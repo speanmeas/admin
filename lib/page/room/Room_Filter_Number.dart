@@ -5,11 +5,11 @@ import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
 void main() {
-  runApp(Room_Read());
+  runApp(Room_Filter_Number());
 }
 
-class Room_Read extends StatelessWidget {
-  Room_Read({super.key});
+class Room_Filter_Number extends StatelessWidget {
+  Room_Filter_Number({super.key});
 
   List<Map<String, dynamic>> schema = [
     {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
@@ -42,13 +42,13 @@ class Room_Read extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Read_(schema: schema, input: input),
+      home: Room_Filter_Number_(schema: schema, input: input),
     );
   }
 }
 
-class Room_Read_ extends StatefulWidget {
-  Room_Read_({
+class Room_Filter_Number_ extends StatefulWidget {
+  Room_Filter_Number_({
     super.key, //
     required this.schema,
     required this.input,
@@ -58,25 +58,25 @@ class Room_Read_ extends StatefulWidget {
   Map<String, dynamic> input;
 
   @override
-  State<Room_Read_> createState() => _Room_Read_State();
+  State<Room_Filter_Number_> createState() => _Room_Filter_Number_State();
 }
 
-class _Room_Read_State extends State<Room_Read_> {
+class _Room_Filter_Number_State extends State<Room_Filter_Number_> {
   late Map<String, dynamic> output;
+
+  double min = 0.0;
+  double max = 100.0;
+
+  late double select_min = min;
+  late double select_max = max;
+
+  RangeValues _rangeValues = const RangeValues(0, 100);
 
   @override
   void initState() {
     super.initState();
-
     output = Map.from(widget.input);
-
-    // for (var e in widget.schema.sublist(0, widget.schema.length - 3)) {
-    //   output[e["alias"]] = null;
-    // }
-
     print(output);
-
-    // print(output);
     setState(() {});
   }
 
@@ -85,7 +85,7 @@ class _Room_Read_State extends State<Room_Read_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "View Room", //
+          "Filter", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -99,8 +99,9 @@ class _Room_Read_State extends State<Room_Read_> {
               Navigator.pop(context);
             },
             color: Colors.red,
+            tooltip: "Close",
           ),
-          SizedBox(width: 8),
+          SizedBox(width: 4),
         ],
         centerTitle: false,
         toolbarHeight: 40,
@@ -110,81 +111,79 @@ class _Room_Read_State extends State<Room_Read_> {
         child: Container(
           width: 600,
           // alignment: Alignment.bottomCenter,
+          padding: EdgeInsets.all(8),
           child: ListView(
             children: [
+              //
               SizedBox(height: 16),
 
-              Center(
-                child: Container(
-                  width: 200,
-                  height: 200, //
-                  child: Placeholder(),
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: TextEditingController(text: _rangeValues.start.toStringAsFixed(2)),
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: "Min", //
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: TextEditingController(text: _rangeValues.end.toStringAsFixed(2)),
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: "Max", //
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                    ),
+                  ),
+                ],
               ),
 
-              SizedBox(height: 16),
+              SizedBox(height: 40),
 
-              ...widget.schema.map((e) {
-                //
-                if (["_id", "created_at", "updated_at", "deleted_at"].contains(e["alias"])) {
-                  return SizedBox.shrink();
-                }
+              RangeSlider(
+                values: _rangeValues,
+                min: min,
+                max: max,
+                divisions: 1000,
+                labels: RangeLabels(
+                  _rangeValues.start.toStringAsFixed(2), //
+                  _rangeValues.end.toStringAsFixed(2),
+                ),
+                onChanged: (RangeValues values) {
+                  setState(() {
+                    _rangeValues = values;
+                  });
+                },
+              ),
 
-                //
-                if (e["type"] == "string") {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
-                    child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
-                      decoration: InputDecoration(
-                        labelText: e['title'], //
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      readOnly: true,
-                    ),
-                  );
-                }
+              SizedBox(height: 20),
 
-                //
-                if (e["type"] == "number") {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
-                    child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? '0'),
-                      decoration: InputDecoration(
-                        labelText: e['title'], //
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      readOnly: true,
-                    ),
-                  );
-                }
-
-                // TODO: later
-                if (e["type"] == "date-time") {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
-                    child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
-                      decoration: InputDecoration(
-                        labelText: e['title'], //
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      readOnly: true,
-                    ),
-                  );
-                }
-
-                //
-                return SizedBox.shrink();
-              }),
-
-              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Tooltip(
+                    message: "Apply filter",
+                    child: OutlinedButton.icon(icon: Icon(Icons.filter_alt_outlined), label: Text("Apply"), onPressed: on_apply_filter),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void on_apply_filter() {
+    final select_min = double.parse(_rangeValues.start.toStringAsFixed(2));
+    final select_max = double.parse(_rangeValues.end.toStringAsFixed(2));
+    print(select_min);
+    print(select_max);
   }
 }
 
