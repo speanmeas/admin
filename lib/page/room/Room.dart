@@ -8,8 +8,12 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
+import 'package:speanmeas/page/room/Room_Column_Visibility.dart';
 import 'package:speanmeas/page/room/Room_Create.dart';
 import 'package:speanmeas/page/room/Room_Delete.dart';
+import 'package:speanmeas/page/room/Room_Filter_Datetime.dart';
+import 'package:speanmeas/page/room/Room_Filter_Number.dart';
+import 'package:speanmeas/page/room/Room_Filter_String.dart';
 import 'package:speanmeas/page/room/Schema.dart';
 
 import 'package:speanmeas/utility/Dio.dart';
@@ -64,7 +68,7 @@ class _Room_State extends State<Room_> {
     {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
     {"alias": "price", "title": "Price", "type": "number", "visible": 1},
     {"alias": "status", "title": "Status", "type": "string", "visible": 1},
-    {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 0},
+    {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 1},
     {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
     {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
   ];
@@ -83,8 +87,8 @@ class _Room_State extends State<Room_> {
 
   String? key;
   String? query;
-  int? min;
-  int? max;
+  double? min;
+  double? max;
   String? start;
   String? end;
   int? limit = 100;
@@ -142,7 +146,7 @@ class _Room_State extends State<Room_> {
         });
   }
 
-  Timer? _debounce;
+  // Timer? _debounce;
 
   double get_width() {
     return number_column_width + schema.where((e) => e["visible"] == 1).length * column_width;
@@ -179,7 +183,17 @@ class _Room_State extends State<Room_> {
             // button view column
             IconButton(
               onPressed: () {
-                //
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Room_Select_Column_Visibility_(schema: schema), //
+                  ),
+                ).then((value) {
+                  if (value != null) {
+                    schema = value;
+                    setState(() {});
+                  }
+                });
               },
               icon: Icon(Icons.view_column_outlined),
               tooltip: "View Column",
@@ -294,29 +308,71 @@ class _Room_State extends State<Room_> {
                   // search mode
                   if (is_filter)
                     ...schema.where((row) => row["visible"] == 1).map((row) {
+                      // if (row["type"] == "string") {
+                      //   return Container(
+                      //     height: header_height, //
+                      //     width: column_width, //
+                      //     padding: const EdgeInsets.fromLTRB(1, 8, 1, 0),
+                      //     child: TextField(
+                      //       decoration: InputDecoration(
+                      //         hintText: "Search", //
+                      //         labelText: row["title"] as String?,
+                      //         floatingLabelBehavior: FloatingLabelBehavior.always,
+                      //         contentPadding: EdgeInsets.fromLTRB(4, 4, 0, 4),
+                      //         border: OutlineInputBorder(),
+                      //       ),
+                      //       style: const TextStyle(fontSize: 14),
+                      //       onChanged: (value) {
+                      //         if (_debounce?.isActive ?? false) _debounce!.cancel();
+                      //         _debounce = Timer(const Duration(milliseconds: 200), () async {
+                      //           key = row['alias'] as String;
+                      //           query = value;
+                      //           sort_order = 0;
+                      //           init();
+                      //         });
+                      //       },
+                      //     ),
+                      //   );
+                      // }
+
                       if (row["type"] == "string") {
                         return Container(
                           height: header_height, //
                           width: column_width, //
-                          padding: const EdgeInsets.fromLTRB(1, 8, 1, 0),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: "Search", //
-                              labelText: row["title"] as String?,
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
-                              contentPadding: EdgeInsets.fromLTRB(4, 4, 0, 4),
-                              border: OutlineInputBorder(),
-                            ),
-                            style: const TextStyle(fontSize: 14),
-                            onChanged: (value) {
-                              if (_debounce?.isActive ?? false) _debounce!.cancel();
-                              _debounce = Timer(const Duration(milliseconds: 200), () async {
-                                key = row['alias'] as String;
-                                query = value;
-                                sort_order = 0;
-                                init();
+                          padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
+                          child: OutlinedButton.icon(
+                            onPressed: () {
+                              // TODO: Implement range selection
+                              print("${row["alias"]}");
+
+                              key = row['alias'];
+                              query = null;
+                              min = null;
+                              max = null;
+                              start = null;
+                              end = null;
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Room_Filter_String_(), //
+                                ),
+                              ).then((value) {
+                                if (value != null) {
+                                  query = value;
+                                  init();
+                                }
                               });
                             },
+                            icon: const Icon(Icons.search),
+                            label: Text(
+                              row["title"] as String? ?? "", //
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                overflow: TextOverflow.ellipsis, //
+                              ),
+                            ),
                           ),
                         );
                       }
@@ -325,14 +381,45 @@ class _Room_State extends State<Room_> {
                         return Container(
                           height: header_height, //
                           width: column_width, //
-                          padding: const EdgeInsets.fromLTRB(1, 8, 1, 0),
+                          padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
                           child: OutlinedButton.icon(
                             onPressed: () {
                               // TODO: Implement range selection
-                              print("Range selection for ${row["title"]}");
+                              print("${row["alias"]}");
+                              key = row['alias'];
+                              query = null;
+                              min = null;
+                              max = null;
+                              start = null;
+                              end = null;
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Room_Filter_Number_(
+                                    key_: row['alias'], //
+                                  ),
+                                ),
+                              ).then((value) {
+                                print("value: $value");
+                                if (value != null) {
+                                  min = value["min"];
+                                  max = value["max"];
+
+                                  // query = value;
+                                  init();
+                                }
+                              });
                             },
                             icon: const Icon(Icons.tune),
-                            label: Text(row["title"] as String? ?? ""),
+                            label: Text(
+                              row["title"] as String? ?? "", //
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                overflow: TextOverflow.ellipsis, //
+                              ),
+                            ),
                           ),
                         );
                       }
@@ -341,14 +428,40 @@ class _Room_State extends State<Room_> {
                         return Container(
                           height: header_height, //
                           width: column_width, //
-                          padding: const EdgeInsets.fromLTRB(1, 8, 1, 0),
+                          padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
                           child: OutlinedButton.icon(
                             onPressed: () {
                               // TODO: Implement range selection
-                              print("Range selection for ${row["title"]}");
+                              print("${row["alias"]}");
+                              key = row['alias'];
+                              query = null;
+                              min = null;
+                              max = null;
+                              start = null;
+                              end = null;
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Room_Filter_Datetime_(
+                                    schema: schema,
+                                    input: {
+                                      "min": 0, //
+                                      "max": 100,
+                                    },
+                                  ),
+                                ),
+                              );
                             },
                             icon: const Icon(Icons.date_range),
-                            label: Text(row["title"] as String? ?? ""),
+                            label: Text(
+                              row["title"] as String? ?? "", //
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                overflow: TextOverflow.ellipsis, //
+                              ),
+                            ),
                           ),
                         );
                       }

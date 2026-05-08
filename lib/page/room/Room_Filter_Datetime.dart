@@ -248,10 +248,13 @@ class _Room_Filter_Datetime_State extends State<Room_Filter_Datetime_> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  OutlinedButton.icon(
-                    icon: Icon(Icons.filter_alt),
-                    label: Text("Filter"), //
-                    onPressed: on_apply_filter,
+                  Tooltip(
+                    message: "Apply filter",
+                    child: OutlinedButton.icon(
+                      icon: Icon(Icons.filter_alt_outlined),
+                      label: Text("Apply"), //
+                      onPressed: on_apply_filter,
+                    ),
                   ),
                 ],
               ),

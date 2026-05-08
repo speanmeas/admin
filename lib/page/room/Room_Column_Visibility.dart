@@ -165,6 +165,8 @@ class _Room_Select_Column_Visibility_State extends State<Room_Select_Column_Visi
                     label: Text("Apply"), //
                     onPressed: () {
                       print(output);
+                      Navigator.pop(context, output);
+                      show_snackbar(context: context, message: "Column updated.", color: Colors.green);
                     },
                   ),
                 ],
@@ -175,4 +177,25 @@ class _Room_Select_Column_Visibility_State extends State<Room_Select_Column_Visi
       ),
     );
   }
+}
+
+void show_snackbar({
+  required BuildContext context, //
+  required String message, //
+  required Color color, //
+}) {
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.info_outline, color: Colors.white),
+            SizedBox(width: 8),
+            Text(message),
+          ],
+        ),
+        backgroundColor: color,
+      ),
+    );
 }

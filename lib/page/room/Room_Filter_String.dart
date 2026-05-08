@@ -11,38 +11,38 @@ void main() {
 class Room_Filter_String extends StatelessWidget {
   Room_Filter_String({super.key});
 
-  List<Map<String, dynamic>> schema = [
-    {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
-    {"alias": "name", "title": "Room No.", "type": "string", "visible": 1},
-    {"alias": "type", "title": "Room Type", "type": "string", "visible": 1},
-    {"alias": "capacity", "title": "Capacity", "type": "number", "visible": 1},
-    {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
-    {"alias": "price", "title": "Price", "type": "number", "visible": 1},
-    {"alias": "status", "title": "Status", "type": "string", "visible": 1},
-    {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 0},
-    {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
-    {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
-  ];
+  // List<Map<String, dynamic>> schema = [
+  //   {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
+  //   {"alias": "name", "title": "Room No.", "type": "string", "visible": 1},
+  //   {"alias": "type", "title": "Room Type", "type": "string", "visible": 1},
+  //   {"alias": "capacity", "title": "Capacity", "type": "number", "visible": 1},
+  //   {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
+  //   {"alias": "price", "title": "Price", "type": "number", "visible": 1},
+  //   {"alias": "status", "title": "Status", "type": "string", "visible": 1},
+  //   {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 0},
+  //   {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
+  //   {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
+  // ];
 
-  Map<String, dynamic> input = {
-    "_id": 1, //
-    "name": "Room 1", //
-    "type": null, //
-    "capacity": 10,
-    "ac_or_fan": "AC",
-    "price": null,
-    "status": "Active",
-    "created_at": "2022-01-01 00:00:00",
-    "updated_at": "2022-01-01 00:00:00",
-    "deleted_at": null,
-  };
+  // Map<String, dynamic> input = {
+  //   "_id": 1, //
+  //   "name": "Room 1", //
+  //   "type": null, //
+  //   "capacity": 10,
+  //   "ac_or_fan": "AC",
+  //   "price": null,
+  //   "status": "Active",
+  //   "created_at": "2022-01-01 00:00:00",
+  //   "updated_at": "2022-01-01 00:00:00",
+  //   "deleted_at": null,
+  // };
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Filter_String_(schema: schema, input: input),
+      home: Room_Filter_String_(),
     );
   }
 }
@@ -50,29 +50,19 @@ class Room_Filter_String extends StatelessWidget {
 class Room_Filter_String_ extends StatefulWidget {
   Room_Filter_String_({
     super.key, //
-    required this.schema,
-    required this.input,
+    // required this.schema,
+    // required this.input,
   });
 
-  List<Map<String, dynamic>> schema;
-  Map<String, dynamic> input;
+  // List<Map<String, dynamic>> schema;
+  // Map<String, dynamic> input;
 
   @override
   State<Room_Filter_String_> createState() => _Room_Filter_String_State();
 }
 
 class _Room_Filter_String_State extends State<Room_Filter_String_> {
-  late Map<String, dynamic> output;
-
-  String filter = "";
-
-  @override
-  void initState() {
-    super.initState();
-    output = Map.from(widget.input);
-    print(output);
-    setState(() {});
-  }
+  TextEditingController controller_search = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -115,16 +105,13 @@ class _Room_Filter_String_State extends State<Room_Filter_String_> {
                 children: [
                   Expanded(
                     child: TextField(
+                      controller: controller_search,
                       autofocus: true,
                       decoration: InputDecoration(
                         labelText: "Filter", //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {
-                        setState(() {
-                          filter = value;
-                        });
-                      },
+                      onChanged: (value) {},
                       onSubmitted: (_) => on_apply_filter(),
                     ),
                   ),
@@ -158,7 +145,8 @@ class _Room_Filter_String_State extends State<Room_Filter_String_> {
   }
 
   void on_apply_filter() {
-    print(filter);
+    Navigator.pop(context, controller_search.text);
+    show_snackbar(context: context, message: "Filter applied", color: Colors.green);
   }
 }
 
