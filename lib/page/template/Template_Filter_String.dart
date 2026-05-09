@@ -5,51 +5,64 @@ import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
 void main() {
-  runApp(Room_Filter_Number());
+  runApp(Room_Filter_String());
 }
 
-class Room_Filter_Number extends StatelessWidget {
-  Room_Filter_Number({super.key});
+class Room_Filter_String extends StatelessWidget {
+  Room_Filter_String({super.key});
 
-  String key_ = "capacity";
+  // List<Map<String, dynamic>> schema = [
+  //   {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
+  //   {"alias": "name", "title": "Room No.", "type": "string", "visible": 1},
+  //   {"alias": "type", "title": "Room Type", "type": "string", "visible": 1},
+  //   {"alias": "capacity", "title": "Capacity", "type": "number", "visible": 1},
+  //   {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
+  //   {"alias": "price", "title": "Price", "type": "number", "visible": 1},
+  //   {"alias": "status", "title": "Status", "type": "string", "visible": 1},
+  //   {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 0},
+  //   {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
+  //   {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
+  // ];
+
+  // Map<String, dynamic> input = {
+  //   "_id": 1, //
+  //   "name": "Room 1", //
+  //   "type": null, //
+  //   "capacity": 10,
+  //   "ac_or_fan": "AC",
+  //   "price": null,
+  //   "status": "Active",
+  //   "created_at": "2022-01-01 00:00:00",
+  //   "updated_at": "2022-01-01 00:00:00",
+  //   "deleted_at": null,
+  // };
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Filter_Number_(key_: key_),
+      home: Room_Filter_String_(),
     );
   }
 }
 
-class Room_Filter_Number_ extends StatefulWidget {
-  Room_Filter_Number_({
+class Room_Filter_String_ extends StatefulWidget {
+  Room_Filter_String_({
     super.key, //
-
-    required this.key_,
+    // required this.schema,
+    // required this.input,
   });
 
-  String key_;
+  // List<Map<String, dynamic>> schema;
+  // Map<String, dynamic> input;
 
   @override
-  State<Room_Filter_Number_> createState() => _Room_Filter_Number_State();
+  State<Room_Filter_String_> createState() => _Room_Filter_String_State();
 }
 
-class _Room_Filter_Number_State extends State<Room_Filter_Number_> {
-  double min = 0.0; // need to query follow key_
-  double max = 100.0; // need to query
-
-  late double select_min = min;
-  late double select_max = max;
-
-  late RangeValues range;
-
-  @override
-  void initState() {
-    super.initState();
-    range = RangeValues(min, max);
-  }
+class _Room_Filter_String_State extends State<Room_Filter_String_> {
+  TextEditingController controller_search = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -92,47 +105,20 @@ class _Room_Filter_Number_State extends State<Room_Filter_Number_> {
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: TextEditingController(text: range.start.toStringAsFixed(2)),
-                      keyboardType: TextInputType.number,
+                      controller: controller_search,
+                      autofocus: true,
                       decoration: InputDecoration(
-                        labelText: "Min", //
+                        labelText: "Filter", //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      controller: TextEditingController(text: range.end.toStringAsFixed(2)),
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: "Max", //
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
+                      onChanged: (value) {},
+                      onSubmitted: (_) => on_apply_filter(),
                     ),
                   ),
                 ],
               ),
 
-              SizedBox(height: 40),
-
-              RangeSlider(
-                values: range,
-                min: min,
-                max: max,
-                divisions: 1000,
-                labels: RangeLabels(
-                  range.start.toStringAsFixed(2), //
-                  range.end.toStringAsFixed(2),
-                ),
-                onChanged: (RangeValues values) {
-                  setState(() {
-                    range = values;
-                  });
-                },
-              ),
-
-              SizedBox(height: 20),
+              SizedBox(height: 16),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -147,6 +133,10 @@ class _Room_Filter_Number_State extends State<Room_Filter_Number_> {
                   ),
                 ],
               ),
+
+              SizedBox(height: 8),
+
+              SizedBox(height: 8),
             ],
           ),
         ),
@@ -155,15 +145,8 @@ class _Room_Filter_Number_State extends State<Room_Filter_Number_> {
   }
 
   void on_apply_filter() {
-    double select_min = double.parse(range.start.toStringAsFixed(2));
-    double select_max = double.parse(range.end.toStringAsFixed(2));
-    print(select_min);
-    print(select_max);
-
-    Navigator.pop(context, {
-      "min": select_min, //
-      "max": select_max,
-    });
+    Navigator.pop(context, controller_search.text);
+    show_snackbar(context: context, message: "Filter applied", color: Colors.green);
   }
 }
 

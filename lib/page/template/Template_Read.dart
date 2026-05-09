@@ -1,16 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
 void main() {
-  runApp(Room_Update());
+  runApp(Room_Read());
 }
 
-class Room_Update extends StatelessWidget {
-  Room_Update({super.key});
+class Room_Read extends StatelessWidget {
+  Room_Read({super.key});
 
   List<Map<String, dynamic>> schema = [
     {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
@@ -43,13 +42,13 @@ class Room_Update extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Update_(schema: schema, input: input),
+      home: Room_Read_(schema: schema, input: input),
     );
   }
 }
 
-class Room_Update_ extends StatefulWidget {
-  Room_Update_({
+class Room_Read_ extends StatefulWidget {
+  Room_Read_({
     super.key, //
     required this.schema,
     required this.input,
@@ -59,10 +58,10 @@ class Room_Update_ extends StatefulWidget {
   Map<String, dynamic> input;
 
   @override
-  State<Room_Update_> createState() => _Room_Update_State();
+  State<Room_Read_> createState() => _Room_Read_State();
 }
 
-class _Room_Update_State extends State<Room_Update_> {
+class _Room_Read_State extends State<Room_Read_> {
   late Map<String, dynamic> output;
 
   @override
@@ -86,7 +85,7 @@ class _Room_Update_State extends State<Room_Update_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Update Room", //
+          "View Room", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -113,11 +112,25 @@ class _Room_Update_State extends State<Room_Update_> {
           // alignment: Alignment.bottomCenter,
           child: ListView(
             children: [
+              SizedBox(height: 16),
+
+              Center(
+                child: Container(
+                  width: 200,
+                  height: 200, //
+                  child: Placeholder(),
+                ),
+              ),
+
+              SizedBox(height: 16),
+
               ...widget.schema.map((e) {
+                //
                 if (["_id", "created_at", "updated_at", "deleted_at"].contains(e["alias"])) {
                   return SizedBox.shrink();
                 }
 
+                //
                 if (e["type"] == "string") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
@@ -125,27 +138,24 @@ class _Room_Update_State extends State<Room_Update_> {
                       controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: e['title'], //
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {
-                        output[e['alias']] = value; //
-                      },
+                      readOnly: true,
                     ),
                   );
                 }
 
+                //
                 if (e["type"] == "number") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
+                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? '0'),
                       decoration: InputDecoration(
                         labelText: e['title'], //
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      keyboardType: TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
-                      onChanged: (value) {
-                        output[e['alias']] = double.tryParse(value);
-                      },
+                      readOnly: true,
                     ),
                   );
                 }
@@ -158,51 +168,18 @@ class _Room_Update_State extends State<Room_Update_> {
                       controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: e['title'], //
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      keyboardType: TextInputType.datetime,
-                      onChanged: (value) {
-                        output[e['alias']] = value;
-                      },
+                      readOnly: true,
                     ),
                   );
                 }
 
+                //
                 return SizedBox.shrink();
               }),
 
               SizedBox(height: 8),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  OutlinedButton.icon(
-                    icon: Icon(Icons.edit_outlined),
-                    label: Text("Update"),
-                    style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                    onPressed: () async {
-                      // print(output);
-                      await dio
-                          .post(
-                            '/room/update',
-                            data: FormData.fromMap({
-                              ...output, //
-                            }),
-                          )
-                          .then((value) {
-                            // print(value);
-                            show_snackbar(context: context, message: "Room update successfully", color: Colors.green);
-                            Navigator.pop(context, true);
-                          })
-                          .catchError((error) {
-                            // print(error);
-                            show_snackbar(context: context, message: "Room update failed", color: Colors.red);
-                          });
-                    },
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 800),
             ],
           ),
         ),

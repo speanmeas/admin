@@ -42,6 +42,18 @@ List<Map<String, dynamic>> schema = [
     "visible": 1
   },
   {
+    "alias": "datetime_start",
+    "title": "Datetime Start",
+    "type": "date-time",
+    "visible": 1
+  },
+  {
+    "alias": "datetime_end",
+    "title": "Datetime End",
+    "type": "date-time",
+    "visible": 1
+  },
+  {
     "alias": "created_at",
     "title": "Created At",
     "type": "date-time",

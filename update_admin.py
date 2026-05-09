@@ -45,21 +45,29 @@ if build_match:
 
 # build web release
 # os.system("flutter build web --release --base-href /")
-# os.system("flutter build web --release --base-href /app/ --output=build/github")
+# os.system("flutter build web --release --base-href /app/ --output=build/github --no-wasm-dry-run")
 
 #! build for cloudflare
-os.system("flutter build web --release --base-href / --output=build/cloudflare")
+# os.system("flutter build web --release --base-href / --output=build/cloudflare --no-wasm-dry-run")
 
 #! build for github
-os.system(f"flutter build web --release --base-href /{os.path.basename(os.getcwd())}/ --output=build/github")
+# os.system(f"flutter build web --release --base-href /{os.path.basename(os.getcwd())}/ --output=build/github --no-wasm-dry-run")
 
 
-#! delay for 10 seconds
-for _ in tqdm(range(100)):
-    time.sleep(0.1)
+#! build for local without pwa
+# flutter build web --release --pwa-strategy=none. pwa = progressive web app
+os.system(f"flutter build web --release --base-href / --output=build/local --no-wasm-dry-run")
+
+# copy build/local to server/service/admin/local
+# os.system("copy build/local/* ../server/service/admin/local/ /E /Y")  # /E = copy all subdirectories, /Y = suppress prompt to confirm overwriting
 
 
-#! git commit and push
-os.system("git add .")
-os.system(f'git commit -m "update"')
-os.system("git push")
+# #! delay for 10 seconds
+# for _ in tqdm(range(100)):
+#     time.sleep(0.1)
+
+
+# #! git commit and push
+# os.system("git add .")
+# os.system(f'git commit -m "update"')
+# os.system("git push")

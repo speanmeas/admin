@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/page/Dashboard.dart';
+import 'package:speanmeas/page/dashboard/Dashboard.dart';
 import 'package:speanmeas/layout/Panel_Body.dart';
 import 'package:speanmeas/layout/.backup/Panel_Bottom.dart';
 import 'package:speanmeas/layout/Panel_Left.dart';

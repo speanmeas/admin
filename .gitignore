@@ -34,6 +34,7 @@ migrate_working_dir/
 /build/*
 !/build/cloudflare/
 !/build/github/
+!/build/local/
 
 /coverage/
 
