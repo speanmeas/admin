@@ -6,11 +6,11 @@ import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
 void main() {
-  runApp(Room_Update());
+  runApp(Template_Update());
 }
 
-class Room_Update extends StatelessWidget {
-  Room_Update({super.key});
+class Template_Update extends StatelessWidget {
+  Template_Update({super.key});
 
   List<Map<String, dynamic>> schema = [
     {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
@@ -43,13 +43,13 @@ class Room_Update extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Update_(schema: schema, input: input),
+      home: Template_Update_(schema: schema, input: input),
     );
   }
 }
 
-class Room_Update_ extends StatefulWidget {
-  Room_Update_({
+class Template_Update_ extends StatefulWidget {
+  Template_Update_({
     super.key, //
     required this.schema,
     required this.input,
@@ -59,10 +59,10 @@ class Room_Update_ extends StatefulWidget {
   Map<String, dynamic> input;
 
   @override
-  State<Room_Update_> createState() => _Room_Update_State();
+  State<Template_Update_> createState() => _Template_Update_State();
 }
 
-class _Room_Update_State extends State<Room_Update_> {
+class _Template_Update_State extends State<Template_Update_> {
   late Map<String, dynamic> output;
 
   @override

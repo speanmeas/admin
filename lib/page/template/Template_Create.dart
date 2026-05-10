@@ -1,17 +1,17 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:speanmeas/page/room/Schema.g.dart';
+import 'package:speanmeas/page/template/Schema.g.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
 void main() {
-  runApp(Room_Create());
+  runApp(Template_Create());
 }
 
-class Room_Create extends StatelessWidget {
-  Room_Create({super.key});
+class Template_Create extends StatelessWidget {
+  Template_Create({super.key});
 
   List<Map<String, dynamic>> schema = [
     {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
@@ -32,13 +32,13 @@ class Room_Create extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Create_(schema: schema),
+      home: Template_Create_(schema: schema),
     );
   }
 }
 
-class Room_Create_ extends StatefulWidget {
-  Room_Create_({
+class Template_Create_ extends StatefulWidget {
+  Template_Create_({
     super.key, //
     required this.schema,
   });
@@ -46,10 +46,10 @@ class Room_Create_ extends StatefulWidget {
   List<Map<String, dynamic>> schema;
 
   @override
-  State<Room_Create_> createState() => _Room_Create_State();
+  State<Template_Create_> createState() => _Template_Create_State();
 }
 
-class _Room_Create_State extends State<Room_Create_> {
+class _Template_Create_State extends State<Template_Create_> {
   Map<String, dynamic> output = {};
 
   @override

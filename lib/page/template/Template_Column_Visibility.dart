@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:speanmeas/page/room/Schema.g.dart';
+import 'package:speanmeas/page/template/Schema.g.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 
 void main() {
-  runApp(Room_Select_Column_Visibility());
+  runApp(Template_Select_Column_Visibility());
 }
 
-class Room_Select_Column_Visibility extends StatelessWidget {
-  Room_Select_Column_Visibility({super.key});
+class Template_Select_Column_Visibility extends StatelessWidget {
+  Template_Select_Column_Visibility({super.key});
 
   List<Map<String, dynamic>> schema = [
     {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
@@ -28,13 +28,13 @@ class Room_Select_Column_Visibility extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Select_Column_Visibility_(schema: schema),
+      home: Template_Select_Column_Visibility_(schema: schema),
     );
   }
 }
 
-class Room_Select_Column_Visibility_ extends StatefulWidget {
-  Room_Select_Column_Visibility_({
+class Template_Select_Column_Visibility_ extends StatefulWidget {
+  Template_Select_Column_Visibility_({
     super.key, //
     required this.schema,
   });
@@ -42,10 +42,10 @@ class Room_Select_Column_Visibility_ extends StatefulWidget {
   List<Map<String, dynamic>> schema;
 
   @override
-  State<Room_Select_Column_Visibility_> createState() => _Room_Select_Column_Visibility_State();
+  State<Template_Select_Column_Visibility_> createState() => _Template_Select_Column_Visibility_State();
 }
 
-class _Room_Select_Column_Visibility_State extends State<Room_Select_Column_Visibility_> {
+class _Template_Select_Column_Visibility_State extends State<Template_Select_Column_Visibility_> {
   //
   //
 

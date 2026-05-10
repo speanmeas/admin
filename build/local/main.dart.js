@@ -103492,7 +103492,7 @@ s($,"b4b","Kt",()=>new A.amJ(A.c0("/",!0,!1),A.c0("(^[a-zA-Z][-+.a-zA-Z\\d]*://|
 s($,"b49","aFE",()=>A.aW6())
 s($,"b3E","a2E",()=>A.aHp())
 s($,"b5I","aPp",()=>!t.Cm.b(A.b([],t.Z)))
-s($,"b6S","Ky",()=>{var q=A.aQV("https://dev_api.speanmeas.com"),p=A.aMt(),o=new A.Ob(A.b([B.CK],A.ay("A<i2?>")))
+s($,"b6S","Ky",()=>{var q=A.aQV("https://api.speanmeas.com"),p=A.aMt(),o=new A.Ob(A.b([B.CK],A.ay("A<i2?>")))
 o.V(o,B.JB)
 o=new A.a5W(p,o,A.aMt(),new A.a9k(51200),!1)
 o.YO$=q

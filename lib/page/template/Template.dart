@@ -8,47 +8,47 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/page/room/Room_Column_Visibility.dart';
-import 'package:speanmeas/page/room/Room_Create.dart';
-import 'package:speanmeas/page/room/Room_Delete.dart';
-import 'package:speanmeas/page/room/Room_Filter_Datetime.dart';
-import 'package:speanmeas/page/room/Room_Filter_Number.dart';
-import 'package:speanmeas/page/room/Room_Filter_String.dart';
-import 'package:speanmeas/page/room/Schema.g.dart';
+import 'package:speanmeas/page/template/Template_Column_Visibility.dart';
+import 'package:speanmeas/page/template/Template_Create.dart';
+import 'package:speanmeas/page/template/Template_Delete.dart';
+import 'package:speanmeas/page/template/Template_Filter_Datetime.dart';
+import 'package:speanmeas/page/template/Template_Filter_Number.dart';
+import 'package:speanmeas/page/template/Template_Filter_String.dart';
+import 'package:speanmeas/page/template/Schema.g.dart';
 
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
 
-import 'package:speanmeas/page/room/Room_Update.dart';
-import 'package:speanmeas/page/room/Room_Read.dart';
+import 'package:speanmeas/page/template/Template_Update.dart';
+import 'package:speanmeas/page/template/Template_Read.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 
 void main() {
-  runApp(const Room());
+  runApp(const Template());
 }
 
-class Room extends StatelessWidget {
-  const Room({super.key});
+class Template extends StatelessWidget {
+  const Template({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Room', //
+      title: 'Template', //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: const Room_(),
+      home: const Template_(),
     );
   }
 }
 
-class Room_ extends StatefulWidget {
-  const Room_({super.key});
+class Template_ extends StatefulWidget {
+  const Template_({super.key});
 
   @override
-  State<Room_> createState() => _Room_State();
+  State<Template_> createState() => _Template_State();
 }
 
-class _Room_State extends State<Room_> {
+class _Template_State extends State<Template_> {
   //
   //
 
@@ -187,7 +187,7 @@ class _Room_State extends State<Room_> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Room_Select_Column_Visibility_(schema: schema), //
+                    builder: (context) => Template_Select_Column_Visibility_(schema: schema), //
                   ),
                 ).then((value) {
                   if (value != null) {
@@ -209,7 +209,7 @@ class _Room_State extends State<Room_> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Room_Create_(
+                      builder: (context) => Template_Create_(
                         schema: schema, //
                       ),
                     ),
@@ -356,7 +356,7 @@ class _Room_State extends State<Room_> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => Room_Filter_String_(), //
+                                  builder: (context) => Template_Filter_String_(), //
                                 ),
                               ).then((value) {
                                 if (value != null) {
@@ -397,7 +397,7 @@ class _Room_State extends State<Room_> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => Room_Filter_Number_(
+                                  builder: (context) => Template_Filter_Number_(
                                     key_: row['alias'], //
                                   ),
                                 ),
@@ -444,7 +444,7 @@ class _Room_State extends State<Room_> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => Room_Filter_Datetime_(
+                                  builder: (context) => Template_Filter_Datetime_(
                                     schema: schema,
                                     input: {
                                       "min": 0, //
@@ -613,7 +613,7 @@ class _Room_State extends State<Room_> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => Room_Update_(
+                                        builder: (context) => Template_Update_(
                                           schema: schema, //
                                           input: data[index],
                                         ),
@@ -639,7 +639,7 @@ class _Room_State extends State<Room_> {
                                     Navigator.push(
                                       context, //
                                       MaterialPageRoute(
-                                        builder: (context) => Room_Delete_(
+                                        builder: (context) => Template_Delete_(
                                           input: {
                                             "_id": data[index]["_id"], //
                                             "name": data[index]["name"],
@@ -679,7 +679,7 @@ class _Room_State extends State<Room_> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => Room_Read_(
+                            builder: (context) => Template_Read_(
                               schema: schema, //
                               input: data[index],
                             ),

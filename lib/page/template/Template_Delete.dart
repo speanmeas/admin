@@ -5,11 +5,11 @@ import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
 void main() {
-  runApp(Room_Delete());
+  runApp(Template_Delete());
 }
 
-class Room_Delete extends StatelessWidget {
-  Room_Delete({super.key});
+class Template_Delete extends StatelessWidget {
+  Template_Delete({super.key});
 
   Map<String, dynamic> input = {
     "_id": "69f984897186bcf74f8a5dde", //
@@ -21,13 +21,13 @@ class Room_Delete extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Delete_(input: input),
+      home: Template_Delete_(input: input),
     );
   }
 }
 
-class Room_Delete_ extends StatefulWidget {
-  Room_Delete_({
+class Template_Delete_ extends StatefulWidget {
+  Template_Delete_({
     super.key, //
     required this.input,
   });
@@ -35,10 +35,10 @@ class Room_Delete_ extends StatefulWidget {
   final Map<String, dynamic> input;
 
   @override
-  State<Room_Delete_> createState() => _Room_Delete_State();
+  State<Template_Delete_> createState() => _Template_Delete_State();
 }
 
-class _Room_Delete_State extends State<Room_Delete_> {
+class _Template_Delete_State extends State<Template_Delete_> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

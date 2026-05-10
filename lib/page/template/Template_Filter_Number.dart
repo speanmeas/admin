@@ -5,11 +5,11 @@ import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
 void main() {
-  runApp(Room_Filter_Number());
+  runApp(Template_Filter_Number());
 }
 
-class Room_Filter_Number extends StatelessWidget {
-  Room_Filter_Number({super.key});
+class Template_Filter_Number extends StatelessWidget {
+  Template_Filter_Number({super.key});
 
   String key_ = "capacity";
 
@@ -18,13 +18,13 @@ class Room_Filter_Number extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Filter_Number_(key_: key_),
+      home: Template_Filter_Number_(key_: key_),
     );
   }
 }
 
-class Room_Filter_Number_ extends StatefulWidget {
-  Room_Filter_Number_({
+class Template_Filter_Number_ extends StatefulWidget {
+  Template_Filter_Number_({
     super.key, //
 
     required this.key_,
@@ -33,10 +33,10 @@ class Room_Filter_Number_ extends StatefulWidget {
   String key_;
 
   @override
-  State<Room_Filter_Number_> createState() => _Room_Filter_Number_State();
+  State<Template_Filter_Number_> createState() => _Template_Filter_Number_State();
 }
 
-class _Room_Filter_Number_State extends State<Room_Filter_Number_> {
+class _Template_Filter_Number_State extends State<Template_Filter_Number_> {
   double min = 0.0; // need to query follow key_
   double max = 100.0; // need to query
 
