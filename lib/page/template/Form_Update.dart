@@ -1,66 +1,75 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:speanmeas/page/template/Schema.g.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
+import 'Initialize.dart';
+import 'Schema.g.dart';
+
 void main() {
-  runApp(Template_Create());
+  runApp(Update());
 }
 
-class Template_Create extends StatelessWidget {
-  Template_Create({super.key});
+class Update extends StatelessWidget {
+  Update({super.key});
 
-  List<Map<String, dynamic>> schema = [
-    {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
-    {"alias": "name", "title": "Room No.", "type": "string", "visible": 1},
-    {"alias": "type", "title": "Room Type", "type": "string", "visible": 1},
-    {"alias": "capacity", "title": "Capacity", "type": "number", "visible": 1},
-    {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
-    {"alias": "price", "title": "Price", "type": "number", "visible": 1},
-    {"alias": "status", "title": "Status", "type": "string", "visible": 1},
-    //
-    {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 1},
-    {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
-    {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
-  ];
+  Map<String, dynamic> input = {
+    "_id": 1, //
+    "string_1": "a", //
+    "string_2": "aa", //
+    "string_3": "aaa", //
+    "number_1": 1,
+    "number_2": 11,
+    "number_3": 111,
+    "datetime_1": "2022-01-01 00:00:00",
+    "datetime_2": "2022-01-01 00:00:00",
+    "datetime_3": "2022-01-01 00:00:00",
+    "created_at": "2022-01-01 00:00:00",
+    "updated_at": "2022-01-01 00:00:00",
+    "deleted_at": null,
+  };
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Template_Create_(schema: schema),
+      home: Update_(input: input),
     );
   }
 }
 
-class Template_Create_ extends StatefulWidget {
-  Template_Create_({
+class Update_ extends StatefulWidget {
+  Update_({
     super.key, //
-    required this.schema,
+    required this.input,
   });
 
-  List<Map<String, dynamic>> schema;
+  Map<String, dynamic> input;
 
   @override
-  State<Template_Create_> createState() => _Template_Create_State();
+  State<Update_> createState() => _Update_State();
 }
 
-class _Template_Create_State extends State<Template_Create_> {
-  Map<String, dynamic> output = {};
+class _Update_State extends State<Update_> {
+  late Map<String, dynamic> output;
 
   @override
   void initState() {
     super.initState();
 
-    for (var e in widget.schema.sublist(0, widget.schema.length - 3)) {
-      output[e["alias"]] = null;
-    }
+    output = Map.from(widget.input);
+
+    // for (var e in widget.schema.sublist(0, widget.schema.length - 3)) {
+    //   output[e["alias"]] = null;
+    // }
 
     print(output);
+
+    // print(output);
+    setState(() {});
   }
 
   @override
@@ -68,7 +77,7 @@ class _Template_Create_State extends State<Template_Create_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Create Room", //
+          "Update $HEADER", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -95,16 +104,16 @@ class _Template_Create_State extends State<Template_Create_> {
           // alignment: Alignment.bottomCenter,
           child: ListView(
             children: [
-              ...widget.schema.map((e) {
-                // print(e);
+              ...schema.map((e) {
                 if (["_id", "created_at", "updated_at", "deleted_at"].contains(e["alias"])) {
                   return SizedBox.shrink();
                 }
 
                 if (e["type"] == "string") {
                   return Padding(
-                    padding: const EdgeInsets.all(4.0),
+                    padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
                     child: TextField(
+                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: e['title'], //
                       ),
@@ -117,8 +126,9 @@ class _Template_Create_State extends State<Template_Create_> {
 
                 if (e["type"] == "number") {
                   return Padding(
-                    padding: const EdgeInsets.all(4.0),
+                    padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
                     child: TextField(
+                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: e['title'], //
                       ),
@@ -131,15 +141,24 @@ class _Template_Create_State extends State<Template_Create_> {
                   );
                 }
 
-                return Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                  child: TextField(
-                    decoration: InputDecoration(labelText: e["title"]),
-                    onChanged: (value) {
-                      output[e["alias"]] = value;
-                    },
-                  ),
-                );
+                // TODO: later
+                if (e["type"] == "date-time") {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+                    child: TextField(
+                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
+                      decoration: InputDecoration(
+                        labelText: e['title'], //
+                      ),
+                      keyboardType: TextInputType.datetime,
+                      onChanged: (value) {
+                        output[e['alias']] = value;
+                      },
+                    ),
+                  );
+                }
+
+                return SizedBox.shrink();
               }),
 
               SizedBox(height: 8),
@@ -148,25 +167,26 @@ class _Template_Create_State extends State<Template_Create_> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   OutlinedButton.icon(
-                    icon: Icon(Icons.add_task),
-                    label: Text("Create"),
+                    icon: Icon(Icons.edit_outlined),
+                    label: Text("Update"),
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
                     onPressed: () async {
+                      // print(output);
                       await dio
                           .post(
-                            '/room/create',
+                            '$PATH/update',
                             data: FormData.fromMap({
                               ...output, //
                             }),
                           )
                           .then((value) {
-                            print(value);
-                            show_snackbar(context: context, message: "Room create successfully", color: Colors.green);
+                            // print(value);
+                            show_snackbar(context: context, message: "Room update successfully", color: Colors.green);
                             Navigator.pop(context, true);
                           })
                           .catchError((error) {
-                            print(error);
-                            show_snackbar(context: context, message: "Room create failed", color: Colors.red);
+                            // print(error);
+                            show_snackbar(context: context, message: "Room update failed", color: Colors.red);
                           });
                     },
                   ),

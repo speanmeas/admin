@@ -5,80 +5,47 @@ import 'package:flutter/services.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
+import 'Initialize.dart';
+import 'Schema.g.dart';
+
 void main() {
-  runApp(Template_Update());
+  runApp(Create());
 }
 
-class Template_Update extends StatelessWidget {
-  Template_Update({super.key});
-
-  List<Map<String, dynamic>> schema = [
-    {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
-    {"alias": "name", "title": "Room No.", "type": "string", "visible": 1},
-    {"alias": "type", "title": "Room Type", "type": "string", "visible": 1},
-    {"alias": "capacity", "title": "Capacity", "type": "number", "visible": 1},
-    {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
-    {"alias": "price", "title": "Price", "type": "number", "visible": 1},
-    {"alias": "status", "title": "Status", "type": "string", "visible": 1},
-    {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 0},
-    {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
-    {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
-  ];
-
-  Map<String, dynamic> input = {
-    "_id": 1, //
-    "name": "Room 1", //
-    "type": null, //
-    "capacity": 10,
-    "ac_or_fan": "AC",
-    "price": null,
-    "status": "Active",
-    "created_at": "2022-01-01 00:00:00",
-    "updated_at": "2022-01-01 00:00:00",
-    "deleted_at": null,
-  };
+class Create extends StatelessWidget {
+  Create({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Template_Update_(schema: schema, input: input),
+      home: Create_(),
     );
   }
 }
 
-class Template_Update_ extends StatefulWidget {
-  Template_Update_({
+class Create_ extends StatefulWidget {
+  Create_({
     super.key, //
-    required this.schema,
-    required this.input,
   });
 
-  List<Map<String, dynamic>> schema;
-  Map<String, dynamic> input;
-
   @override
-  State<Template_Update_> createState() => _Template_Update_State();
+  State<Create_> createState() => _Create_State();
 }
 
-class _Template_Update_State extends State<Template_Update_> {
-  late Map<String, dynamic> output;
+class _Create_State extends State<Create_> {
+  Map<String, dynamic> output = {};
 
   @override
   void initState() {
     super.initState();
 
-    output = Map.from(widget.input);
-
-    // for (var e in widget.schema.sublist(0, widget.schema.length - 3)) {
-    //   output[e["alias"]] = null;
-    // }
+    for (var e in schema.sublist(0, schema.length - 3)) {
+      output[e["alias"]] = null;
+    }
 
     print(output);
-
-    // print(output);
-    setState(() {});
   }
 
   @override
@@ -86,7 +53,7 @@ class _Template_Update_State extends State<Template_Update_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Update Room", //
+          "Create $HEADER", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -111,9 +78,11 @@ class _Template_Update_State extends State<Template_Update_> {
         child: Container(
           width: 600,
           // alignment: Alignment.bottomCenter,
+          // padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
           child: ListView(
             children: [
-              ...widget.schema.map((e) {
+              ...schema.map((e) {
+                // print(e);
                 if (["_id", "created_at", "updated_at", "deleted_at"].contains(e["alias"])) {
                   return SizedBox.shrink();
                 }
@@ -122,9 +91,9 @@ class _Template_Update_State extends State<Template_Update_> {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: e['title'], //
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (value) {
                         output[e['alias']] = value; //
@@ -137,9 +106,9 @@ class _Template_Update_State extends State<Template_Update_> {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: e['title'], //
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
@@ -149,25 +118,72 @@ class _Template_Update_State extends State<Template_Update_> {
                     ),
                   );
                 }
-
-                // TODO: later
                 if (e["type"] == "date-time") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
-                    child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
-                      decoration: InputDecoration(
-                        labelText: e['title'], //
-                      ),
-                      keyboardType: TextInputType.datetime,
-                      onChanged: (value) {
-                        output[e['alias']] = value;
-                      },
+                    child: Row(
+                      children: [
+                        Text("${e['title'] as String? ?? ""} : "),
+
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              //   final DateTime? date = await showDatePicker(
+                              //     context: context, //
+                              //     initialDate: start_date,
+                              //     firstDate: DateTime(2000),
+                              //     lastDate: DateTime(2100),
+                              //   );
+                              //   if (date != null) {
+                              //     setState(() {
+                              //       start_date = date;
+                              //       print(format_date(date));
+                              //     });
+                              //   }
+                            },
+                            icon: Icon(Icons.calendar_today),
+                            label: Text("Select Date"),
+                          ),
+                        ),
+                        Text(" - "), //
+
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              // final TimeOfDay? time = await showTimePicker(
+                              //   context: context, //
+                              //   initialTime: start_time,
+                              // );
+                              // if (time != null) {
+                              //   setState(() {
+                              //     start_time = time;
+                              //     print(format_time(time));
+                              //   });
+                              // }
+                            },
+                            icon: Icon(Icons.access_time),
+                            label: Text("Select Time"),
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 }
 
                 return SizedBox.shrink();
+
+                // return Padding(
+                //   padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+                //   child: TextField(
+                //     decoration: InputDecoration(
+                //       labelText: e["title"], //
+                //       floatingLabelBehavior: FloatingLabelBehavior.always,
+                //     ),
+                //     onChanged: (value) {
+                //       output[e["alias"]] = value;
+                //     },
+                //   ),
+                // );
               }),
 
               SizedBox(height: 8),
@@ -176,26 +192,25 @@ class _Template_Update_State extends State<Template_Update_> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   OutlinedButton.icon(
-                    icon: Icon(Icons.edit_outlined),
-                    label: Text("Update"),
+                    icon: Icon(Icons.add_task),
+                    label: Text("Create"),
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
                     onPressed: () async {
-                      // print(output);
                       await dio
                           .post(
-                            '/room/update',
+                            '$PATH/create',
                             data: FormData.fromMap({
                               ...output, //
                             }),
                           )
                           .then((value) {
-                            // print(value);
-                            show_snackbar(context: context, message: "Room update successfully", color: Colors.green);
+                            print(value);
+                            show_snackbar(context: context, message: "Room create successfully", color: Colors.green);
                             Navigator.pop(context, true);
                           })
                           .catchError((error) {
-                            // print(error);
-                            show_snackbar(context: context, message: "Room update failed", color: Colors.red);
+                            print(error);
+                            show_snackbar(context: context, message: "Room create failed", color: Colors.red);
                           });
                     },
                   ),

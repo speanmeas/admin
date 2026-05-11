@@ -4,25 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
+import 'Initialize.dart';
+import 'Schema.g.dart';
+
 void main() {
-  runApp(Room_Read());
+  runApp(View_One());
 }
 
-class Room_Read extends StatelessWidget {
-  Room_Read({super.key});
-
-  List<Map<String, dynamic>> schema = [
-    {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
-    {"alias": "name", "title": "Room No.", "type": "string", "visible": 1},
-    {"alias": "type", "title": "Room Type", "type": "string", "visible": 1},
-    {"alias": "capacity", "title": "Capacity", "type": "number", "visible": 1},
-    {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
-    {"alias": "price", "title": "Price", "type": "number", "visible": 1},
-    {"alias": "status", "title": "Status", "type": "string", "visible": 1},
-    {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 0},
-    {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
-    {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
-  ];
+class View_One extends StatelessWidget {
+  View_One({super.key});
 
   Map<String, dynamic> input = {
     "_id": 1, //
@@ -42,13 +32,13 @@ class Room_Read extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Read_(schema: schema, input: input),
+      home: View_One_(schema: schema, input: input),
     );
   }
 }
 
-class Room_Read_ extends StatefulWidget {
-  Room_Read_({
+class View_One_ extends StatefulWidget {
+  View_One_({
     super.key, //
     required this.schema,
     required this.input,
@@ -58,10 +48,10 @@ class Room_Read_ extends StatefulWidget {
   Map<String, dynamic> input;
 
   @override
-  State<Room_Read_> createState() => _Room_Read_State();
+  State<View_One_> createState() => _View_One_State();
 }
 
-class _Room_Read_State extends State<Room_Read_> {
+class _View_One_State extends State<View_One_> {
   late Map<String, dynamic> output;
 
   @override
@@ -85,7 +75,7 @@ class _Room_Read_State extends State<Room_Read_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "View Room", //
+          "View $HEADER", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,

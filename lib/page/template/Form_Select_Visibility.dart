@@ -1,40 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:speanmeas/page/template/Schema.g.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 
+import 'Initialize.dart';
+import 'Schema.g.dart';
+
 void main() {
-  runApp(Template_Select_Column_Visibility());
+  runApp(Select_Visibility());
 }
 
-class Template_Select_Column_Visibility extends StatelessWidget {
-  Template_Select_Column_Visibility({super.key});
+class Select_Visibility extends StatelessWidget {
+  Select_Visibility({super.key});
 
-  List<Map<String, dynamic>> schema = [
-    {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
-    {"alias": "name", "title": "Room No.", "type": "string", "visible": 1},
-    {"alias": "type", "title": "Room Type", "type": "string", "visible": 1},
-    {"alias": "capacity", "title": "Capacity", "type": "number", "visible": 1},
-    {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
-    {"alias": "price", "title": "Price", "type": "number", "visible": 1},
-    {"alias": "status", "title": "Status", "type": "string", "visible": 1},
-    {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 0},
-    {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
-    {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
-  ];
+  List<Map<String, dynamic>> _schema = schema;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Template_Select_Column_Visibility_(schema: schema),
+      home: Select_Visibility_(schema: _schema),
     );
   }
 }
 
-class Template_Select_Column_Visibility_ extends StatefulWidget {
-  Template_Select_Column_Visibility_({
+class Select_Visibility_ extends StatefulWidget {
+  Select_Visibility_({
     super.key, //
     required this.schema,
   });
@@ -42,10 +33,10 @@ class Template_Select_Column_Visibility_ extends StatefulWidget {
   List<Map<String, dynamic>> schema;
 
   @override
-  State<Template_Select_Column_Visibility_> createState() => _Template_Select_Column_Visibility_State();
+  State<Select_Visibility_> createState() => _Select_Visibility_State();
 }
 
-class _Template_Select_Column_Visibility_State extends State<Template_Select_Column_Visibility_> {
+class _Select_Visibility_State extends State<Select_Visibility_> {
   //
   //
 
@@ -63,7 +54,7 @@ class _Template_Select_Column_Visibility_State extends State<Template_Select_Col
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Visibility", //
+          "Visibility $HEADER", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,

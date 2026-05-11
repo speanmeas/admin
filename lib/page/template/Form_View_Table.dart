@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:core';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -8,27 +6,28 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/page/template/Template_Column_Visibility.dart';
-import 'package:speanmeas/page/template/Template_Create.dart';
-import 'package:speanmeas/page/template/Template_Delete.dart';
-import 'package:speanmeas/page/template/Template_Filter_Datetime.dart';
-import 'package:speanmeas/page/template/Template_Filter_Number.dart';
-import 'package:speanmeas/page/template/Template_Filter_String.dart';
-import 'package:speanmeas/page/template/Schema.g.dart';
-
+import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
 
-import 'package:speanmeas/page/template/Template_Update.dart';
-import 'package:speanmeas/page/template/Template_Read.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
+import 'Form_Select_Visibility.dart';
+import 'Form_Create.dart';
+import 'Form_Delete.dart';
+import 'Form_Filter_Datetime.dart';
+import 'Form_Filter_Number.dart';
+import 'Form_Filter_String.dart';
+import 'Form_Update.dart';
+import 'Form_View_One.dart';
+
+import 'Initialize.dart';
+import 'Schema.g.dart';
 
 void main() {
-  runApp(const Template());
+  runApp(const View_Table());
 }
 
-class Template extends StatelessWidget {
-  const Template({super.key});
+class View_Table extends StatelessWidget {
+  const View_Table({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,49 +35,32 @@ class Template extends StatelessWidget {
       title: 'Template', //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: const Template_(),
+      home: const View_Table_(),
     );
   }
 }
 
-class Template_ extends StatefulWidget {
-  const Template_({super.key});
+class View_Table_ extends StatefulWidget {
+  const View_Table_({super.key});
 
   @override
-  State<Template_> createState() => _Template_State();
+  State<View_Table_> createState() => _View_Table_State();
 }
 
-class _Template_State extends State<Template_> {
+class _View_Table_State extends State<View_Table_> {
   //
   //
 
-  bool is_admin = true;
+  bool _is_admin = true;
 
-  double header_height = 40.0;
-  double row_height = 40.0;
-  double column_width = 120.0;
-  double number_column_width = 60.0;
+  double _header_height = 40.0;
+  double _row_height = 40.0;
+  double _column_width = 120.0;
+  double _number_column_width = 60.0;
 
   // schema
-  // note: check secure_storage -> Schema.g.dart
-  List<Map<String, dynamic>> schema = [
-    {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
-    {"alias": "name", "title": "Room No.", "type": "string", "visible": 1},
-    {"alias": "type", "title": "Room Type", "type": "string", "visible": 1},
-    {"alias": "capacity", "title": "Capacity", "type": "number", "visible": 1},
-    {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
-    {"alias": "price", "title": "Price", "type": "number", "visible": 1},
-    {"alias": "status", "title": "Status", "type": "string", "visible": 1},
-    {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 1},
-    {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
-    {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
+  // todo: check secure_storage -> Schema.g.dart
+  List<Map<String, dynamic>> _schema = schema;
 
   List<Map<String, dynamic>> data = [];
 
@@ -95,10 +77,16 @@ class _Template_State extends State<Template_> {
   int? limit = 100;
   int sort_order = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
   void init() async {
     await dio
         .post(
-          '/room/read',
+          '$PATH/read',
           data: FormData.fromMap({
             "key": key, //
             "query": query,
@@ -124,7 +112,7 @@ class _Template_State extends State<Template_> {
   void load_more() async {
     await dio
         .post(
-          '/room/read',
+          '$PATH/read',
           data: FormData.fromMap({
             "key": key, //
             "query": query,
@@ -150,7 +138,7 @@ class _Template_State extends State<Template_> {
   // Timer? _debounce;
 
   double get_width() {
-    return number_column_width + schema.where((e) => e["visible"] == 1).length * column_width;
+    return _number_column_width + _schema.where((e) => e["visible"] == 1).length * _column_width;
   }
 
   @override
@@ -178,7 +166,7 @@ class _Template_State extends State<Template_> {
                 setState(() {});
               },
               icon: is_filter ? Icon(Icons.filter_alt_off_outlined) : Icon(Icons.filter_alt_outlined),
-              tooltip: is_filter ? "Off Filter" : "On Filter",
+              tooltip: "Filter",
             ),
 
             // button view column
@@ -187,31 +175,29 @@ class _Template_State extends State<Template_> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Template_Select_Column_Visibility_(schema: schema), //
+                    builder: (context) => Select_Visibility_(schema: _schema), //
                   ),
                 ).then((value) {
                   if (value != null) {
-                    schema = value;
+                    _schema = value;
                     setState(() {});
                   }
                 });
               },
               icon: Icon(Icons.view_column_outlined),
-              tooltip: "View Column",
+              tooltip: "View",
             ),
 
-            Spacer(),
+            // Spacer(),
 
             // button add
-            if (is_admin)
+            if (_is_admin)
               IconButton(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Template_Create_(
-                        schema: schema, //
-                      ),
+                      builder: (context) => Create_(), //
                     ),
                   ).then((value) {
                     if (value != null) {
@@ -242,7 +228,7 @@ class _Template_State extends State<Template_> {
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: SizedBox(
-          width: is_admin ? get_width() + 90 : get_width(),
+          width: _is_admin ? get_width() + 90 : get_width(),
           child: Column(
             children: [
               // header
@@ -250,8 +236,8 @@ class _Template_State extends State<Template_> {
                 children: [
                   // number column
                   Container(
-                    height: header_height, //
-                    width: number_column_width, //
+                    height: _header_height, //
+                    width: _number_column_width, //
                     alignment: Alignment.center,
                     child: Text(
                       "No.", //
@@ -261,11 +247,11 @@ class _Template_State extends State<Template_> {
 
                   // sort mode
                   if (!is_filter)
-                    ...schema.map((row) {
+                    ..._schema.map((row) {
                       if (row["visible"] != 1) return const SizedBox();
                       return Container(
-                        height: header_height, //
-                        width: column_width, //
+                        height: _header_height, //
+                        width: _column_width, //
                         child: InkWell(
                           onTap: () {
                             setState(() {
@@ -308,7 +294,7 @@ class _Template_State extends State<Template_> {
 
                   // search mode
                   if (is_filter)
-                    ...schema.where((row) => row["visible"] == 1).map((row) {
+                    ..._schema.where((row) => row["visible"] == 1).map((row) {
                       // if (row["type"] == "string") {
                       //   return Container(
                       //     height: header_height, //
@@ -338,8 +324,8 @@ class _Template_State extends State<Template_> {
 
                       if (row["type"] == "string") {
                         return Container(
-                          height: header_height, //
-                          width: column_width, //
+                          height: _header_height, //
+                          width: _column_width, //
                           padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
                           child: OutlinedButton.icon(
                             onPressed: () {
@@ -356,7 +342,7 @@ class _Template_State extends State<Template_> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => Template_Filter_String_(), //
+                                  builder: (context) => Filter_String_(), //
                                 ),
                               ).then((value) {
                                 if (value != null) {
@@ -380,8 +366,8 @@ class _Template_State extends State<Template_> {
 
                       if (row["type"] == "number") {
                         return Container(
-                          height: header_height, //
-                          width: column_width, //
+                          height: _header_height, //
+                          width: _column_width, //
                           padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
                           child: OutlinedButton.icon(
                             onPressed: () {
@@ -397,7 +383,7 @@ class _Template_State extends State<Template_> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => Template_Filter_Number_(
+                                  builder: (context) => Filter_Number_(
                                     key_: row['alias'], //
                                   ),
                                 ),
@@ -427,8 +413,8 @@ class _Template_State extends State<Template_> {
 
                       if (row["type"] == "date-time") {
                         return Container(
-                          height: header_height, //
-                          width: column_width, //
+                          height: _header_height, //
+                          width: _column_width, //
                           padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
                           child: OutlinedButton.icon(
                             onPressed: () {
@@ -444,8 +430,8 @@ class _Template_State extends State<Template_> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => Template_Filter_Datetime_(
-                                    schema: schema,
+                                  builder: (context) => Filter_Datetime_(
+                                    schema: _schema,
                                     input: {
                                       "min": 0, //
                                       "max": 100,
@@ -471,9 +457,9 @@ class _Template_State extends State<Template_> {
                     }),
 
                   // actions column
-                  if (is_admin)
+                  if (_is_admin)
                     Container(
-                      height: header_height, //
+                      height: _header_height, //
                       width: 80, //
                       child: Row(
                         children: [
@@ -499,7 +485,7 @@ class _Template_State extends State<Template_> {
                           load_more();
                         });
                         return Container(
-                          height: row_height, //
+                          height: _row_height, //
                           alignment: Alignment.centerLeft,
                           decoration: const BoxDecoration(
                             border: Border(top: BorderSide(color: Colors.black12, width: 1)),
@@ -508,7 +494,7 @@ class _Template_State extends State<Template_> {
                         );
                       } else {
                         return Container(
-                          height: row_height, //
+                          height: _row_height, //
                           alignment: Alignment.center,
                           decoration: const BoxDecoration(
                             border: Border(top: BorderSide(color: Colors.black12, width: 1)),
@@ -519,24 +505,24 @@ class _Template_State extends State<Template_> {
                     }
                     return InkWell(
                       child: Container(
-                        height: row_height, //
+                        height: _row_height, //
                         decoration: const BoxDecoration(
                           border: Border(top: BorderSide(color: Colors.black12, width: 1)),
                         ),
                         child: Row(
                           children: [
                             Container(
-                              width: number_column_width, //
+                              width: _number_column_width, //
                               alignment: Alignment.center,
                               child: Text(
                                 "${index + 1}", //
                               ),
                             ),
 
-                            ...schema.where((row) => row["visible"] == 1).map((row) {
+                            ..._schema.where((row) => row["visible"] == 1).map((row) {
                               if (row["alias"] == "_id") {
                                 return Container(
-                                  width: column_width, //
+                                  width: _column_width, //
                                   alignment: Alignment.center,
                                   child: Text(
                                     "${data[index][row["alias"]] ?? ""}", //
@@ -551,7 +537,7 @@ class _Template_State extends State<Template_> {
                                 final priceValue = data[index][row["alias"]];
                                 final price = priceValue is num ? priceValue.toDouble() : double.tryParse(priceValue?.toString() ?? "0.0") ?? 0.0;
                                 return Container(
-                                  width: column_width, //
+                                  width: _column_width, //
                                   alignment: Alignment.center,
                                   child: Text(
                                     "${price.toStringAsFixed(2)} \$", //
@@ -584,7 +570,7 @@ class _Template_State extends State<Template_> {
                                 }
 
                                 return Container(
-                                  width: column_width,
+                                  width: _column_width,
                                   alignment: Alignment.center,
                                   child: Text(displayText, overflow: TextOverflow.ellipsis, maxLines: 2, softWrap: true),
                                 );
@@ -592,7 +578,7 @@ class _Template_State extends State<Template_> {
 
                               // general case
                               return Container(
-                                width: column_width, //
+                                width: _column_width, //
                                 alignment: Alignment.center,
                                 child: Text(
                                   "${data[index][row["alias"]] ?? ""}", //
@@ -603,19 +589,18 @@ class _Template_State extends State<Template_> {
                               );
                             }),
 
-                            if (is_admin) ...[
+                            if (_is_admin) ...[
                               // button edit
                               SizedBox(
-                                width: row_height, //
+                                width: _row_height, //
                                 child: IconButton(
                                   icon: const Icon(Icons.edit_outlined), //
                                   onPressed: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => Template_Update_(
-                                          schema: schema, //
-                                          input: data[index],
+                                        builder: (context) => Update_(
+                                          input: data[index], //
                                         ),
                                       ),
                                     ).then((value) {
@@ -630,7 +615,7 @@ class _Template_State extends State<Template_> {
 
                               // button delete
                               SizedBox(
-                                width: row_height, //
+                                width: _row_height, //
                                 child: IconButton(
                                   icon: const Icon(Icons.delete_outline),
                                   onPressed: () async {
@@ -639,11 +624,8 @@ class _Template_State extends State<Template_> {
                                     Navigator.push(
                                       context, //
                                       MaterialPageRoute(
-                                        builder: (context) => Template_Delete_(
-                                          input: {
-                                            "_id": data[index]["_id"], //
-                                            "name": data[index]["name"],
-                                          },
+                                        builder: (context) => Delete_(
+                                          id: data[index]["_id"], //
                                         ),
                                       ),
                                     ).then((value) {
@@ -679,8 +661,8 @@ class _Template_State extends State<Template_> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => Template_Read_(
-                              schema: schema, //
+                            builder: (context) => View_One_(
+                              schema: _schema, //
                               input: data[index],
                             ),
                           ),

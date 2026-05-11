@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
+import 'Initialize.dart';
+import 'Schema.g.dart';
+
 void main() {
-  runApp(Room_Filter_String());
+  runApp(Filter_String());
 }
 
-class Room_Filter_String extends StatelessWidget {
-  Room_Filter_String({super.key});
+class Filter_String extends StatelessWidget {
+  Filter_String({super.key});
 
   // List<Map<String, dynamic>> schema = [
   //   {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
@@ -42,13 +45,13 @@ class Room_Filter_String extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Filter_String_(),
+      home: Filter_String_(),
     );
   }
 }
 
-class Room_Filter_String_ extends StatefulWidget {
-  Room_Filter_String_({
+class Filter_String_ extends StatefulWidget {
+  Filter_String_({
     super.key, //
     // required this.schema,
     // required this.input,
@@ -58,10 +61,10 @@ class Room_Filter_String_ extends StatefulWidget {
   // Map<String, dynamic> input;
 
   @override
-  State<Room_Filter_String_> createState() => _Room_Filter_String_State();
+  State<Filter_String_> createState() => _Filter_String_State();
 }
 
-class _Room_Filter_String_State extends State<Room_Filter_String_> {
+class _Filter_String_State extends State<Filter_String_> {
   TextEditingController controller_search = TextEditingController();
 
   @override
@@ -69,7 +72,7 @@ class _Room_Filter_String_State extends State<Room_Filter_String_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Filter", //
+          "Filter $HEADER", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,

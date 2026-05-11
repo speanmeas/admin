@@ -4,25 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
+import 'Initialize.dart';
+import 'Schema.g.dart';
+
 void main() {
-  runApp(Template_Filter_Datetime());
+  runApp(Filter_Datetime());
 }
 
-class Template_Filter_Datetime extends StatelessWidget {
-  Template_Filter_Datetime({super.key});
+class Filter_Datetime extends StatelessWidget {
+  Filter_Datetime({super.key});
 
-  List<Map<String, dynamic>> schema = [
-    {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
-    {"alias": "name", "title": "Room No.", "type": "string", "visible": 1},
-    {"alias": "type", "title": "Room Type", "type": "string", "visible": 1},
-    {"alias": "capacity", "title": "Capacity", "type": "number", "visible": 1},
-    {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
-    {"alias": "price", "title": "Price", "type": "number", "visible": 1},
-    {"alias": "status", "title": "Status", "type": "string", "visible": 1},
-    {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 0},
-    {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
-    {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
-  ];
+  // List<Map<String, dynamic>> schema = [
+  //   {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
+  //   {"alias": "name", "title": "Room No.", "type": "string", "visible": 1},
+  //   {"alias": "type", "title": "Room Type", "type": "string", "visible": 1},
+  //   {"alias": "capacity", "title": "Capacity", "type": "number", "visible": 1},
+  //   {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
+  //   {"alias": "price", "title": "Price", "type": "number", "visible": 1},
+  //   {"alias": "status", "title": "Status", "type": "string", "visible": 1},
+  //   {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 0},
+  //   {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
+  //   {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
+  // ];
 
   Map<String, dynamic> input = {
     "_id": 1, //
@@ -42,13 +45,13 @@ class Template_Filter_Datetime extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Template_Filter_Datetime_(schema: schema, input: input),
+      home: Filter_Datetime_(schema: schema, input: input),
     );
   }
 }
 
-class Template_Filter_Datetime_ extends StatefulWidget {
-  Template_Filter_Datetime_({
+class Filter_Datetime_ extends StatefulWidget {
+  Filter_Datetime_({
     super.key, //
     required this.schema,
     required this.input,
@@ -58,10 +61,10 @@ class Template_Filter_Datetime_ extends StatefulWidget {
   Map<String, dynamic> input;
 
   @override
-  State<Template_Filter_Datetime_> createState() => _Template_Filter_Datetime_State();
+  State<Filter_Datetime_> createState() => _Filter_Datetime_State();
 }
 
-class _Template_Filter_Datetime_State extends State<Template_Filter_Datetime_> {
+class _Filter_Datetime_State extends State<Filter_Datetime_> {
   late Map<String, dynamic> output;
 
   @override
@@ -102,7 +105,7 @@ class _Template_Filter_Datetime_State extends State<Template_Filter_Datetime_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Filter", //
+          "Filter $HEADER", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,

@@ -2,12 +2,36 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
+bool is_local = false;
+
 int MOBILE_SCREEN_WIDTH = 1000;
 
 String TITLE = 'Spean Meas Hotel';
 
-// String API_HOST = kReleaseMode ? 'https://dev_api.speanmeas.com' : 'http://127.0.0.1:8000';
-String API_HOST = kReleaseMode ? 'https://api.speanmeas.com' : 'http://192.168.1.12:8000';
+String get_api_host() {
+  if (kDebugMode) {
+    return 'http://localhost:8000';
+  }
 
-// String MINIO_PUBLIC = kReleaseMode ? 'https://dev_s3.speanmeas.com/public' : 'http://127.0.0.1:9000/public';
-String MINIO_PUBLIC = kReleaseMode ? 'https://sss.speanmeas.com/public' : 'http://192.168.1.12:9000/public';
+  if (is_local) {
+    return 'http://sm-server:8000'; // todo: need to confix router
+  }
+
+  return 'https://api.speanmeas.com';
+}
+
+String API_HOST = get_api_host();
+
+String get_minio_public() {
+  if (kDebugMode) {
+    return 'http://localhost:9000/public';
+  }
+
+  if (is_local) {
+    return 'http://sm-server:9000/public'; // todo: need to confix router
+  }
+
+  return 'https://sss.speanmeas.com/public';
+}
+
+String MINIO_PUBLIC = get_minio_public();
