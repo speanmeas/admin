@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Initialize.dart';
+import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
@@ -204,35 +205,25 @@ class _Filter_Number_State extends State<Filter_Number_> {
   }
 
   void on_apply_filter() {
-    // double select_min = double.parse(range.start.toStringAsFixed(2));
-    // double select_max = double.parse(range.end.toStringAsFixed(2));
-    print(select_min);
-    print(select_max);
+    // validate min and max
+    if (select_min > select_max) {
+      snackbar_show(
+        context: context, //
+        message: "Min must be less or equal to max",
+        color: Colors.red,
+      );
+      return;
+    }
 
     Navigator.pop(context, {
       "min": select_min, //
       "max": select_max,
     });
-  }
-}
 
-void show_snackbar({
-  required BuildContext context, //
-  required String message, //
-  required Color color, //
-}) {
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.info_outline, color: Colors.white),
-            SizedBox(width: 8),
-            Text(message),
-          ],
-        ),
-        backgroundColor: color,
-      ),
+    snackbar_show(
+      context: context, //
+      message: "Filter applied",
+      color: Colors.green,
     );
+  }
 }

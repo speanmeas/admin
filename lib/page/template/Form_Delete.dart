@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Initialize.dart';
+import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
@@ -103,12 +104,20 @@ class _Delete_State extends State<Delete_> {
                           )
                           .then((value) {
                             print(value);
-                            show_snackbar(context: context, message: "Room deleted successfully", color: Colors.green);
+                            snackbar_show(
+                              context: context, //
+                              message: "Room deleted successfully",
+                              color: Colors.green,
+                            );
                             Navigator.pop(context, true);
                           })
                           .catchError((error) {
                             print(error);
-                            show_snackbar(context: context, message: "Failed to delete room", color: Colors.red);
+                            snackbar_show(
+                              context: context, //
+                              message: "Failed to delete room",
+                              color: Colors.red,
+                            );
                           });
                     },
                     // style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -121,25 +130,4 @@ class _Delete_State extends State<Delete_> {
       ),
     );
   }
-}
-
-void show_snackbar({
-  required BuildContext context, //
-  required String message, //
-  required Color color, //
-}) {
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.info_outline, color: Colors.white),
-            SizedBox(width: 8),
-            Text(message),
-          ],
-        ),
-        backgroundColor: color,
-      ),
-    );
 }

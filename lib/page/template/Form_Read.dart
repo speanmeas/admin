@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
-import 'Initialize.dart';
+import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(View_One());
+  runApp(Read());
 }
 
-class View_One extends StatelessWidget {
-  View_One({super.key});
+class Read extends StatelessWidget {
+  Read({super.key});
 
   Map<String, dynamic> input = {
     "_id": 1, //
@@ -32,26 +32,24 @@ class View_One extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: View_One_(schema: schema, input: input),
+      home: Read_(input: input),
     );
   }
 }
 
-class View_One_ extends StatefulWidget {
-  View_One_({
+class Read_ extends StatefulWidget {
+  Read_({
     super.key, //
-    required this.schema,
     required this.input,
   });
 
-  List<Map<String, dynamic>> schema;
   Map<String, dynamic> input;
 
   @override
-  State<View_One_> createState() => _View_One_State();
+  State<Read_> createState() => _Read_State();
 }
 
-class _View_One_State extends State<View_One_> {
+class _Read_State extends State<Read_> {
   late Map<String, dynamic> output;
 
   @override
@@ -59,10 +57,6 @@ class _View_One_State extends State<View_One_> {
     super.initState();
 
     output = Map.from(widget.input);
-
-    // for (var e in widget.schema.sublist(0, widget.schema.length - 3)) {
-    //   output[e["alias"]] = null;
-    // }
 
     print(output);
 
@@ -104,17 +98,7 @@ class _View_One_State extends State<View_One_> {
             children: [
               SizedBox(height: 16),
 
-              Center(
-                child: Container(
-                  width: 200,
-                  height: 200, //
-                  child: Placeholder(),
-                ),
-              ),
-
-              SizedBox(height: 16),
-
-              ...widget.schema.map((e) {
+              ...schema.map((e) {
                 //
                 if (["_id", "created_at", "updated_at", "deleted_at"].contains(e["alias"])) {
                   return SizedBox.shrink();
@@ -123,7 +107,7 @@ class _View_One_State extends State<View_One_> {
                 //
                 if (e["type"] == "string") {
                   return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
                       controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
                       decoration: InputDecoration(
@@ -138,7 +122,7 @@ class _View_One_State extends State<View_One_> {
                 //
                 if (e["type"] == "number") {
                   return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
                       controller: TextEditingController(text: output[e['alias']]?.toString() ?? '0'),
                       decoration: InputDecoration(
@@ -150,10 +134,10 @@ class _View_One_State extends State<View_One_> {
                   );
                 }
 
-                // TODO: later
-                if (e["type"] == "date-time") {
+                //
+                if (e["type"] == "datetime") {
                   return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
                       controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
                       decoration: InputDecoration(
@@ -170,6 +154,29 @@ class _View_One_State extends State<View_One_> {
               }),
 
               SizedBox(height: 8),
+
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (int i = 0; i < 10; i++)
+                      Container(
+                        width: 100, //
+                        height: 100,
+                        margin: EdgeInsets.only(right: 8),
+                        child: InkWell(
+                          onTap: () {
+                            // TODO: Handle image tap
+                            print('Image tapped: $i');
+                          },
+                          child: Placeholder(),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 1000),
             ],
           ),
         ),

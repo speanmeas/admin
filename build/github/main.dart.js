@@ -95524,7 +95524,7 @@ I(a){var s="Dashboard",r=null,q=t.p
 return A.kI(A.k1(r,!1,r,A.bS(A.b([A.a2(s,r,r,r,r,r,r,r,r)],q),B.w,B.r,B.v,0,r),0,40),A.dx(A.cq(r,A.lP(A.b([A.a2(s,r,r,r,r,r,r,r,r)],q),!1),B.o,r,r,r,r,r,r,r,r,r,800),r,r),r)}}
 A.D7.prototype={
 a9(){var s=t.N,r=t.z,q=t.H7
-return new A.Zr(A.b([A.az(["alias","_id","title","ID","type","string","visible",0],s,r),A.az(["alias","name","title","Room No.","type","string","visible",1],s,r),A.az(["alias","type","title","Room Type","type","string","visible",1],s,r),A.az(["alias","capacity","title","Capacity","type","number","visible",1],s,r),A.az(["alias","ac_or_fan","title","AC or Fan","type","string","visible",1],s,r),A.az(["alias","price","title","Price","type","number","visible",1],s,r),A.az(["alias","status","title","Status","type","string","visible",1],s,r),A.az(["alias","created_at","title","Created At","type","date-time","visible",1],s,r),A.az(["alias","updated_at","title","Updated At","type","date-time","visible",0],s,r),A.az(["alias","deleted_at","title","Deleted At","type","date-time","visible",0],s,r)],q),A.b([],q))}}
+return new A.Zr(A.b([A.az(["alias","_id","title","ID","type","string","visible",0],s,r),A.az(["alias","name","title","Room No.","type","string","visible",1],s,r),A.az(["alias","type","title","Room Type","type","string","visible",1],s,r),A.az(["alias","capacity","title","Capacity","type","number","visible",1],s,r),A.az(["alias","ac_or_fan","title","AC or Fan","type","string","visible",1],s,r),A.az(["alias","price","title","Price","type","number","visible",1],s,r),A.az(["alias","status","title","Status","type","string","visible",1],s,r),A.az(["alias","created_at","title","Created At","type","datetime","visible",1],s,r),A.az(["alias","updated_at","title","Updated At","type","datetime","visible",0],s,r),A.az(["alias","deleted_at","title","Deleted At","type","datetime","visible",0],s,r)],q),A.b([],q))}}
 A.Zr.prototype={
 aq(){this.aG()
 this.h3()},
@@ -95660,7 +95660,7 @@ if(J.d(o.h(a,r),"string")){o=A.cB(o.h(a,q))
 if(o==null)o=""
 return A.cq(p,A.ib(B.Hh,A.a2(o,p,p,p,p,A.cY(p,p,p,p,p,p,p,p,p,p,p,14,p,p,B.aG,p,p,!0,p,p,p,B.x,p,p,p,p),p,p,p),new A.awq(s.a,a,s.b),p),B.o,p,p,p,40,p,p,B.kj,p,p,120)}if(J.d(o.h(a,r),"number")){o=A.cB(o.h(a,q))
 if(o==null)o=""
-return A.cq(p,A.ib(B.Hb,A.a2(o,p,p,p,p,A.cY(p,p,p,p,p,p,p,p,p,p,p,14,p,p,B.aG,p,p,!0,p,p,p,B.x,p,p,p,p),p,p,p),new A.awr(s.a,a,s.b),p),B.o,p,p,p,40,p,p,B.kj,p,p,120)}if(J.d(o.h(a,r),"date-time")){o=A.cB(o.h(a,q))
+return A.cq(p,A.ib(B.Hb,A.a2(o,p,p,p,p,A.cY(p,p,p,p,p,p,p,p,p,p,p,14,p,p,B.aG,p,p,!0,p,p,p,B.x,p,p,p,p),p,p,p),new A.awr(s.a,a,s.b),p),B.o,p,p,p,40,p,p,B.kj,p,p,120)}if(J.d(o.h(a,r),"datetime")){o=A.cB(o.h(a,q))
 if(o==null)o=""
 return A.cq(p,A.ib(B.Hg,A.a2(o,p,p,p,p,A.cY(p,p,p,p,p,p,p,p,p,p,p,14,p,p,B.aG,p,p,!0,p,p,p,B.x,p,p,p,p),p,p,p),new A.aws(s.a,a,s.b),p),B.o,p,p,p,40,p,p,B.kj,p,p,120)}return B.mh},
 $S:234}
@@ -95947,7 +95947,7 @@ A.de(s)
 r.a3(new A.avO())},
 BE(a){return B.c.dX(B.e.k(a.a),2,"0")+":"+B.c.dX(B.e.k(a.b),2,"0")},
 I(a){var s=this,r=null,q=A.a2("Filter",r,r,r,r,A.cY(r,r,r,r,r,r,r,r,r,r,r,20,r,r,B.aG,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),p=t.p
-return A.kI(A.k1(A.b([A.dB(B.bu,r,A.aB(B.co,r,r,r),r,r,new A.avJ(a),r,r,r),A.aC(r,r,8)],p),!0,!1,q,0,40),A.dx(A.cq(r,A.lP(A.b([A.aC(r,20,r),A.bS(A.b([A.cq(B.jx,A.a2("Start Date-Time:",r,r,r,r,A.cY(r,r,r,r,r,r,r,r,r,r,r,18,r,r,B.aG,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),B.o,r,r,r,r,r,r,r,r,r,160),A.aC(r,r,8),A.ib(A.aB(B.l4,r,r,r),A.a2(B.c.a_(s.r.Di(),0,10),r,r,r,r,r,r,r,r),new A.avK(s,a),r),A.aC(r,r,16),A.ib(A.aB(B.l3,r,r,r),A.a2(s.BE(s.x),r,r,r,r,r,r,r,r),new A.avL(s,a),r)],p),B.w,B.bE,B.v,0,r),A.aC(r,16,r),A.bS(A.b([A.cq(B.jx,A.a2("End Date-Time:",r,r,r,r,A.cY(r,r,r,r,r,r,r,r,r,r,r,18,r,r,B.aG,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),B.o,r,r,r,r,r,r,r,r,r,160),A.aC(r,r,8),A.ib(A.aB(B.l4,r,r,r),A.a2(B.c.a_(s.w.Di(),0,10),r,r,r,r,r,r,r,r),new A.avM(s,a),r),A.aC(r,r,16),A.ib(A.aB(B.l3,r,r,r),A.a2(s.BE(s.y),r,r,r,r,r,r,r,r),new A.avN(s,a),r)],p),B.w,B.bE,B.v,0,r),A.aC(r,20,r),A.bS(A.b([A.amm(A.ib(A.aB(B.i9,r,r,r),A.a2("Apply",r,r,r,r,r,r,r,r),s.gwT(),r),"Apply filter")],p),B.w,B.bE,B.v,0,r),A.aC(r,8,r),A.aC(r,8,r)],p),!1),B.o,r,r,r,r,r,r,new A.av(8,8,8,8),r,r,600),r,r),r)},
+return A.kI(A.k1(A.b([A.dB(B.bu,r,A.aB(B.co,r,r,r),r,r,new A.avJ(a),r,r,r),A.aC(r,r,8)],p),!0,!1,q,0,40),A.dx(A.cq(r,A.lP(A.b([A.aC(r,20,r),A.bS(A.b([A.cq(B.jx,A.a2("Start datetime:",r,r,r,r,A.cY(r,r,r,r,r,r,r,r,r,r,r,18,r,r,B.aG,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),B.o,r,r,r,r,r,r,r,r,r,160),A.aC(r,r,8),A.ib(A.aB(B.l4,r,r,r),A.a2(B.c.a_(s.r.Di(),0,10),r,r,r,r,r,r,r,r),new A.avK(s,a),r),A.aC(r,r,16),A.ib(A.aB(B.l3,r,r,r),A.a2(s.BE(s.x),r,r,r,r,r,r,r,r),new A.avL(s,a),r)],p),B.w,B.bE,B.v,0,r),A.aC(r,16,r),A.bS(A.b([A.cq(B.jx,A.a2("End datetime:",r,r,r,r,A.cY(r,r,r,r,r,r,r,r,r,r,r,18,r,r,B.aG,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),B.o,r,r,r,r,r,r,r,r,r,160),A.aC(r,r,8),A.ib(A.aB(B.l4,r,r,r),A.a2(B.c.a_(s.w.Di(),0,10),r,r,r,r,r,r,r,r),new A.avM(s,a),r),A.aC(r,r,16),A.ib(A.aB(B.l3,r,r,r),A.a2(s.BE(s.y),r,r,r,r,r,r,r,r),new A.avN(s,a),r)],p),B.w,B.bE,B.v,0,r),A.aC(r,20,r),A.bS(A.b([A.amm(A.ib(A.aB(B.i9,r,r,r),A.a2("Apply",r,r,r,r,r,r,r,r),s.gwT(),r),"Apply filter")],p),B.w,B.bE,B.v,0,r),A.aC(r,8,r),A.aC(r,8,r)],p),!1),B.o,r,r,r,r,r,r,new A.av(8,8,8,8),r,r,600),r,r),r)},
 rW(){A.de("Filter")}}
 A.avO.prototype={
 $0(){},
@@ -96115,7 +96115,7 @@ s===$&&A.a()
 s=s.h(0,n.h(a,r))
 s=s==null?p:J.d4(s)
 if(s==null)s="0"
-return new A.bf(B.dX,A.io(p,B.aU,!1,p,!0,B.A,p,A.j9(),new A.fx(new A.c3(s,B.bf,B.ad),$.ag()),p,p,p,p,p,2,A.fR(p,p,p,p,p,p,p,p,!0,p,p,p,p,p,p,p,p,p,B.c1,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,n.h(a,o),!0,!0,!1,p,p,p,p,p,p,p,p,p,p,p,p,p,p),B.S,!0,p,!0,p,!1,p,B.aO,p,p,p,p,p,p,p,p,1,p,p,!1,"\u2022",p,p,p,p,p,!1,p,p,!0,p,!0,p,B.bl,p,p,p,p,p,p,p,p,p,p,p,p,!0,B.a0,p,B.bq,p,p,p,p),p)}if(J.d(n.h(a,q),"date-time")){s=this.a.d
+return new A.bf(B.dX,A.io(p,B.aU,!1,p,!0,B.A,p,A.j9(),new A.fx(new A.c3(s,B.bf,B.ad),$.ag()),p,p,p,p,p,2,A.fR(p,p,p,p,p,p,p,p,!0,p,p,p,p,p,p,p,p,p,B.c1,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,n.h(a,o),!0,!0,!1,p,p,p,p,p,p,p,p,p,p,p,p,p,p),B.S,!0,p,!0,p,!1,p,B.aO,p,p,p,p,p,p,p,p,1,p,p,!1,"\u2022",p,p,p,p,p,!1,p,p,!0,p,!0,p,B.bl,p,p,p,p,p,p,p,p,p,p,p,p,!0,B.a0,p,B.bq,p,p,p,p),p)}if(J.d(n.h(a,q),"datetime")){s=this.a.d
 s===$&&A.a()
 s=s.h(0,n.h(a,r))
 s=s==null?p:J.d4(s)
@@ -96160,7 +96160,7 @@ r===$&&A.a()
 r=r.h(0,m.h(a,q))
 r=r==null?o:J.d4(r)
 if(r==null)r=""
-return new A.bf(B.dX,A.io(o,B.aU,!1,o,!0,B.A,o,A.j9(),new A.fx(new A.c3(r,B.bf,B.ad),$.ag()),o,o,o,o,o,2,A.fR(o,o,o,o,o,o,o,o,!0,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,m.h(a,n),!0,!0,!1,o,o,o,o,o,o,o,o,o,o,o,o,o,o),B.S,!0,o,!0,o,!1,o,B.aO,o,o,A.b([new A.uA(A.c0("[0-9.]",!0,!1),!0,"")],t.VS),o,new A.ip(2,!1,!0),o,o,o,1,o,o,!1,"\u2022",o,new A.awK(s,a),o,o,o,!1,o,o,!1,o,!0,o,B.bl,o,o,o,o,o,o,o,o,o,o,o,o,!0,B.a0,o,B.bq,o,o,o,o),o)}if(J.d(m.h(a,p),"date-time")){s=this.a
+return new A.bf(B.dX,A.io(o,B.aU,!1,o,!0,B.A,o,A.j9(),new A.fx(new A.c3(r,B.bf,B.ad),$.ag()),o,o,o,o,o,2,A.fR(o,o,o,o,o,o,o,o,!0,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,m.h(a,n),!0,!0,!1,o,o,o,o,o,o,o,o,o,o,o,o,o,o),B.S,!0,o,!0,o,!1,o,B.aO,o,o,A.b([new A.uA(A.c0("[0-9.]",!0,!1),!0,"")],t.VS),o,new A.ip(2,!1,!0),o,o,o,1,o,o,!1,"\u2022",o,new A.awK(s,a),o,o,o,!1,o,o,!1,o,!0,o,B.bl,o,o,o,o,o,o,o,o,o,o,o,o,!0,B.a0,o,B.bq,o,o,o,o),o)}if(J.d(m.h(a,p),"datetime")){s=this.a
 r=s.d
 r===$&&A.a()
 r=r.h(0,m.h(a,q))

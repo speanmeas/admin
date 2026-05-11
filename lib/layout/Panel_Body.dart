@@ -7,6 +7,7 @@ import 'package:speanmeas/layout/Variable.dart';
 import 'package:speanmeas/page/Setting.dart';
 // import 'package:speanmeas/page/Staff.dart';
 import 'package:speanmeas/page/User.dart';
+import 'package:speanmeas/page/template/Main.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 
 void main() {
@@ -50,6 +51,7 @@ class _Panel_Body_State extends State<Panel_Body_> {
     "Setting": Setting_(),
     "Customer": Customer_(),
     "User": User_(),
+    "Template": Template_(),
     // "Staff": StaffTable(),
   };
 

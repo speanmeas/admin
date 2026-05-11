@@ -19,9 +19,9 @@ class Room_Filter_Datetime extends StatelessWidget {
     {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
     {"alias": "price", "title": "Price", "type": "number", "visible": 1},
     {"alias": "status", "title": "Status", "type": "string", "visible": 1},
-    {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 0},
-    {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
-    {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
+    {"alias": "created_at", "title": "Created At", "type": "datetime", "visible": 0},
+    {"alias": "updated_at", "title": "Updated At", "type": "datetime", "visible": 0},
+    {"alias": "deleted_at", "title": "Deleted At", "type": "datetime", "visible": 0},
   ];
 
   Map<String, dynamic> input = {
@@ -140,7 +140,7 @@ class _Room_Filter_Datetime_State extends State<Room_Filter_Datetime_> {
                     width: 160,
                     alignment: Alignment.centerRight,
                     child: Text(
-                      "Start Date-Time:", //
+                      "Start datetime:", //
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -196,7 +196,7 @@ class _Room_Filter_Datetime_State extends State<Room_Filter_Datetime_> {
                     width: 160,
                     alignment: Alignment.centerRight,
                     child: Text(
-                      "End Date-Time:", //
+                      "End datetime:", //
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),

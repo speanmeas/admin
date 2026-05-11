@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Initialize.dart';
+import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
@@ -154,11 +155,7 @@ class _Select_Visibility_State extends State<Select_Visibility_> {
                   OutlinedButton.icon(
                     icon: Icon(Icons.view_column_outlined),
                     label: Text("Apply"), //
-                    onPressed: () {
-                      print(output);
-                      Navigator.pop(context, output);
-                      show_snackbar(context: context, message: "Column updated.", color: Colors.green);
-                    },
+                    onPressed: on_apply,
                   ),
                 ],
               ),
@@ -168,25 +165,26 @@ class _Select_Visibility_State extends State<Select_Visibility_> {
       ),
     );
   }
-}
 
-void show_snackbar({
-  required BuildContext context, //
-  required String message, //
-  required Color color, //
-}) {
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.info_outline, color: Colors.white),
-            SizedBox(width: 8),
-            Text(message),
-          ],
-        ),
-        backgroundColor: color,
-      ),
+  void on_apply() {
+    // validate
+    if (output.every((element) => element['visible'] == 0)) {
+      snackbar_show(
+        context: context, //
+        message: "Please select at least one column.",
+        color: Colors.red,
+      );
+      return;
+    }
+
+    // print(output);
+
+    Navigator.pop(context, output);
+
+    snackbar_show(
+      context: context, //
+      message: "Visibility updated.",
+      color: Colors.green,
     );
+  }
 }

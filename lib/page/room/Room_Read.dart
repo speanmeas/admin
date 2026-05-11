@@ -19,9 +19,9 @@ class Room_Read extends StatelessWidget {
     {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
     {"alias": "price", "title": "Price", "type": "number", "visible": 1},
     {"alias": "status", "title": "Status", "type": "string", "visible": 1},
-    {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 0},
-    {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
-    {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
+    {"alias": "created_at", "title": "Created At", "type": "datetime", "visible": 0},
+    {"alias": "updated_at", "title": "Updated At", "type": "datetime", "visible": 0},
+    {"alias": "deleted_at", "title": "Deleted At", "type": "datetime", "visible": 0},
   ];
 
   Map<String, dynamic> input = {
@@ -161,7 +161,7 @@ class _Room_Read_State extends State<Room_Read_> {
                 }
 
                 // TODO: later
-                if (e["type"] == "date-time") {
+                if (e["type"] == "datetime") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
                     child: TextField(

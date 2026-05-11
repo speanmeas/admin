@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Initialize.dart';
+import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
@@ -22,9 +23,9 @@ class Filter_String extends StatelessWidget {
   //   {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
   //   {"alias": "price", "title": "Price", "type": "number", "visible": 1},
   //   {"alias": "status", "title": "Status", "type": "string", "visible": 1},
-  //   {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 0},
-  //   {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
-  //   {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
+  //   {"alias": "created_at", "title": "Created At", "type": "datetime", "visible": 0},
+  //   {"alias": "updated_at", "title": "Updated At", "type": "datetime", "visible": 0},
+  //   {"alias": "deleted_at", "title": "Deleted At", "type": "datetime", "visible": 0},
   // ];
 
   // Map<String, dynamic> input = {
@@ -148,28 +149,22 @@ class _Filter_String_State extends State<Filter_String_> {
   }
 
   void on_apply_filter() {
-    Navigator.pop(context, controller_search.text);
-    show_snackbar(context: context, message: "Filter applied", color: Colors.green);
-  }
-}
+    // validate
+    if (controller_search.text.isEmpty) {
+      snackbar_show(
+        context: context, //
+        message: "Please enter a filter",
+        color: Colors.red,
+      );
+      return;
+    }
 
-void show_snackbar({
-  required BuildContext context, //
-  required String message, //
-  required Color color, //
-}) {
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.info_outline, color: Colors.white),
-            SizedBox(width: 8),
-            Text(message),
-          ],
-        ),
-        backgroundColor: color,
-      ),
+    Navigator.pop(context, controller_search.text);
+
+    snackbar_show(
+      context: context, //
+      message: "Filter applied",
+      color: Colors.green,
     );
+  }
 }

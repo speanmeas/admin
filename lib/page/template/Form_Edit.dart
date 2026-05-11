@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
+import 'package:speanmeas/utility/Datetime_format.dart';
 import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/widget/Datetime_Picker.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Initialize.dart';
+import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
@@ -104,18 +107,16 @@ class _Update_State extends State<Update_> {
           // alignment: Alignment.bottomCenter,
           child: ListView(
             children: [
-              ...schema.map((e) {
-                if (["_id", "created_at", "updated_at", "deleted_at"].contains(e["alias"])) {
-                  return SizedBox.shrink();
-                }
-
+              ...schema.where((e) => !["_id", "created_at", "updated_at", "deleted_at"].contains(e["alias"])).map((e) {
+                // edit string
                 if (e["type"] == "string") {
                   return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
                       controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: e['title'], //
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (value) {
                         output[e['alias']] = value; //
@@ -124,13 +125,15 @@ class _Update_State extends State<Update_> {
                   );
                 }
 
+                // edit number
                 if (e["type"] == "number") {
                   return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
                       controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: e['title'], //
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
@@ -141,25 +144,87 @@ class _Update_State extends State<Update_> {
                   );
                 }
 
-                // TODO: later
-                if (e["type"] == "date-time") {
+                // edit datetime
+                if (e["type"] == "datetime") {
                   return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
-                    child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
-                      decoration: InputDecoration(
-                        labelText: e['title'], //
-                      ),
-                      keyboardType: TextInputType.datetime,
-                      onChanged: (value) {
-                        output[e['alias']] = value;
-                      },
+                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                    child: Row(
+                      children: [
+                        Text("${e['title'] ?? ""} : "),
+                        OutlinedButton.icon(
+                          onPressed: () async {
+                            final DateTime? datetime = await datetime_picker(context);
+
+                            if (datetime == null) return;
+
+                            output[e['alias']] = datetime_to_string(datetime);
+
+                            setState(() {});
+                          },
+                          label: Text(output[e['alias']] == null ? "Select Datetime" : output[e['alias']]!),
+                          icon: const Icon(Icons.calendar_today),
+                        ),
+                      ],
                     ),
                   );
                 }
 
                 return SizedBox.shrink();
               }),
+
+              SizedBox(height: 8),
+
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (int i = 0; i < 10; i++)
+                      Container(
+                        width: 100, //
+                        height: 100,
+                        margin: EdgeInsets.only(right: 8),
+                        child: InkWell(
+                          onTap: () {
+                            // TODO: Handle image tap
+                            showModalBottomSheet<void>(
+                              context: context,
+                              isScrollControlled: true,
+                              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
+                              builder: (BuildContext context) {
+                                return Wrap(
+                                  children: [
+                                    ListTile(
+                                      leading: Icon(Icons.camera_outlined),
+                                      title: Text('Camera'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    ListTile(
+                                      leading: Icon(Icons.upload_outlined),
+                                      title: Text('Upload'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    ListTile(
+                                      leading: Icon(Icons.delete_outlined),
+                                      title: Text('Delete'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: Placeholder(),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
 
               SizedBox(height: 8),
 
@@ -181,44 +246,31 @@ class _Update_State extends State<Update_> {
                           )
                           .then((value) {
                             // print(value);
-                            show_snackbar(context: context, message: "Room update successfully", color: Colors.green);
+                            snackbar_show(
+                              context: context, //
+                              message: "Room update successfully",
+                              color: Colors.green,
+                            );
                             Navigator.pop(context, true);
                           })
                           .catchError((error) {
                             // print(error);
-                            show_snackbar(context: context, message: "Room update failed", color: Colors.red);
+                            snackbar_show(
+                              context: context, //
+                              message: "Room update failed",
+                              color: Colors.red,
+                            );
                           });
                     },
                   ),
                 ],
               ),
 
-              SizedBox(height: 800),
+              SizedBox(height: 1000),
             ],
           ),
         ),
       ),
     );
   }
-}
-
-void show_snackbar({
-  required BuildContext context, //
-  required String message, //
-  required Color color, //
-}) {
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.info_outline, color: Colors.white),
-            SizedBox(width: 8),
-            Text(message),
-          ],
-        ),
-        backgroundColor: color,
-      ),
-    );
 }

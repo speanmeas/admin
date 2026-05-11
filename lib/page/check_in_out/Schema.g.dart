@@ -1,116 +1,21 @@
 List<Map<String, dynamic>> schema = [
-  {
-    "alias": "_id",
-    "title": "ID",
-    "type": "string",
-    "visible": 0
-  },
-  {
-    "alias": "room_name",
-    "title": "Room Name",
-    "type": "string",
-    "visible": 1
-  },
-  {
-    "alias": "customer_name",
-    "title": "Customer Name",
-    "type": "string",
-    "visible": 1
-  },
-  {
-    "alias": "number_of_guest",
-    "title": "Number of Guest",
-    "type": "integer",
-    "visible": 1
-  },
-  {
-    "alias": "check_in_at",
-    "title": "Check In At",
-    "type": "date-time",
-    "visible": 1
-  },
-  {
-    "alias": "check_out_at",
-    "title": "Check Out At",
-    "type": "date-time",
-    "visible": 1
-  },
-  {
-    "alias": "number_of_night",
-    "title": "Number of Night",
-    "type": "integer",
-    "visible": 1
-  },
-  {
-    "alias": "number_of_hour",
-    "title": "Number of Hour",
-    "type": "integer",
-    "visible": 1
-  },
-  {
-    "alias": "room_price",
-    "title": "Room Price",
-    "type": "number",
-    "visible": 1
-  },
-  {
-    "alias": "booking_amount",
-    "title": "Booking Amount",
-    "type": "number",
-    "visible": 1
-  },
-  {
-    "alias": "ar_amount",
-    "title": "AR Amount",
-    "type": "number",
-    "visible": 1
-  },
-  {
-    "alias": "pay_by_bank",
-    "title": "Pay By Bank",
-    "type": "string",
-    "visible": 1
-  },
-  {
-    "alias": "pay_by_cash",
-    "title": "Pay By Cash",
-    "type": "number",
-    "visible": 1
-  },
-  {
-    "alias": "note",
-    "title": "Note",
-    "type": "string",
-    "visible": 1
-  },
-  {
-    "alias": "check_in_by",
-    "title": "Check In By",
-    "type": "string",
-    "visible": 1
-  },
-  {
-    "alias": "check_out_by",
-    "title": "Check Out By",
-    "type": "string",
-    "visible": 1
-  },
-  {
-    "alias": "created_at",
-    "title": "Created At",
-    "type": "date-time",
-    "visible": 1
-  },
-  {
-    "alias": "updated_at",
-    "title": "Updated At",
-    "type": "date-time",
-    "visible": 0
-  },
-  {
-    "alias": "deleted_at",
-    "title": "Deleted At",
-    "type": "date-time",
-    "visible": 0
-  }
+  {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
+  {"alias": "room_name", "title": "Room Name", "type": "string", "visible": 1},
+  {"alias": "customer_name", "title": "Customer Name", "type": "string", "visible": 1},
+  {"alias": "number_of_guest", "title": "Number of Guest", "type": "integer", "visible": 1},
+  {"alias": "check_in_at", "title": "Check In At", "type": "datetime", "visible": 1},
+  {"alias": "check_out_at", "title": "Check Out At", "type": "datetime", "visible": 1},
+  {"alias": "number_of_night", "title": "Number of Night", "type": "integer", "visible": 1},
+  {"alias": "number_of_hour", "title": "Number of Hour", "type": "integer", "visible": 1},
+  {"alias": "room_price", "title": "Room Price", "type": "number", "visible": 1},
+  {"alias": "booking_amount", "title": "Booking Amount", "type": "number", "visible": 1},
+  {"alias": "ar_amount", "title": "AR Amount", "type": "number", "visible": 1},
+  {"alias": "pay_by_bank", "title": "Pay By Bank", "type": "string", "visible": 1},
+  {"alias": "pay_by_cash", "title": "Pay By Cash", "type": "number", "visible": 1},
+  {"alias": "note", "title": "Note", "type": "string", "visible": 1},
+  {"alias": "check_in_by", "title": "Check In By", "type": "string", "visible": 1},
+  {"alias": "check_out_by", "title": "Check Out By", "type": "string", "visible": 1},
+  {"alias": "created_at", "title": "Created At", "type": "datetime", "visible": 1},
+  {"alias": "updated_at", "title": "Updated At", "type": "datetime", "visible": 0},
+  {"alias": "deleted_at", "title": "Deleted At", "type": "datetime", "visible": 0},
 ];

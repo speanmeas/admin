@@ -357,7 +357,20 @@ class _Panel_Left_State extends State<Panel_Left_> {
           ),
         ),
 
-        // Settings
+        // Template
+        ListTile(
+          leading: Icon(Icons.model_training_outlined),
+          title: Text("Template"),
+          onTap: () {
+            if (v.body != "Template") {
+              v.body = "Template";
+              v.notifyListeners();
+            }
+            if (isMobile) Navigator.pop(context);
+          }, //
+        ),
+
+        // Setting
         ListTile(
           leading: Icon(Icons.settings_outlined),
           title: Text("Setting"),

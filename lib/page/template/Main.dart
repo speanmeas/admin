@@ -13,41 +13,41 @@ import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'Form_Select_Visibility.dart';
 import 'Form_Create.dart';
 import 'Form_Delete.dart';
-import 'Form_Filter_Datetime.dart';
-import 'Form_Filter_Number.dart';
-import 'Form_Filter_String.dart';
-import 'Form_Update.dart';
-import 'Form_View_One.dart';
+import 'Form_Search_Datetime.dart';
+import 'Form_Search_Number.dart';
+import 'Form_Search_String.dart';
+import 'Form_Edit.dart';
+import 'Form_Read.dart';
 
-import 'Initialize.dart';
+import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(const View_Table());
+  runApp(const Template());
 }
 
-class View_Table extends StatelessWidget {
-  const View_Table({super.key});
+class Template extends StatelessWidget {
+  const Template({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Template', //
+      title: HEADER, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: const View_Table_(),
+      home: const Template_(),
     );
   }
 }
 
-class View_Table_ extends StatefulWidget {
-  const View_Table_({super.key});
+class Template_ extends StatefulWidget {
+  const Template_({super.key});
 
   @override
-  State<View_Table_> createState() => _View_Table_State();
+  State<Template_> createState() => _Template_State();
 }
 
-class _View_Table_State extends State<View_Table_> {
+class _Template_State extends State<Template_> {
   //
   //
 
@@ -329,7 +329,6 @@ class _View_Table_State extends State<View_Table_> {
                           padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              // TODO: Implement range selection
                               print("${row["alias"]}");
 
                               key = row['alias'];
@@ -371,7 +370,6 @@ class _View_Table_State extends State<View_Table_> {
                           padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              // TODO: Implement range selection
                               print("${row["alias"]}");
                               key = row['alias'];
                               query = null;
@@ -411,7 +409,7 @@ class _View_Table_State extends State<View_Table_> {
                         );
                       }
 
-                      if (row["type"] == "date-time") {
+                      if (row["type"] == "datetime") {
                         return Container(
                           height: _header_height, //
                           width: _column_width, //
@@ -430,13 +428,7 @@ class _View_Table_State extends State<View_Table_> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => Filter_Datetime_(
-                                    schema: _schema,
-                                    input: {
-                                      "min": 0, //
-                                      "max": 100,
-                                    },
-                                  ),
+                                  builder: (context) => Filter_Datetime_(), //
                                 ),
                               );
                             },
@@ -661,9 +653,8 @@ class _View_Table_State extends State<View_Table_> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => View_One_(
-                              schema: _schema, //
-                              input: data[index],
+                            builder: (context) => Read_(
+                              input: data[index], //
                             ),
                           ),
                         );

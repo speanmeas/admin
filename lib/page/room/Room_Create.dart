@@ -22,9 +22,9 @@ class Room_Create extends StatelessWidget {
     {"alias": "price", "title": "Price", "type": "number", "visible": 1},
     {"alias": "status", "title": "Status", "type": "string", "visible": 1},
     //
-    {"alias": "created_at", "title": "Created At", "type": "date-time", "visible": 1},
-    {"alias": "updated_at", "title": "Updated At", "type": "date-time", "visible": 0},
-    {"alias": "deleted_at", "title": "Deleted At", "type": "date-time", "visible": 0},
+    {"alias": "created_at", "title": "Created At", "type": "datetime", "visible": 1},
+    {"alias": "updated_at", "title": "Updated At", "type": "datetime", "visible": 0},
+    {"alias": "deleted_at", "title": "Deleted At", "type": "datetime", "visible": 0},
   ];
 
   @override
