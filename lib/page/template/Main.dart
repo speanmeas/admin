@@ -146,97 +146,13 @@ class _Template_State extends State<Template_> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Container(
-          // color
-          decoration: BoxDecoration(color: Colors.blue[50]),
-          child: Row(
-            children: [
-              // button filter
-              IconButton(
-                onPressed: () {
-                  //
-                  is_filter = !is_filter;
-                  //
-                  if (is_filter == false) {
-                    key = null;
-                    query = null;
-                    min = null;
-                    max = null;
-                    start = null;
-                    end = null;
-                    sort_order = 0;
-                    init();
-                  }
-                  setState(() {});
-                },
-                icon: is_filter ? Icon(Icons.filter_alt_off_outlined) : Icon(Icons.filter_alt_outlined),
-                tooltip: "Filter",
-              ),
-
-              // button view column
-              IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Select_Visibility_(schema: _schema), //
-                    ),
-                  ).then((value) {
-                    if (value != null) {
-                      _schema = value;
-                      setState(() {});
-                    }
-                  });
-                },
-                icon: Icon(Icons.view_column_outlined),
-                tooltip: "View",
-              ),
-
-              // Spacer(),
-
-              // button add
-              if (_is_admin)
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Create_(), //
-                      ),
-                    ).then((value) {
-                      if (value != null) {
-                        init();
-                      }
-                    });
-                  },
-                  icon: Icon(Icons.add),
-                  tooltip: "Add",
-                ),
-
-              // button export
-              // IconButton(
-              //   onPressed: () {
-              //     //
-              //   },
-              //   icon: Icon(Icons.download_outlined),
-              //   tooltip: "Export",
-              // ),
-            ],
-          ),
-        ),
-        toolbarHeight: 40,
-        titleSpacing: 0,
-        automaticallyImplyLeading: false,
-      ),
-
       //
       body: Scrollbar(
         controller: controller_scrollbar,
         thumbVisibility: true,
         // notificationPredicate: (_) => true,
-        // thickness: 16, // scrollbar width
-        // radius: const Radius.circular(0),
+        thickness: 12, // scrollbar width
+        radius: const Radius.circular(0),
         // interactive: true,
         // scrollbarOrientation: ScrollbarOrientation.bottom,
         child: SingleChildScrollView(
@@ -248,13 +164,14 @@ class _Template_State extends State<Template_> {
               children: [
                 // header
                 Container(
-                  decoration: BoxDecoration(color: Colors.grey[100]),
+                  // decoration: BoxDecoration(color: Colors.blue[50]),
                   child: Row(
                     children: [
                       // number column
                       Container(
                         height: _header_height, //
                         width: _number_column_width, //
+                        // color: Colors.blue[50],
                         alignment: Alignment.center,
                         child: Text(
                           "No.", //
@@ -269,6 +186,7 @@ class _Template_State extends State<Template_> {
                           return Container(
                             height: _header_height, //
                             width: _column_width, //
+                            // color: Colors.blue[50],
                             child: InkWell(
                               onTap: () {
                                 setState(() {
@@ -294,15 +212,17 @@ class _Template_State extends State<Template_> {
                               },
 
                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Spacer(),
+                                  key == row["alias"] ? Icon(sort_order == -1 ? Icons.arrow_downward : Icons.arrow_upward, size: 20) : const Icon(Icons.unfold_more, size: 20),
+
+                                  SizedBox(width: 4),
+
                                   Text(
                                     row["title"], //
                                     style: const TextStyle(fontWeight: FontWeight.bold),
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  Spacer(),
-                                  key == row["alias"] ? Icon(sort_order == -1 ? Icons.arrow_downward : Icons.arrow_upward, size: 20) : const Icon(Icons.unfold_more, size: 20),
                                 ],
                               ),
                             ),
@@ -312,40 +232,13 @@ class _Template_State extends State<Template_> {
                       // search mode
                       if (is_filter)
                         ..._schema.where((row) => row["visible"] == 1).map((row) {
-                          // if (row["type"] == "string") {
-                          //   return Container(
-                          //     height: header_height, //
-                          //     width: column_width, //
-                          //     padding: const EdgeInsets.fromLTRB(1, 8, 1, 0),
-                          //     child: TextField(
-                          //       decoration: InputDecoration(
-                          //         hintText: "Search", //
-                          //         labelText: row["title"] as String?,
-                          //         floatingLabelBehavior: FloatingLabelBehavior.always,
-                          //         contentPadding: EdgeInsets.fromLTRB(4, 4, 0, 4),
-                          //         border: OutlineInputBorder(),
-                          //       ),
-                          //       style: const TextStyle(fontSize: 14),
-                          //       onChanged: (value) {
-                          //         if (_debounce?.isActive ?? false) _debounce!.cancel();
-                          //         _debounce = Timer(const Duration(milliseconds: 200), () async {
-                          //           key = row['alias'] as String;
-                          //           query = value;
-                          //           sort_order = 0;
-                          //           init();
-                          //         });
-                          //       },
-                          //     ),
-                          //   );
-                          // }
-
+                          //
                           if (row["type"] == "string") {
                             return Container(
                               height: _header_height, //
                               width: _column_width, //
-                              padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
-                              child: OutlinedButton.icon(
-                                onPressed: () {
+                              child: InkWell(
+                                onTap: () {
                                   print("${row["alias"]}");
 
                                   key = row['alias'];
@@ -367,26 +260,30 @@ class _Template_State extends State<Template_> {
                                     }
                                   });
                                 },
-                                icon: const Icon(Icons.search),
-                                label: Text(
-                                  row["title"] as String? ?? "", //
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    overflow: TextOverflow.ellipsis, //
-                                  ),
+
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.search, size: 20),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      row["title"], //
+                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
                                 ),
                               ),
                             );
                           }
 
+                          //
                           if (row["type"] == "number") {
                             return Container(
                               height: _header_height, //
                               width: _column_width, //
-                              padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
-                              child: OutlinedButton.icon(
-                                onPressed: () {
+                              child: InkWell(
+                                onTap: () {
                                   print("${row["alias"]}");
                                   key = row['alias'];
                                   query = null;
@@ -413,26 +310,30 @@ class _Template_State extends State<Template_> {
                                     }
                                   });
                                 },
-                                icon: const Icon(Icons.tune),
-                                label: Text(
-                                  row["title"] as String? ?? "", //
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    overflow: TextOverflow.ellipsis, //
-                                  ),
+
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.tune, size: 20),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      row["title"], //
+                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
                                 ),
                               ),
                             );
                           }
 
+                          //
                           if (row["type"] == "datetime") {
                             return Container(
                               height: _header_height, //
                               width: _column_width, //
-                              padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
-                              child: OutlinedButton.icon(
-                                onPressed: () {
+                              child: InkWell(
+                                onTap: () {
                                   // TODO: Implement range selection
                                   print("${row["alias"]}");
                                   key = row['alias'];
@@ -447,21 +348,32 @@ class _Template_State extends State<Template_> {
                                     MaterialPageRoute(
                                       builder: (context) => Filter_Datetime_(), //
                                     ),
-                                  );
+                                  ).then((value) {
+                                    if (value != null) {
+                                      start = value["start"];
+                                      end = value["end"];
+                                      init();
+                                    }
+                                  });
                                 },
-                                icon: const Icon(Icons.date_range),
-                                label: Text(
-                                  row["title"] as String? ?? "", //
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    overflow: TextOverflow.ellipsis, //
-                                  ),
+
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.date_range, size: 20),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      row["title"], //
+                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
                                 ),
                               ),
                             );
                           }
 
+                          //
                           return const SizedBox();
                         }),
 
@@ -689,6 +601,72 @@ class _Template_State extends State<Template_> {
               ],
             ),
           ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Padding(
+        padding: .symmetric(horizontal: 0),
+        child: Row(
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(width: 4),
+            FloatingActionButton(
+              onPressed: () {
+                //
+                is_filter = !is_filter;
+                //
+                if (is_filter == false) {
+                  key = null;
+                  query = null;
+                  min = null;
+                  max = null;
+                  start = null;
+                  end = null;
+                  sort_order = 0;
+                  init();
+                }
+                setState(() {});
+              },
+              child: is_filter ? Icon(Icons.filter_alt_off_outlined) : Icon(Icons.filter_alt_outlined),
+            ),
+
+            SizedBox(width: 4),
+            FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Select_Visibility_(schema: _schema), //
+                  ),
+                ).then((value) {
+                  if (value != null) {
+                    _schema = value;
+                    setState(() {});
+                  }
+                });
+              },
+              child: Icon(Icons.view_column_outlined),
+            ),
+
+            Spacer(),
+
+            FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Create_(), //
+                  ),
+                ).then((value) {
+                  if (value != null) {
+                    init();
+                  }
+                });
+              },
+              child: Icon(Icons.add),
+            ),
+            SizedBox(width: 4),
+          ],
         ),
       ),
     );

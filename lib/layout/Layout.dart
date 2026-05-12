@@ -49,7 +49,7 @@ class _Layout_Dashboard_State extends State<Layout_Dashboard_> {
         title: Panel_Top_(), //
         // backgroundColor: Colors.blue[50],
         titleSpacing: 0,
-        toolbarHeight: 40,
+        toolbarHeight: 48,
         centerTitle: false,
       ),
       body: Column(

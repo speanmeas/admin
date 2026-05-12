@@ -54,8 +54,8 @@ class _Panel_Top_State extends State<Panel_Top_> {
     bool isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
     // final v = context.watch<Variable>();
     return Container(
-      // decoration: BoxDecoration(border: Border.all()), //
-      decoration: BoxDecoration(border: Border(bottom: BorderSide())), //
+      height: 48,
+      decoration: isMobile ? null : BoxDecoration(border: Border(bottom: BorderSide())), //
 
       child: Row(
         // mainAxisSize: MainAxisSize.min,
@@ -63,10 +63,18 @@ class _Panel_Top_State extends State<Panel_Top_> {
           //
           if (!isMobile) SizedBox(width: 4), //
           // logo
-          SizedBox(width: 32, height: 32, child: Placeholder()), //
+          SizedBox(
+            width: 56,
+            height: 32, //
+            child: Image.asset(
+              'asset/logo.png', //
+              fit: BoxFit.contain,
+            ),
+          ), //
           SizedBox(width: 4), //
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(TITLE), //
               Text(

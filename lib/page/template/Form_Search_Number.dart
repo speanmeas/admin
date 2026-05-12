@@ -41,22 +41,8 @@ class Filter_Number_ extends StatefulWidget {
 }
 
 class _Filter_Number_State extends State<Filter_Number_> {
-  double lower_bound = -1000000; // todo: need to query follow key_
-  double upper_bound = 1000000; // todo: need to query
-
-  late double select_min = lower_bound;
-  late double select_max = upper_bound;
-
-  // late RangeValues range;
-
-  bool is_min_changed = false;
-  bool is_max_changed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // range = RangeValues(lower_bound, upper_bound);
-  }
+  double? select_min;
+  double? select_max;
 
   TextEditingController controller_min = TextEditingController();
   TextEditingController controller_max = TextEditingController();
@@ -107,28 +93,8 @@ class _Filter_Number_State extends State<Filter_Number_> {
                       decoration: InputDecoration(
                         labelText: "Min", //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        suffixIcon: is_min_changed
-                            ? IconButton(
-                                onPressed: () {
-                                  // range = RangeValues(double.parse(controller_min.text), range.end);
-                                  select_min = double.parse(controller_min.text);
-                                  is_min_changed = false;
-                                  setState(() {});
-                                },
-                                icon: Icon(Icons.check),
-                              )
-                            : null,
+                        // suffixIcon: Icon(Icons.arrow_downward),
                       ),
-                      onChanged: (value) {
-                        is_min_changed = true;
-                        setState(() {});
-                      },
-                      onSubmitted: (value) {
-                        // range = RangeValues(double.parse(value), range.end);
-                        select_min = double.parse(value);
-                        is_min_changed = false;
-                        setState(() {});
-                      },
                     ),
                   ),
                   SizedBox(width: 8),
@@ -139,27 +105,7 @@ class _Filter_Number_State extends State<Filter_Number_> {
                       decoration: InputDecoration(
                         labelText: "Max", //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        suffixIcon: is_max_changed
-                            ? IconButton(
-                                onPressed: () {
-                                  select_max = double.parse(controller_max.text);
-                                  is_max_changed = false;
-                                  setState(() {});
-                                },
-                                icon: Icon(Icons.check),
-                              )
-                            : null,
                       ),
-                      onChanged: (value) {
-                        is_max_changed = true;
-                        setState(() {});
-                      },
-                      onSubmitted: (value) {
-                        // range = RangeValues(range.start, double.parse(value));
-                        select_max = double.parse(value);
-                        is_max_changed = false;
-                        setState(() {});
-                      },
                     ),
                   ),
                 ],
@@ -205,8 +151,21 @@ class _Filter_Number_State extends State<Filter_Number_> {
   }
 
   void on_apply_filter() {
+    select_min = double.parse(controller_min.text);
+    select_max = double.parse(controller_max.text);
+
+    // check if min and max are valid numbers
+    if (select_min == null || select_max == null) {
+      snackbar_show(
+        context: context, //
+        message: "Please enter valid numbers",
+        color: Colors.red,
+      );
+      return;
+    }
+
     // validate min and max
-    if (select_min > select_max) {
+    if (select_min! > select_max!) {
       snackbar_show(
         context: context, //
         message: "Min must be less or equal to max",

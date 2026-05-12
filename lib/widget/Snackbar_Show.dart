@@ -9,6 +9,7 @@ void snackbar_show({
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
+        duration: const Duration(seconds: 1),
         content: Row(
           children: [
             Icon(Icons.info_outline, color: Colors.white),
