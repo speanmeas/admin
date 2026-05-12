@@ -77,6 +77,8 @@ class _Template_State extends State<Template_> {
   int? limit = 100;
   int sort_order = 0;
 
+  ScrollController controller_scrollbar = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -145,79 +147,83 @@ class _Template_State extends State<Template_> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            // button filter
-            IconButton(
-              onPressed: () {
-                //
-                is_filter = !is_filter;
-                //
-                if (is_filter == false) {
-                  key = null;
-                  query = null;
-                  min = null;
-                  max = null;
-                  start = null;
-                  end = null;
-                  sort_order = 0;
-                  init();
-                }
-                setState(() {});
-              },
-              icon: is_filter ? Icon(Icons.filter_alt_off_outlined) : Icon(Icons.filter_alt_outlined),
-              tooltip: "Filter",
-            ),
-
-            // button view column
-            IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Select_Visibility_(schema: _schema), //
-                  ),
-                ).then((value) {
-                  if (value != null) {
-                    _schema = value;
-                    setState(() {});
+        title: Container(
+          // color
+          decoration: BoxDecoration(color: Colors.blue[50]),
+          child: Row(
+            children: [
+              // button filter
+              IconButton(
+                onPressed: () {
+                  //
+                  is_filter = !is_filter;
+                  //
+                  if (is_filter == false) {
+                    key = null;
+                    query = null;
+                    min = null;
+                    max = null;
+                    start = null;
+                    end = null;
+                    sort_order = 0;
+                    init();
                   }
-                });
-              },
-              icon: Icon(Icons.view_column_outlined),
-              tooltip: "View",
-            ),
+                  setState(() {});
+                },
+                icon: is_filter ? Icon(Icons.filter_alt_off_outlined) : Icon(Icons.filter_alt_outlined),
+                tooltip: "Filter",
+              ),
 
-            // Spacer(),
-
-            // button add
-            if (_is_admin)
+              // button view column
               IconButton(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Create_(), //
+                      builder: (context) => Select_Visibility_(schema: _schema), //
                     ),
                   ).then((value) {
                     if (value != null) {
-                      init();
+                      _schema = value;
+                      setState(() {});
                     }
                   });
                 },
-                icon: Icon(Icons.add),
-                tooltip: "Add",
+                icon: Icon(Icons.view_column_outlined),
+                tooltip: "View",
               ),
 
-            // button export
-            // IconButton(
-            //   onPressed: () {
-            //     //
-            //   },
-            //   icon: Icon(Icons.download_outlined),
-            //   tooltip: "Export",
-            // ),
-          ],
+              // Spacer(),
+
+              // button add
+              if (_is_admin)
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Create_(), //
+                      ),
+                    ).then((value) {
+                      if (value != null) {
+                        init();
+                      }
+                    });
+                  },
+                  icon: Icon(Icons.add),
+                  tooltip: "Add",
+                ),
+
+              // button export
+              // IconButton(
+              //   onPressed: () {
+              //     //
+              //   },
+              //   icon: Icon(Icons.download_outlined),
+              //   tooltip: "Export",
+              // ),
+            ],
+          ),
         ),
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -225,294 +231,367 @@ class _Template_State extends State<Template_> {
       ),
 
       //
-      body: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: SizedBox(
-          width: _is_admin ? get_width() + 90 : get_width(),
-          child: Column(
-            children: [
-              // header
-              Row(
-                children: [
-                  // number column
-                  Container(
-                    height: _header_height, //
-                    width: _number_column_width, //
-                    alignment: Alignment.center,
-                    child: Text(
-                      "No.", //
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-
-                  // sort mode
-                  if (!is_filter)
-                    ..._schema.map((row) {
-                      if (row["visible"] != 1) return const SizedBox();
-                      return Container(
+      body: Scrollbar(
+        controller: controller_scrollbar,
+        thumbVisibility: true,
+        // notificationPredicate: (_) => true,
+        // thickness: 16, // scrollbar width
+        // radius: const Radius.circular(0),
+        // interactive: true,
+        // scrollbarOrientation: ScrollbarOrientation.bottom,
+        child: SingleChildScrollView(
+          controller: controller_scrollbar,
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: _is_admin ? get_width() + 90 : get_width(),
+            child: Column(
+              children: [
+                // header
+                Container(
+                  decoration: BoxDecoration(color: Colors.grey[100]),
+                  child: Row(
+                    children: [
+                      // number column
+                      Container(
                         height: _header_height, //
-                        width: _column_width, //
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              //
+                        width: _number_column_width, //
+                        alignment: Alignment.center,
+                        child: Text(
+                          "No.", //
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
 
-                              if (row["alias"] == key) {
-                                final current_index = [-1, 0, 1].indexOf(sort_order);
-                                sort_order = [-1, 0, 1][(current_index - 1) % 3];
-                              } else {
-                                sort_order = -1;
-                              }
+                      // sort mode
+                      if (!is_filter)
+                        ..._schema.map((row) {
+                          if (row["visible"] != 1) return const SizedBox();
+                          return Container(
+                            height: _header_height, //
+                            width: _column_width, //
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  //
 
-                              if (sort_order == 0) {
-                                key = null;
-                              } else {
-                                key = row["alias"] as String;
-                              }
+                                  if (row["alias"] == key) {
+                                    final current_index = [-1, 0, 1].indexOf(sort_order);
+                                    sort_order = [-1, 0, 1][(current_index - 1) % 3];
+                                  } else {
+                                    sort_order = -1;
+                                  }
 
-                              print("key: $key");
-                              print("sort_order: $sort_order");
-                              init();
-                            });
-                          },
+                                  if (sort_order == 0) {
+                                    key = null;
+                                  } else {
+                                    key = row["alias"] as String;
+                                  }
 
+                                  print("key: $key");
+                                  print("sort_order: $sort_order");
+                                  init();
+                                });
+                              },
+
+                              child: Row(
+                                children: [
+                                  Spacer(),
+                                  Text(
+                                    row["title"], //
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Spacer(),
+                                  key == row["alias"] ? Icon(sort_order == -1 ? Icons.arrow_downward : Icons.arrow_upward, size: 20) : const Icon(Icons.unfold_more, size: 20),
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+
+                      // search mode
+                      if (is_filter)
+                        ..._schema.where((row) => row["visible"] == 1).map((row) {
+                          // if (row["type"] == "string") {
+                          //   return Container(
+                          //     height: header_height, //
+                          //     width: column_width, //
+                          //     padding: const EdgeInsets.fromLTRB(1, 8, 1, 0),
+                          //     child: TextField(
+                          //       decoration: InputDecoration(
+                          //         hintText: "Search", //
+                          //         labelText: row["title"] as String?,
+                          //         floatingLabelBehavior: FloatingLabelBehavior.always,
+                          //         contentPadding: EdgeInsets.fromLTRB(4, 4, 0, 4),
+                          //         border: OutlineInputBorder(),
+                          //       ),
+                          //       style: const TextStyle(fontSize: 14),
+                          //       onChanged: (value) {
+                          //         if (_debounce?.isActive ?? false) _debounce!.cancel();
+                          //         _debounce = Timer(const Duration(milliseconds: 200), () async {
+                          //           key = row['alias'] as String;
+                          //           query = value;
+                          //           sort_order = 0;
+                          //           init();
+                          //         });
+                          //       },
+                          //     ),
+                          //   );
+                          // }
+
+                          if (row["type"] == "string") {
+                            return Container(
+                              height: _header_height, //
+                              width: _column_width, //
+                              padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
+                              child: OutlinedButton.icon(
+                                onPressed: () {
+                                  print("${row["alias"]}");
+
+                                  key = row['alias'];
+                                  query = null;
+                                  min = null;
+                                  max = null;
+                                  start = null;
+                                  end = null;
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Filter_String_(), //
+                                    ),
+                                  ).then((value) {
+                                    if (value != null) {
+                                      query = value;
+                                      init();
+                                    }
+                                  });
+                                },
+                                icon: const Icon(Icons.search),
+                                label: Text(
+                                  row["title"] as String? ?? "", //
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    overflow: TextOverflow.ellipsis, //
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          if (row["type"] == "number") {
+                            return Container(
+                              height: _header_height, //
+                              width: _column_width, //
+                              padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
+                              child: OutlinedButton.icon(
+                                onPressed: () {
+                                  print("${row["alias"]}");
+                                  key = row['alias'];
+                                  query = null;
+                                  min = null;
+                                  max = null;
+                                  start = null;
+                                  end = null;
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Filter_Number_(
+                                        key_: row['alias'], //
+                                      ),
+                                    ),
+                                  ).then((value) {
+                                    print("value: $value");
+                                    if (value != null) {
+                                      min = value["min"];
+                                      max = value["max"];
+
+                                      // query = value;
+                                      init();
+                                    }
+                                  });
+                                },
+                                icon: const Icon(Icons.tune),
+                                label: Text(
+                                  row["title"] as String? ?? "", //
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    overflow: TextOverflow.ellipsis, //
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          if (row["type"] == "datetime") {
+                            return Container(
+                              height: _header_height, //
+                              width: _column_width, //
+                              padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
+                              child: OutlinedButton.icon(
+                                onPressed: () {
+                                  // TODO: Implement range selection
+                                  print("${row["alias"]}");
+                                  key = row['alias'];
+                                  query = null;
+                                  min = null;
+                                  max = null;
+                                  start = null;
+                                  end = null;
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Filter_Datetime_(), //
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.date_range),
+                                label: Text(
+                                  row["title"] as String? ?? "", //
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    overflow: TextOverflow.ellipsis, //
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          return const SizedBox();
+                        }),
+
+                      // actions column
+                      if (_is_admin)
+                        Container(
+                          height: _header_height, //
+                          width: 80, //
                           child: Row(
                             children: [
                               Spacer(),
-                              Text(
-                                row["title"], //
-                                style: const TextStyle(fontWeight: FontWeight.bold),
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                              Text("Actions", style: const TextStyle(fontWeight: FontWeight.bold)),
+                              SizedBox(width: 4), //
                               Spacer(),
-                              key == row["alias"] ? Icon(sort_order == -1 ? Icons.arrow_downward : Icons.arrow_upward, size: 20) : const Icon(Icons.unfold_more, size: 20),
                             ],
                           ),
                         ),
-                      );
-                    }),
+                    ],
+                  ),
+                ),
 
-                  // search mode
-                  if (is_filter)
-                    ..._schema.where((row) => row["visible"] == 1).map((row) {
-                      // if (row["type"] == "string") {
-                      //   return Container(
-                      //     height: header_height, //
-                      //     width: column_width, //
-                      //     padding: const EdgeInsets.fromLTRB(1, 8, 1, 0),
-                      //     child: TextField(
-                      //       decoration: InputDecoration(
-                      //         hintText: "Search", //
-                      //         labelText: row["title"] as String?,
-                      //         floatingLabelBehavior: FloatingLabelBehavior.always,
-                      //         contentPadding: EdgeInsets.fromLTRB(4, 4, 0, 4),
-                      //         border: OutlineInputBorder(),
-                      //       ),
-                      //       style: const TextStyle(fontSize: 14),
-                      //       onChanged: (value) {
-                      //         if (_debounce?.isActive ?? false) _debounce!.cancel();
-                      //         _debounce = Timer(const Duration(milliseconds: 200), () async {
-                      //           key = row['alias'] as String;
-                      //           query = value;
-                      //           sort_order = 0;
-                      //           init();
-                      //         });
-                      //       },
-                      //     ),
-                      //   );
-                      // }
-
-                      if (row["type"] == "string") {
-                        return Container(
-                          height: _header_height, //
-                          width: _column_width, //
-                          padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
-                          child: OutlinedButton.icon(
-                            onPressed: () {
-                              print("${row["alias"]}");
-
-                              key = row['alias'];
-                              query = null;
-                              min = null;
-                              max = null;
-                              start = null;
-                              end = null;
-
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Filter_String_(), //
-                                ),
-                              ).then((value) {
-                                if (value != null) {
-                                  query = value;
-                                  init();
-                                }
-                              });
-                            },
-                            icon: const Icon(Icons.search),
-                            label: Text(
-                              row["title"] as String? ?? "", //
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                overflow: TextOverflow.ellipsis, //
-                              ),
+                // body
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: data.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == data.length) {
+                        if (has_more) {
+                          print("Last item");
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            load_more();
+                          });
+                          return Container(
+                            height: _row_height, //
+                            alignment: Alignment.centerLeft,
+                            decoration: const BoxDecoration(
+                              border: Border(top: BorderSide(color: Colors.black12, width: 1)),
                             ),
-                          ),
-                        );
-                      }
-
-                      if (row["type"] == "number") {
-                        return Container(
-                          height: _header_height, //
-                          width: _column_width, //
-                          padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
-                          child: OutlinedButton.icon(
-                            onPressed: () {
-                              print("${row["alias"]}");
-                              key = row['alias'];
-                              query = null;
-                              min = null;
-                              max = null;
-                              start = null;
-                              end = null;
-
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Filter_Number_(
-                                    key_: row['alias'], //
-                                  ),
-                                ),
-                              ).then((value) {
-                                print("value: $value");
-                                if (value != null) {
-                                  min = value["min"];
-                                  max = value["max"];
-
-                                  // query = value;
-                                  init();
-                                }
-                              });
-                            },
-                            icon: const Icon(Icons.tune),
-                            label: Text(
-                              row["title"] as String? ?? "", //
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                overflow: TextOverflow.ellipsis, //
-                              ),
+                            child: const Center(child: CircularProgressIndicator()),
+                          );
+                        } else {
+                          return Container(
+                            height: _row_height, //
+                            alignment: Alignment.center,
+                            decoration: const BoxDecoration(
+                              border: Border(top: BorderSide(color: Colors.black12, width: 1)),
                             ),
-                          ),
-                        );
+                            child: Center(child: Text("Total: ${data.length} rows")),
+                          );
+                        }
                       }
-
-                      if (row["type"] == "datetime") {
-                        return Container(
-                          height: _header_height, //
-                          width: _column_width, //
-                          padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
-                          child: OutlinedButton.icon(
-                            onPressed: () {
-                              // TODO: Implement range selection
-                              print("${row["alias"]}");
-                              key = row['alias'];
-                              query = null;
-                              min = null;
-                              max = null;
-                              start = null;
-                              end = null;
-
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Filter_Datetime_(), //
-                                ),
-                              );
-                            },
-                            icon: const Icon(Icons.date_range),
-                            label: Text(
-                              row["title"] as String? ?? "", //
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                overflow: TextOverflow.ellipsis, //
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-
-                      return const SizedBox();
-                    }),
-
-                  // actions column
-                  if (_is_admin)
-                    Container(
-                      height: _header_height, //
-                      width: 80, //
-                      child: Row(
-                        children: [
-                          Spacer(),
-                          Text("Actions", style: const TextStyle(fontWeight: FontWeight.bold)),
-                          SizedBox(width: 4), //
-                          Spacer(),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-
-              // body
-              Expanded(
-                child: ListView.builder(
-                  itemCount: data.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == data.length) {
-                      if (has_more) {
-                        print("Last item");
-                        Future.delayed(const Duration(milliseconds: 300), () {
-                          load_more();
-                        });
-                        return Container(
+                      return InkWell(
+                        child: Container(
                           height: _row_height, //
-                          alignment: Alignment.centerLeft,
                           decoration: const BoxDecoration(
                             border: Border(top: BorderSide(color: Colors.black12, width: 1)),
                           ),
-                          child: const Center(child: CircularProgressIndicator()),
-                        );
-                      } else {
-                        return Container(
-                          height: _row_height, //
-                          alignment: Alignment.center,
-                          decoration: const BoxDecoration(
-                            border: Border(top: BorderSide(color: Colors.black12, width: 1)),
-                          ),
-                          child: const Center(child: Text("No more data")),
-                        );
-                      }
-                    }
-                    return InkWell(
-                      child: Container(
-                        height: _row_height, //
-                        decoration: const BoxDecoration(
-                          border: Border(top: BorderSide(color: Colors.black12, width: 1)),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: _number_column_width, //
-                              alignment: Alignment.center,
-                              child: Text(
-                                "${index + 1}", //
+                          child: Row(
+                            children: [
+                              Container(
+                                width: _number_column_width, //
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "${index + 1}", //
+                                ),
                               ),
-                            ),
 
-                            ..._schema.where((row) => row["visible"] == 1).map((row) {
-                              if (row["alias"] == "_id") {
+                              ..._schema.where((row) => row["visible"] == 1).map((row) {
+                                if (row["alias"] == "_id") {
+                                  return Container(
+                                    width: _column_width, //
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "${data[index][row["alias"]] ?? ""}", //
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                      softWrap: true,
+                                    ),
+                                  );
+                                }
+
+                                if (row["alias"] == "price") {
+                                  final priceValue = data[index][row["alias"]];
+                                  final price = priceValue is num ? priceValue.toDouble() : double.tryParse(priceValue?.toString() ?? "0.0") ?? 0.0;
+                                  return Container(
+                                    width: _column_width, //
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "${price.toStringAsFixed(2)} \$", //
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                      softWrap: true,
+                                    ),
+                                  );
+                                }
+
+                                // Handle MongoDB date format: {"$date": "2024-01-15T10:30:00.000Z"}
+                                if (row["alias"] == "created_at" || row["alias"] == "updated_at") {
+                                  final output = data[index][row["alias"]];
+                                  String displayText = "-";
+
+                                  try {
+                                    String? dateStr;
+                                    if (output is Map && output.containsKey(r"$date")) {
+                                      dateStr = output[r"$date"] as String?;
+                                    } else if (output is String) {
+                                      dateStr = output;
+                                    }
+
+                                    if (dateStr != null) {
+                                      final date = DateTime.parse(dateStr).toLocal();
+                                      displayText = DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
+                                    }
+                                  } catch (e) {
+                                    displayText = output?.toString() ?? "-";
+                                  }
+
+                                  return Container(
+                                    width: _column_width,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      displayText, //
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                      softWrap: true,
+                                    ),
+                                  );
+                                }
+
+                                // general case
                                 return Container(
                                   width: _column_width, //
                                   alignment: Alignment.center,
@@ -523,147 +602,92 @@ class _Template_State extends State<Template_> {
                                     softWrap: true,
                                   ),
                                 );
-                              }
+                              }),
 
-                              if (row["alias"] == "price") {
-                                final priceValue = data[index][row["alias"]];
-                                final price = priceValue is num ? priceValue.toDouble() : double.tryParse(priceValue?.toString() ?? "0.0") ?? 0.0;
-                                return Container(
-                                  width: _column_width, //
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    "${price.toStringAsFixed(2)} \$", //
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                    softWrap: true,
+                              if (_is_admin) ...[
+                                // button edit
+                                SizedBox(
+                                  width: _row_height, //
+                                  child: IconButton(
+                                    icon: const Icon(Icons.edit_outlined), //
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => Update_(
+                                            input: data[index], //
+                                          ),
+                                        ),
+                                      ).then((value) {
+                                        if (value != null) {
+                                          init();
+                                        }
+                                      });
+                                    },
+                                    tooltip: "Edit",
                                   ),
-                                );
-                              }
-
-                              // Handle MongoDB date format: {"$date": "2024-01-15T10:30:00.000Z"}
-                              if (row["alias"] == "created_at" || row["alias"] == "updated_at") {
-                                final output = data[index][row["alias"]];
-                                String displayText = "-";
-
-                                try {
-                                  String? dateStr;
-                                  if (output is Map && output.containsKey(r"$date")) {
-                                    dateStr = output[r"$date"] as String?;
-                                  } else if (output is String) {
-                                    dateStr = output;
-                                  }
-
-                                  if (dateStr != null) {
-                                    final date = DateTime.parse(dateStr).toLocal();
-                                    displayText = DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
-                                  }
-                                } catch (e) {
-                                  displayText = output?.toString() ?? "-";
-                                }
-
-                                return Container(
-                                  width: _column_width,
-                                  alignment: Alignment.center,
-                                  child: Text(displayText, overflow: TextOverflow.ellipsis, maxLines: 2, softWrap: true),
-                                );
-                              }
-
-                              // general case
-                              return Container(
-                                width: _column_width, //
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "${data[index][row["alias"]] ?? ""}", //
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
-                                  softWrap: true,
                                 ),
-                              );
-                            }),
 
-                            if (_is_admin) ...[
-                              // button edit
-                              SizedBox(
-                                width: _row_height, //
-                                child: IconButton(
-                                  icon: const Icon(Icons.edit_outlined), //
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Update_(
-                                          input: data[index], //
+                                // button delete
+                                SizedBox(
+                                  width: _row_height, //
+                                  child: IconButton(
+                                    icon: const Icon(Icons.delete_outline),
+                                    onPressed: () async {
+                                      print('Delete room ${data[index]["_id"]}');
+
+                                      Navigator.push(
+                                        context, //
+                                        MaterialPageRoute(
+                                          builder: (context) => Delete_(
+                                            id: data[index]["_id"], //
+                                          ),
                                         ),
-                                      ),
-                                    ).then((value) {
-                                      if (value != null) {
-                                        init();
-                                      }
-                                    });
-                                  },
-                                  tooltip: "Edit",
+                                      ).then((value) {
+                                        if (value != null) {
+                                          // data.removeAt(index);
+                                          // print('Delete room ${data[index]["_id"]} success');
+                                          // setState(() {});
+                                          init();
+                                        }
+                                      });
+
+                                      // await dio
+                                      //     .post("/room/delete", data: {"id": data[index]["_id"]})
+                                      //     .then((value) {
+                                      //       print('Delete room ${data[index]["_id"]} success');
+                                      //       data.removeAt(index);
+                                      //       show_snackbar(context: context, message: 'Room deleted successfully', color: Colors.green);
+                                      //       setState(() {});
+                                      //     })
+                                      //     .catchError((error) {
+                                      //       print('Delete room ${data[index]["_id"]} failed: $error');
+                                      //     });
+                                    },
+                                    tooltip: "Delete",
+                                    color: Colors.red,
+                                  ),
                                 ),
-                              ),
-
-                              // button delete
-                              SizedBox(
-                                width: _row_height, //
-                                child: IconButton(
-                                  icon: const Icon(Icons.delete_outline),
-                                  onPressed: () async {
-                                    print('Delete room ${data[index]["_id"]}');
-
-                                    Navigator.push(
-                                      context, //
-                                      MaterialPageRoute(
-                                        builder: (context) => Delete_(
-                                          id: data[index]["_id"], //
-                                        ),
-                                      ),
-                                    ).then((value) {
-                                      if (value != null) {
-                                        // data.removeAt(index);
-                                        // print('Delete room ${data[index]["_id"]} success');
-                                        // setState(() {});
-                                        init();
-                                      }
-                                    });
-
-                                    // await dio
-                                    //     .post("/room/delete", data: {"id": data[index]["_id"]})
-                                    //     .then((value) {
-                                    //       print('Delete room ${data[index]["_id"]} success');
-                                    //       data.removeAt(index);
-                                    //       show_snackbar(context: context, message: 'Room deleted successfully', color: Colors.green);
-                                    //       setState(() {});
-                                    //     })
-                                    //     .catchError((error) {
-                                    //       print('Delete room ${data[index]["_id"]} failed: $error');
-                                    //     });
-                                  },
-                                  tooltip: "Delete",
-                                  color: Colors.red,
-                                ),
-                              ),
+                              ],
                             ],
-                          ],
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Read_(
-                              input: data[index], //
-                            ),
                           ),
-                        );
-                      },
-                    );
-                  },
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Read_(
+                                input: data[index], //
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

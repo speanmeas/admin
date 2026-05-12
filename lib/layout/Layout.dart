@@ -47,8 +47,10 @@ class _Layout_Dashboard_State extends State<Layout_Dashboard_> {
     return Scaffold(
       appBar: AppBar(
         title: Panel_Top_(), //
+        // backgroundColor: Colors.blue[50],
         titleSpacing: 0,
-        toolbarHeight: 48,
+        toolbarHeight: 40,
+        centerTitle: false,
       ),
       body: Column(
         children: [
@@ -58,10 +60,11 @@ class _Layout_Dashboard_State extends State<Layout_Dashboard_> {
                 // panel left
                 if (!isMobile)
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 0, 0, 4),
+                    padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
                     child: Container(
                       width: 300,
-                      decoration: BoxDecoration(border: Border.all()), //
+                      decoration: BoxDecoration(border: Border(right: BorderSide())), //
+                      // color: Colors.grey[50],
                       child: Panel_Left_(), //
                     ),
                   ),
@@ -69,11 +72,12 @@ class _Layout_Dashboard_State extends State<Layout_Dashboard_> {
                 // panel body
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
+                    padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
                     child: Container(
                       width: double.infinity,
                       height: double.infinity,
-                      decoration: BoxDecoration(border: Border.all()),
+                      // decoration: BoxDecoration(border: Border.all()),
+                      color: Colors.white,
                       child: Panel_Body_(), //
                     ),
                   ),
