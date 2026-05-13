@@ -79,6 +79,8 @@ class _Template_State extends State<Template_> {
 
   ScrollController controller_scrollbar = ScrollController();
 
+  ScrollController controller_table = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -109,6 +111,9 @@ class _Template_State extends State<Template_> {
             // print(data);
           });
         });
+
+    // move to top
+    controller_table.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
   }
 
   void load_more() async {
@@ -251,7 +256,7 @@ class _Template_State extends State<Template_> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => Filter_String_(), //
+                                      builder: (context) => Search_String_(), //
                                     ),
                                   ).then((value) {
                                     if (value != null) {
@@ -295,7 +300,7 @@ class _Template_State extends State<Template_> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => Filter_Number_(
+                                      builder: (context) => Search_Number_(
                                         key_: row['alias'], //
                                       ),
                                     ),
@@ -346,7 +351,7 @@ class _Template_State extends State<Template_> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => Filter_Datetime_(), //
+                                      builder: (context) => Search_Datetime_(), //
                                     ),
                                   ).then((value) {
                                     if (value != null) {
@@ -398,6 +403,7 @@ class _Template_State extends State<Template_> {
                 // body
                 Expanded(
                   child: ListView.builder(
+                    controller: controller_table,
                     itemCount: data.length + 1,
                     itemBuilder: (context, index) {
                       if (index == data.length) {
@@ -526,7 +532,7 @@ class _Template_State extends State<Template_> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => Update_(
+                                          builder: (context) => Edit_(
                                             input: data[index], //
                                           ),
                                         ),
@@ -557,24 +563,9 @@ class _Template_State extends State<Template_> {
                                         ),
                                       ).then((value) {
                                         if (value != null) {
-                                          // data.removeAt(index);
-                                          // print('Delete room ${data[index]["_id"]} success');
-                                          // setState(() {});
                                           init();
                                         }
                                       });
-
-                                      // await dio
-                                      //     .post("/room/delete", data: {"id": data[index]["_id"]})
-                                      //     .then((value) {
-                                      //       print('Delete room ${data[index]["_id"]} success');
-                                      //       data.removeAt(index);
-                                      //       show_snackbar(context: context, message: 'Room deleted successfully', color: Colors.green);
-                                      //       setState(() {});
-                                      //     })
-                                      //     .catchError((error) {
-                                      //       print('Delete room ${data[index]["_id"]} failed: $error');
-                                      //     });
                                     },
                                     tooltip: "Delete",
                                     color: Colors.red,
@@ -605,9 +596,8 @@ class _Template_State extends State<Template_> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
-        padding: .symmetric(horizontal: 0),
+        padding: const EdgeInsets.symmetric(horizontal: 0),
         child: Row(
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(width: 4),
             FloatingActionButton(

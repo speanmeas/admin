@@ -12,11 +12,11 @@ import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Create());
+  runApp(Template());
 }
 
-class Create extends StatelessWidget {
-  Create({super.key});
+class Template extends StatelessWidget {
+  Template({super.key});
 
   @override
   Widget build(BuildContext context) {

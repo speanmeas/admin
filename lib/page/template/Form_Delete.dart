@@ -9,11 +9,11 @@ import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Delete());
+  runApp(Template());
 }
 
-class Delete extends StatelessWidget {
-  Delete({super.key});
+class Template extends StatelessWidget {
+  Template({super.key});
 
   String id = "69f984897186bcf74f8a5dde";
 

@@ -7,11 +7,11 @@ import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Select_Visibility());
+  runApp(Template());
 }
 
-class Select_Visibility extends StatelessWidget {
-  Select_Visibility({super.key});
+class Template extends StatelessWidget {
+  Template({super.key});
 
   List<Map<String, dynamic>> _schema = schema;
 

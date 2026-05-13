@@ -12,11 +12,11 @@ import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Update());
+  runApp(Template());
 }
 
-class Update extends StatelessWidget {
-  Update({super.key});
+class Template extends StatelessWidget {
+  Template({super.key});
 
   Map<String, dynamic> input = {
     "_id": 1, //
@@ -39,13 +39,13 @@ class Update extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Update_(input: input),
+      home: Edit_(input: input),
     );
   }
 }
 
-class Update_ extends StatefulWidget {
-  Update_({
+class Edit_ extends StatefulWidget {
+  Edit_({
     super.key, //
     required this.input,
   });
@@ -53,10 +53,10 @@ class Update_ extends StatefulWidget {
   Map<String, dynamic> input;
 
   @override
-  State<Update_> createState() => _Update_State();
+  State<Edit_> createState() => _Edit_State();
 }
 
-class _Update_State extends State<Update_> {
+class _Edit_State extends State<Edit_> {
   late Map<String, dynamic> output;
 
   @override

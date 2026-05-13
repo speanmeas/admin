@@ -8,11 +8,11 @@ import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Read());
+  runApp(Template());
 }
 
-class Read extends StatelessWidget {
-  Read({super.key});
+class Template extends StatelessWidget {
+  Template({super.key});
 
   Map<String, dynamic> input = {
     "_id": 1, //

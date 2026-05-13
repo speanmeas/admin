@@ -9,11 +9,11 @@ import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Filter_String());
+  runApp(Template());
 }
 
-class Filter_String extends StatelessWidget {
-  Filter_String({super.key});
+class Template extends StatelessWidget {
+  Template({super.key});
 
   // List<Map<String, dynamic>> schema = [
   //   {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
@@ -46,13 +46,13 @@ class Filter_String extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Filter_String_(),
+      home: Search_String_(),
     );
   }
 }
 
-class Filter_String_ extends StatefulWidget {
-  Filter_String_({
+class Search_String_ extends StatefulWidget {
+  Search_String_({
     super.key, //
     // required this.schema,
     // required this.input,
@@ -62,10 +62,10 @@ class Filter_String_ extends StatefulWidget {
   // Map<String, dynamic> input;
 
   @override
-  State<Filter_String_> createState() => _Filter_String_State();
+  State<Search_String_> createState() => _Search_String_State();
 }
 
-class _Filter_String_State extends State<Filter_String_> {
+class _Search_String_State extends State<Search_String_> {
   TextEditingController controller_search = TextEditingController();
 
   @override
