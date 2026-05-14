@@ -33,27 +33,20 @@ class Panel_Left_ extends StatefulWidget {
 }
 
 class _Panel_Left_State extends State<Panel_Left_> {
-  String? selected;
-
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
     final v = context.watch<Variable>();
     return ListView(
-      // shrinkWrap: true,
       children: [
         ListTile(
           leading: Icon(Icons.dashboard_outlined),
           title: Text("Dashboard"),
-          selected: selected == "Dashboard",
+          selected: v.body == "Dashboard",
           selectedColor: Colors.blue,
           onTap: () {
-            if (v.body != "Dashboard") {
-              v.body = "Dashboard";
-              v.notifyListeners();
-            }
-            selected = "Dashboard";
-            setState(() {});
+            v.body = "Dashboard";
+            v.notifyListeners();
             if (isMobile) Navigator.pop(context);
           }, //
         ),
@@ -61,15 +54,11 @@ class _Panel_Left_State extends State<Panel_Left_> {
         ListTile(
           leading: Icon(Icons.people_outline),
           title: Text("Check In/Out"),
-          selected: selected == "Check In/Out",
+          selected: v.body == "Check In/Out",
           selectedColor: Colors.blue,
           onTap: () {
-            if (v.body != "Check In/Out") {
-              v.body = "Check In/Out";
-              v.notifyListeners();
-            }
-            selected = "Check In/Out";
-            setState(() {});
+            v.body = "Check In/Out";
+            v.notifyListeners();
             if (isMobile) Navigator.pop(context);
           }, //
         ),
@@ -77,15 +66,11 @@ class _Panel_Left_State extends State<Panel_Left_> {
         ListTile(
           leading: Icon(Icons.hotel_outlined),
           title: Text("Room"),
-          selected: selected == "Room",
+          selected: v.body == "Room",
           selectedColor: Colors.blue,
           onTap: () {
-            if (v.body != "Room") {
-              v.body = "Room";
-              v.notifyListeners();
-            }
-            selected = "Room";
-            setState(() {});
+            v.body = "Room";
+            v.notifyListeners();
             if (isMobile) Navigator.pop(context);
           }, //
         ),
@@ -93,15 +78,11 @@ class _Panel_Left_State extends State<Panel_Left_> {
         ListTile(
           leading: Icon(Icons.people_outline),
           title: Text("Guest"),
-          selected: selected == "Guest",
+          selected: v.body == "Guest",
           selectedColor: Colors.blue,
           onTap: () {
-            if (v.body != "Guest") {
-              v.body = "Guest";
-              v.notifyListeners();
-            }
-            selected = "Guest";
-            setState(() {});
+            v.body = "Guest";
+            v.notifyListeners();
             if (isMobile) Navigator.pop(context);
           }, //
         ),
@@ -109,15 +90,11 @@ class _Panel_Left_State extends State<Panel_Left_> {
         ListTile(
           leading: Icon(Icons.work_outline),
           title: Text("Staff"),
-          selected: selected == "Staff",
+          selected: v.body == "Staff",
           selectedColor: Colors.blue,
           onTap: () {
-            if (v.body != "Staff") {
-              v.body = "Staff";
-              v.notifyListeners();
-            }
-            selected = "Staff";
-            setState(() {});
+            v.body = "Staff";
+            v.notifyListeners();
             if (isMobile) Navigator.pop(context);
           }, //
         ),
@@ -129,7 +106,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
           children: [
             ListTile(
               leading: Icon(Icons.assessment_outlined), //
-              selected: selected == "Daily Report",
+              selected: v.body == "Daily Report",
               selectedColor: Colors.blue,
               title: Text(
                 'Daily Report', //
@@ -138,13 +115,13 @@ class _Panel_Left_State extends State<Panel_Left_> {
               ),
               onTap: () {
                 //
-                selected = "Daily Report";
-                setState(() {});
+                v.body = "Daily Report";
+                v.notifyListeners();
               },
             ),
             ListTile(
               leading: Icon(Icons.assessment_outlined), //
-              selected: selected == "Weekly Report",
+              selected: v.body == "Weekly Report",
               selectedColor: Colors.blue,
               title: Text(
                 'Weekly Report', //
@@ -153,13 +130,13 @@ class _Panel_Left_State extends State<Panel_Left_> {
               ),
               onTap: () {
                 //
-                selected = "Weekly Report";
-                setState(() {});
+                v.body = "Weekly Report";
+                v.notifyListeners();
               },
             ),
             ListTile(
               leading: Icon(Icons.assessment_outlined), //
-              selected: selected == "Monthly Report",
+              selected: v.body == "Monthly Report",
               selectedColor: Colors.blue,
               title: Text(
                 'Monthly Report', //
@@ -168,13 +145,13 @@ class _Panel_Left_State extends State<Panel_Left_> {
               ),
               onTap: () {
                 //
-                selected = "Monthly Report";
-                setState(() {});
+                v.body = "Monthly Report";
+                v.notifyListeners();
               },
             ),
             ListTile(
               leading: Icon(Icons.assessment_outlined), //
-              selected: selected == "Yearly Report",
+              selected: v.body == "Yearly Report",
               selectedColor: Colors.blue,
               title: Text(
                 'Yearly Report', //
@@ -183,8 +160,8 @@ class _Panel_Left_State extends State<Panel_Left_> {
               ),
               onTap: () {
                 //
-                selected = "Yearly Report";
-                setState(() {});
+                v.body = "Yearly Report";
+                v.notifyListeners();
               },
             ),
           ],
@@ -194,44 +171,14 @@ class _Panel_Left_State extends State<Panel_Left_> {
         ListTile(
           leading: Icon(Icons.model_training_outlined),
           title: Text("Template"),
-          selected: selected == "Template",
+          selected: v.body == "Template",
           selectedColor: Colors.blue,
           onTap: () {
-            if (v.body != "Template") {
-              v.body = "Template";
-              v.notifyListeners();
-            }
-            selected = "Template";
-            setState(() {});
+            v.body = "Template";
+            v.notifyListeners();
             if (isMobile) Navigator.pop(context);
           }, //
         ),
-
-        // Setting
-        // ListTile(
-        //   leading: Icon(Icons.settings_outlined),
-        //   title: Text("Setting"),
-        //   onTap: () {
-        //     if (v.body != "Setting") {
-        //       v.body = "Setting";
-        //       v.notifyListeners();
-        //     }
-        //     if (isMobile) Navigator.pop(context);
-        //   }, //
-        // ),
-
-        // // User Profile
-        // ListTile(
-        //   leading: Icon(Icons.person_outline),
-        //   title: Text("User"),
-        //   onTap: () {
-        //     if (v.body != "User") {
-        //       v.body = "User";
-        //       v.notifyListeners();
-        //     }
-        //     if (isMobile) Navigator.pop(context);
-        //   }, //
-        // ),
       ],
     );
   }

@@ -59,6 +59,9 @@ class Edit_ extends StatefulWidget {
 class _Edit_State extends State<Edit_> {
   late Map<String, dynamic> output;
 
+  final ScrollController controller_images = ScrollController();
+  final ScrollController controller_videos = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -174,55 +177,147 @@ class _Edit_State extends State<Edit_> {
 
               SizedBox(height: 8),
 
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (int i = 0; i < 10; i++)
-                      Container(
-                        width: 100, //
-                        height: 100,
-                        margin: EdgeInsets.only(right: 8),
-                        child: InkWell(
-                          onTap: () {
-                            // TODO: Handle image tap
-                            showModalBottomSheet<void>(
-                              context: context,
-                              isScrollControlled: true,
-                              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
-                              builder: (BuildContext context) {
-                                return Wrap(
-                                  children: [
-                                    ListTile(
-                                      leading: Icon(Icons.camera_outlined),
-                                      title: Text('Camera'),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                    ListTile(
-                                      leading: Icon(Icons.upload_outlined),
-                                      title: Text('Upload'),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                    ListTile(
-                                      leading: Icon(Icons.delete_outlined),
-                                      title: Text('Delete'),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                          child: Placeholder(),
+              Container(
+                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                child: Text(
+                  "Images:", //
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+
+              Scrollbar(
+                controller: controller_images,
+                thumbVisibility: true,
+                // notificationPredicate: (_) => true,
+                thickness: 12, // scrollbar width
+                radius: const Radius.circular(0),
+                // interactive: true,
+                // scrollbarOrientation: ScrollbarOrientation.bottom,
+                child: SingleChildScrollView(
+                  controller: controller_images,
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (int i = 0; i < 10; i++)
+                        Container(
+                          width: 100, //
+                          height: 100,
+                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
+                          child: InkWell(
+                            onTap: () {
+                              // TODO: Handle image tap
+                              print('Image tapped: $i');
+                              showModalBottomSheet<void>(
+                                context: context,
+                                isScrollControlled: true,
+                                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
+                                builder: (BuildContext context) {
+                                  return Wrap(
+                                    children: [
+                                      ListTile(
+                                        leading: Icon(Icons.camera_outlined),
+                                        title: Text('Camera'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.upload_outlined),
+                                        title: Text('Upload'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.delete_outlined),
+                                        title: Text('Delete'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Placeholder(),
+                          ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 8),
+
+              Container(
+                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                child: Text(
+                  "Videos:", //
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+
+              Scrollbar(
+                controller: controller_videos,
+                thumbVisibility: true,
+                // notificationPredicate: (_) => true,
+                thickness: 12, // scrollbar width
+                radius: const Radius.circular(0),
+                // interactive: true,
+                // scrollbarOrientation: ScrollbarOrientation.bottom,
+                child: SingleChildScrollView(
+                  controller: controller_videos,
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (int i = 0; i < 10; i++)
+                        Container(
+                          width: 100, //
+                          height: 100,
+                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
+                          child: InkWell(
+                            onTap: () {
+                              // TODO: Handle video tap
+                              print('Video tapped: $i');
+                              showModalBottomSheet<void>(
+                                context: context,
+                                isScrollControlled: true,
+                                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
+                                builder: (BuildContext context) {
+                                  return Wrap(
+                                    children: [
+                                      ListTile(
+                                        leading: Icon(Icons.camera_outlined),
+                                        title: Text('Camera'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.upload_outlined),
+                                        title: Text('Upload'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.delete_outlined),
+                                        title: Text('Delete'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Placeholder(),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
 

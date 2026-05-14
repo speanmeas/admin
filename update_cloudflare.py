@@ -1,4 +1,3 @@
-# %%
 import os
 import sys
 
@@ -50,7 +49,7 @@ if build_match:
 print(f"{old_build_num} -> {new_build_num}")
 
 #! clean
-os.system("flutter clean")
+# os.system("flutter clean")
 
 # build web release
 # os.system("flutter build web --release --base-href /")

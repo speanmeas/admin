@@ -224,10 +224,12 @@ class _Template_State extends State<Template_> {
 
                                   SizedBox(width: 4),
 
-                                  Text(
-                                    row["title"], //
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                    overflow: TextOverflow.ellipsis,
+                                  Expanded(
+                                    child: Text(
+                                      row["title"], //
+                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ],
                               ),

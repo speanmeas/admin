@@ -5,11 +5,11 @@ import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/Environment.dart';
 
 void main() {
-  runApp(const Login());
+  runApp(const Template());
 }
 
-class Login extends StatelessWidget {
-  const Login({super.key});
+class Template extends StatelessWidget {
+  const Template({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,25 +33,14 @@ class _Login_State extends State<Login_> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Text("Login"), //
-          ],
-        ),
-        toolbarHeight: 40,
-        titleSpacing: 0,
-        automaticallyImplyLeading: false,
-      ),
-      body: Center(
-        child: Container(
-          width: 800,
-          child: ListView(
-            children: [
-              Text("Login"), //
-            ],
-          ),
-        ),
+      body: ListView(
+        children: [
+          Text(
+            "Login", //
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), //
+          ), //
+          Text("Welcome to the login page"),
+        ],
       ),
     );
   }

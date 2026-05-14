@@ -5,11 +5,11 @@ import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/Environment.dart';
 
 void main() {
-  runApp(const Dashboard());
+  runApp(const Template());
 }
 
-class Dashboard extends StatelessWidget {
-  const Dashboard({super.key});
+class Template extends StatelessWidget {
+  const Template({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,25 +33,14 @@ class _Dashboard_State extends State<Dashboard_> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Text("Dashboard"), //
-          ],
-        ),
-        toolbarHeight: 40,
-        titleSpacing: 0,
-        automaticallyImplyLeading: false,
-      ),
-      body: Center(
-        child: Container(
-          width: 800,
-          child: ListView(
-            children: [
-              Text("Dashboard"), //
-            ],
-          ),
-        ),
+      body: ListView(
+        children: [
+          Text(
+            "Dashboard", //
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), //
+          ), //
+          Text("Welcome to the dashboard"),
+        ],
       ),
     );
   }

@@ -4,13 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/Global_Variable.dart';
 
-import 'package:speanmeas/page/Customer.dart';
-import 'package:speanmeas/page/dashboard/Dashboard.dart';
-import 'package:speanmeas/page/Setting.dart';
-import 'package:speanmeas/page/User.dart';
-
-import 'package:speanmeas/page/room/Main.dart';
-import 'package:speanmeas/page/template/Main.dart';
+import 'Setup.dart';
 
 void main() {
   runApp(
@@ -45,17 +39,6 @@ class Panel_Body_ extends StatefulWidget {
 class _Panel_Body_State extends State<Panel_Body_> {
   //
   String body = "Dashboard";
-
-  //
-  Map<String, Widget> pages = {
-    "Dashboard": Dashboard_(), //
-    "Room": Room_(), //
-    "Setting": Setting_(),
-    // "Guest": Guest_(),
-    "User": User_(),
-    "Template": Template_(),
-    // "Staff": StaffTable(),
-  };
 
   @override
   Widget build(BuildContext context) {
