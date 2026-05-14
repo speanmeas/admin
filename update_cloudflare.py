@@ -31,8 +31,8 @@ if build_match:
     patch = int(build_match.group(3))
     # print(f"patch : {patch}")
 
-    build_num = int(build_match.group(4))
-    new_build_num = build_num + 1
+    old_build_num = int(build_match.group(4))
+    new_build_num = old_build_num + 1
     # print(f"build_num : {build_num} -> new_build_num : {new_build_num}")
 
     # update the build number in pubspec.yaml content
@@ -46,9 +46,11 @@ if build_match:
     # write back to env.dart
     with open("pubspec.yaml", "w", encoding="utf-8") as f:
         f.write(new_content)
-#
+
+print(f"{old_build_num} -> {new_build_num}")
+
 #! clean
-# os.system("flutter clean")
+os.system("flutter clean")
 
 # build web release
 # os.system("flutter build web --release --base-href /")
@@ -70,3 +72,6 @@ for _ in tqdm(range(100)):
 os.system("git add .")
 os.system(f'git commit -m "update"')
 os.system("git push")
+
+
+print("Done!")
