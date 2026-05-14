@@ -7,23 +7,23 @@ List<Map<String, dynamic>> schema = [
     "hide": 1
   },
   {
-    "alias": "string_1",
-    "title": "String 1",
-    "type": "string",
+    "alias": "text_1",
+    "title": "Text 1",
+    "type": "text",
     "visible": 1,
     "hide": 0
   },
   {
-    "alias": "string_2",
-    "title": "String 2",
-    "type": "string",
+    "alias": "text_2",
+    "title": "Text 2",
+    "type": "text",
     "visible": 1,
     "hide": 0
   },
   {
-    "alias": "string_3",
-    "title": "String 3",
-    "type": "string",
+    "alias": "text_3",
+    "title": "Text 3",
+    "type": "text",
     "visible": 1,
     "hide": 0
   },
@@ -50,21 +50,21 @@ List<Map<String, dynamic>> schema = [
   },
   {
     "alias": "datetime_1",
-    "title": "Date Time 1",
+    "title": "Datetime 1",
     "type": "datetime",
     "visible": 1,
     "hide": 0
   },
   {
     "alias": "datetime_2",
-    "title": "Date Time 2",
+    "title": "Datetime 2",
     "type": "datetime",
     "visible": 1,
     "hide": 0
   },
   {
     "alias": "datetime_3",
-    "title": "Date Time 3",
+    "title": "Datetime 3",
     "type": "datetime",
     "visible": 1,
     "hide": 0
@@ -87,6 +87,27 @@ List<Map<String, dynamic>> schema = [
     "alias": "deleted_at",
     "title": "Deleted At",
     "type": "datetime",
+    "visible": 0,
+    "hide": 1
+  },
+  {
+    "alias": "created_by",
+    "title": "Created By",
+    "type": "text",
+    "visible": 0,
+    "hide": 1
+  },
+  {
+    "alias": "updated_by",
+    "title": "Updated By",
+    "type": "text",
+    "visible": 0,
+    "hide": 1
+  },
+  {
+    "alias": "deleted_by",
+    "title": "Deleted By",
+    "type": "text",
     "visible": 0,
     "hide": 1
   }

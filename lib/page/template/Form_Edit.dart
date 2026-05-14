@@ -59,6 +59,7 @@ class Edit_ extends StatefulWidget {
 class _Edit_State extends State<Edit_> {
   late Map<String, dynamic> output;
 
+  final ScrollController controller_audios = ScrollController();
   final ScrollController controller_images = ScrollController();
   final ScrollController controller_videos = ScrollController();
 
@@ -110,61 +111,65 @@ class _Edit_State extends State<Edit_> {
           // alignment: Alignment.bottomCenter,
           child: ListView(
             children: [
-              ...schema.where((e) => !["_id", "created_at", "updated_at", "deleted_at"].contains(e["alias"])).map((e) {
+              ...schema.map((row) {
+                if (row["hide"] == 1) {
+                  return SizedBox.shrink();
+                }
+
                 // edit string
-                if (e["type"] == "string") {
+                if (row["type"] == "text") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
+                      controller: TextEditingController(text: output[row['alias']]?.toString() ?? ''),
                       decoration: InputDecoration(
-                        labelText: e['title'], //
+                        labelText: row['title'], //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (value) {
-                        output[e['alias']] = value; //
+                        output[row['alias']] = value; //
                       },
                     ),
                   );
                 }
 
                 // edit number
-                if (e["type"] == "number") {
+                if (row["type"] == "number") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
+                      controller: TextEditingController(text: output[row['alias']]?.toString() ?? ''),
                       decoration: InputDecoration(
-                        labelText: e['title'], //
+                        labelText: row['title'], //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
                       onChanged: (value) {
-                        output[e['alias']] = double.tryParse(value);
+                        output[row['alias']] = double.tryParse(value);
                       },
                     ),
                   );
                 }
 
                 // edit datetime
-                if (e["type"] == "datetime") {
+                if (row["type"] == "datetime") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: Row(
                       children: [
-                        Text("${e['title'] ?? ""} : "),
+                        Text("${row['title'] ?? ""} : "),
                         OutlinedButton.icon(
                           onPressed: () async {
                             final DateTime? datetime = await datetime_picker(context);
 
                             if (datetime == null) return;
 
-                            output[e['alias']] = datetime_to_string(datetime);
+                            output[row['alias']] = datetime_to_string(datetime);
 
                             setState(() {});
                           },
-                          label: Text(output[e['alias']] == null ? "Select Datetime" : output[e['alias']]!),
+                          label: Text(output[row['alias']] == null ? "Select Datetime" : output[row['alias']]!),
                           icon: const Icon(Icons.calendar_today),
                         ),
                       ],
@@ -174,6 +179,79 @@ class _Edit_State extends State<Edit_> {
 
                 return SizedBox.shrink();
               }),
+
+              SizedBox(height: 8),
+
+              Container(
+                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                child: Text(
+                  "Audios:", //
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+
+              Scrollbar(
+                controller: controller_audios,
+                thumbVisibility: true,
+                // notificationPredicate: (_) => true,
+                thickness: 12, // scrollbar width
+                radius: const Radius.circular(0),
+                // interactive: true,
+                // scrollbarOrientation: ScrollbarOrientation.bottom,
+                child: SingleChildScrollView(
+                  controller: controller_audios,
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (int i = 0; i < 10; i++)
+                        Container(
+                          width: 100, //
+                          height: 100,
+                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
+                          child: InkWell(
+                            onTap: () {
+                              // TODO: Handle image tap
+                              print('Audio tapped: $i');
+                              showModalBottomSheet<void>(
+                                context: context,
+                                isScrollControlled: true,
+                                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
+                                builder: (BuildContext context) {
+                                  return Wrap(
+                                    children: [
+                                      ListTile(
+                                        leading: Icon(Icons.camera_outlined),
+                                        title: Text('Camera'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.upload_outlined),
+                                        title: Text('Upload'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.delete_outlined),
+                                        title: Text('Delete'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Placeholder(),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
 
               SizedBox(height: 8),
 

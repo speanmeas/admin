@@ -220,14 +220,21 @@ class _Template_State extends State<Template_> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  key == row["alias"] ? Icon(sort_order == -1 ? Icons.arrow_downward : Icons.arrow_upward, size: 20) : const Icon(Icons.unfold_more, size: 20),
+                                  key == row["alias"]
+                                      ? //
+                                        Icon(sort_order == -1 ? Icons.arrow_downward : Icons.arrow_upward, size: 20, color: Colors.blue)
+                                      : const Icon(Icons.unfold_more, size: 20, color: Colors.blue),
 
                                   SizedBox(width: 4),
 
                                   Expanded(
                                     child: Text(
                                       row["title"], //
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
+
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold, //
+                                        color: Colors.blue,
+                                      ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
@@ -241,7 +248,7 @@ class _Template_State extends State<Template_> {
                       if (is_search)
                         ..._schema.where((row) => row["visible"] == 1).map((row) {
                           //
-                          if (row["type"] == "string") {
+                          if (row["type"] == "text") {
                             return Container(
                               height: _header_height, //
                               width: _column_width, //
@@ -273,11 +280,11 @@ class _Template_State extends State<Template_> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.search, size: 20),
+                                    const Icon(Icons.search, size: 20, color: Colors.blue),
                                     const SizedBox(width: 4),
                                     Text(
                                       row["title"], //
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
@@ -324,11 +331,11 @@ class _Template_State extends State<Template_> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.tune, size: 20),
+                                    const Icon(Icons.tune, size: 20, color: Colors.blue),
                                     const SizedBox(width: 4),
                                     Text(
                                       row["title"], //
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
@@ -371,11 +378,11 @@ class _Template_State extends State<Template_> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.date_range, size: 20),
+                                    const Icon(Icons.date_range, size: 20, color: Colors.blue),
                                     const SizedBox(width: 4),
                                     Text(
                                       row["title"], //
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
@@ -610,7 +617,6 @@ class _Template_State extends State<Template_> {
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          // SizedBox(width: 4),
           Column(
             children: [
               Spacer(),
@@ -622,9 +628,8 @@ class _Template_State extends State<Template_> {
                 ),
                 child: IconButton(
                   onPressed: () {
-                    //
                     is_search = !is_search;
-                    //
+
                     if (is_search == false) {
                       key = null;
                       query = null;
@@ -646,7 +651,6 @@ class _Template_State extends State<Template_> {
 
               SizedBox(height: 4),
 
-              // SizedBox(width: 4),
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.blue, width: 2),
@@ -672,7 +676,6 @@ class _Template_State extends State<Template_> {
 
               SizedBox(height: 4),
 
-              // Spacer(),
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.blue, width: 2),
@@ -694,6 +697,7 @@ class _Template_State extends State<Template_> {
                   icon: Icon(Icons.add, fontWeight: FontWeight.bold),
                 ),
               ),
+
               SizedBox(height: 4),
             ],
           ),
@@ -703,17 +707,4 @@ class _Template_State extends State<Template_> {
       ),
     );
   }
-}
-
-Widget Float_Button({required BuildContext context, required VoidCallback onPressed}) {
-  return Container(
-    decoration: BoxDecoration(
-      border: Border.all(color: Colors.blue, width: 2),
-      borderRadius: BorderRadius.circular(4),
-    ),
-    child: IconButton(
-      onPressed: onPressed,
-      icon: Icon(Icons.add, fontWeight: FontWeight.bold),
-    ),
-  );
 }

@@ -52,6 +52,7 @@ class Read_ extends StatefulWidget {
 class _Read_State extends State<Read_> {
   late Map<String, dynamic> output;
 
+  final ScrollController controller_audios = ScrollController();
   final ScrollController controller_images = ScrollController();
   final ScrollController controller_videos = ScrollController();
 
@@ -101,20 +102,20 @@ class _Read_State extends State<Read_> {
             children: [
               SizedBox(height: 16),
 
-              ...schema.map((e) {
+              ...schema.map((row) {
                 //
-                if (["_id", "created_at", "updated_at", "deleted_at"].contains(e["alias"])) {
+                if (row['hide'] == 1) {
                   return SizedBox.shrink();
                 }
 
                 //
-                if (e["type"] == "string") {
+                if (row["type"] == "text") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
+                      controller: TextEditingController(text: output[row['alias']]?.toString() ?? ''),
                       decoration: InputDecoration(
-                        labelText: e['title'], //
+                        labelText: row['title'], //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       readOnly: true,
@@ -123,13 +124,13 @@ class _Read_State extends State<Read_> {
                 }
 
                 //
-                if (e["type"] == "number") {
+                if (row["type"] == "number") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? '0'),
+                      controller: TextEditingController(text: output[row['alias']]?.toString() ?? '0'),
                       decoration: InputDecoration(
-                        labelText: e['title'], //
+                        labelText: row['title'], //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       readOnly: true,
@@ -138,13 +139,13 @@ class _Read_State extends State<Read_> {
                 }
 
                 //
-                if (e["type"] == "datetime") {
+                if (row["type"] == "datetime") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
+                      controller: TextEditingController(text: output[row['alias']]?.toString() ?? ''),
                       decoration: InputDecoration(
-                        labelText: e['title'], //
+                        labelText: row['title'], //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       readOnly: true,
@@ -155,6 +156,47 @@ class _Read_State extends State<Read_> {
                 //
                 return SizedBox.shrink();
               }),
+
+              SizedBox(height: 8),
+
+              Container(
+                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                child: Text(
+                  "Audios:", //
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+
+              Scrollbar(
+                controller: controller_audios,
+                thumbVisibility: true,
+                // notificationPredicate: (_) => true,
+                thickness: 12, // scrollbar width
+                radius: const Radius.circular(0),
+                // interactive: true,
+                // scrollbarOrientation: ScrollbarOrientation.bottom,
+                child: SingleChildScrollView(
+                  controller: controller_audios,
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (int i = 0; i < 10; i++)
+                        Container(
+                          width: 100, //
+                          height: 100,
+                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
+                          child: InkWell(
+                            onTap: () {
+                              // TODO: Handle audio tap
+                              print('Audio tapped: $i');
+                            },
+                            child: Placeholder(),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
 
               SizedBox(height: 8),
 

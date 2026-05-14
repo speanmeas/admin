@@ -44,7 +44,7 @@ class _Create_State extends State<Create_> {
   void initState() {
     super.initState();
 
-    for (var e in schema.sublist(0, schema.length - 3)) {
+    for (var e in schema) {
       output[e["alias"]] = null;
     }
 
@@ -52,35 +52,6 @@ class _Create_State extends State<Create_> {
   }
 
   DateTime? selectedDateTime;
-
-  Future<void> pickDateTime() async {
-    // Select Date
-    final DateTime? pickedDate = await showDatePicker(
-      context: context, //
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (pickedDate == null) return;
-
-    // Select Time
-    final TimeOfDay? pickedTime = await showTimePicker(
-      context: context, //
-      initialTime: TimeOfDay.now(),
-    );
-
-    if (pickedTime == null) return;
-
-    // Combine Date + Time
-    final DateTime finalDateTime = DateTime(pickedDate.year, pickedDate.month, pickedDate.day, pickedTime.hour, pickedTime.minute);
-
-    setState(() {
-      selectedDateTime = finalDateTime;
-    });
-
-    print(finalDateTime);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,90 +86,75 @@ class _Create_State extends State<Create_> {
           // padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
           child: ListView(
             children: [
-              ...schema
-                  .where(
-                    (e) =>
-                        !["_id", "created_at", "updated_at", "deleted_at"] //
-                            .contains(e["alias"]),
-                  )
-                  .map((e) {
-                    // print(e);`
+              ...schema.map((row) {
+                // print(row);
 
-                    if (e["type"] == "string") {
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: e['title'], //
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                          ),
-                          onChanged: (value) {
-                            output[e['alias']] = value; //
-                          },
+                if (row["hide"] == 1) {
+                  return SizedBox.shrink();
+                }
+
+                if (row["type"] == "text") {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        labelText: row['title'], //
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      onChanged: (value) {
+                        output[row['alias']] = value; //
+                      },
+                    ),
+                  );
+                }
+
+                //
+                if (row["type"] == "number") {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        labelText: row['title'], //
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
+                      onChanged: (value) {
+                        output[row['alias']] = double.tryParse(value);
+                      },
+                    ),
+                  );
+                }
+
+                //
+                if (row["type"] == "datetime") {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                    child: Row(
+                      children: [
+                        Text("${row['title'] as String? ?? ""} : "),
+
+                        OutlinedButton.icon(
+                          onPressed: () async {
+                            final DateTime? datetime = await datetime_picker(context);
+
+                            if (datetime == null) return;
+
+                            output[row['alias']] = datetime_to_string(datetime);
+
+                            setState(() {});
+                          }, //
+                          // label: Text("Select Datetime"),
+                          label: Text(output[row['alias']] == null ? "Select Datetime" : output[row['alias']]!),
+                          icon: const Icon(Icons.calendar_today),
                         ),
-                      );
-                    }
+                      ],
+                    ),
+                  );
+                }
 
-                    //
-                    if (e["type"] == "number") {
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: e['title'], //
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                          ),
-                          keyboardType: TextInputType.numberWithOptions(decimal: true),
-                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
-                          onChanged: (value) {
-                            output[e['alias']] = double.tryParse(value);
-                          },
-                        ),
-                      );
-                    }
-
-                    //
-                    if (e["type"] == "datetime") {
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
-                        child: Row(
-                          children: [
-                            Text("${e['title'] as String? ?? ""} : "),
-
-                            OutlinedButton.icon(
-                              onPressed: () async {
-                                final DateTime? datetime = await datetime_picker(context);
-
-                                if (datetime == null) return;
-
-                                output[e['alias']] = datetime_to_string(datetime);
-
-                                setState(() {});
-                              }, //
-                              // label: Text("Select Datetime"),
-                              label: Text(output[e['alias']] == null ? "Select Datetime" : output[e['alias']]!),
-                              icon: const Icon(Icons.calendar_today),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    return SizedBox.shrink();
-
-                    // return Padding(
-                    //   padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
-                    //   child: TextField(
-                    //     decoration: InputDecoration(
-                    //       labelText: e["title"], //
-                    //       floatingLabelBehavior: FloatingLabelBehavior.always,
-                    //     ),
-                    //     onChanged: (value) {
-                    //       output[e["alias"]] = value;
-                    //     },
-                    //   ),
-                    // );
-                  }),
+                return SizedBox.shrink();
+              }),
 
               SizedBox(height: 8),
 

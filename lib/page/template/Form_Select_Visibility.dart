@@ -86,7 +86,8 @@ class _Select_Visibility_State extends State<Select_Visibility_> {
                 buildDefaultDragHandles: false,
                 padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 shrinkWrap: true,
-                itemCount: output.length,
+                // itemCount: output.length,
+                itemCount: schema.length,
                 onReorder: (int old_i, int new_i) {
                   print("Reorder: $old_i -> $new_i");
                   setState(() {
@@ -99,10 +100,10 @@ class _Select_Visibility_State extends State<Select_Visibility_> {
                 },
 
                 itemBuilder: (context, i) {
-                  //
-                  if (["_id", "created_at", "updated_at", "deleted_at"].contains(output[i]['alias'])) {
+                  if (schema[i]['hide'] == 1) {
                     return Container(key: ValueKey(i));
                   }
+
                   //
                   return InkWell(
                     //

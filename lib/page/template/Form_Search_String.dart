@@ -16,13 +16,13 @@ class Template extends StatelessWidget {
   Template({super.key});
 
   // List<Map<String, dynamic>> schema = [
-  //   {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
-  //   {"alias": "name", "title": "Room No.", "type": "string", "visible": 1},
-  //   {"alias": "type", "title": "Room Type", "type": "string", "visible": 1},
+  //   {"alias": "_id", "title": "ID", "type": "text", "visible": 0},
+  //   {"alias": "name", "title": "Room No.", "type": "text", "visible": 1},
+  //   {"alias": "type", "title": "Room Type", "type": "text", "visible": 1},
   //   {"alias": "capacity", "title": "Capacity", "type": "number", "visible": 1},
-  //   {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
+  //   {"alias": "ac_or_fan", "title": "AC or Fan", "type": "text", "visible": 1},
   //   {"alias": "price", "title": "Price", "type": "number", "visible": 1},
-  //   {"alias": "status", "title": "Status", "type": "string", "visible": 1},
+  //   {"alias": "status", "title": "Status", "type": "text", "visible": 1},
   //   {"alias": "created_at", "title": "Created At", "type": "datetime", "visible": 0},
   //   {"alias": "updated_at", "title": "Updated At", "type": "datetime", "visible": 0},
   //   {"alias": "deleted_at", "title": "Deleted At", "type": "datetime", "visible": 0},
