@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'package:speanmeas/theme/Theme_Data.dart';
+import 'package:speanmeas/Global_Variable.dart';
+
 import 'package:speanmeas/page/Customer.dart';
 import 'package:speanmeas/page/dashboard/Dashboard.dart';
-import 'package:speanmeas/page/room/Room.dart';
-import 'package:speanmeas/layout/Variable.dart';
+import 'package:speanmeas/page/room/Main.dart';
 import 'package:speanmeas/page/Setting.dart';
-// import 'package:speanmeas/page/Staff.dart';
 import 'package:speanmeas/page/User.dart';
 import 'package:speanmeas/page/template/Main.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
 
 void main() {
   runApp(
@@ -49,7 +50,7 @@ class _Panel_Body_State extends State<Panel_Body_> {
     "Dashboard": Dashboard_(), //
     "Room": Room_(), //
     "Setting": Setting_(),
-    "Customer": Customer_(),
+    // "Guest": Guest_(),
     "User": User_(),
     "Template": Template_(),
     // "Staff": StaffTable(),

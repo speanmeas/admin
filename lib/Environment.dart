@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
+String TITLE = 'Spean Meas';
+
 bool is_local = false;
 
 int MOBILE_SCREEN_WIDTH = 1000;
-
-String TITLE = 'Spean Meas';
 
 String get_api_host() {
   if (kDebugMode) {

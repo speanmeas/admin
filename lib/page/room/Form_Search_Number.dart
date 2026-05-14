@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
+
+import 'Setup.dart';
+import 'Schema.g.dart';
 
 void main() {
-  runApp(Room_Filter_Number());
+  runApp(Template());
 }
 
-class Room_Filter_Number extends StatelessWidget {
-  Room_Filter_Number({super.key});
+class Template extends StatelessWidget {
+  Template({super.key});
 
   String key_ = "capacity";
 
@@ -18,13 +22,13 @@ class Room_Filter_Number extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Filter_Number_(key_: key_),
+      home: Search_Number_(key_: key_),
     );
   }
 }
 
-class Room_Filter_Number_ extends StatefulWidget {
-  Room_Filter_Number_({
+class Search_Number_ extends StatefulWidget {
+  Search_Number_({
     super.key, //
 
     required this.key_,
@@ -33,30 +37,22 @@ class Room_Filter_Number_ extends StatefulWidget {
   String key_;
 
   @override
-  State<Room_Filter_Number_> createState() => _Room_Filter_Number_State();
+  State<Search_Number_> createState() => _Search_Number_State();
 }
 
-class _Room_Filter_Number_State extends State<Room_Filter_Number_> {
-  double min = 0.0; // need to query follow key_
-  double max = 100.0; // need to query
+class _Search_Number_State extends State<Search_Number_> {
+  double? select_min;
+  double? select_max;
 
-  late double select_min = min;
-  late double select_max = max;
-
-  late RangeValues range;
-
-  @override
-  void initState() {
-    super.initState();
-    range = RangeValues(min, max);
-  }
+  TextEditingController controller_min = TextEditingController();
+  TextEditingController controller_max = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Filter", //
+          "Filter $HEADER", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -92,18 +88,19 @@ class _Room_Filter_Number_State extends State<Room_Filter_Number_> {
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: TextEditingController(text: range.start.toStringAsFixed(2)),
+                      controller: controller_min,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: "Min", //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
+                        // suffixIcon: Icon(Icons.arrow_downward),
                       ),
                     ),
                   ),
                   SizedBox(width: 8),
                   Expanded(
                     child: TextField(
-                      controller: TextEditingController(text: range.end.toStringAsFixed(2)),
+                      controller: controller_max,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: "Max", //
@@ -114,25 +111,24 @@ class _Room_Filter_Number_State extends State<Room_Filter_Number_> {
                 ],
               ),
 
-              SizedBox(height: 40),
+              // SizedBox(height: 40),
 
-              RangeSlider(
-                values: range,
-                min: min,
-                max: max,
-                divisions: 1000,
-                labels: RangeLabels(
-                  range.start.toStringAsFixed(2), //
-                  range.end.toStringAsFixed(2),
-                ),
-                onChanged: (RangeValues values) {
-                  setState(() {
-                    range = values;
-                  });
-                },
-              ),
-
-              SizedBox(height: 20),
+              // RangeSlider(
+              //   values: range,
+              //   min: min,
+              //   max: max,
+              //   divisions: 1000,
+              //   labels: RangeLabels(
+              //     range.start.toStringAsFixed(2), //
+              //     range.end.toStringAsFixed(2),
+              //   ),
+              //   onChanged: (RangeValues values) {
+              //     setState(() {
+              //       range = values;
+              //     });
+              //   },
+              // ),
+              SizedBox(height: 16),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -155,35 +151,38 @@ class _Room_Filter_Number_State extends State<Room_Filter_Number_> {
   }
 
   void on_apply_filter() {
-    double select_min = double.parse(range.start.toStringAsFixed(2));
-    double select_max = double.parse(range.end.toStringAsFixed(2));
-    print(select_min);
-    print(select_max);
+    select_min = double.parse(controller_min.text);
+    select_max = double.parse(controller_max.text);
+
+    // check if min and max are valid numbers
+    if (select_min == null || select_max == null) {
+      snackbar_show(
+        context: context, //
+        message: "Please enter valid numbers",
+        color: Colors.red,
+      );
+      return;
+    }
+
+    // validate min and max
+    if (select_min! > select_max!) {
+      snackbar_show(
+        context: context, //
+        message: "Min must be less or equal to max",
+        color: Colors.red,
+      );
+      return;
+    }
 
     Navigator.pop(context, {
       "min": select_min, //
       "max": select_max,
     });
-  }
-}
 
-void show_snackbar({
-  required BuildContext context, //
-  required String message, //
-  required Color color, //
-}) {
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.info_outline, color: Colors.white),
-            SizedBox(width: 8),
-            Text(message),
-          ],
-        ),
-        backgroundColor: color,
-      ),
+    snackbar_show(
+      context: context, //
+      message: "Filter applied",
+      color: Colors.green,
     );
+  }
 }

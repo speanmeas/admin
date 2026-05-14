@@ -1,40 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:speanmeas/page/room/Schema.g.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
+
+import 'Setup.dart';
+import 'Schema.g.dart';
 
 void main() {
-  runApp(Room_Select_Column_Visibility());
+  runApp(Template());
 }
 
-class Room_Select_Column_Visibility extends StatelessWidget {
-  Room_Select_Column_Visibility({super.key});
+class Template extends StatelessWidget {
+  Template({super.key});
 
-  List<Map<String, dynamic>> schema = [
-    {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
-    {"alias": "name", "title": "Room No.", "type": "string", "visible": 1},
-    {"alias": "type", "title": "Room Type", "type": "string", "visible": 1},
-    {"alias": "capacity", "title": "Capacity", "type": "number", "visible": 1},
-    {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
-    {"alias": "price", "title": "Price", "type": "number", "visible": 1},
-    {"alias": "status", "title": "Status", "type": "string", "visible": 1},
-    {"alias": "created_at", "title": "Created At", "type": "datetime", "visible": 0},
-    {"alias": "updated_at", "title": "Updated At", "type": "datetime", "visible": 0},
-    {"alias": "deleted_at", "title": "Deleted At", "type": "datetime", "visible": 0},
-  ];
+  List<Map<String, dynamic>> _schema = schema;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Select_Column_Visibility_(schema: schema),
+      home: Select_Visibility_(schema: _schema),
     );
   }
 }
 
-class Room_Select_Column_Visibility_ extends StatefulWidget {
-  Room_Select_Column_Visibility_({
+class Select_Visibility_ extends StatefulWidget {
+  Select_Visibility_({
     super.key, //
     required this.schema,
   });
@@ -42,10 +34,10 @@ class Room_Select_Column_Visibility_ extends StatefulWidget {
   List<Map<String, dynamic>> schema;
 
   @override
-  State<Room_Select_Column_Visibility_> createState() => _Room_Select_Column_Visibility_State();
+  State<Select_Visibility_> createState() => _Select_Visibility_State();
 }
 
-class _Room_Select_Column_Visibility_State extends State<Room_Select_Column_Visibility_> {
+class _Select_Visibility_State extends State<Select_Visibility_> {
   //
   //
 
@@ -63,7 +55,7 @@ class _Room_Select_Column_Visibility_State extends State<Room_Select_Column_Visi
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Visibility", //
+          "Visibility $HEADER", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -163,11 +155,7 @@ class _Room_Select_Column_Visibility_State extends State<Room_Select_Column_Visi
                   OutlinedButton.icon(
                     icon: Icon(Icons.view_column_outlined),
                     label: Text("Apply"), //
-                    onPressed: () {
-                      print(output);
-                      Navigator.pop(context, output);
-                      show_snackbar(context: context, message: "Column updated.", color: Colors.green);
-                    },
+                    onPressed: on_apply,
                   ),
                 ],
               ),
@@ -177,25 +165,26 @@ class _Room_Select_Column_Visibility_State extends State<Room_Select_Column_Visi
       ),
     );
   }
-}
 
-void show_snackbar({
-  required BuildContext context, //
-  required String message, //
-  required Color color, //
-}) {
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.info_outline, color: Colors.white),
-            SizedBox(width: 8),
-            Text(message),
-          ],
-        ),
-        backgroundColor: color,
-      ),
+  void on_apply() {
+    // validate
+    if (output.every((element) => element['visible'] == 0)) {
+      snackbar_show(
+        context: context, //
+        message: "Please select at least one column.",
+        color: Colors.red,
+      );
+      return;
+    }
+
+    // print(output);
+
+    Navigator.pop(context, output);
+
+    snackbar_show(
+      context: context, //
+      message: "Visibility updated.",
+      color: Colors.green,
     );
+  }
 }

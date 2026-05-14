@@ -3,48 +3,51 @@ import 'package:flutter/material.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
+
+import 'Setup.dart';
+import 'Schema.g.dart';
 
 void main() {
-  runApp(Room_Delete());
+  runApp(Template());
 }
 
-class Room_Delete extends StatelessWidget {
-  Room_Delete({super.key});
+class Template extends StatelessWidget {
+  Template({super.key});
 
-  Map<String, dynamic> input = {
-    "_id": "69f984897186bcf74f8a5dde", //
-    "name": "Room 1",
-  };
+  String id = "69f984897186bcf74f8a5dde";
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Delete_(input: input),
+      home: Delete_(id: id),
     );
   }
 }
 
-class Room_Delete_ extends StatefulWidget {
-  Room_Delete_({
+class Delete_ extends StatefulWidget {
+  Delete_({
     super.key, //
-    required this.input,
+    // required this.input,
+    required this.id,
   });
 
-  final Map<String, dynamic> input;
+  // final Map<String, dynamic> input;
+  final String id;
 
   @override
-  State<Room_Delete_> createState() => _Room_Delete_State();
+  State<Delete_> createState() => _Delete_State();
 }
 
-class _Room_Delete_State extends State<Room_Delete_> {
+class _Delete_State extends State<Delete_> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Delete Room", //
+          "Delete $HEADER", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -76,16 +79,8 @@ class _Room_Delete_State extends State<Room_Delete_> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Delete ", //
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  Text(
-                    "${widget.input['name']}", //
+                    "Confirm to delete?", //
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    " ?", //
-                    style: TextStyle(fontSize: 20),
                   ),
                 ],
               ),
@@ -102,19 +97,27 @@ class _Room_Delete_State extends State<Room_Delete_> {
                     onPressed: () async {
                       await dio
                           .post(
-                            '/room/delete',
+                            '$PATH/delete',
                             data: FormData.fromMap({
-                              "_id": widget.input['_id'], //
+                              "_id": widget.id, //
                             }),
                           )
                           .then((value) {
                             print(value);
-                            show_snackbar(context: context, message: "Room deleted successfully", color: Colors.green);
+                            snackbar_show(
+                              context: context, //
+                              message: "Room deleted successfully",
+                              color: Colors.green,
+                            );
                             Navigator.pop(context, true);
                           })
                           .catchError((error) {
                             print(error);
-                            show_snackbar(context: context, message: "Failed to delete room", color: Colors.red);
+                            snackbar_show(
+                              context: context, //
+                              message: "Failed to delete room",
+                              color: Colors.red,
+                            );
                           });
                     },
                     // style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -127,25 +130,4 @@ class _Room_Delete_State extends State<Room_Delete_> {
       ),
     );
   }
-}
-
-void show_snackbar({
-  required BuildContext context, //
-  required String message, //
-  required Color color, //
-}) {
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.info_outline, color: Colors.white),
-            SizedBox(width: 8),
-            Text(message),
-          ],
-        ),
-        backgroundColor: color,
-      ),
-    );
 }

@@ -14,16 +14,51 @@ List<Map<String, dynamic>> schema = [
     "hide": 0
   },
   {
-    "alias": "type",
-    "title": "Type",
+    "alias": "position",
+    "title": "Position",
     "type": "string",
     "visible": 1,
     "hide": 0
   },
   {
-    "alias": "price",
-    "title": "Price",
-    "type": "number",
+    "alias": "phone_number",
+    "title": "Phone Number",
+    "type": "string",
+    "visible": 1,
+    "hide": 0
+  },
+  {
+    "alias": "email",
+    "title": "Email",
+    "type": "string",
+    "visible": 1,
+    "hide": 0
+  },
+  {
+    "alias": "gender",
+    "title": "Gender",
+    "type": "string",
+    "visible": 1,
+    "hide": 0
+  },
+  {
+    "alias": "shift",
+    "title": "Shift",
+    "type": "string",
+    "visible": 1,
+    "hide": 0
+  },
+  {
+    "alias": "start_work",
+    "title": "Start Work",
+    "type": "datetime",
+    "visible": 1,
+    "hide": 0
+  },
+  {
+    "alias": "stop_work",
+    "title": "Stop Work",
+    "type": "datetime",
     "visible": 1,
     "hide": 0
   },

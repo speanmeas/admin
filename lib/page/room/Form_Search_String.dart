@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
+
+import 'Setup.dart';
+import 'Schema.g.dart';
 
 void main() {
-  runApp(Room_Filter_String());
+  runApp(Template());
 }
 
-class Room_Filter_String extends StatelessWidget {
-  Room_Filter_String({super.key});
+class Template extends StatelessWidget {
+  Template({super.key});
 
   // List<Map<String, dynamic>> schema = [
   //   {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
@@ -42,13 +46,13 @@ class Room_Filter_String extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Room_Filter_String_(),
+      home: Search_String_(),
     );
   }
 }
 
-class Room_Filter_String_ extends StatefulWidget {
-  Room_Filter_String_({
+class Search_String_ extends StatefulWidget {
+  Search_String_({
     super.key, //
     // required this.schema,
     // required this.input,
@@ -58,10 +62,10 @@ class Room_Filter_String_ extends StatefulWidget {
   // Map<String, dynamic> input;
 
   @override
-  State<Room_Filter_String_> createState() => _Room_Filter_String_State();
+  State<Search_String_> createState() => _Search_String_State();
 }
 
-class _Room_Filter_String_State extends State<Room_Filter_String_> {
+class _Search_String_State extends State<Search_String_> {
   TextEditingController controller_search = TextEditingController();
 
   @override
@@ -69,7 +73,7 @@ class _Room_Filter_String_State extends State<Room_Filter_String_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Filter", //
+          "Filter $HEADER", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -145,28 +149,22 @@ class _Room_Filter_String_State extends State<Room_Filter_String_> {
   }
 
   void on_apply_filter() {
-    Navigator.pop(context, controller_search.text);
-    show_snackbar(context: context, message: "Filter applied", color: Colors.green);
-  }
-}
+    // validate
+    if (controller_search.text.isEmpty) {
+      snackbar_show(
+        context: context, //
+        message: "Please enter a filter",
+        color: Colors.red,
+      );
+      return;
+    }
 
-void show_snackbar({
-  required BuildContext context, //
-  required String message, //
-  required Color color, //
-}) {
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.info_outline, color: Colors.white),
-            SizedBox(width: 8),
-            Text(message),
-          ],
-        ),
-        backgroundColor: color,
-      ),
+    Navigator.pop(context, controller_search.text);
+
+    snackbar_show(
+      context: context, //
+      message: "Filter applied",
+      color: Colors.green,
     );
+  }
 }

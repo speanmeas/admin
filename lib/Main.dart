@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:speanmeas/Environment.dart';
 
-import 'package:speanmeas/layout/Variable.dart';
+import 'package:speanmeas/Global_Variable.dart';
 import 'package:speanmeas/layout/Layout.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 
@@ -20,7 +21,7 @@ class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Spean Meas Hotel', //
+      title: '$TITLE Admin', //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
       home: Layout_Dashboard_(),

@@ -3,7 +3,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/layout/Variable.dart';
+import 'package:speanmeas/Global_Variable.dart';
 
 void main() {
   runApp(
@@ -52,7 +52,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
   @override
   Widget build(BuildContext context) {
     bool isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
-    // final v = context.watch<Variable>();
+    final v = context.watch<Variable>();
     return Container(
       height: 48,
       decoration: isMobile ? null : BoxDecoration(border: Border(bottom: BorderSide())), //
@@ -76,7 +76,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(TITLE), //
+              Text(v.body), //
               Text(
                 VERSION,
                 style: TextStyle(

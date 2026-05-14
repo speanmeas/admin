@@ -35,19 +35,19 @@ class Template extends StatelessWidget {
       title: HEADER, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: const Template_(),
+      home: const Room_(),
     );
   }
 }
 
-class Template_ extends StatefulWidget {
-  const Template_({super.key});
+class Room_ extends StatefulWidget {
+  const Room_({super.key});
 
   @override
-  State<Template_> createState() => _Template_State();
+  State<Room_> createState() => _Room_State();
 }
 
-class _Template_State extends State<Template_> {
+class _Room_State extends State<Room_> {
   //
   //
 
@@ -145,7 +145,7 @@ class _Template_State extends State<Template_> {
   // Timer? _debounce;
 
   double get_width() {
-    return _number_column_width + _schema.where((e) => e["visible"] == 1).length * _column_width + 48;
+    return _number_column_width + _schema.where((e) => e["visible"] == 1).length * _column_width;
   }
 
   @override
@@ -604,114 +604,95 @@ class _Template_State extends State<Template_> {
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          // SizedBox(width: 4),
-          Column(
-            children: [
-              Spacer(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0),
+        child: Row(
+          children: [
+            SizedBox(width: 4),
 
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue, width: 2),
-                  borderRadius: BorderRadius.circular(4),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.blue, width: 2),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: IconButton(
+                onPressed: () {
+                  //
+                  is_search = !is_search;
+                  //
+                  if (is_search == false) {
+                    key = null;
+                    query = null;
+                    min = null;
+                    max = null;
+                    start = null;
+                    end = null;
+                    sort_order = 0;
+                    init();
+                  }
+                  setState(() {});
+                }, //
+                icon: Icon(
+                  is_search ? Icons.search_off_outlined : Icons.search_outlined, //
+                  fontWeight: FontWeight.bold,
                 ),
-                child: IconButton(
-                  onPressed: () {
-                    //
-                    is_search = !is_search;
-                    //
-                    if (is_search == false) {
-                      key = null;
-                      query = null;
-                      min = null;
-                      max = null;
-                      start = null;
-                      end = null;
-                      sort_order = 0;
+              ),
+            ),
+
+            SizedBox(width: 4),
+
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.blue, width: 2),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Select_Visibility_(schema: _schema), //
+                    ),
+                  ).then((value) {
+                    if (value != null) {
+                      _schema = value;
+                      setState(() {});
+                    }
+                  });
+                }, //
+                icon: Icon(Icons.view_column_outlined, fontWeight: FontWeight.bold),
+              ),
+            ),
+
+            Spacer(),
+
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.blue, width: 2),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Create_(), //
+                    ),
+                  ).then((value) {
+                    if (value != null) {
                       init();
                     }
-                    setState(() {});
-                  }, //
-                  icon: Icon(
-                    is_search ? Icons.search_off_outlined : Icons.search_outlined, //
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                  });
+                }, //
+                icon: Icon(Icons.add, fontWeight: FontWeight.bold),
               ),
+            ),
 
-              SizedBox(height: 4),
-
-              // SizedBox(width: 4),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue, width: 2),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Select_Visibility_(schema: _schema), //
-                      ),
-                    ).then((value) {
-                      if (value != null) {
-                        _schema = value;
-                        setState(() {});
-                      }
-                    });
-                  }, //
-                  icon: Icon(Icons.view_column_outlined, fontWeight: FontWeight.bold),
-                ),
-              ),
-
-              SizedBox(height: 4),
-
-              // Spacer(),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue, width: 2),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Create_(), //
-                      ),
-                    ).then((value) {
-                      if (value != null) {
-                        init();
-                      }
-                    });
-                  }, //
-                  icon: Icon(Icons.add, fontWeight: FontWeight.bold),
-                ),
-              ),
-              SizedBox(height: 4),
-            ],
-          ),
-
-          SizedBox(width: 4),
-        ],
+            SizedBox(width: 4),
+          ],
+        ),
       ),
     );
   }
-}
-
-Widget Float_Button({required BuildContext context, required VoidCallback onPressed}) {
-  return Container(
-    decoration: BoxDecoration(
-      border: Border.all(color: Colors.blue, width: 2),
-      borderRadius: BorderRadius.circular(4),
-    ),
-    child: IconButton(
-      onPressed: onPressed,
-      icon: Icon(Icons.add, fontWeight: FontWeight.bold),
-    ),
-  );
 }
