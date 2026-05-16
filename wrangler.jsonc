@@ -10,5 +10,3 @@
   },
   "compatibility_flags": ["nodejs_compat"],
 }
-
-// npx wrangler deploy --assets ./build/cloudflare/ --compatibility-date 2026-04-01
