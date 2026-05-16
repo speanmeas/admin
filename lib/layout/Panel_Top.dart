@@ -3,7 +3,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/layout/Global_Variable.dart';
+import 'package:speanmeas/Global_Variable.dart';
 
 void main() {
   runApp(

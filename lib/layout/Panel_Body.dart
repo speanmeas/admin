@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/layout/Global_Variable.dart';
+import 'package:speanmeas/Global_Variable.dart';
 
 import 'Setup.dart';
 
