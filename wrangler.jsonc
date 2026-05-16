@@ -1,12 +1,12 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "admin-speanmeas-com",
-  "compatibility_date": "2026-05-16",
+  "compatibility_date": "2025-09-27",
   "observability": {
     "enabled": true,
   },
   "assets": {
-    "directory": "web",
+    "directory": ".",
   },
   "compatibility_flags": ["nodejs_compat"],
 }
