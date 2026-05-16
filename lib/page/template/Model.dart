@@ -74,8 +74,9 @@ class _Model_State extends State<Model_> {
   double? max;
   String? start;
   String? end;
-  int? limit = 1000;
   int sort_order = 0;
+
+  int? limit = 1000;
 
   ScrollController controller_scrollbar = ScrollController();
 
@@ -138,15 +139,16 @@ class _Model_State extends State<Model_> {
           }),
         ) //
         .then((r) {
-          setState(() {
-            // print(r.data);
-            data.addAll(List<Map<String, dynamic>>.from(r.data));
-            // print(data);
-            has_more = r.data.length == 100;
-          });
+          // print(r.data);
+          data.addAll(List<Map<String, dynamic>>.from(r.data));
+          // print(data);
+          has_more = r.data.length == limit;
+          setState(() {});
         })
         .catchError((e) {
-          print(e);
+          // has_more = false;
+          // setState(() {});
+          // print(e);
         });
   }
 
