@@ -19,19 +19,24 @@ class Template extends StatelessWidget {
   Template({super.key});
 
   Map<String, dynamic> input = {
-    "_id": 1, //
-    "string_1": "a", //
-    "string_2": "aa", //
-    "string_3": "aaa", //
-    "number_1": 1,
-    "number_2": 11,
-    "number_3": 111,
-    "datetime_1": "2022-01-01 00:00:00",
-    "datetime_2": "2022-01-01 00:00:00",
-    "datetime_3": "2022-01-01 00:00:00",
-    "created_at": "2022-01-01 00:00:00",
-    "updated_at": "2022-01-01 00:00:00",
-    "deleted_at": null,
+    "id_": 1, //
+
+    "text_1_": "a", //
+    "text_2_": "aa", //
+    "text_3_": "aaa", //
+    "number_1_": 1,
+    "number_2_": 11,
+    "number_3_": 111,
+    "datetime_1_": "2022-01-01 00:00:00",
+    "datetime_2_": "2022-01-01 00:00:00",
+    "datetime_3_": "2022-01-01 00:00:00",
+
+    "created_at_": "2022-01-01 00:00:00",
+    "updated_at_": "2022-01-01 00:00:00",
+    "deleted_at_": "2022-01-01 00:00:00",
+    "created_by_": "aaa",
+    "updated_by_": "aaa",
+    "deleted_by_": "aaa",
   };
 
   @override
@@ -39,13 +44,13 @@ class Template extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Edit_(input: input),
+      home: Form_Update_(input: input),
     );
   }
 }
 
-class Edit_ extends StatefulWidget {
-  Edit_({
+class Form_Update_ extends StatefulWidget {
+  Form_Update_({
     super.key, //
     required this.input,
   });
@@ -53,10 +58,10 @@ class Edit_ extends StatefulWidget {
   Map<String, dynamic> input;
 
   @override
-  State<Edit_> createState() => _Edit_State();
+  State<Form_Update_> createState() => _Form_Update_State();
 }
 
-class _Edit_State extends State<Edit_> {
+class _Form_Update_State extends State<Form_Update_> {
   late Map<String, dynamic> output;
 
   final ScrollController controller_audios = ScrollController();
@@ -66,16 +71,7 @@ class _Edit_State extends State<Edit_> {
   @override
   void initState() {
     super.initState();
-
     output = Map.from(widget.input);
-
-    // for (var e in widget.schema.sublist(0, widget.schema.length - 3)) {
-    //   output[e["alias"]] = null;
-    // }
-
-    print(output);
-
-    // print(output);
     setState(() {});
   }
 
@@ -112,7 +108,7 @@ class _Edit_State extends State<Edit_> {
           child: ListView(
             children: [
               ...schema.map((row) {
-                if (row["hide"] == 1) {
+                if (row["is_exclude"] == 1) {
                   return SizedBox.shrink();
                 }
 
@@ -121,13 +117,13 @@ class _Edit_State extends State<Edit_> {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[row['alias']]?.toString() ?? ''),
+                      controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: row['title'], //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (value) {
-                        output[row['alias']] = value; //
+                        output[row["key"]] = value; //
                       },
                     ),
                   );
@@ -138,7 +134,7 @@ class _Edit_State extends State<Edit_> {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[row['alias']]?.toString() ?? ''),
+                      controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: row['title'], //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -146,7 +142,7 @@ class _Edit_State extends State<Edit_> {
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
                       onChanged: (value) {
-                        output[row['alias']] = double.tryParse(value);
+                        output[row["key"]] = double.tryParse(value);
                       },
                     ),
                   );
@@ -159,18 +155,20 @@ class _Edit_State extends State<Edit_> {
                     child: Row(
                       children: [
                         Text("${row['title'] ?? ""} : "),
-                        OutlinedButton.icon(
-                          onPressed: () async {
-                            final DateTime? datetime = await datetime_picker(context);
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              final DateTime? datetime = await datetime_picker(context);
 
-                            if (datetime == null) return;
+                              if (datetime == null) return;
 
-                            output[row['alias']] = datetime_to_string(datetime);
+                              output[row["key"]] = datetime_to_string(datetime);
 
-                            setState(() {});
-                          },
-                          label: Text(output[row['alias']] == null ? "Select Datetime" : output[row['alias']]!),
-                          icon: const Icon(Icons.calendar_today),
+                              setState(() {});
+                            },
+                            label: Text(output[row["key"]] == null ? "Select Datetime" : output[row["key"]]!),
+                            icon: const Icon(Icons.calendar_today),
+                          ),
                         ),
                       ],
                     ),
@@ -220,8 +218,8 @@ class _Edit_State extends State<Edit_> {
                                   return Wrap(
                                     children: [
                                       ListTile(
-                                        leading: Icon(Icons.camera_outlined),
-                                        title: Text('Camera'),
+                                        leading: Icon(Icons.mic_external_on_sharp),
+                                        title: Text('Open Audio Recorder'),
                                         onTap: () {
                                           Navigator.pop(context);
                                         },
@@ -293,8 +291,8 @@ class _Edit_State extends State<Edit_> {
                                   return Wrap(
                                     children: [
                                       ListTile(
-                                        leading: Icon(Icons.camera_outlined),
-                                        title: Text('Camera'),
+                                        leading: Icon(Icons.camera_alt_outlined),
+                                        title: Text('Open Camera'),
                                         onTap: () {
                                           Navigator.pop(context);
                                         },
@@ -366,8 +364,8 @@ class _Edit_State extends State<Edit_> {
                                   return Wrap(
                                     children: [
                                       ListTile(
-                                        leading: Icon(Icons.camera_outlined),
-                                        title: Text('Camera'),
+                                        leading: Icon(Icons.video_camera_back_outlined),
+                                        title: Text('Open Camera'),
                                         onTap: () {
                                           Navigator.pop(context);
                                         },
@@ -409,7 +407,7 @@ class _Edit_State extends State<Edit_> {
                     label: Text("Update"),
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
                     onPressed: () async {
-                      // print(output);
+                      print(output);
                       await dio
                           .post(
                             '$PATH/update',

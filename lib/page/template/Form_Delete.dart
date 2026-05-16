@@ -22,13 +22,13 @@ class Template extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Delete_(id: id),
+      home: Form_Delete_(id: id),
     );
   }
 }
 
-class Delete_ extends StatefulWidget {
-  Delete_({
+class Form_Delete_ extends StatefulWidget {
+  Form_Delete_({
     super.key, //
     // required this.input,
     required this.id,
@@ -38,10 +38,10 @@ class Delete_ extends StatefulWidget {
   final String id;
 
   @override
-  State<Delete_> createState() => _Delete_State();
+  State<Form_Delete_> createState() => _Form_Delete_State();
 }
 
-class _Delete_State extends State<Delete_> {
+class _Form_Delete_State extends State<Form_Delete_> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,7 +99,7 @@ class _Delete_State extends State<Delete_> {
                           .post(
                             '$PATH/delete',
                             data: FormData.fromMap({
-                              "_id": widget.id, //
+                              "id_": widget.id, //
                             }),
                           )
                           .then((value) {

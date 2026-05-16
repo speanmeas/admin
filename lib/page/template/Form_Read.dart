@@ -15,16 +15,24 @@ class Template extends StatelessWidget {
   Template({super.key});
 
   Map<String, dynamic> input = {
-    "_id": 1, //
-    "name": "Room 1", //
-    "type": null, //
-    "capacity": 10,
-    "ac_or_fan": "AC",
-    "price": null,
-    "status": "Active",
-    "created_at": "2022-01-01 00:00:00",
-    "updated_at": "2022-01-01 00:00:00",
-    "deleted_at": null,
+    "id_": 1, //
+
+    "text_1_": "a", //
+    "text_2_": "aa", //
+    "text_3_": "aaa", //
+    "number_1_": 1,
+    "number_2_": 11,
+    "number_3_": 111,
+    "datetime_1_": "2022-01-01 00:00:00",
+    "datetime_2_": "2022-01-01 00:00:00",
+    "datetime_3_": "2022-01-01 00:00:00",
+
+    "created_at_": "2022-01-01 00:00:00",
+    "updated_at_": "2022-01-01 00:00:00",
+    "deleted_at_": "2022-01-01 00:00:00",
+    "created_by_": "aaa",
+    "updated_by_": "aaa",
+    "deleted_by_": "aaa",
   };
 
   @override
@@ -32,13 +40,13 @@ class Template extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Read_(input: input),
+      home: Form_Read_(input: input),
     );
   }
 }
 
-class Read_ extends StatefulWidget {
-  Read_({
+class Form_Read_ extends StatefulWidget {
+  Form_Read_({
     super.key, //
     required this.input,
   });
@@ -46,10 +54,10 @@ class Read_ extends StatefulWidget {
   Map<String, dynamic> input;
 
   @override
-  State<Read_> createState() => _Read_State();
+  State<Form_Read_> createState() => _Form_Read_State();
 }
 
-class _Read_State extends State<Read_> {
+class _Form_Read_State extends State<Form_Read_> {
   late Map<String, dynamic> output;
 
   final ScrollController controller_audios = ScrollController();
@@ -104,7 +112,7 @@ class _Read_State extends State<Read_> {
 
               ...schema.map((row) {
                 //
-                if (row['hide'] == 1) {
+                if (row["is_exclude"] == 1) {
                   return SizedBox.shrink();
                 }
 
@@ -113,7 +121,7 @@ class _Read_State extends State<Read_> {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[row['alias']]?.toString() ?? ''),
+                      controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: row['title'], //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -128,7 +136,7 @@ class _Read_State extends State<Read_> {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[row['alias']]?.toString() ?? '0'),
+                      controller: TextEditingController(text: output[row["key"]]?.toString() ?? '0'),
                       decoration: InputDecoration(
                         labelText: row['title'], //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -143,7 +151,7 @@ class _Read_State extends State<Read_> {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[row['alias']]?.toString() ?? ''),
+                      controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: row['title'], //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -287,25 +295,4 @@ class _Read_State extends State<Read_> {
       ),
     );
   }
-}
-
-void show_snackbar({
-  required BuildContext context, //
-  required String message, //
-  required Color color, //
-}) {
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.info_outline, color: Colors.white),
-            SizedBox(width: 8),
-            Text(message),
-          ],
-        ),
-        backgroundColor: color,
-      ),
-    );
 }

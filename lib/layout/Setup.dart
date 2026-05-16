@@ -6,7 +6,7 @@ import 'package:speanmeas/page/dashboard/Main.dart';
 import 'package:speanmeas/page/guest/Main.dart';
 import 'package:speanmeas/page/room/Main.dart';
 import 'package:speanmeas/page/staff/Main.dart';
-import 'package:speanmeas/page/template/Main.dart';
+import 'package:speanmeas/page/template/Model.dart';
 
 Map<String, Widget> pages = {
   "Dashboard": Dashboard_(), //
@@ -14,5 +14,5 @@ Map<String, Widget> pages = {
   "Room": Room_(), //
   "Guest": Guest_(),
   "Staff": Staff_(),
-  "Template": Template_(),
+  "Template": Model_(),
 };

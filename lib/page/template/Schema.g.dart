@@ -1,114 +1,114 @@
 List<Map<String, dynamic>> schema = [
   {
-    "alias": "_id",
+    "key": "id_",
     "title": "ID",
-    "type": "",
-    "visible": 0,
-    "hide": 1
+    "type": "text",
+    "is_visible": 0,
+    "is_exclude": 1
   },
   {
-    "alias": "text_1",
+    "key": "text_1_",
     "title": "Text 1",
     "type": "text",
-    "visible": 1,
-    "hide": 0
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "text_2",
+    "key": "text_2_",
     "title": "Text 2",
     "type": "text",
-    "visible": 1,
-    "hide": 0
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "text_3",
+    "key": "text_3_",
     "title": "Text 3",
     "type": "text",
-    "visible": 1,
-    "hide": 0
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "number_1",
+    "key": "number_1_",
     "title": "Number 1",
     "type": "number",
-    "visible": 1,
-    "hide": 0
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "number_2",
+    "key": "number_2_",
     "title": "Number 2",
     "type": "number",
-    "visible": 1,
-    "hide": 0
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "number_3",
+    "key": "number_3_",
     "title": "Number 3",
     "type": "number",
-    "visible": 1,
-    "hide": 0
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "datetime_1",
+    "key": "datetime_1_",
     "title": "Datetime 1",
     "type": "datetime",
-    "visible": 1,
-    "hide": 0
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "datetime_2",
+    "key": "datetime_2_",
     "title": "Datetime 2",
     "type": "datetime",
-    "visible": 1,
-    "hide": 0
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "datetime_3",
+    "key": "datetime_3_",
     "title": "Datetime 3",
     "type": "datetime",
-    "visible": 1,
-    "hide": 0
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "created_at",
+    "key": "created_at_",
     "title": "Created At",
     "type": "datetime",
-    "visible": 0,
-    "hide": 1
+    "is_visible": 0,
+    "is_exclude": 1
   },
   {
-    "alias": "updated_at",
+    "key": "updated_at_",
     "title": "Updated At",
     "type": "datetime",
-    "visible": 0,
-    "hide": 1
+    "is_visible": 0,
+    "is_exclude": 1
   },
   {
-    "alias": "deleted_at",
+    "key": "deleted_at_",
     "title": "Deleted At",
     "type": "datetime",
-    "visible": 0,
-    "hide": 1
+    "is_visible": 0,
+    "is_exclude": 1
   },
   {
-    "alias": "created_by",
+    "key": "created_by_",
     "title": "Created By",
     "type": "text",
-    "visible": 0,
-    "hide": 1
+    "is_visible": 0,
+    "is_exclude": 1
   },
   {
-    "alias": "updated_by",
+    "key": "updated_by_",
     "title": "Updated By",
     "type": "text",
-    "visible": 0,
-    "hide": 1
+    "is_visible": 0,
+    "is_exclude": 1
   },
   {
-    "alias": "deleted_by",
+    "key": "deleted_by_",
     "title": "Deleted By",
     "type": "text",
-    "visible": 0,
-    "hide": 1
+    "is_visible": 0,
+    "is_exclude": 1
   }
 ];

@@ -23,21 +23,21 @@ class Template extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Create_(),
+      home: Form_Create_(),
     );
   }
 }
 
-class Create_ extends StatefulWidget {
-  Create_({
+class Form_Create_ extends StatefulWidget {
+  Form_Create_({
     super.key, //
   });
 
   @override
-  State<Create_> createState() => _Create_State();
+  State<Form_Create_> createState() => _Form_Create_State();
 }
 
-class _Create_State extends State<Create_> {
+class _Form_Create_State extends State<Form_Create_> {
   Map<String, dynamic> output = {};
 
   @override
@@ -45,7 +45,7 @@ class _Create_State extends State<Create_> {
     super.initState();
 
     for (var e in schema) {
-      output[e["alias"]] = null;
+      output[e["key"]] = null;
     }
 
     print(output);
@@ -89,7 +89,7 @@ class _Create_State extends State<Create_> {
               ...schema.map((row) {
                 // print(row);
 
-                if (row["hide"] == 1) {
+                if (row["is_exclude"] == 1) {
                   return SizedBox.shrink();
                 }
 
@@ -102,7 +102,7 @@ class _Create_State extends State<Create_> {
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (value) {
-                        output[row['alias']] = value; //
+                        output[row["key"]] = value; //
                       },
                     ),
                   );
@@ -120,7 +120,7 @@ class _Create_State extends State<Create_> {
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
                       onChanged: (value) {
-                        output[row['alias']] = double.tryParse(value);
+                        output[row["key"]] = double.tryParse(value);
                       },
                     ),
                   );
@@ -140,12 +140,12 @@ class _Create_State extends State<Create_> {
 
                             if (datetime == null) return;
 
-                            output[row['alias']] = datetime_to_string(datetime);
+                            output[row["key"]] = datetime_to_string(datetime);
 
                             setState(() {});
                           }, //
                           // label: Text("Select Datetime"),
-                          label: Text(output[row['alias']] == null ? "Select Datetime" : output[row['alias']]!),
+                          label: Text(output[row["key"]] == null ? "Select Datetime" : output[row["key"]]!),
                           icon: const Icon(Icons.calendar_today),
                         ),
                       ],

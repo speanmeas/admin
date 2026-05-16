@@ -22,19 +22,19 @@ class Template extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Search_Datetime_(),
+      home: Filter_Datetime_(),
     );
   }
 }
 
-class Search_Datetime_ extends StatefulWidget {
-  Search_Datetime_({super.key});
+class Filter_Datetime_ extends StatefulWidget {
+  Filter_Datetime_({super.key});
 
   @override
-  State<Search_Datetime_> createState() => _Search_Datetime_State();
+  State<Filter_Datetime_> createState() => _Filter_Datetime_State();
 }
 
-class _Search_Datetime_State extends State<Search_Datetime_> {
+class _Filter_Datetime_State extends State<Filter_Datetime_> {
   String? start_datetime;
   String? end_datetime;
 
@@ -95,59 +95,40 @@ class _Search_Datetime_State extends State<Search_Datetime_> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 160,
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      "Start Datetime:", //
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () async {
+                        final datetime = await datetime_picker(context);
+                        print(datetime);
+                        print(datetime_to_string(datetime));
+                        setState(() {
+                          start_datetime = datetime_to_string(datetime);
+                        });
+                      },
+                      icon: Icon(Icons.calendar_today),
+                      label: Text(start_datetime ?? "Select Start Datetime"),
                     ),
                   ),
 
-                  SizedBox(width: 8),
+                  SizedBox(width: 4),
 
-                  OutlinedButton.icon(
-                    onPressed: () async {
-                      final datetime = await datetime_picker(context);
-                      print(datetime);
-                      print(datetime_to_string(datetime));
-                      setState(() {
-                        start_datetime = datetime_to_string(datetime);
-                      });
-                    },
-                    icon: Icon(Icons.calendar_today),
-                    label: Text(start_datetime ?? "Select Datetime"),
-                  ),
-                ],
-              ),
+                  Icon(Icons.arrow_right_alt_outlined),
 
-              SizedBox(height: 16),
+                  SizedBox(width: 4),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 160,
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      "End Datetime:", //
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () async {
+                        final datetime = await datetime_picker(context);
+                        print(datetime);
+                        print(datetime_to_string(datetime));
+                        setState(() {
+                          end_datetime = datetime_to_string(datetime);
+                        });
+                      },
+                      icon: Icon(Icons.calendar_today),
+                      label: Text(end_datetime ?? "Select End Datetime"),
                     ),
-                  ),
-
-                  SizedBox(width: 8),
-
-                  OutlinedButton.icon(
-                    onPressed: () async {
-                      final datetime = await datetime_picker(context);
-                      print(datetime);
-                      print(datetime_to_string(datetime));
-                      setState(() {
-                        end_datetime = datetime_to_string(datetime);
-                      });
-                    },
-                    icon: Icon(Icons.calendar_today),
-                    label: Text(end_datetime ?? "Select Datetime"),
                   ),
                 ],
               ),
@@ -199,7 +180,7 @@ class _Search_Datetime_State extends State<Search_Datetime_> {
     }
 
     // print start and end datetime
-    print("Filter: $start_datetime to $end_datetime");
+    // print("Filter: $start_datetime to $end_datetime");
 
     Navigator.pop(context, {
       "start": start_datetime, //
