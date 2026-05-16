@@ -74,7 +74,7 @@ class _Model_State extends State<Model_> {
   double? max;
   String? start;
   String? end;
-  int? limit = 100;
+  int? limit = 1000;
   int sort_order = 0;
 
   ScrollController controller_scrollbar = ScrollController();

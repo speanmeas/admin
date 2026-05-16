@@ -99219,7 +99219,7 @@ h=q.cy
 if(h===0)h=null
 p=t.z
 s=2
-return A.P(o.hG("/template/read",A.hO(A.a9(["key_",n,"query_",m,"min_",l,"max_",k,"start_",j,"end_",i,"order_",h,"limit_",100,"offset_",null,"distinct_",null],t.N,p)),p).aL(0,new A.axO(q),t.P).eZ(new A.axP()),$async$co)
+return A.P(o.hG("/template/read",A.hO(A.a9(["key_",n,"query_",m,"min_",l,"max_",k,"start_",j,"end_",i,"order_",h,"limit_",1000,"offset_",null,"distinct_",null],t.N,p)),p).aL(0,new A.axO(q),t.P).eZ(new A.axP()),$async$co)
 case 2:return A.J(null,r)}})
 return A.K($async$co,r)},
 ia(){var s=0,r=A.L(t.H),q=this,p,o,n,m,l,k,j,i,h
@@ -99235,7 +99235,7 @@ h=q.cy
 if(h===0)h=null
 p=t.z
 s=2
-return A.P(o.hG("/template/read",A.hO(A.a9(["key_",n,"query_",m,"min_",l,"max_",k,"start_",j,"end_",i,"order_",h,"limit_",100,"offset_",q.y.length,"distinct_",null],t.N,p)),p).aL(0,new A.axR(q),t.P).eZ(new A.axS()),$async$ia)
+return A.P(o.hG("/template/read",A.hO(A.a9(["key_",n,"query_",m,"min_",l,"max_",k,"start_",j,"end_",i,"order_",h,"limit_",1000,"offset_",q.y.length,"distinct_",null],t.N,p)),p).aL(0,new A.axR(q),t.P).eZ(new A.axS()),$async$ia)
 case 2:return A.J(null,r)}})
 return A.K($async$ia,r)},
 tJ(){return 60+J.kq(this.x,new A.axM()).gA(0)*120+48},
