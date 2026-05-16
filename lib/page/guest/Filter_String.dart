@@ -9,43 +9,33 @@ import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Template());
+  runApp(Filter_String());
 }
 
-class Template extends StatelessWidget {
-  Template({super.key});
-
-  String key_ = "capacity";
+class Filter_String extends StatelessWidget {
+  Filter_String({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Search_Number_(key_: key_),
+      home: Filter_String_(),
     );
   }
 }
 
-class Search_Number_ extends StatefulWidget {
-  Search_Number_({
+class Filter_String_ extends StatefulWidget {
+  Filter_String_({
     super.key, //
-
-    required this.key_,
   });
 
-  String key_;
-
   @override
-  State<Search_Number_> createState() => _Search_Number_State();
+  State<Filter_String_> createState() => _Filter_String_State();
 }
 
-class _Search_Number_State extends State<Search_Number_> {
-  double? select_min;
-  double? select_max;
-
-  TextEditingController controller_min = TextEditingController();
-  TextEditingController controller_max = TextEditingController();
+class _Filter_String_State extends State<Filter_String_> {
+  TextEditingController controller_search = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -88,46 +78,19 @@ class _Search_Number_State extends State<Search_Number_> {
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: controller_min,
-                      keyboardType: TextInputType.number,
+                      controller: controller_search,
+                      autofocus: true,
                       decoration: InputDecoration(
-                        labelText: "Min", //
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        // suffixIcon: Icon(Icons.arrow_downward),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      controller: controller_max,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: "Max", //
+                        labelText: "Filter", //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
+                      onChanged: (value) {},
+                      onSubmitted: (_) => on_apply_filter(),
                     ),
                   ),
                 ],
               ),
 
-              // SizedBox(height: 40),
-
-              // RangeSlider(
-              //   values: range,
-              //   min: min,
-              //   max: max,
-              //   divisions: 1000,
-              //   labels: RangeLabels(
-              //     range.start.toStringAsFixed(2), //
-              //     range.end.toStringAsFixed(2),
-              //   ),
-              //   onChanged: (RangeValues values) {
-              //     setState(() {
-              //       range = values;
-              //     });
-              //   },
-              // ),
               SizedBox(height: 16),
 
               Row(
@@ -143,6 +106,8 @@ class _Search_Number_State extends State<Search_Number_> {
                   ),
                 ],
               ),
+
+              SizedBox(height: 8),
             ],
           ),
         ),
@@ -151,33 +116,17 @@ class _Search_Number_State extends State<Search_Number_> {
   }
 
   void on_apply_filter() {
-    select_min = double.parse(controller_min.text);
-    select_max = double.parse(controller_max.text);
-
-    // check if min and max are valid numbers
-    if (select_min == null || select_max == null) {
+    // validate
+    if (controller_search.text.isEmpty) {
       snackbar_show(
         context: context, //
-        message: "Please enter valid numbers",
+        message: "Please enter a filter",
         color: Colors.red,
       );
       return;
     }
 
-    // validate min and max
-    if (select_min! > select_max!) {
-      snackbar_show(
-        context: context, //
-        message: "Min must be less or equal to max",
-        color: Colors.red,
-      );
-      return;
-    }
-
-    Navigator.pop(context, {
-      "min": select_min, //
-      "max": select_max,
-    });
+    Navigator.pop(context, controller_search.text);
 
     snackbar_show(
       context: context, //

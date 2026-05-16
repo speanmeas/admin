@@ -9,11 +9,11 @@ import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Template());
+  runApp(Form_Delete());
 }
 
-class Template extends StatelessWidget {
-  Template({super.key});
+class Form_Delete extends StatelessWidget {
+  Form_Delete({super.key});
 
   String id = "69f984897186bcf74f8a5dde";
 

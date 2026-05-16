@@ -10,24 +10,24 @@ import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
 
-import 'Form_Select_Visibility.dart';
+import 'Filter_Visibility.dart';
 import 'Form_Create.dart';
 import 'Form_Delete.dart';
-import 'Form_Search_Datetime.dart';
-import 'Form_Search_Number.dart';
-import 'Form_Search_String.dart';
-import 'Form_Edit.dart';
+import 'Filter_Datetime.dart';
+import 'Filter_Number.dart';
+import 'Filter_String.dart';
+import 'Form_Update.dart';
 import 'Form_Read.dart';
 
 import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(const Template());
+  runApp(const Model());
 }
 
-class Template extends StatelessWidget {
-  const Template({super.key});
+class Model extends StatelessWidget {
+  const Model({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,19 +35,19 @@ class Template extends StatelessWidget {
       title: HEADER, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: const Staff_(),
+      home: const Model_(),
     );
   }
 }
 
-class Staff_ extends StatefulWidget {
-  const Staff_({super.key});
+class Model_ extends StatefulWidget {
+  const Model_({super.key});
 
   @override
-  State<Staff_> createState() => _Staff_State();
+  State<Model_> createState() => _Model_State();
 }
 
-class _Staff_State extends State<Staff_> {
+class _Model_State extends State<Model_> {
   //
   //
 
@@ -66,7 +66,7 @@ class _Staff_State extends State<Staff_> {
 
   bool has_more = false;
 
-  bool is_search = false;
+  bool is_filter = false;
 
   String? key;
   String? query;
@@ -74,8 +74,9 @@ class _Staff_State extends State<Staff_> {
   double? max;
   String? start;
   String? end;
-  int? limit = 100;
   int sort_order = 0;
+
+  int? limit = 1000;
 
   ScrollController controller_scrollbar = ScrollController();
 
@@ -92,24 +93,28 @@ class _Staff_State extends State<Staff_> {
         .post(
           '$PATH/read',
           data: FormData.fromMap({
-            "key": key, //
-            "query": query,
-            "min": min,
-            "max": max,
-            "start": start,
-            "end": end,
-            "order": sort_order == 0 ? null : sort_order,
-            "limit": limit,
-            "offset": null,
+            "key_": key, //
+            "query_": query,
+            "min_": min,
+            "max_": max,
+            "start_": start,
+            "end_": end,
+            "order_": sort_order == 0 ? null : sort_order,
+            "limit_": limit,
+            "offset_": null,
+            "distinct_": null,
           }),
         ) //
         .then((r) {
           setState(() {
             // print(r.data.length);
-            has_more = r.data.length == 100;
+            has_more = r.data.length == limit;
             data = List<Map<String, dynamic>>.from(r.data);
             // print(data);
           });
+        })
+        .catchError((e) {
+          print(e);
         });
 
     // move to top
@@ -121,31 +126,36 @@ class _Staff_State extends State<Staff_> {
         .post(
           '$PATH/read',
           data: FormData.fromMap({
-            "key": key, //
-            "query": query,
-            "min": min,
-            "max": max,
-            "start": start,
-            "end": end,
-            "order": sort_order == 0 ? null : sort_order,
-            "limit": limit,
-            "offset": data.length,
+            "key_": key, //
+            "query_": query,
+            "min_": min,
+            "max_": max,
+            "start_": start,
+            "end_": end,
+            "order_": sort_order == 0 ? null : sort_order,
+            "limit_": limit,
+            "offset_": data.length,
+            "distinct_": null,
           }),
         ) //
         .then((r) {
-          setState(() {
-            // print(r.data);
-            data.addAll(List<Map<String, dynamic>>.from(r.data));
-            // print(data);
-            has_more = r.data.length == 100;
-          });
+          // print(r.data);
+          has_more = r.data.length == limit;
+          data.addAll(List<Map<String, dynamic>>.from(r.data));
+          // print(data);
+          setState(() {});
+        })
+        .catchError((e) {
+          // has_more = false;
+          // setState(() {});
+          // print(e);
         });
   }
 
   // Timer? _debounce;
 
   double get_width() {
-    return _number_column_width + _schema.where((e) => e["visible"] == 1).length * _column_width + 48;
+    return _number_column_width + _schema.where((e) => e["is_visible"] == 1).length * _column_width + 48;
   }
 
   @override
@@ -185,9 +195,9 @@ class _Staff_State extends State<Staff_> {
                       ),
 
                       // sort mode
-                      if (!is_search)
+                      if (!is_filter)
                         ..._schema.map((row) {
-                          if (row["visible"] != 1) return const SizedBox();
+                          if (row["is_visible"] != 1) return const SizedBox();
                           return Container(
                             height: _header_height, //
                             width: _column_width, //
@@ -197,7 +207,7 @@ class _Staff_State extends State<Staff_> {
                                 setState(() {
                                   //
 
-                                  if (row["alias"] == key) {
+                                  if (row["key"] == key) {
                                     final current_index = [-1, 0, 1].indexOf(sort_order);
                                     sort_order = [-1, 0, 1][(current_index - 1) % 3];
                                   } else {
@@ -207,7 +217,7 @@ class _Staff_State extends State<Staff_> {
                                   if (sort_order == 0) {
                                     key = null;
                                   } else {
-                                    key = row["alias"] as String;
+                                    key = row["key"] as String;
                                   }
 
                                   print("key: $key");
@@ -224,14 +234,19 @@ class _Staff_State extends State<Staff_> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  key == row["alias"] ? Icon(sort_order == -1 ? Icons.arrow_downward : Icons.arrow_upward, size: 20) : const Icon(Icons.unfold_more, size: 20),
+                                  key == row["key"]
+                                      ? //
+                                        Icon(sort_order == -1 ? Icons.arrow_downward : Icons.arrow_upward, size: 20, color: Colors.blue)
+                                      : const Icon(Icons.unfold_more, size: 20, color: Colors.blue),
 
                                   SizedBox(width: 4),
-
                                   Expanded(
                                     child: Text(
                                       row["title"], //
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold, //
+                                        color: Colors.blue,
+                                      ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
@@ -242,18 +257,18 @@ class _Staff_State extends State<Staff_> {
                         }),
 
                       // search mode
-                      if (is_search)
-                        ..._schema.where((row) => row["visible"] == 1).map((row) {
+                      if (is_filter)
+                        ..._schema.where((row) => row["is_visible"] == 1).map((row) {
                           //
-                          if (row["type"] == "string") {
+                          if (row["type"] == "text") {
                             return Container(
                               height: _header_height, //
                               width: _column_width, //
                               child: InkWell(
                                 onTap: () {
-                                  print("${row["alias"]}");
+                                  // print("${row["key"]}");
 
-                                  key = row['alias'];
+                                  key = row["key"];
                                   query = null;
                                   min = null;
                                   max = null;
@@ -263,7 +278,7 @@ class _Staff_State extends State<Staff_> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => Search_String_(), //
+                                      builder: (context) => Filter_String_(), //
                                     ),
                                   ).then((value) {
                                     if (value != null) {
@@ -281,12 +296,17 @@ class _Staff_State extends State<Staff_> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.search, size: 20),
+                                    const Icon(Icons.filter_alt_outlined, size: 20, color: Colors.blue),
                                     const SizedBox(width: 4),
-                                    Text(
-                                      row["title"], //
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
-                                      overflow: TextOverflow.ellipsis,
+                                    Expanded(
+                                      child: Text(
+                                        row["title"], //
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold, //
+                                          color: Colors.blue,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -301,8 +321,8 @@ class _Staff_State extends State<Staff_> {
                               width: _column_width, //
                               child: InkWell(
                                 onTap: () {
-                                  print("${row["alias"]}");
-                                  key = row['alias'];
+                                  // print("${row["key"]}");
+                                  key = row["key"];
                                   query = null;
                                   min = null;
                                   max = null;
@@ -312,8 +332,8 @@ class _Staff_State extends State<Staff_> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => Search_Number_(
-                                        key_: row['alias'], //
+                                      builder: (context) => Filter_Number_(
+                                        key_: row["key"], //
                                       ),
                                     ),
                                   ).then((value) {
@@ -324,11 +344,7 @@ class _Staff_State extends State<Staff_> {
 
                                       // query = value;
                                       init();
-                                      controller_table.animateTo(
-                                        0, //
-                                        duration: const Duration(milliseconds: 300),
-                                        curve: Curves.easeOut,
-                                      );
+                                      controller_table.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                     }
                                   });
                                 },
@@ -336,12 +352,14 @@ class _Staff_State extends State<Staff_> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.tune, size: 20),
+                                    const Icon(Icons.tune, size: 20, color: Colors.blue),
                                     const SizedBox(width: 4),
-                                    Text(
-                                      row["title"], //
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
-                                      overflow: TextOverflow.ellipsis,
+                                    Expanded(
+                                      child: Text(
+                                        row["title"], //
+                                        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -356,9 +374,8 @@ class _Staff_State extends State<Staff_> {
                               width: _column_width, //
                               child: InkWell(
                                 onTap: () {
-                                  // TODO: Implement range selection
-                                  print("${row["alias"]}");
-                                  key = row['alias'];
+                                  // print("${row["key"]}");
+                                  key = row["key"];
                                   query = null;
                                   min = null;
                                   max = null;
@@ -368,7 +385,7 @@ class _Staff_State extends State<Staff_> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => Search_Datetime_(), //
+                                      builder: (context) => Filter_Datetime_(), //
                                     ),
                                   ).then((value) {
                                     if (value != null) {
@@ -383,12 +400,14 @@ class _Staff_State extends State<Staff_> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.date_range, size: 20),
+                                    const Icon(Icons.date_range, size: 20, color: Colors.blue),
                                     const SizedBox(width: 4),
-                                    Text(
-                                      row["title"], //
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
-                                      overflow: TextOverflow.ellipsis,
+                                    Expanded(
+                                      child: Text(
+                                        row["title"], //
+                                        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -426,7 +445,7 @@ class _Staff_State extends State<Staff_> {
                     itemBuilder: (context, index) {
                       if (index == data.length) {
                         if (has_more) {
-                          print("Last item");
+                          // print("Last item");
                           Future.delayed(const Duration(milliseconds: 300), () {
                             load_more();
                           });
@@ -465,22 +484,9 @@ class _Staff_State extends State<Staff_> {
                                 ),
                               ),
 
-                              ..._schema.where((row) => row["visible"] == 1).map((row) {
-                                if (row["alias"] == "_id") {
-                                  return Container(
-                                    width: _column_width, //
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      "${data[index][row["alias"]] ?? ""}", //
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
-                                      softWrap: true,
-                                    ),
-                                  );
-                                }
-
-                                if (row["alias"] == "price") {
-                                  final priceValue = data[index][row["alias"]];
+                              ..._schema.where((row) => row["is_visible"] == 1).map((row) {
+                                if (row["key"] == "price_") {
+                                  final priceValue = data[index][row["key"]];
                                   final price = priceValue is num ? priceValue.toDouble() : double.tryParse(priceValue?.toString() ?? "0.0") ?? 0.0;
                                   return Container(
                                     width: _column_width, //
@@ -494,45 +500,12 @@ class _Staff_State extends State<Staff_> {
                                   );
                                 }
 
-                                // Handle MongoDB date format: {"$date": "2024-01-15T10:30:00.000Z"}
-                                if (row["alias"] == "created_at" || row["alias"] == "updated_at") {
-                                  final output = data[index][row["alias"]];
-                                  String displayText = "-";
-
-                                  try {
-                                    String? dateStr;
-                                    if (output is Map && output.containsKey(r"$date")) {
-                                      dateStr = output[r"$date"] as String?;
-                                    } else if (output is String) {
-                                      dateStr = output;
-                                    }
-
-                                    if (dateStr != null) {
-                                      final date = DateTime.parse(dateStr).toLocal();
-                                      displayText = DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
-                                    }
-                                  } catch (e) {
-                                    displayText = output?.toString() ?? "-";
-                                  }
-
-                                  return Container(
-                                    width: _column_width,
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      displayText, //
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
-                                      softWrap: true,
-                                    ),
-                                  );
-                                }
-
                                 // general case
                                 return Container(
                                   width: _column_width, //
                                   alignment: Alignment.center,
                                   child: Text(
-                                    "${data[index][row["alias"]] ?? ""}", //
+                                    "${data[index][row["key"]] ?? ""}", //
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                     softWrap: true,
@@ -551,7 +524,7 @@ class _Staff_State extends State<Staff_> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => Edit_(
+                                          builder: (context) => Form_Update_(
                                             input: data[index], //
                                           ),
                                         ),
@@ -574,13 +547,13 @@ class _Staff_State extends State<Staff_> {
                                   child: IconButton(
                                     icon: const Icon(Icons.delete_outline),
                                     onPressed: () async {
-                                      print('Delete room ${data[index]["_id"]}');
+                                      print('Delete room ${data[index]["id_"]}');
 
                                       Navigator.push(
                                         context, //
                                         MaterialPageRoute(
-                                          builder: (context) => Delete_(
-                                            id: data[index]["_id"], //
+                                          builder: (context) => Form_Delete_(
+                                            id: data[index]["id_"], //
                                           ),
                                         ),
                                       ).then((value) {
@@ -603,7 +576,7 @@ class _Staff_State extends State<Staff_> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => Read_(
+                              builder: (context) => Form_Read_(
                                 input: data[index], //
                               ),
                             ),
@@ -622,7 +595,6 @@ class _Staff_State extends State<Staff_> {
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          // SizedBox(width: 4),
           Column(
             children: [
               Spacer(),
@@ -634,10 +606,9 @@ class _Staff_State extends State<Staff_> {
                 ),
                 child: IconButton(
                   onPressed: () {
-                    //
-                    is_search = !is_search;
-                    //
-                    if (is_search == false) {
+                    is_filter = !is_filter;
+
+                    if (is_filter == false) {
                       key = null;
                       query = null;
                       min = null;
@@ -650,7 +621,7 @@ class _Staff_State extends State<Staff_> {
                     setState(() {});
                   }, //
                   icon: Icon(
-                    is_search ? Icons.search_off_outlined : Icons.search_outlined, //
+                    is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -658,7 +629,6 @@ class _Staff_State extends State<Staff_> {
 
               SizedBox(height: 4),
 
-              // SizedBox(width: 4),
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.blue, width: 2),
@@ -669,7 +639,7 @@ class _Staff_State extends State<Staff_> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Select_Visibility_(schema: _schema), //
+                        builder: (context) => Filter_Visibility_(schema: _schema), //
                       ),
                     ).then((value) {
                       if (value != null) {
@@ -684,7 +654,6 @@ class _Staff_State extends State<Staff_> {
 
               SizedBox(height: 4),
 
-              // Spacer(),
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.blue, width: 2),
@@ -695,7 +664,7 @@ class _Staff_State extends State<Staff_> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Create_(), //
+                        builder: (context) => Form_Create_(), //
                       ),
                     ).then((value) {
                       if (value != null) {
@@ -706,6 +675,7 @@ class _Staff_State extends State<Staff_> {
                   icon: Icon(Icons.add, fontWeight: FontWeight.bold),
                 ),
               ),
+
               SizedBox(height: 4),
             ],
           ),
@@ -715,17 +685,4 @@ class _Staff_State extends State<Staff_> {
       ),
     );
   }
-}
-
-Widget Float_Button({required BuildContext context, required VoidCallback onPressed}) {
-  return Container(
-    decoration: BoxDecoration(
-      border: Border.all(color: Colors.blue, width: 2),
-      borderRadius: BorderRadius.circular(4),
-    ),
-    child: IconButton(
-      onPressed: onPressed,
-      icon: Icon(Icons.add, fontWeight: FontWeight.bold),
-    ),
-  );
 }

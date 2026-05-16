@@ -9,11 +9,11 @@ import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Template());
+  runApp(Filter_Number());
 }
 
-class Template extends StatelessWidget {
-  Template({super.key});
+class Filter_Number extends StatelessWidget {
+  Filter_Number({super.key});
 
   String key_ = "capacity";
 
@@ -22,13 +22,13 @@ class Template extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Search_Number_(key_: key_),
+      home: Filter_Number_(key_: key_),
     );
   }
 }
 
-class Search_Number_ extends StatefulWidget {
-  Search_Number_({
+class Filter_Number_ extends StatefulWidget {
+  Filter_Number_({
     super.key, //
 
     required this.key_,
@@ -37,10 +37,10 @@ class Search_Number_ extends StatefulWidget {
   String key_;
 
   @override
-  State<Search_Number_> createState() => _Search_Number_State();
+  State<Filter_Number_> createState() => _Filter_Number_State();
 }
 
-class _Search_Number_State extends State<Search_Number_> {
+class _Filter_Number_State extends State<Filter_Number_> {
   double? select_min;
   double? select_max;
 
@@ -97,7 +97,13 @@ class _Search_Number_State extends State<Search_Number_> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 8),
+
+                  SizedBox(width: 4),
+
+                  Icon(Icons.arrow_right_alt_outlined),
+
+                  SizedBox(width: 4),
+
                   Expanded(
                     child: TextField(
                       controller: controller_max,

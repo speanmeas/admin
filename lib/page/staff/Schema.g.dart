@@ -1,86 +1,107 @@
 List<Map<String, dynamic>> schema = [
   {
-    "alias": "_id",
+    "key": "id_",
     "title": "ID",
-    "type": "",
-    "visible": 0,
-    "hide": 1
+    "type": "text",
+    "is_visible": 0,
+    "is_exclude": 1
   },
   {
-    "alias": "name",
+    "key": "name_",
     "title": "Name",
-    "type": "string",
-    "visible": 1,
-    "hide": 0
+    "type": "text",
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "position",
+    "key": "position_",
     "title": "Position",
-    "type": "string",
-    "visible": 1,
-    "hide": 0
+    "type": "text",
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "phone_number",
+    "key": "phone_number_",
     "title": "Phone Number",
-    "type": "string",
-    "visible": 1,
-    "hide": 0
+    "type": "text",
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "email",
+    "key": "email_",
     "title": "Email",
-    "type": "string",
-    "visible": 1,
-    "hide": 0
+    "type": "text",
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "gender",
+    "key": "gender_",
     "title": "Gender",
-    "type": "string",
-    "visible": 1,
-    "hide": 0
+    "type": "text",
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "shift",
+    "key": "shift_",
     "title": "Shift",
-    "type": "string",
-    "visible": 1,
-    "hide": 0
+    "type": "text",
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "start_work",
+    "key": "start_work_",
     "title": "Start Work",
     "type": "datetime",
-    "visible": 1,
-    "hide": 0
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "stop_work",
+    "key": "stop_work_",
     "title": "Stop Work",
     "type": "datetime",
-    "visible": 1,
-    "hide": 0
+    "is_visible": 1,
+    "is_exclude": 0
   },
   {
-    "alias": "created_at",
+    "key": "created_at_",
     "title": "Created At",
     "type": "datetime",
-    "visible": 0,
-    "hide": 1
+    "is_visible": 0,
+    "is_exclude": 1
   },
   {
-    "alias": "updated_at",
+    "key": "updated_at_",
     "title": "Updated At",
     "type": "datetime",
-    "visible": 0,
-    "hide": 1
+    "is_visible": 0,
+    "is_exclude": 1
   },
   {
-    "alias": "deleted_at",
+    "key": "deleted_at_",
     "title": "Deleted At",
     "type": "datetime",
-    "visible": 0,
-    "hide": 1
+    "is_visible": 0,
+    "is_exclude": 1
+  },
+  {
+    "key": "created_by_",
+    "title": "Created By",
+    "type": "text",
+    "is_visible": 0,
+    "is_exclude": 1
+  },
+  {
+    "key": "updated_by_",
+    "title": "Updated By",
+    "type": "text",
+    "is_visible": 0,
+    "is_exclude": 1
+  },
+  {
+    "key": "deleted_by_",
+    "title": "Deleted By",
+    "type": "text",
+    "is_visible": 0,
+    "is_exclude": 1
   }
 ];

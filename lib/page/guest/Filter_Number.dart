@@ -9,64 +9,43 @@ import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Template());
+  runApp(Filter_Number());
 }
 
-class Template extends StatelessWidget {
-  Template({super.key});
+class Filter_Number extends StatelessWidget {
+  Filter_Number({super.key});
 
-  // List<Map<String, dynamic>> schema = [
-  //   {"alias": "_id", "title": "ID", "type": "string", "visible": 0},
-  //   {"alias": "name", "title": "Room No.", "type": "string", "visible": 1},
-  //   {"alias": "type", "title": "Room Type", "type": "string", "visible": 1},
-  //   {"alias": "capacity", "title": "Capacity", "type": "number", "visible": 1},
-  //   {"alias": "ac_or_fan", "title": "AC or Fan", "type": "string", "visible": 1},
-  //   {"alias": "price", "title": "Price", "type": "number", "visible": 1},
-  //   {"alias": "status", "title": "Status", "type": "string", "visible": 1},
-  //   {"alias": "created_at", "title": "Created At", "type": "datetime", "visible": 0},
-  //   {"alias": "updated_at", "title": "Updated At", "type": "datetime", "visible": 0},
-  //   {"alias": "deleted_at", "title": "Deleted At", "type": "datetime", "visible": 0},
-  // ];
-
-  // Map<String, dynamic> input = {
-  //   "_id": 1, //
-  //   "name": "Room 1", //
-  //   "type": null, //
-  //   "capacity": 10,
-  //   "ac_or_fan": "AC",
-  //   "price": null,
-  //   "status": "Active",
-  //   "created_at": "2022-01-01 00:00:00",
-  //   "updated_at": "2022-01-01 00:00:00",
-  //   "deleted_at": null,
-  // };
+  String key_ = "capacity";
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Search_String_(),
+      home: Filter_Number_(key_: key_),
     );
   }
 }
 
-class Search_String_ extends StatefulWidget {
-  Search_String_({
+class Filter_Number_ extends StatefulWidget {
+  Filter_Number_({
     super.key, //
-    // required this.schema,
-    // required this.input,
+
+    required this.key_,
   });
 
-  // List<Map<String, dynamic>> schema;
-  // Map<String, dynamic> input;
+  String key_;
 
   @override
-  State<Search_String_> createState() => _Search_String_State();
+  State<Filter_Number_> createState() => _Filter_Number_State();
 }
 
-class _Search_String_State extends State<Search_String_> {
-  TextEditingController controller_search = TextEditingController();
+class _Filter_Number_State extends State<Filter_Number_> {
+  double? select_min;
+  double? select_max;
+
+  TextEditingController controller_min = TextEditingController();
+  TextEditingController controller_max = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -109,19 +88,52 @@ class _Search_String_State extends State<Search_String_> {
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: controller_search,
-                      autofocus: true,
+                      controller: controller_min,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: "Filter", //
+                        labelText: "Min", //
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        // suffixIcon: Icon(Icons.arrow_downward),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(width: 4),
+
+                  Icon(Icons.arrow_right_alt_outlined),
+
+                  SizedBox(width: 4),
+
+                  Expanded(
+                    child: TextField(
+                      controller: controller_max,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: "Max", //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {},
-                      onSubmitted: (_) => on_apply_filter(),
                     ),
                   ),
                 ],
               ),
 
+              // SizedBox(height: 40),
+
+              // RangeSlider(
+              //   values: range,
+              //   min: min,
+              //   max: max,
+              //   divisions: 1000,
+              //   labels: RangeLabels(
+              //     range.start.toStringAsFixed(2), //
+              //     range.end.toStringAsFixed(2),
+              //   ),
+              //   onChanged: (RangeValues values) {
+              //     setState(() {
+              //       range = values;
+              //     });
+              //   },
+              // ),
               SizedBox(height: 16),
 
               Row(
@@ -137,10 +149,6 @@ class _Search_String_State extends State<Search_String_> {
                   ),
                 ],
               ),
-
-              SizedBox(height: 8),
-
-              SizedBox(height: 8),
             ],
           ),
         ),
@@ -149,17 +157,33 @@ class _Search_String_State extends State<Search_String_> {
   }
 
   void on_apply_filter() {
-    // validate
-    if (controller_search.text.isEmpty) {
+    select_min = double.parse(controller_min.text);
+    select_max = double.parse(controller_max.text);
+
+    // check if min and max are valid numbers
+    if (select_min == null || select_max == null) {
       snackbar_show(
         context: context, //
-        message: "Please enter a filter",
+        message: "Please enter valid numbers",
         color: Colors.red,
       );
       return;
     }
 
-    Navigator.pop(context, controller_search.text);
+    // validate min and max
+    if (select_min! > select_max!) {
+      snackbar_show(
+        context: context, //
+        message: "Min must be less or equal to max",
+        color: Colors.red,
+      );
+      return;
+    }
+
+    Navigator.pop(context, {
+      "min": select_min, //
+      "max": select_max,
+    });
 
     snackbar_show(
       context: context, //

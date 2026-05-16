@@ -1,1 +1,2 @@
-String PATH = "/room";
+String HEADER = "Guest";
+String PATH = "/guest";

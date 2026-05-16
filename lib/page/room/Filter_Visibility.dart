@@ -7,11 +7,11 @@ import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Template());
+  runApp(Filter_Visibility());
 }
 
-class Template extends StatelessWidget {
-  Template({super.key});
+class Filter_Visibility extends StatelessWidget {
+  Filter_Visibility({super.key});
 
   List<Map<String, dynamic>> _schema = schema;
 
@@ -20,13 +20,13 @@ class Template extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Select_Visibility_(schema: _schema),
+      home: Filter_Visibility_(schema: _schema),
     );
   }
 }
 
-class Select_Visibility_ extends StatefulWidget {
-  Select_Visibility_({
+class Filter_Visibility_ extends StatefulWidget {
+  Filter_Visibility_({
     super.key, //
     required this.schema,
   });
@@ -34,20 +34,22 @@ class Select_Visibility_ extends StatefulWidget {
   List<Map<String, dynamic>> schema;
 
   @override
-  State<Select_Visibility_> createState() => _Select_Visibility_State();
+  State<Filter_Visibility_> createState() => _Filter_Visibility_State();
 }
 
-class _Select_Visibility_State extends State<Select_Visibility_> {
+class _Filter_Visibility_State extends State<Filter_Visibility_> {
   //
   //
 
   late List<Map<String, dynamic>> output;
 
+  List<int> get _visibleIndices => List<int>.generate(output.length, (index) => index).where((index) => output[index]["is_exclude"] != 1).toList();
+
   @override
   void initState() {
     super.initState();
     output = List.from(widget.schema);
-    print(output);
+    // print(output);
   }
 
   @override
@@ -86,32 +88,37 @@ class _Select_Visibility_State extends State<Select_Visibility_> {
                 buildDefaultDragHandles: false,
                 padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 shrinkWrap: true,
-                itemCount: output.length,
+                itemCount: _visibleIndices.length,
                 onReorder: (int old_i, int new_i) {
                   print("Reorder: $old_i -> $new_i");
                   setState(() {
+                    final visibleIndices = _visibleIndices;
+                    final oldIndex = visibleIndices[old_i];
+                    final item = output.removeAt(oldIndex);
+
                     if (old_i < new_i) {
                       new_i -= 1;
                     }
-                    final item = output.removeAt(old_i);
-                    output.insert(new_i.clamp(0, output.length), item);
+
+                    final visibleTargets = _visibleIndices;
+                    final insertIndex = new_i >= visibleTargets.length ? output.length : visibleTargets[new_i];
+
+                    output.insert(insertIndex, item);
                   });
                 },
 
                 itemBuilder: (context, i) {
-                  //
-                  if (["_id", "created_at", "updated_at", "deleted_at"].contains(output[i]['alias'])) {
-                    return Container(key: ValueKey(i));
-                  }
+                  final outputIndex = _visibleIndices[i];
+
                   //
                   return InkWell(
                     //
-                    key: ValueKey(i),
+                    key: ValueKey(outputIndex),
                     //
                     onTap: () {
-                      print("Tapped: ${output[i]['title']}");
+                      print("Tapped: ${output[outputIndex]['title']}");
                       setState(() {
-                        output[i]['visible'] = (output[i]['visible'] + 1) % 2;
+                        output[outputIndex]["is_visible"] = (output[outputIndex]["is_visible"] + 1) % 2;
                       });
                     },
                     //
@@ -121,12 +128,12 @@ class _Select_Visibility_State extends State<Select_Visibility_> {
                       child: Row(
                         children: [
                           //
-                          Icon(output[i]['visible'] == 1 ? Icons.check_box_outlined : Icons.check_box_outline_blank, color: Colors.blue, size: 28), //
+                          Icon(output[outputIndex]["is_visible"] == 1 ? Icons.check_box_outlined : Icons.check_box_outline_blank, color: Colors.blue, size: 28), //
                           //
                           SizedBox(width: 4),
                           //
                           Text(
-                            "${output[i]['title']}", //
+                            "${output[outputIndex]['title']}", //
                             style: TextStyle(fontSize: 16),
                           ),
 
@@ -168,7 +175,7 @@ class _Select_Visibility_State extends State<Select_Visibility_> {
 
   void on_apply() {
     // validate
-    if (output.every((element) => element['visible'] == 0)) {
+    if (output.every((element) => element["is_visible"] == 0)) {
       snackbar_show(
         context: context, //
         message: "Please select at least one column.",

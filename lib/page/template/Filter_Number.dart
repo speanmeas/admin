@@ -9,11 +9,11 @@ import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Template());
+  runApp(Filter_Number());
 }
 
-class Template extends StatelessWidget {
-  Template({super.key});
+class Filter_Number extends StatelessWidget {
+  Filter_Number({super.key});
 
   String key_ = "capacity";
 

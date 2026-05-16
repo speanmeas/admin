@@ -8,23 +8,31 @@ import 'Setup.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Template());
+  runApp(Form_Read());
 }
 
-class Template extends StatelessWidget {
-  Template({super.key});
+class Form_Read extends StatelessWidget {
+  Form_Read({super.key});
 
   Map<String, dynamic> input = {
-    "_id": 1, //
-    "name": "Room 1", //
-    "type": null, //
-    "capacity": 10,
-    "ac_or_fan": "AC",
-    "price": null,
-    "status": "Active",
-    "created_at": "2022-01-01 00:00:00",
-    "updated_at": "2022-01-01 00:00:00",
-    "deleted_at": null,
+    "id_": 1, //
+
+    "text_1_": "a", //
+    "text_2_": "aa", //
+    "text_3_": "aaa", //
+    "number_1_": 1,
+    "number_2_": 11,
+    "number_3_": 111,
+    "datetime_1_": "2022-01-01 00:00:00",
+    "datetime_2_": "2022-01-01 00:00:00",
+    "datetime_3_": "2022-01-01 00:00:00",
+
+    "created_at_": "2022-01-01 00:00:00",
+    "updated_at_": "2022-01-01 00:00:00",
+    "deleted_at_": "2022-01-01 00:00:00",
+    "created_by_": "aaa",
+    "updated_by_": "aaa",
+    "deleted_by_": "aaa",
   };
 
   @override
@@ -32,13 +40,13 @@ class Template extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Read_(input: input),
+      home: Form_Read_(input: input),
     );
   }
 }
 
-class Read_ extends StatefulWidget {
-  Read_({
+class Form_Read_ extends StatefulWidget {
+  Form_Read_({
     super.key, //
     required this.input,
   });
@@ -46,11 +54,15 @@ class Read_ extends StatefulWidget {
   Map<String, dynamic> input;
 
   @override
-  State<Read_> createState() => _Read_State();
+  State<Form_Read_> createState() => _Form_Read_State();
 }
 
-class _Read_State extends State<Read_> {
+class _Form_Read_State extends State<Form_Read_> {
   late Map<String, dynamic> output;
+
+  final ScrollController controller_audios = ScrollController();
+  final ScrollController controller_images = ScrollController();
+  final ScrollController controller_videos = ScrollController();
 
   @override
   void initState() {
@@ -98,20 +110,20 @@ class _Read_State extends State<Read_> {
             children: [
               SizedBox(height: 16),
 
-              ...schema.map((e) {
+              ...schema.map((row) {
                 //
-                if (["_id", "created_at", "updated_at", "deleted_at"].contains(e["alias"])) {
+                if (row["is_exclude"] == 1) {
                   return SizedBox.shrink();
                 }
 
                 //
-                if (e["type"] == "string") {
+                if (row["type"] == "text") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
+                      controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
-                        labelText: e['title'], //
+                        labelText: row['title'], //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       readOnly: true,
@@ -120,13 +132,13 @@ class _Read_State extends State<Read_> {
                 }
 
                 //
-                if (e["type"] == "number") {
+                if (row["type"] == "number") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? '0'),
+                      controller: TextEditingController(text: output[row["key"]]?.toString() ?? '0'),
                       decoration: InputDecoration(
-                        labelText: e['title'], //
+                        labelText: row['title'], //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       readOnly: true,
@@ -135,13 +147,13 @@ class _Read_State extends State<Read_> {
                 }
 
                 //
-                if (e["type"] == "datetime") {
+                if (row["type"] == "datetime") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[e['alias']]?.toString() ?? ''),
+                      controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
-                        labelText: e['title'], //
+                        labelText: row['title'], //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       readOnly: true,
@@ -155,24 +167,124 @@ class _Read_State extends State<Read_> {
 
               SizedBox(height: 8),
 
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (int i = 0; i < 10; i++)
-                      Container(
-                        width: 100, //
-                        height: 100,
-                        margin: EdgeInsets.only(right: 8),
-                        child: InkWell(
-                          onTap: () {
-                            // TODO: Handle image tap
-                            print('Image tapped: $i');
-                          },
-                          child: Placeholder(),
+              Container(
+                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                child: Text(
+                  "Audios:", //
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+
+              Scrollbar(
+                controller: controller_audios,
+                thumbVisibility: true,
+                // notificationPredicate: (_) => true,
+                thickness: 12, // scrollbar width
+                radius: const Radius.circular(0),
+                // interactive: true,
+                // scrollbarOrientation: ScrollbarOrientation.bottom,
+                child: SingleChildScrollView(
+                  controller: controller_audios,
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (int i = 0; i < 10; i++)
+                        Container(
+                          width: 100, //
+                          height: 100,
+                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
+                          child: InkWell(
+                            onTap: () {
+                              // TODO: Handle audio tap
+                              print('Audio tapped: $i');
+                            },
+                            child: Placeholder(),
+                          ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 8),
+
+              Container(
+                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                child: Text(
+                  "Images:", //
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+
+              Scrollbar(
+                controller: controller_images,
+                thumbVisibility: true,
+                // notificationPredicate: (_) => true,
+                thickness: 12, // scrollbar width
+                radius: const Radius.circular(0),
+                // interactive: true,
+                // scrollbarOrientation: ScrollbarOrientation.bottom,
+                child: SingleChildScrollView(
+                  controller: controller_images,
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (int i = 0; i < 10; i++)
+                        Container(
+                          width: 100, //
+                          height: 100,
+                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
+                          child: InkWell(
+                            onTap: () {
+                              // TODO: Handle image tap
+                              print('Image tapped: $i');
+                            },
+                            child: Placeholder(),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 8),
+
+              Container(
+                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                child: Text(
+                  "Videos:", //
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+
+              Scrollbar(
+                controller: controller_videos,
+                thumbVisibility: true,
+                // notificationPredicate: (_) => true,
+                thickness: 12, // scrollbar width
+                radius: const Radius.circular(0),
+                // interactive: true,
+                // scrollbarOrientation: ScrollbarOrientation.bottom,
+                child: SingleChildScrollView(
+                  controller: controller_videos,
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (int i = 0; i < 10; i++)
+                        Container(
+                          width: 100, //
+                          height: 100,
+                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
+                          child: InkWell(
+                            onTap: () {
+                              // TODO: Handle video tap
+                              print('Video tapped: $i');
+                            },
+                            child: Placeholder(),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
 
@@ -183,25 +295,4 @@ class _Read_State extends State<Read_> {
       ),
     );
   }
-}
-
-void show_snackbar({
-  required BuildContext context, //
-  required String message, //
-  required Color color, //
-}) {
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.info_outline, color: Colors.white),
-            SizedBox(width: 8),
-            Text(message),
-          ],
-        ),
-        backgroundColor: color,
-      ),
-    );
 }
