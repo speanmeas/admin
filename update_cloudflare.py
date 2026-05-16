@@ -45,7 +45,6 @@ if build_match:
     with open("pubspec.yaml", "w", encoding="utf-8") as f:
         f.write(new_content)
 
-print(f"{old_build_num} -> {new_build_num}")
 
 #! clean
 # os.system("flutter clean")
@@ -72,4 +71,4 @@ os.system(f'git commit -m "update"')
 os.system("git push")
 
 
-print("Done!")
+print(f"Built: {old_build_num} -> {new_build_num}")
