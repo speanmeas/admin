@@ -3,12 +3,10 @@
   "name": "admin-speanmeas-com",
   "compatibility_date": "2026-05-16",
   "observability": {
-    "enabled": true
+    "enabled": true,
   },
   "assets": {
-    "directory": "web"
+    "directory": "web",
   },
-  "compatibility_flags": [
-    "nodejs_compat"
-  ]
+  "compatibility_flags": ["nodejs_compat"],
 }

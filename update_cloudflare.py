@@ -9,7 +9,6 @@ import time
 from tqdm import tqdm
 from rich import print as pprint
 
-
 #
 #! read pubspec.yaml
 content = ""

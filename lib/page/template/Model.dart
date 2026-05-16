@@ -266,7 +266,7 @@ class _Model_State extends State<Model_> {
                               width: _column_width, //
                               child: InkWell(
                                 onTap: () {
-                                  print("${row["key"]}");
+                                  // print("${row["key"]}");
 
                                   key = row["key"];
                                   query = null;
@@ -316,7 +316,7 @@ class _Model_State extends State<Model_> {
                               width: _column_width, //
                               child: InkWell(
                                 onTap: () {
-                                  print("${row["key"]}");
+                                  // print("${row["key"]}");
                                   key = row["key"];
                                   query = null;
                                   min = null;
@@ -367,8 +367,7 @@ class _Model_State extends State<Model_> {
                               width: _column_width, //
                               child: InkWell(
                                 onTap: () {
-                                  // TODO: Implement range selection
-                                  print("${row["key"]}");
+                                  // print("${row["key"]}");
                                   key = row["key"];
                                   query = null;
                                   min = null;
@@ -437,7 +436,7 @@ class _Model_State extends State<Model_> {
                     itemBuilder: (context, index) {
                       if (index == data.length) {
                         if (has_more) {
-                          print("Last item");
+                          // print("Last item");
                           Future.delayed(const Duration(milliseconds: 300), () {
                             load_more();
                           });
@@ -477,19 +476,6 @@ class _Model_State extends State<Model_> {
                               ),
 
                               ..._schema.where((row) => row["is_visible"] == 1).map((row) {
-                                if (row["key"] == "id_") {
-                                  return Container(
-                                    width: _column_width, //
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      "${data[index][row["key"]] ?? ""}", //
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
-                                      softWrap: true,
-                                    ),
-                                  );
-                                }
-
                                 if (row["key"] == "price") {
                                   final priceValue = data[index][row["key"]];
                                   final price = priceValue is num ? priceValue.toDouble() : double.tryParse(priceValue?.toString() ?? "0.0") ?? 0.0;
@@ -498,39 +484,6 @@ class _Model_State extends State<Model_> {
                                     alignment: Alignment.center,
                                     child: Text(
                                       "${price.toStringAsFixed(2)} \$", //
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
-                                      softWrap: true,
-                                    ),
-                                  );
-                                }
-
-                                // Handle MongoDB date format: {"$date": "2024-01-15T10:30:00.000Z"}
-                                if (row["key"] == "created_at" || row["key"] == "updated_at") {
-                                  final output = data[index][row["key"]];
-                                  String displayText = "-";
-
-                                  try {
-                                    String? dateStr;
-                                    if (output is Map && output.containsKey(r"$date")) {
-                                      dateStr = output[r"$date"] as String?;
-                                    } else if (output is String) {
-                                      dateStr = output;
-                                    }
-
-                                    if (dateStr != null) {
-                                      final date = DateTime.parse(dateStr).toLocal();
-                                      displayText = DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
-                                    }
-                                  } catch (e) {
-                                    displayText = output?.toString() ?? "-";
-                                  }
-
-                                  return Container(
-                                    width: _column_width,
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      displayText, //
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 2,
                                       softWrap: true,
