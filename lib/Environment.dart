@@ -14,7 +14,7 @@ String get_api_host() {
   }
 
   if (is_local) {
-    return 'http://192.168.110.200:8000'; // todo: need to confix router
+    return 'http://192.168.1.100:8000'; // todo: need to confix router
   }
 
   return 'https://api.speanmeas.com';
@@ -28,7 +28,7 @@ String get_minio_public() {
   }
 
   if (is_local) {
-    return 'http://192.168.110.200:9000/public'; // todo: need to confix router
+    return 'http://192.168.1.100:9000/public'; // todo: need to confix router
   }
 
   return 'https://sss.speanmeas.com/public';
