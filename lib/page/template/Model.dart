@@ -110,7 +110,7 @@ class _Model_State extends State<Model_> {
             // print(r.data.length);
             has_more = r.data.length == limit;
             data = List<Map<String, dynamic>>.from(r.data);
-            // print(data);
+            print(data[0]);
           });
         })
         .catchError((e) {

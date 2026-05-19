@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Datetime_format.dart';
@@ -67,6 +70,17 @@ class _Form_Update_State extends State<Form_Update_> {
   final ScrollController controller_audios = ScrollController();
   final ScrollController controller_images = ScrollController();
   final ScrollController controller_videos = ScrollController();
+  final ImagePicker _imagePicker = ImagePicker();
+  final List<XFile?> selectedImages = List<XFile?>.filled(10, null);
+
+  Future<void> pickImage(int index, {required ImageSource source}) async {
+    final XFile? file = await _imagePicker.pickImage(source: source);
+    if (file == null) return;
+    setState(() {
+      selectedImages[index] = file;
+      output['image_${index + 1}_path'] = file.path;
+    });
+  }
 
   @override
   void initState() {
@@ -180,79 +194,7 @@ class _Form_Update_State extends State<Form_Update_> {
 
               SizedBox(height: 8),
 
-              Container(
-                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-                child: Text(
-                  "Audios:", //
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-              ),
-
-              Scrollbar(
-                controller: controller_audios,
-                thumbVisibility: true,
-                // notificationPredicate: (_) => true,
-                thickness: 12, // scrollbar width
-                radius: const Radius.circular(0),
-                // interactive: true,
-                // scrollbarOrientation: ScrollbarOrientation.bottom,
-                child: SingleChildScrollView(
-                  controller: controller_audios,
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (int i = 0; i < 10; i++)
-                        Container(
-                          width: 100, //
-                          height: 100,
-                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
-                          child: InkWell(
-                            onTap: () {
-                              // TODO: Handle image tap
-                              print('Audio tapped: $i');
-                              showModalBottomSheet<void>(
-                                context: context,
-                                isScrollControlled: true,
-                                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
-                                builder: (BuildContext context) {
-                                  return Wrap(
-                                    children: [
-                                      ListTile(
-                                        leading: Icon(Icons.mic_external_on_sharp),
-                                        title: Text('Open Audio Recorder'),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: Icon(Icons.upload_outlined),
-                                        title: Text('Upload'),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: Icon(Icons.delete_outlined),
-                                        title: Text('Delete'),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                            child: Placeholder(),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 8),
-
+              // Images Upload
               Container(
                 padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
                 child: Text(
@@ -282,33 +224,67 @@ class _Form_Update_State extends State<Form_Update_> {
                           child: InkWell(
                             onTap: () {
                               // TODO: Handle image tap
-                              print('Image tapped: $i');
+                              // print('Image tapped: $i');
                               showModalBottomSheet<void>(
                                 context: context,
                                 isScrollControlled: true,
                                 shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
-                                builder: (BuildContext context) {
+                                builder: (BuildContext c) {
                                   return Wrap(
                                     children: [
                                       ListTile(
                                         leading: Icon(Icons.camera_alt_outlined),
                                         title: Text('Open Camera'),
-                                        onTap: () {
-                                          Navigator.pop(context);
+                                        onTap: () async {
+                                          Navigator.pop(c);
                                         },
                                       ),
                                       ListTile(
                                         leading: Icon(Icons.upload_outlined),
                                         title: Text('Upload'),
-                                        onTap: () {
-                                          Navigator.pop(context);
+                                        onTap: () async {
+                                          // hide bottom sheet
+                                          Navigator.pop(c);
+
+                                          final id_ = widget.input["id_"];
+                                          final key_ = i.toString();
+
+                                          print('Upload image at index: $id_, key: $key_');
+
+                                          final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+                                          // if no image selected
+                                          if (image == null) return;
+
+                                          // upload image to server
+                                          await dio
+                                              .post(
+                                                '$PATH/upload_image', //
+                                                data: FormData.fromMap({
+                                                  "id_": id_, //
+                                                  "key_": key_, //
+                                                  'value_': MultipartFile.fromBytes(
+                                                    await image.readAsBytes(), //
+                                                    filename: image.name,
+                                                  ),
+                                                }),
+                                              )
+                                              .then((r) {
+                                                // init();
+                                                snackbar_show(context: context, message: "Uploaded", color: Colors.green);
+                                              })
+                                              .catchError((e) {
+                                                snackbar_show(context: context, message: 'Upload Failed.', color: Colors.red);
+                                              });
                                         },
                                       ),
                                       ListTile(
                                         leading: Icon(Icons.delete_outlined),
                                         title: Text('Delete'),
                                         onTap: () {
-                                          Navigator.pop(context);
+                                          Navigator.pop(c);
+
+                                          //
                                         },
                                       ),
                                     ],
@@ -326,93 +302,28 @@ class _Form_Update_State extends State<Form_Update_> {
 
               SizedBox(height: 8),
 
-              Container(
-                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-                child: Text(
-                  "Videos:", //
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-              ),
-
-              Scrollbar(
-                controller: controller_videos,
-                thumbVisibility: true,
-                // notificationPredicate: (_) => true,
-                thickness: 12, // scrollbar width
-                radius: const Radius.circular(0),
-                // interactive: true,
-                // scrollbarOrientation: ScrollbarOrientation.bottom,
-                child: SingleChildScrollView(
-                  controller: controller_videos,
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (int i = 0; i < 10; i++)
-                        Container(
-                          width: 100, //
-                          height: 100,
-                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
-                          child: InkWell(
-                            onTap: () {
-                              // TODO: Handle video tap
-                              print('Video tapped: $i');
-                              showModalBottomSheet<void>(
-                                context: context,
-                                isScrollControlled: true,
-                                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
-                                builder: (BuildContext context) {
-                                  return Wrap(
-                                    children: [
-                                      ListTile(
-                                        leading: Icon(Icons.video_camera_back_outlined),
-                                        title: Text('Open Camera'),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: Icon(Icons.upload_outlined),
-                                        title: Text('Upload'),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: Icon(Icons.delete_outlined),
-                                        title: Text('Delete'),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                            child: Placeholder(),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 8),
-
+              // Save button
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   OutlinedButton.icon(
-                    icon: Icon(Icons.edit_outlined),
-                    label: Text("Update"),
+                    icon: Icon(Icons.save_outlined),
+                    label: Text("Save"),
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
                     onPressed: () async {
                       print(output);
+                      final Map<String, dynamic> formMap = {...output};
+                      for (int i = 0; i < selectedImages.length; i++) {
+                        final XFile? file = selectedImages[i];
+                        if (file != null) {
+                          formMap['images[$i]'] = await MultipartFile.fromFile(file.path, filename: file.name);
+                        }
+                      }
                       await dio
                           .post(
                             '$PATH/update',
                             data: FormData.fromMap({
-                              ...output, //
+                              ...formMap, //
                             }),
                           )
                           .then((value) {

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:speanmeas/Environment.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
@@ -60,17 +61,22 @@ class Form_Read_ extends StatefulWidget {
 class _Form_Read_State extends State<Form_Read_> {
   late Map<String, dynamic> output;
 
-  final ScrollController controller_audios = ScrollController();
+  // final ScrollController controller_audios = ScrollController();
   final ScrollController controller_images = ScrollController();
-  final ScrollController controller_videos = ScrollController();
+  // final ScrollController controller_videos = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
+    // print(widget.input);
+    // print(widget.input["images_"]);
+    // print(widget.input["images_"]);
+
     output = Map.from(widget.input);
 
-    print(output);
+    // print(output);
+    print(output["images_"]["6"]);
 
     // print(output);
     setState(() {});
@@ -170,47 +176,6 @@ class _Form_Read_State extends State<Form_Read_> {
               Container(
                 padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
                 child: Text(
-                  "Audios:", //
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-              ),
-
-              Scrollbar(
-                controller: controller_audios,
-                thumbVisibility: true,
-                // notificationPredicate: (_) => true,
-                thickness: 12, // scrollbar width
-                radius: const Radius.circular(0),
-                // interactive: true,
-                // scrollbarOrientation: ScrollbarOrientation.bottom,
-                child: SingleChildScrollView(
-                  controller: controller_audios,
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (int i = 0; i < 10; i++)
-                        Container(
-                          width: 100, //
-                          height: 100,
-                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
-                          child: InkWell(
-                            onTap: () {
-                              // TODO: Handle audio tap
-                              print('Audio tapped: $i');
-                            },
-                            child: Placeholder(),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 8),
-
-              Container(
-                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-                child: Text(
                   "Images:", //
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
@@ -239,48 +204,13 @@ class _Form_Read_State extends State<Form_Read_> {
                               // TODO: Handle image tap
                               print('Image tapped: $i');
                             },
-                            child: Placeholder(),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 8),
-
-              Container(
-                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-                child: Text(
-                  "Videos:", //
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-              ),
-
-              Scrollbar(
-                controller: controller_videos,
-                thumbVisibility: true,
-                // notificationPredicate: (_) => true,
-                thickness: 12, // scrollbar width
-                radius: const Radius.circular(0),
-                // interactive: true,
-                // scrollbarOrientation: ScrollbarOrientation.bottom,
-                child: SingleChildScrollView(
-                  controller: controller_videos,
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (int i = 0; i < 10; i++)
-                        Container(
-                          width: 100, //
-                          height: 100,
-                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
-                          child: InkWell(
-                            onTap: () {
-                              // TODO: Handle video tap
-                              print('Video tapped: $i');
-                            },
-                            child: Placeholder(),
+                            child: output["images_"] != null && output["images_"][i.toString()] != null
+                                ? Image.network(
+                                    "$MINIO_PUBLIC/200/images/${output["images_"][i.toString()]}", //
+                                    fit: BoxFit.cover, //
+                                  )
+                                // : Placeholder(),
+                                : Placeholder(),
                           ),
                         ),
                     ],
