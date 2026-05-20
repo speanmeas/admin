@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:speanmeas/Environment.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Datetime_format.dart';
@@ -86,7 +87,33 @@ class _Form_Update_State extends State<Form_Update_> {
   void initState() {
     super.initState();
     output = Map.from(widget.input);
+
+    // print(output);
+    print(output["images_"]);
+
     setState(() {});
+    init();
+  }
+
+  void init() async {
+    await dio
+        .post(
+          '$PATH/read',
+          data: FormData.fromMap({
+            "id_": widget.input["id_"], //
+          }),
+        ) //
+        .then((r) {
+          print(r);
+          // output = r.data["data"] ?? {};
+          // print(output);
+          output = Map.from(r.data[0] ?? {});
+
+          setState(() {});
+        })
+        .catchError((e) {
+          print(e);
+        });
   }
 
   @override
@@ -195,110 +222,121 @@ class _Form_Update_State extends State<Form_Update_> {
               SizedBox(height: 8),
 
               // Images Upload
-              Container(
-                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-                child: Text(
-                  "Images:", //
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-              ),
-
-              Scrollbar(
-                controller: controller_images,
-                thumbVisibility: true,
-                // notificationPredicate: (_) => true,
-                thickness: 12, // scrollbar width
-                radius: const Radius.circular(0),
-                // interactive: true,
-                // scrollbarOrientation: ScrollbarOrientation.bottom,
-                child: SingleChildScrollView(
-                  controller: controller_images,
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (int i = 0; i < 10; i++)
-                        Container(
-                          width: 100, //
-                          height: 100,
-                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
-                          child: InkWell(
-                            onTap: () {
-                              // TODO: Handle image tap
-                              // print('Image tapped: $i');
-                              showModalBottomSheet<void>(
-                                context: context,
-                                isScrollControlled: true,
-                                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
-                                builder: (BuildContext c) {
-                                  return Wrap(
-                                    children: [
-                                      ListTile(
-                                        leading: Icon(Icons.camera_alt_outlined),
-                                        title: Text('Open Camera'),
-                                        onTap: () async {
-                                          Navigator.pop(c);
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: Icon(Icons.upload_outlined),
-                                        title: Text('Upload'),
-                                        onTap: () async {
-                                          // hide bottom sheet
-                                          Navigator.pop(c);
-
-                                          final id_ = widget.input["id_"];
-                                          final key_ = i.toString();
-
-                                          print('Upload image at index: $id_, key: $key_');
-
-                                          final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
-
-                                          // if no image selected
-                                          if (image == null) return;
-
-                                          // upload image to server
-                                          await dio
-                                              .post(
-                                                '$PATH/upload_image', //
-                                                data: FormData.fromMap({
-                                                  "id_": id_, //
-                                                  "key_": key_, //
-                                                  'value_': MultipartFile.fromBytes(
-                                                    await image.readAsBytes(), //
-                                                    filename: image.name,
-                                                  ),
-                                                }),
-                                              )
-                                              .then((r) {
-                                                // init();
-                                                snackbar_show(context: context, message: "Uploaded", color: Colors.green);
-                                              })
-                                              .catchError((e) {
-                                                snackbar_show(context: context, message: 'Upload Failed.', color: Colors.red);
-                                              });
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: Icon(Icons.delete_outlined),
-                                        title: Text('Delete'),
-                                        onTap: () {
-                                          Navigator.pop(c);
-
-                                          //
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                            child: Placeholder(),
-                          ),
-                        ),
-                    ],
+              if (output["images_"] != null)
+                Container(
+                  padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                  child: Text(
+                    "Images:", //
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),
-              ),
+
+              if (output["images_"] != null)
+                Scrollbar(
+                  controller: controller_images,
+                  thumbVisibility: true,
+                  // notificationPredicate: (_) => true,
+                  thickness: 12, // scrollbar width
+                  radius: const Radius.circular(0),
+                  // interactive: true,
+                  // scrollbarOrientation: ScrollbarOrientation.bottom,
+                  child: SingleChildScrollView(
+                    controller: controller_images,
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        for (int i = 0; i < 10; i++)
+                          Container(
+                            width: 100, //
+                            height: 100,
+                            margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
+                            child: InkWell(
+                              onTap: () {
+                                // TODO: Handle image tap
+                                // print('Image tapped: $i');
+                                showModalBottomSheet<void>(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
+                                  builder: (BuildContext c) {
+                                    return Wrap(
+                                      children: [
+                                        ListTile(
+                                          leading: Icon(Icons.camera_alt_outlined),
+                                          title: Text('Open Camera'),
+                                          onTap: () async {
+                                            Navigator.pop(c);
+                                          },
+                                        ),
+                                        ListTile(
+                                          leading: Icon(Icons.upload_outlined),
+                                          title: Text('Upload'),
+                                          onTap: () async {
+                                            // hide bottom sheet
+                                            Navigator.pop(c);
+
+                                            final id_ = widget.input["id_"];
+                                            final key_ = i.toString();
+
+                                            print('Upload image at index: $id_, key: $key_');
+
+                                            final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+                                            // if no image selected
+                                            if (image == null) return;
+
+                                            // upload image to server
+                                            await dio
+                                                .post(
+                                                  '$PATH/upload_image', //
+                                                  data: FormData.fromMap({
+                                                    "id_": id_, //
+                                                    "key_": key_, //
+                                                    'value_': MultipartFile.fromBytes(
+                                                      await image.readAsBytes(), //
+                                                      filename: image.name,
+                                                    ),
+                                                  }),
+                                                )
+                                                .then((r) {
+                                                  // init();
+
+                                                  snackbar_show(context: context, message: "Uploaded", color: Colors.green);
+                                                })
+                                                .catchError((e) {
+                                                  snackbar_show(context: context, message: 'Upload Failed.', color: Colors.red);
+                                                });
+                                          },
+                                        ),
+                                        ListTile(
+                                          leading: Icon(Icons.delete_outlined),
+                                          title: Text('Delete'),
+                                          onTap: () {
+                                            Navigator.pop(c);
+
+                                            //
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              child: output["images_"][i.toString()] != null
+                                  ? Image.network(
+                                      "$MINIO_PUBLIC/200/images/${output["images_"][i.toString()]}", //
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Container(
+                                      color: Colors.grey[300],
+                                      child: Icon(Icons.upload_outlined, color: Colors.blue, size: 24),
+                                    ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
 
               SizedBox(height: 8),
 
@@ -328,6 +366,7 @@ class _Form_Update_State extends State<Form_Update_> {
                           )
                           .then((value) {
                             // print(value);
+
                             snackbar_show(
                               context: context, //
                               message: "Room update successfully",

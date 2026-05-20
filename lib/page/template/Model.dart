@@ -68,15 +68,17 @@ class _Model_State extends State<Model_> {
 
   bool is_filter = false;
 
+  String? id;
   String? key;
   String? query;
   double? min;
   double? max;
   String? start;
   String? end;
-  int sort_order = 0;
-
+  int counter = 0;
+  String? order;
   int? limit = 1000;
+  String? autocomplete;
 
   ScrollController controller_scrollbar = ScrollController();
 
@@ -93,16 +95,17 @@ class _Model_State extends State<Model_> {
         .post(
           '$PATH/read',
           data: FormData.fromMap({
+            "id_": id, //
             "key_": key, //
             "query_": query,
             "min_": min,
             "max_": max,
             "start_": start,
             "end_": end,
-            "order_": sort_order == 0 ? null : sort_order,
+            "order_": order,
             "limit_": limit,
             "offset_": null,
-            "distinct_": null,
+            "autocomplete_": autocomplete,
           }),
         ) //
         .then((r) {
@@ -110,7 +113,7 @@ class _Model_State extends State<Model_> {
             // print(r.data.length);
             has_more = r.data.length == limit;
             data = List<Map<String, dynamic>>.from(r.data);
-            print(data[0]);
+            // print(data[0]);
           });
         })
         .catchError((e) {
@@ -126,16 +129,17 @@ class _Model_State extends State<Model_> {
         .post(
           '$PATH/read',
           data: FormData.fromMap({
+            "id_": null, //
             "key_": key, //
             "query_": query,
             "min_": min,
             "max_": max,
             "start_": start,
             "end_": end,
-            "order_": sort_order == 0 ? null : sort_order,
+            "order_": order,
             "limit_": limit,
             "offset_": data.length,
-            "distinct_": null,
+            "autocomplete_": autocomplete,
           }),
         ) //
         .then((r) {
@@ -207,22 +211,34 @@ class _Model_State extends State<Model_> {
                                 setState(() {
                                   //
 
-                                  if (row["key"] == key) {
-                                    final current_index = [-1, 0, 1].indexOf(sort_order);
-                                    sort_order = [-1, 0, 1][(current_index - 1) % 3];
-                                  } else {
-                                    sort_order = -1;
+                                  if (key != row["key"]) {
+                                    counter = 0;
+                                    order = null;
                                   }
 
-                                  if (sort_order == 0) {
+                                  key = row["key"] as String;
+
+                                  counter += 1;
+
+                                  if (counter % 3 == 0) {
                                     key = null;
-                                  } else {
-                                    key = row["key"] as String;
+                                    order = null;
                                   }
 
-                                  print("key: $key");
-                                  print("sort_order: $sort_order");
+                                  if (counter % 3 == 1) {
+                                    order = "-1";
+                                  }
+
+                                  if (counter % 3 == 2) {
+                                    order = "1";
+                                  }
+
+                                  // print(counter);
+                                  // print("key: $key");
+                                  // print("order: $order");
+
                                   init();
+
                                   controller_table.animateTo(
                                     0, //
                                     duration: const Duration(milliseconds: 300),
@@ -236,7 +252,7 @@ class _Model_State extends State<Model_> {
                                 children: [
                                   key == row["key"]
                                       ? //
-                                        Icon(sort_order == -1 ? Icons.arrow_downward : Icons.arrow_upward, size: 20, color: Colors.blue)
+                                        Icon(order == "-1" ? Icons.arrow_downward : Icons.arrow_upward, size: 20, color: Colors.blue)
                                       : const Icon(Icons.unfold_more, size: 20, color: Colors.blue),
 
                                   SizedBox(width: 4),
@@ -615,7 +631,7 @@ class _Model_State extends State<Model_> {
                       max = null;
                       start = null;
                       end = null;
-                      sort_order = 0;
+                      order = null;
                       init();
                     }
                     setState(() {});
