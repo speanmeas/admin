@@ -233,10 +233,6 @@ class _Model_State extends State<Model_> {
                                     order = "1";
                                   }
 
-                                  // print(counter);
-                                  // print("key: $key");
-                                  // print("order: $order");
-
                                   init();
 
                                   controller_table.animateTo(
@@ -299,6 +295,7 @@ class _Model_State extends State<Model_> {
                                   ).then((value) {
                                     if (value != null) {
                                       query = value;
+                                      order = "1";
                                       init();
                                       controller_table.animateTo(
                                         0, //
@@ -357,7 +354,7 @@ class _Model_State extends State<Model_> {
                                     if (value != null) {
                                       min = value["min"];
                                       max = value["max"];
-
+                                      order = "1";
                                       // query = value;
                                       init();
                                       controller_table.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
@@ -407,6 +404,7 @@ class _Model_State extends State<Model_> {
                                     if (value != null) {
                                       start = value["start"];
                                       end = value["end"];
+                                      order = "1";
                                       init();
                                       controller_table.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
                                     }
@@ -541,15 +539,15 @@ class _Model_State extends State<Model_> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => Form_Update_(
-                                            input: data[index], //
+                                            id: data[index]["id_"], //
                                           ),
                                         ),
                                       ).then((value) {
                                         if (value != null) {
                                           // print(value);
-                                          data[index] = value;
-                                          setState(() {});
-                                          // init();
+                                          //   data[index] = value;
+                                          //   setState(() {});
+                                          init();
                                         }
                                       });
                                     },
@@ -593,7 +591,7 @@ class _Model_State extends State<Model_> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => Form_Read_(
-                                input: data[index], //
+                                id: data[index]["id_"], //
                               ),
                             ),
                           );

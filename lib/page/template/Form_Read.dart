@@ -4,6 +4,7 @@ import 'package:speanmeas/Environment.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import 'Setup.dart';
 import 'Schema.g.dart';
@@ -15,33 +16,14 @@ void main() {
 class Form_Read extends StatelessWidget {
   Form_Read({super.key});
 
-  Map<String, dynamic> input = {
-    "id_": 1, //
-
-    "text_1_": "a", //
-    "text_2_": "aa", //
-    "text_3_": "aaa", //
-    "number_1_": 1,
-    "number_2_": 11,
-    "number_3_": 111,
-    "datetime_1_": "2022-01-01 00:00:00",
-    "datetime_2_": "2022-01-01 00:00:00",
-    "datetime_3_": "2022-01-01 00:00:00",
-
-    "created_at_": "2022-01-01 00:00:00",
-    "updated_at_": "2022-01-01 00:00:00",
-    "deleted_at_": "2022-01-01 00:00:00",
-    "created_by_": "aaa",
-    "updated_by_": "aaa",
-    "deleted_by_": "aaa",
-  };
+  String id = "69f984897186bcf74f8a5dde";
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Form_Read_(input: input),
+      home: Form_Read_(id: id),
     );
   }
 }
@@ -49,17 +31,17 @@ class Form_Read extends StatelessWidget {
 class Form_Read_ extends StatefulWidget {
   Form_Read_({
     super.key, //
-    required this.input,
+    required this.id,
   });
 
-  Map<String, dynamic> input;
+  String id;
 
   @override
   State<Form_Read_> createState() => _Form_Read_State();
 }
 
 class _Form_Read_State extends State<Form_Read_> {
-  late Map<String, dynamic> output;
+  Map<String, dynamic> output = {};
 
   // final ScrollController controller_audios = ScrollController();
   final ScrollController controller_images = ScrollController();
@@ -68,18 +50,24 @@ class _Form_Read_State extends State<Form_Read_> {
   @override
   void initState() {
     super.initState();
+    init();
+  }
 
-    // print(widget.input);
-    // print(widget.input["images_"]);
-    // print(widget.input["images_"]);
-
-    output = Map.from(widget.input);
-
-    // print(output);
-    print(output["images_"]["6"]);
-
-    // print(output);
-    setState(() {});
+  void init() async {
+    await dio
+        .post(
+          '$PATH/read',
+          data: FormData.fromMap({
+            "id_": widget.id, //
+          }),
+        ) //
+        .then((r) {
+          output = Map.from(r.data[0] ?? {});
+          setState(() {});
+        })
+        .catchError((e) {
+          snackbar_show(context: context, message: "Load failed!", color: Colors.red);
+        });
   }
 
   @override

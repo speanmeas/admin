@@ -22,33 +22,14 @@ void main() {
 class Form_Update extends StatelessWidget {
   Form_Update({super.key});
 
-  Map<String, dynamic> input = {
-    "id_": 1, //
-
-    "text_1_": "a", //
-    "text_2_": "aa", //
-    "text_3_": "aaa", //
-    "number_1_": 1,
-    "number_2_": 11,
-    "number_3_": 111,
-    "datetime_1_": "2022-01-01 00:00:00",
-    "datetime_2_": "2022-01-01 00:00:00",
-    "datetime_3_": "2022-01-01 00:00:00",
-
-    "created_at_": "2022-01-01 00:00:00",
-    "updated_at_": "2022-01-01 00:00:00",
-    "deleted_at_": "2022-01-01 00:00:00",
-    "created_by_": "aaa",
-    "updated_by_": "aaa",
-    "deleted_by_": "aaa",
-  };
+  String id = "69f984897186bcf74f8a5dde";
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Form_Update_(input: input),
+      home: Form_Update_(id: id),
     );
   }
 }
@@ -56,17 +37,17 @@ class Form_Update extends StatelessWidget {
 class Form_Update_ extends StatefulWidget {
   Form_Update_({
     super.key, //
-    required this.input,
+    required this.id,
   });
 
-  Map<String, dynamic> input;
+  String id;
 
   @override
   State<Form_Update_> createState() => _Form_Update_State();
 }
 
 class _Form_Update_State extends State<Form_Update_> {
-  late Map<String, dynamic> output;
+  Map<String, dynamic> output = {};
 
   final ScrollController controller_audios = ScrollController();
   final ScrollController controller_images = ScrollController();
@@ -86,12 +67,6 @@ class _Form_Update_State extends State<Form_Update_> {
   @override
   void initState() {
     super.initState();
-    output = Map.from(widget.input);
-
-    // print(output);
-    print(output["images_"]);
-
-    setState(() {});
     init();
   }
 
@@ -100,15 +75,11 @@ class _Form_Update_State extends State<Form_Update_> {
         .post(
           '$PATH/read',
           data: FormData.fromMap({
-            "id_": widget.input["id_"], //
+            "id_": widget.id, //
           }),
         ) //
         .then((r) {
-          print(r);
-          // output = r.data["data"] ?? {};
-          // print(output);
           output = Map.from(r.data[0] ?? {});
-
           setState(() {});
         })
         .catchError((e) {
@@ -261,21 +232,21 @@ class _Form_Update_State extends State<Form_Update_> {
                                   builder: (BuildContext c) {
                                     return Wrap(
                                       children: [
+                                        // ListTile(
+                                        //   leading: Icon(Icons.camera_alt_outlined),
+                                        //   title: Text('Open Camera'),
+                                        //   onTap: () async {
+                                        //     Navigator.pop(c);
+                                        //   },
+                                        // ),
                                         ListTile(
-                                          leading: Icon(Icons.camera_alt_outlined),
-                                          title: Text('Open Camera'),
-                                          onTap: () async {
-                                            Navigator.pop(c);
-                                          },
-                                        ),
-                                        ListTile(
-                                          leading: Icon(Icons.upload_outlined),
-                                          title: Text('Upload'),
+                                          leading: Icon(Icons.upload_outlined, color: Colors.blue),
+                                          title: Text('Upload', style: TextStyle(color: Colors.blue)),
                                           onTap: () async {
                                             // hide bottom sheet
                                             Navigator.pop(c);
 
-                                            final id_ = widget.input["id_"];
+                                            final id_ = widget.id;
                                             final key_ = i.toString();
 
                                             print('Upload image at index: $id_, key: $key_');
@@ -299,8 +270,7 @@ class _Form_Update_State extends State<Form_Update_> {
                                                   }),
                                                 )
                                                 .then((r) {
-                                                  // init();
-
+                                                  init();
                                                   snackbar_show(context: context, message: "Uploaded", color: Colors.green);
                                                 })
                                                 .catchError((e) {
@@ -309,10 +279,33 @@ class _Form_Update_State extends State<Form_Update_> {
                                           },
                                         ),
                                         ListTile(
-                                          leading: Icon(Icons.delete_outlined),
-                                          title: Text('Delete'),
-                                          onTap: () {
+                                          leading: Icon(Icons.delete_outlined, color: Colors.red),
+                                          title: Text('Delete', style: TextStyle(color: Colors.red)),
+                                          onTap: () async {
                                             Navigator.pop(c);
+
+                                            final id_ = widget.id;
+                                            final key_ = i.toString();
+
+                                            print('Delete image at index: $id_, key: $key_');
+
+                                            // delete image from server
+                                            await dio
+                                                .post(
+                                                  '$PATH/upload_image', //
+                                                  data: FormData.fromMap({
+                                                    "id_": id_, //
+                                                    "key_": key_, //
+                                                    'value_': null,
+                                                  }),
+                                                )
+                                                .then((r) {
+                                                  init();
+                                                  snackbar_show(context: context, message: "Image deleted", color: Colors.green);
+                                                })
+                                                .catchError((e) {
+                                                  snackbar_show(context: context, message: 'Delete Failed.', color: Colors.red);
+                                                });
 
                                             //
                                           },
