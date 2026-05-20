@@ -591,7 +591,7 @@ class _Model_State extends State<Model_> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => Form_Read_(
-                                id: data[index]["id_"], //
+                                input: data[index], //
                               ),
                             ),
                           );
