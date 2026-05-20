@@ -93,7 +93,7 @@ class _Form_Create_State extends State<Form_Create_> {
                   return SizedBox.shrink();
                 }
 
-                if (row["type"] == "text") {
+                if (row["kind"] == "text") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
@@ -109,7 +109,7 @@ class _Form_Create_State extends State<Form_Create_> {
                 }
 
                 //
-                if (row["type"] == "number") {
+                if (row["kind"] == "number") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
@@ -127,26 +127,28 @@ class _Form_Create_State extends State<Form_Create_> {
                 }
 
                 //
-                if (row["type"] == "datetime") {
+                if (row["kind"] == "datetime") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: Row(
                       children: [
                         Text("${row['title'] as String? ?? ""} : "),
 
-                        OutlinedButton.icon(
-                          onPressed: () async {
-                            final DateTime? datetime = await datetime_picker(context);
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              final DateTime? datetime = await datetime_picker(context);
 
-                            if (datetime == null) return;
+                              if (datetime == null) return;
 
-                            output[row["key"]] = datetime_to_string(datetime);
+                              output[row["key"]] = datetime_to_string(datetime);
 
-                            setState(() {});
-                          }, //
-                          // label: Text("Select Datetime"),
-                          label: Text(output[row["key"]] == null ? "Select Datetime" : output[row["key"]]!),
-                          icon: const Icon(Icons.calendar_today),
+                              setState(() {});
+                            }, //
+                            // label: Text("Select Datetime"),
+                            label: Text(output[row["key"]] == null ? "Select Datetime" : output[row["key"]]!),
+                            icon: const Icon(Icons.calendar_today),
+                          ),
                         ),
                       ],
                     ),

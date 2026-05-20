@@ -1,113 +1,113 @@
 List<Map<String, dynamic>> schema = [
   {
     "key": "id_",
+    "kind": "text",
     "title": "ID",
-    "type": "text",
     "is_visible": 0,
     "is_exclude": 1
   },
   {
     "key": "text_1_",
+    "kind": "text",
     "title": "Text 1",
-    "type": "text",
     "is_visible": 1,
     "is_exclude": 0
   },
   {
     "key": "text_2_",
+    "kind": "text",
     "title": "Text 2",
-    "type": "text",
     "is_visible": 1,
     "is_exclude": 0
   },
   {
     "key": "text_3_",
+    "kind": "text",
     "title": "Text 3",
-    "type": "text",
     "is_visible": 1,
     "is_exclude": 0
   },
   {
     "key": "number_1_",
+    "kind": "number",
     "title": "Number 1",
-    "type": "number",
     "is_visible": 1,
     "is_exclude": 0
   },
   {
     "key": "number_2_",
+    "kind": "number",
     "title": "Number 2",
-    "type": "number",
     "is_visible": 1,
     "is_exclude": 0
   },
   {
     "key": "number_3_",
+    "kind": "number",
     "title": "Number 3",
-    "type": "number",
     "is_visible": 1,
     "is_exclude": 0
   },
   {
     "key": "datetime_1_",
+    "kind": "datetime",
     "title": "Datetime 1",
-    "type": "datetime",
     "is_visible": 1,
     "is_exclude": 0
   },
   {
     "key": "datetime_2_",
+    "kind": "datetime",
     "title": "Datetime 2",
-    "type": "datetime",
     "is_visible": 1,
     "is_exclude": 0
   },
   {
     "key": "datetime_3_",
+    "kind": "datetime",
     "title": "Datetime 3",
-    "type": "datetime",
     "is_visible": 1,
     "is_exclude": 0
   },
   {
     "key": "created_at_",
+    "kind": "datetime",
     "title": "Created At",
-    "type": "datetime",
     "is_visible": 0,
     "is_exclude": 1
   },
   {
     "key": "updated_at_",
+    "kind": "datetime",
     "title": "Updated At",
-    "type": "datetime",
     "is_visible": 0,
     "is_exclude": 1
   },
   {
     "key": "deleted_at_",
+    "kind": "datetime",
     "title": "Deleted At",
-    "type": "datetime",
     "is_visible": 0,
     "is_exclude": 1
   },
   {
     "key": "created_by_",
+    "kind": "text",
     "title": "Created By",
-    "type": "text",
     "is_visible": 0,
     "is_exclude": 1
   },
   {
     "key": "updated_by_",
+    "kind": "text",
     "title": "Updated By",
-    "type": "text",
     "is_visible": 0,
     "is_exclude": 1
   },
   {
     "key": "deleted_by_",
+    "kind": "text",
     "title": "Deleted By",
-    "type": "text",
     "is_visible": 0,
     "is_exclude": 1
   }

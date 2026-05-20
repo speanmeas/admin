@@ -125,7 +125,7 @@ class _Form_Update_State extends State<Form_Update_> {
                 }
 
                 // edit string
-                if (row["type"] == "text") {
+                if (row["kind"] == "text") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
@@ -142,7 +142,7 @@ class _Form_Update_State extends State<Form_Update_> {
                 }
 
                 // edit number
-                if (row["type"] == "number") {
+                if (row["kind"] == "number") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
@@ -161,7 +161,7 @@ class _Form_Update_State extends State<Form_Update_> {
                 }
 
                 // edit datetime
-                if (row["type"] == "datetime") {
+                if (row["kind"] == "datetime") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: Row(
@@ -193,14 +193,14 @@ class _Form_Update_State extends State<Form_Update_> {
               SizedBox(height: 8),
 
               // Images Upload
-              if (output["images_"] != null)
-                Container(
-                  padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-                  child: Text(
-                    "Images:", //
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
+              // if (output["images_"] != null)
+              Container(
+                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                child: Text(
+                  "Images:", //
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
+              ),
 
               if (output["images_"] != null)
                 Scrollbar(

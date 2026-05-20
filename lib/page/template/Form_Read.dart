@@ -15,33 +15,14 @@ void main() {
 class Form_Read extends StatelessWidget {
   Form_Read({super.key});
 
-  Map<String, dynamic> input = {
-    "id_": 1, //
-
-    "text_1_": "a", //
-    "text_2_": "aa", //
-    "text_3_": "aaa", //
-    "number_1_": 1,
-    "number_2_": 11,
-    "number_3_": 111,
-    "datetime_1_": "2022-01-01 00:00:00",
-    "datetime_2_": "2022-01-01 00:00:00",
-    "datetime_3_": "2022-01-01 00:00:00",
-
-    "created_at_": "2022-01-01 00:00:00",
-    "updated_at_": "2022-01-01 00:00:00",
-    "deleted_at_": "2022-01-01 00:00:00",
-    "created_by_": "aaa",
-    "updated_by_": "aaa",
-    "deleted_by_": "aaa",
-  };
+  String id = "69f984897186bcf74f8a5dde"; //
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Form_Read_(input: input),
+      home: Form_Read_(id: id),
     );
   }
 }
@@ -49,17 +30,17 @@ class Form_Read extends StatelessWidget {
 class Form_Read_ extends StatefulWidget {
   Form_Read_({
     super.key, //
-    required this.input,
+    required this.id,
   });
 
-  Map<String, dynamic> input;
+  String id;
 
   @override
   State<Form_Read_> createState() => _Form_Read_State();
 }
 
 class _Form_Read_State extends State<Form_Read_> {
-  late Map<String, dynamic> output;
+  Map<String, dynamic> output = {};
 
   final ScrollController controller_audios = ScrollController();
   final ScrollController controller_images = ScrollController();
@@ -69,12 +50,30 @@ class _Form_Read_State extends State<Form_Read_> {
   void initState() {
     super.initState();
 
-    output = Map.from(widget.input);
-
-    print(output);
+    // output = Map.from(widget.input);
 
     // print(output);
-    setState(() {});
+
+    // print(output);
+    // setState(() {});
+    init();
+  }
+
+  void init() async {
+    await dio
+        .post(
+          '$PATH/read',
+          data: FormData.fromMap({
+            "id_": widget.id, //
+          }),
+        ) //
+        .then((r) {
+          output = Map.from(r.data[0] ?? {});
+          setState(() {});
+        })
+        .catchError((e) {
+          print(e);
+        });
   }
 
   @override
@@ -118,7 +117,7 @@ class _Form_Read_State extends State<Form_Read_> {
                 }
 
                 //
-                if (row["type"] == "text") {
+                if (row["kind"] == "text") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
@@ -133,7 +132,7 @@ class _Form_Read_State extends State<Form_Read_> {
                 }
 
                 //
-                if (row["type"] == "number") {
+                if (row["kind"] == "number") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
@@ -148,7 +147,7 @@ class _Form_Read_State extends State<Form_Read_> {
                 }
 
                 //
-                if (row["type"] == "datetime") {
+                if (row["kind"] == "datetime") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
@@ -168,7 +167,7 @@ class _Form_Read_State extends State<Form_Read_> {
 
               SizedBox(height: 8),
 
-              if (output["images_"] != null)
+              if (output["images_"] != null && output["images_"].isNotEmpty)
                 Container(
                   padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
                   child: Text(
@@ -177,7 +176,7 @@ class _Form_Read_State extends State<Form_Read_> {
                   ),
                 ),
 
-              if (output["images_"] != null)
+              if (output["images_"] != null && output["images_"].isNotEmpty)
                 Scrollbar(
                   controller: controller_images,
                   thumbVisibility: true,

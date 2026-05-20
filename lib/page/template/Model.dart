@@ -272,7 +272,7 @@ class _Model_State extends State<Model_> {
                       if (is_filter)
                         ..._schema.where((row) => row["is_visible"] == 1).map((row) {
                           //
-                          if (row["type"] == "text") {
+                          if (row["kind"] == "text") {
                             return Container(
                               height: _header_height, //
                               width: _column_width, //
@@ -328,7 +328,7 @@ class _Model_State extends State<Model_> {
                           }
 
                           //
-                          if (row["type"] == "number") {
+                          if (row["kind"] == "number") {
                             return Container(
                               height: _header_height, //
                               width: _column_width, //
@@ -381,7 +381,7 @@ class _Model_State extends State<Model_> {
                           }
 
                           //
-                          if (row["type"] == "datetime") {
+                          if (row["kind"] == "datetime") {
                             return Container(
                               height: _header_height, //
                               width: _column_width, //
@@ -591,7 +591,7 @@ class _Model_State extends State<Model_> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => Form_Read_(
-                                input: data[index], //
+                                id: data[index]["id_"], //
                               ),
                             ),
                           );
