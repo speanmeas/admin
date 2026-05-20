@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:speanmeas/Environment.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
@@ -167,126 +168,54 @@ class _Form_Read_State extends State<Form_Read_> {
 
               SizedBox(height: 8),
 
-              Container(
-                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-                child: Text(
-                  "Audios:", //
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-              ),
-
-              Scrollbar(
-                controller: controller_audios,
-                thumbVisibility: true,
-                // notificationPredicate: (_) => true,
-                thickness: 12, // scrollbar width
-                radius: const Radius.circular(0),
-                // interactive: true,
-                // scrollbarOrientation: ScrollbarOrientation.bottom,
-                child: SingleChildScrollView(
-                  controller: controller_audios,
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (int i = 0; i < 10; i++)
-                        Container(
-                          width: 100, //
-                          height: 100,
-                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
-                          child: InkWell(
-                            onTap: () {
-                              // TODO: Handle audio tap
-                              print('Audio tapped: $i');
-                            },
-                            child: Placeholder(),
-                          ),
-                        ),
-                    ],
+              if (output["images_"] != null)
+                Container(
+                  padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                  child: Text(
+                    "Images:", //
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),
-              ),
 
-              SizedBox(height: 8),
-
-              Container(
-                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-                child: Text(
-                  "Images:", //
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-              ),
-
-              Scrollbar(
-                controller: controller_images,
-                thumbVisibility: true,
-                // notificationPredicate: (_) => true,
-                thickness: 12, // scrollbar width
-                radius: const Radius.circular(0),
-                // interactive: true,
-                // scrollbarOrientation: ScrollbarOrientation.bottom,
-                child: SingleChildScrollView(
+              if (output["images_"] != null)
+                Scrollbar(
                   controller: controller_images,
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (int i = 0; i < 10; i++)
-                        Container(
-                          width: 100, //
-                          height: 100,
-                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
-                          child: InkWell(
-                            onTap: () {
-                              // TODO: Handle image tap
-                              print('Image tapped: $i');
-                            },
-                            child: Placeholder(),
-                          ),
-                        ),
-                    ],
+                  thumbVisibility: true,
+                  // notificationPredicate: (_) => true,
+                  thickness: 12, // scrollbar width
+                  radius: const Radius.circular(0),
+                  // interactive: true,
+                  // scrollbarOrientation: ScrollbarOrientation.bottom,
+                  child: SingleChildScrollView(
+                    controller: controller_images,
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        for (int i = 0; i < 10; i++) ...[
+                          if (output["images_"][i.toString()] != null)
+                            Container(
+                              width: 100, //
+                              height: 100,
+                              margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
+                              child: InkWell(
+                                onTap: () {
+                                  // TODO: Handle image tap
+                                  print('Image tapped: $i');
+                                },
+                                child: output["images_"] != null && output["images_"][i.toString()] != null
+                                    ? Image.network(
+                                        "$MINIO_PUBLIC/200/images/${output["images_"][i.toString()]}", //
+                                        fit: BoxFit.cover, //
+                                      )
+                                    // : Placeholder(),
+                                    : Placeholder(),
+                              ),
+                            ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-
-              SizedBox(height: 8),
-
-              Container(
-                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-                child: Text(
-                  "Videos:", //
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-              ),
-
-              Scrollbar(
-                controller: controller_videos,
-                thumbVisibility: true,
-                // notificationPredicate: (_) => true,
-                thickness: 12, // scrollbar width
-                radius: const Radius.circular(0),
-                // interactive: true,
-                // scrollbarOrientation: ScrollbarOrientation.bottom,
-                child: SingleChildScrollView(
-                  controller: controller_videos,
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (int i = 0; i < 10; i++)
-                        Container(
-                          width: 100, //
-                          height: 100,
-                          margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
-                          child: InkWell(
-                            onTap: () {
-                              // TODO: Handle video tap
-                              print('Video tapped: $i');
-                            },
-                            child: Placeholder(),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
 
               SizedBox(height: 1000),
             ],
