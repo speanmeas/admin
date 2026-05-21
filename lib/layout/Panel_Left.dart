@@ -179,6 +179,30 @@ class _Panel_Left_State extends State<Panel_Left_> {
             if (isMobile) Navigator.pop(context);
           }, //
         ),
+
+        ListTile(
+          leading: Icon(Icons.settings_outlined),
+          title: Text("Manage Setting"),
+          selected: v.body == "Manage Setting",
+          selectedColor: Colors.blue,
+          onTap: () {
+            v.body = "Manage Setting";
+            v.notifyListeners();
+            if (isMobile) Navigator.pop(context);
+          }, //
+        ),
+
+        ListTile(
+          leading: Icon(Icons.login_outlined),
+          title: Text("Signin"),
+          selected: v.body == "Signin",
+          selectedColor: Colors.blue,
+          onTap: () {
+            v.body = "Signin";
+            v.notifyListeners();
+            if (isMobile) Navigator.pop(context);
+          }, //
+        ),
       ],
     );
   }
