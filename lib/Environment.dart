@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
-String TITLE = 'Spean Meas';
+String TITLE = 'Spean Meas HMS';
 
 bool is_local = false;
 
