@@ -101180,14 +101180,14 @@ aj(){var s,r,q
 this.aw()
 for(s=$.a4Y,r=this.d,q=0;q<16;++q)r.m(0,s[q].h(0,"key"),null)
 A.aJ(r)},
-F(a){var s,r=null,q=A.K("Create Template",r,r,r,r,A.b5(r,r,r,r,r,r,r,r,r,r,r,20,r,r,B.v,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),p=t.p
-q=A.cZ(A.b([A.bu(B.r,r,A.a4(B.ab,r,r,r,r),r,r,new A.aw8(a),r,r,r),A.Q(r,r,8)],p),!1,q,0,40)
+F(a){var s,r=null,q=A.ap(a,r,t.w).w,p=A.K("Create Template",r,r,r,r,A.b5(r,r,r,r,r,r,r,r,r,r,r,20,r,r,B.v,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),o=t.p
+p=A.cZ(A.b([A.bu(B.r,r,A.a4(B.ab,r,r,r,r),r,r,new A.aw8(a),r,r,r),A.Q(r,r,8)],o),!1,p,0,40)
 s=$.a4Y
 s=A.ac(new A.ad(s,new A.aw9(this,a),A.a6(s).i("ad<1,e>")),t.l)
 s.push(A.Q(r,8,r))
-s.push(A.ag(A.b([A.ca(A.a4(B.ih,r,r,r,r),A.K("Create",r,r,r,r,r,r,r,r),new A.awa(this,a),A.jo(r,r,r,r,r,r,r,r,r,B.C,r,r,r,r,r,r,r,r,r,r))],p),B.k,B.bC,B.j,0,r))
-s.push(A.Q(r,1000,r))
-return A.cy(q,A.bT(A.a3(r,A.cS(s),B.f,r,r,r,r,r,r,r,r,r,600),r,r),r,r,r)}}
+s.push(A.ag(A.b([A.ca(A.a4(B.ih,r,r,r,r),A.K("Create",r,r,r,r,r,r,r,r),new A.awa(this,a),A.jo(r,r,r,r,r,r,r,r,r,B.C,r,r,r,r,r,r,r,r,r,r))],o),B.k,B.bC,B.j,0,r))
+s.push(A.Q(r,q.a.b-120,r))
+return A.cy(p,A.bT(A.a3(r,A.cS(s),B.f,r,r,r,r,r,r,r,r,r,600),r,r),r,r,r)}}
 A.aw8.prototype={
 $0(){A.ab(this.a,!1).au(null)},
 $S:0}
@@ -101291,19 +101291,19 @@ s=2
 return A.J($.dV().e3("/template/read",A.e2(A.a0(["id_",q.a.c],t.N,p)),p).av(0,new A.awW(q),t.P).cP(new A.awX()),$async$bg)
 case 2:return A.C(null,r)}})
 return A.D($async$bg,r)},
-F(a){var s,r,q,p,o,n,m=this,l=null,k="images_",j=A.K("View Template",l,l,l,l,A.b5(l,l,l,l,l,l,l,l,l,l,l,20,l,l,B.v,l,l,!0,l,l,l,l,l,l,l,l),l,l,l),i=t.p
-j=A.cZ(A.b([A.bu(B.r,l,A.a4(B.ab,l,l,l,l),l,l,new A.awA(a),l,l,l),A.Q(l,l,8)],i),!1,j,0,40)
-s=A.b([A.Q(l,16,l)],i)
+F(a){var s,r,q,p,o,n,m=this,l=null,k="images_",j=A.ap(a,l,t.w).w,i=A.K("View Template",l,l,l,l,A.b5(l,l,l,l,l,l,l,l,l,l,l,20,l,l,B.v,l,l,!0,l,l,l,l,l,l,l,l),l,l,l),h=t.p
+i=A.cZ(A.b([A.bu(B.r,l,A.a4(B.ab,l,l,l,l),l,l,new A.awA(a),l,l,l),A.Q(l,l,8)],h),!1,i,0,40)
+s=A.b([A.Q(l,16,l)],h)
 r=$.a4Y
 B.b.P(s,new A.ad(r,new A.awB(m),A.a6(r).i("ad<1,e>")))
 s.push(A.Q(l,8,l))
 if(m.d.h(0,k)!=null&&J.lN(m.d.h(0,k)))s.push(A.a3(l,A.K("Images:",l,l,l,l,A.b5(l,l,l,l,l,l,l,l,l,l,l,16,l,l,B.v,l,l,!0,l,l,l,l,l,l,l,l),l,l,l),B.f,l,l,l,l,l,l,new A.a7(4,0,4,0),l,l,l))
 if(m.d.h(0,k)!=null&&J.lN(m.d.h(0,k))){r=m.f
-q=A.b([],i)
-for(p=0;p<10;++p){o=A.b([],i)
+q=A.b([],h)
+for(p=0;p<10;++p){o=A.b([],h)
 if(J.a8(m.d.h(0,k),B.e.k(p))!=null){n=m.d.h(0,k)!=null&&J.a8(m.d.h(0,k),B.e.k(p))!=null?A.aQb($.aNR()+"/200/images/"+A.k(J.a8(m.d.h(0,k),B.e.k(p))),B.nt):new A.em(l)
-o.push(A.a3(l,A.bU(!1,!0,n,l,!0,l,l,l,l,l,l,l,l,l,l,new A.awC(p),l,l,l,l),B.f,l,l,l,l,100,new A.a7(4,4,4,20),l,l,l,100))}B.b.P(q,o)}s.push(A.dS(A.dO(A.ag(q,B.k,B.n,B.j,0,l),r,l,B.S),r,B.p,12,!0))}s.push(A.Q(l,1000,l))
-return A.cy(j,A.bT(A.a3(l,A.cS(s),B.f,l,l,l,l,l,l,l,l,l,600),l,l),l,l,l)}}
+o.push(A.a3(l,A.bU(!1,!0,n,l,!0,l,l,l,l,l,l,l,l,l,l,new A.awC(p),l,l,l,l),B.f,l,l,l,l,100,new A.a7(4,4,4,20),l,l,l,100))}B.b.P(q,o)}s.push(A.dS(A.dO(A.ag(q,B.k,B.n,B.j,0,l),r,l,B.S),r,B.p,12,!0))}s.push(A.Q(l,j.a.b-120,l))
+return A.cy(i,A.bT(A.a3(l,A.cS(s),B.f,l,l,l,l,l,l,l,l,l,600),l,l),l,l,l)}}
 A.awW.prototype={
 $1(a){var s=this.a,r=J.a8(a.a,0)
 if(r==null){r=t.z
@@ -101327,7 +101327,7 @@ s=s==null?q:J.c4(s)
 if(s==null)s=""
 return new A.aK(B.a7,A.cn(q,B.U,!1,q,!0,B.t,q,A.cw(),new A.ct(new A.bM(s,B.aq,B.a4),$.aa()),q,q,q,q,q,2,A.cd(q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q,q,B.T,q,q,q,q,q,q,q,q,q,q,q,q,q,q,q,q,q,q,q,q,q,o.h(a,p),!0,!0,!1,q,q,q,q,q,q,q,q,q,q,q,q,q,q),B.B,!0,q,!0,q,!1,q,B.R,q,q,q,q,q,q,q,q,1,q,q,!1,"\u2022",q,q,q,q,q,!1,q,q,!0,q,!0,q,B.Z,q,q,q,q,q,q,q,q,q,q,q,q,!0,B.E,q,B.a_,q,q,q,q),q)}if(J.c(o.h(a,r),"number")){s=this.a.d.h(0,o.h(a,"key"))
 s=s==null?q:J.c4(s)
-if(s==null)s="0"
+if(s==null)s=""
 return new A.aK(B.a7,A.cn(q,B.U,!1,q,!0,B.t,q,A.cw(),new A.ct(new A.bM(s,B.aq,B.a4),$.aa()),q,q,q,q,q,2,A.cd(q,q,q,q,q,q,q,q,!0,q,q,q,q,q,q,q,q,q,B.T,q,q,q,q,q,q,q,q,q,q,q,q,q,q,q,q,q,q,q,q,q,o.h(a,p),!0,!0,!1,q,q,q,q,q,q,q,q,q,q,q,q,q,q),B.B,!0,q,!0,q,!1,q,B.R,q,q,q,q,q,q,q,q,1,q,q,!1,"\u2022",q,q,q,q,q,!1,q,q,!0,q,!0,q,B.Z,q,q,q,q,q,q,q,q,q,q,q,q,!0,B.E,q,B.a_,q,q,q,q),q)}if(J.c(o.h(a,r),"datetime")){s=this.a.d.h(0,o.h(a,"key"))
 s=s==null?q:J.c4(s)
 if(s==null)s=""
@@ -101349,19 +101349,19 @@ s=2
 return A.J($.dV().e3("/template/read",A.e2(A.a0(["id_",q.a.c],t.N,p)),p).av(0,new A.ayr(q),t.P).cP(new A.ays()),$async$bg)
 case 2:return A.C(null,r)}})
 return A.D($async$bg,r)},
-F(a){var s,r,q,p,o,n=this,m=null,l="images_",k=A.K("Update Template",m,m,m,m,A.b5(m,m,m,m,m,m,m,m,m,m,m,20,m,m,B.v,m,m,!0,m,m,m,m,m,m,m,m),m,m,m),j=t.p
-k=A.cZ(A.b([A.bu(B.r,m,A.a4(B.ab,m,m,m,m),m,m,new A.ay1(a),m,m,m),A.Q(m,m,8)],j),!1,k,0,40)
+F(a){var s,r,q,p,o,n=this,m=null,l="images_",k=A.ap(a,m,t.w).w,j=A.K("Update Template",m,m,m,m,A.b5(m,m,m,m,m,m,m,m,m,m,m,20,m,m,B.v,m,m,!0,m,m,m,m,m,m,m,m),m,m,m),i=t.p
+j=A.cZ(A.b([A.bu(B.r,m,A.a4(B.ab,m,m,m,m),m,m,new A.ay1(a),m,m,m),A.Q(m,m,8)],i),!1,j,0,40)
 s=$.a4Y
 s=A.ac(new A.ad(s,new A.ay2(n,a),A.a6(s).i("ad<1,e>")),t.l)
 s.push(A.Q(m,8,m))
 s.push(A.a3(m,A.K("Images:",m,m,m,m,A.b5(m,m,m,m,m,m,m,m,m,m,m,16,m,m,B.v,m,m,!0,m,m,m,m,m,m,m,m),m,m,m),B.f,m,m,m,m,m,m,new A.a7(4,0,4,0),m,m,m))
 if(n.d.h(0,l)!=null){r=n.f
-q=A.b([],j)
+q=A.b([],i)
 for(p=0;p<10;++p){o=J.a8(n.d.h(0,l),B.e.k(p))!=null?A.aQb($.aNR()+"/200/images/"+A.k(J.a8(n.d.h(0,l),B.e.k(p))),B.nt):A.a3(m,A.a4(B.c8,B.C,m,m,24),B.f,B.o7,m,m,m,m,m,m,m,m,m)
 q.push(A.a3(m,A.bU(!1,!0,o,m,!0,m,m,m,m,m,m,m,m,m,m,new A.ay3(n,a,p),m,m,m,m),B.f,m,m,m,m,100,new A.a7(4,4,4,20),m,m,m,100))}s.push(A.dS(A.dO(A.ag(q,B.k,B.n,B.j,0,m),r,m,B.S),r,B.p,12,!0))}s.push(A.Q(m,8,m))
-s.push(A.ag(A.b([A.ca(A.a4(B.Hb,m,m,m,m),A.K("Save",m,m,m,m,m,m,m,m),new A.aye(n,a),A.jo(m,m,m,m,m,m,m,m,m,B.C,m,m,m,m,m,m,m,m,m,m))],j),B.k,B.bC,B.j,0,m))
-s.push(A.Q(m,1000,m))
-return A.cy(k,A.bT(A.a3(m,A.cS(s),B.f,m,m,m,m,m,m,m,m,m,600),m,m),m,m,m)}}
+s.push(A.ag(A.b([A.ca(A.a4(B.Hb,m,m,m,m),A.K("Save",m,m,m,m,m,m,m,m),new A.aye(n,a),A.jo(m,m,m,m,m,m,m,m,m,B.C,m,m,m,m,m,m,m,m,m,m))],i),B.k,B.bC,B.j,0,m))
+s.push(A.Q(m,k.a.b-120,m))
+return A.cy(j,A.bT(A.a3(m,A.cS(s),B.f,m,m,m,m,m,m,m,m,m,600),m,m),m,m,m)}}
 A.ayr.prototype={
 $1(a){var s=this.a,r=J.a8(a.a,0)
 if(r==null){r=t.z
@@ -101426,32 +101426,32 @@ $1(a){var s=null,r=this.a,q=this.b,p=this.c
 return A.lw(A.b([A.cr(s,s,s,!0,!0,A.a4(B.c8,B.C,s,s,s),s,new A.ax1(r,a,q,p),!1,s,s,s,A.K("Upload",s,s,s,s,A.b5(s,s,B.C,s,s,s,s,s,s,s,s,s,s,s,s,s,s,!0,s,s,s,s,s,s,s,s),s,s,s),s,s),A.cr(s,s,s,!0,!0,A.a4(B.bz,B.r,s,s,s),s,new A.ax2(r,a,q,p),!1,s,s,s,A.K("Delete",s,s,s,s,A.b5(s,s,B.r,s,s,s,s,s,s,s,s,s,s,s,s,s,s,!0,s,s,s,s,s,s,s,s),s,s,s),s,s)],t.p))},
 $S:40}
 A.ax1.prototype={
-$0(){var s=0,r=A.E(t.H),q,p=this,o,n,m,l,k,j,i,h,g,f,e,d,c,b
-var $async$$0=A.F(function(a,a0){if(a===1)return A.B(a0,r)
+$0(){var s=0,r=A.E(t.H),q,p=this,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a
+var $async$$0=A.F(function(a0,a1){if(a0===1)return A.B(a1,r)
 for(;;)switch(s){case 0:A.ab(p.b,!1).au(null)
 o=p.a
 n=o.a.c
 m=B.e.k(p.c)
-A.aJ("Upload image at index: "+n+", key: "+m)
 l=new A.PZ(B.nK,null,null,null,!0)
 l.a8m(null,null,null,!0)
 s=3
 return A.J($.aVV().mF(l,B.Hv),$async$$0)
-case 3:k=a0
+case 3:k=a1
 if(k==null){s=1
 break}j=t.z
 i=p.d
 h=$.dV()
-g="/template/upload_image"
+g="/template/upload_media"
 f=A
 e=A
 d=n
 c=m
-b=A
+b="image_value_"
+a=A
 s=5
 return A.J(k.Mj(),$async$$0)
 case 5:s=4
-return A.J(h.e3(g,f.e2(e.a0(["id_",d,"key_",c,"value_",b.b1w(a0,k.b)],t.N,j)),j).av(0,new A.ax_(o,i),t.P).cP(new A.ax0(i)),$async$$0)
+return A.J(h.e3(g,f.e2(e.a0(["id_",d,"image_key_",c,b,a.b1w(a1,k.b)],t.N,j)),j).av(0,new A.ax_(o,i),t.P).cP(new A.ax0(i)),$async$$0)
 case 4:case 1:return A.C(q,r)}})
 return A.D($async$$0,r)},
 $S:6}
@@ -101473,7 +101473,7 @@ A.aJ("Delete image at index: "+o+", key: "+n)
 m=t.z
 l=q.d
 s=2
-return A.J($.dV().e3("/template/upload_image",A.e2(A.a0(["id_",o,"key_",n,"value_",null],t.N,m)),m).av(0,new A.awY(p,l),t.P).cP(new A.awZ(l)),$async$$0)
+return A.J($.dV().e3("/template/delete_media",A.e2(A.a0(["id_",o,"image_key_",n],t.N,m)),m).av(0,new A.awY(p,l),t.P).cP(new A.awZ(l)),$async$$0)
 case 2:return A.C(null,r)}})
 return A.D($async$$0,r)},
 $S:6}

@@ -78,6 +78,8 @@ class _Form_Read_State extends State<Form_Read_> {
 
   @override
   Widget build(BuildContext context) {
+    final screen_height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -136,7 +138,7 @@ class _Form_Read_State extends State<Form_Read_> {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[row["key"]]?.toString() ?? '0'),
+                      controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: row['title'], //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -216,7 +218,7 @@ class _Form_Read_State extends State<Form_Read_> {
                   ),
                 ),
 
-              SizedBox(height: 1000),
+              SizedBox(height: screen_height - 120),
             ],
           ),
         ),

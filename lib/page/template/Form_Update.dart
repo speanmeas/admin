@@ -89,6 +89,8 @@ class _Form_Update_State extends State<Form_Update_> {
 
   @override
   Widget build(BuildContext context) {
+    final screen_height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -223,8 +225,6 @@ class _Form_Update_State extends State<Form_Update_> {
                             margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
                             child: InkWell(
                               onTap: () {
-                                // TODO: Handle image tap
-                                // print('Image tapped: $i');
                                 showModalBottomSheet<void>(
                                   context: context,
                                   isScrollControlled: true,
@@ -249,7 +249,7 @@ class _Form_Update_State extends State<Form_Update_> {
                                             final id_ = widget.id;
                                             final key_ = i.toString();
 
-                                            print('Upload image at index: $id_, key: $key_');
+                                            // print('Upload image at index: $id_, key: $key_');
 
                                             final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
 
@@ -259,11 +259,11 @@ class _Form_Update_State extends State<Form_Update_> {
                                             // upload image to server
                                             await dio
                                                 .post(
-                                                  '$PATH/upload_image', //
+                                                  '$PATH/upload_media', //
                                                   data: FormData.fromMap({
                                                     "id_": id_, //
-                                                    "key_": key_, //
-                                                    'value_': MultipartFile.fromBytes(
+                                                    "image_key_": key_, //
+                                                    'image_value_': MultipartFile.fromBytes(
                                                       await image.readAsBytes(), //
                                                       filename: image.name,
                                                     ),
@@ -292,11 +292,10 @@ class _Form_Update_State extends State<Form_Update_> {
                                             // delete image from server
                                             await dio
                                                 .post(
-                                                  '$PATH/upload_image', //
+                                                  '$PATH/delete_media', //
                                                   data: FormData.fromMap({
                                                     "id_": id_, //
-                                                    "key_": key_, //
-                                                    'value_': null,
+                                                    "image_key_": key_, //
                                                   }),
                                                 )
                                                 .then((r) {
@@ -380,7 +379,7 @@ class _Form_Update_State extends State<Form_Update_> {
                 ],
               ),
 
-              SizedBox(height: 1000),
+              SizedBox(height: screen_height - 120),
             ],
           ),
         ),

@@ -55,6 +55,8 @@ class _Form_Create_State extends State<Form_Create_> {
 
   @override
   Widget build(BuildContext context) {
+    final screen_height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -198,7 +200,7 @@ class _Form_Create_State extends State<Form_Create_> {
                 ],
               ),
 
-              SizedBox(height: 1000),
+              SizedBox(height: screen_height - 120),
             ],
           ),
         ),
