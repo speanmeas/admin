@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/Global_Variable.dart';
+import 'package:speanmeas/Global.dart';
 
 import 'Setup.dart';
 
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Variable(), //
+      create: (_) => Global(), //
       child: const Body(),
     ),
   );
@@ -42,7 +42,7 @@ class _Panel_Body_State extends State<Panel_Body_> {
 
   @override
   Widget build(BuildContext context) {
-    final v = context.watch<Variable>();
+    final v = context.watch<Global>();
 
     // validate body
     if (pages.containsKey(v.body)) {

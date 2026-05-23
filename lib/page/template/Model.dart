@@ -87,6 +87,15 @@ class _Model_State extends State<Model_> {
   @override
   void initState() {
     super.initState();
+
+    // add access_token to dio
+    Future.microtask(() {
+      secure_storage.read(key: 'access_token').then((access_token) {
+        dio.options.headers['access_token'] = access_token;
+        setState(() {});
+      });
+    });
+
     init();
   }
 

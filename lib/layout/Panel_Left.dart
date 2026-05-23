@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global_Variable.dart';
+import 'package:speanmeas/Global.dart';
 
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Variable(), //
+      create: (_) => Global(), //
       child: const Panel_Left(),
     ),
   );
@@ -36,7 +36,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
-    final v = context.watch<Variable>();
+    final v = context.watch<Global>();
     return ListView(
       children: [
         ListTile(

@@ -3,12 +3,14 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global_Variable.dart';
+import 'package:speanmeas/Global.dart';
+import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/utility/Secure_Storage.dart';
 
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Variable(), //
+      create: (_) => Global(), //
       child: const Panel_Top(),
     ),
   );
@@ -37,9 +39,20 @@ class Panel_Top_ extends StatefulWidget {
 class _Panel_Top_State extends State<Panel_Top_> {
   String VERSION = '0.0.0+0';
 
+  String? username;
+
   @override
   void initState() {
     super.initState();
+
+    // add username to dio
+    Future.microtask(() {
+      secure_storage.read(key: 'username').then((value) {
+        username = value;
+        setState(() {});
+      });
+    });
+
     init();
   }
 
@@ -52,7 +65,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
   @override
   Widget build(BuildContext context) {
     bool isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
-    final v = context.watch<Variable>();
+    final v = context.watch<Global>();
     return Container(
       height: 48,
       decoration: isMobile ? null : BoxDecoration(border: Border(bottom: BorderSide())), //
@@ -111,10 +124,10 @@ class _Panel_Top_State extends State<Panel_Top_> {
           // SizedBox(width: 10),
 
           // Login Icon
-          IconButton(
-            onPressed: () {}, //
-            icon: Icon(Icons.login_outlined),
-          ),
+          // IconButton(
+          //   onPressed: () {}, //
+          //   icon: Icon(Icons.login_outlined),
+          // ),
 
           // User Avatar
           InkWell(
@@ -127,7 +140,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
               child: CircleAvatar(
                 radius: 16,
                 backgroundColor: Colors.white,
-                child: Text("A"), //
+                child: Text(username?.substring(0, 1).toUpperCase() ?? "X"), //
               ),
             ),
           ),
