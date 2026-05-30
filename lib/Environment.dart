@@ -35,3 +35,8 @@ String get_minio_public() {
 }
 
 String MINIO_PUBLIC = get_minio_public();
+
+double HEADER_HEIGHT = 40.0;
+double ROW_HEIGHT = 40.0;
+double COLUMN_WIDTH = 120.0;
+double NUMBER_COLUMN_WIDTH = 60.0;
