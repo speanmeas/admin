@@ -3,35 +3,37 @@ import 'package:flutter/material.dart';
 import 'package:speanmeas/page/check_in_out/Main.dart';
 import 'package:speanmeas/page/dashboard/Main.dart';
 
-import 'package:speanmeas/page/guest/Model.dart' as guest;
-import 'package:speanmeas/page/staff/Model.dart' as staff;
+import 'package:speanmeas/page/check_in_out/Main.dart' as check_in_out_;
+import 'package:speanmeas/page/guest/Main.dart' as guest;
 import 'package:speanmeas/page/room/Model.dart' as room;
-import 'package:speanmeas/page/template/Model.dart' as template;
-import 'package:speanmeas/page/Setting.dart';
-import 'package:speanmeas/page/Singin_AI.dart';
+import 'package:speanmeas/page/user/Main.dart' as user;
+
+import 'package:speanmeas/page/staff/Model.dart' as staff;
+import 'package:speanmeas/page/template/Main.dart' as template;
+import 'package:speanmeas/page/setting/Main.dart' as setting;
 
 Map<String, Widget> pages = {
   //
   "Dashboard": Dashboard_(),
 
   //
-  "Check In/Out": Check_In_Out_(),
+  "Check In/Out": check_in_out_.Model_(),
 
   //
   "Room": room.Model_(),
 
   //
-  "Guest": guest.Model_(),
+  "Guest": guest.Main_(),
+
+  //
+  "User": user.Main_(),
 
   //
   "Staff": staff.Model_(),
 
   //
-  "Template": template.Model_(),
+  "Template": template.Main_(),
 
   //
-  "Manage Setting": Setting_(),
-
-  //
-  "Signin": Signin_(),
+  "Setting": setting.Setting_(),
 };

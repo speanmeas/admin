@@ -6,7 +6,7 @@ import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
 import 'package:speanmeas/Environment.dart';
 
-import 'package:speanmeas/page/Singin.dart';
+import 'package:speanmeas/page/Sing_In.dart';
 
 void main() {
   runApp(
@@ -27,7 +27,7 @@ class Main extends StatelessWidget {
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
       // home: Layout_Dashboard_(),
-      home: Signin_(),
+      home: Sign_In_(),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
+import 'package:speanmeas/page/User_Profile.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
 
@@ -131,7 +132,12 @@ class _Panel_Top_State extends State<Panel_Top_> {
 
           // User Avatar
           InkWell(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context, //
+                MaterialPageRoute(builder: (_) => User_Profile_()),
+              );
+            },
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -145,6 +151,20 @@ class _Panel_Top_State extends State<Panel_Top_> {
             ),
           ),
 
+          // OutlinedButton.icon(
+          //   onPressed: () {
+          //     secure_storage.delete(key: 'access_token');
+          //     dio.options.headers.remove('Authorization');
+          //     username = null;
+          //     setState(() {});
+          //     Navigator.pushReplacement(
+          //       context, //
+          //       MaterialPageRoute(builder: (_) => Sign_In_()),
+          //     );
+          //   }, //
+          //   icon: Icon(Icons.logout, color: Colors.red), //
+          //   label: Text("Leave", style: TextStyle(color: Colors.red)), //
+          // ),
           SizedBox(width: 8), //
         ],
       ),

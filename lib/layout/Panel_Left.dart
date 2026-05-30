@@ -40,18 +40,6 @@ class _Panel_Left_State extends State<Panel_Left_> {
     return ListView(
       children: [
         ListTile(
-          leading: Icon(Icons.dashboard_outlined),
-          title: Text("Dashboard"),
-          selected: v.body == "Dashboard",
-          selectedColor: Colors.blue,
-          onTap: () {
-            v.body = "Dashboard";
-            v.notifyListeners();
-            if (isMobile) Navigator.pop(context);
-          }, //
-        ),
-
-        ListTile(
           leading: Icon(Icons.people_outline),
           title: Text("Check In/Out"),
           selected: v.body == "Check In/Out",
@@ -87,13 +75,14 @@ class _Panel_Left_State extends State<Panel_Left_> {
           }, //
         ),
 
+        // User
         ListTile(
-          leading: Icon(Icons.work_outline),
-          title: Text("Staff"),
-          selected: v.body == "Staff",
+          leading: Icon(Icons.person_outline),
+          title: Text("User"),
+          selected: v.body == "User",
           selectedColor: Colors.blue,
           onTap: () {
-            v.body = "Staff";
+            v.body = "User";
             v.notifyListeners();
             if (isMobile) Navigator.pop(context);
           }, //
@@ -167,6 +156,18 @@ class _Panel_Left_State extends State<Panel_Left_> {
           ],
         ),
 
+        ListTile(
+          leading: Icon(Icons.dashboard_outlined),
+          title: Text("Dashboard"),
+          selected: v.body == "Dashboard",
+          selectedColor: Colors.blue,
+          onTap: () {
+            v.body = "Dashboard";
+            v.notifyListeners();
+            if (isMobile) Navigator.pop(context);
+          }, //
+        ),
+
         // Template
         ListTile(
           leading: Icon(Icons.model_training_outlined),
@@ -181,28 +182,40 @@ class _Panel_Left_State extends State<Panel_Left_> {
         ),
 
         ListTile(
-          leading: Icon(Icons.settings_outlined),
-          title: Text("Manage Setting"),
-          selected: v.body == "Manage Setting",
+          leading: Icon(Icons.work_outline),
+          title: Text("Staff"),
+          selected: v.body == "Staff",
           selectedColor: Colors.blue,
           onTap: () {
-            v.body = "Manage Setting";
+            v.body = "Staff";
             v.notifyListeners();
             if (isMobile) Navigator.pop(context);
           }, //
         ),
 
         ListTile(
-          leading: Icon(Icons.login_outlined),
-          title: Text("Signin"),
-          selected: v.body == "Signin",
+          leading: Icon(Icons.settings_outlined),
+          title: Text("Setting"),
+          selected: v.body == "Setting",
           selectedColor: Colors.blue,
           onTap: () {
-            v.body = "Signin";
+            v.body = "Setting";
             v.notifyListeners();
             if (isMobile) Navigator.pop(context);
           }, //
         ),
+
+        // ListTile(
+        //   leading: Icon(Icons.login_outlined),
+        //   title: Text("Signin"),
+        //   selected: v.body == "Signin",
+        //   selectedColor: Colors.blue,
+        //   onTap: () {
+        //     v.body = "Signin";
+        //     v.notifyListeners();
+        //     if (isMobile) Navigator.pop(context);
+        //   }, //
+        // ),
       ],
     );
   }

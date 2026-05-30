@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
-String TITLE = 'Spean Meas HMS';
+String TITLE = 'Spean Meas';
 
 bool is_local = false;
 
@@ -38,5 +38,5 @@ String MINIO_PUBLIC = get_minio_public();
 
 double HEADER_HEIGHT = 40.0;
 double ROW_HEIGHT = 40.0;
-double COLUMN_WIDTH = 120.0;
+double COLUMN_WIDTH = 160.0;
 double NUMBER_COLUMN_WIDTH = 60.0;

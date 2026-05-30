@@ -114,9 +114,9 @@ class _Form_Read_State extends State<Form_Read_> {
 
               ...schema.map((row) {
                 //
-                // if (row["is_exclude"] == 1) {
-                //   return SizedBox.shrink();
-                // }
+                if (row["is_exclude"] == 1) {
+                  return SizedBox.shrink();
+                }
 
                 //
                 if (row["kind"] == "text") {
