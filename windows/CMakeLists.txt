@@ -57,6 +57,45 @@ add_subdirectory("runner")
 # them to the application.
 include(flutter/generated_plugins.cmake)
 
+if(MSVC AND TARGET flutter_secure_storage_windows_plugin)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(ATL_LIBRARY_ARCH x64)
+  else()
+    set(ATL_LIBRARY_ARCH x86)
+  endif()
+
+  set(VS_INSTALL_ROOTS)
+  if(DEFINED CMAKE_GENERATOR_INSTANCE)
+    list(APPEND VS_INSTALL_ROOTS "${CMAKE_GENERATOR_INSTANCE}")
+  endif()
+
+  file(GLOB VS_INSTALL_ROOTS_GLOB LIST_DIRECTORIES true
+    "$ENV{ProgramFiles}/Microsoft Visual Studio/*/*"
+    "$ENV{ProgramFiles\(x86\)}/Microsoft Visual Studio/*/*")
+  list(APPEND VS_INSTALL_ROOTS ${VS_INSTALL_ROOTS_GLOB})
+  list(REMOVE_DUPLICATES VS_INSTALL_ROOTS)
+
+  set(ATL_INCLUDE_DIR)
+  set(ATL_LIBRARY_DIR)
+  foreach(VS_INSTALL_ROOT ${VS_INSTALL_ROOTS})
+    file(GLOB ATL_INCLUDE_DIRS "${VS_INSTALL_ROOT}/VC/Tools/MSVC/*/atlmfc/include")
+    if(ATL_INCLUDE_DIRS)
+      list(SORT ATL_INCLUDE_DIRS)
+      list(GET ATL_INCLUDE_DIRS -1 ATL_INCLUDE_DIR)
+      get_filename_component(ATL_MFC_DIR "${ATL_INCLUDE_DIR}" DIRECTORY)
+      set(ATL_LIBRARY_DIR "${ATL_MFC_DIR}/lib/${ATL_LIBRARY_ARCH}")
+      break()
+    endif()
+  endforeach()
+
+  if(ATL_INCLUDE_DIR)
+    target_include_directories(flutter_secure_storage_windows_plugin PRIVATE "${ATL_INCLUDE_DIR}")
+  endif()
+  if(EXISTS "${ATL_LIBRARY_DIR}")
+    target_link_directories(flutter_secure_storage_windows_plugin PRIVATE "${ATL_LIBRARY_DIR}")
+  endif()
+endif()
+
 
 # === Installation ===
 # Support files are copied into place next to the executable, so that it can
