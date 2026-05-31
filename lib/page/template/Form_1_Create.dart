@@ -91,8 +91,27 @@ class _Form_Create_State extends State<Form_Create_> {
               ...schema.map((row) {
                 // print(row);
 
-                if (row["is_exclude"] == 1) {
-                  return SizedBox.shrink();
+                // todo: handle a click from primary key to select foreign key
+                if (row["key"].toString().endsWith("id_")) {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                    child: Row(
+                      children: [
+                        Text(
+                          "${row['title'] as String? ?? ""} : ", //
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () {}, //
+                            label: Text(output[row["key"]] == null ? "Select" : output[row["key"]]!),
+                            icon: const Icon(Icons.text_fields),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
                 }
 
                 if (row["kind"] == "text") {
@@ -101,6 +120,7 @@ class _Form_Create_State extends State<Form_Create_> {
                     child: TextField(
                       decoration: InputDecoration(
                         labelText: row['title'], //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (value) {
@@ -117,6 +137,7 @@ class _Form_Create_State extends State<Form_Create_> {
                     child: TextField(
                       decoration: InputDecoration(
                         labelText: row['title'], //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -134,7 +155,10 @@ class _Form_Create_State extends State<Form_Create_> {
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: Row(
                       children: [
-                        Text("${row['title'] as String? ?? ""} : "),
+                        Text(
+                          "${row['title'] as String? ?? ""} : ", //
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
 
                         Expanded(
                           child: OutlinedButton.icon(
@@ -169,33 +193,7 @@ class _Form_Create_State extends State<Form_Create_> {
                     icon: Icon(Icons.add_task),
                     label: Text("Create"),
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                    onPressed: () async {
-                      print(output);
-                      await dio
-                          .post(
-                            '$PATH/create',
-                            data: FormData.fromMap({
-                              ...output, //
-                            }),
-                          )
-                          .then((value) {
-                            print(value);
-                            snackbar_show(
-                              context: context, //
-                              message: "Room create successfully",
-                              color: Colors.green,
-                            );
-                            Navigator.pop(context, true);
-                          })
-                          .catchError((error) {
-                            print(error);
-                            snackbar_show(
-                              context: context, //
-                              message: "Room create failed",
-                              color: Colors.red,
-                            );
-                          });
-                    },
+                    onPressed: create_pressed,
                   ),
                 ],
               ),
@@ -206,5 +204,34 @@ class _Form_Create_State extends State<Form_Create_> {
         ),
       ),
     );
+  }
+
+  void create_pressed() async {
+    //
+    print(output);
+    await dio
+        .post(
+          '$PATH/create',
+          data: FormData.fromMap({
+            ...output, //
+          }),
+        )
+        .then((value) {
+          print(value);
+          snackbar_show(
+            context: context, //
+            message: "Room create successfully",
+            color: Colors.green,
+          );
+          Navigator.pop(context, true);
+        })
+        .catchError((error) {
+          print(error);
+          snackbar_show(
+            context: context, //
+            message: "Room create failed",
+            color: Colors.red,
+          );
+        });
   }
 }

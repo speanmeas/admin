@@ -45,6 +45,8 @@ class User_Profile_ extends StatefulWidget {
 }
 
 class _User_Profile_State extends State<User_Profile_> {
+  String? access_token;
+
   bool is_password_visible = false;
 
   String? full_name = "Under development...";
@@ -59,24 +61,27 @@ class _User_Profile_State extends State<User_Profile_> {
   final controller_username = TextEditingController();
   final controller_password = TextEditingController();
 
+  bool confirm_full_name = false;
+  bool confirm_phone_number = false;
+  bool confirm_email = false;
+
+  bool confirm_username = false;
+  bool confirm_password = false;
+
   @override
   void initState() {
     super.initState();
 
-    // controller_full_name.text = full_name ?? "";
-    // controller_phone_number.text = phone_number ?? "";
-    // controller_email.text = email ?? "";
-    // controller_username.text = username ?? "";
-    // controller_password.text = password ?? "";
-
     read_access_token();
+    get_user_info();
   }
 
   void read_access_token() async {
     await secure_storage
         .read(key: 'access_token') //
-        .then((access_token) {
-          if (access_token != null) {
+        .then((r) {
+          if (r != null) {
+            access_token = r;
             dio.options.headers['Authorization'] = 'Bearer $access_token';
             setState(() {});
             print("Access token found: $access_token");
@@ -89,8 +94,33 @@ class _User_Profile_State extends State<User_Profile_> {
         .catchError((e) {});
   }
 
+  dynamic data;
+
   // todo: get user info
-  void get_user_info() async {}
+  void get_user_info() async {
+    //
+    await dio
+        .post(
+          '/auth/read', //
+          data: FormData.fromMap({}),
+        ) //
+        .then((r) {
+          print("User info: ${r.data}");
+          data = r.data;
+
+          controller_full_name.text = data['full_name_'] ?? "";
+          controller_phone_number.text = data['phone_'] ?? "";
+          controller_email.text = data['email_'] ?? "";
+
+          controller_username.text = data['username_'] ?? "";
+          // controller_password.text = "**********"; // do not show real password
+
+          setState(() {});
+        })
+        .catchError((e) {
+          print("Failed to get user info: $e");
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,20 +189,27 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 padding: EdgeInsets.all(8),
                 child: TextField(
-                  controller: controller_full_name..text = full_name ?? "",
+                  controller: controller_full_name,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person, color: Colors.grey),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        print("Edit full name");
-                      },
-                      icon: Icon(Icons.edit, color: Colors.blue),
-                    ),
+                    suffixIcon: confirm_full_name
+                        ? IconButton(
+                            onPressed: () {
+                              print("Edit full name");
+                            },
+                            icon: Icon(Icons.check, color: Colors.blue),
+                          )
+                        : null,
+
                     labelText: "Full Name", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                   ),
                   // initial value
+                  onChanged: (value) {
+                    confirm_full_name = value != "";
+                    setState(() {});
+                  },
                 ),
               ),
 
@@ -181,19 +218,25 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 padding: EdgeInsets.all(8),
                 child: TextField(
-                  controller: controller_phone_number..text = phone_number ?? "",
+                  controller: controller_phone_number,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.phone, color: Colors.grey),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        print("Edit phone number");
-                      },
-                      icon: Icon(Icons.edit, color: Colors.blue),
-                    ),
+                    suffixIcon: confirm_phone_number
+                        ? IconButton(
+                            onPressed: () {
+                              print("Edit phone number");
+                            },
+                            icon: Icon(Icons.check, color: Colors.blue),
+                          )
+                        : null,
                     labelText: "Phone Number", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                   ),
+                  onChanged: (value) {
+                    confirm_phone_number = value != "";
+                    setState(() {});
+                  },
                 ),
               ),
 
@@ -202,19 +245,25 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 padding: EdgeInsets.all(8),
                 child: TextField(
-                  controller: controller_email..text = email ?? "",
+                  controller: controller_email,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.email, color: Colors.grey),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        print("Edit email");
-                      },
-                      icon: Icon(Icons.edit, color: Colors.blue),
-                    ),
+                    suffixIcon: confirm_email
+                        ? IconButton(
+                            onPressed: () {
+                              print("Edit email");
+                            },
+                            icon: Icon(Icons.check, color: Colors.blue),
+                          )
+                        : null,
                     labelText: "Email", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                   ),
+                  onChanged: (value) {
+                    confirm_email = value != "";
+                    setState(() {});
+                  },
                 ),
               ),
 
@@ -223,19 +272,46 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 padding: EdgeInsets.all(8),
                 child: TextField(
-                  controller: controller_username..text = username ?? "",
+                  controller: controller_username,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person, color: Colors.grey),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        print("Edit username");
-                      },
-                      icon: Icon(Icons.edit, color: Colors.blue),
-                    ),
+                    suffixIcon: confirm_username
+                        ? IconButton(
+                            onPressed: () async {
+                              final new_username = controller_username.text;
+
+                              print(new_username);
+
+                              await dio
+                                  .post(
+                                    "/auth/update",
+                                    data: FormData.fromMap({
+                                      "new_username": new_username, //
+                                    }),
+                                  )
+                                  .then((r) {
+                                    print("Username updated: ${r.data}");
+                                    snackbar_show(context: context, message: "Username updated successfully", color: Colors.green);
+                                    setState(() {
+                                      confirm_username = false;
+                                    });
+                                  })
+                                  .catchError((e) {
+                                    print("Failed to update username: $e");
+                                    snackbar_show(context: context, message: "Failed to update username", color: Colors.red);
+                                  });
+                            },
+                            icon: Icon(Icons.check, color: Colors.blue),
+                          )
+                        : null,
                     labelText: "Username", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                   ),
+                  onChanged: (value) {
+                    confirm_username = value != "";
+                    setState(() {});
+                  },
                 ),
               ),
 
@@ -244,19 +320,48 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 padding: EdgeInsets.all(8),
                 child: TextField(
-                  controller: controller_password..text = password ?? "",
+                  controller: controller_password,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.lock, color: Colors.grey),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        print("Edit password");
-                      },
-                      icon: Icon(Icons.edit, color: Colors.blue),
-                    ),
+                    hintText: "Enter New Password",
+                    suffixIcon: confirm_password
+                        ? IconButton(
+                            onPressed: () async {
+                              final new_password = controller_password.text;
+
+                              print(new_password);
+
+                              await dio
+                                  .post(
+                                    "/auth/update",
+                                    data: FormData.fromMap({
+                                      "new_password": new_password, //
+                                    }),
+                                  )
+                                  .then((r) {
+                                    print("Password updated: ${r.data}");
+                                    snackbar_show(context: context, message: "Password updated successfully", color: Colors.green);
+                                    setState(() {
+                                      confirm_password = false;
+                                      controller_password.text = "";
+                                    });
+                                  })
+                                  .catchError((e) {
+                                    print("Failed to update password: $e");
+                                    snackbar_show(context: context, message: "Failed to update password", color: Colors.red);
+                                  });
+                            },
+                            icon: Icon(Icons.check, color: Colors.blue),
+                          )
+                        : null,
                     labelText: "Password", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                   ),
+                  onChanged: (value) {
+                    confirm_password = value != "";
+                    setState(() {});
+                  },
                 ),
               ),
 

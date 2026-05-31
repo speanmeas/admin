@@ -114,8 +114,19 @@ class _Form_Read_State extends State<Form_Read_> {
 
               ...schema.map((row) {
                 //
-                if (row["is_exclude"] == 1) {
-                  return SizedBox.shrink();
+
+                if (row["key"] == "password_hash_") {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                    child: TextField(
+                      controller: TextEditingController(text: "**********"),
+                      decoration: InputDecoration(
+                        labelText: row['title'], //
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      readOnly: true,
+                    ),
+                  );
                 }
 
                 //
