@@ -41,11 +41,11 @@ class _Panel_Left_State extends State<Panel_Left_> {
       children: [
         ListTile(
           leading: Icon(Icons.people_outline),
-          title: Text("Check In/Out"),
-          selected: v.body == "Check In/Out",
+          title: Text("Main Desk"),
+          selected: v.body == "Main Desk",
           selectedColor: Colors.blue,
           onTap: () {
-            v.body = "Check In/Out";
+            v.body = "Main Desk";
             v.notifyListeners();
             if (isMobile) Navigator.pop(context);
           }, //
