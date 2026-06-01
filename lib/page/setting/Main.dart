@@ -47,6 +47,22 @@ class _Setting_State extends State<Setting_> {
   @override
   void initState() {
     super.initState();
+    init();
+  }
+
+  List<Map<String, dynamic>> data = [];
+
+  void init() async {
+    await dio
+        .post("/setting/readAll")
+        .then((r) {
+          data = List<Map<String, dynamic>>.from(r.data);
+          print(data);
+          setState(() {});
+        })
+        .catchError((error) {
+          //
+        });
   }
 
   @override
@@ -62,6 +78,60 @@ class _Setting_State extends State<Setting_> {
               const Text(
                 'Under Development...', //
               ),
+
+              ...data.where((e) => e["Key"] == "Title").map((e) {
+                final key = e["Key"].toString();
+                final value = e["Value"].toString();
+                return Container(
+                  width: 600,
+                  padding: EdgeInsets.all(8),
+                  child: TextField(
+                    controller: TextEditingController(text: value),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(), //
+                      labelText: key,
+                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                    ),
+                  ),
+                );
+              }),
+
+              ...data.where((e) => e["Key"] == "Subtitle").map((e) {
+                final key = e["Key"].toString();
+                final value = e["Value"].toString();
+                return Container(
+                  width: 600,
+                  padding: EdgeInsets.all(8),
+                  child: TextField(
+                    controller: TextEditingController(text: value),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(), //
+                      labelText: key,
+                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                    ),
+                  ),
+                );
+              }),
+
+              ...data.where((e) => e["Key"] == "USD to KHR").map((e) {
+                final key = e["Key"].toString();
+                final value = e["Value"].toString();
+                return Container(
+                  width: 600,
+                  padding: EdgeInsets.all(8),
+                  child: TextField(
+                    controller: TextEditingController(text: value),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(), //
+                      labelText: key,
+                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                    ),
+                  ),
+                );
+              }),
 
               SizedBox(height: screen_height - 80),
             ],

@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
+import 'package:speanmeas/page/check_in_out_clean/form_check_in/Step_4_Summary.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
@@ -17,13 +18,13 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (_) => Global(), //
-      child: const Form_Check_In_Payment(),
+      child: const Payment(),
     ),
   );
 }
 
-class Form_Check_In_Payment extends StatelessWidget {
-  const Form_Check_In_Payment({super.key});
+class Payment extends StatelessWidget {
+  const Payment({super.key});
 
   final id = "69f984897186bcf74f8a5dde"; //
 
@@ -33,21 +34,21 @@ class Form_Check_In_Payment extends StatelessWidget {
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Form_Check_In_Payment_(id: id),
+      home: Payment_(id: id),
     );
   }
 }
 
-class Form_Check_In_Payment_ extends StatefulWidget {
-  const Form_Check_In_Payment_({super.key, required this.id});
+class Payment_ extends StatefulWidget {
+  const Payment_({super.key, required this.id});
 
   final String id;
 
   @override
-  State<Form_Check_In_Payment_> createState() => _Form_Check_In_Payment_State();
+  State<Payment_> createState() => _Payment_State();
 }
 
-class _Form_Check_In_Payment_State extends State<Form_Check_In_Payment_> {
+class _Payment_State extends State<Payment_> {
   //
 
   String? type_pay;
@@ -454,7 +455,7 @@ class _Form_Check_In_Payment_State extends State<Form_Check_In_Payment_> {
                 child: Divider(thickness: 1, color: Colors.grey),
               ),
 
-              // Check In
+              //
               Container(
                 padding: EdgeInsets.all(8),
                 child: OutlinedButton.icon(
@@ -462,9 +463,20 @@ class _Form_Check_In_Payment_State extends State<Form_Check_In_Payment_> {
                   icon: Icon(Icons.login),
                   onPressed: () {
                     print("Check In");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => Summary_(
+                          id: widget.id, //
+                        ),
+                      ),
+                    );
                   }, //
                 ),
               ),
+
+              //
+              SizedBox(height: screen_height - 80),
             ],
           ),
         ),

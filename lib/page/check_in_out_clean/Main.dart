@@ -8,10 +8,10 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
-import 'package:speanmeas/page/check_in_out_clean/Form_Check_In_2_Duration.dart';
-import 'package:speanmeas/page/check_in_out_clean/Form_Check_In_1_Guest_Info.dart';
-import 'package:speanmeas/page/check_in_out_clean/Form_Check_Out.dart';
-import 'package:speanmeas/page/check_in_out_clean/Form_Clean.dart';
+import 'package:speanmeas/page/check_in_out_clean/form_check_in/Step_2_Stay_Detail.dart';
+import 'package:speanmeas/page/check_in_out_clean/form_check_in/Step_1_Guest_Info.dart';
+import 'package:speanmeas/page/check_in_out_clean/form_check_out/Form_Check_Out.dart';
+import 'package:speanmeas/page/check_in_out_clean/form_clean/Form_Clean.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
@@ -79,6 +79,7 @@ class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
         child: Center(
           child: Column(
             children: [
+              //
               ...rooms.map((room) {
                 return Container(
                   width: 600,
@@ -151,7 +152,7 @@ class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => Form_Check_In_Guest_Info_(
+                                    builder: (_) => Guest_Info_(
                                       id: room['_id']['\$oid'], //
                                     ),
                                   ),
@@ -201,6 +202,8 @@ class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
                   ),
                 );
               }),
+
+              SizedBox(height: screen_height - 80),
             ],
           ),
         ),

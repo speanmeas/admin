@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
-import 'package:speanmeas/page/check_in_out_clean/Form_Check_In_3_Payment.dart';
+import 'package:speanmeas/page/check_in_out_clean/form_check_in/Step_3_Payment.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
@@ -18,13 +18,13 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (_) => Global(), //
-      child: const Form_Check_In(),
+      child: const Stay_Detail(),
     ),
   );
 }
 
-class Form_Check_In extends StatelessWidget {
-  const Form_Check_In({super.key});
+class Stay_Detail extends StatelessWidget {
+  const Stay_Detail({super.key});
 
   final id = "69f984897186bcf74f8a5dde"; //
 
@@ -34,21 +34,21 @@ class Form_Check_In extends StatelessWidget {
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Form_Check_In_(id: id),
+      home: Stay_Detail_(id: id),
     );
   }
 }
 
-class Form_Check_In_ extends StatefulWidget {
-  const Form_Check_In_({super.key, required this.id});
+class Stay_Detail_ extends StatefulWidget {
+  const Stay_Detail_({super.key, required this.id});
 
   final String id;
 
   @override
-  State<Form_Check_In_> createState() => _Form_Check_In_State();
+  State<Stay_Detail_> createState() => _Stay_Detail_State();
 }
 
-class _Form_Check_In_State extends State<Form_Check_In_> {
+class _Stay_Detail_State extends State<Stay_Detail_> {
   //
 
   List<Map<String, dynamic>> rooms = [];
@@ -141,7 +141,7 @@ class _Form_Check_In_State extends State<Form_Check_In_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Check In Duration", //
+          "Check In - Stay Detail", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -170,32 +170,23 @@ class _Form_Check_In_State extends State<Form_Check_In_> {
               //
               SizedBox(height: 4),
 
-              // Room Number
+              //
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: Row(
+                padding: EdgeInsets.fromLTRB(8, 12, 8, 4),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Room Number: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    SizedBox(width: 4),
-                    Text(room_number ?? "", style: TextStyle(fontSize: 16)),
+                    Text("Room Number: ", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                    Text(
+                      room_number ?? "",
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue),
+                    ),
                   ],
                 ),
               ),
 
-              // Room Type
-              Container(
-                width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: Row(
-                  children: [
-                    Text("Room Type: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    SizedBox(width: 4),
-                    Text(room_type ?? "", style: TextStyle(fontSize: 16)),
-                  ],
-                ),
-              ),
-
+              //
               Container(
                 width: 600,
                 padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -204,7 +195,7 @@ class _Form_Check_In_State extends State<Form_Check_In_> {
                 ),
               ),
 
-              // Cooling Type
+              //
               Container(
                 width: 600,
                 padding: EdgeInsets.fromLTRB(4, 4, 8, 8),
@@ -256,7 +247,7 @@ class _Form_Check_In_State extends State<Form_Check_In_> {
                 ),
               ),
 
-              // Room Number
+              //
               Container(
                 width: 600,
                 padding: EdgeInsets.all(4),
@@ -266,6 +257,7 @@ class _Form_Check_In_State extends State<Form_Check_In_> {
                 ),
               ),
 
+              //
               Container(
                 width: 600,
                 padding: EdgeInsets.fromLTRB(4, 4, 8, 8),
@@ -340,6 +332,7 @@ class _Form_Check_In_State extends State<Form_Check_In_> {
                 ),
               ),
 
+              //
               Container(
                 width: 600,
                 padding: EdgeInsets.all(4),
@@ -349,6 +342,7 @@ class _Form_Check_In_State extends State<Form_Check_In_> {
                 ),
               ),
 
+              //
               Container(
                 width: 600,
                 padding: EdgeInsets.fromLTRB(4, 4, 8, 8),
@@ -421,12 +415,14 @@ class _Form_Check_In_State extends State<Form_Check_In_> {
                 ),
               ),
 
+              //
               Container(
                 width: 600,
                 padding: EdgeInsets.symmetric(vertical: 2),
                 child: Divider(thickness: 1, color: Colors.grey),
               ),
 
+              //
               Container(
                 width: 600,
                 padding: EdgeInsets.all(4),
@@ -447,7 +443,7 @@ class _Form_Check_In_State extends State<Form_Check_In_> {
                 ),
               ),
 
-              // Pay
+              //
               Container(
                 padding: EdgeInsets.all(8),
                 child: OutlinedButton.icon(
@@ -457,7 +453,7 @@ class _Form_Check_In_State extends State<Form_Check_In_> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => Form_Check_In_Payment_(
+                        builder: (_) => Payment_(
                           id: widget.id, //
                         ),
                       ),
@@ -465,6 +461,9 @@ class _Form_Check_In_State extends State<Form_Check_In_> {
                   }, //
                 ),
               ),
+
+              //
+              SizedBox(height: screen_height - 80),
             ],
           ),
         ),

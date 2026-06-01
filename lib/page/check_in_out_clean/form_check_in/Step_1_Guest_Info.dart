@@ -8,8 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
-import 'package:speanmeas/page/check_in_out_clean/Form_Check_In_2_Duration.dart';
-import 'package:speanmeas/page/check_in_out_clean/Form_Check_In_3_Payment.dart';
+import 'package:speanmeas/page/check_in_out_clean/form_check_in/Step_2_Stay_Detail.dart';
+import 'package:speanmeas/page/check_in_out_clean/form_check_in/Step_3_Payment.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
@@ -19,13 +19,13 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (_) => Global(), //
-      child: const Form_Check_In_Guest_Info(),
+      child: const Guest_Info(),
     ),
   );
 }
 
-class Form_Check_In_Guest_Info extends StatelessWidget {
-  const Form_Check_In_Guest_Info({super.key});
+class Guest_Info extends StatelessWidget {
+  const Guest_Info({super.key});
 
   final id = "69f984897186bcf74f8a5dde"; //
 
@@ -35,21 +35,21 @@ class Form_Check_In_Guest_Info extends StatelessWidget {
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Form_Check_In_Guest_Info_(id: id),
+      home: Guest_Info_(id: id),
     );
   }
 }
 
-class Form_Check_In_Guest_Info_ extends StatefulWidget {
-  const Form_Check_In_Guest_Info_({super.key, required this.id});
+class Guest_Info_ extends StatefulWidget {
+  const Guest_Info_({super.key, required this.id});
 
   final String id;
 
   @override
-  State<Form_Check_In_Guest_Info_> createState() => _Form_Check_In_Guest_Info_State();
+  State<Guest_Info_> createState() => _Guest_Info_State();
 }
 
-class _Form_Check_In_Guest_Info_State extends State<Form_Check_In_Guest_Info_> {
+class _Guest_Info_State extends State<Guest_Info_> {
   //
 
   late String? room_id = widget.id;
@@ -103,9 +103,10 @@ class _Form_Check_In_Guest_Info_State extends State<Form_Check_In_Guest_Info_> {
               Container(
                 width: 600,
                 padding: EdgeInsets.fromLTRB(4, 8, 8, 0),
+                alignment: Alignment.center,
                 child: Text(
-                  "ID Card | Passport: ", //
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  "Photo of ID Card or Passport: ", //
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
 
@@ -139,7 +140,7 @@ class _Form_Check_In_Guest_Info_State extends State<Form_Check_In_Guest_Info_> {
                 child: TextField(
                   decoration: InputDecoration(
                     border: OutlineInputBorder(), //
-                    labelText: "Guest's Name (EN):",
+                    labelText: "Name (EN):",
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
@@ -153,14 +154,29 @@ class _Form_Check_In_Guest_Info_State extends State<Form_Check_In_Guest_Info_> {
                 child: TextField(
                   decoration: InputDecoration(
                     border: OutlineInputBorder(), //
-                    labelText: "Guest's Name (KH):",
+                    labelText: "Name (KH):",
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
                 ),
               ),
 
-              // Phone number input
+              // Nationality
+              Container(
+                width: 600,
+                padding: EdgeInsets.all(8),
+                child: TextField(
+                  controller: TextEditingController(text: "Cambodia"), //
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(), //
+                    labelText: "Nationality:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                ),
+              ),
+
+              //
               Container(
                 width: 600,
                 padding: EdgeInsets.all(8),
@@ -168,13 +184,14 @@ class _Form_Check_In_Guest_Info_State extends State<Form_Check_In_Guest_Info_> {
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(), //
-                    labelText: "Guest's Phone Number",
+                    labelText: "Phone Number",
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
                 ),
               ),
 
+              //
               Container(
                 width: 600,
                 padding: EdgeInsets.fromLTRB(4, 8, 8, 0),
@@ -188,6 +205,7 @@ class _Form_Check_In_Guest_Info_State extends State<Form_Check_In_Guest_Info_> {
                 ),
               ),
 
+              //
               Container(
                 width: 600,
                 padding: EdgeInsets.fromLTRB(4, 4, 8, 8),
@@ -259,7 +277,7 @@ class _Form_Check_In_Guest_Info_State extends State<Form_Check_In_Guest_Info_> {
                 ),
               ),
 
-              // Pay
+              //
               Container(
                 padding: EdgeInsets.all(8),
                 child: OutlinedButton.icon(
@@ -269,7 +287,7 @@ class _Form_Check_In_Guest_Info_State extends State<Form_Check_In_Guest_Info_> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => Form_Check_In_(
+                        builder: (_) => Stay_Detail_(
                           id: widget.id, //
                         ),
                       ),
@@ -277,6 +295,9 @@ class _Form_Check_In_Guest_Info_State extends State<Form_Check_In_Guest_Info_> {
                   }, //
                 ),
               ),
+
+              //
+              SizedBox(height: screen_height - 80),
             ],
           ),
         ),
