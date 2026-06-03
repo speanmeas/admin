@@ -57,8 +57,6 @@ app.*.map.json
 !.github/
 !.gitignore
 
-**/z*/
-**/z*
 
 update_client.py
 update_server.py

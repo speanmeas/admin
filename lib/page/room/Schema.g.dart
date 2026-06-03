@@ -1,72 +1,44 @@
 List<Map<String, dynamic>> schema = [
   {
-    "key": "id_",
-    "title": "ID",
-    "type": "text",
-    "is_visible": 0,
-    "is_exclude": 1
+    "key": "room_number_",
+    "kind": "text",
+    "title": "Room Number",
+    "is_visible": 1
   },
   {
-    "key": "name_",
-    "title": "Name",
-    "type": "text",
-    "is_visible": 1,
-    "is_exclude": 0
+    "key": "room_type_",
+    "kind": "text",
+    "title": "Room Type",
+    "is_visible": 1
   },
   {
-    "key": "type_",
-    "title": "Type",
-    "type": "text",
-    "is_visible": 1,
-    "is_exclude": 0
+    "key": "status_",
+    "kind": "text",
+    "title": "Status",
+    "is_visible": 1
   },
   {
-    "key": "price_",
-    "title": "Price",
-    "type": "number",
-    "is_visible": 1,
-    "is_exclude": 0
+    "key": "price_ac_per_night_usd_",
+    "kind": "number",
+    "title": "Price AC (USD)",
+    "is_visible": 1
   },
   {
-    "key": "created_at_",
-    "title": "Created At",
-    "type": "datetime",
-    "is_visible": 0,
-    "is_exclude": 1
+    "key": "price_fan_per_night_usd_",
+    "kind": "number",
+    "title": "Price Fan (USD)",
+    "is_visible": 1
   },
   {
-    "key": "updated_at_",
-    "title": "Updated At",
-    "type": "datetime",
-    "is_visible": 0,
-    "is_exclude": 1
+    "key": "price_ac_per_3_hour_usd_",
+    "kind": "number",
+    "title": "Price AC (USD)",
+    "is_visible": 1
   },
   {
-    "key": "deleted_at_",
-    "title": "Deleted At",
-    "type": "datetime",
-    "is_visible": 0,
-    "is_exclude": 1
-  },
-  {
-    "key": "created_by_",
-    "title": "Created By",
-    "type": "text",
-    "is_visible": 0,
-    "is_exclude": 1
-  },
-  {
-    "key": "updated_by_",
-    "title": "Updated By",
-    "type": "text",
-    "is_visible": 0,
-    "is_exclude": 1
-  },
-  {
-    "key": "deleted_by_",
-    "title": "Deleted By",
-    "type": "text",
-    "is_visible": 0,
-    "is_exclude": 1
+    "key": "price_fan_per_3_hour_usd_",
+    "kind": "number",
+    "title": "Price Fan (USD)",
+    "is_visible": 1
   }
 ];

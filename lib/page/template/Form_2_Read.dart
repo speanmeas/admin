@@ -5,7 +5,7 @@ import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
-import 'Setup.dart';
+import 'Zetup.dart';
 import 'Schema.g.dart';
 
 void main() {

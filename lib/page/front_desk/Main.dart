@@ -8,10 +8,10 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
-import 'package:speanmeas/page/check_in_out_clean/form_check_in/Step_2_Stay_Detail.dart';
-import 'package:speanmeas/page/check_in_out_clean/form_check_in/Step_1_Guest_Info.dart';
-import 'package:speanmeas/page/check_in_out_clean/form_check_out/Form_Check_Out.dart';
-import 'package:speanmeas/page/check_in_out_clean/form_clean/Form_Clean.dart';
+import 'package:speanmeas/page/front_desk/form_check_in/Step_2_Stay_Detail.dart';
+import 'package:speanmeas/page/front_desk/form_check_in/Step_1_Guest_Info.dart';
+import 'package:speanmeas/page/front_desk/form_check_out/Form_Check_Out.dart';
+import 'package:speanmeas/page/front_desk/form_clean/Form_Clean.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
@@ -50,7 +50,7 @@ class Check_In_Out_Clean_ extends StatefulWidget {
 class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
   //
 
-  List<Map<String, dynamic>> rooms = [];
+  List<Map<String, dynamic>> data = [];
 
   @override
   void initState() {
@@ -60,11 +60,13 @@ class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
 
   void init() async {
     await dio
-        .post("/room/read_all")
+        .post("/room/read")
         .then((r) {
           // print(r.data);
-          rooms = List<Map<String, dynamic>>.from(r.data);
-          // print(rooms);
+          data = List<Map<String, dynamic>>.from(r.data);
+
+          print(data);
+
           setState(() {});
         })
         .catchError((e) {});
@@ -80,7 +82,7 @@ class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
           child: Column(
             children: [
               //
-              ...rooms.map((room) {
+              ...data.map((room) {
                 return Container(
                   width: 600,
                   margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -99,16 +101,16 @@ class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Room ${room['Name']} (${room['Type']})", //
+                              "Room ${room['room_number_']} (${room['room_type_']})", //
                               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             SizedBox(width: 16),
                             Text(
-                              "${room['Status']}",
+                              "${room['status_']}",
                               style: TextStyle(
-                                color: room['Status'] == "Available"
+                                color: room['status_'] == "Available"
                                     ? Colors.green
-                                    : room['Status'] == "Dirty"
+                                    : room['status_'] == "Dirty"
                                     ? Colors.orange
                                     : Colors.red,
                                 fontWeight: FontWeight.w600,
@@ -128,14 +130,14 @@ class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
                             Row(
                               children: [
                                 Text("AC: "), //
-                                Text("${room['AC_USD']}"),
+                                Text("${room['price_ac_per_night_usd_']}"),
                                 Text("\$"), //
                               ],
                             ),
                             Row(
                               children: [
                                 Text("Fan: "), //
-                                Text("${room['Fan_USD']}"),
+                                Text("${room['price_fan_per_night_usd_']}"),
                                 Text("\$"), //
                               ],
                             ),
@@ -146,7 +148,7 @@ class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
                       SizedBox(width: 16),
 
                       OutlinedButton.icon(
-                        onPressed: room['Status'] == "Available"
+                        onPressed: room['status_'] == "Available"
                             ? () {
                                 print("${room['_id']['\$oid']}");
                                 Navigator.push(
@@ -164,7 +166,7 @@ class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
                       ),
                       const SizedBox(width: 8),
                       OutlinedButton.icon(
-                        onPressed: room['Status'] == "Occupied"
+                        onPressed: room['status_'] == "Occupied"
                             ? () {
                                 print("${room['_id']['\$oid']}");
                                 Navigator.push(
@@ -182,7 +184,7 @@ class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
                       ),
                       const SizedBox(width: 8),
                       OutlinedButton.icon(
-                        onPressed: room['Status'] == "Dirty"
+                        onPressed: room['status_'] == "Dirty"
                             ? () {
                                 print("${room['_id']['\$oid']}");
                                 Navigator.push(

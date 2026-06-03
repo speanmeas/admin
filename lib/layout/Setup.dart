@@ -11,7 +11,7 @@ import 'package:speanmeas/page/user/Main.dart' as user;
 import 'package:speanmeas/page/staff/Model.dart' as staff;
 import 'package:speanmeas/page/template/Main.dart' as template;
 import 'package:speanmeas/page/setting/Main.dart' as setting;
-import 'package:speanmeas/page/check_in_out_clean/Main.dart' as check_in_out_clean;
+import 'package:speanmeas/page/front_desk/Main.dart' as check_in_out_clean;
 
 Map<String, Widget> pages = {
   //

@@ -1,14 +1,20 @@
 List<Map<String, dynamic>> schema = [
   {
-    "key": "aaa_id_",
+    "key": "xxx_id_",
     "kind": "text",
-    "title": "AAA",
+    "title": "XXX",
     "is_visible": 1
   },
   {
-    "key": "bbb_id_",
+    "key": "yyy_id_",
     "kind": "text",
-    "title": "BBB",
+    "title": "YYY",
+    "is_visible": 1
+  },
+  {
+    "key": "zzz_id_",
+    "kind": "text",
+    "title": "ZZZ",
     "is_visible": 1
   },
   {
