@@ -27,23 +27,19 @@ void main() {
 class Summary extends StatelessWidget {
   const Summary({super.key});
 
-  final id = "69f984897186bcf74f8a5dde"; //
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Summary_(id: id),
+      home: Summary_(),
     );
   }
 }
 
 class Summary_ extends StatefulWidget {
-  const Summary_({super.key, required this.id});
-
-  final String id;
+  const Summary_({super.key});
 
   @override
   State<Summary_> createState() => _Summary_State();
@@ -111,14 +107,7 @@ class _Summary_State extends State<Summary_> {
                   label: Text("Print"),
                   icon: Icon(Icons.print_outlined),
                   onPressed: () async {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => Receipt_(
-                          id: widget.id, //
-                        ),
-                      ),
-                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => Receipt_()));
                   }, //
                 ),
               ),

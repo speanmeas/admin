@@ -27,23 +27,19 @@ void main() {
 class Receipt extends StatelessWidget {
   const Receipt({super.key});
 
-  final id = "69f984897186bcf74f8a5dde"; //
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Receipt_(id: id),
+      home: Receipt_(),
     );
   }
 }
 
 class Receipt_ extends StatefulWidget {
-  const Receipt_({super.key, required this.id});
-
-  final String id;
+  const Receipt_({super.key});
 
   @override
   State<Receipt_> createState() => _Receipt_State();

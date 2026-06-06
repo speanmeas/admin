@@ -5,7 +5,7 @@ import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Zetup.dart';
+import '__Setup__.dart';
 import 'Schema.g.dart';
 
 void main() {
@@ -30,11 +30,9 @@ class Form_Delete extends StatelessWidget {
 class Form_Delete_ extends StatefulWidget {
   Form_Delete_({
     super.key, //
-    // required this.input,
     required this.id,
   });
 
-  // final Map<String, dynamic> input;
   final String id;
 
   @override
@@ -94,32 +92,7 @@ class _Form_Delete_State extends State<Form_Delete_> {
                     icon: Icon(Icons.delete_outlined),
                     label: Text("Delete"),
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-                    onPressed: () async {
-                      await dio
-                          .post(
-                            '$PATH/delete',
-                            data: FormData.fromMap({
-                              "id_": widget.id, //
-                            }),
-                          )
-                          .then((value) {
-                            print(value);
-                            snackbar_show(
-                              context: context, //
-                              message: "Room deleted successfully",
-                              color: Colors.green,
-                            );
-                            Navigator.pop(context, true);
-                          })
-                          .catchError((error) {
-                            print(error);
-                            snackbar_show(
-                              context: context, //
-                              message: "Failed to delete room",
-                              color: Colors.red,
-                            );
-                          });
-                    },
+                    onPressed: delete_pressed,
                     // style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   ),
                 ],
@@ -129,5 +102,33 @@ class _Form_Delete_State extends State<Form_Delete_> {
         ),
       ),
     );
+  }
+
+  void delete_pressed() async {
+    //
+    await dio
+        .post(
+          '$PATH/data_delete',
+          data: FormData.fromMap({
+            "id": widget.id, //
+          }),
+        )
+        .then((value) {
+          print(value);
+          snackbar_show(
+            context: context, //
+            message: "Room deleted successfully",
+            color: Colors.green,
+          );
+          Navigator.pop(context, true);
+        })
+        .catchError((error) {
+          print(error);
+          snackbar_show(
+            context: context, //
+            message: "Failed to delete room",
+            color: Colors.red,
+          );
+        });
   }
 }

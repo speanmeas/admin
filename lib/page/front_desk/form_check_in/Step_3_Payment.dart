@@ -26,23 +26,19 @@ void main() {
 class Payment extends StatelessWidget {
   const Payment({super.key});
 
-  final id = "69f984897186bcf74f8a5dde"; //
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Payment_(id: id),
+      home: Payment_(),
     );
   }
 }
 
 class Payment_ extends StatefulWidget {
-  const Payment_({super.key, required this.id});
-
-  final String id;
+  const Payment_({super.key});
 
   @override
   State<Payment_> createState() => _Payment_State();
@@ -463,14 +459,7 @@ class _Payment_State extends State<Payment_> {
                   icon: Icon(Icons.login),
                   onPressed: () {
                     print("Check In");
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => Summary_(
-                          id: widget.id, //
-                        ),
-                      ),
-                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => Summary_()));
                   }, //
                 ),
               ),

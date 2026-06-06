@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
+import 'package:speanmeas/page/front_desk/form_check_in/Model.dart';
 import 'package:speanmeas/page/front_desk/form_check_in/Step_2_Stay_Detail.dart';
 import 'package:speanmeas/page/front_desk/form_check_in/Step_3_Payment.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
@@ -16,18 +17,11 @@ import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global(), //
-      child: const Guest_Info(),
-    ),
-  );
+  runApp(const Guest_Info());
 }
 
 class Guest_Info extends StatelessWidget {
   const Guest_Info({super.key});
-
-  final id = "69f984897186bcf74f8a5dde"; //
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +29,13 @@ class Guest_Info extends StatelessWidget {
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Guest_Info_(id: id),
+      home: Guest_Info_(),
     );
   }
 }
 
 class Guest_Info_ extends StatefulWidget {
-  const Guest_Info_({super.key, required this.id});
-
-  final String id;
+  const Guest_Info_({super.key});
 
   @override
   State<Guest_Info_> createState() => _Guest_Info_State();
@@ -52,9 +44,9 @@ class Guest_Info_ extends StatefulWidget {
 class _Guest_Info_State extends State<Guest_Info_> {
   //
 
-  late String? room_id = widget.id;
+  late String? room_id = "";
 
-  int? number_of_guests;
+  dynamic data;
 
   ScrollController? number_of_guests_scroll_controller = ScrollController();
 
@@ -62,6 +54,8 @@ class _Guest_Info_State extends State<Guest_Info_> {
   void initState() {
     super.initState();
     init();
+
+    print("Model.data: ${Model.data}");
   }
 
   void init() async {}
@@ -234,8 +228,8 @@ class _Guest_Info_State extends State<Guest_Info_> {
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          if (number_of_guests == e) Icon(Icons.radio_button_checked, size: 24, color: Colors.blue), //
-                                          if (number_of_guests != e) Icon(Icons.radio_button_unchecked, size: 24), //
+                                          if (Model.data['number_of_guests'] == e) Icon(Icons.radio_button_checked, size: 24, color: Colors.blue), //
+                                          if (Model.data['number_of_guests'] != e) Icon(Icons.radio_button_unchecked, size: 24), //
                                           SizedBox(width: 2),
                                           if (e == 1) //
                                             Text("1 Person", style: TextStyle(fontSize: 16))
@@ -245,7 +239,7 @@ class _Guest_Info_State extends State<Guest_Info_> {
                                       ),
                                     ),
                                     onTap: () {
-                                      number_of_guests = e;
+                                      Model.data['number_of_guests'] = e;
                                       setState(() {});
                                     },
                                   );
@@ -260,7 +254,7 @@ class _Guest_Info_State extends State<Guest_Info_> {
                     Container(
                       width: 80,
                       child: TextField(
-                        controller: TextEditingController(text: number_of_guests?.toString() ?? ""),
+                        controller: TextEditingController(text: Model.data['number_of_guests']?.toString() ?? ""),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: "Persons",
@@ -268,7 +262,7 @@ class _Guest_Info_State extends State<Guest_Info_> {
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                         ),
                         onChanged: (value) {
-                          number_of_guests = int.tryParse(value);
+                          Model.data['number_of_guests'] = int.tryParse(value);
                           setState(() {});
                         },
                       ),
@@ -284,14 +278,7 @@ class _Guest_Info_State extends State<Guest_Info_> {
                   label: Text("Next"), //
                   icon: Icon(Icons.play_arrow_outlined, size: 32),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => Stay_Detail_(
-                          id: widget.id, //
-                        ),
-                      ),
-                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => Stay_Detail_()));
                   }, //
                 ),
               ),

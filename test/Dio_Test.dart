@@ -9,22 +9,13 @@ void main() async {
 
   await dio
       .post(
-        '/template/create',
+        '/template/data_read',
         data: FormData.fromMap({
-          "aaa": "aaa", //
-          "bbb": "bbb", //
+          //
         }),
       )
-      .then((response) {
-        print("Ok!");
+      .then((r) {
+        print(r.data);
       })
-      .catchError((error) {
-        print("Error!");
-      });
-  // try {
-  //   final response = await dio.get('/api/v1/hello');
-  //   print(response.data);
-  // } catch (e) {
-  //   print('Error: $e');
-  // }
+      .catchError((error) {});
 }

@@ -12,7 +12,7 @@ import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Zetup.dart';
+import '__Setup__.dart';
 import 'Schema.g.dart';
 
 void main() {
@@ -73,13 +73,14 @@ class _Form_Update_State extends State<Form_Update_> {
   void init() async {
     await dio
         .post(
-          '$PATH/read',
+          '$PATH/data_read',
           data: FormData.fromMap({
-            "id_": widget.id, //
+            "id": widget.id, //
           }),
         ) //
         .then((r) {
           output = Map.from(r.data[0] ?? {});
+          // print(output);
           setState(() {});
         })
         .catchError((e) {
@@ -216,7 +217,7 @@ class _Form_Update_State extends State<Form_Update_> {
                 ),
               ),
 
-              if (output["images_"] != null)
+              if (output["images"] != null)
                 Scrollbar(
                   controller: controller_images,
                   thumbVisibility: true,
@@ -258,10 +259,10 @@ class _Form_Update_State extends State<Form_Update_> {
                                             // hide bottom sheet
                                             Navigator.pop(c);
 
-                                            final id_ = widget.id;
-                                            final key_ = i.toString();
+                                            final id = widget.id;
+                                            final key = i.toString();
 
-                                            // print('Upload image at index: $id_, key: $key_');
+                                            // print('Upload image at index: $id, key: $key');
 
                                             final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
 
@@ -271,11 +272,11 @@ class _Form_Update_State extends State<Form_Update_> {
                                             // upload image to server
                                             await dio
                                                 .post(
-                                                  '$PATH/upload_media', //
+                                                  '$PATH/file_upload', //
                                                   data: FormData.fromMap({
-                                                    "id_": id_, //
-                                                    "image_key_": key_, //
-                                                    'image_value_': MultipartFile.fromBytes(
+                                                    "id": id, //
+                                                    "image_key": key, //
+                                                    'image_value': MultipartFile.fromBytes(
                                                       await image.readAsBytes(), //
                                                       filename: image.name,
                                                     ),
@@ -296,18 +297,18 @@ class _Form_Update_State extends State<Form_Update_> {
                                           onTap: () async {
                                             Navigator.pop(c);
 
-                                            final id_ = widget.id;
-                                            final key_ = i.toString();
+                                            final id = widget.id;
+                                            final key = i.toString();
 
-                                            print('Delete image at index: $id_, key: $key_');
+                                            // print('Delete image at index: $id, key: $key');
 
                                             // delete image from server
                                             await dio
                                                 .post(
-                                                  '$PATH/delete_media', //
+                                                  '$PATH/file_delete', //
                                                   data: FormData.fromMap({
-                                                    "id_": id_, //
-                                                    "image_key_": key_, //
+                                                    "id": id, //
+                                                    "image_key": key, //
                                                   }),
                                                 )
                                                 .then((r) {
@@ -326,9 +327,9 @@ class _Form_Update_State extends State<Form_Update_> {
                                   },
                                 );
                               },
-                              child: output["images_"][i.toString()] != null
+                              child: output["images"][i.toString()] != null
                                   ? Image.network(
-                                      "$MINIO_PUBLIC/200/images/${output["images_"][i.toString()]}", //
+                                      "$MINIO_PUBLIC/200/images/${output["images"][i.toString()]}", //
                                       fit: BoxFit.cover,
                                     )
                                   : Container(
@@ -341,7 +342,6 @@ class _Form_Update_State extends State<Form_Update_> {
                     ),
                   ),
                 ),
-
               SizedBox(height: 8),
 
               // Save button
@@ -353,19 +353,22 @@ class _Form_Update_State extends State<Form_Update_> {
                     label: Text("Save"),
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
                     onPressed: () async {
-                      print(output);
-                      final Map<String, dynamic> formMap = {...output};
-                      for (int i = 0; i < selectedImages.length; i++) {
-                        final XFile? file = selectedImages[i];
-                        if (file != null) {
-                          formMap['images[$i]'] = await MultipartFile.fromFile(file.path, filename: file.name);
-                        }
-                      }
+                      // final Map<String, dynamic> formMap = {...output};
+                      // for (int i = 0; i < selectedImages.length; i++) {
+                      //   final XFile? file = selectedImages[i];
+                      //   if (file != null) {
+                      //     formMap['images[$i]'] = await MultipartFile.fromFile(file.path, filename: file.name);
+                      //   }
+                      // }
+
+                      // output["id"] = output["_id"][r"$oid"]; //
+                      // print(output);
+
                       await dio
                           .post(
-                            '$PATH/update',
+                            '$PATH/data_update',
                             data: FormData.fromMap({
-                              ...formMap, //
+                              ...output, //
                             }),
                           )
                           .then((value) {
@@ -373,7 +376,7 @@ class _Form_Update_State extends State<Form_Update_> {
 
                             snackbar_show(
                               context: context, //
-                              message: "Room update successfully",
+                              message: "$HEADER update successfully",
                               color: Colors.green,
                             );
                             Navigator.pop(context, output);
@@ -382,7 +385,7 @@ class _Form_Update_State extends State<Form_Update_> {
                             // print(error);
                             snackbar_show(
                               context: context, //
-                              message: "Room update failed",
+                              message: "$HEADER update failed",
                               color: Colors.red,
                             );
                           });
@@ -397,5 +400,9 @@ class _Form_Update_State extends State<Form_Update_> {
         ),
       ),
     );
+  }
+
+  void update_pressed() async {
+    //
   }
 }

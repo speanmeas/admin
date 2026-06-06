@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
+import 'package:speanmeas/page/front_desk/form_check_in/Model.dart';
 import 'package:speanmeas/page/front_desk/form_check_in/Step_3_Payment.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
@@ -26,23 +27,19 @@ void main() {
 class Stay_Detail extends StatelessWidget {
   const Stay_Detail({super.key});
 
-  final id = "69f984897186bcf74f8a5dde"; //
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Stay_Detail_(id: id),
+      home: Stay_Detail_(),
     );
   }
 }
 
 class Stay_Detail_ extends StatefulWidget {
-  const Stay_Detail_({super.key, required this.id});
-
-  final String id;
+  const Stay_Detail_({super.key});
 
   @override
   State<Stay_Detail_> createState() => _Stay_Detail_State();
@@ -54,7 +51,7 @@ class _Stay_Detail_State extends State<Stay_Detail_> {
   List<Map<String, dynamic>> rooms = [];
   String? selectedStayType;
 
-  late String? room_id = widget.id;
+  late String? room_id = Model.data['room_id'];
 
   String? room_number;
   String? room_type;
@@ -450,14 +447,7 @@ class _Stay_Detail_State extends State<Stay_Detail_> {
                   label: Text("Next"),
                   icon: Icon(Icons.play_arrow_outlined, size: 32),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => Payment_(
-                          id: widget.id, //
-                        ),
-                      ),
-                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => Payment_()));
                   }, //
                 ),
               ),

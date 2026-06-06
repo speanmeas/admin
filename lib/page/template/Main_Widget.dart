@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:speanmeas/Environment.dart';
+import 'package:speanmeas/utility/Datetime_format.dart';
 
-Widget Container_Sort_Mode({
+Widget Header_Sort_Mode({
   required dynamic row, //
   required String? key,
   required String? order,
@@ -39,7 +40,7 @@ Widget Container_Sort_Mode({
   );
 }
 
-Widget Container_Search_Datetime({
+Widget Header_Search_Datetime({
   required dynamic row, //
   required VoidCallback onPressed,
 }) {
@@ -67,7 +68,7 @@ Widget Container_Search_Datetime({
   );
 }
 
-Widget Container_Search_Number({
+Widget Header_Search_Number({
   required dynamic row, //
   required VoidCallback onPressed,
 }) {
@@ -95,7 +96,7 @@ Widget Container_Search_Number({
   );
 }
 
-Widget Container_Search_Text({
+Widget Header_Search_Text({
   required dynamic row, //
   required VoidCallback onPressed,
 }) {
@@ -157,7 +158,7 @@ Widget Container_Loading() {
   );
 }
 
-Widget Container_Price(dynamic input) {
+Widget Cell_Price(dynamic input) {
   final priceValue = input;
   final price = priceValue is num ? priceValue.toDouble() : double.tryParse(priceValue?.toString() ?? "0.0") ?? 0.0;
   return Container(
@@ -172,7 +173,13 @@ Widget Container_Price(dynamic input) {
   );
 }
 
-Widget Container_General(String data) {
+Widget Cell_Datetime(dynamic data) {
+  final raw = data;
+  if (raw is Map && raw.containsKey(r'$date')) {
+    final datetime = DateTime.tryParse(raw[r'$date']);
+    data = datetime_to_string(datetime) ?? "";
+  }
+
   // general case
   return Container(
     width: COLUMN_WIDTH, //
@@ -186,8 +193,23 @@ Widget Container_General(String data) {
   );
 }
 
-Widget Container_Add({required VoidCallback onPressed}) {
+Widget Cell_General(dynamic data) {
+  // general case
   return Container(
+    width: COLUMN_WIDTH, //
+    alignment: Alignment.center,
+    child: Text(
+      data, //
+      overflow: TextOverflow.ellipsis,
+      maxLines: 2,
+      softWrap: true,
+    ),
+  );
+}
+
+Widget Footer_Add({required VoidCallback onPressed}) {
+  return Container(
+    margin: EdgeInsets.fromLTRB(0, 0, 0, 4),
     decoration: BoxDecoration(
       border: Border.all(color: Colors.blue, width: 2),
       borderRadius: BorderRadius.circular(4),
@@ -199,8 +221,9 @@ Widget Container_Add({required VoidCallback onPressed}) {
   );
 }
 
-Widget Container_Column_Visible({required VoidCallback onPressed}) {
+Widget Footer_Visibility({required VoidCallback onPressed}) {
   return Container(
+    margin: EdgeInsets.fromLTRB(0, 0, 0, 4),
     decoration: BoxDecoration(
       border: Border.all(color: Colors.blue, width: 2),
       borderRadius: BorderRadius.circular(4),
@@ -212,7 +235,7 @@ Widget Container_Column_Visible({required VoidCallback onPressed}) {
   );
 }
 
-Widget Container_No() {
+Widget Header_No() {
   return Container(
     height: HEADER_HEIGHT,
     width: NUMBER_COLUMN_WIDTH,
@@ -221,7 +244,7 @@ Widget Container_No() {
   );
 }
 
-Widget Container_Action() {
+Widget Header_Action() {
   return Container(
     height: HEADER_HEIGHT, //
     width: 80, //
@@ -236,11 +259,31 @@ Widget Container_Action() {
   );
 }
 
-Widget Container_Filter({
+Widget Footer_Export({
+  required VoidCallback onPressed, //
+}) {
+  return Container(
+    margin: EdgeInsets.fromLTRB(0, 0, 0, 4),
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.blue, width: 2),
+      borderRadius: BorderRadius.circular(4),
+    ),
+    child: IconButton(
+      onPressed: onPressed,
+      icon: Icon(
+        Icons.download_outlined, //
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+}
+
+Widget Footer_Filter({
   required bool is_filter, //
   required VoidCallback onPressed,
 }) {
   return Container(
+    margin: EdgeInsets.fromLTRB(0, 0, 0, 4),
     decoration: BoxDecoration(
       border: Border.all(color: Colors.blue, width: 2),
       borderRadius: BorderRadius.circular(4),
@@ -255,7 +298,7 @@ Widget Container_Filter({
   );
 }
 
-Widget Button_Edit({required VoidCallback onPressed}) {
+Widget Button_Update({required VoidCallback onPressed}) {
   return SizedBox(
     width: ROW_HEIGHT, //
     child: IconButton(

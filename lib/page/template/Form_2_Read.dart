@@ -5,7 +5,7 @@ import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 
-import 'Zetup.dart';
+import '__Setup__.dart';
 import 'Schema.g.dart';
 
 void main() {
@@ -62,9 +62,9 @@ class _Form_Read_State extends State<Form_Read_> {
   void init() async {
     await dio
         .post(
-          '$PATH/read',
+          '$PATH/data_read',
           data: FormData.fromMap({
-            "id_": widget.id, //
+            "id": widget.id, //
           }),
         ) //
         .then((r) {
@@ -180,7 +180,7 @@ class _Form_Read_State extends State<Form_Read_> {
 
               SizedBox(height: 8),
 
-              if (output["images_"] != null && output["images_"].isNotEmpty)
+              if (output["images"] != null && output["images"].isNotEmpty)
                 Container(
                   padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
                   child: Text(
@@ -189,7 +189,7 @@ class _Form_Read_State extends State<Form_Read_> {
                   ),
                 ),
 
-              if (output["images_"] != null && output["images_"].isNotEmpty)
+              if (output["images"] != null && output["images"].isNotEmpty)
                 Scrollbar(
                   controller: controller_images,
                   thumbVisibility: true,
@@ -204,7 +204,7 @@ class _Form_Read_State extends State<Form_Read_> {
                     child: Row(
                       children: [
                         for (int i = 0; i < 10; i++) ...[
-                          if (output["images_"][i.toString()] != null)
+                          if (output["images"][i.toString()] != null)
                             Container(
                               width: 100, //
                               height: 100,
@@ -214,9 +214,9 @@ class _Form_Read_State extends State<Form_Read_> {
                                   // TODO: Handle image tap
                                   print('Image tapped: $i');
                                 },
-                                child: output["images_"] != null && output["images_"][i.toString()] != null
+                                child: output["images"] != null && output["images"][i.toString()] != null
                                     ? Image.network(
-                                        "$MINIO_PUBLIC/200/images/${output["images_"][i.toString()]}", //
+                                        "$MINIO_PUBLIC/200/images/${output["images"][i.toString()]}", //
                                         fit: BoxFit.cover, //
                                       )
                                     // : Placeholder(),

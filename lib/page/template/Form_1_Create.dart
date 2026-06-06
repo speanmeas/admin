@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:speanmeas/Environment.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Datetime_format.dart';
@@ -8,7 +9,7 @@ import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Zetup.dart';
+import '__Setup__.dart';
 import 'Schema.g.dart';
 
 void main() {
@@ -47,8 +48,6 @@ class _Form_Create_State extends State<Form_Create_> {
     for (var e in schema) {
       output[e["key"]] = null;
     }
-
-    print(output);
   }
 
   DateTime? selectedDateTime;
@@ -91,28 +90,7 @@ class _Form_Create_State extends State<Form_Create_> {
               ...schema.map((row) {
                 // print(row);
 
-                // todo: handle a click from primary key to select foreign key
-                if (row["key"].toString().endsWith("id_")) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
-                    child: Row(
-                      children: [
-                        Text(
-                          "${row['title'] as String? ?? ""} : ", //
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () {}, //
-                            label: Text(output[row["key"]] == null ? "Select" : output[row["key"]]!),
-                            icon: const Icon(Icons.text_fields),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
+                // todo: handle foreign key
 
                 if (row["kind"] == "text") {
                   return Padding(
@@ -211,7 +189,7 @@ class _Form_Create_State extends State<Form_Create_> {
     print(output);
     await dio
         .post(
-          '$PATH/create',
+          '$PATH/data_create',
           data: FormData.fromMap({
             ...output, //
           }),
@@ -220,7 +198,7 @@ class _Form_Create_State extends State<Form_Create_> {
           print(value);
           snackbar_show(
             context: context, //
-            message: "Room create successfully",
+            message: "$HEADER create successfully.",
             color: Colors.green,
           );
           Navigator.pop(context, true);
@@ -229,7 +207,7 @@ class _Form_Create_State extends State<Form_Create_> {
           print(error);
           snackbar_show(
             context: context, //
-            message: "Room create failed",
+            message: "$HEADER create failed.",
             color: Colors.red,
           );
         });
