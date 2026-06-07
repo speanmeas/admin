@@ -11,6 +11,7 @@ analyzer:
   errors:
     avoid_print: ignore
     camel_case_types: ignore
+    dead_code: ignore
     depend_on_referenced_packages: ignore
     file_names: ignore
     invalid_use_of_protected_member: ignore

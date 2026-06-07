@@ -1,20 +1,20 @@
 List<Map<String, dynamic>> schema = [
   {
-    "key": "guest_name",
+    "key": "name",
     "kind": "text",
-    "title": "Guest Name",
+    "title": "Name",
     "is_visible": 1
   },
   {
-    "key": "guest_phone_number",
+    "key": "gender",
     "kind": "text",
-    "title": "Guest Phone Number",
+    "title": "Gender",
     "is_visible": 1
   },
   {
-    "key": "guest_email",
+    "key": "phone_number",
     "kind": "text",
-    "title": "Guest Email",
+    "title": "Phone Number",
     "is_visible": 1
   },
   {

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
@@ -169,53 +170,33 @@ class _Panel_Left_State extends State<Panel_Left_> {
           ],
         ),
 
-        // ListTile(
-        //   leading: Icon(Icons.dashboard_outlined),
-        //   title: Text("Dashboard"),
-        //   selected: v.body == "Dashboard",
-        //   selectedColor: Colors.blue,
-        //   onTap: () {
-        //     v.body = "Dashboard";
-        //     v.notifyListeners();
-        //     if (isMobile) Navigator.pop(context);
-        //   }, //
-        // ),
-
         // Template
-        ListTile(
-          leading: Icon(Icons.model_training_outlined),
-          title: Text("Template"),
-          selected: v.body == "Template",
-          selectedColor: Colors.blue,
-          onTap: () {
-            v.body = "Template";
-            v.notifyListeners();
-            if (isMobile) Navigator.pop(context);
-          }, //
-        ),
+        if (kDebugMode)
+          ListTile(
+            leading: Icon(Icons.model_training_outlined),
+            title: Text("Template"),
+            selected: v.body == "Template",
+            selectedColor: Colors.blue,
+            onTap: () {
+              v.body = "Template";
+              v.notifyListeners();
+              if (isMobile) Navigator.pop(context);
+            }, //
+          ),
 
-        // ListTile(
-        //   leading: Icon(Icons.work_outline),
-        //   title: Text("Staff"),
-        //   selected: v.body == "Staff",
-        //   selectedColor: Colors.blue,
-        //   onTap: () {
-        //     v.body = "Staff";
-        //     v.notifyListeners();
-        //     if (isMobile) Navigator.pop(context);
-        //   }, //
-        // ),
-        ListTile(
-          leading: Icon(Icons.settings_outlined),
-          title: Text("Setting"),
-          selected: v.body == "Setting",
-          selectedColor: Colors.blue,
-          onTap: () {
-            v.body = "Setting";
-            v.notifyListeners();
-            if (isMobile) Navigator.pop(context);
-          }, //
-        ),
+        // Setting
+        if (kDebugMode)
+          ListTile(
+            leading: Icon(Icons.settings_outlined),
+            title: Text("Setting"),
+            selected: v.body == "Setting",
+            selectedColor: Colors.blue,
+            onTap: () {
+              v.body = "Setting";
+              v.notifyListeners();
+              if (isMobile) Navigator.pop(context);
+            }, //
+          ),
 
         // ListTile(
         //   leading: Icon(Icons.login_outlined),

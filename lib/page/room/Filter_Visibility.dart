@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Setup.dart';
+import '__Setup__.dart';
 import 'Schema.g.dart';
 
 void main() {
@@ -43,7 +43,7 @@ class _Filter_Visibility_State extends State<Filter_Visibility_> {
 
   late List<Map<String, dynamic>> output;
 
-  List<int> get _visibleIndices => List<int>.generate(output.length, (index) => index).where((index) => output[index]["is_exclude"] != 1).toList();
+  List<int> get _visibleIndices => List<int>.generate(output.length, (index) => index).toList();
 
   @override
   void initState() {

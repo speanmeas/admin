@@ -9,7 +9,8 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
-import 'package:speanmeas/page/front_desk/form_check_in/Step_5_Receipt.dart';
+import 'package:speanmeas/page/front_desk/form_check_in/Invoice.dart';
+import 'package:speanmeas/page/front_desk/form_check_in/__Model__.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
@@ -94,21 +95,253 @@ class _Summary_State extends State<Summary_> {
                 width: 600,
                 padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 alignment: Alignment.center,
-                child: Text(
-                  "Summary: ", //
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                child: Row(
+                  children: [
+                    Text("Room Number: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.room_number}"), //
+                  ],
+                ),
+              ),
+
+              //
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Room Type: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.room_type}"), //
+                  ],
+                ),
+              ),
+
+              // guest name
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Guest Name: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.guest_name}"), //
+                  ],
+                ),
+              ),
+
+              // guest gender
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Guest Gender: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.guest_gender}"), //
+                  ],
+                ),
+              ),
+
+              // guest phone number
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Guest Phone Number: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.guest_phone_number}"), //
+                  ],
+                ),
+              ),
+
+              // number of guests
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Number of Guests: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.number_of_guests}"), //
+                  ],
+                ),
+              ),
+
+              // duration
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Duration: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.number_of_days} days and ${Model_Check_In.number_of_hours} hours"), //
+                  ],
+                ),
+              ),
+
+              // price per day
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Price / Day: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.price_per_day ?? 0} USD"), //
+                  ],
+                ),
+              ),
+
+              // price per 3 hour
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Price / 3 Hours: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.price_per_3_hour ?? 0} USD"), //
+                  ],
+                ),
+              ),
+
+              // price total
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Price Total: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.price_total_usd ?? 0} USD or ${Model_Check_In.price_total_khr ?? 0} KHR"), //
+                  ],
+                ),
+              ),
+
+              // paid bank usd
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Paid Bank USD: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.paid_bank_usd ?? 0} USD"), //
+                  ],
+                ),
+              ),
+
+              // paid bank khr
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Paid Bank KHR: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.paid_bank_khr ?? 0} KHR"), //
+                  ],
+                ),
+              ),
+
+              // paid cash usd
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Paid Cash USD: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.paid_cash_usd ?? 0} USD"), //
+                  ],
+                ),
+              ),
+
+              // paid cash khr
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Paid Cash KHR: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.paid_cash_khr ?? 0} KHR"), //
+                  ],
+                ),
+              ),
+
+              // return total
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Return Total: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.return_usd ?? 0} USD or  ${Model_Check_In.return_khr ?? 0} KHR"), //
+                  ],
+                ),
+              ),
+
+              // remaining total
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Row(
+                  children: [
+                    Text("Remaining Total: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
+                    Text("${Model_Check_In.remain_usd ?? 0} USD or  ${Model_Check_In.remain_khr ?? 0} KHR"), //
+                  ],
                 ),
               ),
 
               //
               Container(
                 padding: EdgeInsets.all(8),
-                child: OutlinedButton.icon(
-                  label: Text("Print"),
-                  icon: Icon(Icons.print_outlined),
-                  onPressed: () async {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => Receipt_()));
-                  }, //
+                child: Row(
+                  children: [
+                    SizedBox(width: 60),
+
+                    Spacer(),
+
+                    OutlinedButton.icon(
+                      label: Text("Check In"),
+                      icon: Icon(Icons.login_outlined),
+                      onPressed: () async {
+                        await dio
+                            .post(
+                              "/room/data_update",
+                              data: FormData.fromMap({
+                                "id": Model_Check_In.room_id, //
+                                "status": "Occupied", //
+                              }),
+                            )
+                            .then((r) {
+                              print(r.data);
+                              Navigator.pop(context); // close step 4
+                              Navigator.pop(context); // close step 3
+                              Navigator.pop(context); // close step 2
+                              Navigator.pop(context, true); // close step 1
+                            })
+                            .catchError((e) {
+                              print(e);
+                            });
+                      }, //
+                    ),
+
+                    Spacer(),
+
+                    OutlinedButton.icon(
+                      label: Text("Print"),
+                      icon: Icon(Icons.print_outlined),
+                      onPressed: () async {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => Receipt_()));
+                      }, //
+                    ),
+                  ],
                 ),
               ),
 

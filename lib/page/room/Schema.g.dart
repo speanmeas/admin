@@ -12,13 +12,13 @@ List<Map<String, dynamic>> schema = [
     "is_visible": 1
   },
   {
-    "key": "price_1_night",
+    "key": "price_per_day",
     "kind": "number",
-    "title": "Price/Night",
+    "title": "Price/Day",
     "is_visible": 1
   },
   {
-    "key": "price_3_hour",
+    "key": "price_per_3_hour",
     "kind": "number",
     "title": "Price/3h",
     "is_visible": 1
@@ -27,6 +27,12 @@ List<Map<String, dynamic>> schema = [
     "key": "status",
     "kind": "text",
     "title": "Status",
+    "is_visible": 1
+  },
+  {
+    "key": "account_receivable",
+    "kind": "number",
+    "title": "Account Receivable",
     "is_visible": 1
   },
   {

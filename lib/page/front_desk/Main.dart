@@ -13,19 +13,16 @@ import 'package:speanmeas/page/front_desk/form_check_in/__Model__.dart';
 import 'package:speanmeas/page/front_desk/form_check_in/Step_2_Stay_Detail.dart';
 import 'package:speanmeas/page/front_desk/form_check_in/Step_1_Guest_Info.dart';
 import 'package:speanmeas/page/front_desk/form_check_out/Form_Check_Out.dart';
+import 'package:speanmeas/page/front_desk/form_check_out/__Model__.dart';
 import 'package:speanmeas/page/front_desk/form_clean/Form_Clean.dart';
+import 'package:speanmeas/page/front_desk/form_clean/__Model__.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global(), //
-      child: const Main(),
-    ),
-  );
+  runApp(const Main());
 }
 
 class Main extends StatelessWidget {
@@ -62,7 +59,13 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     await dio
-        .post("/room/data_read")
+        .post(
+          "/room/data_read", //
+          data: FormData.fromMap({
+            "key": "room_number", //
+            "order": "1",
+          }),
+        )
         .then((r) {
           // print(r.data);
           data = List<Map<String, dynamic>>.from(r.data);
@@ -136,37 +139,53 @@ class _Main_State extends State<Main_> {
     //
     print("${room['id']}");
 
-    Model.data['room_id'] = room['id'];
+    Model_Check_In.room_id = room['id'].toString();
+    Model_Check_In.room_number = room['room_number'].toString();
+    Model_Check_In.room_type = room['room_type'].toString();
+    Model_Check_In.price_per_day = room['price_per_day'].toString();
+    Model_Check_In.price_per_3_hour = room['price_per_3_hour'].toString();
 
     Navigator.push(
       context, //
       MaterialPageRoute(builder: (_) => Guest_Info_()),
-    );
+    ).then((v) {
+      if (v == true) {
+        init();
+      }
+    });
   }
 
   void on_check_out(dynamic room) {
     //
     print("${room['id']}");
+
+    Model_Check_Out.room_id = room['id'].toString();
+    Model_Check_Out.room_number = room['room_number'].toString();
+
     Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => Form_Check_Out_(
-          id: room['id'], //
-        ),
-      ),
-    );
+      context, //
+      MaterialPageRoute(builder: (_) => Form_Check_Out_()),
+    ).then((v) {
+      if (v == true) {
+        init();
+      }
+    });
   }
 
   void on_check_clean(dynamic room) {
     //
     print("${room['id']}");
+
+    Model_Clean.room_id = room['id'].toString();
+    Model_Clean.room_number = room['room_number'].toString();
+
     Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => Form_Check_Clean_(
-          id: room['id'], //
-        ),
-      ),
-    );
+      context, //
+      MaterialPageRoute(builder: (_) => Form_Check_Clean_()),
+    ).then((v) {
+      if (v == true) {
+        init();
+      }
+    });
   }
 }

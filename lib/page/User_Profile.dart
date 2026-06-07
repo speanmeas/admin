@@ -153,7 +153,6 @@ class _User_Profile_State extends State<User_Profile_> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               //
-              SizedBox(height: 16),
 
               // * profile picture with upload button
               // Stack(
@@ -175,7 +174,6 @@ class _User_Profile_State extends State<User_Profile_> {
               //     ),
               //   ],
               // ),
-              SizedBox(height: 16),
 
               // textfield full name
               Container(

@@ -8,24 +8,18 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
+import 'package:speanmeas/page/front_desk/form_check_out/__Model__.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global(), //
-      child: const Form_Check_Out(),
-    ),
-  );
+  runApp(const Form_Check_Out());
 }
 
 class Form_Check_Out extends StatelessWidget {
   const Form_Check_Out({super.key});
-
-  final id = "69f984897186bcf74f8a5dde"; //
 
   @override
   Widget build(BuildContext context) {
@@ -33,15 +27,13 @@ class Form_Check_Out extends StatelessWidget {
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Form_Check_Out_(id: id),
+      home: Form_Check_Out_(),
     );
   }
 }
 
 class Form_Check_Out_ extends StatefulWidget {
-  const Form_Check_Out_({super.key, required this.id});
-
-  final String id;
+  const Form_Check_Out_({super.key});
 
   @override
   State<Form_Check_Out_> createState() => _Form_Check_Out_State();
@@ -51,17 +43,6 @@ class _Form_Check_Out_State extends State<Form_Check_Out_> {
   //
 
   List<Map<String, dynamic>> rooms = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    print(widget.id);
-
-    init();
-  }
-
-  void init() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +78,20 @@ class _Form_Check_Out_State extends State<Form_Check_Out_> {
           child: Column(
             children: [
               //
-              Text("Under Development..."),
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 12, 8, 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Room Number: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(
+                      Model_Check_Out.room_number ?? "",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+                    ),
+                  ],
+                ),
+              ),
 
               Container(
                 width: 600,
@@ -112,6 +106,33 @@ class _Form_Check_Out_State extends State<Form_Check_Out_> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
                 ),
+              ),
+
+              OutlinedButton.icon(
+                onPressed: () async {
+                  //
+                  print("Confirm Check Out");
+
+                  // todo: save data to backend
+
+                  await dio
+                      .post(
+                        "/room/data_update",
+                        data: FormData.fromMap({
+                          "id": Model_Check_Out.room_id, //
+                          "status": "Dirty", //
+                        }),
+                      )
+                      .then((r) {
+                        print(r.data);
+                        Navigator.pop(context, true);
+                      })
+                      .catchError((e) {
+                        print(e);
+                      });
+                },
+                icon: const Icon(Icons.check),
+                label: const Text("Confirm Check Out"), //
               ),
             ],
           ),

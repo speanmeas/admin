@@ -14,5 +14,7 @@ class Global extends ChangeNotifier {
 
   //
 
+  static double RATE = 4000;
+
   //
 }

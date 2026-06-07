@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -48,88 +49,15 @@ class Stay_Detail_ extends StatefulWidget {
 class _Stay_Detail_State extends State<Stay_Detail_> {
   //
 
-  List<Map<String, dynamic>> rooms = [];
-  String? selectedStayType;
+  TextEditingController controller_cool = TextEditingController();
+  TextEditingController controller_duration_days = SearchController();
+  TextEditingController controller_duration_hours = SearchController();
 
-  late String? room_id = Model.data['room_id'];
+  ScrollController scroll_number_of_days = ScrollController();
+  TextEditingController controller_number_of_days = TextEditingController(text: "0");
 
-  String? room_number;
-  String? room_type;
-  String? cooling_type;
-
-  int? number_of_guests;
-
-  double? price_ac_per_day_usd = 15;
-  double? price_ac_per_day_khr = 60000;
-
-  double? price_ac_per_3_hour_usd = 6;
-  double? price_ac_per_3_hour_khr = 24000;
-
-  double? price_fan_per_day_usd = 10;
-  double? price_fan_per_day_khr = 40000;
-
-  double? price_fan_per_3_hour_usd = 5;
-  double? price_fan_per_3_hour_khr = 20000;
-
-  int? duration_days = 0;
-  int? duration_hours = 0;
-
-  double? get_price_total_usd() {
-    if (cooling_type == "ac") {
-      return ((price_ac_per_day_usd ?? 0) * (duration_days ?? 0)) + ((price_ac_per_3_hour_usd ?? 0) * (duration_hours ?? 0) / 3);
-    } else if (cooling_type == "fan") {
-      return ((price_fan_per_day_usd ?? 0) * (duration_days ?? 0)) + ((price_fan_per_3_hour_usd ?? 0) * (duration_hours ?? 0) / 3);
-    } else {
-      return null;
-    }
-  }
-
-  double? get_price_total_khr() {
-    if (cooling_type == "ac") {
-      return ((price_ac_per_day_khr ?? 0) * (duration_days ?? 0)) + ((price_ac_per_3_hour_khr ?? 0) * (duration_hours ?? 0) / 3);
-    } else if (cooling_type == "fan") {
-      return ((price_fan_per_day_khr ?? 0) * (duration_days ?? 0)) + ((price_fan_per_3_hour_khr ?? 0) * (duration_hours ?? 0) / 3);
-    } else {
-      return null;
-    }
-  }
-
-  double? pay_by_cash_usd;
-  double? pay_by_cash_khr;
-  double? pay_by_bank_usd;
-  double? pay_by_bank_khr;
-
-  double? account_receivable_usd;
-  double? account_receivable_khr;
-
-  final controller_scrollbar_days = ScrollController();
-  final controller_scrollbar_hours = ScrollController();
-
-  TextEditingController? controller_days = TextEditingController();
-  TextEditingController? controller_hours = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  void init() async {
-    await dio
-        .post(
-          "/room/read_id",
-          data: FormData.fromMap({
-            "id": room_id, //
-          }),
-        )
-        .then((r) {
-          print(r.data);
-          room_number = r.data['Name'].toString();
-          room_type = r.data['Type'].toString();
-          setState(() {});
-        })
-        .catchError((e) {});
-  }
+  ScrollController scroll_number_of_hours = ScrollController();
+  TextEditingController controller_number_of_hours = TextEditingController(text: "0");
 
   @override
   Widget build(BuildContext context) {
@@ -164,260 +92,199 @@ class _Stay_Detail_State extends State<Stay_Detail_> {
         child: Center(
           child: Column(
             children: [
-              //
-              SizedBox(height: 4),
-
-              //
+              // room number
               Container(
                 width: 600,
                 padding: EdgeInsets.fromLTRB(8, 12, 8, 4),
-                child: Column(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Room Number: ", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                    Text("Room Number: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     Text(
-                      room_number ?? "",
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue),
+                      Model_Check_In.room_number ?? "",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
                     ),
                   ],
                 ),
               ),
 
-              //
+              // input cooling type
+              if (kDebugMode && false)
+                Container(
+                  width: 600,
+                  padding: EdgeInsets.all(8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: controller_cool,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(), //
+                            labelText: "Cooling Type:",
+                            labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                          ),
+                        ),
+                      ),
+
+                      // ac
+                      Container(
+                        margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.ac_unit), //
+                          label: Text("AC"), //
+                          onPressed: () {
+                            controller_cool.text = "Air-Conditioner";
+                            setState(() {});
+                          }, //
+                        ),
+                      ),
+
+                      // fan
+                      Container(
+                        margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.mode_fan_off_outlined), // todo: change icon to fan
+                          label: Text("Fan"), //
+                          onPressed: () {
+                            controller_cool.text = "Fan";
+                            setState(() {});
+                          }, //
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+              // duration - number of days
               Container(
                 width: 600,
                 padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: Row(
-                  children: [Text("Cooling Type: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))],
-                ),
-              ),
-
-              //
-              Container(
-                width: 600,
-                padding: EdgeInsets.fromLTRB(4, 4, 8, 8),
-                child: Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                child: Column(
                   children: [
-                    InkWell(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (cooling_type == "ac") Icon(Icons.radio_button_checked, size: 24, color: Colors.blue), //
-                            if (cooling_type != "ac") Icon(Icons.radio_button_unchecked, size: 24), //
-                            SizedBox(width: 4),
-                            Text("Air-Conditioner", style: TextStyle(fontSize: 16)),
-                          ],
-                        ),
+                    TextField(
+                      controller: controller_number_of_days,
+                      keyboardType: TextInputType.number,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Duration (Days):",
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onTap: () {
-                        setState(() {
-                          cooling_type = "ac";
-                        });
-                      },
                     ),
 
-                    SizedBox(width: 4),
+                    SizedBox(height: 4),
 
-                    InkWell(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (cooling_type == "fan") Icon(Icons.radio_button_checked, size: 24, color: Colors.blue), //
-                            if (cooling_type != "fan") Icon(Icons.radio_button_unchecked, size: 24), //
-                            SizedBox(width: 4),
-                            Text("Fan", style: TextStyle(fontSize: 16)),
-                          ],
-                        ),
-                      ),
-                      onTap: () {
-                        setState(() {
-                          cooling_type = "fan";
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-
-              //
-              Container(
-                width: 600,
-                padding: EdgeInsets.all(4),
-                child: Text(
-                  "Duration (Days): ", //
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-
-              //
-              Container(
-                width: 600,
-                padding: EdgeInsets.fromLTRB(4, 4, 8, 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Scrollbar(
-                        controller: controller_scrollbar_days,
-                        thumbVisibility: true,
-                        thickness: 12, // scrollbar width
-                        radius: const Radius.circular(0),
-                        child: SingleChildScrollView(
-                          controller: controller_scrollbar_days,
-                          scrollDirection: Axis.horizontal,
-                          child: Container(
-                            height: 60,
-                            margin: EdgeInsets.only(top: 4),
-                            alignment: Alignment.topLeft,
-                            child: Row(
-                              children: [
-                                ...List.generate(31, (i) => i).map((e) {
-                                  return InkWell(
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          if (duration_days == e) Icon(Icons.radio_button_checked, size: 24, color: Colors.blue), //
-                                          if (duration_days != e) Icon(Icons.radio_button_unchecked, size: 24), //
-                                          SizedBox(width: 2),
-                                          if (e == 0) //
-                                            Text("None", style: TextStyle(fontSize: 16))
-                                          else if (e == 1) //
-                                            Text("1 Day", style: TextStyle(fontSize: 16))
-                                          else //
-                                            Text("$e Days", style: TextStyle(fontSize: 16)),
-                                        ],
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      duration_days = e;
-                                      controller_days?.text = e.toString();
-                                      setState(() {});
-                                    },
-                                  );
-                                }),
-                              ],
+                    //
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Scrollbar(
+                            controller: scroll_number_of_days,
+                            thumbVisibility: true,
+                            thickness: 12, // scrollbar width
+                            radius: const Radius.circular(0),
+                            child: SingleChildScrollView(
+                              controller: scroll_number_of_days,
+                              scrollDirection: Axis.horizontal,
+                              child: Container(
+                                height: 50,
+                                alignment: Alignment.topLeft,
+                                child: Row(
+                                  children: [
+                                    ...List.generate(30, (i) => i).map((e) {
+                                      return Container(
+                                        margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                                        child: OutlinedButton.icon(
+                                          onPressed: () {
+                                            controller_number_of_days.text = e.toString();
+                                            setState(() {});
+                                          },
+                                          icon: Icon(Icons.nights_stay_outlined), //
+                                          label: Text("$e"),
+                                        ),
+                                      );
+                                    }),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-
-                    Container(
-                      width: 80,
-                      child: TextField(
-                        controller: controller_days,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: "Days",
-                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                        ),
-                        onChanged: (value) {
-                          duration_days = int.tryParse(value);
-                          setState(() {});
-                        },
-                      ),
+                      ],
                     ),
                   ],
                 ),
               ),
 
-              //
+              // duration - number of hours
               Container(
                 width: 600,
-                padding: EdgeInsets.all(4),
-                child: Text(
-                  "Duration (Hours): ", //
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-
-              //
-              Container(
-                width: 600,
-                padding: EdgeInsets.fromLTRB(4, 4, 8, 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: Column(
                   children: [
-                    Expanded(
-                      child: Scrollbar(
-                        controller: controller_scrollbar_hours,
-                        thumbVisibility: true,
-                        thickness: 12, // scrollbar width
-                        radius: const Radius.circular(0),
-                        child: SingleChildScrollView(
-                          controller: controller_scrollbar_hours,
-                          scrollDirection: Axis.horizontal,
-                          child: Container(
-                            height: 60,
-                            margin: EdgeInsets.only(top: 4),
-                            alignment: Alignment.topLeft,
-                            child: Row(
-                              children: [
-                                ...List.generate(8, (i) => i).map((e) {
-                                  return InkWell(
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          if (duration_hours == 3 * e) Icon(Icons.radio_button_checked, size: 24, color: Colors.blue), //
-                                          if (duration_hours != 3 * e) Icon(Icons.radio_button_unchecked, size: 24), //
-                                          SizedBox(width: 2),
-                                          if (e == 0) //
-                                            Text("None", style: TextStyle(fontSize: 16))
-                                          else //
-                                            Text("${3 * e} Hours", style: TextStyle(fontSize: 16)),
-                                        ],
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      duration_hours = 3 * e;
-                                      controller_hours?.text = duration_hours.toString();
-                                      setState(() {});
-                                    },
-                                  );
-                                }),
-                              ],
+                    TextField(
+                      controller: controller_number_of_hours,
+                      keyboardType: TextInputType.number,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Duration (Hours):",
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                    ),
+
+                    SizedBox(height: 4),
+
+                    //
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Scrollbar(
+                            controller: scroll_number_of_hours,
+                            thumbVisibility: true,
+                            thickness: 12, // scrollbar width
+                            radius: const Radius.circular(0),
+                            child: SingleChildScrollView(
+                              controller: scroll_number_of_hours,
+                              scrollDirection: Axis.horizontal,
+                              child: Container(
+                                height: 50,
+                                alignment: Alignment.topLeft,
+                                child: Row(
+                                  children: [
+                                    ...[0, 3, 6, 9, 12, 15, 18, 21].map((e) {
+                                      return Container(
+                                        margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                                        child: OutlinedButton.icon(
+                                          onPressed: () {
+                                            controller_number_of_hours.text = e.toString();
+                                            setState(() {});
+                                          },
+                                          icon: Icon(Icons.timer_outlined), //
+                                          label: Text("$e"),
+                                        ),
+                                      );
+                                    }),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-
-                    Container(
-                      width: 80,
-                      child: TextField(
-                        controller: controller_hours,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: "Hours",
-                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                        ),
-                        onChanged: (value) {
-                          duration_hours = int.tryParse(value);
-                          setState(() {});
-                        },
-                      ),
+                      ],
                     ),
                   ],
                 ),
               ),
 
               //
-              Container(
-                width: 600,
-                padding: EdgeInsets.symmetric(vertical: 2),
-                child: Divider(thickness: 1, color: Colors.grey),
-              ),
+              Divider(thickness: 1, color: Colors.grey),
 
               //
               Container(
@@ -441,14 +308,13 @@ class _Stay_Detail_State extends State<Stay_Detail_> {
               ),
 
               //
+              //
               Container(
                 padding: EdgeInsets.all(8),
                 child: OutlinedButton.icon(
-                  label: Text("Next"),
-                  icon: Icon(Icons.play_arrow_outlined, size: 32),
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => Payment_()));
-                  }, //
+                  label: Text("Next"), //
+                  icon: Icon(Icons.arrow_forward, size: 24),
+                  onPressed: on_next,
                 ),
               ),
 
@@ -459,5 +325,37 @@ class _Stay_Detail_State extends State<Stay_Detail_> {
         ),
       ),
     );
+  }
+
+  void on_next() {
+    //
+    Model_Check_In.number_of_days = controller_number_of_days.text;
+    Model_Check_In.number_of_hours = controller_number_of_hours.text;
+
+    //
+    Model_Check_In.price_total_usd = get_price_total_usd()?.toString();
+    Model_Check_In.price_total_khr = get_price_total_khr()?.toString();
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (_) => Payment_()),
+    );
+  }
+
+  double? get_price_total_usd() {
+    final days = int.tryParse(controller_number_of_days.text) ?? 0;
+    final hours = int.tryParse(controller_number_of_hours.text) ?? 0;
+
+    final price_per_day = double.tryParse(Model_Check_In.price_per_day?.toString() ?? '0') ?? 0;
+    final price_per_3_hour = double.tryParse(Model_Check_In.price_per_3_hour?.toString() ?? '0') ?? 0;
+
+    final total = (days * price_per_day) + ((hours / 3).ceil() * price_per_3_hour);
+
+    return total;
+  }
+
+  double? get_price_total_khr() {
+    final total_usd = get_price_total_usd() ?? 0;
+    return total_usd * Global.RATE;
   }
 }

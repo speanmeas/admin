@@ -104,10 +104,16 @@ class _Panel_Top_State extends State<Panel_Top_> {
           Spacer(),
 
           // Notification Icon
-          IconButton(
-            onPressed: () {}, //
-            icon: Icon(Icons.notifications_outlined),
-          ), //
+          Badge(
+            label: Text('3'), //
+            offset: Offset(-4, 4),
+            child: IconButton(
+              icon: Icon(Icons.notifications_outlined),
+              onPressed: () {
+                // Handle notification tap
+              },
+            ),
+          ),
           // Dark Mode Toggle
           // IconButton(onPressed: () {}, icon: Icon(Icons.dark_mode_outlined)), //
           // Search Icon
