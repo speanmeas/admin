@@ -41,11 +41,11 @@ class _Panel_Left_State extends State<Panel_Left_> {
       children: [
         ListTile(
           leading: Icon(Icons.people_outline),
-          title: Text("Main Desk"),
-          selected: v.body == "Main Desk",
+          title: Text("Front Desk"),
+          selected: v.body == "Front Desk",
           selectedColor: Colors.blue,
           onTap: () {
-            v.body = "Main Desk";
+            v.body = "Front Desk";
             v.notifyListeners();
             if (isMobile) Navigator.pop(context);
           }, //
@@ -83,6 +83,19 @@ class _Panel_Left_State extends State<Panel_Left_> {
           selectedColor: Colors.blue,
           onTap: () {
             v.body = "User";
+            v.notifyListeners();
+            if (isMobile) Navigator.pop(context);
+          }, //
+        ),
+
+        // Check In/Out/Clean
+        ListTile(
+          leading: Icon(Icons.meeting_room_outlined),
+          title: Text("Check In/Out/Clean"),
+          selected: v.body == "Check In/Out/Clean",
+          selectedColor: Colors.blue,
+          onTap: () {
+            v.body = "Check In/Out/Clean";
             v.notifyListeners();
             if (isMobile) Navigator.pop(context);
           }, //
@@ -156,17 +169,17 @@ class _Panel_Left_State extends State<Panel_Left_> {
           ],
         ),
 
-        ListTile(
-          leading: Icon(Icons.dashboard_outlined),
-          title: Text("Dashboard"),
-          selected: v.body == "Dashboard",
-          selectedColor: Colors.blue,
-          onTap: () {
-            v.body = "Dashboard";
-            v.notifyListeners();
-            if (isMobile) Navigator.pop(context);
-          }, //
-        ),
+        // ListTile(
+        //   leading: Icon(Icons.dashboard_outlined),
+        //   title: Text("Dashboard"),
+        //   selected: v.body == "Dashboard",
+        //   selectedColor: Colors.blue,
+        //   onTap: () {
+        //     v.body = "Dashboard";
+        //     v.notifyListeners();
+        //     if (isMobile) Navigator.pop(context);
+        //   }, //
+        // ),
 
         // Template
         ListTile(
@@ -181,18 +194,17 @@ class _Panel_Left_State extends State<Panel_Left_> {
           }, //
         ),
 
-        ListTile(
-          leading: Icon(Icons.work_outline),
-          title: Text("Staff"),
-          selected: v.body == "Staff",
-          selectedColor: Colors.blue,
-          onTap: () {
-            v.body = "Staff";
-            v.notifyListeners();
-            if (isMobile) Navigator.pop(context);
-          }, //
-        ),
-
+        // ListTile(
+        //   leading: Icon(Icons.work_outline),
+        //   title: Text("Staff"),
+        //   selected: v.body == "Staff",
+        //   selectedColor: Colors.blue,
+        //   onTap: () {
+        //     v.body = "Staff";
+        //     v.notifyListeners();
+        //     if (isMobile) Navigator.pop(context);
+        //   }, //
+        // ),
         ListTile(
           leading: Icon(Icons.settings_outlined),
           title: Text("Setting"),

@@ -1,86 +1,26 @@
 List<Map<String, dynamic>> schema = [
   {
-    "key": "id_",
-    "title": "ID",
-    "type": "text",
-    "is_visible": 0,
-    "is_exclude": 1
+    "key": "guest_name",
+    "kind": "text",
+    "title": "Guest Name",
+    "is_visible": 1
   },
   {
-    "key": "name_",
-    "title": "Name",
-    "type": "text",
-    "is_visible": 1,
-    "is_exclude": 0
+    "key": "guest_phone_number",
+    "kind": "text",
+    "title": "Guest Phone Number",
+    "is_visible": 1
   },
   {
-    "key": "phone_number_",
-    "title": "Phone Number",
-    "type": "text",
-    "is_visible": 1,
-    "is_exclude": 0
+    "key": "guest_email",
+    "kind": "text",
+    "title": "Guest Email",
+    "is_visible": 1
   },
   {
-    "key": "email_",
-    "title": "Email",
-    "type": "text",
-    "is_visible": 1,
-    "is_exclude": 0
-  },
-  {
-    "key": "national_id_",
-    "title": "National ID",
-    "type": "text",
-    "is_visible": 1,
-    "is_exclude": 0
-  },
-  {
-    "key": "passport_number_",
-    "title": "Passport Number",
-    "type": "text",
-    "is_visible": 1,
-    "is_exclude": 0
-  },
-  {
-    "key": "created_at_",
-    "title": "Created At",
-    "type": "datetime",
-    "is_visible": 0,
-    "is_exclude": 1
-  },
-  {
-    "key": "updated_at_",
-    "title": "Updated At",
-    "type": "datetime",
-    "is_visible": 0,
-    "is_exclude": 1
-  },
-  {
-    "key": "deleted_at_",
-    "title": "Deleted At",
-    "type": "datetime",
-    "is_visible": 0,
-    "is_exclude": 1
-  },
-  {
-    "key": "created_by_",
-    "title": "Created By",
-    "type": "text",
-    "is_visible": 0,
-    "is_exclude": 1
-  },
-  {
-    "key": "updated_by_",
-    "title": "Updated By",
-    "type": "text",
-    "is_visible": 0,
-    "is_exclude": 1
-  },
-  {
-    "key": "deleted_by_",
-    "title": "Deleted By",
-    "type": "text",
-    "is_visible": 0,
-    "is_exclude": 1
+    "key": "note",
+    "kind": "text",
+    "title": "Note",
+    "is_visible": 1
   }
 ];

@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
-import 'package:speanmeas/page/front_desk/form_check_in/Model.dart';
+import 'package:speanmeas/page/front_desk/form_check_in/__Model__.dart';
 import 'package:speanmeas/page/front_desk/form_check_in/Step_2_Stay_Detail.dart';
 import 'package:speanmeas/page/front_desk/form_check_in/Step_3_Payment.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';

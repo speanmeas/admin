@@ -8,7 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
-import 'package:speanmeas/page/front_desk/form_check_in/Model.dart';
+import 'package:speanmeas/page/front_desk/Main_Widget.dart';
+import 'package:speanmeas/page/front_desk/form_check_in/__Model__.dart';
 import 'package:speanmeas/page/front_desk/form_check_in/Step_2_Stay_Detail.dart';
 import 'package:speanmeas/page/front_desk/form_check_in/Step_1_Guest_Info.dart';
 import 'package:speanmeas/page/front_desk/form_check_out/Form_Check_Out.dart';
@@ -22,13 +23,13 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (_) => Global(), //
-      child: const Check_In_Out_Clean(),
+      child: const Main(),
     ),
   );
 }
 
-class Check_In_Out_Clean extends StatelessWidget {
-  const Check_In_Out_Clean({super.key});
+class Main extends StatelessWidget {
+  const Main({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,19 +37,19 @@ class Check_In_Out_Clean extends StatelessWidget {
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: const Check_In_Out_Clean_(),
+      home: const Main_(),
     );
   }
 }
 
-class Check_In_Out_Clean_ extends StatefulWidget {
-  const Check_In_Out_Clean_({super.key});
+class Main_ extends StatefulWidget {
+  const Main_({super.key});
 
   @override
-  State<Check_In_Out_Clean_> createState() => _Check_In_Out_Clean_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
+class _Main_State extends State<Main_> {
   //
 
   List<Map<String, dynamic>> data = [];
@@ -61,12 +62,12 @@ class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
 
   void init() async {
     await dio
-        .post("/room/read")
+        .post("/room/data_read")
         .then((r) {
           // print(r.data);
           data = List<Map<String, dynamic>>.from(r.data);
 
-          // print(data);
+          print(data);
 
           setState(() {});
         })
@@ -96,83 +97,27 @@ class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
 
                   child: Row(
                     children: [
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Room ${room['room_number_']} (${room['room_type_']})", //
-                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(width: 16),
-                            Text(
-                              "${room['status_']}",
-                              style: TextStyle(
-                                color: room['status_'] == "Available"
-                                    ? Colors.green
-                                    : room['status_'] == "Dirty"
-                                    ? Colors.orange
-                                    : Colors.red,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      Room_Status(room: room),
 
                       Spacer(),
 
-                      SizedBox(width: 16),
-
-                      OutlinedButton.icon(
-                        onPressed: room['status_'] == "Available"
-                            ? () {
-                                print("${room['_id']['\$oid']}");
-
-                                Model.data['room_id_'] = room['_id']['\$oid'];
-
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => Guest_Info_()));
-                              }
-                            : null,
-                        icon: const Icon(Icons.login),
-                        label: const Text("Check In"), //
+                      Button_Checkin(
+                        onPressed: room['status'] != "Available"
+                            ? null //
+                            : () => on_check_in(room),
                       ),
-                      const SizedBox(width: 8),
-                      OutlinedButton.icon(
-                        onPressed: room['status_'] == "Occupied"
-                            ? () {
-                                print("${room['_id']['\$oid']}");
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => Form_Check_Out_(
-                                      id: room['_id']['\$oid'], //
-                                    ),
-                                  ),
-                                );
-                              }
-                            : null,
-                        icon: const Icon(Icons.logout),
-                        label: const Text("Check Out"),
+
+                      Button_Check_Out(
+                        onPressed: room['status'] != "Occupied"
+                            ? null //
+                            : () => on_check_out(room),
                       ),
-                      const SizedBox(width: 8),
-                      OutlinedButton.icon(
-                        onPressed: room['status_'] == "Dirty"
-                            ? () {
-                                print("${room['_id']['\$oid']}");
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => Form_Check_Clean_(
-                                      id: room['_id']['\$oid'], //
-                                    ),
-                                  ),
-                                );
-                              }
-                            : null, //
-                        icon: const Icon(Icons.cleaning_services),
-                        label: const Text("Clean"),
+
+                      //
+                      Button_Clean(
+                        onPressed: room['status'] != "Dirty"
+                            ? null //
+                            : () => on_check_clean(room),
                       ),
                     ],
                   ),
@@ -182,6 +127,44 @@ class _Check_In_Out_Clean_State extends State<Check_In_Out_Clean_> {
               SizedBox(height: screen_height - 80),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  void on_check_in(dynamic room) {
+    //
+    print("${room['id']}");
+
+    Model.data['room_id'] = room['id'];
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (_) => Guest_Info_()),
+    );
+  }
+
+  void on_check_out(dynamic room) {
+    //
+    print("${room['id']}");
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Form_Check_Out_(
+          id: room['id'], //
+        ),
+      ),
+    );
+  }
+
+  void on_check_clean(dynamic room) {
+    //
+    print("${room['id']}");
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Form_Check_Clean_(
+          id: room['id'], //
         ),
       ),
     );

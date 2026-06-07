@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Setup.dart';
+import '__Setup__.dart';
 import 'Schema.g.dart';
 
 void main() {
@@ -57,7 +57,7 @@ class _Filter_Visibility_State extends State<Filter_Visibility_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Visibility $HEADER", //
+          "$HEADER Visibility", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,

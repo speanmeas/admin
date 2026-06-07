@@ -8,7 +8,7 @@ class Global extends ChangeNotifier {
 
   // String body = "Dashboard";
   // String body = "Template";
-  String body = "Main Desk";
+  String body = "Front Desk";
 
   //
 

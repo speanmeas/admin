@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/Global.dart';
 
-import 'Zetup.dart';
+import '__Setup__.dart';
 
 void main() {
   runApp(

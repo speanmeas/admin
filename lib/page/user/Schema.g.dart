@@ -1,54 +1,54 @@
 List<Map<String, dynamic>> schema = [
   {
-    "key": "username_",
+    "key": "username",
     "kind": "text",
     "title": "Username",
     "is_visible": 1
   },
   {
-    "key": "password_hash_",
+    "key": "password",
     "kind": "text",
-    "title": "Password Hash",
+    "title": "Password",
     "is_visible": 1
   },
   {
-    "key": "full_name_",
+    "key": "full_name",
     "kind": "text",
     "title": "Full Name",
     "is_visible": 1
   },
   {
-    "key": "phone_",
+    "key": "phone",
     "kind": "text",
     "title": "Phone",
     "is_visible": 1
   },
   {
-    "key": "email_",
+    "key": "email",
     "kind": "text",
     "title": "Email",
     "is_visible": 1
   },
   {
-    "key": "is_admin_",
+    "key": "is_admin",
     "kind": "number",
     "title": "Is Admin",
     "is_visible": 1
   },
   {
-    "key": "is_manager_",
+    "key": "is_manager",
     "kind": "number",
     "title": "Is Manager",
     "is_visible": 1
   },
   {
-    "key": "is_cashier_",
+    "key": "is_cashier",
     "kind": "number",
     "title": "Is Cashier",
     "is_visible": 1
   },
   {
-    "key": "note_",
+    "key": "note",
     "kind": "text",
     "title": "Note",
     "is_visible": 1

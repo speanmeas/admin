@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 
-import 'package:speanmeas/page/dashboard/Main.dart';
+import 'package:speanmeas/page/.dashboard/Main.dart';
 import 'package:speanmeas/layout/Panel_Body.dart';
 import 'package:speanmeas/layout/Panel_Left.dart';
 import 'package:speanmeas/layout/Panel_Top.dart';

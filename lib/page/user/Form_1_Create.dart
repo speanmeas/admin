@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:speanmeas/Environment.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Datetime_format.dart';
@@ -8,7 +9,7 @@ import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Setup.dart';
+import '__Setup__.dart';
 import 'Schema.g.dart';
 
 void main() {
@@ -47,14 +48,14 @@ class _Form_Create_State extends State<Form_Create_> {
     for (var e in schema) {
       output[e["key"]] = null;
     }
-
-    print(output);
   }
 
   DateTime? selectedDateTime;
 
   @override
   Widget build(BuildContext context) {
+    final screen_height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -89,16 +90,15 @@ class _Form_Create_State extends State<Form_Create_> {
               ...schema.map((row) {
                 // print(row);
 
-                if (row["is_exclude"] == 1) {
-                  return SizedBox.shrink();
-                }
+                // todo: handle foreign key
 
-                if (row["type"] == "text") {
+                if (row["kind"] == "text") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
                       decoration: InputDecoration(
                         labelText: row['title'], //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (value) {
@@ -109,12 +109,13 @@ class _Form_Create_State extends State<Form_Create_> {
                 }
 
                 //
-                if (row["type"] == "number") {
+                if (row["kind"] == "number") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
                       decoration: InputDecoration(
                         labelText: row['title'], //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -127,26 +128,31 @@ class _Form_Create_State extends State<Form_Create_> {
                 }
 
                 //
-                if (row["type"] == "datetime") {
+                if (row["kind"] == "datetime") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: Row(
                       children: [
-                        Text("${row['title'] as String? ?? ""} : "),
+                        Text(
+                          "${row['title'] as String? ?? ""} : ", //
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
 
-                        OutlinedButton.icon(
-                          onPressed: () async {
-                            final DateTime? datetime = await datetime_picker(context);
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              final DateTime? datetime = await datetime_picker(context);
 
-                            if (datetime == null) return;
+                              if (datetime == null) return;
 
-                            output[row["key"]] = datetime_to_string(datetime);
+                              output[row["key"]] = datetime_to_string(datetime);
 
-                            setState(() {});
-                          }, //
-                          // label: Text("Select Datetime"),
-                          label: Text(output[row["key"]] == null ? "Select Datetime" : output[row["key"]]!),
-                          icon: const Icon(Icons.calendar_today),
+                              setState(() {});
+                            }, //
+                            // label: Text("Select Datetime"),
+                            label: Text(output[row["key"]] == null ? "Select Datetime" : output[row["key"]]!),
+                            icon: const Icon(Icons.calendar_today),
+                          ),
                         ),
                       ],
                     ),
@@ -165,42 +171,45 @@ class _Form_Create_State extends State<Form_Create_> {
                     icon: Icon(Icons.add_task),
                     label: Text("Create"),
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                    onPressed: () async {
-                      print(output);
-                      await dio
-                          .post(
-                            '$PATH/create',
-                            data: FormData.fromMap({
-                              ...output, //
-                            }),
-                          )
-                          .then((value) {
-                            print(value);
-                            snackbar_show(
-                              context: context, //
-                              message: "Room create successfully",
-                              color: Colors.green,
-                            );
-                            Navigator.pop(context, true);
-                          })
-                          .catchError((error) {
-                            print(error);
-                            snackbar_show(
-                              context: context, //
-                              message: "Room create failed",
-                              color: Colors.red,
-                            );
-                          });
-                    },
+                    onPressed: create_pressed,
                   ),
                 ],
               ),
 
-              SizedBox(height: 1000),
+              SizedBox(height: screen_height - 120),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void create_pressed() async {
+    //
+    print(output);
+    await dio
+        .post(
+          '$PATH/data_create',
+          data: FormData.fromMap({
+            ...output, //
+          }),
+        )
+        .then((value) {
+          print(value);
+          snackbar_show(
+            context: context, //
+            message: "$HEADER create successfully.",
+            color: Colors.green,
+          );
+          Navigator.pop(context, true);
+        })
+        .catchError((error) {
+          print(error);
+          snackbar_show(
+            context: context, //
+            message: "$HEADER create failed.",
+            color: Colors.red,
+          );
+        });
   }
 }

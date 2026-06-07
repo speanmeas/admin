@@ -15,12 +15,7 @@ import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global(), //
-      child: const User_Profile(),
-    ),
-  );
+  runApp(User_Profile());
 }
 
 class User_Profile extends StatelessWidget {
@@ -84,11 +79,11 @@ class _User_Profile_State extends State<User_Profile_> {
             access_token = r;
             dio.options.headers['Authorization'] = 'Bearer $access_token';
             setState(() {});
-            print("Access token found: $access_token");
+            // print("Access token found: $access_token");
 
             // try using access token to get user info
           } else {
-            print("No access token found.");
+            // print("No access token found.");
           }
         })
         .catchError((e) {});
@@ -108,11 +103,13 @@ class _User_Profile_State extends State<User_Profile_> {
           print("User info: ${r.data}");
           data = r.data;
 
-          controller_full_name.text = data['full_name_'] ?? "";
-          controller_phone_number.text = data['phone_'] ?? "";
-          controller_email.text = data['email_'] ?? "";
+          // print("User info: $data");
 
-          controller_username.text = data['username_'] ?? "";
+          controller_full_name.text = data['full_name'] ?? "";
+          controller_phone_number.text = data['phone'] ?? "";
+          controller_email.text = data['email'] ?? "";
+
+          controller_username.text = data['username'] ?? "";
           // controller_password.text = "**********"; // do not show real password
 
           setState(() {});
@@ -158,36 +155,32 @@ class _User_Profile_State extends State<User_Profile_> {
               //
               SizedBox(height: 16),
 
-              //
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 80, //
-                    backgroundColor: Colors.grey.shade200,
-                    // backgroundImage: NetworkImage(""), // todo:
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      decoration: BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
-                      child: IconButton(
-                        icon: Icon(Icons.camera_alt_outlined, color: Colors.white),
-                        onPressed: () {
-                          print("Change profile picture");
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
+              // * profile picture with upload button
+              // Stack(
+              //   children: [
+              //     CircleAvatar(
+              //       radius: 80, //
+              //       backgroundColor: Colors.grey.shade200,
+              //       // backgroundImage: NetworkImage(""), // todo:
+              //     ),
+              //     Positioned(
+              //       bottom: 0,
+              //       right: 0,
+              //       child: IconButton(
+              //         icon: Icon(Icons.camera_alt_outlined),
+              //         onPressed: () {
+              //           print("Change profile picture");
+              //         },
+              //       ),
+              //     ),
+              //   ],
+              // ),
               SizedBox(height: 16),
 
               // textfield full name
               Container(
                 width: 600,
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
                 child: TextField(
                   controller: controller_full_name,
                   decoration: InputDecoration(
@@ -291,14 +284,22 @@ class _User_Profile_State extends State<User_Profile_> {
                                   )
                                   .then((r) {
                                     print("Username updated: ${r.data}");
-                                    snackbar_show(context: context, message: "Username updated successfully", color: Colors.green);
+                                    snackbar_show(
+                                      context: context, //
+                                      message: "Username updated successfully",
+                                      color: Colors.green,
+                                    );
                                     setState(() {
                                       confirm_username = false;
                                     });
                                   })
                                   .catchError((e) {
                                     print("Failed to update username: $e");
-                                    snackbar_show(context: context, message: "Failed to update username", color: Colors.red);
+                                    snackbar_show(
+                                      context: context, //
+                                      message: "Failed to update username",
+                                      color: Colors.red,
+                                    );
                                   });
                             },
                             icon: Icon(Icons.check, color: Colors.blue),
@@ -388,7 +389,11 @@ class _User_Profile_State extends State<User_Profile_> {
     // remove access token from secure storage and dio header
     await secure_storage.delete(key: 'access_token');
     dio.options.headers.remove('Authorization');
-    snackbar_show(context: context, message: "Signed out successfully", color: Colors.green);
+    snackbar_show(
+      context: context, //
+      message: "Signed out successfully",
+      color: Colors.green,
+    );
 
     // navigate to sign in page
     Navigator.pushReplacement(
