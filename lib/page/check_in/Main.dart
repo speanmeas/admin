@@ -55,7 +55,7 @@ class _Main_State extends State<Main_> {
   //
   //
 
-  bool is_admin = true; // todo: check admin role from secure storage
+  bool is_admin = false; // todo: check admin role from secure storage
   bool has_more = false;
   bool is_filter = false;
 
