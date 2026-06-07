@@ -92,15 +92,29 @@ class _Panel_Left_State extends State<Panel_Left_> {
         // Check In/Out/Clean
         ListTile(
           leading: Icon(Icons.meeting_room_outlined),
-          title: Text("Check In/Out/Clean"),
-          selected: v.body == "Check In/Out/Clean",
+          title: Text("Check In"),
+          selected: v.body == "Check In",
           selectedColor: Colors.blue,
           onTap: () {
-            v.body = "Check In/Out/Clean";
+            v.body = "Check In";
             v.notifyListeners();
             if (isMobile) Navigator.pop(context);
           }, //
         ),
+
+        // Check In/Out/Clean
+        if (kDebugMode)
+          ListTile(
+            leading: Icon(Icons.meeting_room_outlined),
+            title: Text("Check In/Out/Clean"),
+            selected: v.body == "Check In/Out/Clean",
+            selectedColor: Colors.blue,
+            onTap: () {
+              v.body = "Check In/Out/Clean";
+              v.notifyListeners();
+              if (isMobile) Navigator.pop(context);
+            }, //
+          ),
 
         // Reports
         ExpansionTile(

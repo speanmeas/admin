@@ -80,14 +80,27 @@ class _Form_Check_Out_State extends State<Form_Check_Out_> {
               //
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 12, 8, 4),
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("Room Number: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     Text(
                       Model_Check_Out.room_number ?? "",
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+                    ),
+                  ],
+                ),
+              ),
+
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                child: Row(
+                  children: [
+                    Text("Remaining Balance: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(
+                      "${Model_Check_Out.account_receivable ?? "0"} USD",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
                     ),
                   ],
                 ),
@@ -120,6 +133,7 @@ class _Form_Check_Out_State extends State<Form_Check_Out_> {
                         "/room/data_update",
                         data: FormData.fromMap({
                           "id": Model_Check_Out.room_id, //
+                          "account_receivable": 0,
                           "status": "Dirty", //
                         }),
                       )

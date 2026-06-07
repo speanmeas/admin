@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -104,16 +105,17 @@ class _Panel_Top_State extends State<Panel_Top_> {
           Spacer(),
 
           // Notification Icon
-          Badge(
-            label: Text('3'), //
-            offset: Offset(-4, 4),
-            child: IconButton(
-              icon: Icon(Icons.notifications_outlined),
-              onPressed: () {
-                // Handle notification tap
-              },
+          if (kDebugMode)
+            Badge(
+              label: Text('3'), //
+              offset: Offset(-4, 4),
+              child: IconButton(
+                icon: Icon(Icons.notifications_outlined),
+                onPressed: () {
+                  // Handle notification tap
+                },
+              ),
             ),
-          ),
           // Dark Mode Toggle
           // IconButton(onPressed: () {}, icon: Icon(Icons.dark_mode_outlined)), //
           // Search Icon

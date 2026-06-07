@@ -17,8 +17,8 @@ class Model_Check_In extends ChangeNotifier {
   // data
   static String? number_of_guests;
 
-  static String? number_of_days;
-  static String? number_of_hours;
+  static String? stay_duration_day;
+  static String? stay_duration_hour;
 
   static String? price_per_day;
   static String? price_per_3_hour;

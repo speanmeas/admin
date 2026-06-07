@@ -100,7 +100,51 @@ class _Main_State extends State<Main_> {
 
                   child: Row(
                     children: [
-                      Room_Status(room: room),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            //
+                            Text(
+                              "Room ${room['room_number']} (${room['room_type']})", //
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            //
+                            SizedBox(width: 16),
+
+                            //
+                            if (room['status'] == "Available")
+                              Text(
+                                "Available",
+                                style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                              ),
+
+                            if (room['status'] == "Dirty")
+                              Text(
+                                "Dirty",
+                                style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+                              ),
+                            if (room['status'] == "Occupied")
+                              Text(
+                                "Occupied - A/R ${room['account_receivable'] ?? 0} USD ", //
+                                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                              ),
+
+                            // Text(
+                            //   "${room['status']}",
+                            //   style: TextStyle(
+                            //     color: room['status'] == "Available"
+                            //         ? Colors.green
+                            //         : room['status'] == "Dirty"
+                            //         ? Colors.orange
+                            //         : Colors.red,
+                            //     fontWeight: FontWeight.w600,
+                            //   ),
+                            // ),
+                          ],
+                        ),
+                      ),
 
                       Spacer(),
 
@@ -161,6 +205,7 @@ class _Main_State extends State<Main_> {
 
     Model_Check_Out.room_id = room['id'].toString();
     Model_Check_Out.room_number = room['room_number'].toString();
+    Model_Check_Out.account_receivable = room['account_receivable'].toString();
 
     Navigator.push(
       context, //

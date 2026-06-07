@@ -176,7 +176,7 @@ class _Summary_State extends State<Summary_> {
                 child: Row(
                   children: [
                     Text("Duration: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.number_of_days} days and ${Model_Check_In.number_of_hours} hours"), //
+                    Text("${Model_Check_In.stay_duration_day} days and ${Model_Check_In.stay_duration_hour} hours"), //
                   ],
                 ),
               ),
@@ -311,11 +311,46 @@ class _Summary_State extends State<Summary_> {
                       label: Text("Check In"),
                       icon: Icon(Icons.login_outlined),
                       onPressed: () async {
+                        // todo: save data to backend
+
+                        await dio
+                            .post(
+                              "/check_in/data_create",
+                              data: FormData.fromMap({
+                                "room_number": Model_Check_In.room_number, //
+                                "room_type": Model_Check_In.room_type,
+                                "price_per_day": Model_Check_In.price_per_day,
+                                "price_per_3_hour": Model_Check_In.price_per_3_hour,
+                                "guest_name": Model_Check_In.guest_name,
+                                "guest_phone_number": Model_Check_In.guest_phone_number,
+                                "guest_gender": Model_Check_In.guest_gender,
+                                "number_of_guests": Model_Check_In.number_of_guests,
+                                "stay_duration_day": Model_Check_In.stay_duration_day,
+                                "stay_duration_hour": Model_Check_In.stay_duration_hour,
+                                "price_total_usd": Model_Check_In.price_total_usd,
+                                "paid_bank_usd": Model_Check_In.paid_bank_usd,
+                                "paid_bank_khr": Model_Check_In.paid_bank_khr,
+                                "paid_cash_usd": Model_Check_In.paid_cash_usd,
+                                "paid_cash_khr": Model_Check_In.paid_cash_khr,
+                                "return_usd": Model_Check_In.return_usd,
+                                "remain_usd": Model_Check_In.remain_usd,
+                              }),
+                            )
+                            .then((r) {
+                              print(r.data);
+                            })
+                            .catchError((e) {
+                              print(e);
+                            });
+
+                        //
+
                         await dio
                             .post(
                               "/room/data_update",
                               data: FormData.fromMap({
                                 "id": Model_Check_In.room_id, //
+                                "account_receivable": double.parse(Model_Check_In.remain_usd.toString()), //
                                 "status": "Occupied", //
                               }),
                             )

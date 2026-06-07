@@ -329,8 +329,8 @@ class _Stay_Detail_State extends State<Stay_Detail_> {
 
   void on_next() {
     //
-    Model_Check_In.number_of_days = controller_number_of_days.text;
-    Model_Check_In.number_of_hours = controller_number_of_hours.text;
+    Model_Check_In.stay_duration_day = controller_number_of_days.text;
+    Model_Check_In.stay_duration_hour = controller_number_of_hours.text;
 
     //
     Model_Check_In.price_total_usd = get_price_total_usd()?.toString();
