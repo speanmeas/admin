@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
+import 'package:speanmeas/Environment.dart';
+
 import 'package:speanmeas/layout/Layout.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
@@ -117,7 +118,7 @@ class _Sign_In_State extends State<Sign_In_> {
 
               Text(
                 'Welcome to Spean Meas Hotel', //
-                style: Theme.of(context).textTheme.headlineMedium!.copyWith(fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
 
               SizedBox(height: 8),
@@ -130,6 +131,7 @@ class _Sign_In_State extends State<Sign_In_> {
                     labelText: 'Username', //
                     prefixIcon: Icon(Icons.person, color: Colors.grey),
                   ),
+                  onSubmitted: (_) => signin_press(),
                 ),
               ),
 
@@ -148,6 +150,7 @@ class _Sign_In_State extends State<Sign_In_> {
                     ),
                   ),
                   obscureText: !is_password_visible,
+                  onSubmitted: (_) => signin_press(),
                 ),
               ),
 

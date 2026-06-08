@@ -16,7 +16,7 @@ Map<String, Widget> pages = {
   "Guest": guest.Main_(),
   "User": user.Main_(),
   "Check In": check_in.Main_(),
-  
+
   "Template": template.Main_(),
   // "Dashboard": Dashboard_(),
 

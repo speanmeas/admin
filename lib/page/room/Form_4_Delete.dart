@@ -65,11 +65,9 @@ class _Form_Delete_State extends State<Form_Delete_> {
         toolbarHeight: 40,
         titleSpacing: 0,
       ),
-      body: Center(
-        child: Container(
-          width: 600,
-          alignment: Alignment.center,
-          child: ListView(
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
             children: [
               SizedBox(height: 20),
 

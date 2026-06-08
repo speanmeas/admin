@@ -18,9 +18,9 @@ List<Map<String, dynamic>> schema = [
     "is_visible": 1
   },
   {
-    "key": "phone",
+    "key": "phone_number",
     "kind": "text",
-    "title": "Phone",
+    "title": "Phone Number",
     "is_visible": 1
   },
   {
@@ -31,20 +31,26 @@ List<Map<String, dynamic>> schema = [
   },
   {
     "key": "is_admin",
-    "kind": "number",
+    "kind": "boolean",
     "title": "Is Admin",
     "is_visible": 1
   },
   {
     "key": "is_manager",
-    "kind": "number",
+    "kind": "boolean",
     "title": "Is Manager",
     "is_visible": 1
   },
   {
-    "key": "is_cashier",
-    "kind": "number",
-    "title": "Is Cashier",
+    "key": "is_receptionist",
+    "kind": "boolean",
+    "title": "Is Receptionist",
+    "is_visible": 1
+  },
+  {
+    "key": "is_housekeeper",
+    "kind": "boolean",
+    "title": "Is Housekeeper",
     "is_visible": 1
   },
   {

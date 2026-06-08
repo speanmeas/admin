@@ -193,6 +193,48 @@ Widget Cell_Datetime(dynamic data) {
   );
 }
 
+Widget Cell_Text(dynamic data) {
+  // general case
+  return Container(
+    width: COLUMN_WIDTH, //
+    alignment: Alignment.center,
+    child: Text(
+      data, //
+      overflow: TextOverflow.ellipsis,
+      maxLines: 2,
+      softWrap: true,
+    ),
+  );
+}
+
+Widget Cell_Number(dynamic data) {
+  // general case
+  return Container(
+    width: COLUMN_WIDTH, //
+    alignment: Alignment.center,
+    child: Text(
+      data, //
+      overflow: TextOverflow.ellipsis,
+      maxLines: 2,
+      softWrap: true,
+    ),
+  );
+}
+
+Widget Cell_Boolean(dynamic data) {
+  // general case
+  return Container(
+    width: COLUMN_WIDTH, //
+    alignment: Alignment.center,
+    child: Text(
+      data, //
+      overflow: TextOverflow.ellipsis,
+      maxLines: 2,
+      softWrap: true,
+    ),
+  );
+}
+
 Widget Cell_General(dynamic data) {
   // general case
   return Container(

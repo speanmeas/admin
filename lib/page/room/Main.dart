@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
+import 'package:speanmeas/page/template/__Model__.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Datetime_format.dart';
 import 'package:speanmeas/utility/Dio.dart';
@@ -25,13 +26,11 @@ import 'Schema.g.dart';
 import '__Setup__.dart';
 
 void main() {
-  runApp(const Guest_Info());
+  runApp(const Main());
 }
 
-class Guest_Info extends StatelessWidget {
-  const Guest_Info({super.key});
-
-  final id = "69f984897186bcf74f8a5dde"; //
+class Main extends StatelessWidget {
+  const Main({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +124,10 @@ class _Main_State extends State<Main_> {
           setState(() {
             // print(r.data.length);
             has_more = r.data.length == limit;
+            // data = List<Map<String, dynamic>>.from(r.data);
+
             data = List<Map<String, dynamic>>.from(r.data);
+
             // print(data);
           });
         })
@@ -157,7 +159,7 @@ class _Main_State extends State<Main_> {
           // print(r.data);
           has_more = r.data.length == limit;
           data.addAll(List<Map<String, dynamic>>.from(r.data));
-          // print(data);
+          print(data);
           setState(() {});
         })
         .catchError((e) {});
@@ -226,18 +228,98 @@ class _Main_State extends State<Main_> {
 
         ..._schema.where((row) => row["is_visible"] == 1).map((row) {
           // case price
-          if (row["key"] == "price") return Cell_Price(data[index][row["key"]]);
+          if (row["key"] == "price") {
+            final priceValue = data[index][row["key"]];
+            final price = priceValue is num ? priceValue.toDouble() : double.tryParse(priceValue?.toString() ?? "0.0") ?? 0.0;
+            return Container(
+              width: COLUMN_WIDTH, //
+              alignment: Alignment.center,
+              child: Text(
+                "${price.toStringAsFixed(2)} \$", //
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                softWrap: true,
+              ),
+            );
+          }
 
           // case password
-          if (row["key"] == "password_hash") return Cell_General("**********");
+          if (row["key"] == "password") {
+            return Container(
+              width: COLUMN_WIDTH, //
+              alignment: Alignment.center,
+              child: Text(
+                data[index][row["key"]]?.toString() ?? "", //
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                softWrap: true,
+              ),
+            );
+          }
+
+          // case datetime
+          if (row["kind"] == "text") {
+            return Container(
+              width: COLUMN_WIDTH, //
+              alignment: Alignment.center,
+              child: Text(
+                data[index][row["key"]]?.toString() ?? "", //
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                softWrap: true,
+              ),
+            );
+          }
+
+          // case datetime
+          if (row["kind"] == "number") {
+            return Container(
+              width: COLUMN_WIDTH, //
+              alignment: Alignment.center,
+              child: Text(
+                data[index][row["key"]]?.toString() ?? "", //
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                softWrap: true,
+              ),
+            );
+          }
+
+          // case datetime
+          if (row["kind"] == "boolean") {
+            return Container(
+              width: COLUMN_WIDTH, //
+              alignment: Alignment.center,
+              child: Text(
+                data[index][row["key"]] == "1"
+                    ? "Yes"
+                    : (data[index][row["key"]] == "0"
+                          ? "No" //
+                          : (data[index][row["key"]] ?? "")),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                softWrap: true,
+              ),
+            );
+          }
 
           // case datetime
           if (row["kind"] == "datetime") {
-            return Cell_Datetime(data[index][row["key"]] ?? "");
+            return Container(
+              width: COLUMN_WIDTH, //
+              alignment: Alignment.center,
+              child: Text(
+                data[index][row["key"]]?.toString() ?? "", //
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                softWrap: true,
+              ),
+            );
           }
 
           // default
-          return Cell_General("${data[index][row["key"]] ?? ""}");
+          return const SizedBox();
+          // Cell_General("${data[index][row["key"]] ?? ""}");
         }),
 
         if (is_admin) ...[
@@ -262,7 +344,7 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  void read_item_pressed(int index) {
+  void on_read(int index) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -478,6 +560,7 @@ class _Main_State extends State<Main_> {
     required List<Widget> Function(int index) children_body,
     required List<Widget> children_floating,
   }) {
+    //
     return Scaffold(
       body: Scrollbar(
         controller: controller_scrollbar,
@@ -519,7 +602,7 @@ class _Main_State extends State<Main_> {
                           ),
                           child: Row(children: children_body(index)),
                         ),
-                        onTap: () => read_item_pressed(index),
+                        onTap: () => on_read(index),
                       );
                     },
                   ),

@@ -116,20 +116,20 @@ class _Form_Update_State extends State<Form_Update_> {
         toolbarHeight: 40,
         titleSpacing: 0,
       ),
-      body: Center(
-        child: Container(
-          width: 600,
-          // alignment: Alignment.bottomCenter,
-          child: ListView(
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
             children: [
               ...schema.map((row) {
-                if (row["key"] == "password_hash_") {
+                //
+                if (row["key"] == "password") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
                       controller: TextEditingController(text: ""),
                       decoration: InputDecoration(
                         labelText: row['title'], //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (value) {
@@ -139,7 +139,7 @@ class _Form_Update_State extends State<Form_Update_> {
                   );
                 }
 
-                // edit string
+                //
                 if (row["kind"] == "text") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
@@ -147,6 +147,7 @@ class _Form_Update_State extends State<Form_Update_> {
                       controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: row['title'], //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (value) {
@@ -164,6 +165,7 @@ class _Form_Update_State extends State<Form_Update_> {
                       controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: row['title'], //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -175,26 +177,96 @@ class _Form_Update_State extends State<Form_Update_> {
                   );
                 }
 
-                // edit datetime
-                if (row["kind"] == "datetime") {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                if (row["kind"] == "boolean") {
+                  return Container(
+                    width: 600,
+                    padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Row(
                       children: [
-                        Text("${row['title'] ?? ""} : "),
+                        // is_admin
                         Expanded(
+                          child: TextField(
+                            controller: TextEditingController(
+                              text: output[row["key"]] == "1"
+                                  ? "Yes"
+                                  : (output[row["key"]] == "0"
+                                        ? "No" //
+                                        : (output[row["key"]] ?? "")),
+                            ),
+                            readOnly: true,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(), //
+                              labelText: "${row['title'] as String? ?? ""}:",
+                              labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                            ),
+                          ),
+                        ),
+
+                        // bank
+                        Container(
+                          margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                          child: OutlinedButton.icon(
+                            icon: Icon(Icons.check_circle_outline), //
+                            label: Text("Yes"), //
+                            style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
+                            onPressed: () {
+                              output[row["key"]] = "1";
+                              setState(() {});
+                            }, //
+                          ),
+                        ),
+
+                        // cash
+                        Container(
+                          margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                          child: OutlinedButton.icon(
+                            icon: Icon(Icons.cancel_outlined), //
+                            label: Text("No"), //
+                            style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                            onPressed: () {
+                              output[row["key"]] = "0";
+                              setState(() {});
+                            }, //
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                // edit datetime
+                if (row["kind"] == "datetime") {
+                  return Container(
+                    width: 600,
+                    padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: TextEditingController(text: output[row["key"]] ?? ""),
+                            readOnly: true,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(), //
+                              labelText: row['title'], //
+                              labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                            ),
+                          ),
+                        ),
+
+                        Container(
+                          margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
                           child: OutlinedButton.icon(
                             onPressed: () async {
                               final DateTime? datetime = await datetime_picker(context);
-
                               if (datetime == null) return;
-
                               output[row["key"]] = datetime_to_string(datetime);
-
                               setState(() {});
-                            },
-                            label: Text(output[row["key"]] == null ? "Select Datetime" : output[row["key"]]!),
+                            }, //
+                            label: Text("Select"),
                             icon: const Icon(Icons.calendar_today),
+                            style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
                           ),
                         ),
                       ],

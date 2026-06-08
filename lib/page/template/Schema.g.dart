@@ -36,6 +36,24 @@ List<Map<String, dynamic>> schema = [
     "is_visible": 1
   },
   {
+    "key": "is_admin",
+    "kind": "boolean",
+    "title": "Is Admin",
+    "is_visible": 1
+  },
+  {
+    "key": "is_user",
+    "kind": "boolean",
+    "title": "Is User",
+    "is_visible": 1
+  },
+  {
+    "key": "is_guest",
+    "kind": "boolean",
+    "title": "Is Guest",
+    "is_visible": 1
+  },
+  {
     "key": "datetime_1",
     "kind": "datetime",
     "title": "Datetime 1",

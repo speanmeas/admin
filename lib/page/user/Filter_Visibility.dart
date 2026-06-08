@@ -57,7 +57,7 @@ class _Filter_Visibility_State extends State<Filter_Visibility_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "$HEADER Visibility", //
+          "Visibility $HEADER", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
