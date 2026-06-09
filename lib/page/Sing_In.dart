@@ -191,11 +191,37 @@ class _Sign_In_State extends State<Sign_In_> {
         )
         .then((r) async {
           print("Login successful");
+
           print("Response: ${r.data}");
+
           snackbar_show(context: context, message: "Login successful", color: Colors.green);
 
           await secure_storage.write(key: "username", value: controller_username.text);
           await secure_storage.write(key: "access_token", value: r.data["access_token"]);
+
+          if (r.data["is_admin"].isNotEmpty && r.data["is_admin"] == "1") {
+            Global.is_admin = true;
+          }
+
+          if (r.data["is_manager"].isNotEmpty && r.data["is_manager"] == "1") {
+            Global.is_manager = true;
+          }
+
+          if (r.data["is_receptionist"].isNotEmpty && r.data["is_receptionist"] == "1") {
+            Global.is_receptionist = true;
+          }
+
+          if (r.data["is_housekeeper"].isNotEmpty && r.data["is_housekeeper"] == "1") {
+            Global.is_housekeeper = true;
+          }
+
+          // Model_Layout.view();
+          Global().reload();
+
+          // await secure_storage.write(key: "is_admin", value: jsonEncode(r.data["is_admin"]));
+          // await secure_storage.write(key: "is_manager", value: jsonEncode(r.data["is_manager"]));
+          // await secure_storage.write(key: "is_receptionist", value: jsonEncode(r.data["is_receptionist"]));
+          // await secure_storage.write(key: "is_cleaner", value: jsonEncode(r.data["is_cleaner"]));
 
           Navigator.pushReplacement(
             context, //

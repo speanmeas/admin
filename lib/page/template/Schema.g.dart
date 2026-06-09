@@ -70,5 +70,11 @@ List<Map<String, dynamic>> schema = [
     "kind": "datetime",
     "title": "Datetime 3",
     "is_visible": 1
+  },
+  {
+    "key": "note",
+    "kind": "text",
+    "title": "Note",
+    "is_visible": 1
   }
 ];

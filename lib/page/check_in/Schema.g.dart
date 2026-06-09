@@ -36,6 +36,12 @@ List<Map<String, dynamic>> schema = [
     "is_visible": 1
   },
   {
+    "key": "guest_nationality",
+    "kind": "text",
+    "title": "Guest Nationality",
+    "is_visible": 1
+  },
+  {
     "key": "guest_phone_number",
     "kind": "text",
     "title": "Guest Phone Number",
@@ -62,43 +68,109 @@ List<Map<String, dynamic>> schema = [
   {
     "key": "price_total_usd",
     "kind": "text",
-    "title": "Price Total (USD)",
+    "title": "Price (USD)",
+    "is_visible": 1
+  },
+  {
+    "key": "price_total_khr",
+    "kind": "text",
+    "title": "Price (KHR)",
     "is_visible": 1
   },
   {
     "key": "paid_bank_usd",
     "kind": "text",
-    "title": "Paid at Bank (USD)",
+    "title": "Paid Bank (USD)",
     "is_visible": 1
   },
   {
     "key": "paid_bank_khr",
     "kind": "text",
-    "title": "Paid at Bank (KHR)",
+    "title": "Paid Bank (KHR)",
     "is_visible": 1
   },
   {
     "key": "paid_cash_usd",
     "kind": "text",
-    "title": "Paid at Cash (USD)",
+    "title": "Paid Cash (USD)",
     "is_visible": 1
   },
   {
     "key": "paid_cash_khr",
     "kind": "text",
-    "title": "Paid at Cash (KHR)",
+    "title": "Paid Cash (KHR)",
     "is_visible": 1
   },
   {
     "key": "return_usd",
     "kind": "text",
-    "title": "Return Total (USD)",
+    "title": "Return (USD)",
     "is_visible": 1
   },
   {
-    "key": "remain_usd",
+    "key": "return_khr",
     "kind": "text",
-    "title": "Remaining Total (USD)",
+    "title": "Return (KHR)",
+    "is_visible": 1
+  },
+  {
+    "key": "balance_usd",
+    "kind": "text",
+    "title": "Balance (USD)",
+    "is_visible": 1
+  },
+  {
+    "key": "balance_khr",
+    "kind": "text",
+    "title": "Balance (KHR)",
+    "is_visible": 1
+  },
+  {
+    "key": "check_in_at",
+    "kind": "datetime",
+    "title": "Check-in At",
+    "is_visible": 1
+  },
+  {
+    "key": "check_in_by",
+    "kind": "text",
+    "title": "Check-in By",
+    "is_visible": 1
+  },
+  {
+    "key": "received_paid_at",
+    "kind": "datetime",
+    "title": "Received Paid At",
+    "is_visible": 1
+  },
+  {
+    "key": "received_paid_by",
+    "kind": "text",
+    "title": "Received Paid By",
+    "is_visible": 1
+  },
+  {
+    "key": "check_out_at",
+    "kind": "datetime",
+    "title": "Check-out At",
+    "is_visible": 1
+  },
+  {
+    "key": "check_out_by",
+    "kind": "text",
+    "title": "Check-out By",
+    "is_visible": 1
+  },
+  {
+    "key": "cleaned_at",
+    "kind": "datetime",
+    "title": "Cleaned At",
+    "is_visible": 1
+  },
+  {
+    "key": "cleaned_by",
+    "kind": "text",
+    "title": "Cleaned By",
     "is_visible": 1
   },
   {

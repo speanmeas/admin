@@ -70,7 +70,7 @@ class _Main_State extends State<Main_> {
           // print(r.data);
           data = List<Map<String, dynamic>>.from(r.data);
 
-          print(data);
+          // print(data);
 
           setState(() {});
         })
@@ -79,6 +79,7 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
     final screen_height = MediaQuery.of(context).size.height;
 
     return Scaffold(
@@ -100,6 +101,7 @@ class _Main_State extends State<Main_> {
 
                   child: Row(
                     children: [
+                      // room status
                       Container(
                         alignment: Alignment.centerLeft,
                         child: Column(
@@ -127,45 +129,83 @@ class _Main_State extends State<Main_> {
                               ),
                             if (room['status'] == "Occupied")
                               Text(
-                                "Occupied - A/R ${room['account_receivable'] ?? 0} USD ", //
+                                "Occupied - A/R ${room['ar'] ?? 0} USD ", //
                                 style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
                               ),
-
-                            // Text(
-                            //   "${room['status']}",
-                            //   style: TextStyle(
-                            //     color: room['status'] == "Available"
-                            //         ? Colors.green
-                            //         : room['status'] == "Dirty"
-                            //         ? Colors.orange
-                            //         : Colors.red,
-                            //     fontWeight: FontWeight.w600,
-                            //   ),
-                            // ),
                           ],
                         ),
                       ),
 
                       Spacer(),
 
-                      Button_Checkin(
-                        onPressed: room['status'] != "Available"
-                            ? null //
-                            : () => on_check_in(room),
-                      ),
+                      // button check in
+                      if (isMobile)
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          child: IconButton(
+                            onPressed: room['status'] != "Available"
+                                ? null //
+                                : () => on_check_in(room),
+                            icon: const Icon(Icons.login),
+                          ),
+                        ),
+                      if (!isMobile)
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          child: OutlinedButton.icon(
+                            onPressed: room['status'] != "Available"
+                                ? null //
+                                : () => on_check_in(room),
+                            icon: const Icon(Icons.login),
+                            label: const Text("Check In"), //
+                          ),
+                        ),
 
-                      Button_Check_Out(
-                        onPressed: room['status'] != "Occupied"
-                            ? null //
-                            : () => on_check_out(room),
-                      ),
+                      // button check out
+                      if (isMobile)
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          child: IconButton(
+                            onPressed: room['status'] != "Occupied"
+                                ? null //
+                                : () => on_check_out(room),
+                            icon: const Icon(Icons.logout),
+                          ),
+                        ),
+                      if (!isMobile)
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          child: OutlinedButton.icon(
+                            onPressed: room['status'] != "Occupied"
+                                ? null //
+                                : () => on_check_out(room),
+                            icon: const Icon(Icons.logout),
+                            label: const Text("Check Out"), //
+                          ),
+                        ),
 
-                      //
-                      Button_Clean(
-                        onPressed: room['status'] != "Dirty"
-                            ? null //
-                            : () => on_check_clean(room),
-                      ),
+                      // button clean
+                      if (isMobile)
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          child: IconButton(
+                            onPressed: room['status'] != "Dirty"
+                                ? null //
+                                : () => on_check_clean(room),
+                            icon: const Icon(Icons.cleaning_services),
+                          ),
+                        ),
+                      if (!isMobile)
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          child: OutlinedButton.icon(
+                            onPressed: room['status'] != "Dirty"
+                                ? null //
+                                : () => on_check_clean(room),
+                            icon: const Icon(Icons.cleaning_services),
+                            label: const Text("Clean"), //
+                          ),
+                        ),
                     ],
                   ),
                 );
@@ -181,13 +221,14 @@ class _Main_State extends State<Main_> {
 
   void on_check_in(dynamic room) {
     //
-    print("${room['id']}");
+    // print("${room['id']}");
 
-    Model_Check_In.room_id = room['id'].toString();
-    Model_Check_In.room_number = room['room_number'].toString();
-    Model_Check_In.room_type = room['room_type'].toString();
-    Model_Check_In.price_per_day = room['price_per_day'].toString();
-    Model_Check_In.price_per_3_hour = room['price_per_3_hour'].toString();
+    Model.room_id = room['id'].toString();
+    Model.room_number = room['room_number'].toString();
+    Model.room_type = room['room_type'].toString();
+
+    Model.price_per_day = double.parse(room['price_per_day'].toString());
+    Model.price_per_3_hour = double.parse(room['price_per_3_hour'].toString());
 
     Navigator.push(
       context, //
@@ -196,16 +237,17 @@ class _Main_State extends State<Main_> {
       if (v == true) {
         init();
       }
+      Model.clear();
     });
   }
 
   void on_check_out(dynamic room) {
     //
-    print("${room['id']}");
+    // print("${room['id']}");
 
     Model_Check_Out.room_id = room['id'].toString();
     Model_Check_Out.room_number = room['room_number'].toString();
-    Model_Check_Out.account_receivable = room['account_receivable'].toString();
+    Model_Check_Out.account_receivable = double.parse(room['ar']?.toString() ?? '0');
 
     Navigator.push(
       context, //
@@ -214,6 +256,7 @@ class _Main_State extends State<Main_> {
       if (v == true) {
         init();
       }
+      Model.clear();
     });
   }
 

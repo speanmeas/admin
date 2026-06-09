@@ -122,9 +122,28 @@ class _Form_Update_State extends State<Form_Update_> {
             children: [
               ...schema.map((row) {
                 //
+                if (row["key"] == "note") {
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: TextField(
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        // hintText: "Enter text...", //
+                        border: OutlineInputBorder(),
+                        labelText: "Note:", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                    ),
+                  );
+                }
+
+                //
                 if (row["key"] == "password") {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: ""),
                       decoration: InputDecoration(
@@ -141,8 +160,9 @@ class _Form_Update_State extends State<Form_Update_> {
 
                 //
                 if (row["kind"] == "text") {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
@@ -159,8 +179,9 @@ class _Form_Update_State extends State<Form_Update_> {
 
                 // edit number
                 if (row["kind"] == "number") {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
@@ -180,7 +201,7 @@ class _Form_Update_State extends State<Form_Update_> {
                 if (row["kind"] == "boolean") {
                   return Container(
                     width: 600,
-                    padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Row(
                       children: [
                         // is_admin
@@ -239,7 +260,7 @@ class _Form_Update_State extends State<Form_Update_> {
                 if (row["kind"] == "datetime") {
                   return Container(
                     width: 600,
-                    padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Row(
                       children: [
                         Expanded(
@@ -290,127 +311,130 @@ class _Form_Update_State extends State<Form_Update_> {
               ),
 
               if (output["images"] != null)
-                Scrollbar(
-                  controller: controller_images,
-                  thumbVisibility: true,
-                  // notificationPredicate: (_) => true,
-                  thickness: 12, // scrollbar width
-                  radius: const Radius.circular(0),
-                  // interactive: true,
-                  // scrollbarOrientation: ScrollbarOrientation.bottom,
-                  child: SingleChildScrollView(
+                Container(
+                  width: 600,
+                  child: Scrollbar(
                     controller: controller_images,
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        for (int i = 0; i < 10; i++)
-                          Container(
-                            width: 100, //
-                            height: 100,
-                            margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
-                            child: InkWell(
-                              onTap: () {
-                                showModalBottomSheet<void>(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
-                                  builder: (BuildContext c) {
-                                    return Wrap(
-                                      children: [
-                                        // ListTile(
-                                        //   leading: Icon(Icons.camera_alt_outlined),
-                                        //   title: Text('Open Camera'),
-                                        //   onTap: () async {
-                                        //     Navigator.pop(c);
-                                        //   },
-                                        // ),
-                                        ListTile(
-                                          leading: Icon(Icons.upload_outlined, color: Colors.blue),
-                                          title: Text('Upload', style: TextStyle(color: Colors.blue)),
-                                          onTap: () async {
-                                            // hide bottom sheet
-                                            Navigator.pop(c);
+                    thumbVisibility: true,
+                    // notificationPredicate: (_) => true,
+                    thickness: 12, // scrollbar width
+                    radius: const Radius.circular(0),
+                    // interactive: true,
+                    // scrollbarOrientation: ScrollbarOrientation.bottom,
+                    child: SingleChildScrollView(
+                      controller: controller_images,
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          for (int i = 0; i < 10; i++)
+                            Container(
+                              width: 100, //
+                              height: 100,
+                              margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
+                              child: InkWell(
+                                onTap: () {
+                                  showModalBottomSheet<void>(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
+                                    builder: (BuildContext c) {
+                                      return Wrap(
+                                        children: [
+                                          // ListTile(
+                                          //   leading: Icon(Icons.camera_alt_outlined),
+                                          //   title: Text('Open Camera'),
+                                          //   onTap: () async {
+                                          //     Navigator.pop(c);
+                                          //   },
+                                          // ),
+                                          ListTile(
+                                            leading: Icon(Icons.upload_outlined, color: Colors.blue),
+                                            title: Text('Upload', style: TextStyle(color: Colors.blue)),
+                                            onTap: () async {
+                                              // hide bottom sheet
+                                              Navigator.pop(c);
 
-                                            final id = widget.id;
-                                            final key = i.toString();
+                                              final id = widget.id;
+                                              final key = i.toString();
 
-                                            // print('Upload image at index: $id, key: $key');
+                                              // print('Upload image at index: $id, key: $key');
 
-                                            final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+                                              final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
 
-                                            // if no image selected
-                                            if (image == null) return;
+                                              // if no image selected
+                                              if (image == null) return;
 
-                                            // upload image to server
-                                            await dio
-                                                .post(
-                                                  '$PATH/file_upload', //
-                                                  data: FormData.fromMap({
-                                                    "id": id, //
-                                                    "image_key": key, //
-                                                    'image_value': MultipartFile.fromBytes(
-                                                      await image.readAsBytes(), //
-                                                      filename: image.name,
-                                                    ),
-                                                  }),
-                                                )
-                                                .then((r) {
-                                                  init();
-                                                  snackbar_show(context: context, message: "Uploaded", color: Colors.green);
-                                                })
-                                                .catchError((e) {
-                                                  snackbar_show(context: context, message: 'Upload Failed.', color: Colors.red);
-                                                });
-                                          },
-                                        ),
-                                        ListTile(
-                                          leading: Icon(Icons.delete_outlined, color: Colors.red),
-                                          title: Text('Delete', style: TextStyle(color: Colors.red)),
-                                          onTap: () async {
-                                            Navigator.pop(c);
+                                              // upload image to server
+                                              await dio
+                                                  .post(
+                                                    '$PATH/file_upload', //
+                                                    data: FormData.fromMap({
+                                                      "id": id, //
+                                                      "image_key": key, //
+                                                      'image_value': MultipartFile.fromBytes(
+                                                        await image.readAsBytes(), //
+                                                        filename: image.name,
+                                                      ),
+                                                    }),
+                                                  )
+                                                  .then((r) {
+                                                    init();
+                                                    snackbar_show(context: context, message: "Uploaded", color: Colors.green);
+                                                  })
+                                                  .catchError((e) {
+                                                    snackbar_show(context: context, message: 'Upload Failed.', color: Colors.red);
+                                                  });
+                                            },
+                                          ),
+                                          ListTile(
+                                            leading: Icon(Icons.delete_outlined, color: Colors.red),
+                                            title: Text('Delete', style: TextStyle(color: Colors.red)),
+                                            onTap: () async {
+                                              Navigator.pop(c);
 
-                                            final id = widget.id;
-                                            final key = i.toString();
+                                              final id = widget.id;
+                                              final key = i.toString();
 
-                                            // print('Delete image at index: $id, key: $key');
+                                              // print('Delete image at index: $id, key: $key');
 
-                                            // delete image from server
-                                            await dio
-                                                .post(
-                                                  '$PATH/file_delete', //
-                                                  data: FormData.fromMap({
-                                                    "id": id, //
-                                                    "image_key": key, //
-                                                  }),
-                                                )
-                                                .then((r) {
-                                                  init();
-                                                  snackbar_show(context: context, message: "Image deleted", color: Colors.green);
-                                                })
-                                                .catchError((e) {
-                                                  snackbar_show(context: context, message: 'Delete Failed.', color: Colors.red);
-                                                });
+                                              // delete image from server
+                                              await dio
+                                                  .post(
+                                                    '$PATH/file_delete', //
+                                                    data: FormData.fromMap({
+                                                      "id": id, //
+                                                      "image_key": key, //
+                                                    }),
+                                                  )
+                                                  .then((r) {
+                                                    init();
+                                                    snackbar_show(context: context, message: "Image deleted", color: Colors.green);
+                                                  })
+                                                  .catchError((e) {
+                                                    snackbar_show(context: context, message: 'Delete Failed.', color: Colors.red);
+                                                  });
 
-                                            //
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                              child: output["images"][i.toString()] != null
-                                  ? Image.network(
-                                      "$MINIO_PUBLIC/200/images/${output["images"][i.toString()]}", //
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Container(
-                                      color: Colors.grey[300],
-                                      child: Icon(Icons.upload_outlined, color: Colors.blue, size: 24),
-                                    ),
+                                              //
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                child: output["images"][i.toString()] != null
+                                    ? Image.network(
+                                        "$MINIO_PUBLIC/200/images/${output["images"][i.toString()]}", //
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Container(
+                                        color: Colors.grey[300],
+                                        child: Icon(Icons.upload_outlined, color: Colors.blue, size: 24),
+                                      ),
+                              ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

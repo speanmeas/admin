@@ -10,7 +10,6 @@ import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import '__Setup__.dart';
-import '__Model__.dart';
 import 'Schema.g.dart';
 
 void main() {
@@ -89,6 +88,24 @@ class _Form_Create_State extends State<Form_Create_> {
                 // print(row);
 
                 // todo: handle foreign key
+
+                //
+                if (row["key"] == "note") {
+                  return Container(
+                    width: 600,
+                    padding: EdgeInsets.all(8),
+                    child: TextField(
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        // hintText: "Enter text...", //
+                        border: OutlineInputBorder(),
+                        labelText: "Note:", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                    ),
+                  );
+                }
 
                 if (row["kind"] == "text") {
                   return Container(

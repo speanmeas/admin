@@ -104,24 +104,41 @@ class _Form_Read_State extends State<Form_Read_> {
         toolbarHeight: 40,
         titleSpacing: 0,
       ),
-      body: Center(
-        child: Container(
-          width: 600,
-          // alignment: Alignment.bottomCenter,
-          child: ListView(
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
             children: [
               SizedBox(height: 16),
 
               ...schema.map((row) {
                 //
 
-                if (row["key"] == "password_hash_") {
+                if (row["key"] == "note") {
+                  return Container(
+                    width: 600,
+                    padding: EdgeInsets.all(8),
+                    child: TextField(
+                      readOnly: true,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        // hintText: "Enter text...", //
+                        border: OutlineInputBorder(),
+                        labelText: "Note:", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                    ),
+                  );
+                }
+
+                if (row["key"] == "password") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
                     child: TextField(
                       controller: TextEditingController(text: "**********"),
                       decoration: InputDecoration(
                         labelText: row['title'], //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       readOnly: true,
@@ -137,6 +154,7 @@ class _Form_Read_State extends State<Form_Read_> {
                       controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: row['title'], //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       readOnly: true,
@@ -152,6 +170,29 @@ class _Form_Read_State extends State<Form_Read_> {
                       controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
                         labelText: row['title'], //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      readOnly: true,
+                    ),
+                  );
+                }
+
+                //
+                if (row["kind"] == "boolean") {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                    child: TextField(
+                      controller: TextEditingController(
+                        text: output[row["key"]] == "1"
+                            ? "Yes"
+                            : (output[row["key"]] == "0"
+                                  ? "No" //
+                                  : (output[row["key"]] ?? "")),
+                      ),
+                      decoration: InputDecoration(
+                        labelText: row['title'], //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       readOnly: true,

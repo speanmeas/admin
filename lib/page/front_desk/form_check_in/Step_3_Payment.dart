@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -9,11 +10,12 @@ import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
 import 'package:speanmeas/page/front_desk/form_check_in/Step_4_Summary.dart';
-import 'package:speanmeas/page/front_desk/form_check_in/__Model__.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
+
+import '__Model__.dart';
 
 void main() {
   runApp(
@@ -48,13 +50,36 @@ class Payment_ extends StatefulWidget {
 class _Payment_State extends State<Payment_> {
   //
 
-  TextEditingController controller_payment_type = TextEditingController(text: "Bank");
-  TextEditingController controller_currency_type = TextEditingController(text: "USD");
+  final controller_price_total_usd = TextEditingController();
+  final controller_price_total_khr = TextEditingController();
 
-  TextEditingController controller_bank_usd = TextEditingController();
-  TextEditingController controller_bank_khr = TextEditingController();
-  TextEditingController controller_cash_usd = TextEditingController();
-  TextEditingController controller_cash_khr = TextEditingController();
+  final controller_paid_bank_usd = TextEditingController();
+  final controller_paid_bank_khr = TextEditingController();
+  final controller_paid_cash_usd = TextEditingController();
+  final controller_paid_cash_khr = TextEditingController();
+
+  final controller_return_usd = TextEditingController();
+  final controller_return_khr = TextEditingController();
+
+  final controller_ar_usd = TextEditingController();
+  final controller_ar_khr = TextEditingController();
+
+  @override
+  initState() {
+    super.initState();
+
+    controller_price_total_usd.text = NumberFormat("#,##0.##").format(double.parse(Model.price_total_usd.toString()));
+    controller_price_total_khr.text = NumberFormat("#,##0.##").format(double.parse(Model.price_total_khr.toString()));
+    controller_paid_bank_usd.text = Model.paid_bank_usd.toString();
+    controller_paid_bank_khr.text = Model.paid_bank_khr.toString();
+    controller_paid_cash_usd.text = Model.paid_cash_usd.toString();
+    controller_paid_cash_khr.text = Model.paid_cash_khr.toString();
+    controller_return_usd.text = Model.return_usd.toString();
+    controller_return_khr.text = Model.return_khr.toString();
+
+    controller_ar_usd.text = NumberFormat("#,##0.##").format(get_ar_usd());
+    controller_ar_khr.text = NumberFormat("#,##0.##").format(get_ar_usd() * Global.RATE);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,139 +114,100 @@ class _Payment_State extends State<Payment_> {
         child: Center(
           child: Column(
             children: [
+              // room number
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("Room Number: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     Text(
-                      Model_Check_In.room_number ?? "",
+                      Model.room_number ?? "",
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
                     ),
                   ],
                 ),
               ),
 
-              // select payment type
+              // price total usd and khr
               Container(
                 width: 600,
-                padding: EdgeInsets.all(8),
+                height: 40,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: Row(
                   children: [
-                    // payment type
-                    Expanded(
-                      child: TextField(
-                        controller: controller_payment_type,
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(), //
-                          labelText: "Payment Type:",
-                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                        ),
-                      ),
+                    Text("Price Total: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(
+                      Model.price_total_usd.toString(),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
                     ),
-
-                    // bank
-                    Container(
-                      margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.account_balance_outlined), //
-                        label: Text("Bank"), //
-                        onPressed: () {
-                          controller_payment_type.text = "Bank";
-                          setState(() {});
-                        }, //
-                      ),
+                    Text(" USD = ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(
+                      Model.price_total_khr.toString(),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
                     ),
-
-                    // cash
-                    Container(
-                      margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.monetization_on_outlined), //
-                        label: Text("Cash"), //
-                        onPressed: () {
-                          controller_payment_type.text = "Cash";
-                          setState(() {});
-                        }, //
-                      ),
-                    ),
-
-                    // bank + cash
-                    Container(
-                      margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.account_balance_wallet_outlined), //
-                        label: Text("Bank + Cash"), //
-                        onPressed: () {
-                          controller_payment_type.text = "Bank + Cash";
-                          setState(() {});
-                        }, //
-                      ),
-                    ),
+                    Text(" KHR", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
 
-              // select currency Type
+              // paid bank usd and khr
               Container(
                 width: 600,
-                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // currency type
                     Expanded(
                       child: TextField(
-                        controller: controller_currency_type,
-                        readOnly: true,
+                        controller: controller_paid_bank_usd,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
                         decoration: InputDecoration(
-                          border: OutlineInputBorder(), //
-                          labelText: "Currency Type:",
+                          labelText: "Paid Bank (USD):",
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                         ),
+                        onChanged: (v) {
+                          if (v.isEmpty) {
+                            Model.paid_bank_usd = 0;
+                            setState(() {});
+                            return;
+                          }
+
+                          if (double.tryParse(v) == null) {
+                            controller_paid_bank_usd.text = v.substring(0, v.length - 1);
+                            controller_paid_bank_usd.selection = TextSelection.collapsed(offset: controller_paid_bank_usd.text.length);
+                          }
+
+                          Model.paid_bank_usd = double.tryParse(v) ?? 0;
+                          setState(() {});
+                        },
                       ),
                     ),
 
-                    // bank
-                    Container(
-                      margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.account_balance_outlined), //
-                        label: Text("USD"), //
-                        onPressed: () {
-                          controller_currency_type.text = "USD";
-                          setState(() {});
-                        }, //
-                      ),
-                    ),
+                    SizedBox(width: 8),
 
-                    // cash
-                    Container(
-                      margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.monetization_on_outlined), //
-                        label: Text("KHR"), //
-                        onPressed: () {
-                          controller_currency_type.text = "KHR";
-                          setState(() {});
-                        }, //
-                      ),
-                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: controller_paid_bank_khr,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: false),
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+                        decoration: InputDecoration(
+                          labelText: "Paid Bank (KHR):",
+                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                        ),
+                        onChanged: (v) {
+                          if (double.tryParse(v) == null) {
+                            controller_paid_bank_khr.text = v.substring(0, v.length - 1);
+                            controller_paid_bank_khr.selection = TextSelection.collapsed(offset: controller_paid_bank_khr.text.length);
+                          }
 
-                    // bank + cash
-                    Container(
-                      margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.account_balance_wallet_outlined), //
-                        label: Text("USD + KHR"), //
-                        onPressed: () {
-                          controller_currency_type.text = "USD + KHR";
+                          Model.paid_bank_khr = double.tryParse(v) ?? 0;
                           setState(() {});
-                        }, //
+                        },
                       ),
                     ),
                   ],
@@ -231,255 +217,158 @@ class _Payment_State extends State<Payment_> {
               // payment details
               Container(
                 width: 600,
-                padding: EdgeInsets.all(8),
-
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 250,
-                          height: 50,
-                          child: controller_payment_type.text.contains("Bank") && controller_currency_type.text.contains("USD")
-                              ? TextField(
-                                  controller: controller_bank_usd,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(), //
-                                    labelText: "Bank USD:",
-                                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                                  ),
-                                  onChanged: (_) => setState(() {}),
-                                )
-                              : SizedBox(),
-                        ),
-
-                        SizedBox(width: 8),
-
-                        Container(
-                          width: 250,
-                          height: 50,
-                          child: controller_payment_type.text.contains("Bank") && controller_currency_type.text.contains("KHR")
-                              ? TextField(
-                                  controller: controller_bank_khr,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(), //
-                                    labelText: "Bank KHR:",
-                                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                                  ),
-                                  onChanged: (_) => setState(() {}),
-                                )
-                              : SizedBox(),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        Container(
-                          width: 250,
-                          height: 50,
-                          child: controller_payment_type.text.contains("Cash") && controller_currency_type.text.contains("USD")
-                              ? TextField(
-                                  controller: controller_cash_usd,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(), //
-                                    labelText: "Cash USD:",
-                                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                                  ),
-                                  onChanged: (_) => setState(() {}),
-                                )
-                              : SizedBox(),
-                        ),
-
-                        SizedBox(width: 8),
-
-                        Container(
-                          width: 250,
-                          height: 50,
-                          child: controller_payment_type.text.contains("Cash") && controller_currency_type.text.contains("KHR")
-                              ? TextField(
-                                  controller: controller_cash_khr,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(), //
-                                    labelText: "Cash KHR:",
-                                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                                  ),
-                                  onChanged: (_) => setState(() {}),
-                                )
-                              : SizedBox(),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              Container(
-                width: 600,
-                padding: EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  border: Border(top: BorderSide(color: Colors.grey)),
-                  borderRadius: BorderRadius.circular(0),
-                ),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Total: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Expanded(
+                      child: TextField(
+                        controller: controller_paid_cash_usd,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                        decoration: InputDecoration(
+                          labelText: "Paid Cash (USD):",
+                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                        ),
+                        onChanged: (v) {
+                          if (v.isEmpty) {
+                            Model.paid_cash_usd = 0;
+                            setState(() {});
+                            return;
+                          }
 
-                    Container(
-                      width: 200,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            style: TextStyle(fontSize: 16),
-                            "${NumberFormat("#,##0.00").format(get_price_total_usd() ?? 0)} USD", //
-                          ),
-                          Text(
-                            style: TextStyle(fontSize: 16),
-                            "or ${NumberFormat("#,##0.##").format(get_price_total_khr() ?? 0)} KHR", //
-                          ),
-                        ],
+                          if (double.tryParse(v) == null) {
+                            controller_paid_cash_usd.text = v.substring(0, v.length - 1);
+                            controller_paid_cash_usd.selection = TextSelection.collapsed(offset: controller_paid_cash_usd.text.length);
+                          }
+
+                          Model.paid_cash_usd = double.tryParse(v) ?? 0;
+                          setState(() {});
+                        },
+                      ),
+                    ),
+
+                    SizedBox(width: 8),
+
+                    Expanded(
+                      child: TextField(
+                        controller: controller_paid_cash_khr,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: false),
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+                        decoration: InputDecoration(
+                          labelText: "Paid Cash (KHR):",
+                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                        ),
+                        onChanged: (v) {
+                          if (v.isEmpty) {
+                            Model.paid_cash_khr = 0;
+                            setState(() {});
+                            return;
+                          }
+
+                          if (double.tryParse(v) == null) {
+                            controller_paid_cash_khr.text = v.substring(0, v.length - 1);
+                            controller_paid_cash_khr.selection = TextSelection.collapsed(offset: controller_paid_cash_khr.text.length);
+                          }
+
+                          Model.paid_cash_khr = double.tryParse(v) ?? 0;
+                          setState(() {});
+                        },
                       ),
                     ),
                   ],
                 ),
               ),
 
-              Container(
-                width: 600,
-                padding: EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  border: Border(top: BorderSide(color: Colors.grey)),
-                  borderRadius: BorderRadius.circular(0),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Paid: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-
-                    Container(
-                      width: 200,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            style: TextStyle(fontSize: 16),
-                            "${NumberFormat("#,##0.00").format(get_paid_bank_usd() ?? 0)} USD", //
+              // return details
+              if (get_ar_usd() > 0)
+                Container(
+                  width: 600,
+                  margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: controller_return_usd,
+                          decoration: InputDecoration(
+                            labelText: "Return (USD):",
+                            labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
                           ),
-                          Text(
-                            style: TextStyle(fontSize: 16),
-                            "and ${NumberFormat("#,##0.##").format(get_paid_bank_khr() ?? 0)} KHR", //
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                          onChanged: (v) {
+                            if (v.isEmpty) {
+                              Model.return_usd = 0;
+                              setState(() {});
+                              return;
+                            }
+
+                            if (double.tryParse(v) == null) {
+                              controller_return_usd.text = v.substring(0, v.length - 1);
+                              controller_return_usd.selection = TextSelection.collapsed(offset: controller_return_usd.text.length);
+                            }
+
+                            Model.return_usd = double.tryParse(v) ?? 0;
+                            setState(() {});
+                          },
+                        ),
+                      ),
+
+                      SizedBox(width: 8),
+
+                      Expanded(
+                        child: TextField(
+                          controller: controller_return_khr,
+                          decoration: InputDecoration(
+                            labelText: "Return (KHR):",
+                            labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
                           ),
-                        ],
+                          keyboardType: const TextInputType.numberWithOptions(decimal: false),
+                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+                          onChanged: (v) {
+                            if (v.isEmpty) {
+                              Model.return_khr = 0;
+                              setState(() {});
+                              return;
+                            }
+
+                            if (double.tryParse(v) == null) {
+                              controller_return_khr.text = v.substring(0, v.length - 1);
+                              controller_return_khr.selection = TextSelection.collapsed(offset: controller_return_khr.text.length);
+                            }
+
+                            Model.return_khr = double.tryParse(v) ?? 0;
+                            setState(() {});
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // return amount
-              Container(
-                width: 600,
-                padding: EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  border: Border(top: BorderSide(color: Colors.grey)),
-                  borderRadius: BorderRadius.circular(0),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Return: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-
-                    Container(
-                      width: 200,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          if ((get_return_usd() ?? 0) < 0)
-                            Text(
-                              style: TextStyle(fontSize: 16, color: Colors.blue, fontWeight: FontWeight.bold),
-                              "${NumberFormat("#,##0.00").format(get_return_usd() ?? 0)} USD", //
-                            ),
-                          if ((get_return_usd() ?? 0) == 0)
-                            Text(
-                              style: TextStyle(fontSize: 16),
-                              "${NumberFormat("#,##0.00").format(get_return_usd() ?? 0)} USD", //
-                            ),
-                          if ((get_return_khr() ?? 0) < 0)
-                            Text(
-                              style: TextStyle(fontSize: 16, color: Colors.blue, fontWeight: FontWeight.bold),
-                              "or ${NumberFormat("#,##0.##").format(get_return_khr() ?? 0)} KHR", //
-                            ),
-                          if ((get_return_khr() ?? 0) == 0)
-                            Text(
-                              style: TextStyle(fontSize: 16),
-                              "or ${NumberFormat("#,##0.##").format(get_return_khr() ?? 0)} KHR", //
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // remaining
-              Container(
-                width: 600,
-                padding: EdgeInsets.all(4),
-
-                decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(color: Colors.grey), //
-                    bottom: BorderSide(color: Colors.grey), //
+                    ],
                   ),
-                  borderRadius: BorderRadius.circular(0),
                 ),
+
+              // price total usd and khr
+              Container(
+                width: 600,
+                height: 40,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Remaining: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-
-                    Container(
-                      width: 200,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          if ((get_remaining_usd() ?? 0) > 0)
-                            Text(
-                              style: TextStyle(fontSize: 16, color: Colors.red, fontWeight: FontWeight.bold),
-                              "${NumberFormat("#,##0.00").format(get_remaining_usd() ?? 0)} USD", //
-                            ),
-                          if ((get_remaining_usd() ?? 0) == 0)
-                            Text(
-                              style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),
-                              "${NumberFormat("#,##0.00").format(get_remaining_usd() ?? 0)} USD", //
-                            ),
-
-                          if (get_remaining_khr() != null && get_remaining_khr()! > 0)
-                            Text(
-                              style: TextStyle(fontSize: 16, color: Colors.red, fontWeight: FontWeight.bold),
-                              "or ${NumberFormat("#,##0.##").format(get_remaining_khr() ?? 0)} KHR", //
-                            ),
-
-                          if (get_remaining_khr() != null && get_remaining_khr()! == 0)
-                            Text(
-                              style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),
-                              "or ${NumberFormat("#,##0.##").format(get_remaining_khr() ?? 0)} KHR", //
-                            ),
-                        ],
-                      ),
+                    Text("Balance: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(
+                      get_ar_usd().toString(),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
                     ),
+                    Text(" USD = ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(
+                      (get_ar_usd() * Global.RATE).toString(),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+                    ),
+                    Text(" KHR", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -504,20 +393,6 @@ class _Payment_State extends State<Payment_> {
   }
 
   void on_next() {
-    Model_Check_In.paid_bank_usd = get_paid_bank_usd()?.toString();
-    Model_Check_In.paid_bank_khr = get_paid_bank_khr()?.toString();
-    Model_Check_In.paid_cash_usd = get_paid_cash_usd()?.toString();
-    Model_Check_In.paid_cash_khr = get_paid_cash_khr()?.toString();
-
-    // Model.paid_total_usd = get_paid_as_usd()?.toString();
-    // Model.paid_total_khr = get_paid_as_khr()?.toString();
-
-    Model_Check_In.return_usd = get_return_usd()?.toString();
-    Model_Check_In.return_khr = get_return_khr()?.toString();
-
-    Model_Check_In.remain_usd = get_remaining_usd()?.toString();
-    Model_Check_In.remain_khr = get_remaining_khr()?.toString();
-
     //
     Navigator.push(
       context, //
@@ -525,107 +400,14 @@ class _Payment_State extends State<Payment_> {
     );
   }
 
-  double? get_price_total_usd() {
-    double total_usd = double.tryParse(Model_Check_In.price_total_usd!) ?? 0;
-    return total_usd;
-  }
+  double get_ar_usd() {
+    double paid_total_usd = Model.paid_bank_usd + Model.paid_cash_usd + (Model.paid_bank_khr + Model.paid_cash_khr) / Global.RATE;
 
-  double? get_price_total_khr() {
-    double total_usd = double.tryParse(Model_Check_In.price_total_usd!) ?? 0;
-    return total_usd * Global.RATE;
-  }
+    double return_total_usd = Model.return_usd + Model.return_khr / Global.RATE;
 
-  double? get_paid_bank_usd() {
-    if (controller_payment_type.text.contains("Bank") && controller_currency_type.text.contains("USD")) {
-      double paid_bank_usd = double.tryParse(controller_bank_usd.text) ?? 0;
-      return paid_bank_usd;
-    }
-    return null;
-  }
+    Model.balance_usd = paid_total_usd - return_total_usd - Model.price_total_usd;
+    Model.balance_khr = Model.balance_usd * Global.RATE;
 
-  double? get_paid_bank_khr() {
-    if (controller_payment_type.text.contains("Bank") && controller_currency_type.text.contains("KHR")) {
-      double paid_bank_khr = double.tryParse(controller_bank_khr.text) ?? 0;
-      return paid_bank_khr;
-    }
-    return null;
-  }
-
-  double? get_paid_cash_usd() {
-    if (controller_payment_type.text.contains("Cash") && controller_currency_type.text.contains("USD")) {
-      double paid_cash_usd = double.tryParse(controller_cash_usd.text) ?? 0;
-      return paid_cash_usd;
-    }
-    return null;
-  }
-
-  double? get_paid_cash_khr() {
-    if (controller_payment_type.text.contains("Cash") && controller_currency_type.text.contains("KHR")) {
-      double paid_cash_khr = double.tryParse(controller_cash_khr.text) ?? 0;
-      return paid_cash_khr;
-    }
-    return null;
-  }
-
-  double? get_paid_as_usd() {
-    double paid_total_usd = (get_paid_bank_usd() ?? 0) + (get_paid_cash_usd() ?? 0);
-    return paid_total_usd;
-  }
-
-  double? get_paid_as_khr() {
-    double paid_total_khr = (get_paid_bank_khr() ?? 0) + (get_paid_cash_khr() ?? 0);
-    return paid_total_khr;
-  }
-
-  double? get_return_usd() {
-    double total_usd = get_price_total_usd() ?? 0;
-    double paid_total_usd = get_paid_as_usd() ?? 0;
-    double paid_total_khr_as_usd = (get_paid_as_khr() ?? 0) / Global.RATE;
-    double total_paid_as_usd = paid_total_usd + paid_total_khr_as_usd;
-
-    if (total_usd < total_paid_as_usd) {
-      return total_usd - total_paid_as_usd;
-    } else {
-      return 0;
-    }
-  }
-
-  double? get_return_khr() {
-    double total_usd = get_price_total_usd() ?? 0;
-    double paid_total_usd = get_paid_as_usd() ?? 0;
-    double paid_total_khr_as_usd = (get_paid_as_khr() ?? 0) / Global.RATE;
-    double total_paid_as_usd = paid_total_usd + paid_total_khr_as_usd;
-
-    if (total_usd < total_paid_as_usd) {
-      return (total_usd - total_paid_as_usd) * Global.RATE;
-    } else {
-      return 0;
-    }
-  }
-
-  double? get_remaining_usd() {
-    double total_usd = get_price_total_usd() ?? 0;
-    double paid_total_usd = get_paid_as_usd() ?? 0;
-    double paid_total_khr_as_usd = (get_paid_as_khr() ?? 0) / Global.RATE;
-    double total_paid_as_usd = paid_total_usd + paid_total_khr_as_usd;
-
-    if (total_usd > total_paid_as_usd) {
-      return total_usd - total_paid_as_usd;
-    } else {
-      return 0;
-    }
-  }
-
-  double? get_remaining_khr() {
-    double total_usd = get_price_total_usd() ?? 0;
-    double paid_total_usd = get_paid_as_usd() ?? 0;
-    double paid_total_khr_as_usd = (get_paid_as_khr() ?? 0) / Global.RATE;
-    double total_paid_as_usd = paid_total_usd + paid_total_khr_as_usd;
-
-    if (total_usd > total_paid_as_usd) {
-      return (total_usd - total_paid_as_usd) * Global.RATE;
-    } else {
-      return 0;
-    }
+    return Model.balance_usd;
   }
 }

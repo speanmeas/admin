@@ -7,7 +7,7 @@ class Model_Check_Out extends ChangeNotifier {
   static String? room_id;
   static String? room_number;
 
-  static String? account_receivable;
+  static double account_receivable = 0;
 
   //
 }

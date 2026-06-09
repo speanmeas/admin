@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:html' as html;
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -52,10 +51,7 @@ class _Summary_State extends State<Summary_> {
   @override
   void initState() {
     super.initState();
-    init();
   }
-
-  void init() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -90,54 +86,65 @@ class _Summary_State extends State<Summary_> {
         child: Center(
           child: Column(
             children: [
-              //
+              // room number + room type
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+
                 child: Row(
                   children: [
-                    Text("Room Number: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.room_number}"), //
+                    Text("Room Number: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.room_number, style: TextStyle(color: Colors.blue)),
                   ],
                 ),
               ),
 
-              //
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: Row(
                   children: [
-                    Text("Room Type: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.room_type}"), //
+                    Text("Room Type: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.room_type, style: TextStyle(color: Colors.blue)),
                   ],
                 ),
               ),
 
-              // guest name
+              // price per day + price per 3 hour
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: Row(
                   children: [
-                    Text("Guest Name: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.guest_name}"), //
+                    Text("Room Price: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text("${Model.price_per_day.toString()}\$", style: TextStyle(color: Colors.blue)),
+                    Text(" / Day , ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text("${Model.price_per_3_hour.toString()}\$", style: TextStyle(color: Colors.blue)),
+                    Text(" / 3 Hours", style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
 
-              // guest gender
+              // guest name + guest gender
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: Row(
                   children: [
-                    Text("Guest Gender: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.guest_gender}"), //
+                    Text("Guest Name: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.guest_name, style: TextStyle(color: Colors.blue)),
+                  ],
+                ),
+              ),
+
+              // guest name + guest gender
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: Row(
+                  children: [
+                    Text("Guest Gender: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.guest_gender, style: TextStyle(color: Colors.blue)),
                   ],
                 ),
               ),
@@ -145,12 +152,24 @@ class _Summary_State extends State<Summary_> {
               // guest phone number
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+
                 child: Row(
                   children: [
-                    Text("Guest Phone Number: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.guest_phone_number}"), //
+                    Text("Guest Phone Number: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.guest_phone_number, style: TextStyle(color: Colors.blue)),
+                  ],
+                ),
+              ),
+
+              // guest nationality
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: Row(
+                  children: [
+                    Text("Guest Nationality: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.guest_nationality, style: TextStyle(color: Colors.blue)),
                   ],
                 ),
               ),
@@ -158,234 +177,206 @@ class _Summary_State extends State<Summary_> {
               // number of guests
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: Row(
                   children: [
-                    Text("Number of Guests: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.number_of_guests}"), //
+                    Text("Number of Guests: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.number_of_guests.toString(), style: TextStyle(color: Colors.blue)),
+                    Text(" Persons", style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
 
-              // duration
+              // stay duration day + stay duration hour
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: Row(
                   children: [
-                    Text("Duration: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.stay_duration_day} days and ${Model_Check_In.stay_duration_hour} hours"), //
+                    Text("Stay Duration: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.stay_duration_day.toString(), style: TextStyle(color: Colors.blue)),
+                    Text(" Days ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.stay_duration_hour.toString(), style: TextStyle(color: Colors.blue)),
+                    Text(" Hours", style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
 
-              // price per day
+              // total price
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: Row(
                   children: [
-                    Text("Price / Day: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.price_per_day ?? 0} USD"), //
+                    Text("Total Price: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.price_total_usd.toString(), style: TextStyle(color: Colors.blue)),
+                    Text(" USD = ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.price_total_khr.toString(), style: TextStyle(color: Colors.blue)),
+                    Text(" KHR ", style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
 
-              // price per 3 hour
+              // paid bank usd + paid bank khr
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: Row(
                   children: [
-                    Text("Price / 3 Hours: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.price_per_3_hour ?? 0} USD"), //
+                    Text("Paid Bank: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.paid_bank_usd.toString(), style: TextStyle(color: Colors.blue)),
+                    Text(" USD + ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.paid_bank_khr.toString(), style: TextStyle(color: Colors.blue)),
+                    Text(" KHR ", style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
 
-              // price total
+              // paid cash usd + paid cash khr
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: Row(
                   children: [
-                    Text("Price Total: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.price_total_usd ?? 0} USD or ${Model_Check_In.price_total_khr ?? 0} KHR"), //
+                    Text("Paid Cash: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.paid_cash_usd.toString(), style: TextStyle(color: Colors.blue)),
+                    Text(" USD + ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.paid_cash_khr.toString(), style: TextStyle(color: Colors.blue)),
+                    Text(" KHR ", style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
 
-              // paid bank usd
+              // return usd + return khr
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: Row(
                   children: [
-                    Text("Paid Bank USD: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.paid_bank_usd ?? 0} USD"), //
+                    Text("Return: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.return_usd.toString(), style: TextStyle(color: Colors.blue)),
+                    Text(" USD + ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.return_khr.toString(), style: TextStyle(color: Colors.blue)),
+                    Text(" KHR ", style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
 
-              // paid bank khr
+              // balance usd + balance khr
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: Row(
                   children: [
-                    Text("Paid Bank KHR: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.paid_bank_khr ?? 0} KHR"), //
+                    Text("Balance: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.balance_usd.toString(), style: TextStyle(color: Colors.blue)),
+                    Text(" USD + ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(Model.balance_khr.toString(), style: TextStyle(color: Colors.blue)),
+                    Text(" KHR ", style: TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
 
-              // paid cash usd
+              // button check in + print
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
-                child: Row(
-                  children: [
-                    Text("Paid Cash USD: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.paid_cash_usd ?? 0} USD"), //
-                  ],
-                ),
-              ),
-
-              // paid cash khr
-              Container(
-                width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
-                child: Row(
-                  children: [
-                    Text("Paid Cash KHR: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.paid_cash_khr ?? 0} KHR"), //
-                  ],
-                ),
-              ),
-
-              // return total
-              Container(
-                width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
-                child: Row(
-                  children: [
-                    Text("Return Total: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.return_usd ?? 0} USD or  ${Model_Check_In.return_khr ?? 0} KHR"), //
-                  ],
-                ),
-              ),
-
-              // remaining total
-              Container(
-                width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
-                child: Row(
-                  children: [
-                    Text("Remaining Total: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                    Text("${Model_Check_In.remain_usd ?? 0} USD or  ${Model_Check_In.remain_khr ?? 0} KHR"), //
-                  ],
-                ),
-              ),
-
-              //
-              Container(
                 padding: EdgeInsets.all(8),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(width: 60),
-
-                    Spacer(),
+                    SizedBox(width: 80),
 
                     OutlinedButton.icon(
-                      label: Text("Check In"),
+                      label: Text("Check In"), //
                       icon: Icon(Icons.login_outlined),
-                      onPressed: () async {
-                        // todo: save data to backend
-
-                        await dio
-                            .post(
-                              "/check_in/data_create",
-                              data: FormData.fromMap({
-                                "room_number": Model_Check_In.room_number, //
-                                "room_type": Model_Check_In.room_type,
-                                "price_per_day": Model_Check_In.price_per_day,
-                                "price_per_3_hour": Model_Check_In.price_per_3_hour,
-                                "guest_name": Model_Check_In.guest_name,
-                                "guest_phone_number": Model_Check_In.guest_phone_number,
-                                "guest_gender": Model_Check_In.guest_gender,
-                                "number_of_guests": Model_Check_In.number_of_guests,
-                                "stay_duration_day": Model_Check_In.stay_duration_day,
-                                "stay_duration_hour": Model_Check_In.stay_duration_hour,
-                                "price_total_usd": Model_Check_In.price_total_usd,
-                                "paid_bank_usd": Model_Check_In.paid_bank_usd,
-                                "paid_bank_khr": Model_Check_In.paid_bank_khr,
-                                "paid_cash_usd": Model_Check_In.paid_cash_usd,
-                                "paid_cash_khr": Model_Check_In.paid_cash_khr,
-                                "return_usd": Model_Check_In.return_usd,
-                                "remain_usd": Model_Check_In.remain_usd,
-                              }),
-                            )
-                            .then((r) {
-                              print(r.data);
-                            })
-                            .catchError((e) {
-                              print(e);
-                            });
-
-                        //
-
-                        await dio
-                            .post(
-                              "/room/data_update",
-                              data: FormData.fromMap({
-                                "id": Model_Check_In.room_id, //
-                                "account_receivable": double.parse(Model_Check_In.remain_usd.toString()), //
-                                "status": "Occupied", //
-                              }),
-                            )
-                            .then((r) {
-                              print(r.data);
-                              Navigator.pop(context); // close step 4
-                              Navigator.pop(context); // close step 3
-                              Navigator.pop(context); // close step 2
-                              Navigator.pop(context, true); // close step 1
-                            })
-                            .catchError((e) {
-                              print(e);
-                            });
-                      }, //
+                      onPressed: on_check_in,
                     ),
-
-                    Spacer(),
 
                     OutlinedButton.icon(
                       label: Text("Print"),
                       icon: Icon(Icons.print_outlined),
-                      onPressed: () async {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => Receipt_()));
-                      }, //
+                      onPressed: on_print, //
                     ),
                   ],
                 ),
               ),
 
-              //
+              // add bottom space
               SizedBox(height: screen_height - 80),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void on_print() {
+    //
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (_) => Invoice_()),
+    );
+  }
+
+  void on_check_in() async {
+    //
+    // todo: save guest info + stay detail + payment to database
+
+    await dio
+        .post(
+          "/check_in/data_create",
+          data: FormData.fromMap({
+            "room_number": Model.room_number, //
+            "room_type": Model.room_type,
+            "price_per_day": Model.price_per_day,
+            "price_per_3_hour": Model.price_per_3_hour,
+            "guest_name": Model.guest_name,
+            "guest_phone_number": Model.guest_phone_number,
+            "guest_gender": Model.guest_gender,
+            "number_of_guests": Model.number_of_guests,
+            "stay_duration_day": Model.stay_duration_day,
+            "stay_duration_hour": Model.stay_duration_hour,
+            "price_total_usd": Model.price_total_usd,
+            "paid_bank_usd": Model.paid_bank_usd,
+            "paid_bank_khr": Model.paid_bank_khr,
+            "paid_cash_usd": Model.paid_cash_usd,
+            "paid_cash_khr": Model.paid_cash_khr,
+            "return_usd": Model.return_usd,
+            "return_khr": Model.return_khr,
+            "balance_usd": Model.balance_usd,
+            "balance_khr": Model.balance_khr,
+          }),
+        )
+        .then((r) {
+          print(r.data);
+        })
+        .catchError((e) {
+          print(e);
+        });
+
+    //
+
+    await dio
+        .post(
+          "/room/data_update",
+          data: FormData.fromMap({
+            "id": Model.room_id, //
+            "account_receivable": double.parse(Model.balance_usd.toString()), //
+            "status": "Occupied", //
+          }),
+        )
+        .then((r) {
+          print(r.data);
+
+          Model.clear();
+
+          Navigator.pop(context); // close step 4
+          Navigator.pop(context); // close step 3
+          Navigator.pop(context); // close step 2
+          Navigator.pop(context, true); // close step 1
+        })
+        .catchError((e) {
+          print(e);
+        });
   }
 }

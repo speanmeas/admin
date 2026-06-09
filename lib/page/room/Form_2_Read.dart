@@ -113,6 +113,24 @@ class _Form_Read_State extends State<Form_Read_> {
               ...schema.map((row) {
                 //
 
+                if (row["key"] == "note") {
+                  return Container(
+                    width: 600,
+                    padding: EdgeInsets.all(8),
+                    child: TextField(
+                      readOnly: true,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        // hintText: "Enter text...", //
+                        border: OutlineInputBorder(),
+                        labelText: "Note:", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                    ),
+                  );
+                }
+
                 if (row["key"] == "password") {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),

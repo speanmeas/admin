@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -49,15 +50,20 @@ class Stay_Detail_ extends StatefulWidget {
 class _Stay_Detail_State extends State<Stay_Detail_> {
   //
 
-  TextEditingController controller_cool = TextEditingController();
-  TextEditingController controller_duration_days = SearchController();
-  TextEditingController controller_duration_hours = SearchController();
+  final scroll_number_of_days = ScrollController();
+  final controller_number_of_days = TextEditingController(text: "0");
+  final scroll_number_of_hours = ScrollController();
+  final controller_number_of_hours = TextEditingController(text: "0");
+  final controller_price_usd = TextEditingController();
+  final controller_price_khr = TextEditingController();
 
-  ScrollController scroll_number_of_days = ScrollController();
-  TextEditingController controller_number_of_days = TextEditingController(text: "0");
+  final stay_duration_day_options = const [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  final stay_duration_hour_options = const [0, 3, 6, 9, 12];
 
-  ScrollController scroll_number_of_hours = ScrollController();
-  TextEditingController controller_number_of_hours = TextEditingController(text: "0");
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,220 +101,133 @@ class _Stay_Detail_State extends State<Stay_Detail_> {
               // room number
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 12, 8, 4),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("Room Number: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     Text(
-                      Model_Check_In.room_number ?? "",
+                      Model.room_number ?? "",
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
                     ),
                   ],
                 ),
               ),
 
-              // input cooling type
-              if (kDebugMode && false)
-                Container(
-                  width: 600,
-                  padding: EdgeInsets.all(8),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: controller_cool,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(), //
-                            labelText: "Cooling Type:",
-                            labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                          ),
-                        ),
-                      ),
-
-                      // ac
-                      Container(
-                        margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                        child: OutlinedButton.icon(
-                          icon: Icon(Icons.ac_unit), //
-                          label: Text("AC"), //
-                          onPressed: () {
-                            controller_cool.text = "Air-Conditioner";
-                            setState(() {});
-                          }, //
-                        ),
-                      ),
-
-                      // fan
-                      Container(
-                        margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                        child: OutlinedButton.icon(
-                          icon: Icon(Icons.mode_fan_off_outlined), // todo: change icon to fan
-                          label: Text("Fan"), //
-                          onPressed: () {
-                            controller_cool.text = "Fan";
-                            setState(() {});
-                          }, //
-                        ),
-                      ),
-                    ],
+              // stay duration days
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: DropdownButtonFormField<int>(
+                  initialValue: stay_duration_day_options.first,
+                  decoration: InputDecoration(
+                    labelText: "Duration (Days):",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
-                ),
-
-              // duration - number of days
-              Container(
-                width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: controller_number_of_days,
-                      keyboardType: TextInputType.number,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "Duration (Days):",
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                    ),
-
-                    SizedBox(height: 4),
-
-                    //
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Scrollbar(
-                            controller: scroll_number_of_days,
-                            thumbVisibility: true,
-                            thickness: 12, // scrollbar width
-                            radius: const Radius.circular(0),
-                            child: SingleChildScrollView(
-                              controller: scroll_number_of_days,
-                              scrollDirection: Axis.horizontal,
-                              child: Container(
-                                height: 50,
-                                alignment: Alignment.topLeft,
-                                child: Row(
-                                  children: [
-                                    ...List.generate(30, (i) => i).map((e) {
-                                      return Container(
-                                        margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                                        child: OutlinedButton.icon(
-                                          onPressed: () {
-                                            controller_number_of_days.text = e.toString();
-                                            setState(() {});
-                                          },
-                                          icon: Icon(Icons.nights_stay_outlined), //
-                                          label: Text("$e"),
-                                        ),
-                                      );
-                                    }),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  items: stay_duration_day_options.map((i) {
+                    return DropdownMenuItem<int>(value: i, child: Text(i.toString()));
+                  }).toList(),
+                  onChanged: (v) {
+                    Model.stay_duration_day = v ?? 0;
+                    setState(() {});
+                  },
                 ),
               ),
 
-              // duration - number of hours
+              // stay duration hours
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: controller_number_of_hours,
-                      keyboardType: TextInputType.number,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "Duration (Hours):",
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                    ),
-
-                    SizedBox(height: 4),
-
-                    //
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Scrollbar(
-                            controller: scroll_number_of_hours,
-                            thumbVisibility: true,
-                            thickness: 12, // scrollbar width
-                            radius: const Radius.circular(0),
-                            child: SingleChildScrollView(
-                              controller: scroll_number_of_hours,
-                              scrollDirection: Axis.horizontal,
-                              child: Container(
-                                height: 50,
-                                alignment: Alignment.topLeft,
-                                child: Row(
-                                  children: [
-                                    ...[0, 3, 6, 9, 12, 15, 18, 21].map((e) {
-                                      return Container(
-                                        margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                                        child: OutlinedButton.icon(
-                                          onPressed: () {
-                                            controller_number_of_hours.text = e.toString();
-                                            setState(() {});
-                                          },
-                                          icon: Icon(Icons.timer_outlined), //
-                                          label: Text("$e"),
-                                        ),
-                                      );
-                                    }),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: DropdownButtonFormField<int>(
+                  initialValue: stay_duration_hour_options.first,
+                  decoration: InputDecoration(
+                    labelText: "Duration (Hours):",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  items: stay_duration_hour_options.map((i) {
+                    return DropdownMenuItem<int>(value: i, child: Text(i.toString()));
+                  }).toList(),
+                  onChanged: (v) {
+                    Model.stay_duration_hour = v ?? 0;
+                    setState(() {});
+                  },
                 ),
               ),
 
-              //
-              Divider(thickness: 1, color: Colors.grey),
-
-              //
+              // price USD
               Container(
                 width: 600,
-                padding: EdgeInsets.all(4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Total: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: controller_price_usd,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                  decoration: const InputDecoration(
+                    labelText: "Price (USD):", //
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  onChanged: (v) {
+                    if (v.isEmpty) {
+                      Model.price_total_usd = 0;
+                      controller_price_khr.text = "";
+                      setState(() {});
+                      return;
+                    }
 
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text("${NumberFormat("#,##0.##").format(get_price_total_usd() ?? 0)} USD", style: TextStyle(fontSize: 16)),
-                        Text("or  ${NumberFormat("#,##0.##").format(get_price_total_khr() ?? 0)} KHR", style: TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                  ],
+                    if (double.tryParse(v) == null) {
+                      controller_price_usd.text = v.substring(0, v.length - 1);
+                      controller_price_usd.selection = TextSelection.fromPosition(TextPosition(offset: controller_price_usd.text.length));
+                      return;
+                    }
+
+                    Model.price_total_usd = double.tryParse(v) ?? 0;
+                    Model.price_total_khr = Model.price_total_usd * Global.RATE;
+                    controller_price_khr.text = (Model.price_total_usd * Global.RATE).toString();
+                    setState(() {});
+                  },
                 ),
               ),
 
-              //
-              //
+              // price KHR
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: controller_price_khr,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: false),
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+                  decoration: InputDecoration(
+                    labelText: "Price (KHR):",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  onChanged: (v) {
+                    if (v.isEmpty) {
+                      Model.price_total_khr = 0;
+                      controller_price_usd.text = "";
+                      setState(() {});
+                      return;
+                    }
+
+                    if (double.tryParse(v) == null) {
+                      controller_price_khr.text = v.substring(0, v.length - 1);
+                      controller_price_khr.selection = TextSelection.fromPosition(TextPosition(offset: controller_price_khr.text.length));
+                      return;
+                    }
+
+                    Model.price_total_khr = double.tryParse(v) ?? 0;
+                    Model.price_total_usd = Model.price_total_khr / Global.RATE;
+
+                    controller_price_usd.text = (Model.price_total_khr / Global.RATE).toString();
+                    setState(() {});
+                  },
+                ),
+              ),
+
+              // button next
               Container(
                 padding: EdgeInsets.all(8),
                 child: OutlinedButton.icon(
@@ -328,34 +247,9 @@ class _Stay_Detail_State extends State<Stay_Detail_> {
   }
 
   void on_next() {
-    //
-    Model_Check_In.stay_duration_day = controller_number_of_days.text;
-    Model_Check_In.stay_duration_hour = controller_number_of_hours.text;
-
-    //
-    Model_Check_In.price_total_usd = get_price_total_usd()?.toString();
-    Model_Check_In.price_total_khr = get_price_total_khr()?.toString();
-
     Navigator.push(
       context, //
       MaterialPageRoute(builder: (_) => Payment_()),
     );
-  }
-
-  double? get_price_total_usd() {
-    final days = int.tryParse(controller_number_of_days.text) ?? 0;
-    final hours = int.tryParse(controller_number_of_hours.text) ?? 0;
-
-    final price_per_day = double.tryParse(Model_Check_In.price_per_day?.toString() ?? '0') ?? 0;
-    final price_per_3_hour = double.tryParse(Model_Check_In.price_per_3_hour?.toString() ?? '0') ?? 0;
-
-    final total = (days * price_per_day) + ((hours / 3).ceil() * price_per_3_hour);
-
-    return total;
-  }
-
-  double? get_price_total_khr() {
-    final total_usd = get_price_total_usd() ?? 0;
-    return total_usd * Global.RATE;
   }
 }

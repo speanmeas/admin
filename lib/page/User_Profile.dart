@@ -79,12 +79,7 @@ class _User_Profile_State extends State<User_Profile_> {
             access_token = r;
             dio.options.headers['Authorization'] = 'Bearer $access_token';
             setState(() {});
-            // print("Access token found: $access_token");
-
-            // try using access token to get user info
-          } else {
-            // print("No access token found.");
-          }
+          } else {}
         })
         .catchError((e) {});
   }
@@ -96,7 +91,7 @@ class _User_Profile_State extends State<User_Profile_> {
     //
     await dio
         .post(
-          '/auth/read', //
+          '/auth/data_read', //
           data: FormData.fromMap({}),
         ) //
         .then((r) {
@@ -178,9 +173,10 @@ class _User_Profile_State extends State<User_Profile_> {
               // textfield full name
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
                   controller: controller_full_name,
+                  readOnly: true,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person, color: Colors.grey),
                     suffixIcon: confirm_full_name
@@ -207,9 +203,11 @@ class _User_Profile_State extends State<User_Profile_> {
               // textfield phone
               Container(
                 width: 600,
-                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
                   controller: controller_phone_number,
+                  readOnly: true,
+
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.phone, color: Colors.grey),
                     suffixIcon: confirm_phone_number
@@ -234,9 +232,10 @@ class _User_Profile_State extends State<User_Profile_> {
               // textfield email
               Container(
                 width: 600,
-                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
                   controller: controller_email,
+                  readOnly: true,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.email, color: Colors.grey),
                     suffixIcon: confirm_email
@@ -261,9 +260,10 @@ class _User_Profile_State extends State<User_Profile_> {
               // textfield username
               Container(
                 width: 600,
-                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
                   controller: controller_username,
+                  readOnly: true,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person, color: Colors.grey),
                     suffixIcon: confirm_username
@@ -317,9 +317,10 @@ class _User_Profile_State extends State<User_Profile_> {
               // textfield password
               Container(
                 width: 600,
-                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
                   controller: controller_password,
+                  readOnly: true,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.lock, color: Colors.grey),
                     hintText: "Enter New Password",
@@ -393,8 +394,10 @@ class _User_Profile_State extends State<User_Profile_> {
       color: Colors.green,
     );
 
+    Navigator.pop(context);
+
     // navigate to sign in page
-    Navigator.pushReplacement(
+    Navigator.push(
       context, //
       MaterialPageRoute(builder: (_) => const Sign_In_()),
     );

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -45,13 +46,22 @@ class Guest_Info_ extends StatefulWidget {
 class _Guest_Info_State extends State<Guest_Info_> {
   //
 
-  ScrollController? number_of_guests_scroll_controller = ScrollController();
+  final controller_name = TextEditingController();
+  final gender_options = const ["Male", "Female", "Other"];
+  final controller_phone_number = TextEditingController();
+  final controller_nationality = TextEditingController();
+  final number_of_guests_options = const [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  final controller_number_of_guests = TextEditingController();
 
-  TextEditingController controller_name = TextEditingController();
-  TextEditingController controller_gender = TextEditingController(text: "Male");
-  TextEditingController controller_phone_number = TextEditingController();
-  TextEditingController controller_number_of_guests = TextEditingController(text: "1");
+  @override
+  void initState() {
+    super.initState();
+    controller_name.text = Model.guest_name;
+    controller_phone_number.text = Model.guest_phone_number;
+    controller_nationality.text = Model.guest_nationality;
+  }
 
+  // late final scroll_number_of_guest = ScrollController();
   @override
   Widget build(BuildContext context) {
     final screen_height = MediaQuery.of(context).size.height;
@@ -85,33 +95,60 @@ class _Guest_Info_State extends State<Guest_Info_> {
         child: Center(
           child: Column(
             children: [
-              //
+              // room number
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 12, 8, 4),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("Room Number: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     Text(
-                      Model_Check_In.room_number ?? "",
+                      Model.room_number ?? "",
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
                     ),
                   ],
                 ),
               ),
 
-              //
-              if (kDebugMode && false)
-                Container(
-                  width: 600,
-                  padding: EdgeInsets.fromLTRB(4, 8, 8, 0),
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Photo of ID Card or Passport: ", //
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              // guest name
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: controller_name,
+                  decoration: InputDecoration(
+                    labelText: "Guest Name:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
+                  onChanged: (v) {
+                    Model.guest_name = v;
+                    setState(() {});
+                  },
                 ),
+              ),
+
+              // guest gender
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: DropdownButtonFormField<String>(
+                  initialValue: gender_options.first,
+                  decoration: InputDecoration(
+                    labelText: "Guest Gender:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  items: gender_options.map((i) {
+                    return DropdownMenuItem<String>(value: i, child: Text(i));
+                  }).toList(),
+                  onChanged: (v) {
+                    Model.guest_gender = v ?? "";
+                    setState(() {});
+                  },
+                ),
+              ),
 
               // photo of id card or passport
               if (kDebugMode && false)
@@ -137,183 +174,68 @@ class _Guest_Info_State extends State<Guest_Info_> {
                   ),
                 ),
 
-              // input name general
-              Container(
-                width: 600,
-                padding: EdgeInsets.all(8),
-                child: TextField(
-                  controller: controller_name,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(), //
-                    labelText: "Name:",
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                  ),
-                ),
-              ),
-
-              // name in khmer input
-              if (kDebugMode && false)
-                Container(
-                  width: 600,
-                  padding: EdgeInsets.all(8),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(), //
-                      labelText: "Name (KH):",
-                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                    ),
-                  ),
-                ),
-
-              // nationality input
-              if (kDebugMode && false)
-                Container(
-                  width: 600,
-                  padding: EdgeInsets.all(8),
-                  child: TextField(
-                    controller: TextEditingController(text: "Cambodia"), //
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(), //
-                      labelText: "Nationality:",
-                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                    ),
-                  ),
-                ),
-
               // input phone number
               Container(
                 width: 600,
-                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
                   controller: controller_phone_number,
-                  keyboardType: TextInputType.phone,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: false),
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9+]'))],
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(), //
-                    labelText: "Phone Number",
+                    labelText: "Phone Number:",
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
+                  onChanged: (v) {
+                    Model.guest_phone_number = v;
+                    setState(() {});
+                  },
                 ),
               ),
 
-              // input gender
+              // Guest Nationality
               Container(
                 width: 600,
-                padding: EdgeInsets.all(8),
-                child: Row(
-                  children: [
-                    // gender
-                    Expanded(
-                      child: TextField(
-                        controller: controller_gender,
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(), //
-                          labelText: "Gender:",
-                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                        ),
-                      ),
-                    ),
-
-                    // male
-                    Container(
-                      margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.male_outlined), //
-                        label: Text("Male"), //
-                        onPressed: () {
-                          controller_gender.text = "Male";
-                          setState(() {});
-                        }, //
-                      ),
-                    ),
-
-                    // female
-                    Container(
-                      margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.female_outlined), //
-                        label: Text("Female"), //
-                        onPressed: () {
-                          controller_gender.text = "Female";
-                          setState(() {});
-                        }, //
-                      ),
-                    ),
-                  ],
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: controller_nationality,
+                  decoration: InputDecoration(
+                    labelText: "Guest Nationality:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  onChanged: (v) {
+                    Model.guest_nationality = v;
+                    setState(() {});
+                  },
                 ),
               ),
 
-              // input number of guests
+              // number of guests
               Container(
                 width: 600,
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: controller_number_of_guests,
-                      keyboardType: TextInputType.number,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "Number of Guests:",
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                    ),
-
-                    SizedBox(height: 4),
-
-                    //
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Scrollbar(
-                            controller: number_of_guests_scroll_controller,
-                            thumbVisibility: true,
-                            thickness: 12, // scrollbar width
-                            radius: const Radius.circular(0),
-                            child: SingleChildScrollView(
-                              controller: number_of_guests_scroll_controller,
-                              scrollDirection: Axis.horizontal,
-                              child: Container(
-                                height: 50,
-                                alignment: Alignment.topLeft,
-                                child: Row(
-                                  children: [
-                                    ...List.generate(10, (i) => i + 1).map((e) {
-                                      return Container(
-                                        margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                                        child: OutlinedButton.icon(
-                                          onPressed: () {
-                                            controller_number_of_guests.text = e.toString();
-                                            setState(() {});
-                                          },
-                                          icon: Icon(Icons.person_outline),
-                                          label: Text("$e"),
-                                        ),
-                                      );
-                                    }),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: DropdownButtonFormField<int>(
+                  initialValue: number_of_guests_options.first,
+                  decoration: InputDecoration(
+                    labelText: "Number of Guests:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  items: number_of_guests_options.map((i) {
+                    return DropdownMenuItem<int>(value: i, child: Text(i.toString()));
+                  }).toList(),
+                  onChanged: (v) {
+                    Model.number_of_guests = v ?? 0;
+                    setState(() {});
+                  },
                 ),
               ),
 
               //
               Container(
-                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: OutlinedButton.icon(
                   label: Text("Next"), //
                   icon: Icon(Icons.arrow_forward, size: 24),
@@ -331,12 +253,6 @@ class _Guest_Info_State extends State<Guest_Info_> {
   }
 
   void on_next() {
-    //
-    Model_Check_In.guest_name = controller_name.text;
-    Model_Check_In.guest_gender = controller_gender.text;
-    Model_Check_In.guest_phone_number = controller_phone_number.text;
-    Model_Check_In.number_of_guests = controller_number_of_guests.text;
-
     Navigator.push(
       context, //
       MaterialPageRoute(builder: (_) => Stay_Detail_()),

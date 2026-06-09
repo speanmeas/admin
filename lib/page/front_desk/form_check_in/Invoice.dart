@@ -19,13 +19,13 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (_) => Global(), //
-      child: const Receipt(),
+      child: const Invoice(),
     ),
   );
 }
 
-class Receipt extends StatelessWidget {
-  const Receipt({super.key});
+class Invoice extends StatelessWidget {
+  const Invoice({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,19 +33,19 @@ class Receipt extends StatelessWidget {
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Receipt_(),
+      home: Invoice_(),
     );
   }
 }
 
-class Receipt_ extends StatefulWidget {
-  const Receipt_({super.key});
+class Invoice_ extends StatefulWidget {
+  const Invoice_({super.key});
 
   @override
-  State<Receipt_> createState() => _Receipt_State();
+  State<Invoice_> createState() => _Invoice_State();
 }
 
-class _Receipt_State extends State<Receipt_> {
+class _Invoice_State extends State<Invoice_> {
   //
 
   @override

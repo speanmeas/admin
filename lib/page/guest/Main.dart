@@ -6,22 +6,24 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
+import 'package:speanmeas/page/template/__Model__.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
+import 'package:speanmeas/utility/Datetime_format.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
 
-import 'Form_Create.dart';
-import 'Form_Read.dart';
-import 'Form_Update.dart';
-import 'Form_Delete.dart';
-import 'Filter_String.dart';
-import 'Filter_Number.dart';
-import 'Filter_Datetime.dart';
+import 'Form_1_Create.dart';
+import 'Form_2_Read.dart';
+import 'Form_3_Update.dart';
+import 'Form_4_Delete.dart';
+import 'Filter_1_String.dart';
+import 'Filter_2_Number.dart';
+import 'Filter_3_Datetime.dart';
 import 'Filter_Visibility.dart';
 
 import 'Main_Widget.dart';
 import 'Schema.g.dart';
-import 'Setup.dart';
+import '__Setup__.dart';
 
 void main() {
   runApp(const Main());
@@ -33,10 +35,10 @@ class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: HEADER, //
+      title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: const Main_(),
+      home: Main_(),
     );
   }
 }
@@ -52,7 +54,7 @@ class _Main_State extends State<Main_> {
   //
   //
 
-  bool _is_admin = true; // todo: check admin role from secure storage
+  bool is_admin = true; // todo: check admin role from secure storage
   bool has_more = false;
   bool is_filter = false;
 
@@ -68,10 +70,11 @@ class _Main_State extends State<Main_> {
   double? max;
   String? start;
   String? end;
-  int counter = 0;
   String? order;
   int? limit = 1000;
   String? autocomplete;
+
+  int counter = 0;
 
   ScrollController controller_scrollbar = ScrollController();
   ScrollController controller_table = ScrollController();
@@ -102,26 +105,29 @@ class _Main_State extends State<Main_> {
   void init() async {
     await dio
         .post(
-          '$PATH/read',
+          '$PATH/data_read',
           data: FormData.fromMap({
-            "id_": id, //
-            "key_": key, //
-            "query_": query,
-            "min_": min,
-            "max_": max,
-            "start_": start,
-            "end_": end,
-            "order_": order,
-            "limit_": limit,
-            "offset_": null,
-            "autocomplete_": autocomplete,
+            "id": id, //
+            "key": key, //
+            "query": query,
+            "min": min,
+            "max": max,
+            "start": start,
+            "end": end,
+            "order": order,
+            "limit": limit,
+            "offset": null,
+            "autocomplete": autocomplete,
           }),
         ) //
         .then((r) {
           setState(() {
             // print(r.data.length);
             has_more = r.data.length == limit;
+            // data = List<Map<String, dynamic>>.from(r.data);
+
             data = List<Map<String, dynamic>>.from(r.data);
+
             // print(data);
           });
         })
@@ -136,24 +142,24 @@ class _Main_State extends State<Main_> {
         .post(
           '$PATH/read',
           data: FormData.fromMap({
-            "id_": null, //
-            "key_": key, //
-            "query_": query,
-            "min_": min,
-            "max_": max,
-            "start_": start,
-            "end_": end,
-            "order_": order,
-            "limit_": limit,
-            "offset_": data.length,
-            "autocomplete_": autocomplete,
+            "id": null, //
+            "key": key, //
+            "query": query,
+            "min": min,
+            "max": max,
+            "start": start,
+            "end": end,
+            "order": order,
+            "limit": limit,
+            "offset": data.length,
+            "autocomplete": autocomplete,
           }),
         ) //
         .then((r) {
           // print(r.data);
           has_more = r.data.length == limit;
           data.addAll(List<Map<String, dynamic>>.from(r.data));
-          // print(data);
+          print(data);
           setState(() {});
         })
         .catchError((e) {});
@@ -164,7 +170,7 @@ class _Main_State extends State<Main_> {
     return Layout(
       children_header: [
         // No.
-        Container_No(),
+        Header_No(),
 
         // sort mode
         if (!is_filter)
@@ -173,7 +179,7 @@ class _Main_State extends State<Main_> {
             if (row["is_visible"] != 1) return const SizedBox();
 
             // sort mode
-            return Container_Sort_Mode(
+            return Header_Sort_Mode(
               row: row, //
               key: key ?? "",
               order: order ?? "",
@@ -186,7 +192,7 @@ class _Main_State extends State<Main_> {
           ..._schema.where((row) => row["is_visible"] == 1).map((row) {
             // header search text
             if (row["kind"] == "text") {
-              return Container_Search_Text(
+              return Header_Search_Text(
                 row: row, //
                 onPressed: () => filter_text_pressed(row),
               );
@@ -194,7 +200,7 @@ class _Main_State extends State<Main_> {
 
             // header search number
             if (row["kind"] == "number") {
-              return Container_Search_Number(
+              return Header_Search_Number(
                 row: row, //
                 onPressed: () => filter_number_pressed(row),
               );
@@ -202,7 +208,7 @@ class _Main_State extends State<Main_> {
 
             // header search datetime
             if (row["kind"] == "datetime") {
-              return Container_Search_Datetime(
+              return Header_Search_Datetime(
                 row: row, //
                 onPressed: () => filter_datetime_pressed(row),
               );
@@ -213,23 +219,112 @@ class _Main_State extends State<Main_> {
           }),
 
         // actions column
-        if (_is_admin) Container_Action(),
+        if (is_admin) Header_Action(),
       ],
 
       children_body: (index) => [
+        //
         Container_Index(index),
 
         ..._schema.where((row) => row["is_visible"] == 1).map((row) {
           // case price
-          if (row["key"] == "price_") return Container_Price(data[index][row["key"]]);
+          if (row["key"] == "price") {
+            final priceValue = data[index][row["key"]];
+            final price = priceValue is num ? priceValue.toDouble() : double.tryParse(priceValue?.toString() ?? "0.0") ?? 0.0;
+            return Container(
+              width: COLUMN_WIDTH, //
+              alignment: Alignment.center,
+              child: Text(
+                "${price.toStringAsFixed(2)} \$", //
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                softWrap: true,
+              ),
+            );
+          }
+
+          // case password
+          if (row["key"] == "password") {
+            return Container(
+              width: COLUMN_WIDTH, //
+              alignment: Alignment.center,
+              child: Text(
+                data[index][row["key"]]?.toString() ?? "", //
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                softWrap: true,
+              ),
+            );
+          }
+
+          // case datetime
+          if (row["kind"] == "text") {
+            return Container(
+              width: COLUMN_WIDTH, //
+              alignment: Alignment.center,
+              child: Text(
+                data[index][row["key"]]?.toString() ?? "", //
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                softWrap: true,
+              ),
+            );
+          }
+
+          // case datetime
+          if (row["kind"] == "number") {
+            return Container(
+              width: COLUMN_WIDTH, //
+              alignment: Alignment.center,
+              child: Text(
+                data[index][row["key"]]?.toString() ?? "", //
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                softWrap: true,
+              ),
+            );
+          }
+
+          // case datetime
+          if (row["kind"] == "boolean") {
+            return Container(
+              width: COLUMN_WIDTH, //
+              alignment: Alignment.center,
+              child: Text(
+                data[index][row["key"]] == "1"
+                    ? "Yes"
+                    : (data[index][row["key"]] == "0"
+                          ? "No" //
+                          : (data[index][row["key"]] ?? "")),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                softWrap: true,
+              ),
+            );
+          }
+
+          // case datetime
+          if (row["kind"] == "datetime") {
+            return Container(
+              width: COLUMN_WIDTH, //
+              alignment: Alignment.center,
+              child: Text(
+                data[index][row["key"]]?.toString() ?? "", //
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                softWrap: true,
+              ),
+            );
+          }
 
           // default
-          return Container_General("${data[index][row["key"]] ?? ""}");
+          return const SizedBox();
+          // Cell_General("${data[index][row["key"]] ?? ""}");
         }),
 
-        if (_is_admin) ...[
-          // edit
-          Button_Edit(onPressed: () => button_edit_pressed(index)), //
+        if (is_admin) ...[
+          // update
+          Button_Update(onPressed: () => button_update_pressed(index)), //
           // delete
           Button_Delete(onPressed: () => button_delete_pressed(index)),
         ],
@@ -238,27 +333,23 @@ class _Main_State extends State<Main_> {
       children_floating: [
         Spacer(),
 
-        Container_Filter(is_filter: is_filter, onPressed: float_filter_pressed),
+        Footer_Export(onPressed: () {}),
 
-        SizedBox(height: 4),
+        Footer_Filter(is_filter: is_filter, onPressed: float_filter_pressed),
 
-        Container_Column_Visible(onPressed: float_visible_pressed),
+        Footer_Visibility(onPressed: float_visible_pressed),
 
-        SizedBox(height: 4),
-
-        Container_Add(onPressed: float_add_pressed),
-
-        SizedBox(height: 4),
+        Footer_Add(onPressed: float_add_pressed),
       ],
     );
   }
 
-  void read_item_pressed(int index) {
+  void on_read(int index) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => Form_Read_(
-          id: data[index]["id_"], //
+          id: data[index]["id"], //
         ),
       ),
     );
@@ -427,12 +518,12 @@ class _Main_State extends State<Main_> {
     setState(() {});
   }
 
-  void button_edit_pressed(int index) {
+  void button_update_pressed(int index) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => Form_Update_(
-          id: data[index]["id_"], //
+          id: data[index]["id"], //
         ),
       ),
     ).then((value) {
@@ -447,7 +538,7 @@ class _Main_State extends State<Main_> {
       context, //
       MaterialPageRoute(
         builder: (context) => Form_Delete_(
-          id: data[index]["id_"], //
+          id: data[index]["id"], //
         ),
       ),
     ).then((value) {
@@ -459,7 +550,9 @@ class _Main_State extends State<Main_> {
   }
 
   double get_width() {
-    return NUMBER_COLUMN_WIDTH + _schema.where((e) => e["is_visible"] == 1).length * COLUMN_WIDTH + 48;
+    return NUMBER_COLUMN_WIDTH + //
+        _schema.where((e) => e["is_visible"] == 1).length * COLUMN_WIDTH + //
+        48;
   }
 
   Widget Layout({
@@ -467,6 +560,7 @@ class _Main_State extends State<Main_> {
     required List<Widget> Function(int index) children_body,
     required List<Widget> children_floating,
   }) {
+    //
     return Scaffold(
       body: Scrollbar(
         controller: controller_scrollbar,
@@ -477,7 +571,7 @@ class _Main_State extends State<Main_> {
           controller: controller_scrollbar,
           scrollDirection: Axis.horizontal,
           child: SizedBox(
-            width: _is_admin ? get_width() + 90 : get_width(),
+            width: is_admin ? get_width() + 90 : get_width(),
             child: Column(
               children: [
                 // header
@@ -508,7 +602,7 @@ class _Main_State extends State<Main_> {
                           ),
                           child: Row(children: children_body(index)),
                         ),
-                        onTap: () => read_item_pressed(index),
+                        onTap: () => on_read(index),
                       );
                     },
                   ),

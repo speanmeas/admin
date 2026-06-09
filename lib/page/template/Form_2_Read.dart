@@ -113,9 +113,28 @@ class _Form_Read_State extends State<Form_Read_> {
               ...schema.map((row) {
                 //
 
+                if (row["key"] == "note") {
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: TextField(
+                      readOnly: true,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        // hintText: "Enter text...", //
+                        border: OutlineInputBorder(),
+                        labelText: "Note:", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                    ),
+                  );
+                }
+
                 if (row["key"] == "password") {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: "**********"),
                       decoration: InputDecoration(
@@ -130,8 +149,9 @@ class _Form_Read_State extends State<Form_Read_> {
 
                 //
                 if (row["kind"] == "text") {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
@@ -146,8 +166,9 @@ class _Form_Read_State extends State<Form_Read_> {
 
                 //
                 if (row["kind"] == "number") {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
@@ -162,8 +183,9 @@ class _Form_Read_State extends State<Form_Read_> {
 
                 //
                 if (row["kind"] == "boolean") {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(
                         text: output[row["key"]] == "1"
@@ -184,8 +206,9 @@ class _Form_Read_State extends State<Form_Read_> {
 
                 //
                 if (row["kind"] == "datetime") {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       decoration: InputDecoration(
@@ -205,7 +228,7 @@ class _Form_Read_State extends State<Form_Read_> {
 
               if (output["images"] != null && output["images"].isNotEmpty)
                 Container(
-                  padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                  margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                   child: Text(
                     "Images:", //
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),

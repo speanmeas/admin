@@ -1,26 +1,28 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
+import 'package:speanmeas/theme/Theme_Data.dart';
 
 void main() {
   runApp(
     ChangeNotifierProvider(
       create: (_) => Global(), //
-      child: const Panel_Left(),
+      child: const Main(),
     ),
   );
 }
 
-class Panel_Left extends StatelessWidget {
-  const Panel_Left({super.key});
+class Main extends StatelessWidget {
+  const Main({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Demo',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+      theme: Theme_Data(),
       home: Scaffold(body: const Panel_Left_()),
     );
   }
@@ -37,81 +39,86 @@ class _Panel_Left_State extends State<Panel_Left_> {
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
-    final v = context.watch<Global>();
+    final global = context.watch<Global>();
     return ListView(
       children: [
-        ListTile(
-          leading: Icon(Icons.people_outline),
-          title: Text("Front Desk"),
-          selected: v.body == "Front Desk",
-          selectedColor: Colors.blue,
-          onTap: () {
-            v.body = "Front Desk";
-            v.notifyListeners();
-            if (isMobile) Navigator.pop(context);
-          }, //
-        ),
+        if (Global.is_admin || Global.is_manager || Global.is_receptionist || Global.is_housekeeper)
+          ListTile(
+            leading: Icon(Icons.people_outline),
+            title: Text("Front Desk"),
+            selected: global.body == "Front Desk",
+            selectedColor: Colors.blue,
+            onTap: () {
+              global.body = "Front Desk";
+              global.notifyListeners();
+              if (isMobile) Navigator.pop(context);
+            }, //
+          ),
 
-        ListTile(
-          leading: Icon(Icons.hotel_outlined),
-          title: Text("Room"),
-          selected: v.body == "Room",
-          selectedColor: Colors.blue,
-          onTap: () {
-            v.body = "Room";
-            v.notifyListeners();
-            if (isMobile) Navigator.pop(context);
-          }, //
-        ),
+        if (Global.is_admin || Global.is_manager)
+          ListTile(
+            leading: Icon(Icons.hotel_outlined),
+            title: Text("Room"),
+            selected: global.body == "Room",
+            selectedColor: Colors.blue,
+            onTap: () {
+              global.body = "Room";
+              global.notifyListeners();
+              if (isMobile) Navigator.pop(context);
+            }, //
+          ),
 
-        ListTile(
-          leading: Icon(Icons.people_outline),
-          title: Text("Guest"),
-          selected: v.body == "Guest",
-          selectedColor: Colors.blue,
-          onTap: () {
-            v.body = "Guest";
-            v.notifyListeners();
-            if (isMobile) Navigator.pop(context);
-          }, //
-        ),
+        if (Global.is_admin || Global.is_manager)
+          ListTile(
+            leading: Icon(Icons.people_outline),
+            title: Text("Guest"),
+            selected: global.body == "Guest",
+            selectedColor: Colors.blue,
+            onTap: () {
+              global.body = "Guest";
+              global.notifyListeners();
+              if (isMobile) Navigator.pop(context);
+            }, //
+          ),
 
         // User
-        ListTile(
-          leading: Icon(Icons.person_outline),
-          title: Text("User"),
-          selected: v.body == "User",
-          selectedColor: Colors.blue,
-          onTap: () {
-            v.body = "User";
-            v.notifyListeners();
-            if (isMobile) Navigator.pop(context);
-          }, //
-        ),
+        if (Global.is_admin || Global.is_manager)
+          ListTile(
+            leading: Icon(Icons.person_outline),
+            title: Text("User"),
+            selected: global.body == "User",
+            selectedColor: Colors.blue,
+            onTap: () {
+              global.body = "User";
+              global.notifyListeners();
+              if (isMobile) Navigator.pop(context);
+            }, //
+          ),
 
         // Check In/Out/Clean
-        ListTile(
-          leading: Icon(Icons.meeting_room_outlined),
-          title: Text("Check In"),
-          selected: v.body == "Check In",
-          selectedColor: Colors.blue,
-          onTap: () {
-            v.body = "Check In";
-            v.notifyListeners();
-            if (isMobile) Navigator.pop(context);
-          }, //
-        ),
+        if (kDebugMode)
+          ListTile(
+            leading: Icon(Icons.meeting_room_outlined),
+            title: Text("Check In"),
+            selected: global.body == "Check In",
+            selectedColor: Colors.blue,
+            onTap: () {
+              global.body = "Check In";
+              global.notifyListeners();
+              if (isMobile) Navigator.pop(context);
+            }, //
+          ),
 
         // Check In/Out/Clean
         if (kDebugMode)
           ListTile(
             leading: Icon(Icons.meeting_room_outlined),
             title: Text("Check In/Out/Clean"),
-            selected: v.body == "Check In/Out/Clean",
+            selected: global.body == "Check In/Out/Clean",
             selectedColor: Colors.blue,
             onTap: () {
-              v.body = "Check In/Out/Clean";
-              v.notifyListeners();
+              global.body = "Check In/Out/Clean";
+              global.notifyListeners();
               if (isMobile) Navigator.pop(context);
             }, //
           ),
@@ -123,7 +130,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
           children: [
             ListTile(
               leading: Icon(Icons.assessment_outlined), //
-              selected: v.body == "Daily Report",
+              selected: global.body == "Daily Report",
               selectedColor: Colors.blue,
               title: Text(
                 'Daily Report', //
@@ -132,13 +139,13 @@ class _Panel_Left_State extends State<Panel_Left_> {
               ),
               onTap: () {
                 //
-                v.body = "Daily Report";
-                v.notifyListeners();
+                global.body = "Daily Report";
+                global.notifyListeners();
               },
             ),
             ListTile(
               leading: Icon(Icons.assessment_outlined), //
-              selected: v.body == "Weekly Report",
+              selected: global.body == "Weekly Report",
               selectedColor: Colors.blue,
               title: Text(
                 'Weekly Report', //
@@ -147,13 +154,13 @@ class _Panel_Left_State extends State<Panel_Left_> {
               ),
               onTap: () {
                 //
-                v.body = "Weekly Report";
-                v.notifyListeners();
+                global.body = "Weekly Report";
+                global.notifyListeners();
               },
             ),
             ListTile(
               leading: Icon(Icons.assessment_outlined), //
-              selected: v.body == "Monthly Report",
+              selected: global.body == "Monthly Report",
               selectedColor: Colors.blue,
               title: Text(
                 'Monthly Report', //
@@ -162,13 +169,13 @@ class _Panel_Left_State extends State<Panel_Left_> {
               ),
               onTap: () {
                 //
-                v.body = "Monthly Report";
-                v.notifyListeners();
+                global.body = "Monthly Report";
+                global.notifyListeners();
               },
             ),
             ListTile(
               leading: Icon(Icons.assessment_outlined), //
-              selected: v.body == "Yearly Report",
+              selected: global.body == "Yearly Report",
               selectedColor: Colors.blue,
               title: Text(
                 'Yearly Report', //
@@ -177,8 +184,8 @@ class _Panel_Left_State extends State<Panel_Left_> {
               ),
               onTap: () {
                 //
-                v.body = "Yearly Report";
-                v.notifyListeners();
+                global.body = "Yearly Report";
+                global.notifyListeners();
               },
             ),
           ],
@@ -189,11 +196,11 @@ class _Panel_Left_State extends State<Panel_Left_> {
           ListTile(
             leading: Icon(Icons.model_training_outlined),
             title: Text("Template"),
-            selected: v.body == "Template",
+            selected: global.body == "Template",
             selectedColor: Colors.blue,
             onTap: () {
-              v.body = "Template";
-              v.notifyListeners();
+              global.body = "Template";
+              global.notifyListeners();
               if (isMobile) Navigator.pop(context);
             }, //
           ),
@@ -203,11 +210,11 @@ class _Panel_Left_State extends State<Panel_Left_> {
           ListTile(
             leading: Icon(Icons.settings_outlined),
             title: Text("Setting"),
-            selected: v.body == "Setting",
+            selected: global.body == "Setting",
             selectedColor: Colors.blue,
             onTap: () {
-              v.body = "Setting";
-              v.notifyListeners();
+              global.body = "Setting";
+              global.notifyListeners();
               if (isMobile) Navigator.pop(context);
             }, //
           ),
