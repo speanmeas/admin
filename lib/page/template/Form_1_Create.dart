@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
+import 'package:speanmeas/Global.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Datetime_format.dart';
@@ -13,11 +15,16 @@ import '__Setup__.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Form_Create());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global(), //
+      child: Main(),
+    ),
+  );
 }
 
-class Form_Create extends StatelessWidget {
-  Form_Create({super.key});
+class Main extends StatelessWidget {
+  Main({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +46,7 @@ class Form_Create_ extends StatefulWidget {
 }
 
 class _Form_Create_State extends State<Form_Create_> {
+  //
   Map<String, dynamic> output = {};
 
   @override
@@ -89,7 +97,7 @@ class _Form_Create_State extends State<Form_Create_> {
 
                 // todo: handle foreign key
 
-                //
+                // note - multi-line text
                 if (row["key"] == "note") {
                   return Container(
                     width: 600,
@@ -103,11 +111,15 @@ class _Form_Create_State extends State<Form_Create_> {
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
+                      onChanged: (value) {
+                        output[row["key"]] = value; //
+                      },
                     ),
                   );
                 }
 
-                if (row["kind"] == "text") {
+                // string
+                if (row["kind"] == "string") {
                   return Container(
                     width: 600,
                     padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -124,19 +136,19 @@ class _Form_Create_State extends State<Form_Create_> {
                   );
                 }
 
-                //
+                // number
                 if (row["kind"] == "number") {
                   return Container(
                     width: 600,
                     padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
+                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
                       decoration: InputDecoration(
                         labelText: row['title'], //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      keyboardType: TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
                       onChanged: (value) {
                         output[row["key"]] = double.tryParse(value);
                       },
@@ -147,96 +159,50 @@ class _Form_Create_State extends State<Form_Create_> {
                 if (row["kind"] == "boolean") {
                   return Container(
                     width: 600,
-                    padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      children: [
-                        // is_admin
-                        Expanded(
-                          child: TextField(
-                            controller: TextEditingController(
-                              text: output[row["key"]] == "1"
-                                  ? "Yes"
-                                  : (output[row["key"]] == "0"
-                                        ? "No" //
-                                        : (output[row["key"]] ?? "")),
-                            ),
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(), //
-                              labelText: "${row['title'] as String? ?? ""}:",
-                              labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
-                            ),
-                          ),
-                        ),
-
-                        // bank
-                        Container(
-                          margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                          child: OutlinedButton.icon(
-                            icon: Icon(Icons.check_circle_outline), //
-                            label: Text("Yes"), //
-                            style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
-                            onPressed: () {
-                              output[row["key"]] = "1";
-                              setState(() {});
-                            }, //
-                          ),
-                        ),
-
-                        // cash
-                        Container(
-                          margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                          child: OutlinedButton.icon(
-                            icon: Icon(Icons.cancel_outlined), //
-                            label: Text("No"), //
-                            style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-                            onPressed: () {
-                              output[row["key"]] = "0";
-                              setState(() {});
-                            }, //
-                          ),
-                        ),
-                      ],
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: DropdownButtonFormField<String>(
+                      initialValue: "No",
+                      decoration: InputDecoration(
+                        labelText: row['title'],
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
+                      ),
+                      items: ["Yes", "No"].map((i) {
+                        return DropdownMenuItem<String>(value: i, child: Text(i));
+                      }).toList(),
+                      onChanged: (v) {
+                        if (v == "Yes") {
+                          output[row["key"]] = true;
+                        } else {
+                          output[row["key"]] = false;
+                        }
+                        setState(() {});
+                      },
                     ),
                   );
                 }
 
-                //
-                if (row["kind"] == "datetime") {
+                if (row["kind"] == "date-time") {
                   return Container(
                     width: 600,
                     padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: TextEditingController(text: output[row["key"]] ?? ""),
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(), //
-                              labelText: row['title'], //
-                              labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
-                            ),
-                          ),
-                        ),
-
-                        Container(
-                          margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                          child: OutlinedButton.icon(
-                            onPressed: () async {
-                              final DateTime? datetime = await datetime_picker(context);
-                              if (datetime == null) return;
-                              output[row["key"]] = datetime_to_string(datetime);
-                              setState(() {});
-                            }, //
-                            label: Text("Select"),
-                            icon: const Icon(Icons.calendar_today),
-                            style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                          ),
-                        ),
-                      ],
+                    child: TextField(
+                      controller: TextEditingController(text: output[row["key"]] ?? ""),
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(), //
+                        labelText: row['title'], //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        suffixIcon: Icon(Icons.calendar_today), //
+                      ),
+                      onTap: () async {
+                        final DateTime? datetime = await datetime_picker(context);
+                        if (datetime == null) return;
+                        output[row["key"]] = datetime_to_string(datetime);
+                        setState(() {});
+                      }, //,
                     ),
                   );
                 }
@@ -250,7 +216,7 @@ class _Form_Create_State extends State<Form_Create_> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   OutlinedButton.icon(
-                    icon: Icon(Icons.add_task),
+                    icon: Icon(Icons.check),
                     label: Text("Create"),
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
                     onPressed: create_pressed,
@@ -268,7 +234,6 @@ class _Form_Create_State extends State<Form_Create_> {
 
   void create_pressed() async {
     //
-    print(output);
 
     await dio
         .post(
@@ -278,21 +243,13 @@ class _Form_Create_State extends State<Form_Create_> {
           }),
         )
         .then((value) {
-          print(value);
-          snackbar_show(
-            context: context, //
-            message: "$HEADER create successfully.",
-            color: Colors.green,
-          );
+          // print(value);
+          snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
           Navigator.pop(context, true);
         })
         .catchError((error) {
-          print(error);
-          snackbar_show(
-            context: context, //
-            message: "$HEADER create failed.",
-            color: Colors.red,
-          );
+          // print(error);
+          snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
         });
   }
 }

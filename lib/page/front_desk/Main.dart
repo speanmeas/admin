@@ -22,7 +22,12 @@ import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 void main() {
-  runApp(const Main());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global(), //
+      child: const Main(),
+    ),
+  );
 }
 
 class Main extends StatelessWidget {
@@ -94,8 +99,7 @@ class _Main_State extends State<Main_> {
                   margin: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: const BoxDecoration(
                     border: Border(
-                      top: BorderSide(color: Colors.black26),
-                      bottom: BorderSide(color: Colors.black26),
+                      top: BorderSide(color: Colors.grey), //
                     ),
                   ),
 
@@ -138,74 +142,87 @@ class _Main_State extends State<Main_> {
 
                       Spacer(),
 
-                      // button check in
-                      if (isMobile)
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: IconButton(
-                            onPressed: room['status'] != "Available"
-                                ? null //
-                                : () => on_check_in(room),
-                            icon: const Icon(Icons.login),
-                          ),
-                        ),
-                      if (!isMobile)
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                          child: OutlinedButton.icon(
-                            onPressed: room['status'] != "Available"
-                                ? null //
-                                : () => on_check_in(room),
-                            icon: const Icon(Icons.login),
-                            label: const Text("Check In"), //
-                          ),
-                        ),
+                      // three-dot action menu
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                        child: PopupMenuButton<String>(
+                          icon: const Icon(Icons.more_vert),
+                          tooltip: "Actions",
+                          itemBuilder: (context) => [
+                            if (room['status'] == "Available")
+                              PopupMenuItem(
+                                value: "check_in",
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.login), //
+                                    SizedBox(width: 8), Text("Check In"),
+                                  ],
+                                ),
+                              ),
+                            if (room['status'] == "Occupied")
+                              PopupMenuItem(
+                                value: "check_out",
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.logout), //
+                                    SizedBox(width: 8), Text("Check Out"),
+                                  ],
+                                ),
+                              ),
+                            if (room['status'] == "Dirty")
+                              PopupMenuItem(
+                                value: "clean",
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.cleaning_services), //
+                                    SizedBox(width: 8), Text("Clean"),
+                                  ],
+                                ),
+                              ),
 
-                      // button check out
-                      if (isMobile)
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: IconButton(
-                            onPressed: room['status'] != "Occupied"
-                                ? null //
-                                : () => on_check_out(room),
-                            icon: const Icon(Icons.logout),
-                          ),
-                        ),
-                      if (!isMobile)
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                          child: OutlinedButton.icon(
-                            onPressed: room['status'] != "Occupied"
-                                ? null //
-                                : () => on_check_out(room),
-                            icon: const Icon(Icons.logout),
-                            label: const Text("Check Out"), //
-                          ),
-                        ),
+                            PopupMenuItem(
+                              value: "payment",
+                              child: Row(
+                                children: [
+                                  Icon(Icons.payment), //
+                                  SizedBox(width: 8), Text("Payment"),
+                                ],
+                              ),
+                            ),
 
-                      // button clean
-                      if (isMobile)
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: IconButton(
-                            onPressed: room['status'] != "Dirty"
-                                ? null //
-                                : () => on_check_clean(room),
-                            icon: const Icon(Icons.cleaning_services),
-                          ),
+                            PopupMenuItem(
+                              value: "update",
+                              child: Row(
+                                children: [
+                                  Icon(Icons.update), //
+                                  SizedBox(width: 8), Text("Update"),
+                                ],
+                              ),
+                            ),
+                          ],
+                          onSelected: (value) {
+                            if (value == "check_in") {
+                              on_check_in(room);
+                            }
+
+                            if (value == "check_out") {
+                              on_check_out(room);
+                            }
+
+                            if (value == "clean") {
+                              on_check_clean(room);
+                            }
+
+                            if (value == "payment") {
+                              print("Update payment for room ${room['room_number']}");
+                            }
+
+                            if (value == "update") {
+                              print("Update info for room ${room['room_number']}");
+                            }
+                          },
                         ),
-                      if (!isMobile)
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                          child: OutlinedButton.icon(
-                            onPressed: room['status'] != "Dirty"
-                                ? null //
-                                : () => on_check_clean(room),
-                            icon: const Icon(Icons.cleaning_services),
-                            label: const Text("Clean"), //
-                          ),
-                        ),
+                      ),
                     ],
                   ),
                 );

@@ -1,13 +1,13 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/page/template/__Model__.dart';
+import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
+
 import 'package:speanmeas/utility/Datetime_format.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
@@ -16,9 +16,11 @@ import 'Form_1_Create.dart';
 import 'Form_2_Read.dart';
 import 'Form_3_Update.dart';
 import 'Form_4_Delete.dart';
-import 'Filter_1_String.dart';
-import 'Filter_2_Number.dart';
-import 'Filter_3_Datetime.dart';
+
+import 'Filter_String.dart';
+import 'Filter_Number.dart';
+import 'Filter_Datetime.dart';
+import 'Filter_Boolean.dart';
 import 'Filter_Visibility.dart';
 
 import 'Main_Widget.dart';
@@ -26,7 +28,12 @@ import 'Schema.g.dart';
 import '__Setup__.dart';
 
 void main() {
-  runApp(const Main());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global(), //
+      child: const Main(),
+    ),
+  );
 }
 
 class Main extends StatelessWidget {
@@ -63,8 +70,8 @@ class _Main_State extends State<Main_> {
 
   List<Map<String, dynamic>> data = [];
 
-  String? id;
   String? key;
+  bool? has;
   String? query;
   double? min;
   double? max;
@@ -72,7 +79,6 @@ class _Main_State extends State<Main_> {
   String? end;
   String? order;
   int? limit = 1000;
-  String? autocomplete;
 
   int counter = 0;
 
@@ -91,9 +97,7 @@ class _Main_State extends State<Main_> {
             if (access_token != null) {
               dio.options.headers['Authorization'] = 'Bearer $access_token';
               setState(() {});
-              print("Access token found: $access_token");
-            } else {
-              print("No access token found.");
+              // print("Access token found: $access_token");
             }
           })
           .catchError((e) {});
@@ -107,8 +111,8 @@ class _Main_State extends State<Main_> {
         .post(
           '$PATH/data_read',
           data: FormData.fromMap({
-            "id": id, //
             "key": key, //
+            "has": has, //
             "query": query,
             "min": min,
             "max": max,
@@ -117,18 +121,12 @@ class _Main_State extends State<Main_> {
             "order": order,
             "limit": limit,
             "offset": null,
-            "autocomplete": autocomplete,
           }),
         ) //
         .then((r) {
           setState(() {
-            // print(r.data.length);
             has_more = r.data.length == limit;
-            // data = List<Map<String, dynamic>>.from(r.data);
-
             data = List<Map<String, dynamic>>.from(r.data);
-
-            // print(data);
           });
         })
         .catchError((e) {});
@@ -142,8 +140,8 @@ class _Main_State extends State<Main_> {
         .post(
           '$PATH/read',
           data: FormData.fromMap({
-            "id": null, //
             "key": key, //
+            "has": has, //
             "query": query,
             "min": min,
             "max": max,
@@ -152,25 +150,33 @@ class _Main_State extends State<Main_> {
             "order": order,
             "limit": limit,
             "offset": data.length,
-            "autocomplete": autocomplete,
           }),
         ) //
         .then((r) {
-          // print(r.data);
           has_more = r.data.length == limit;
           data.addAll(List<Map<String, dynamic>>.from(r.data));
-          print(data);
           setState(() {});
         })
         .catchError((e) {});
   }
 
+  double screen_height = 0;
+  Global global = Global();
+
   @override
   Widget build(BuildContext context) {
+    screen_height = MediaQuery.of(context).size.height;
+    global = context.watch<Global>();
+
     return Layout(
       children_header: [
         // No.
-        Header_No(),
+        Container(
+          height: HEADER_HEIGHT,
+          width: NUMBER_COLUMN_WIDTH,
+          alignment: Alignment.center,
+          child: const Text('No.', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
 
         // sort mode
         if (!is_filter)
@@ -191,7 +197,7 @@ class _Main_State extends State<Main_> {
         if (is_filter)
           ..._schema.where((row) => row["is_visible"] == 1).map((row) {
             // header search text
-            if (row["kind"] == "text") {
+            if (row["kind"] == "string") {
               return Header_Search_Text(
                 row: row, //
                 onPressed: () => filter_text_pressed(row),
@@ -206,8 +212,16 @@ class _Main_State extends State<Main_> {
               );
             }
 
+            // header search number
+            if (row["kind"] == "boolean") {
+              return Header_Search_Boolean(
+                row: row, //
+                onPressed: () => filter_boolean_pressed(row),
+              );
+            }
+
             // header search datetime
-            if (row["kind"] == "datetime") {
+            if (row["kind"] == "date-time") {
               return Header_Search_Datetime(
                 row: row, //
                 onPressed: () => filter_datetime_pressed(row),
@@ -227,29 +241,14 @@ class _Main_State extends State<Main_> {
         Container_Index(index),
 
         ..._schema.where((row) => row["is_visible"] == 1).map((row) {
-          // case price
-          if (row["key"] == "price") {
-            final priceValue = data[index][row["key"]];
-            final price = priceValue is num ? priceValue.toDouble() : double.tryParse(priceValue?.toString() ?? "0.0") ?? 0.0;
-            return Container(
-              width: COLUMN_WIDTH, //
-              alignment: Alignment.center,
-              child: Text(
-                "${price.toStringAsFixed(2)} \$", //
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                softWrap: true,
-              ),
-            );
-          }
-
           // case password
           if (row["key"] == "password") {
+            String output = "**********";
             return Container(
               width: COLUMN_WIDTH, //
               alignment: Alignment.center,
               child: Text(
-                data[index][row["key"]]?.toString() ?? "", //
+                output, //
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
                 softWrap: true,
@@ -258,12 +257,13 @@ class _Main_State extends State<Main_> {
           }
 
           // case datetime
-          if (row["kind"] == "text") {
+          if (row["kind"] == "string") {
+            String output = data[index][row["key"]]?.toString() ?? "";
             return Container(
               width: COLUMN_WIDTH, //
               alignment: Alignment.center,
               child: Text(
-                data[index][row["key"]]?.toString() ?? "", //
+                output, //
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
                 softWrap: true,
@@ -273,11 +273,12 @@ class _Main_State extends State<Main_> {
 
           // case datetime
           if (row["kind"] == "number") {
+            String output = data[index][row["key"]]?.toString() ?? "0";
             return Container(
               width: COLUMN_WIDTH, //
               alignment: Alignment.center,
               child: Text(
-                data[index][row["key"]]?.toString() ?? "", //
+                output, //
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
                 softWrap: true,
@@ -287,15 +288,13 @@ class _Main_State extends State<Main_> {
 
           // case datetime
           if (row["kind"] == "boolean") {
+            String output = data[index][row["key"]]?.toString() ?? "false";
+            output = output.toLowerCase() == "true" ? "Yes" : "No";
             return Container(
               width: COLUMN_WIDTH, //
               alignment: Alignment.center,
               child: Text(
-                data[index][row["key"]] == "1"
-                    ? "Yes"
-                    : (data[index][row["key"]] == "0"
-                          ? "No" //
-                          : (data[index][row["key"]] ?? "")),
+                output, //
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
                 softWrap: true,
@@ -304,12 +303,14 @@ class _Main_State extends State<Main_> {
           }
 
           // case datetime
-          if (row["kind"] == "datetime") {
+          if (row["kind"] == "date-time") {
+            String output = data[index][row["key"]]?.toString() ?? "";
+            output = output.replaceAll("T", " ");
             return Container(
               width: COLUMN_WIDTH, //
               alignment: Alignment.center,
               child: Text(
-                data[index][row["key"]]?.toString() ?? "", //
+                output, //
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
                 softWrap: true,
@@ -358,6 +359,7 @@ class _Main_State extends State<Main_> {
   void filter_datetime_pressed(Map<String, dynamic> row) {
     // print("${row["key"]}");
     key = row["key"];
+    has = null;
     query = null;
     min = null;
     max = null;
@@ -383,6 +385,7 @@ class _Main_State extends State<Main_> {
   void filter_number_pressed(Map<String, dynamic> row) {
     // print("${row["key"]}");
     key = row["key"];
+    has = null;
     query = null;
     min = null;
     max = null;
@@ -390,12 +393,8 @@ class _Main_State extends State<Main_> {
     end = null;
 
     Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Filter_Number_(
-          key_: row["key"], //
-        ),
-      ),
+      context, //
+      MaterialPageRoute(builder: (context) => Filter_Number_()),
     ).then((value) {
       print("value: $value");
       if (value != null) {
@@ -409,10 +408,36 @@ class _Main_State extends State<Main_> {
     });
   }
 
+  void filter_boolean_pressed(Map<String, dynamic> row) {
+    key = row["key"];
+    has = null;
+    query = null;
+    min = null;
+    max = null;
+    start = null;
+    end = null;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Filter_Boolean_(), //
+      ),
+    ).then((value) {
+      print(value);
+      if (value != null) {
+        has = value;
+        order = "1";
+        init();
+        controller_table.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+      }
+    });
+  }
+
   void filter_text_pressed(Map<String, dynamic> row) {
     // print("${row["key"]}");
 
     key = row["key"];
+    has = null;
     query = null;
     min = null;
     max = null;
@@ -429,11 +454,7 @@ class _Main_State extends State<Main_> {
         query = value;
         order = "1";
         init();
-        controller_table.animateTo(
-          0, //
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+        controller_table.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
       }
     });
   }
@@ -467,11 +488,7 @@ class _Main_State extends State<Main_> {
       init();
 
       // move to top
-      controller_table.animateTo(
-        0, //
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+      controller_table.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
     });
   }
 

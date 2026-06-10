@@ -68,6 +68,34 @@ Widget Header_Search_Datetime({
   );
 }
 
+Widget Header_Search_Boolean({
+  required dynamic row, //
+  required VoidCallback onPressed,
+}) {
+  return Container(
+    height: HEADER_HEIGHT, //
+    width: COLUMN_WIDTH, //
+    child: InkWell(
+      onTap: onPressed,
+
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.toggle_on_outlined, size: 20, color: Colors.blue),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              row["title"], //
+              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 Widget Header_Search_Number({
   required dynamic row, //
   required VoidCallback onPressed,

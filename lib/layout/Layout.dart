@@ -28,23 +28,26 @@ class Layout_Dashboard extends StatelessWidget {
       title: 'Demo', //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Layout_Dashboard_(),
+      home: Layout_(),
     );
   }
 }
 
-class Layout_Dashboard_ extends StatefulWidget {
-  const Layout_Dashboard_({super.key});
+class Layout_ extends StatefulWidget {
+  const Layout_({super.key});
 
   @override
-  State<Layout_Dashboard_> createState() => _Layout_Dashboard_State();
+  State<Layout_> createState() => _Layout_State();
 }
 
-class _Layout_Dashboard_State extends State<Layout_Dashboard_> {
+class _Layout_State extends State<Layout_> {
+  bool is_mobile = false;
+  Global global = Global();
+
   @override
   Widget build(BuildContext context) {
-    final isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
-    // final v = context.watch<Variable>();
+    is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
+    global = context.watch<Global>();
     return Scaffold(
       appBar: AppBar(
         title: Panel_Top_(), //
@@ -59,7 +62,7 @@ class _Layout_Dashboard_State extends State<Layout_Dashboard_> {
             child: Row(
               children: [
                 // panel left
-                if (!isMobile)
+                if (!is_mobile)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
                     child: Container(
@@ -88,7 +91,7 @@ class _Layout_Dashboard_State extends State<Layout_Dashboard_> {
           ),
         ],
       ),
-      drawer: isMobile ? Drawer(child: Panel_Left_()) : null,
+      drawer: is_mobile ? Drawer(child: Panel_Left_()) : null,
     );
   }
 }

@@ -36,13 +36,16 @@ class Panel_Left_ extends StatefulWidget {
 }
 
 class _Panel_Left_State extends State<Panel_Left_> {
+  bool is_mobile = false;
+  Global global = Global();
+
   @override
   Widget build(BuildContext context) {
-    final isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
-    final global = context.watch<Global>();
+    is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
+    global = context.watch<Global>();
     return ListView(
       children: [
-        if (Global.is_admin || Global.is_manager || Global.is_receptionist || Global.is_housekeeper)
+        if (global.is_admin || global.is_manager || global.is_receptionist || global.is_housekeeper)
           ListTile(
             leading: Icon(Icons.people_outline),
             title: Text("Front Desk"),
@@ -51,24 +54,11 @@ class _Panel_Left_State extends State<Panel_Left_> {
             onTap: () {
               global.body = "Front Desk";
               global.notifyListeners();
-              if (isMobile) Navigator.pop(context);
+              if (is_mobile) Navigator.pop(context);
             }, //
           ),
 
-        if (Global.is_admin || Global.is_manager)
-          ListTile(
-            leading: Icon(Icons.hotel_outlined),
-            title: Text("Room"),
-            selected: global.body == "Room",
-            selectedColor: Colors.blue,
-            onTap: () {
-              global.body = "Room";
-              global.notifyListeners();
-              if (isMobile) Navigator.pop(context);
-            }, //
-          ),
-
-        if (Global.is_admin || Global.is_manager)
+        if (global.is_admin || global.is_manager || global.is_receptionist)
           ListTile(
             leading: Icon(Icons.people_outline),
             title: Text("Guest"),
@@ -77,12 +67,25 @@ class _Panel_Left_State extends State<Panel_Left_> {
             onTap: () {
               global.body = "Guest";
               global.notifyListeners();
-              if (isMobile) Navigator.pop(context);
+              if (is_mobile) Navigator.pop(context);
+            }, //
+          ),
+
+        if (global.is_admin || global.is_manager)
+          ListTile(
+            leading: Icon(Icons.hotel_outlined),
+            title: Text("Room"),
+            selected: global.body == "Room",
+            selectedColor: Colors.blue,
+            onTap: () {
+              global.body = "Room";
+              global.notifyListeners();
+              if (is_mobile) Navigator.pop(context);
             }, //
           ),
 
         // User
-        if (Global.is_admin || Global.is_manager)
+        if (global.is_admin || global.is_manager)
           ListTile(
             leading: Icon(Icons.person_outline),
             title: Text("User"),
@@ -91,12 +94,12 @@ class _Panel_Left_State extends State<Panel_Left_> {
             onTap: () {
               global.body = "User";
               global.notifyListeners();
-              if (isMobile) Navigator.pop(context);
+              if (is_mobile) Navigator.pop(context);
             }, //
           ),
 
         // Check In/Out/Clean
-        if (kDebugMode)
+        if (false)
           ListTile(
             leading: Icon(Icons.meeting_room_outlined),
             title: Text("Check In"),
@@ -105,12 +108,12 @@ class _Panel_Left_State extends State<Panel_Left_> {
             onTap: () {
               global.body = "Check In";
               global.notifyListeners();
-              if (isMobile) Navigator.pop(context);
+              if (is_mobile) Navigator.pop(context);
             }, //
           ),
 
         // Check In/Out/Clean
-        if (kDebugMode)
+        if (false)
           ListTile(
             leading: Icon(Icons.meeting_room_outlined),
             title: Text("Check In/Out/Clean"),
@@ -119,7 +122,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
             onTap: () {
               global.body = "Check In/Out/Clean";
               global.notifyListeners();
-              if (isMobile) Navigator.pop(context);
+              if (is_mobile) Navigator.pop(context);
             }, //
           ),
 
@@ -201,35 +204,9 @@ class _Panel_Left_State extends State<Panel_Left_> {
             onTap: () {
               global.body = "Template";
               global.notifyListeners();
-              if (isMobile) Navigator.pop(context);
+              if (is_mobile) Navigator.pop(context);
             }, //
           ),
-
-        // Setting
-        if (kDebugMode)
-          ListTile(
-            leading: Icon(Icons.settings_outlined),
-            title: Text("Setting"),
-            selected: global.body == "Setting",
-            selectedColor: Colors.blue,
-            onTap: () {
-              global.body = "Setting";
-              global.notifyListeners();
-              if (isMobile) Navigator.pop(context);
-            }, //
-          ),
-
-        // ListTile(
-        //   leading: Icon(Icons.login_outlined),
-        //   title: Text("Signin"),
-        //   selected: v.body == "Signin",
-        //   selectedColor: Colors.blue,
-        //   onTap: () {
-        //     v.body = "Signin";
-        //     v.notifyListeners();
-        //     if (isMobile) Navigator.pop(context);
-        //   }, //
-        // ),
       ],
     );
   }

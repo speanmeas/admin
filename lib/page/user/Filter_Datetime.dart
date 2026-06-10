@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:speanmeas/Global.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Datetime_format.dart';
@@ -11,11 +13,16 @@ import '__Setup__.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Filter_Datetime());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global(), //
+      child: Main(),
+    ),
+  );
 }
 
-class Filter_Datetime extends StatelessWidget {
-  Filter_Datetime({super.key});
+class Main extends StatelessWidget {
+  Main({super.key});
 
   @override
   Widget build(BuildContext context) {

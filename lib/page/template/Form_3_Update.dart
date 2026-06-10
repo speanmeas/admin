@@ -4,7 +4,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
+import 'package:speanmeas/Global.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Datetime_format.dart';
@@ -16,11 +18,16 @@ import '__Setup__.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Form_Update());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global(), //
+      child: Main(),
+    ),
+  );
 }
 
-class Form_Update extends StatelessWidget {
-  Form_Update({super.key});
+class Main extends StatelessWidget {
+  Main({super.key});
 
   String id = "69f984897186bcf74f8a5dde";
 
@@ -80,17 +87,17 @@ class _Form_Update_State extends State<Form_Update_> {
         ) //
         .then((r) {
           output = Map.from(r.data[0] ?? {});
-          // print(output);
+          // print("Output: $output");
           setState(() {});
         })
-        .catchError((e) {
-          print(e);
-        });
+        .catchError((_) {});
   }
+
+  double screen_height = 0;
 
   @override
   Widget build(BuildContext context) {
-    final screen_height = MediaQuery.of(context).size.height;
+    screen_height = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: AppBar(
@@ -135,6 +142,9 @@ class _Form_Update_State extends State<Form_Update_> {
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
+                      onChanged: (value) {
+                        output[row["key"]] = value; //
+                      },
                     ),
                   );
                 }
@@ -145,9 +155,9 @@ class _Form_Update_State extends State<Form_Update_> {
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      controller: TextEditingController(text: ""),
                       decoration: InputDecoration(
                         labelText: row['title'], //
+                        hintText: "Enter new password", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -159,7 +169,7 @@ class _Form_Update_State extends State<Form_Update_> {
                 }
 
                 //
-                if (row["kind"] == "text") {
+                if (row["kind"] == "string") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -202,95 +212,52 @@ class _Form_Update_State extends State<Form_Update_> {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      children: [
-                        // is_admin
-                        Expanded(
-                          child: TextField(
-                            controller: TextEditingController(
-                              text: output[row["key"]] == "1"
-                                  ? "Yes"
-                                  : (output[row["key"]] == "0"
-                                        ? "No" //
-                                        : (output[row["key"]] ?? "")),
-                            ),
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(), //
-                              labelText: "${row['title'] as String? ?? ""}:",
-                              labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
-                            ),
-                          ),
-                        ),
-
-                        // bank
-                        Container(
-                          margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                          child: OutlinedButton.icon(
-                            icon: Icon(Icons.check_circle_outline), //
-                            label: Text("Yes"), //
-                            style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
-                            onPressed: () {
-                              output[row["key"]] = "1";
-                              setState(() {});
-                            }, //
-                          ),
-                        ),
-
-                        // cash
-                        Container(
-                          margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                          child: OutlinedButton.icon(
-                            icon: Icon(Icons.cancel_outlined), //
-                            label: Text("No"), //
-                            style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-                            onPressed: () {
-                              output[row["key"]] = "0";
-                              setState(() {});
-                            }, //
-                          ),
-                        ),
-                      ],
+                    child: DropdownButtonFormField<String>(
+                      initialValue: "No",
+                      decoration: InputDecoration(
+                        labelText: row['title'],
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
+                      ),
+                      items: ["Yes", "No"].map((i) {
+                        return DropdownMenuItem<String>(value: i, child: Text(i));
+                      }).toList(),
+                      onChanged: (v) {
+                        if (v == "Yes") {
+                          output[row["key"]] = true;
+                        } else {
+                          output[row["key"]] = false;
+                        }
+                        setState(() {});
+                      },
                     ),
                   );
                 }
 
-                // edit datetime
-                if (row["kind"] == "datetime") {
+                if (row["kind"] == "date-time") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: TextEditingController(text: output[row["key"]] ?? ""),
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(), //
-                              labelText: row['title'], //
-                              labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
-                            ),
-                          ),
-                        ),
-
-                        Container(
-                          margin: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                          child: OutlinedButton.icon(
-                            onPressed: () async {
-                              final DateTime? datetime = await datetime_picker(context);
-                              if (datetime == null) return;
-                              output[row["key"]] = datetime_to_string(datetime);
-                              setState(() {});
-                            }, //
-                            label: Text("Select"),
-                            icon: const Icon(Icons.calendar_today),
-                            style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                          ),
-                        ),
-                      ],
+                    child: TextField(
+                      controller: TextEditingController(text: output[row["key"]] ?? ""),
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(), //
+                        labelText: row['title'], //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        suffixIcon: Icon(Icons.calendar_today), //
+                      ),
+                      onTap: () async {
+                        final DateTime? datetime = await datetime_picker(
+                          context, //
+                          initial_datetime: output[row["key"]] != null ? DateTime.tryParse(output[row["key"]]) : null,
+                        );
+                        if (datetime == null) return;
+                        output[row["key"]] = datetime_to_string(datetime);
+                        setState(() {});
+                      }, //,
                     ),
                   );
                 }
@@ -303,7 +270,8 @@ class _Form_Update_State extends State<Form_Update_> {
               // Images Upload
               // if (output["images_"] != null)
               Container(
-                padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                alignment: Alignment.centerLeft,
                 child: Text(
                   "Images:", //
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -313,6 +281,7 @@ class _Form_Update_State extends State<Form_Update_> {
               if (output["images"] != null)
                 Container(
                   width: 600,
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 8),
                   child: Scrollbar(
                     controller: controller_images,
                     thumbVisibility: true,
@@ -438,54 +407,16 @@ class _Form_Update_State extends State<Form_Update_> {
                     ),
                   ),
                 ),
-              SizedBox(height: 8),
 
               // Save button
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   OutlinedButton.icon(
-                    icon: Icon(Icons.save_outlined),
-                    label: Text("Save"),
+                    icon: Icon(Icons.check), //
+                    label: Text("Update"),
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                    onPressed: () async {
-                      // final Map<String, dynamic> formMap = {...output};
-                      // for (int i = 0; i < selectedImages.length; i++) {
-                      //   final XFile? file = selectedImages[i];
-                      //   if (file != null) {
-                      //     formMap['images[$i]'] = await MultipartFile.fromFile(file.path, filename: file.name);
-                      //   }
-                      // }
-
-                      // output["id"] = output["_id"][r"$oid"]; //
-                      // print(output);
-
-                      await dio
-                          .post(
-                            '$PATH/data_update',
-                            data: FormData.fromMap({
-                              ...output, //
-                            }),
-                          )
-                          .then((value) {
-                            // print(value);
-
-                            snackbar_show(
-                              context: context, //
-                              message: "$HEADER update successfully",
-                              color: Colors.green,
-                            );
-                            Navigator.pop(context, output);
-                          })
-                          .catchError((error) {
-                            // print(error);
-                            snackbar_show(
-                              context: context, //
-                              message: "$HEADER update failed",
-                              color: Colors.red,
-                            );
-                          });
-                    },
+                    onPressed: on_update,
                   ),
                 ],
               ),
@@ -498,7 +429,16 @@ class _Form_Update_State extends State<Form_Update_> {
     );
   }
 
-  void update_pressed() async {
-    //
+  void on_update() async {
+    print("Output: $output");
+    await dio
+        .post('$PATH/data_update', data: FormData.fromMap({...output}))
+        .then((value) {
+          snackbar_show(context: context, message: "$HEADER update successfully", color: Colors.green);
+          Navigator.pop(context, output);
+        })
+        .catchError((error) {
+          snackbar_show(context: context, message: "$HEADER update failed", color: Colors.red);
+        });
   }
 }

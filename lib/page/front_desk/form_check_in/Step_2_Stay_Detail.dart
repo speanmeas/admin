@@ -52,22 +52,33 @@ class _Stay_Detail_State extends State<Stay_Detail_> {
 
   final scroll_number_of_days = ScrollController();
   final controller_number_of_days = TextEditingController(text: "0");
+
   final scroll_number_of_hours = ScrollController();
   final controller_number_of_hours = TextEditingController(text: "0");
+
   final controller_price_usd = TextEditingController();
   final controller_price_khr = TextEditingController();
 
   final stay_duration_day_options = const [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   final stay_duration_hour_options = const [0, 3, 6, 9, 12];
 
+  Global global = Global();
+
   @override
   void initState() {
     super.initState();
+
+    if (Model.stay_duration_day != 0) controller_number_of_days.text = Model.stay_duration_day.toString();
+    if (Model.stay_duration_hour != 0) controller_number_of_hours.text = Model.stay_duration_hour.toString();
+
+    if (Model.price_total_usd != 0) controller_price_usd.text = Model.price_total_usd.toString();
+    if (Model.price_total_khr != 0) controller_price_khr.text = Model.price_total_khr.toString();
   }
 
   @override
   Widget build(BuildContext context) {
     final screen_height = MediaQuery.of(context).size.height;
+    global = context.read<Global>();
 
     return Scaffold(
       appBar: AppBar(
@@ -119,7 +130,7 @@ class _Stay_Detail_State extends State<Stay_Detail_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: DropdownButtonFormField<int>(
-                  initialValue: stay_duration_day_options.first,
+                  initialValue: int.tryParse(controller_number_of_days.text),
                   decoration: InputDecoration(
                     labelText: "Duration (Days):",
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -140,7 +151,7 @@ class _Stay_Detail_State extends State<Stay_Detail_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: DropdownButtonFormField<int>(
-                  initialValue: stay_duration_hour_options.first,
+                  initialValue: int.tryParse(controller_number_of_hours.text),
                   decoration: InputDecoration(
                     labelText: "Duration (Hours):",
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -184,8 +195,8 @@ class _Stay_Detail_State extends State<Stay_Detail_> {
                     }
 
                     Model.price_total_usd = double.tryParse(v) ?? 0;
-                    Model.price_total_khr = Model.price_total_usd * Global.RATE;
-                    controller_price_khr.text = (Model.price_total_usd * Global.RATE).toString();
+                    Model.price_total_khr = Model.price_total_usd * global.RATE;
+                    controller_price_khr.text = (Model.price_total_usd * global.RATE).toString();
                     setState(() {});
                   },
                 ),
@@ -219,9 +230,9 @@ class _Stay_Detail_State extends State<Stay_Detail_> {
                     }
 
                     Model.price_total_khr = double.tryParse(v) ?? 0;
-                    Model.price_total_usd = Model.price_total_khr / Global.RATE;
+                    Model.price_total_usd = Model.price_total_khr / global.RATE;
 
-                    controller_price_usd.text = (Model.price_total_khr / Global.RATE).toString();
+                    controller_price_usd.text = (Model.price_total_khr / global.RATE).toString();
                     setState(() {});
                   },
                 ),

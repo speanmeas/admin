@@ -3,10 +3,11 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
-import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/Environment.dart';
+import 'package:speanmeas/Global.dart';
 
 import 'package:speanmeas/layout/Layout.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
@@ -50,11 +51,20 @@ class _Sign_In_State extends State<Sign_In_> {
   final controller_username = TextEditingController();
   final controller_password = TextEditingController();
 
+  String VERSION = '0.0.0+0';
+
   @override
   void initState() {
     super.initState();
 
+    read_version();
     read_access_token();
+  }
+
+  void read_version() async {
+    final info = await PackageInfo.fromPlatform();
+    VERSION = '${info.version}+${info.buildNumber}';
+    setState(() {});
   }
 
   void read_access_token() async {
@@ -64,8 +74,7 @@ class _Sign_In_State extends State<Sign_In_> {
           if (access_token != null) {
             dio.options.headers['Authorization'] = 'Bearer $access_token';
             setState(() {});
-            print("Access token found: $access_token");
-
+            // print("Access token found: $access_token");
             // try using access token to get user info
             try_access_token(access_token);
           } else {
@@ -81,15 +90,36 @@ class _Sign_In_State extends State<Sign_In_> {
           "/auth/check", //
           data: FormData.fromMap({"access_token": access_token}),
         )
-        .then((r) {
-          print("Access token is valid.");
-          print("User info: ${r.data}");
+        .then((r) async {
+          print(r.data);
+
+          if (r.data["username"] != null) {
+            global.username = r.data["username"];
+          }
+
+          if (r.data["is_admin"].isNotEmpty && r.data["is_admin"] == "1") {
+            global.is_admin = true;
+          }
+
+          if (r.data["is_manager"].isNotEmpty && r.data["is_manager"] == "1") {
+            global.is_manager = true;
+          }
+
+          if (r.data["is_receptionist"].isNotEmpty && r.data["is_receptionist"] == "1") {
+            global.is_receptionist = true;
+          }
+
+          if (r.data["is_housekeeper"].isNotEmpty && r.data["is_housekeeper"] == "1") {
+            global.is_housekeeper = true;
+          }
+
+          global.notifyListeners();
 
           Navigator.pushReplacement(
             context, //
             MaterialPageRoute(
               builder: (context) {
-                return Layout_Dashboard_(); //
+                return Layout_(); //
               },
             ),
           );
@@ -100,9 +130,13 @@ class _Sign_In_State extends State<Sign_In_> {
         });
   }
 
+  Global global = Global();
+  double screen_height = 0;
+
   @override
   Widget build(BuildContext context) {
-    final screen_height = MediaQuery.of(context).size.height;
+    screen_height = MediaQuery.of(context).size.height;
+    global = context.read<Global>();
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -121,12 +155,18 @@ class _Sign_In_State extends State<Sign_In_> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
 
+              Text(
+                VERSION,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+              ), //
+
               SizedBox(height: 8),
 
               Container(
                 width: 500,
                 child: TextField(
                   controller: controller_username,
+
                   decoration: InputDecoration(
                     labelText: 'Username', //
                     prefixIcon: Icon(Icons.person, color: Colors.grey),
@@ -177,10 +217,6 @@ class _Sign_In_State extends State<Sign_In_> {
   }
 
   void signin_press() async {
-    print("Signin");
-    print("Username: ${controller_username.text}");
-    print("Password: ${controller_password.text}");
-
     await dio
         .post(
           "/auth/sign_in",
@@ -196,45 +232,40 @@ class _Sign_In_State extends State<Sign_In_> {
 
           snackbar_show(context: context, message: "Login successful", color: Colors.green);
 
-          await secure_storage.write(key: "username", value: controller_username.text);
           await secure_storage.write(key: "access_token", value: r.data["access_token"]);
 
+          if (r.data["username"] != null) {
+            global.username = r.data["username"];
+          }
+
           if (r.data["is_admin"].isNotEmpty && r.data["is_admin"] == "1") {
-            Global.is_admin = true;
+            global.is_admin = true;
           }
 
           if (r.data["is_manager"].isNotEmpty && r.data["is_manager"] == "1") {
-            Global.is_manager = true;
+            global.is_manager = true;
           }
 
           if (r.data["is_receptionist"].isNotEmpty && r.data["is_receptionist"] == "1") {
-            Global.is_receptionist = true;
+            global.is_receptionist = true;
           }
 
           if (r.data["is_housekeeper"].isNotEmpty && r.data["is_housekeeper"] == "1") {
-            Global.is_housekeeper = true;
+            global.is_housekeeper = true;
           }
 
-          // Model_Layout.view();
-          Global().reload();
-
-          // await secure_storage.write(key: "is_admin", value: jsonEncode(r.data["is_admin"]));
-          // await secure_storage.write(key: "is_manager", value: jsonEncode(r.data["is_manager"]));
-          // await secure_storage.write(key: "is_receptionist", value: jsonEncode(r.data["is_receptionist"]));
-          // await secure_storage.write(key: "is_cleaner", value: jsonEncode(r.data["is_cleaner"]));
+          global.notifyListeners();
 
           Navigator.pushReplacement(
             context, //
             MaterialPageRoute(
               builder: (context) {
-                return Layout_Dashboard_(); //
+                return Layout_(); //
               },
             ),
           );
         })
         .catchError((e) {
-          // print("Login failed");
-          // print("Error: ${error.toString()}");
           snackbar_show(context: context, message: "Login failed", color: Colors.red);
         });
 

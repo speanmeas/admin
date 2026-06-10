@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
+import 'package:speanmeas/Global.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
@@ -9,11 +11,16 @@ import '__Setup__.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Form_Read());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global(), //
+      child: Main(),
+    ),
+  );
 }
 
-class Form_Read extends StatelessWidget {
-  Form_Read({super.key});
+class Main extends StatelessWidget {
+  Main({super.key});
 
   String id = "69f984897186bcf74f8a5dde"; //
 
@@ -49,13 +56,6 @@ class _Form_Read_State extends State<Form_Read_> {
   @override
   void initState() {
     super.initState();
-
-    // output = Map.from(widget.input);
-
-    // print(output);
-
-    // print(output);
-    // setState(() {});
     init();
   }
 
@@ -148,7 +148,7 @@ class _Form_Read_State extends State<Form_Read_> {
                 }
 
                 //
-                if (row["kind"] == "text") {
+                if (row["kind"] == "string") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -183,17 +183,13 @@ class _Form_Read_State extends State<Form_Read_> {
 
                 //
                 if (row["kind"] == "boolean") {
+                  String output = row["key"]?.toString() ?? "false";
+                  output = output.toLowerCase() == "true" ? "Yes" : "No";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      controller: TextEditingController(
-                        text: output[row["key"]] == "1"
-                            ? "Yes"
-                            : (output[row["key"]] == "0"
-                                  ? "No" //
-                                  : (output[row["key"]] ?? "")),
-                      ),
+                      controller: TextEditingController(text: output),
                       decoration: InputDecoration(
                         labelText: row['title'], //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -205,7 +201,7 @@ class _Form_Read_State extends State<Form_Read_> {
                 }
 
                 //
-                if (row["kind"] == "datetime") {
+                if (row["kind"] == "date-time") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),

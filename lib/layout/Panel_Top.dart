@@ -41,19 +41,11 @@ class Panel_Top_ extends StatefulWidget {
 class _Panel_Top_State extends State<Panel_Top_> {
   String VERSION = '0.0.0+0';
 
-  String? username;
-
   @override
   void initState() {
     super.initState();
 
-    // add username to dio
-    Future.microtask(() {
-      secure_storage.read(key: 'username').then((value) {
-        username = value;
-        setState(() {});
-      });
-    });
+    print('Global username: ${global.username}');
 
     init();
   }
@@ -64,10 +56,13 @@ class _Panel_Top_State extends State<Panel_Top_> {
     setState(() {});
   }
 
+  bool isMobile = false;
+  Global global = Global();
+
   @override
   Widget build(BuildContext context) {
-    bool isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
-    final v = context.watch<Global>();
+    isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
+    global = context.watch<Global>();
     return Container(
       height: 48,
       decoration: isMobile ? null : BoxDecoration(border: Border(bottom: BorderSide())), //
@@ -76,7 +71,8 @@ class _Panel_Top_State extends State<Panel_Top_> {
         // mainAxisSize: MainAxisSize.min,
         children: [
           //
-          if (!isMobile) SizedBox(width: 4), //
+          if (!isMobile) SizedBox(width: 4),
+
           // logo
           SizedBox(
             width: 56,
@@ -85,13 +81,15 @@ class _Panel_Top_State extends State<Panel_Top_> {
               'asset/logo.png', //
               fit: BoxFit.contain,
             ),
-          ), //
+          ),
+
           SizedBox(width: 4), //
+
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(v.body), //
+              Text(global.body), //
               Text(
                 VERSION,
                 style: TextStyle(
@@ -116,27 +114,8 @@ class _Panel_Top_State extends State<Panel_Top_> {
                 },
               ),
             ),
-          // Dark Mode Toggle
-          // IconButton(onPressed: () {}, icon: Icon(Icons.dark_mode_outlined)), //
-          // Search Icon
-          // IconButton(onPressed: () {}, icon: Icon(Icons.search_outlined)), //
-          // Dark Mode Toggle
-          // IconButton(onPressed: () {}, icon: Icon(Icons.dark_mode_outlined)), //
-          SizedBox(width: 4), //
-          // DropdownButton<String>(
-          //   value: 'En',
-          //   items: ['En', 'Kh'].map((String value) {
-          //     return DropdownMenuItem<String>(value: value, child: Text(value));
-          //   }).toList(),
-          //   onChanged: (String? newValue) {},
-          // ),
-          // SizedBox(width: 10),
 
-          // Login Icon
-          // IconButton(
-          //   onPressed: () {}, //
-          //   icon: Icon(Icons.login_outlined),
-          // ),
+          SizedBox(width: 4),
 
           // User Avatar
           InkWell(
@@ -147,35 +126,29 @@ class _Panel_Top_State extends State<Panel_Top_> {
               );
             },
             child: Container(
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.blue, width: 2),
               ),
-              child: CircleAvatar(
-                radius: 16,
-                backgroundColor: Colors.white,
-                child: Text(username?.substring(0, 1).toUpperCase() ?? "X"), //
-              ),
+              child: build_avatar(),
             ),
           ),
 
-          // OutlinedButton.icon(
-          //   onPressed: () {
-          //     secure_storage.delete(key: 'access_token');
-          //     dio.options.headers.remove('Authorization');
-          //     username = null;
-          //     setState(() {});
-          //     Navigator.pushReplacement(
-          //       context, //
-          //       MaterialPageRoute(builder: (_) => Sign_In_()),
-          //     );
-          //   }, //
-          //   icon: Icon(Icons.logout, color: Colors.red), //
-          //   label: Text("Leave", style: TextStyle(color: Colors.red)), //
-          // ),
           SizedBox(width: 8), //
         ],
       ),
     );
+  }
+
+  Widget build_avatar() {
+    if (global.is_admin) return Text("A");
+    if (global.is_manager) return Text("M");
+    if (global.is_receptionist) return Text("R");
+    if (global.is_housekeeper) return Text("H");
+
+    return Text("X");
   }
 }

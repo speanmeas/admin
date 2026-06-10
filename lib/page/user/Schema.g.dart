@@ -1,31 +1,31 @@
 List<Map<String, dynamic>> schema = [
   {
     "key": "username",
-    "kind": "text",
+    "kind": "string",
     "title": "Username",
     "is_visible": 1
   },
   {
     "key": "password",
-    "kind": "text",
+    "kind": "string",
     "title": "Password",
     "is_visible": 1
   },
   {
     "key": "full_name",
-    "kind": "text",
+    "kind": "string",
     "title": "Full Name",
     "is_visible": 1
   },
   {
     "key": "phone_number",
-    "kind": "text",
+    "kind": "string",
     "title": "Phone Number",
     "is_visible": 1
   },
   {
     "key": "email",
-    "kind": "text",
+    "kind": "string",
     "title": "Email",
     "is_visible": 1
   },
@@ -48,14 +48,14 @@ List<Map<String, dynamic>> schema = [
     "is_visible": 1
   },
   {
-    "key": "is_housekeeper",
+    "key": "is_cleaner",
     "kind": "boolean",
-    "title": "Is Housekeeper",
+    "title": "Is Cleaner",
     "is_visible": 1
   },
   {
     "key": "note",
-    "kind": "text",
+    "kind": "string",
     "title": "Note",
     "is_visible": 1
   }

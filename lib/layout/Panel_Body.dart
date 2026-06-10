@@ -4,7 +4,13 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/Global.dart';
 
-import '__Setup__.dart';
+import 'package:speanmeas/page/front_desk/Main.dart' as front_desk;
+import 'package:speanmeas/page/guest/Main.dart' as guest;
+import 'package:speanmeas/page/room/Main.dart' as room;
+import 'package:speanmeas/page/user/Main.dart' as user;
+import 'package:speanmeas/page/check_in/Main.dart' as check_in;
+import 'package:speanmeas/page/template/Main.dart' as template;
+import 'package:speanmeas/page/setting/Main.dart' as setting;
 
 void main() {
   runApp(
@@ -38,20 +44,37 @@ class Panel_Body_ extends StatefulWidget {
 
 class _Panel_Body_State extends State<Panel_Body_> {
   //
-  String body = "Dashboard";
+
+  Global global = Global();
 
   @override
   Widget build(BuildContext context) {
-    final v = context.watch<Global>();
+    global = context.watch<Global>();
 
-    // validate body
-    if (pages.containsKey(v.body)) {
-      body = v.body;
+    if (global.body == "Front Desk") {
+      return front_desk.Main_();
     }
 
-    return IndexedStack(
-      index: pages.keys.toList().indexOf(body), //
-      children: pages.values.toList(), //
-    );
+    if (global.body == "Room") {
+      return room.Main_();
+    }
+
+    if (global.body == "Guest") {
+      return guest.Main_();
+    }
+
+    if (global.body == "User") {
+      return user.Main_();
+    }
+
+    if (global.body == "User") {
+      return user.Main_();
+    }
+
+    if (global.body == "Template") {
+      return template.Main_();
+    }
+
+    return const SizedBox();
   }
 }

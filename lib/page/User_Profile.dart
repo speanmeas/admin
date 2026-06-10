@@ -114,10 +114,13 @@ class _User_Profile_State extends State<User_Profile_> {
         });
   }
 
+  double screen_height = 0;
+  Global global = Global();
+
   @override
   Widget build(BuildContext context) {
-    final screen_height = MediaQuery.of(context).size.height;
-
+    screen_height = MediaQuery.of(context).size.height;
+    global = context.read<Global>();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -169,6 +172,39 @@ class _User_Profile_State extends State<User_Profile_> {
               //     ),
               //   ],
               // ),
+
+              // Position
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Position: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+
+                    if (global.is_admin)
+                      Text(
+                        "Administrator", //
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+                      ),
+                    if (global.is_manager)
+                      Text(
+                        "Manager", //
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+                      ),
+                    if (global.is_receptionist)
+                      Text(
+                        "Receptionist", //
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+                      ),
+                    if (global.is_housekeeper)
+                      Text(
+                        "Housekeeper", //
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+                      ),
+                  ],
+                ),
+              ),
 
               // textfield full name
               Container(
@@ -388,12 +424,12 @@ class _User_Profile_State extends State<User_Profile_> {
     // remove access token from secure storage and dio header
     await secure_storage.delete(key: 'access_token');
     dio.options.headers.remove('Authorization');
-    snackbar_show(
-      context: context, //
-      message: "Signed out successfully",
-      color: Colors.green,
-    );
 
+    snackbar_show(context: context, message: "Signed out successfully", color: Colors.green);
+
+    global.clear();
+
+    Navigator.pop(context);
     Navigator.pop(context);
 
     // navigate to sign in page

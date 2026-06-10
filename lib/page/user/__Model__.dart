@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
 
-class Model_Setup extends ChangeNotifier {
+class Model extends ChangeNotifier {
   //
-  static String? id;
-  static String? username;
-  static String? password;
-  static String? full_name;
-  static String? phone_number;
-  static String? email;
+  String? id;
+
+  String? username;
+  String? password;
+  String? full_name;
+
+  String? phone_number;
 
   //
-  static String? is_admin;
-  static String? is_manager;
-  static String? is_cashier;
-
-  //
-  // static bool? is_admin;
-  // static bool? is_manager;
-  // static bool? is_cashier;
-
-  //
-  static String? note;
+  bool? is_admin;
+  bool? is_manager;
+  bool? is_cashier;
+  bool? is_housekeeper;
 
   //
 }

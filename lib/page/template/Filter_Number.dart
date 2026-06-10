@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:speanmeas/Global.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
@@ -9,33 +11,40 @@ import '__Setup__.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Filter_String());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global(), //
+      child: Main(),
+    ),
+  );
 }
 
-class Filter_String extends StatelessWidget {
-  Filter_String({super.key});
+class Main extends StatelessWidget {
+  Main({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Filter_String_(),
+      home: Filter_Number_(),
     );
   }
 }
 
-class Filter_String_ extends StatefulWidget {
-  Filter_String_({
-    super.key, //
-  });
+class Filter_Number_ extends StatefulWidget {
+  Filter_Number_({super.key});
 
   @override
-  State<Filter_String_> createState() => _Filter_String_State();
+  State<Filter_Number_> createState() => _Filter_Number_State();
 }
 
-class _Filter_String_State extends State<Filter_String_> {
-  TextEditingController controller_search = TextEditingController();
+class _Filter_Number_State extends State<Filter_Number_> {
+  double? select_min;
+  double? select_max;
+
+  TextEditingController controller_min = TextEditingController();
+  TextEditingController controller_max = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -78,14 +87,30 @@ class _Filter_String_State extends State<Filter_String_> {
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: controller_search,
-                      autofocus: true,
+                      controller: controller_min,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: "Filter", //
+                        labelText: "Min", //
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        // suffixIcon: Icon(Icons.arrow_downward),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(width: 4),
+
+                  Icon(Icons.arrow_right_alt_outlined),
+
+                  SizedBox(width: 4),
+
+                  Expanded(
+                    child: TextField(
+                      controller: controller_max,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: "Max", //
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {},
-                      onSubmitted: (_) => on_apply_filter(),
                     ),
                   ),
                 ],
@@ -106,8 +131,6 @@ class _Filter_String_State extends State<Filter_String_> {
                   ),
                 ],
               ),
-
-              SizedBox(height: 8),
             ],
           ),
         ),
@@ -116,17 +139,33 @@ class _Filter_String_State extends State<Filter_String_> {
   }
 
   void on_apply_filter() {
-    // validate
-    if (controller_search.text.isEmpty) {
+    select_min = double.parse(controller_min.text);
+    select_max = double.parse(controller_max.text);
+
+    // check if min and max are valid numbers
+    if (select_min == null || select_max == null) {
       snackbar_show(
         context: context, //
-        message: "Please enter a filter",
+        message: "Please enter valid numbers",
         color: Colors.red,
       );
       return;
     }
 
-    Navigator.pop(context, controller_search.text);
+    // validate min and max
+    if (select_min! > select_max!) {
+      snackbar_show(
+        context: context, //
+        message: "Min must be less or equal to max",
+        color: Colors.red,
+      );
+      return;
+    }
+
+    Navigator.pop(context, {
+      "min": select_min, //
+      "max": select_max,
+    });
 
     snackbar_show(
       context: context, //

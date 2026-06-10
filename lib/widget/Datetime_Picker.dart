@@ -8,11 +8,14 @@ void main() {
   );
 }
 
-Future<DateTime?> datetime_picker(BuildContext context) async {
+Future<DateTime?> datetime_picker(
+  BuildContext context, { //
+  DateTime? initial_datetime,
+}) async {
   // Select Date
   final DateTime? picked_date = await showDatePicker(
     context: context, //
-    initialDate: DateTime.now(),
+    initialDate: initial_datetime ?? DateTime.now(),
     firstDate: DateTime(2000),
     lastDate: DateTime(2100),
   );

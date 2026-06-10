@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:speanmeas/Global.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
@@ -7,11 +9,16 @@ import '__Setup__.dart';
 import 'Schema.g.dart';
 
 void main() {
-  runApp(Filter_Visibility());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global(), //
+      child: Main(),
+    ),
+  );
 }
 
-class Filter_Visibility extends StatelessWidget {
-  Filter_Visibility({super.key});
+class Main extends StatelessWidget {
+  Main({super.key});
 
   List<Map<String, dynamic>> _schema = schema;
 
@@ -84,13 +91,14 @@ class _Filter_Visibility_State extends State<Filter_Visibility_> {
           // padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
           child: ListView(
             children: [
+              //
               ReorderableListView.builder(
                 buildDefaultDragHandles: false,
                 padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 shrinkWrap: true,
                 itemCount: _visibleIndices.length,
                 onReorder: (int old_i, int new_i) {
-                  print("Reorder: $old_i -> $new_i");
+                  // print("Reorder: $old_i -> $new_i");
                   setState(() {
                     final visibleIndices = _visibleIndices;
                     final oldIndex = visibleIndices[old_i];
@@ -116,7 +124,7 @@ class _Filter_Visibility_State extends State<Filter_Visibility_> {
                     key: ValueKey(outputIndex),
                     //
                     onTap: () {
-                      print("Tapped: ${output[outputIndex]['title']}");
+                      // print("Tapped: ${output[outputIndex]['title']}");
                       setState(() {
                         output[outputIndex]["is_visible"] = (output[outputIndex]["is_visible"] + 1) % 2;
                       });
