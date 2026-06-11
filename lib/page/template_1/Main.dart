@@ -244,12 +244,44 @@ class _Main_State extends State<Main_> {
             ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          print("Add");
-        },
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Column(
+            children: [
+              Spacer(),
+
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 0, 20, 16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.blue, width: 2),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.add, fontWeight: FontWeight.bold),
+                  onPressed: () {
+                    print("Add");
+                    snackbar_show(context: context, message: "Test", color: Colors.green);
+                  },
+                ),
+              ),
+            ], //
+          ),
+
+          SizedBox(width: 4),
+        ],
       ),
+
+      // floatingActionButton: FloatingActionButton(
+      //   elevation: 10,
+      //   child: Icon(Icons.add, size: 32),
+      //   onPressed: () {
+      //     print("Add");
+      //     snackbar_show(context: context, message: "Test", color: Colors.green);
+      //   },
+      // ),
     );
   }
 }
@@ -266,6 +298,7 @@ build_plutocolumn({
     field: field,
     type: type,
     width: 160,
+    minWidth: 100,
     readOnly: true,
     enableFilterMenuItem: false,
     enableSorting: false,
@@ -277,7 +310,7 @@ build_plutocolumn({
             child: Icon(Icons.filter_alt_outlined, size: 20, color: Colors.blue),
           ),
 
-          SizedBox(width: 4),
+          SizedBox(width: 8),
 
           Expanded(
             child: InkWell(
@@ -290,7 +323,7 @@ build_plutocolumn({
             ),
           ),
 
-          SizedBox(width: 16),
+          SizedBox(width: 20),
         ],
       ),
     ),

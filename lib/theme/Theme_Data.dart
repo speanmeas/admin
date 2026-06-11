@@ -103,8 +103,8 @@ ThemeData Theme_Data() {
       focusElevation: 0,
       hoverElevation: 0,
       disabledElevation: 0,
-      backgroundColor: Colors.transparent,
-      foregroundColor: Colors.blue,
+      backgroundColor: Colors.blue,
+      foregroundColor: Colors.white,
       shape: OutlineInputBorder(
         borderSide: BorderSide(color: Colors.blue), //
         borderRadius: BorderRadius.circular(0), //

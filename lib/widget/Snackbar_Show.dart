@@ -9,7 +9,8 @@ void snackbar_show({
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
-        duration: const Duration(seconds: 1),
+        margin: EdgeInsets.fromLTRB(8, 8, 80, 24),
+        // duration: const Duration(seconds: 1),
         content: Row(
           children: [
             Icon(Icons.info_outline, color: Colors.white),
@@ -18,6 +19,7 @@ void snackbar_show({
           ],
         ),
         backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
       ),
     );
 }
