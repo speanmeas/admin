@@ -45,8 +45,6 @@ class _Panel_Top_State extends State<Panel_Top_> {
   void initState() {
     super.initState();
 
-    print('Global username: ${global.username}');
-
     init();
   }
 
@@ -119,12 +117,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
 
           // User Avatar
           InkWell(
-            onTap: () {
-              Navigator.push(
-                context, //
-                MaterialPageRoute(builder: (_) => User_Profile_()),
-              );
-            },
+            customBorder: const CircleBorder(),
             child: Container(
               width: 40,
               height: 40,
@@ -135,6 +128,12 @@ class _Panel_Top_State extends State<Panel_Top_> {
               ),
               child: build_avatar(),
             ),
+            onTap: () {
+              Navigator.push(
+                context, //
+                MaterialPageRoute(builder: (_) => User_Profile_()),
+              );
+            },
           ),
 
           SizedBox(width: 8), //
@@ -144,11 +143,11 @@ class _Panel_Top_State extends State<Panel_Top_> {
   }
 
   Widget build_avatar() {
-    if (global.is_admin) return Text("A");
-    if (global.is_manager) return Text("M");
-    if (global.is_receptionist) return Text("R");
-    if (global.is_housekeeper) return Text("H");
+    if (global.is_admin) return Text("A", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+    if (global.is_manager) return Text("M", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+    if (global.is_receptionist) return Text("R", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+    if (global.is_housekeeper) return Text("H", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
 
-    return Text("X");
+    return Text("X", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
   }
 }

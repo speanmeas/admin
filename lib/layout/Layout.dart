@@ -63,27 +63,23 @@ class _Layout_State extends State<Layout_> {
               children: [
                 // panel left
                 if (!is_mobile)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-                    child: Container(
-                      width: 300,
-                      decoration: BoxDecoration(border: Border(right: BorderSide())), //
-                      // color: Colors.grey[50],
-                      child: Panel_Left_(), //
-                    ),
+                  Container(
+                    // margin: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                    width: 300,
+                    decoration: BoxDecoration(border: Border(right: BorderSide())), //
+                    child: Panel_Left_(), //
+                    // color: Colors.grey[50],
                   ),
 
                 // panel body
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-                    child: Container(
-                      width: double.infinity,
-                      height: double.infinity,
-                      // decoration: BoxDecoration(border: Border.all()),
-                      color: Colors.white,
-                      child: Panel_Body_(), //
-                    ),
+                  child: Container(
+                    // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    width: double.infinity,
+                    height: double.infinity,
+                    // decoration: BoxDecoration(border: Border.all()),
+                    color: Colors.white,
+                    child: Panel_Body_(), //
                   ),
                 ),
               ],
