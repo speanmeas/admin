@@ -207,6 +207,19 @@ class _Panel_Left_State extends State<Panel_Left_> {
               if (is_mobile) Navigator.pop(context);
             }, //
           ),
+
+        // Template
+        ListTile(
+          leading: Icon(Icons.model_training_outlined),
+          title: Text("Template 1"),
+          selected: global.body == "Template 1",
+          selectedColor: Colors.blue,
+          onTap: () {
+            global.body = "Template 1";
+            global.notifyListeners();
+            if (is_mobile) Navigator.pop(context);
+          }, //
+        ),
       ],
     );
   }

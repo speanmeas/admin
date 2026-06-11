@@ -99,9 +99,16 @@ ThemeData Theme_Data() {
 
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       elevation: 0,
+      highlightElevation: 0,
+      focusElevation: 0,
+      hoverElevation: 0,
+      disabledElevation: 0,
       backgroundColor: Colors.transparent,
       foregroundColor: Colors.blue,
-      shape: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+      shape: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.blue), //
+        borderRadius: BorderRadius.circular(0), //
+      ),
       sizeConstraints: const BoxConstraints.tightFor(width: 40, height: 40),
     ),
 

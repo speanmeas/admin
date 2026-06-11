@@ -9,8 +9,10 @@ import 'package:speanmeas/page/guest/Main.dart' as guest;
 import 'package:speanmeas/page/room/Main.dart' as room;
 import 'package:speanmeas/page/user/Main.dart' as user;
 import 'package:speanmeas/page/check_in/Main.dart' as check_in;
-import 'package:speanmeas/page/template/Main.dart' as template;
 import 'package:speanmeas/page/setting/Main.dart' as setting;
+
+import 'package:speanmeas/page/template/Main.dart' as template;
+import 'package:speanmeas/page/template_1/Main.dart' as template_1;
 
 void main() {
   runApp(
@@ -73,6 +75,10 @@ class _Panel_Body_State extends State<Panel_Body_> {
 
     if (global.body == "Template") {
       return template.Main_();
+    }
+
+    if (global.body == "Template 1") {
+      return template_1.Main_();
     }
 
     return const SizedBox();
