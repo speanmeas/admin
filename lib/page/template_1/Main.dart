@@ -254,7 +254,7 @@ class _Main_State extends State<Main_> {
               Spacer(),
 
               Container(
-                margin: EdgeInsets.fromLTRB(0, 0, 20, 16),
+                margin: EdgeInsets.fromLTRB(0, 0, 20, 12),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.blue, width: 2),
                   borderRadius: BorderRadius.circular(4),
