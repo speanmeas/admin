@@ -50,22 +50,49 @@ class _Main_State extends State<Main_> {
 
   bool isLoading = false;
 
-  late List<PlutoRow> rows;
+  List<PlutoColumn> columns = [];
+  List<PlutoRow> rows = [];
+
+  List<Map<String, dynamic>> schema = [
+    {"name": "boolean_1", "title": "Logic 1", "type": "boolean"}, //
+    {"name": "boolean_2", "title": "Logic 2", "type": "boolean"},
+    {"name": "text_1", "title": "Text 1", "type": "string"}, //
+    {"name": "text_2", "title": "Text 2", "type": "string"},
+    {"name": "number_1", "title": "Number 1", "type": "number"},
+    {"name": "number_2", "title": "Number 2", "type": "number"},
+    {"name": "datetime_1", "title": "Datetime 1", "type": "date-time"},
+    {"name": "datetime_2", "title": "Datetime 2", "type": "date-time"},
+  ];
 
   @override
   void initState() {
     super.initState();
 
+    columns = [
+      ...schema.map((row) {
+        return build_plutocolumn(
+          title: row['title']!,
+          field: row['name']!,
+          type: row['type'] == 'number' ? PlutoColumnType.number() : PlutoColumnType.text(),
+          on_filter: () {
+            print("Filter ${row['name']}");
+          },
+        );
+      }),
+    ];
+
     rows = [
       for (int i = 0; i < 10000; i++)
         PlutoRow(
           cells: {
-            'room': PlutoCell(value: '$i'),
-            'guest': PlutoCell(value: 'John'),
-            'check_in': PlutoCell(value: '2026-06-10 12:34:56'), //
-            'check_out': PlutoCell(value: '2026-06-10 12:34:56'),
-            'status': PlutoCell(value: 'Occupied'),
-            'payment': PlutoCell(value: i * 100),
+            'boolean_1': PlutoCell(value: 'Yes'),
+            'boolean_2': PlutoCell(value: 'No'),
+            'text_1': PlutoCell(value: 'Text 1 - $i'),
+            'text_2': PlutoCell(value: 'Text 2 - $i'),
+            'number_1': PlutoCell(value: i * 10),
+            'number_2': PlutoCell(value: i * 20),
+            'datetime_1': PlutoCell(value: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now().add(Duration(days: i)))),
+            'datetime_2': PlutoCell(value: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now().add(Duration(days: i * 2)))),
           },
         ),
     ];
@@ -85,80 +112,65 @@ class _Main_State extends State<Main_> {
           ),
           Expanded(
             child: PlutoGrid(
-              columns: [
-                build_plutocolumn(
-                  title: 'Room',
-                  field: 'room',
-                  type: PlutoColumnType.text(), //
-                  on_filter: () {
-                    print("Filter room");
-                  },
-                  on_sort: () {
-                    print("Sort room");
-                  },
-                ),
+              columns: columns, //
+              // [
+              //   build_plutocolumn(
+              //     title: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+              //     field: 'room',
+              //     type: PlutoColumnType.number(),
+              //     on_filter: () {
+              //       print("Filter room");
+              //     },
+              //   ),
 
-                build_plutocolumn(
-                  title: 'Guest',
-                  field: 'guest',
-                  type: PlutoColumnType.text(), //
-                  on_filter: () {
-                    print("Filter guest");
-                  },
-                  on_sort: () {
-                    print("Sort guest");
-                  },
-                ),
+              //   build_plutocolumn(
+              //     title: 'Guest',
+              //     field: 'guest',
+              //     type: PlutoColumnType.text(),
+              //     on_filter: () {
+              //       print("Filter guest");
+              //     },
+              //   ),
 
-                build_plutocolumn(
-                  title: 'Check In',
-                  field: 'check_in',
-                  type: PlutoColumnType.text(), //
-                  on_filter: () {
-                    print("Filter check_in");
-                  },
-                  on_sort: () {
-                    print("Sort check_in");
-                  },
-                ),
+              //   build_plutocolumn(
+              //     title: 'Check In',
+              //     field: 'check_in',
+              //     type: PlutoColumnType.text(),
+              //     on_filter: () {
+              //       print("Filter check_in");
+              //     },
+              //   ),
 
-                build_plutocolumn(
-                  title: 'Check Out',
-                  field: 'check_out',
-                  type: PlutoColumnType.text(), //
-                  on_filter: () {
-                    print("Filter check_out");
-                  },
-                  on_sort: () {
-                    print("Sort check_out");
-                  },
-                ),
+              //   build_plutocolumn(
+              //     title: 'Check Out',
+              //     field: 'check_out',
+              //     type: PlutoColumnType.text(),
+              //     on_filter: () {
+              //       print("Filter check_out");
+              //     },
+              //   ),
 
-                build_plutocolumn(
-                  title: 'Status',
-                  field: 'status',
-                  type: PlutoColumnType.text(), //
-                  on_filter: () {
-                    print("Filter status");
-                  },
-                  on_sort: () {
-                    print("Sort status");
-                  },
-                ),
+              //   build_plutocolumn(
+              //     title: 'Status',
+              //     field: 'status',
+              //     type: PlutoColumnType.text(),
+              //     on_filter: () {
+              //       print("Filter status");
+              //     },
+              //   ),
 
-                build_plutocolumn(
-                  title: 'Payment',
-                  field: 'payment',
-                  type: PlutoColumnType.number(), //
-                  on_filter: () {
-                    print("Filter payment");
-                  },
-                  on_sort: () {
-                    print("Sort payment");
-                  },
-                ),
-              ],
+              //   build_plutocolumn(
+              //     title: 'Payment',
+              //     field: 'payment',
+              //     type: PlutoColumnType.number(),
+              //     on_filter: () {
+              //       print("Filter payment");
+              //     },
+              //   ),
+              // ],
+              //
               rows: rows,
+              //
               configuration: PlutoGridConfiguration(
                 scrollbar: PlutoGridScrollbarConfig(
                   scrollbarThickness: 12, //
@@ -273,25 +285,15 @@ class _Main_State extends State<Main_> {
           SizedBox(width: 4),
         ],
       ),
-
-      // floatingActionButton: FloatingActionButton(
-      //   elevation: 10,
-      //   child: Icon(Icons.add, size: 32),
-      //   onPressed: () {
-      //     print("Add");
-      //     snackbar_show(context: context, message: "Test", color: Colors.green);
-      //   },
-      // ),
     );
   }
 }
 
 build_plutocolumn({
   required String title, //
-  required String field, //
+  required String field,
   required PlutoColumnType type,
   required VoidCallback on_filter,
-  required VoidCallback on_sort,
 }) {
   return PlutoColumn(
     title: title,
@@ -301,7 +303,6 @@ build_plutocolumn({
     minWidth: 100,
     readOnly: true,
     enableFilterMenuItem: false,
-    enableSorting: false,
     titleSpan: WidgetSpan(
       child: Row(
         children: [
@@ -310,16 +311,13 @@ build_plutocolumn({
             child: Icon(Icons.filter_alt_outlined, size: 20, color: Colors.blue),
           ),
 
-          SizedBox(width: 8),
+          SizedBox(width: 4),
 
           Expanded(
-            child: InkWell(
-              onTap: on_sort,
-              child: Text(
-                title,
-                style: TextStyle(fontWeight: FontWeight.bold),
-                overflow: TextOverflow.ellipsis,
-              ), //
+            child: Text(
+              title,
+              style: TextStyle(fontWeight: FontWeight.bold),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
 
