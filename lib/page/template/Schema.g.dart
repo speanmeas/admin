@@ -1,15 +1,80 @@
 List<Map<String, dynamic>> schema = [
-  {"key": "text_1", "kind": "string", "title": "Text 1", "is_visible": 1},
-  {"key": "text_2", "kind": "string", "title": "Text 2", "is_visible": 1},
-  {"key": "text_3", "kind": "string", "title": "Text 3", "is_visible": 1},
-  {"key": "number_1", "kind": "number", "title": "Number 1", "is_visible": 1},
-  {"key": "number_2", "kind": "number", "title": "Number 2", "is_visible": 1},
-  {"key": "number_3", "kind": "number", "title": "Number 3", "is_visible": 1},
-  {"key": "datetime_1", "kind": "date-time", "title": "Datetime 1", "is_visible": 1},
-  {"key": "datetime_2", "kind": "date-time", "title": "Datetime 2", "is_visible": 1},
-  {"key": "datetime_3", "kind": "date-time", "title": "Datetime 3", "is_visible": 1},
-  {"key": "is_admin", "kind": "boolean", "title": "Is Admin", "is_visible": 1},
-  {"key": "is_user", "kind": "boolean", "title": "Is User", "is_visible": 1},
-  {"key": "is_guest", "kind": "boolean", "title": "Is Guest", "is_visible": 1},
-  {"key": "note", "kind": "string", "title": "Note", "is_visible": 1},
+  {
+    "key": "text_1",
+    "kind": "string",
+    "title": "Text 1",
+    "is_visible": 1
+  },
+  {
+    "key": "text_2",
+    "kind": "string",
+    "title": "Text 2",
+    "is_visible": 1
+  },
+  {
+    "key": "text_3",
+    "kind": "string",
+    "title": "Text 3",
+    "is_visible": 1
+  },
+  {
+    "key": "number_1",
+    "kind": "number",
+    "title": "Number 1",
+    "is_visible": 1
+  },
+  {
+    "key": "number_2",
+    "kind": "number",
+    "title": "Number 2",
+    "is_visible": 1
+  },
+  {
+    "key": "number_3",
+    "kind": "number",
+    "title": "Number 3",
+    "is_visible": 1
+  },
+  {
+    "key": "datetime_1",
+    "kind": "date-time",
+    "title": "Datetime 1",
+    "is_visible": 1
+  },
+  {
+    "key": "datetime_2",
+    "kind": "date-time",
+    "title": "Datetime 2",
+    "is_visible": 1
+  },
+  {
+    "key": "datetime_3",
+    "kind": "date-time",
+    "title": "Datetime 3",
+    "is_visible": 1
+  },
+  {
+    "key": "is_admin",
+    "kind": "boolean",
+    "title": "Is Admin",
+    "is_visible": 1
+  },
+  {
+    "key": "is_user",
+    "kind": "boolean",
+    "title": "Is User",
+    "is_visible": 1
+  },
+  {
+    "key": "is_guest",
+    "kind": "boolean",
+    "title": "Is Guest",
+    "is_visible": 1
+  },
+  {
+    "key": "note",
+    "kind": "string",
+    "title": "Note",
+    "is_visible": 1
+  }
 ];

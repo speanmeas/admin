@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pluto_grid/pluto_grid.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pluto_grid/pluto_grid.dart';
 
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
@@ -12,6 +12,14 @@ import 'package:speanmeas/layout/Layout.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
+
+import 'Filter_String.dart';
+import 'Filter_Number.dart';
+import 'Filter_Boolean.dart';
+import 'Filter_Datetime.dart';
+
+import '__Setup__.dart';
+import 'Schema.g.dart';
 
 void main() {
   runApp(
@@ -46,56 +54,27 @@ class Main_ extends StatefulWidget {
 class _Main_State extends State<Main_> {
   //
 
-  PlutoGridStateManager? stateManager;
+  late PlutoGridStateManager state_manager;
 
-  bool isLoading = false;
+  bool is_loading = false;
+  //   bool has_more = false;
 
-  List<PlutoColumn> columns = [];
-  List<PlutoRow> rows = [];
+  String? key;
+  bool? has;
+  String? query;
+  double? min;
+  double? max;
+  String? start;
+  String? end;
+  String? order;
+  int? limit = 1000;
 
-  List<Map<String, dynamic>> schema = [
-    {"name": "boolean_1", "title": "Logic 1", "type": "boolean"}, //
-    {"name": "boolean_2", "title": "Logic 2", "type": "boolean"},
-    {"name": "text_1", "title": "Text 1", "type": "string"}, //
-    {"name": "text_2", "title": "Text 2", "type": "string"},
-    {"name": "number_1", "title": "Number 1", "type": "number"},
-    {"name": "number_2", "title": "Number 2", "type": "number"},
-    {"name": "datetime_1", "title": "Datetime 1", "type": "date-time"},
-    {"name": "datetime_2", "title": "Datetime 2", "type": "date-time"},
-  ];
+  int counter = 0;
 
   @override
   void initState() {
     super.initState();
-
-    columns = [
-      ...schema.map((row) {
-        return build_plutocolumn(
-          title: row['title']!,
-          field: row['name']!,
-          type: row['type'] == 'number' ? PlutoColumnType.number() : PlutoColumnType.text(),
-          on_filter: () {
-            print("Filter ${row['name']}");
-          },
-        );
-      }),
-    ];
-
-    rows = [
-      for (int i = 0; i < 10000; i++)
-        PlutoRow(
-          cells: {
-            'boolean_1': PlutoCell(value: 'Yes'),
-            'boolean_2': PlutoCell(value: 'No'),
-            'text_1': PlutoCell(value: 'Text 1 - $i'),
-            'text_2': PlutoCell(value: 'Text 2 - $i'),
-            'number_1': PlutoCell(value: i * 10),
-            'number_2': PlutoCell(value: i * 20),
-            'datetime_1': PlutoCell(value: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now().add(Duration(days: i)))),
-            'datetime_2': PlutoCell(value: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now().add(Duration(days: i * 2)))),
-          },
-        ),
-    ];
+    init();
   }
 
   @override
@@ -112,64 +91,42 @@ class _Main_State extends State<Main_> {
           ),
           Expanded(
             child: PlutoGrid(
-              columns: columns, //
-              // [
-              //   build_plutocolumn(
-              //     title: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-              //     field: 'room',
-              //     type: PlutoColumnType.number(),
-              //     on_filter: () {
-              //       print("Filter room");
-              //     },
-              //   ),
+              columns: [
+                ...schema.map((row) {
+                  return build_plutocolumn(
+                    field: row['key']!,
+                    title: row['title']!,
+                    type: row['type'],
+                    on_filter: () {
+                      print("Filter ${row['key']}");
 
-              //   build_plutocolumn(
-              //     title: 'Guest',
-              //     field: 'guest',
-              //     type: PlutoColumnType.text(),
-              //     on_filter: () {
-              //       print("Filter guest");
-              //     },
-              //   ),
-
-              //   build_plutocolumn(
-              //     title: 'Check In',
-              //     field: 'check_in',
-              //     type: PlutoColumnType.text(),
-              //     on_filter: () {
-              //       print("Filter check_in");
-              //     },
-              //   ),
-
-              //   build_plutocolumn(
-              //     title: 'Check Out',
-              //     field: 'check_out',
-              //     type: PlutoColumnType.text(),
-              //     on_filter: () {
-              //       print("Filter check_out");
-              //     },
-              //   ),
-
-              //   build_plutocolumn(
-              //     title: 'Status',
-              //     field: 'status',
-              //     type: PlutoColumnType.text(),
-              //     on_filter: () {
-              //       print("Filter status");
-              //     },
-              //   ),
-
-              //   build_plutocolumn(
-              //     title: 'Payment',
-              //     field: 'payment',
-              //     type: PlutoColumnType.number(),
-              //     on_filter: () {
-              //       print("Filter payment");
-              //     },
-              //   ),
-              // ],
+                      if (row['type'] == 'string') {
+                        Navigator.push(
+                          context, //
+                          MaterialPageRoute(builder: (context) => Filter_String_()),
+                        );
+                      } else if (row['type'] == 'number') {
+                        Navigator.push(
+                          context, //
+                          MaterialPageRoute(builder: (context) => Filter_Number_()),
+                        );
+                      } else if (row['type'] == 'date-time') {
+                        Navigator.push(
+                          context, //
+                          MaterialPageRoute(builder: (context) => Filter_Datetime_()),
+                        );
+                      } else if (row['type'] == 'boolean') {
+                        Navigator.push(
+                          context, //
+                          MaterialPageRoute(builder: (context) => Filter_Boolean_()),
+                        );
+                      }
+                    },
+                  );
+                }),
+              ], //
               //
-              rows: rows,
+              rows: [],
               //
               configuration: PlutoGridConfiguration(
                 scrollbar: PlutoGridScrollbarConfig(
@@ -178,55 +135,69 @@ class _Main_State extends State<Main_> {
                   isAlwaysShown: true,
                 ),
                 style: PlutoGridStyleConfig(
-                  rowHeight: 24, //
+                  rowHeight: 28, //
                   columnHeight: 32,
                 ),
               ),
+              onChanged: (PlutoGridOnChangedEvent event) {
+                state_manager.notifyListeners();
+              },
               onLoaded: (event) {
-                stateManager = event.stateManager;
+                state_manager = event.stateManager;
 
-                stateManager!.scroll.bodyRowsVertical!.addListener(() {
-                  final position = stateManager!.scroll.bodyRowsVertical!.position;
+                state_manager.scroll.bodyRowsVertical!.addListener(() {
+                  final position = state_manager.scroll.bodyRowsVertical!.position;
 
-                  if (position.pixels >= position.maxScrollExtent) {
-                    print('Reached bottom');
-                    isLoading = true;
-                    setState(() {});
+                  if (!is_loading) {
+                    if (position.pixels >= position.maxScrollExtent) {
+                      print('Reached bottom');
+                      is_loading = true;
+                      on_load_more();
+                      setState(() {});
+                    }
                   }
                 });
               },
-              onRowDoubleTap: (event) {
-                print("Row double tapped: ${event.row.cells['room']!.value}");
 
+              onRowDoubleTap: (event) {
                 // show options: view, edit, delete
                 showModalBottomSheet(
                   context: context,
                   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
                   builder: (context) {
+                    int row_number = event.rowIdx;
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         ListTile(
-                          leading: Icon(Icons.visibility_outlined),
-                          title: Text("View"),
+                          leading: Icon(Icons.add_circle_outline),
+                          title: Text("Create"),
                           onTap: () {
-                            print("View room ${event.row.cells['room']!.value}");
+                            print("Create row $row_number");
+                            Navigator.pop(context);
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.visibility_outlined),
+                          title: Text("Read"),
+                          onTap: () {
+                            print("Read row $row_number");
                             Navigator.pop(context);
                           },
                         ),
                         ListTile(
                           leading: Icon(Icons.edit_outlined),
-                          title: Text("Edit"),
+                          title: Text("Update"),
                           onTap: () {
-                            print("Edit room ${event.row.cells['room']!.value}");
+                            print("Update row $row_number");
                             Navigator.pop(context);
                           },
                         ),
                         ListTile(
-                          leading: Icon(Icons.delete_outline),
-                          title: Text("Delete"),
+                          leading: Icon(Icons.delete_outline, color: Colors.red),
+                          title: Text("Delete", style: TextStyle(color: Colors.red)),
                           onTap: () {
-                            print("Delete room ${event.row.cells['room']!.value}");
+                            print("Delete row $row_number");
                             Navigator.pop(context);
                           },
                         ),
@@ -238,7 +209,7 @@ class _Main_State extends State<Main_> {
             ),
           ),
 
-          if (isLoading)
+          if (is_loading)
             Container(
               height: 32,
               child: Row(
@@ -256,74 +227,134 @@ class _Main_State extends State<Main_> {
             ),
         ],
       ),
+    );
+  }
 
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Column(
-            children: [
-              Spacer(),
+  void init() async {
+    await dio
+        .post(
+          '$PATH/data_read',
+          data: FormData.fromMap({
+            "limit": 100, //
+          }),
+        ) //
+        .then((r) {
+          final data = List<Map<String, dynamic>>.from(r.data);
 
-              Container(
-                margin: EdgeInsets.fromLTRB(0, 0, 20, 12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue, width: 2),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: IconButton(
-                  icon: Icon(Icons.add, fontWeight: FontWeight.bold),
-                  onPressed: () {
-                    print("Add");
-                    snackbar_show(context: context, message: "Test", color: Colors.green);
-                  },
-                ),
+          state_manager.removeAllRows();
+
+          state_manager.appendRows([
+            for (var d in data)
+              PlutoRow(
+                cells: {
+                  for (var s in schema)
+                    if (s['type'] == 'date-time') //
+                      s['key']!: PlutoCell(value: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(d[s['key']].toString()).toLocal()))
+                    else
+                      s['key']!: PlutoCell(value: d[s['key']].toString()),
+                },
               ),
-            ], //
-          ),
+          ]);
 
-          SizedBox(width: 4),
-        ],
+          setState(() {});
+        })
+        .catchError((e) {});
+
+    // print length of state_manager.rows
+    print(state_manager.rows.length);
+  }
+
+  void on_load_more() async {
+    await dio
+        .post(
+          '$PATH/data_read',
+          data: FormData.fromMap({
+            "limit": 100, //
+            "offset": state_manager.rows.length, //
+          }),
+        ) //
+        .then((r) {
+          final data = List<Map<String, dynamic>>.from(r.data);
+
+          state_manager.appendRows([
+            for (var d in data)
+              PlutoRow(
+                cells: {
+                  for (var s in schema)
+                    if (s['type'] == 'date-time') //
+                      s['key']!: PlutoCell(value: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(d[s['key']].toString()).toLocal()))
+                    else
+                      s['key']!: PlutoCell(value: d[s['key']].toString()),
+                },
+              ),
+          ]);
+
+          is_loading = false;
+
+          setState(() {});
+        })
+        .catchError((e) {});
+  }
+
+  build_plutocolumn({
+    required String title, //
+    required String field,
+    required String type,
+    required VoidCallback on_filter,
+  }) {
+    //
+    PlutoColumnType column_type = PlutoColumnType.text();
+    //
+    if (type == 'number') {
+      column_type = PlutoColumnType.number();
+    }
+    //
+    return PlutoColumn(
+      title: title,
+      field: field,
+      type: column_type,
+      width: 160,
+      minWidth: 100,
+      readOnly: true,
+      enableFilterMenuItem: false,
+      titleSpan: WidgetSpan(
+        child: Row(
+          children: [
+            if (type == "number")
+              InkWell(
+                onTap: on_filter,
+                child: Icon(Icons.tune, size: 20, color: Colors.blue),
+              )
+            else if (type == "boolean")
+              InkWell(
+                onTap: on_filter,
+                child: Icon(Icons.toggle_on_outlined, size: 20, color: Colors.blue),
+              )
+            else if (type == "date-time")
+              InkWell(
+                onTap: on_filter,
+                child: Icon(Icons.date_range, size: 20, color: Colors.blue),
+              )
+            else
+              InkWell(
+                onTap: on_filter,
+                child: Icon(Icons.filter_alt_outlined, size: 20, color: Colors.blue),
+              ),
+
+            SizedBox(width: 4),
+
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+
+            SizedBox(width: 20),
+          ],
+        ),
       ),
     );
   }
-}
-
-build_plutocolumn({
-  required String title, //
-  required String field,
-  required PlutoColumnType type,
-  required VoidCallback on_filter,
-}) {
-  return PlutoColumn(
-    title: title,
-    field: field,
-    type: type,
-    width: 160,
-    minWidth: 100,
-    readOnly: true,
-    enableFilterMenuItem: false,
-    titleSpan: WidgetSpan(
-      child: Row(
-        children: [
-          InkWell(
-            onTap: on_filter,
-            child: Icon(Icons.filter_alt_outlined, size: 20, color: Colors.blue),
-          ),
-
-          SizedBox(width: 4),
-
-          Expanded(
-            child: Text(
-              title,
-              style: TextStyle(fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-
-          SizedBox(width: 20),
-        ],
-      ),
-    ),
-  );
 }

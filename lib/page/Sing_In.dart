@@ -166,7 +166,7 @@ class _Sign_In_State extends State<Sign_In_> {
                 width: 500,
                 child: TextField(
                   controller: controller_username,
-
+                  autofocus: true,
                   decoration: InputDecoration(
                     labelText: 'Username', //
                     prefixIcon: Icon(Icons.person, color: Colors.grey),
