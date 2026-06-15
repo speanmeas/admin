@@ -1,31 +1,30 @@
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pluto_grid/pluto_grid.dart';
 
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
+import 'package:speanmeas/layout/Layout.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
-
-import 'package:speanmeas/utility/Datetime_format.dart';
 import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/utility/Secure_Storage.dart';
-
-import 'Form_1_Create.dart';
-import 'Form_2_Read.dart';
-import 'Form_3_Update.dart';
-import 'Form_4_Delete.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import 'Filter_String.dart';
 import 'Filter_Number.dart';
-import 'Filter_Datetime.dart';
 import 'Filter_Boolean.dart';
-import 'Filter_Visibility.dart';
+import 'Filter_Datetime.dart';
 
-import 'Main_Widget.dart';
-import 'Schema.g.dart';
 import '__Setup__.dart';
+import 'Schema.g.dart';
+
+import 'Form_Create.dart';
+import 'Form_Read.dart';
+import 'Form_Update.dart';
+import 'Form_Delete.dart';
 
 void main() {
   runApp(
@@ -45,7 +44,7 @@ class Main extends StatelessWidget {
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Main_(),
+      home: const Main_(),
     );
   }
 }
@@ -59,51 +58,461 @@ class Main_ extends StatefulWidget {
 
 class _Main_State extends State<Main_> {
   //
+
+  PlutoGridStateManager? state_manager;
+
+  bool is_loading = false;
+  bool has_more = true;
+
+  int total_row = 0;
+
   //
-
-  bool is_admin = true; // todo: check admin role from secure storage
-  bool has_more = false;
-  bool is_filter = false;
-
-  // todo: check secure_storage -> Schema.g.dart
-  List<Map<String, dynamic>> _schema = schema;
-
-  List<Map<String, dynamic>> data = [];
-
   String? key;
   bool? has;
   String? query;
   double? min;
   double? max;
-  String? start;
-  String? end;
-  String? order;
-  int? limit = 1000;
 
-  int counter = 0;
+  DateTime? start;
+  DateTime? end;
 
-  ScrollController controller_scrollbar = ScrollController();
-  ScrollController controller_table = ScrollController();
+  int? order;
 
   @override
   void initState() {
     super.initState();
+    init();
+  }
 
-    // add access_token to dio
-    Future.microtask(() {
-      secure_storage
-          .read(key: 'access_token') //
-          .then((access_token) {
-            if (access_token != null) {
-              dio.options.headers['Authorization'] = 'Bearer $access_token';
-              setState(() {});
-              // print("Access token found: $access_token");
-            }
-          })
-          .catchError((e) {});
+  @override
+  Widget build(BuildContext context) {
+    final is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
+    final screen_height = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      body: Column(
+        children: [
+          // menu
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Wrap(
+                  children: [
+                    // create
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.add), //
+                        label: Text("Create"),
+                        onPressed: on_create,
+                      ),
+                    ),
+
+                    // read
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.visibility_outlined), //
+                        label: Text("Read"),
+                        onPressed: on_read,
+                      ),
+                    ),
+
+                    // update
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.edit_outlined), //
+                        label: Text("Update"),
+                        onPressed: on_update,
+                      ),
+                    ),
+
+                    // delete
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.delete_outline, color: Colors.red), //
+                        label: Text("Delete", style: TextStyle(color: Colors.red)),
+                        onPressed: on_delete,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // refresh
+              Container(
+                height: 32,
+                margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                child: InkWell(
+                  child: Icon(Icons.refresh, color: Colors.blue), //
+                  onTap: on_refresh,
+                ),
+              ),
+            ],
+          ),
+          // filter
+          Expanded(
+            child: PlutoGrid(
+              //
+              rows: [],
+              //
+              columns: [
+                // hidden id
+                PlutoColumn(title: "ID", field: "id", type: PlutoColumnType.text(), hide: true, readOnly: true),
+
+                ...schema.map((row) {
+                  return build_plutocolumn(
+                    field: row['key']!, //
+                    title: row['title']!,
+                    type: row['type']!,
+                    on_filter: () => on_filter(row),
+                  );
+                }),
+              ], //
+              //
+              configuration: PlutoGridConfiguration(
+                scrollbar: PlutoGridScrollbarConfig(
+                  scrollbarThickness: 12, //
+                  scrollbarThicknessWhileDragging: 12,
+                  isAlwaysShown: true,
+                ),
+                style: PlutoGridStyleConfig(
+                  rowHeight: 28, //
+                  columnHeight: 32,
+                ),
+              ),
+              onLoaded: (event) {
+                state_manager = event.stateManager;
+
+                state_manager?.scroll.bodyRowsVertical!.addListener(() {
+                  final position = state_manager?.scroll.bodyRowsVertical!.position;
+
+                  if (!is_loading) {
+                    if (position!.pixels >= position.maxScrollExtent) {
+                      // print('Reached bottom');
+                      if (has_more) {
+                        is_loading = true;
+                        on_load_more();
+                      }
+                      setState(() {});
+                    }
+                  }
+                });
+              },
+            ),
+          ),
+
+          if (is_loading)
+            Container(
+              height: 24,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 20, //
+                    height: 20,
+                    child: CircularProgressIndicator(),
+                  ),
+                  SizedBox(width: 12),
+                  Text('Loading more...'),
+                ],
+              ),
+            ),
+
+          if (!is_loading)
+            (() {
+              if (state_manager == null) return SizedBox();
+              total_row = state_manager!.rows.length;
+              return Container(
+                height: 24,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Loaded: $total_row items'), //
+                  ],
+                ),
+              );
+            })(),
+        ],
+      ),
+    );
+  }
+
+  void on_filter(row) {
+    //
+    // init
+    key = row['key'];
+    order = 1;
+
+    // clear sort
+    final sorted_column = state_manager?.getSortedColumn;
+    if (sorted_column != null) {
+      state_manager?.sortBySortIdx(sorted_column);
+    }
+
+    if (row['type'] == 'string') {
+      Navigator.push(
+        context, //
+        MaterialPageRoute(builder: (context) => Filter_String_()),
+      ).then((v) {
+        //
+        if (v == null) return;
+
+        query = v;
+        init();
+
+        // scroll to top
+        state_manager?.scroll.vertical?.jumpTo(0);
+      });
+    }
+    //
+    else if (row['type'] == 'number') {
+      Navigator.push(
+        context, //
+        MaterialPageRoute(builder: (context) => Filter_Number_()),
+      ).then((v) {
+        //
+        if (v == null) return;
+
+        min = v["min"];
+        max = v["max"];
+
+        init();
+
+        // scroll to top
+        state_manager?.scroll.vertical?.jumpTo(0);
+      });
+    }
+    //
+    else if (row['type'] == 'date-time') {
+      Navigator.push(
+        context, //
+        MaterialPageRoute(builder: (context) => Filter_Datetime_()),
+      ).then((v) {
+        //
+        if (v == null) return;
+
+        start = v["start"];
+        end = v["end"];
+
+        init();
+
+        // scroll to top
+        state_manager?.scroll.vertical?.jumpTo(0);
+      });
+    }
+    //
+    else if (row['type'] == 'boolean') {
+      Navigator.push(
+        context, //
+        MaterialPageRoute(builder: (context) => Filter_Boolean_()),
+      ).then((v) {
+        //
+        if (v == null) return;
+
+        has = v;
+        init();
+
+        // scroll to top
+        state_manager?.scroll.vertical?.jumpTo(0);
+      });
+    }
+  }
+
+  void on_create() {
+    //
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => Form_Create_()),
+    ).then((v) {
+      // validate
+      if (v == null) return;
+
+      // add new row to the top
+      state_manager?.prependRows([
+        PlutoRow(
+          cells: {
+            'id': PlutoCell(value: v['id'].toString()),
+            for (var s in schema)
+              if (s['type'] == 'date-time') //
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+
+                    final dt = DateTime.tryParse(v[s['key']].toString());
+                    if (dt == null) return '';
+
+                    // default
+                    return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+                  })(),
+                )
+              else if (s['type'] == 'boolean') //
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+                    if (v[s['key']] == true) return 'Yes';
+
+                    // default
+                    return 'No';
+                  })(),
+                )
+              else
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+
+                    // default
+                    return v[s['key']].toString();
+                  })(),
+                ),
+          },
+        ),
+      ]);
+
+      // refresh total row count
+      total_row = state_manager!.rows.length;
+      setState(() {});
+
+      // scroll to top
+      state_manager?.scroll.vertical?.jumpTo(0);
+    });
+  }
+
+  void on_read() {
+    //
+    if (state_manager?.currentRow == null) {
+      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+      return;
+    }
+
+    //
+    Map<String, dynamic> data = {};
+    state_manager?.currentRow!.cells.forEach((key, cell) {
+      data[key] = cell.value;
+    });
+    // print("Read row $data");
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => Form_Read_(input: data)),
+    );
+  }
+
+  void on_update() {
+    //
+
+    if (state_manager?.currentRow == null) {
+      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+      return;
+    }
+
+    Map<String, dynamic> data = {};
+    state_manager?.currentRow!.cells.forEach((key, cell) {
+      data[key] = (() {
+        if (cell.value == null) return null;
+
+        // default
+        return cell.value.toString();
+      })();
     });
 
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => Form_Update_(input: data)),
+    ).then((v) {
+      //
+      if (v == null) return;
+
+      final row = state_manager?.currentRow;
+      for (var s in schema) {
+        final key = s['key'];
+        if (key == null) continue;
+
+        if (s['type'] == 'date-time') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            final dt = DateTime.tryParse(v[key].toString());
+            if (dt == null) return '';
+
+            // default
+            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+          })();
+        } else if (s['type'] == 'boolean') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+            if (v[key] == true) return 'Yes';
+
+            // default
+            return 'No';
+          })();
+        } else {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            // default
+            return v[key].toString();
+          })();
+        }
+      }
+
+      state_manager?.notifyListeners();
+    });
+  }
+
+  void on_delete() {
+    if (state_manager?.currentRow == null) {
+      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+      return;
+    }
+
+    //
+    String id = state_manager?.currentRow!.cells['id']!.value;
+
+    //
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => Form_Delete_(id: id)),
+    ).then((v) {
+      if (v == null) return;
+      state_manager?.removeCurrentRow();
+
+      // refresh total row count
+      total_row = state_manager!.rows.length;
+      setState(() {});
+    });
+  }
+
+  void on_refresh() {
+    //
+    key = null;
+    has = null;
+    query = null;
+    min = null;
+    max = null;
+    start = null;
+    end = null;
+    order = null;
+
+    // clear sort
+    final sorted_column = state_manager?.getSortedColumn;
+    if (sorted_column != null) {
+      state_manager?.sortBySortIdx(sorted_column);
+    }
+
     init();
+
+    // scroll to top
+    state_manager?.scroll.vertical?.jumpTo(0);
+
+    // Navigator.pop(context);
   }
 
   void init() async {
@@ -113,532 +522,223 @@ class _Main_State extends State<Main_> {
           data: FormData.fromMap({
             "key": key, //
             "has": has, //
-            "query": query,
-            "min": min,
-            "max": max,
-            "start": start,
-            "end": end,
-            "order": order,
-            "limit": limit,
-            "offset": null,
+            "query": query, //
+            "min": min, //
+            "max": max, //
+            "start": start, //
+            "end": end, //
+            "order": order, //
           }),
         ) //
         .then((r) {
-          setState(() {
-            has_more = r.data.length == limit;
-            data = List<Map<String, dynamic>>.from(r.data);
-          });
+          final data = List<Map<String, dynamic>>.from(r.data);
+
+          if (r.data.length == 10000) has_more = true;
+          if (r.data.length != 10000) has_more = false;
+
+          state_manager?.removeAllRows();
+
+          state_manager?.appendRows([
+            for (var d in data)
+              PlutoRow(
+                cells: {
+                  'id': PlutoCell(value: d['id'].toString()),
+                  for (var s in schema)
+                    //
+                    if (s['key'] == "password") //
+                      s['key']!: PlutoCell(value: "**********")
+                    //
+                    else if (s['type'] == 'date-time') //
+                      s['key']!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s['key']] == null) return '';
+
+                          //
+                          final dt = DateTime.tryParse(d[s['key']].toString());
+                          if (dt == null) return '';
+
+                          // default
+                          return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+                        })(),
+                      )
+                    //
+                    else if (s['type'] == 'boolean') //
+                      s['key']!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s['key']] == null) return '';
+                          if (d[s['key']] == true) return 'Yes';
+
+                          // default
+                          return "No";
+                        })(),
+                      )
+                    //
+                    else
+                      s['key']!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s['key']] == null) return '';
+
+                          // default
+                          return d[s['key']].toString();
+                        })(),
+                      ),
+                },
+              ),
+          ]);
+
+          setState(() {});
         })
         .catchError((e) {});
 
-    // move to top
-    // controller_table.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+    // print length of state_manager?.rows
+    // print(state_manager?.rows.length);
   }
 
-  void load_more() async {
+  void on_load_more() async {
+    // clear sort
+    final sorted_column = state_manager?.getSortedColumn;
+    if (sorted_column != null) {
+      state_manager?.sortBySortIdx(sorted_column);
+    }
+
     await dio
         .post(
-          '$PATH/read',
+          '$PATH/data_read',
           data: FormData.fromMap({
             "key": key, //
             "has": has, //
-            "query": query,
-            "min": min,
-            "max": max,
-            "start": start,
-            "end": end,
-            "order": order,
-            "limit": limit,
-            "offset": data.length,
+            "query": query, //
+            "min": min, //
+            "max": max, //
+            "start": start, //
+            "end": end, //
+            "order": order, //
+            "offset": state_manager?.rows.length, //
           }),
         ) //
         .then((r) {
-          has_more = r.data.length == limit;
-          data.addAll(List<Map<String, dynamic>>.from(r.data));
+          final data = List<Map<String, dynamic>>.from(r.data);
+
+          state_manager?.appendRows([
+            for (var d in data)
+              PlutoRow(
+                cells: {
+                  'id': PlutoCell(value: d['id'].toString()),
+                  for (var s in schema)
+                    //
+                    if (s['key'] == "password") //
+                      s['key']!: PlutoCell(value: "**********")
+                    //
+                    else if (s['type'] == 'date-time') //
+                      s['key']!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s['key']] == null) return '';
+
+                          //
+                          final dt = DateTime.tryParse(d[s['key']].toString());
+                          if (dt == null) return '';
+
+                          // default
+                          return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+                        })(),
+                      )
+                    //
+                    else if (s['type'] == 'boolean') //
+                      s['key']!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s['key']] == null) return '';
+                          if (d[s['key']] == true) return 'Yes';
+
+                          // default
+                          return "No";
+                        })(),
+                      )
+                    //
+                    else
+                      s['key']!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s['key']] == null) return '';
+
+                          // default
+                          return d[s['key']].toString();
+                        })(),
+                      ),
+                },
+              ),
+          ]);
+
+          is_loading = false;
+
           setState(() {});
         })
         .catchError((e) {});
   }
 
-  double screen_height = 0;
-  Global global = Global();
-
-  @override
-  Widget build(BuildContext context) {
-    screen_height = MediaQuery.of(context).size.height;
-    global = context.watch<Global>();
-
-    return Layout(
-      children_header: [
-        // No.
-        Container(
-          height: HEADER_HEIGHT,
-          width: NUMBER_COLUMN_WIDTH,
-          alignment: Alignment.center,
-          child: const Text('No.', style: TextStyle(fontWeight: FontWeight.bold)),
-        ),
-
-        // sort mode
-        if (!is_filter)
-          ..._schema.map((row) {
-            //
-            if (row["is_visible"] != 1) return const SizedBox();
-
-            // sort mode
-            return Header_Sort_Mode(
-              row: row, //
-              key: key ?? "",
-              order: order ?? "",
-              onPressed: () => sort_mode_pressed(row),
-            );
-          }),
-
-        // search mode
-        if (is_filter)
-          ..._schema.where((row) => row["is_visible"] == 1).map((row) {
-            // header search text
-            if (row["kind"] == "string") {
-              return Header_Search_Text(
-                row: row, //
-                onPressed: () => filter_text_pressed(row),
-              );
-            }
-
-            // header search number
-            if (row["kind"] == "number") {
-              return Header_Search_Number(
-                row: row, //
-                onPressed: () => filter_number_pressed(row),
-              );
-            }
-
-            // header search number
-            if (row["kind"] == "boolean") {
-              return Header_Search_Boolean(
-                row: row, //
-                onPressed: () => filter_boolean_pressed(row),
-              );
-            }
-
-            // header search datetime
-            if (row["kind"] == "date-time") {
-              return Header_Search_Datetime(
-                row: row, //
-                onPressed: () => filter_datetime_pressed(row),
-              );
-            }
-
-            //
-            return const SizedBox();
-          }),
-
-        // actions column
-        if (is_admin) Header_Action(),
-      ],
-
-      children_body: (index) => [
-        //
-        Container_Index(index),
-
-        ..._schema.where((row) => row["is_visible"] == 1).map((row) {
-          // case password
-          if (row["key"] == "password") {
-            String output = "**********";
-            return Container(
-              width: COLUMN_WIDTH, //
-              alignment: Alignment.center,
-              child: Text(
-                output, //
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                softWrap: true,
-              ),
-            );
-          }
-
-          // case datetime
-          if (row["kind"] == "string") {
-            String output = data[index][row["key"]]?.toString() ?? "";
-            return Container(
-              width: COLUMN_WIDTH, //
-              alignment: Alignment.center,
-              child: Text(
-                output, //
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                softWrap: true,
-              ),
-            );
-          }
-
-          // case datetime
-          if (row["kind"] == "number") {
-            String output = data[index][row["key"]]?.toString() ?? "0";
-            return Container(
-              width: COLUMN_WIDTH, //
-              alignment: Alignment.center,
-              child: Text(
-                output, //
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                softWrap: true,
-              ),
-            );
-          }
-
-          // case datetime
-          if (row["kind"] == "boolean") {
-            String output = data[index][row["key"]]?.toString() ?? "false";
-            output = output.toLowerCase() == "true" ? "Yes" : "No";
-            return Container(
-              width: COLUMN_WIDTH, //
-              alignment: Alignment.center,
-              child: Text(
-                output, //
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                softWrap: true,
-              ),
-            );
-          }
-
-          // case datetime
-          if (row["kind"] == "date-time") {
-            String output = data[index][row["key"]]?.toString() ?? "";
-            output = output.replaceAll("T", " ");
-            return Container(
-              width: COLUMN_WIDTH, //
-              alignment: Alignment.center,
-              child: Text(
-                output, //
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                softWrap: true,
-              ),
-            );
-          }
-
-          // default
-          return const SizedBox();
-          // Cell_General("${data[index][row["key"]] ?? ""}");
-        }),
-
-        if (is_admin) ...[
-          // update
-          Button_Update(onPressed: () => button_update_pressed(index)), //
-          // delete
-          Button_Delete(onPressed: () => button_delete_pressed(index)),
-        ],
-      ],
-
-      children_floating: [
-        Spacer(),
-
-        Footer_Export(onPressed: () {}),
-
-        Footer_Filter(is_filter: is_filter, onPressed: float_filter_pressed),
-
-        Footer_Visibility(onPressed: float_visible_pressed),
-
-        Footer_Add(onPressed: float_add_pressed),
-      ],
-    );
-  }
-
-  void on_read(int index) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Form_Read_(
-          id: data[index]["id"], //
-        ),
-      ),
-    );
-  }
-
-  void filter_datetime_pressed(Map<String, dynamic> row) {
-    // print("${row["key"]}");
-    key = row["key"];
-    has = null;
-    query = null;
-    min = null;
-    max = null;
-    start = null;
-    end = null;
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Filter_Datetime_(), //
-      ),
-    ).then((value) {
-      if (value != null) {
-        start = value["start"];
-        end = value["end"];
-        order = "1";
-        init();
-        controller_table.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-      }
-    });
-  }
-
-  void filter_number_pressed(Map<String, dynamic> row) {
-    // print("${row["key"]}");
-    key = row["key"];
-    has = null;
-    query = null;
-    min = null;
-    max = null;
-    start = null;
-    end = null;
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => Filter_Number_()),
-    ).then((value) {
-      print("value: $value");
-      if (value != null) {
-        min = value["min"];
-        max = value["max"];
-        order = "1";
-        // query = value;
-        init();
-        controller_table.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-      }
-    });
-  }
-
-  void filter_boolean_pressed(Map<String, dynamic> row) {
-    key = row["key"];
-    has = null;
-    query = null;
-    min = null;
-    max = null;
-    start = null;
-    end = null;
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Filter_Boolean_(), //
-      ),
-    ).then((value) {
-      print(value);
-      if (value != null) {
-        has = value;
-        order = "1";
-        init();
-        controller_table.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-      }
-    });
-  }
-
-  void filter_text_pressed(Map<String, dynamic> row) {
-    // print("${row["key"]}");
-
-    key = row["key"];
-    has = null;
-    query = null;
-    min = null;
-    max = null;
-    start = null;
-    end = null;
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Filter_String_(), //
-      ),
-    ).then((value) {
-      if (value != null) {
-        query = value;
-        order = "1";
-        init();
-        controller_table.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-      }
-    });
-  }
-
-  void sort_mode_pressed(Map<String, dynamic> row) {
-    setState(() {
-      //
-
-      if (key != row["key"]) {
-        counter = 0;
-        order = null;
-      }
-
-      key = row["key"] as String;
-
-      counter += 1;
-
-      if (counter % 3 == 0) {
-        key = null;
-        order = null;
-      }
-
-      if (counter % 3 == 1) {
-        order = "-1";
-      }
-
-      if (counter % 3 == 2) {
-        order = "1";
-      }
-
-      init();
-
-      // move to top
-      controller_table.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-    });
-  }
-
-  void float_add_pressed() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Form_Create_(), //
-      ),
-    ).then((value) {
-      if (value != null) {
-        init();
-      }
-    });
-  }
-
-  void float_visible_pressed() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Filter_Visibility_(schema: _schema), //
-      ),
-    ).then((value) {
-      if (value != null) {
-        _schema = value;
-        setState(() {});
-      }
-    });
-  }
-
-  void float_filter_pressed() {
-    is_filter = !is_filter;
-
-    if (is_filter == false) {
-      key = null;
-      query = null;
-      min = null;
-      max = null;
-      start = null;
-      end = null;
-      order = null;
-      init();
-    }
-    setState(() {});
-  }
-
-  void button_update_pressed(int index) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Form_Update_(
-          id: data[index]["id"], //
-        ),
-      ),
-    ).then((value) {
-      if (value != null) {
-        init();
-      }
-    });
-  }
-
-  void button_delete_pressed(int index) {
-    Navigator.push(
-      context, //
-      MaterialPageRoute(
-        builder: (context) => Form_Delete_(
-          id: data[index]["id"], //
-        ),
-      ),
-    ).then((value) {
-      if (value != null) {
-        data.removeAt(index);
-        setState(() {});
-      }
-    });
-  }
-
-  double get_width() {
-    return NUMBER_COLUMN_WIDTH + //
-        _schema.where((e) => e["is_visible"] == 1).length * COLUMN_WIDTH + //
-        48;
-  }
-
-  Widget Layout({
-    required List<Widget> children_header, //
-    required List<Widget> Function(int index) children_body,
-    required List<Widget> children_floating,
+  build_plutocolumn({
+    required String title, //
+    required String field,
+    required String type,
+    required VoidCallback on_filter,
   }) {
     //
-    return Scaffold(
-      body: Scrollbar(
-        controller: controller_scrollbar,
-        thumbVisibility: true,
-        thickness: 12, // scrollbar width
-        radius: const Radius.circular(0),
-        child: SingleChildScrollView(
-          controller: controller_scrollbar,
-          scrollDirection: Axis.horizontal,
-          child: SizedBox(
-            width: is_admin ? get_width() + 90 : get_width(),
-            child: Column(
-              children: [
-                // header
-                Row(children: children_header),
+    PlutoColumnType column_type = PlutoColumnType.text();
+    //
+    if (type == 'number') {
+      column_type = PlutoColumnType.number();
+    }
+    //
+    return PlutoColumn(
+      title: title,
+      field: field,
+      type: column_type,
+      width: 160,
+      minWidth: 100,
+      readOnly: true,
+      enableFilterMenuItem: false,
 
-                // body
-                Expanded(
-                  child: ListView.builder(
-                    controller: controller_table,
-                    itemCount: data.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == data.length) {
-                        if (has_more) {
-                          // print("Last item");
-                          Future.delayed(const Duration(milliseconds: 300), () {
-                            load_more();
-                          });
-                          return Container_Loading();
-                        } else {
-                          return Container_Total(data.length);
-                        }
-                      }
-                      return InkWell(
-                        child: Container(
-                          height: ROW_HEIGHT, //
-                          decoration: const BoxDecoration(
-                            border: Border(top: BorderSide(color: Colors.black12, width: 1)),
-                          ),
-                          child: Row(children: children_body(index)),
-                        ),
-                        onTap: () => on_read(index),
-                      );
-                    },
-                  ),
-                ),
-              ],
+      titleSpan: WidgetSpan(
+        child: Row(
+          children: [
+            if (type == "number")
+              InkWell(
+                onTap: on_filter,
+                child: Icon(Icons.tune, size: 20, color: Colors.blue),
+              )
+            else if (type == "boolean")
+              InkWell(
+                onTap: on_filter,
+                child: Icon(Icons.toggle_on_outlined, size: 20, color: Colors.blue),
+              )
+            else if (type == "date-time")
+              InkWell(
+                onTap: on_filter,
+                child: Icon(Icons.date_range, size: 20, color: Colors.blue),
+              )
+            else
+              InkWell(
+                onTap: on_filter,
+                child: Icon(Icons.filter_alt_outlined, size: 20, color: Colors.blue),
+              ),
+
+            SizedBox(width: 4),
+
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Column(
-            children: children_floating, //
-          ),
 
-          SizedBox(width: 4),
-        ],
+            SizedBox(width: 20),
+          ],
+        ),
       ),
     );
   }

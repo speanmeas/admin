@@ -11,8 +11,10 @@ import 'package:speanmeas/page/user/Main.dart' as user;
 import 'package:speanmeas/page/.check_in/Main.dart' as check_in;
 import 'package:speanmeas/page/.setting/Main.dart' as setting;
 
-import 'package:speanmeas/page/template/Main.dart' as template;
 import 'package:speanmeas/page/template_1/Main.dart' as template_1;
+import 'package:speanmeas/page/template_2/Main.dart' as template_2;
+import 'package:speanmeas/page/template_2a/Main.dart' as template_2a;
+import 'package:speanmeas/page/template_2b/Main.dart' as template_2b;
 
 void main() {
   runApp(
@@ -69,12 +71,20 @@ class _Panel_Body_State extends State<Panel_Body_> {
       return user.Main_();
     }
 
-    if (global.body == "Template") {
-      return template.Main_();
-    }
-
     if (global.body == "Template 1") {
       return template_1.Main_();
+    }
+
+    if (global.body == "Template 2") {
+      return template_2.Main_();
+    }
+
+    if (global.body == "Template 2a") {
+      return template_2a.Main_();
+    }
+
+    if (global.body == "Template 2b") {
+      return template_2b.Main_();
     }
 
     return const SizedBox();

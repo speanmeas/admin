@@ -1,62 +1,52 @@
 List<Map<String, dynamic>> schema = [
   {
     "key": "username",
-    "kind": "string",
-    "title": "Username",
-    "is_visible": 1
+    "type": "string",
+    "title": "Username"
   },
   {
     "key": "password",
-    "kind": "string",
-    "title": "Password",
-    "is_visible": 1
+    "type": "string",
+    "title": "Password"
   },
   {
     "key": "full_name",
-    "kind": "string",
-    "title": "Full Name",
-    "is_visible": 1
+    "type": "string",
+    "title": "Full Name"
   },
   {
     "key": "phone_number",
-    "kind": "string",
-    "title": "Phone Number",
-    "is_visible": 1
+    "type": "string",
+    "title": "Phone Number"
   },
   {
     "key": "email",
-    "kind": "string",
-    "title": "Email",
-    "is_visible": 1
+    "type": "string",
+    "title": "Email"
   },
   {
     "key": "is_admin",
-    "kind": "boolean",
-    "title": "Is Admin",
-    "is_visible": 1
+    "type": "boolean",
+    "title": "Is Admin"
   },
   {
     "key": "is_manager",
-    "kind": "boolean",
-    "title": "Is Manager",
-    "is_visible": 1
+    "type": "boolean",
+    "title": "Is Manager"
   },
   {
     "key": "is_receptionist",
-    "kind": "boolean",
-    "title": "Is Receptionist",
-    "is_visible": 1
+    "type": "boolean",
+    "title": "Is Receptionist"
   },
   {
     "key": "is_cleaner",
-    "kind": "boolean",
-    "title": "Is Cleaner",
-    "is_visible": 1
+    "type": "boolean",
+    "title": "Is Cleaner"
   },
   {
     "key": "note",
-    "kind": "string",
-    "title": "Note",
-    "is_visible": 1
+    "type": "string",
+    "title": "Note"
   }
 ];

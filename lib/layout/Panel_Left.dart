@@ -195,18 +195,18 @@ class _Panel_Left_State extends State<Panel_Left_> {
         ),
 
         // Template
-        if (kDebugMode)
-          ListTile(
-            leading: Icon(Icons.model_training_outlined),
-            title: Text("Template"),
-            selected: global.body == "Template",
-            selectedColor: Colors.blue,
-            onTap: () {
-              global.body = "Template";
-              global.notifyListeners();
-              if (is_mobile) Navigator.pop(context);
-            }, //
-          ),
+        // if (kDebugMode)
+        //   ListTile(
+        //     leading: Icon(Icons.model_training_outlined),
+        //     title: Text("Template"),
+        //     selected: global.body == "Template",
+        //     selectedColor: Colors.blue,
+        //     onTap: () {
+        //       global.body = "Template";
+        //       global.notifyListeners();
+        //       if (is_mobile) Navigator.pop(context);
+        //     }, //
+        //   ),
 
         // Template
         ListTile(
@@ -220,6 +220,53 @@ class _Panel_Left_State extends State<Panel_Left_> {
             if (is_mobile) Navigator.pop(context);
           }, //
         ),
+
+        // Template
+        (() {
+          String name = "Template 2";
+          return ListTile(
+            leading: Icon(Icons.model_training_outlined),
+            title: Text(name),
+            selected: global.body == name,
+            selectedColor: Colors.blue,
+            onTap: () {
+              global.body = name;
+              global.notifyListeners();
+              if (is_mobile) Navigator.pop(context);
+            },
+          );
+        })(),
+
+        // Template
+        (() {
+          String name = "Template 2a";
+          return ListTile(
+            leading: Icon(Icons.model_training_outlined),
+            title: Text(name),
+            selected: global.body == name,
+            selectedColor: Colors.blue,
+            onTap: () {
+              global.body = name;
+              global.notifyListeners();
+              if (is_mobile) Navigator.pop(context);
+            },
+          );
+        })(),
+
+        (() {
+          String name = "Template 2b";
+          return ListTile(
+            leading: Icon(Icons.model_training_outlined),
+            title: Text(name),
+            selected: global.body == name,
+            selectedColor: Colors.blue,
+            onTap: () {
+              global.body = name;
+              global.notifyListeners();
+              if (is_mobile) Navigator.pop(context);
+            },
+          );
+        })(),
       ],
     );
   }

@@ -321,7 +321,6 @@ class _Main_State extends State<Main_> {
 
   void on_create() {
     //
-    // Navigator.pop(context);
     Navigator.push(
       context, //
       MaterialPageRoute(builder: (context) => Form_Create_()),
@@ -370,6 +369,7 @@ class _Main_State extends State<Main_> {
         ),
       ]);
 
+      // refresh total row count
       total_row = state_manager!.rows.length;
       setState(() {});
 
@@ -477,6 +477,10 @@ class _Main_State extends State<Main_> {
       if (v == null) return;
       state_manager?.removeCurrentRow();
     });
+
+    // refresh total row count
+    total_row = state_manager!.rows.length;
+    setState(() {});
   }
 
   void on_refresh() {
@@ -533,7 +537,11 @@ class _Main_State extends State<Main_> {
                 cells: {
                   'id': PlutoCell(value: d['id'].toString()),
                   for (var s in schema)
-                    if (s['type'] == 'date-time') //
+                    //
+                    if (s['key'] == "password") //
+                      s['key']!: PlutoCell(value: "**********")
+                    //
+                    else if (s['type'] == 'date-time') //
                       s['key']!: PlutoCell(
                         value: (() {
                           //
@@ -547,6 +555,7 @@ class _Main_State extends State<Main_> {
                           return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
                         })(),
                       )
+                    //
                     else if (s['type'] == 'boolean') //
                       s['key']!: PlutoCell(
                         value: (() {
@@ -558,6 +567,7 @@ class _Main_State extends State<Main_> {
                           return "No";
                         })(),
                       )
+                    //
                     else
                       s['key']!: PlutoCell(
                         value: (() {
@@ -611,7 +621,11 @@ class _Main_State extends State<Main_> {
                 cells: {
                   'id': PlutoCell(value: d['id'].toString()),
                   for (var s in schema)
-                    if (s['type'] == 'date-time') //
+                    //
+                    if (s['key'] == "password") //
+                      s['key']!: PlutoCell(value: "**********")
+                    //
+                    else if (s['type'] == 'date-time') //
                       s['key']!: PlutoCell(
                         value: (() {
                           //
@@ -625,6 +639,7 @@ class _Main_State extends State<Main_> {
                           return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
                         })(),
                       )
+                    //
                     else if (s['type'] == 'boolean') //
                       s['key']!: PlutoCell(
                         value: (() {
@@ -636,6 +651,7 @@ class _Main_State extends State<Main_> {
                           return "No";
                         })(),
                       )
+                    //
                     else
                       s['key']!: PlutoCell(
                         value: (() {
