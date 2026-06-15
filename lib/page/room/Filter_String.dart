@@ -42,31 +42,21 @@ class Filter_String_ extends StatefulWidget {
 }
 
 class _Filter_String_State extends State<Filter_String_> {
-  TextEditingController controller_search = TextEditingController();
+  //
+  final controller_search = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Filter $HEADER", //
+          "Filter Text", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
           ),
         ),
 
-        actions: [
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            color: Colors.red,
-            tooltip: "Close",
-          ),
-          SizedBox(width: 4),
-        ],
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -78,12 +68,15 @@ class _Filter_String_State extends State<Filter_String_> {
               //
               Container(
                 width: 600,
-                margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
                   controller: controller_search,
                   autofocus: true,
                   decoration: InputDecoration(
-                    labelText: "Filter", //
+                    border: OutlineInputBorder(), //
+                    hintText: "Input", //
+                    labelText: "Search:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
                   onChanged: (value) {},
@@ -91,11 +84,11 @@ class _Filter_String_State extends State<Filter_String_> {
                 ),
               ),
 
-              Tooltip(
-                message: "Apply filter",
+              Container(
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: OutlinedButton.icon(
-                  icon: Icon(Icons.filter_alt_outlined), //
-                  label: Text("Apply"),
+                  icon: Icon(Icons.filter_alt_outlined),
+                  label: Text("Apply"), //
                   onPressed: on_apply_filter,
                 ),
               ),
@@ -119,12 +112,8 @@ class _Filter_String_State extends State<Filter_String_> {
       return;
     }
 
-    Navigator.pop(context, controller_search.text);
+    Navigator.pop(context, controller_search.text.trim());
 
-    snackbar_show(
-      context: context, //
-      message: "Filter applied",
-      color: Colors.green,
-    );
+    snackbar_show(context: context, message: "Filter applied", color: Colors.green);
   }
 }

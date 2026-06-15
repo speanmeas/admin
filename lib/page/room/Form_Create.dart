@@ -58,8 +58,6 @@ class _Form_Create_State extends State<Form_Create_> {
     }
   }
 
-  DateTime? selectedDateTime;
-
   @override
   Widget build(BuildContext context) {
     final screen_height = MediaQuery.of(context).size.height;
@@ -67,23 +65,13 @@ class _Form_Create_State extends State<Form_Create_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Create $HEADER", //
+          "Create", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
           ),
         ),
 
-        actions: [
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            color: Colors.red,
-          ),
-          SizedBox(width: 8),
-        ],
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -93,21 +81,21 @@ class _Form_Create_State extends State<Form_Create_> {
           child: Column(
             children: [
               ...schema.map((row) {
-                // print(row);
+                //
+                //
+                //
 
-                // todo: handle foreign key
-
-                // note - multi-line text
+                // note
                 if (row["key"] == "note") {
                   return Container(
                     width: 600,
-                    padding: EdgeInsets.all(8),
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       maxLines: 4,
                       decoration: InputDecoration(
-                        // hintText: "Enter text...", //
-                        border: OutlineInputBorder(),
+                        hintText: "Input", //
                         labelText: "Note:", //
+                        border: OutlineInputBorder(),
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -118,14 +106,19 @@ class _Form_Create_State extends State<Form_Create_> {
                   );
                 }
 
+                //
+                //
+                //
+
                 // string
-                if (row["kind"] == "string") {
+                if (row["type"] == "string") {
                   return Container(
                     width: 600,
-                    padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       decoration: InputDecoration(
-                        labelText: row['title'], //
+                        hintText: "Input", //
+                        labelText: row['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -137,15 +130,16 @@ class _Form_Create_State extends State<Form_Create_> {
                 }
 
                 // number
-                if (row["kind"] == "number") {
+                if (row["type"] == "number") {
                   return Container(
                     width: 600,
-                    padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
                       decoration: InputDecoration(
-                        labelText: row['title'], //
+                        hintText: "Input", //
+                        labelText: row['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -156,18 +150,18 @@ class _Form_Create_State extends State<Form_Create_> {
                   );
                 }
 
-                if (row["kind"] == "boolean") {
+                if (row["type"] == "boolean") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
-                      initialValue: "No",
                       decoration: InputDecoration(
-                        labelText: row['title'],
+                        hintText: "Select", //
+                        labelText: row['title'] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
                       ),
+                      icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
                       items: ["Yes", "No"].map((i) {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
@@ -183,19 +177,20 @@ class _Form_Create_State extends State<Form_Create_> {
                   );
                 }
 
-                if (row["kind"] == "date-time") {
+                if (row["type"] == "date-time") {
                   return Container(
                     width: 600,
-                    padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: output[row["key"]] ?? ""),
                       readOnly: true,
                       decoration: InputDecoration(
+                        hintText: "Select", //
+                        labelText: row['title'] + ":", //
                         border: OutlineInputBorder(), //
-                        labelText: row['title'], //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        suffixIcon: Icon(Icons.calendar_today), //
+                        suffixIcon: Icon(Icons.calendar_today, size: 20), //
                       ),
                       onTap: () async {
                         final DateTime? datetime = await datetime_picker(context);
@@ -210,21 +205,17 @@ class _Form_Create_State extends State<Form_Create_> {
                 return SizedBox.shrink();
               }),
 
-              SizedBox(height: 8),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  OutlinedButton.icon(
-                    icon: Icon(Icons.check),
-                    label: Text("Create"),
-                    style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                    onPressed: create_pressed,
-                  ),
-                ],
+              Container(
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: OutlinedButton.icon(
+                  icon: Icon(Icons.check),
+                  label: Text("Create"),
+                  style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+                  onPressed: create_pressed,
+                ),
               ),
 
-              SizedBox(height: screen_height - 120),
+              SizedBox(height: screen_height - 80),
             ],
           ),
         ),
@@ -235,20 +226,16 @@ class _Form_Create_State extends State<Form_Create_> {
   void create_pressed() async {
     //
 
+    print(output);
+
     await dio
-        .post(
-          '$PATH/data_create',
-          data: FormData.fromMap({
-            ...output, //
-          }),
-        )
-        .then((value) {
-          // print(value);
+        .post('$PATH/data_create', data: FormData.fromMap({...output}))
+        .then((r) {
+          output["id"] = r.data["id"]; //
           snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
-          Navigator.pop(context, true);
+          Navigator.pop(context, output);
         })
         .catchError((error) {
-          // print(error);
           snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
         });
   }
