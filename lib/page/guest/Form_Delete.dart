@@ -49,25 +49,17 @@ class Form_Delete_ extends StatefulWidget {
 class _Form_Delete_State extends State<Form_Delete_> {
   @override
   Widget build(BuildContext context) {
+    final screen_height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Delete $HEADER", //
+          "Delete", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
           ),
         ),
 
-        actions: [
-          IconButton(
-            icon: Icon(Icons.close, color: Colors.red),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          SizedBox(width: 8),
-        ],
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -76,31 +68,28 @@ class _Form_Delete_State extends State<Form_Delete_> {
         child: Center(
           child: Column(
             children: [
-              SizedBox(height: 20),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Confirm to delete?", //
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                ],
+              // confirmation
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Text(
+                  "Confirm to delete?", //
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
 
-              SizedBox(height: 20),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  OutlinedButton.icon(
-                    icon: Icon(Icons.delete_outlined),
-                    label: Text("Delete"),
-                    style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-                    onPressed: delete_pressed,
-                    // style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  ),
-                ],
+              // button delete
+              Container(
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: OutlinedButton.icon(
+                  autofocus: true,
+                  icon: Icon(Icons.delete_outlined),
+                  label: Text("Delete"),
+                  style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                  onPressed: delete_pressed,
+                  // style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                ),
               ),
             ],
           ),

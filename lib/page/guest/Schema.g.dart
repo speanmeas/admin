@@ -1,32 +1,27 @@
 List<Map<String, dynamic>> schema = [
   {
     "key": "name",
-    "kind": "string",
-    "title": "Name",
-    "is_visible": 1
+    "type": "string",
+    "title": "Name"
   },
   {
     "key": "gender",
-    "kind": "string",
-    "title": "Gender",
-    "is_visible": 1
+    "type": "string",
+    "title": "Gender"
   },
   {
     "key": "phone_number",
-    "kind": "string",
-    "title": "Phone Number",
-    "is_visible": 1
+    "type": "string",
+    "title": "Phone Number"
   },
   {
     "key": "nationality",
-    "kind": "string",
-    "title": "Nationality",
-    "is_visible": 1
+    "type": "string",
+    "title": "Nationality"
   },
   {
     "key": "note",
-    "kind": "string",
-    "title": "Note",
-    "is_visible": 1
+    "type": "string",
+    "title": "Note"
   }
 ];

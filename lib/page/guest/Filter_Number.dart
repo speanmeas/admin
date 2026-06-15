@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:speanmeas/Global.dart';
 
@@ -51,85 +52,95 @@ class _Filter_Number_State extends State<Filter_Number_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Filter $HEADER", //
+          "Filter Number", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
           ),
         ),
 
-        actions: [
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            color: Colors.red,
-            tooltip: "Close",
-          ),
-          SizedBox(width: 4),
-        ],
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
       ),
-      body: Center(
-        child: Container(
-          width: 600,
-          // alignment: Alignment.bottomCenter,
-          padding: EdgeInsets.all(8),
-          child: ListView(
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
             children: [
               //
-              SizedBox(height: 16),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: controller_min,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: "Min", //
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        // suffixIcon: Icon(Icons.arrow_downward),
-                      ),
-                    ),
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: controller_min,
+                  autofocus: true,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(), //
+                    hintText: "Input", //
+                    labelText: "Min value:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
+                  onChanged: (v) {
+                    if (v.isEmpty) {
+                      select_min = 0;
+                      setState(() {});
+                      return;
+                    }
 
-                  SizedBox(width: 4),
+                    if (double.tryParse(v) == null) {
+                      controller_min.text = v.substring(0, v.length - 1);
+                      controller_min.selection = TextSelection.collapsed(offset: controller_min.text.length);
+                    }
 
-                  Icon(Icons.arrow_right_alt_outlined),
-
-                  SizedBox(width: 4),
-
-                  Expanded(
-                    child: TextField(
-                      controller: controller_max,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: "Max", //
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                    ),
-                  ),
-                ],
+                    select_min = double.tryParse(v) ?? 0;
+                    setState(() {});
+                  }, //,
+                ),
               ),
 
-              SizedBox(height: 16),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Tooltip(
-                    message: "Apply filter",
-                    child: OutlinedButton.icon(
-                      icon: Icon(Icons.filter_alt_outlined), //
-                      label: Text("Apply"),
-                      onPressed: on_apply_filter,
-                    ),
+              //
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: controller_max,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(), //
+                    hintText: "Input", //
+                    labelText: "Max value:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
-                ],
+                  onChanged: (v) {
+                    if (v.isEmpty) {
+                      select_max = 0;
+                      setState(() {});
+                      return;
+                    }
+
+                    if (double.tryParse(v) == null) {
+                      controller_max.text = v.substring(0, v.length - 1);
+                      controller_max.selection = TextSelection.collapsed(offset: controller_max.text.length);
+                    }
+
+                    select_max = double.tryParse(v) ?? 0;
+                    setState(() {});
+                  }, //,
+                ),
+              ),
+
+              Container(
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: OutlinedButton.icon(
+                  icon: Icon(Icons.tune),
+                  label: Text("Apply"), //
+                  onPressed: on_apply_filter,
+                ),
               ),
             ],
           ),

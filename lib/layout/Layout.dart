@@ -65,7 +65,7 @@ class _Layout_State extends State<Layout_> {
                 if (!is_mobile)
                   Container(
                     // margin: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-                    width: 300,
+                    width: 250,
                     decoration: BoxDecoration(border: Border(right: BorderSide())), //
                     child: Panel_Left_(), //
                     // color: Colors.grey[50],

@@ -45,116 +45,85 @@ class _Filter_Datetime_State extends State<Filter_Datetime_> {
   String? start_datetime;
   String? end_datetime;
 
-  // DateTime start_date = DateTime.now();
-  // DateTime end_date = DateTime.now();
-
-  // TimeOfDay start_time = TimeOfDay(hour: 0, minute: 0);
-  // TimeOfDay end_time = TimeOfDay(hour: 0, minute: 0);
-
-  // String format_date(DateTime date) {
-  //   return date.toIso8601String().substring(0, 10);
-  // }
-
-  // String format_time(TimeOfDay time) {
-  //   return "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}";
-  // }
-
-  // String format_date_time(DateTime date, TimeOfDay time) {
-  //   return "${date.toIso8601String().substring(0, 10)} ${format_time(time)}";
-  // }
+  DateTime? start_datetime_raw;
+  DateTime? end_datetime_raw;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Filter $HEADER", //
+          "Filter Datetime", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
           ),
         ),
 
-        actions: [
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            color: Colors.red,
-          ),
-          SizedBox(width: 8),
-        ],
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
       ),
-      body: Center(
-        child: Container(
-          width: 600,
-          // alignment: Alignment.bottomCenter,
-          padding: EdgeInsets.all(8),
-          child: ListView(
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
             children: [
               //
-              SizedBox(height: 20),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () async {
-                        final datetime = await datetime_picker(context);
-                        print(datetime);
-                        print(datetime_to_string(datetime));
-                        setState(() {
-                          start_datetime = datetime_to_string(datetime);
-                        });
-                      },
-                      icon: Icon(Icons.calendar_today),
-                      label: Text(start_datetime ?? "Select Start Datetime"),
-                    ),
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: TextEditingController(text: start_datetime ?? "Select"),
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(), //
+                    labelText: "Start Datetime:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    suffixIcon: Icon(Icons.calendar_today, size: 20), //
                   ),
-
-                  SizedBox(width: 4),
-
-                  Icon(Icons.arrow_right_alt_outlined),
-
-                  SizedBox(width: 4),
-
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () async {
-                        final datetime = await datetime_picker(context);
-                        print(datetime);
-                        print(datetime_to_string(datetime));
-                        setState(() {
-                          end_datetime = datetime_to_string(datetime);
-                        });
-                      },
-                      icon: Icon(Icons.calendar_today),
-                      label: Text(end_datetime ?? "Select End Datetime"),
-                    ),
-                  ),
-                ],
+                  onTap: () async {
+                    final DateTime? datetime = await datetime_picker(context);
+                    if (datetime == null) return;
+                    start_datetime = datetime_to_string(datetime);
+                    start_datetime_raw = datetime;
+                    setState(() {});
+                  }, //,
+                ),
               ),
 
-              SizedBox(height: 16),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Tooltip(
-                    message: "Apply filter",
-                    child: OutlinedButton.icon(
-                      icon: Icon(Icons.filter_alt_outlined),
-                      label: Text("Apply"), //
-                      onPressed: on_apply_filter,
-                    ),
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: TextEditingController(text: end_datetime ?? "Select"),
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(), //
+                    labelText: "End Datetime:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    suffixIcon: Icon(Icons.calendar_today, size: 20), //
                   ),
-                ],
+                  onTap: () async {
+                    final DateTime? datetime = await datetime_picker(context);
+                    if (datetime == null) return;
+                    end_datetime = datetime_to_string(datetime);
+                    end_datetime_raw = datetime;
+                    setState(() {});
+                  }, //,
+                ),
               ),
+
+              Container(
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: OutlinedButton.icon(
+                  icon: Icon(Icons.date_range),
+                  label: Text("Apply"), //
+                  onPressed: on_apply_filter,
+                ),
+              ),
+              //
             ],
           ),
         ),
@@ -163,41 +132,23 @@ class _Filter_Datetime_State extends State<Filter_Datetime_> {
   }
 
   void on_apply_filter() {
-    // start = format_date_time(start_date, start_time);
-    // end = format_date_time(end_date, end_time);
-
     // validate start and end datetime
-    if (start_datetime == null || end_datetime == null) {
-      snackbar_show(
-        context: context, //
-        message: "Please select start and end datetime",
-        color: Colors.red,
-      );
+    if (start_datetime_raw == null || end_datetime_raw == null) {
+      snackbar_show(context: context, message: "Please select start and end datetime", color: Colors.red);
       return;
     }
 
     // please put end datetime after start datetime
-    if (DateTime.parse(end_datetime!).isBefore(DateTime.parse(start_datetime!))) {
-      snackbar_show(
-        context: context, //
-        message: "End datetime must be after start datetime",
-        color: Colors.red,
-      );
+    if (end_datetime_raw!.isBefore(start_datetime_raw!)) {
+      snackbar_show(context: context, message: "End datetime must be after start datetime", color: Colors.red);
       return;
     }
 
     // print start and end datetime
     // print("Filter: $start_datetime to $end_datetime");
 
-    Navigator.pop(context, {
-      "start": start_datetime, //
-      "end": end_datetime,
-    });
+    Navigator.pop(context, {"start": start_datetime_raw, "end": end_datetime_raw});
 
-    snackbar_show(
-      context: context, //
-      message: "Filter applied",
-      color: Colors.green,
-    );
+    snackbar_show(context: context, message: "Filter applied", color: Colors.green);
   }
 }
