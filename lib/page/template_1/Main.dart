@@ -144,7 +144,7 @@ class _Main_State extends State<Main_> {
                 height: 32,
                 margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
                 child: InkWell(
-                  child: Icon(Icons.refresh, size: 32, color: Colors.blue), //
+                  child: Icon(Icons.refresh, color: Colors.blue), //
                   onTap: on_refresh,
                 ),
               ),
