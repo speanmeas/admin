@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -65,7 +64,7 @@ class _Main_State extends State<Main_> {
   bool is_loading = false;
   bool has_more = true;
 
-  bool is_filter = false; // todo: later
+  int total_row = 0;
 
   //
   String? key;
@@ -222,16 +221,14 @@ class _Main_State extends State<Main_> {
 
           if (!is_loading)
             (() {
-              int total = 0;
-              if (state_manager != null) {
-                total = state_manager!.rows.length;
-              }
+              if (state_manager == null) return SizedBox();
+              total_row = state_manager!.rows.length;
               return Container(
                 height: 24,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Loaded: $total items'), //
+                    Text('Loaded: $total_row items'), //
                   ],
                 ),
               );
@@ -372,6 +369,9 @@ class _Main_State extends State<Main_> {
           },
         ),
       ]);
+
+      total_row = state_manager!.rows.length;
+      setState(() {});
 
       // scroll to top
       state_manager?.scroll.vertical?.jumpTo(0);
