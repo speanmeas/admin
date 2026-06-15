@@ -144,26 +144,35 @@ class _Sign_In_State extends State<Sign_In_> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 40),
-
-              Container(height: 160, child: Image.asset('asset/logo.png')),
-
-              SizedBox(height: 8),
-
-              Text(
-                'Welcome to Spean Meas Hotel', //
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Container(
+                height: 160, //
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: Image.asset('asset/logo.png'),
               ),
 
-              Text(
-                VERSION,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
-              ), //
-
-              SizedBox(height: 8),
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                alignment: Alignment.center,
+                child: Text(
+                  'Welcome to Spean Meas Hotel', //
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              ),
 
               Container(
-                width: 500,
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                alignment: Alignment.center,
+                child: Text(
+                  VERSION,
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blue),
+                ), //
+              ), //
+
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
                   controller: controller_username,
                   autofocus: true,
@@ -175,10 +184,9 @@ class _Sign_In_State extends State<Sign_In_> {
                 ),
               ),
 
-              SizedBox(height: 8),
-
               Container(
-                width: 500,
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
                   controller: controller_password,
                   decoration: InputDecoration(
@@ -194,12 +202,13 @@ class _Sign_In_State extends State<Sign_In_> {
                 ),
               ),
 
-              SizedBox(height: 8),
-
-              OutlinedButton.icon(
-                icon: Icon(Icons.login), //
-                label: Text('Signin'),
-                onPressed: signin_press,
+              Container(
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: OutlinedButton.icon(
+                  icon: Icon(Icons.login), //
+                  label: Text('Signin'),
+                  onPressed: signin_press,
+                ),
               ),
 
               SizedBox(height: screen_height - 80),

@@ -45,6 +45,9 @@ class _Filter_Datetime_State extends State<Filter_Datetime_> {
   String? start_datetime;
   String? end_datetime;
 
+  DateTime? start_datetime_raw;
+  DateTime? end_datetime_raw;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,6 +86,7 @@ class _Filter_Datetime_State extends State<Filter_Datetime_> {
                     final DateTime? datetime = await datetime_picker(context);
                     if (datetime == null) return;
                     start_datetime = datetime_to_string(datetime);
+                    start_datetime_raw = datetime;
                     setState(() {});
                   }, //,
                 ),
@@ -105,6 +109,7 @@ class _Filter_Datetime_State extends State<Filter_Datetime_> {
                     final DateTime? datetime = await datetime_picker(context);
                     if (datetime == null) return;
                     end_datetime = datetime_to_string(datetime);
+                    end_datetime_raw = datetime;
                     setState(() {});
                   }, //,
                 ),
@@ -128,37 +133,22 @@ class _Filter_Datetime_State extends State<Filter_Datetime_> {
 
   void on_apply_filter() {
     // validate start and end datetime
-    if (start_datetime == null || end_datetime == null) {
-      snackbar_show(
-        context: context, //
-        message: "Please select start and end datetime",
-        color: Colors.red,
-      );
+    if (start_datetime_raw == null || end_datetime_raw == null) {
+      snackbar_show(context: context, message: "Please select start and end datetime", color: Colors.red);
       return;
     }
 
     // please put end datetime after start datetime
-    if (DateTime.parse(end_datetime!).isBefore(DateTime.parse(start_datetime!))) {
-      snackbar_show(
-        context: context, //
-        message: "End datetime must be after start datetime",
-        color: Colors.red,
-      );
+    if (end_datetime_raw!.isBefore(start_datetime_raw!)) {
+      snackbar_show(context: context, message: "End datetime must be after start datetime", color: Colors.red);
       return;
     }
 
     // print start and end datetime
     // print("Filter: $start_datetime to $end_datetime");
 
-    Navigator.pop(context, {
-      "start": start_datetime, //
-      "end": end_datetime,
-    });
+    Navigator.pop(context, {"start": start_datetime_raw, "end": end_datetime_raw});
 
-    snackbar_show(
-      context: context, //
-      message: "Filter applied",
-      color: Colors.green,
-    );
+    snackbar_show(context: context, message: "Filter applied", color: Colors.green);
   }
 }

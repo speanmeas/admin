@@ -58,13 +58,9 @@ class _Form_Create_State extends State<Form_Create_> {
     }
   }
 
-  DateTime? selectedDateTime;
-
-  double screen_height = 0;
-
   @override
   Widget build(BuildContext context) {
-    screen_height = MediaQuery.of(context).size.height;
+    final screen_height = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: AppBar(
@@ -230,11 +226,14 @@ class _Form_Create_State extends State<Form_Create_> {
   void create_pressed() async {
     //
 
+    print(output);
+
     await dio
         .post('$PATH/data_create', data: FormData.fromMap({...output}))
-        .then((value) {
+        .then((r) {
+          output["id"] = r.data["id"]; //
           snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
-          Navigator.pop(context, true);
+          Navigator.pop(context, output);
         })
         .catchError((error) {
           snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);

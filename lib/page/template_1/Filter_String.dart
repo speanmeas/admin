@@ -112,12 +112,8 @@ class _Filter_String_State extends State<Filter_String_> {
       return;
     }
 
-    Navigator.pop(context, controller_search.text);
+    Navigator.pop(context, controller_search.text.trim());
 
-    snackbar_show(
-      context: context, //
-      message: "Filter applied",
-      color: Colors.green,
-    );
+    snackbar_show(context: context, message: "Filter applied", color: Colors.green);
   }
 }

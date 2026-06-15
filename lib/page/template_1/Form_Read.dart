@@ -230,7 +230,12 @@ class _Form_Read_State extends State<Form_Read_> {
                 //
                 if (row["type"] == "date-time") {
                   String value = output[row["key"]]?.toString() ?? "";
-                  value = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(value).toLocal());
+                  if (value.isNotEmpty) {
+                    DateTime? tmp = DateTime.tryParse(value);
+                    if (tmp != null) {
+                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                    }
+                  }
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),

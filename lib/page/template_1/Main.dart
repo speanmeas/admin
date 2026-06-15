@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,11 @@ import 'Filter_Datetime.dart';
 
 import '__Setup__.dart';
 import 'Schema.g.dart';
+
+import 'Form_Create.dart';
+import 'Form_Read.dart';
+import 'Form_Update.dart';
+import 'Form_Delete.dart';
 
 void main() {
   runApp(
@@ -54,22 +60,24 @@ class Main_ extends StatefulWidget {
 class _Main_State extends State<Main_> {
   //
 
-  late PlutoGridStateManager state_manager;
+  PlutoGridStateManager? state_manager;
 
   bool is_loading = false;
-  //   bool has_more = false;
+  bool has_more = true;
 
+  bool is_filter = false; // todo: later
+
+  //
   String? key;
   bool? has;
   String? query;
   double? min;
   double? max;
-  String? start;
-  String? end;
-  String? order;
-  int? limit = 1000;
 
-  int counter = 0;
+  DateTime? start;
+  DateTime? end;
+
+  int? order;
 
   @override
   void initState() {
@@ -84,42 +92,106 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       body: Column(
         children: [
+          // menu
           Row(
             children: [
               // todo: add menu
             ],
           ),
+          // filter
           Expanded(
             child: PlutoGrid(
               columns: [
+                PlutoColumn(
+                  title: "ID", //
+                  field: "id",
+                  type: PlutoColumnType.text(),
+                  hide: true,
+                  readOnly: true,
+                ),
+
                 ...schema.map((row) {
                   return build_plutocolumn(
                     field: row['key']!,
                     title: row['title']!,
                     type: row['type'],
                     on_filter: () {
-                      print("Filter ${row['key']}");
+                      // init
+                      key = row['key'];
+                      order = 1;
+
+                      // clear sort
+                      final sorted_column = state_manager?.getSortedColumn;
+                      if (sorted_column != null) {
+                        state_manager?.sortBySortIdx(sorted_column);
+                      }
 
                       if (row['type'] == 'string') {
                         Navigator.push(
                           context, //
                           MaterialPageRoute(builder: (context) => Filter_String_()),
-                        );
-                      } else if (row['type'] == 'number') {
+                        ).then((v) {
+                          //
+                          if (v == null) return;
+
+                          query = v;
+                          init();
+
+                          // scroll to top
+                          state_manager?.scroll.vertical?.jumpTo(0);
+                        });
+                      }
+                      //
+                      else if (row['type'] == 'number') {
                         Navigator.push(
                           context, //
                           MaterialPageRoute(builder: (context) => Filter_Number_()),
-                        );
-                      } else if (row['type'] == 'date-time') {
+                        ).then((v) {
+                          //
+                          if (v == null) return;
+
+                          min = v["min"];
+                          max = v["max"];
+
+                          init();
+
+                          // scroll to top
+                          state_manager?.scroll.vertical?.jumpTo(0);
+                        });
+                      }
+                      //
+                      else if (row['type'] == 'date-time') {
                         Navigator.push(
                           context, //
                           MaterialPageRoute(builder: (context) => Filter_Datetime_()),
-                        );
-                      } else if (row['type'] == 'boolean') {
+                        ).then((v) {
+                          //
+                          if (v == null) return;
+
+                          start = v["start"];
+                          end = v["end"];
+
+                          init();
+
+                          // scroll to top
+                          state_manager?.scroll.vertical?.jumpTo(0);
+                        });
+                      }
+                      //
+                      else if (row['type'] == 'boolean') {
                         Navigator.push(
                           context, //
                           MaterialPageRoute(builder: (context) => Filter_Boolean_()),
-                        );
+                        ).then((v) {
+                          //
+                          if (v == null) return;
+
+                          has = v;
+                          init();
+
+                          // scroll to top
+                          state_manager?.scroll.vertical?.jumpTo(0);
+                        });
                       }
                     },
                   );
@@ -140,19 +212,21 @@ class _Main_State extends State<Main_> {
                 ),
               ),
               onChanged: (PlutoGridOnChangedEvent event) {
-                state_manager.notifyListeners();
+                state_manager?.notifyListeners();
               },
               onLoaded: (event) {
                 state_manager = event.stateManager;
 
-                state_manager.scroll.bodyRowsVertical!.addListener(() {
-                  final position = state_manager.scroll.bodyRowsVertical!.position;
+                state_manager?.scroll.bodyRowsVertical!.addListener(() {
+                  final position = state_manager?.scroll.bodyRowsVertical!.position;
 
                   if (!is_loading) {
-                    if (position.pixels >= position.maxScrollExtent) {
-                      print('Reached bottom');
-                      is_loading = true;
-                      on_load_more();
+                    if (position!.pixels >= position.maxScrollExtent) {
+                      // print('Reached bottom');
+                      if (has_more) {
+                        is_loading = true;
+                        on_load_more();
+                      }
                       setState(() {});
                     }
                   }
@@ -160,44 +234,206 @@ class _Main_State extends State<Main_> {
               },
 
               onRowDoubleTap: (event) {
+                int row_number = event.rowIdx;
+                state_manager?.setCurrentCell(event.cell, row_number);
+
                 // show options: view, edit, delete
                 showModalBottomSheet(
                   context: context,
                   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
                   builder: (context) {
-                    int row_number = event.rowIdx;
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        // create OK
                         ListTile(
                           leading: Icon(Icons.add_circle_outline),
                           title: Text("Create"),
                           onTap: () {
-                            print("Create row $row_number");
+                            //
                             Navigator.pop(context);
+                            Navigator.push(
+                              context, //
+                              MaterialPageRoute(builder: (context) => Form_Create_()),
+                            ).then((v) {
+                              // validate
+                              if (v == null) return;
+
+                              // add new row to the top
+                              state_manager?.prependRows([
+                                PlutoRow(
+                                  cells: {
+                                    'id': PlutoCell(value: v['id'].toString()),
+                                    for (var s in schema)
+                                      if (s['type'] == 'date-time') //
+                                        s['key']!: PlutoCell(
+                                          value: (() {
+                                            if (v[s['key']] == null) return '';
+
+                                            final dt = DateTime.tryParse(v[s['key']].toString());
+                                            if (dt == null) return '';
+
+                                            // default
+                                            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+                                          })(),
+                                        )
+                                      else if (s['type'] == 'boolean') //
+                                        s['key']!: PlutoCell(
+                                          value: (() {
+                                            if (v[s['key']] == null) return '';
+                                            if (v[s['key']] == true) return 'Yes';
+
+                                            // default
+                                            return 'No';
+                                          })(),
+                                        )
+                                      else
+                                        s['key']!: PlutoCell(
+                                          value: (() {
+                                            if (v[s['key']] == null) return '';
+
+                                            // default
+                                            return v[s['key']].toString();
+                                          })(),
+                                        ),
+                                  },
+                                ),
+                              ]);
+
+                              // scroll to top
+                              state_manager?.scroll.vertical?.jumpTo(0);
+                            });
                           },
                         ),
+
+                        // read OK
                         ListTile(
                           leading: Icon(Icons.visibility_outlined),
                           title: Text("Read"),
                           onTap: () {
-                            print("Read row $row_number");
-                            Navigator.pop(context);
+                            Map<String, dynamic> data = {};
+                            state_manager?.currentRow!.cells.forEach((key, cell) {
+                              data[key] = cell.value;
+                            });
+                            // print("Read row $data");
+
+                            Navigator.pushReplacement(
+                              context, //
+                              MaterialPageRoute(builder: (context) => Form_Read_(input: data)),
+                            );
                           },
                         ),
+
+                        // update
                         ListTile(
                           leading: Icon(Icons.edit_outlined),
                           title: Text("Update"),
                           onTap: () {
-                            print("Update row $row_number");
+                            // print("Update row $row_number");
+
+                            Map<String, dynamic> data = {};
+                            state_manager?.currentRow!.cells.forEach((key, cell) {
+                              data[key] = (() {
+                                if (cell.value == null) return null;
+
+                                // default
+                                return cell.value.toString();
+                              })();
+                            });
+
                             Navigator.pop(context);
+                            Navigator.push(
+                              context, //
+                              MaterialPageRoute(builder: (context) => Form_Update_(input: data)),
+                            ).then((v) {
+                              //
+                              if (v == null) return;
+
+                              final row = state_manager?.currentRow;
+                              for (var s in schema) {
+                                final key = s['key'];
+                                if (key == null) continue;
+
+                                if (s['type'] == 'date-time') {
+                                  row?.cells[key]?.value = (() {
+                                    if (v[key] == null) return '';
+
+                                    final dt = DateTime.tryParse(v[key].toString());
+                                    if (dt == null) return '';
+
+                                    // default
+                                    return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+                                  })();
+                                } else if (s['type'] == 'boolean') {
+                                  row?.cells[key]?.value = (() {
+                                    if (v[key] == null) return '';
+                                    if (v[key] == true) return 'Yes';
+
+                                    // default
+                                    return 'No';
+                                  })();
+                                } else {
+                                  row?.cells[key]?.value = (() {
+                                    if (v[key] == null) return '';
+
+                                    // default
+                                    return v[key].toString();
+                                  })();
+                                }
+                              }
+
+                              state_manager?.notifyListeners();
+                            });
                           },
                         ),
+
+                        // delete OK
                         ListTile(
                           leading: Icon(Icons.delete_outline, color: Colors.red),
                           title: Text("Delete", style: TextStyle(color: Colors.red)),
                           onTap: () {
-                            print("Delete row $row_number");
+                            //
+                            String id = state_manager?.currentRow!.cells['id']!.value;
+
+                            //
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context, //
+                              MaterialPageRoute(builder: (context) => Form_Delete_(id: id)),
+                            ).then((v) {
+                              if (v == null) return;
+                              state_manager?.removeCurrentRow();
+                            });
+
+                            //
+                          },
+                        ),
+
+                        // clear filter
+                        ListTile(
+                          leading: Icon(Icons.refresh),
+                          title: Text("Refresh"),
+                          onTap: () {
+                            key = null;
+                            has = null;
+                            query = null;
+                            min = null;
+                            max = null;
+                            start = null;
+                            end = null;
+                            order = null;
+
+                            // clear sort
+                            final sorted_column = state_manager?.getSortedColumn;
+                            if (sorted_column != null) {
+                              state_manager?.sortBySortIdx(sorted_column);
+                            }
+
+                            init();
+
+                            // scroll to top
+                            state_manager?.scroll.vertical?.jumpTo(0);
+
                             Navigator.pop(context);
                           },
                         ),
@@ -211,7 +447,7 @@ class _Main_State extends State<Main_> {
 
           if (is_loading)
             Container(
-              height: 32,
+              height: 24,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -220,11 +456,28 @@ class _Main_State extends State<Main_> {
                     height: 20,
                     child: CircularProgressIndicator(),
                   ),
-                  SizedBox(width: 16),
+                  SizedBox(width: 12),
                   Text('Loading more...'),
                 ],
               ),
             ),
+
+          if (!is_loading)
+            (() {
+              int total = 0;
+              if (state_manager != null) {
+                total = state_manager!.rows.length;
+              }
+              return Container(
+                height: 24,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Loaded: $total items'), //
+                  ],
+                ),
+              );
+            })(),
         ],
       ),
     );
@@ -235,23 +488,65 @@ class _Main_State extends State<Main_> {
         .post(
           '$PATH/data_read',
           data: FormData.fromMap({
-            "limit": 100, //
+            "key": key, //
+            "has": has, //
+            "query": query, //
+            "min": min, //
+            "max": max, //
+            "start": start, //
+            "end": end, //
+            "order": order, //
           }),
         ) //
         .then((r) {
           final data = List<Map<String, dynamic>>.from(r.data);
 
-          state_manager.removeAllRows();
+          if (r.data.length == 10000) has_more = true;
+          if (r.data.length != 10000) has_more = false;
 
-          state_manager.appendRows([
+          state_manager?.removeAllRows();
+
+          state_manager?.appendRows([
             for (var d in data)
               PlutoRow(
                 cells: {
+                  'id': PlutoCell(value: d['id'].toString()),
                   for (var s in schema)
                     if (s['type'] == 'date-time') //
-                      s['key']!: PlutoCell(value: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(d[s['key']].toString()).toLocal()))
+                      s['key']!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s['key']] == null) return '';
+
+                          //
+                          final dt = DateTime.tryParse(d[s['key']].toString());
+                          if (dt == null) return '';
+
+                          // default
+                          return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+                        })(),
+                      )
+                    else if (s['type'] == 'boolean') //
+                      s['key']!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s['key']] == null) return '';
+                          if (d[s['key']] == true) return 'Yes';
+
+                          // default
+                          return "No";
+                        })(),
+                      )
                     else
-                      s['key']!: PlutoCell(value: d[s['key']].toString()),
+                      s['key']!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s['key']] == null) return '';
+
+                          // default
+                          return d[s['key']].toString();
+                        })(),
+                      ),
                 },
               ),
           ]);
@@ -260,8 +555,8 @@ class _Main_State extends State<Main_> {
         })
         .catchError((e) {});
 
-    // print length of state_manager.rows
-    print(state_manager.rows.length);
+    // print length of state_manager?.rows
+    // print(state_manager?.rows.length);
   }
 
   void on_load_more() async {
@@ -269,22 +564,61 @@ class _Main_State extends State<Main_> {
         .post(
           '$PATH/data_read',
           data: FormData.fromMap({
-            "limit": 100, //
-            "offset": state_manager.rows.length, //
+            "key": key, //
+            "has": has, //
+            "query": query, //
+            "min": min, //
+            "max": max, //
+            "start": start, //
+            "end": end, //
+            "order": order, //
+            "offset": state_manager?.rows.length, //
           }),
         ) //
         .then((r) {
           final data = List<Map<String, dynamic>>.from(r.data);
 
-          state_manager.appendRows([
+          state_manager?.appendRows([
             for (var d in data)
               PlutoRow(
                 cells: {
+                  'id': PlutoCell(value: d['id'].toString()),
                   for (var s in schema)
                     if (s['type'] == 'date-time') //
-                      s['key']!: PlutoCell(value: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(d[s['key']].toString()).toLocal()))
+                      s['key']!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s['key']] == null) return '';
+
+                          //
+                          final dt = DateTime.tryParse(d[s['key']].toString());
+                          if (dt == null) return '';
+
+                          // default
+                          return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+                        })(),
+                      )
+                    else if (s['type'] == 'boolean') //
+                      s['key']!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s['key']] == null) return '';
+                          if (d[s['key']] == true) return 'Yes';
+
+                          // default
+                          return "No";
+                        })(),
+                      )
                     else
-                      s['key']!: PlutoCell(value: d[s['key']].toString()),
+                      s['key']!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s['key']] == null) return '';
+
+                          // default
+                          return d[s['key']].toString();
+                        })(),
+                      ),
                 },
               ),
           ]);
@@ -317,6 +651,7 @@ class _Main_State extends State<Main_> {
       minWidth: 100,
       readOnly: true,
       enableFilterMenuItem: false,
+
       titleSpan: WidgetSpan(
         child: Row(
           children: [

@@ -67,32 +67,15 @@ class Form_Update_ extends StatefulWidget {
 class _Form_Update_State extends State<Form_Update_> {
   Map<String, dynamic> output = {};
 
-  // final ScrollController controller_audios = ScrollController();
-  // final ScrollController controller_images = ScrollController();
-  // final ScrollController controller_videos = ScrollController();
-
-  // final ImagePicker _imagePicker = ImagePicker();
-  // final List<XFile?> selectedImages = List<XFile?>.filled(10, null);
-  // Future<void> pickImage(int index, {required ImageSource source}) async {
-  //   final XFile? file = await _imagePicker.pickImage(source: source);
-  //   if (file == null) return;
-  //   setState(() {
-  //     selectedImages[index] = file;
-  //     output['image_${index + 1}_path'] = file.path;
-  //   });
-  // }
-
   @override
   void initState() {
     super.initState();
     output = widget.input;
   }
 
-  double screen_height = 0;
-
   @override
   Widget build(BuildContext context) {
-    screen_height = MediaQuery.of(context).size.height;
+    final screen_height = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: AppBar(
@@ -252,8 +235,16 @@ class _Form_Update_State extends State<Form_Update_> {
 
                 if (row["type"] == "date-time") {
                   String? value = output[row["key"]]?.toString() ?? '';
-                  value = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(value).toLocal());
+                  if (value.isNotEmpty) {
+                    DateTime? tmp = DateTime.tryParse(value);
+                    if (tmp != null) {
+                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                    }
+                  }
                   DateTime? initial_datetime = DateTime.tryParse(value);
+                  if (initial_datetime != null) {
+                    initial_datetime = DateTime.now();
+                  }
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -284,146 +275,6 @@ class _Form_Update_State extends State<Form_Update_> {
                 return SizedBox.shrink();
               }),
 
-              // // Images Upload
-              // // if (output["images_"] != null)
-              // Container(
-              //   margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-              //   alignment: Alignment.centerLeft,
-              //   child: Text(
-              //     "Images:", //
-              //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              //   ),
-              // ),
-              // if (output["images"] != null)
-              //   Container(
-              //     width: 600,
-              //     margin: EdgeInsets.fromLTRB(0, 0, 0, 8),
-              //     child: Scrollbar(
-              //       controller: controller_images,
-              //       thumbVisibility: true,
-              //       // notificationPredicate: (_) => true,
-              //       thickness: 12, // scrollbar width
-              //       radius: const Radius.circular(0),
-              //       // interactive: true,
-              //       // scrollbarOrientation: ScrollbarOrientation.bottom,
-              //       child: SingleChildScrollView(
-              //         controller: controller_images,
-              //         scrollDirection: Axis.horizontal,
-              //         child: Row(
-              //           children: [
-              //             for (int i = 0; i < 10; i++)
-              //               Container(
-              //                 width: 100, //
-              //                 height: 100,
-              //                 margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
-              //                 child: InkWell(
-              //                   onTap: () {
-              //                     showModalBottomSheet<void>(
-              //                       context: context,
-              //                       isScrollControlled: true,
-              //                       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
-              //                       builder: (BuildContext c) {
-              //                         return Wrap(
-              //                           children: [
-              //                             // ListTile(
-              //                             //   leading: Icon(Icons.camera_alt_outlined),
-              //                             //   title: Text('Open Camera'),
-              //                             //   onTap: () async {
-              //                             //     Navigator.pop(c);
-              //                             //   },
-              //                             // ),
-              //                             ListTile(
-              //                               leading: Icon(Icons.upload_outlined, color: Colors.blue),
-              //                               title: Text('Upload', style: TextStyle(color: Colors.blue)),
-              //                               onTap: () async {
-              //                                 // hide bottom sheet
-              //                                 Navigator.pop(c);
-
-              //                                 final id = widget.id;
-              //                                 final key = i.toString();
-
-              //                                 // print('Upload image at index: $id, key: $key');
-
-              //                                 final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
-
-              //                                 // if no image selected
-              //                                 if (image == null) return;
-
-              //                                 // upload image to server
-              //                                 await dio
-              //                                     .post(
-              //                                       '$PATH/file_upload', //
-              //                                       data: FormData.fromMap({
-              //                                         "id": id, //
-              //                                         "image_key": key, //
-              //                                         'image_value': MultipartFile.fromBytes(
-              //                                           await image.readAsBytes(), //
-              //                                           filename: image.name,
-              //                                         ),
-              //                                       }),
-              //                                     )
-              //                                     .then((r) {
-              //                                       init();
-              //                                       snackbar_show(context: context, message: "Uploaded", color: Colors.green);
-              //                                     })
-              //                                     .catchError((e) {
-              //                                       snackbar_show(context: context, message: 'Upload Failed.', color: Colors.red);
-              //                                     });
-              //                               },
-              //                             ),
-              //                             ListTile(
-              //                               leading: Icon(Icons.delete_outlined, color: Colors.red),
-              //                               title: Text('Delete', style: TextStyle(color: Colors.red)),
-              //                               onTap: () async {
-              //                                 Navigator.pop(c);
-
-              //                                 final id = widget.id;
-              //                                 final key = i.toString();
-
-              //                                 // print('Delete image at index: $id, key: $key');
-
-              //                                 // delete image from server
-              //                                 await dio
-              //                                     .post(
-              //                                       '$PATH/file_delete', //
-              //                                       data: FormData.fromMap({
-              //                                         "id": id, //
-              //                                         "image_key": key, //
-              //                                       }),
-              //                                     )
-              //                                     .then((r) {
-              //                                       init();
-              //                                       snackbar_show(context: context, message: "Image deleted", color: Colors.green);
-              //                                     })
-              //                                     .catchError((e) {
-              //                                       snackbar_show(context: context, message: 'Delete Failed.', color: Colors.red);
-              //                                     });
-
-              //                                 //
-              //                               },
-              //                             ),
-              //                           ],
-              //                         );
-              //                       },
-              //                     );
-              //                   },
-              //                   child: output["images"][i.toString()] != null
-              //                       ? Image.network(
-              //                           "$MINIO_PUBLIC/200/images/${output["images"][i.toString()]}", //
-              //                           fit: BoxFit.cover,
-              //                         )
-              //                       : Container(
-              //                           color: Colors.grey[300],
-              //                           child: Icon(Icons.upload_outlined, color: Colors.blue, size: 24),
-              //                         ),
-              //                 ),
-              //               ),
-              //           ],
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-
               // button update
               Container(
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -449,6 +300,7 @@ class _Form_Update_State extends State<Form_Update_> {
     await dio
         .post('$PATH/data_update', data: FormData.fromMap({...output}))
         .then((value) {
+          print(output);
           snackbar_show(context: context, message: "$HEADER update successfully", color: Colors.green);
           Navigator.pop(context, output);
         })

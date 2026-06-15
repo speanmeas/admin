@@ -49,6 +49,7 @@ class Form_Delete_ extends StatefulWidget {
 class _Form_Delete_State extends State<Form_Delete_> {
   @override
   Widget build(BuildContext context) {
+    final screen_height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -82,6 +83,7 @@ class _Form_Delete_State extends State<Form_Delete_> {
               Container(
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: OutlinedButton.icon(
+                  autofocus: true,
                   icon: Icon(Icons.delete_outlined),
                   label: Text("Delete"),
                   style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
