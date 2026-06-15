@@ -96,104 +96,75 @@ class _Main_State extends State<Main_> {
           Row(
             children: [
               // todo: add menu
+              Container(
+                height: 32,
+                margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                child: OutlinedButton.icon(
+                  icon: Icon(Icons.add), //
+                  label: Text("Create"),
+                  onPressed: on_create,
+                ),
+              ),
+
+              //
+              Container(
+                height: 32,
+                margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                child: OutlinedButton.icon(
+                  icon: Icon(Icons.visibility_outlined), //
+                  label: Text("Read"),
+                  onPressed: on_read,
+                ),
+              ),
+
+              //
+              Container(
+                height: 32,
+                margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                child: OutlinedButton.icon(
+                  icon: Icon(Icons.edit_outlined), //
+                  label: Text("Update"),
+                  onPressed: on_update,
+                ),
+              ),
+
+              //
+              Container(
+                height: 32,
+                margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                child: OutlinedButton.icon(
+                  icon: Icon(Icons.delete_outline, color: Colors.red), //
+                  label: Text("Delete", style: TextStyle(color: Colors.red)),
+                  onPressed: on_delete,
+                ),
+              ),
+
+              Spacer(),
+
+              Container(
+                height: 32,
+                margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                child: InkWell(
+                  child: Icon(Icons.refresh, size: 32, color: Colors.blue), //
+                  onTap: on_refresh,
+                ),
+              ),
             ],
           ),
           // filter
           Expanded(
             child: PlutoGrid(
+              //
               columns: [
-                PlutoColumn(
-                  title: "ID", //
-                  field: "id",
-                  type: PlutoColumnType.text(),
-                  hide: true,
-                  readOnly: true,
-                ),
+                // hidden id
+                PlutoColumn(title: "ID", field: "id", type: PlutoColumnType.text(), hide: true, readOnly: true),
 
                 ...schema.map((row) {
                   return build_plutocolumn(
-                    field: row['key']!,
+                    field: row['key']!, //
                     title: row['title']!,
-                    type: row['type'],
-                    on_filter: () {
-                      // init
-                      key = row['key'];
-                      order = 1;
-
-                      // clear sort
-                      final sorted_column = state_manager?.getSortedColumn;
-                      if (sorted_column != null) {
-                        state_manager?.sortBySortIdx(sorted_column);
-                      }
-
-                      if (row['type'] == 'string') {
-                        Navigator.push(
-                          context, //
-                          MaterialPageRoute(builder: (context) => Filter_String_()),
-                        ).then((v) {
-                          //
-                          if (v == null) return;
-
-                          query = v;
-                          init();
-
-                          // scroll to top
-                          state_manager?.scroll.vertical?.jumpTo(0);
-                        });
-                      }
-                      //
-                      else if (row['type'] == 'number') {
-                        Navigator.push(
-                          context, //
-                          MaterialPageRoute(builder: (context) => Filter_Number_()),
-                        ).then((v) {
-                          //
-                          if (v == null) return;
-
-                          min = v["min"];
-                          max = v["max"];
-
-                          init();
-
-                          // scroll to top
-                          state_manager?.scroll.vertical?.jumpTo(0);
-                        });
-                      }
-                      //
-                      else if (row['type'] == 'date-time') {
-                        Navigator.push(
-                          context, //
-                          MaterialPageRoute(builder: (context) => Filter_Datetime_()),
-                        ).then((v) {
-                          //
-                          if (v == null) return;
-
-                          start = v["start"];
-                          end = v["end"];
-
-                          init();
-
-                          // scroll to top
-                          state_manager?.scroll.vertical?.jumpTo(0);
-                        });
-                      }
-                      //
-                      else if (row['type'] == 'boolean') {
-                        Navigator.push(
-                          context, //
-                          MaterialPageRoute(builder: (context) => Filter_Boolean_()),
-                        ).then((v) {
-                          //
-                          if (v == null) return;
-
-                          has = v;
-                          init();
-
-                          // scroll to top
-                          state_manager?.scroll.vertical?.jumpTo(0);
-                        });
-                      }
-                    },
+                    type: row['type']!,
+                    on_filter: () => on_filter(row),
                   );
                 }),
               ], //
@@ -211,9 +182,6 @@ class _Main_State extends State<Main_> {
                   columnHeight: 32,
                 ),
               ),
-              onChanged: (PlutoGridOnChangedEvent event) {
-                state_manager?.notifyListeners();
-              },
               onLoaded: (event) {
                 state_manager = event.stateManager;
 
@@ -231,216 +199,6 @@ class _Main_State extends State<Main_> {
                     }
                   }
                 });
-              },
-
-              onRowDoubleTap: (event) {
-                int row_number = event.rowIdx;
-                state_manager?.setCurrentCell(event.cell, row_number);
-
-                // show options: view, edit, delete
-                showModalBottomSheet(
-                  context: context,
-                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
-                  builder: (context) {
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // create OK
-                        ListTile(
-                          leading: Icon(Icons.add_circle_outline),
-                          title: Text("Create"),
-                          onTap: () {
-                            //
-                            Navigator.pop(context);
-                            Navigator.push(
-                              context, //
-                              MaterialPageRoute(builder: (context) => Form_Create_()),
-                            ).then((v) {
-                              // validate
-                              if (v == null) return;
-
-                              // add new row to the top
-                              state_manager?.prependRows([
-                                PlutoRow(
-                                  cells: {
-                                    'id': PlutoCell(value: v['id'].toString()),
-                                    for (var s in schema)
-                                      if (s['type'] == 'date-time') //
-                                        s['key']!: PlutoCell(
-                                          value: (() {
-                                            if (v[s['key']] == null) return '';
-
-                                            final dt = DateTime.tryParse(v[s['key']].toString());
-                                            if (dt == null) return '';
-
-                                            // default
-                                            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
-                                          })(),
-                                        )
-                                      else if (s['type'] == 'boolean') //
-                                        s['key']!: PlutoCell(
-                                          value: (() {
-                                            if (v[s['key']] == null) return '';
-                                            if (v[s['key']] == true) return 'Yes';
-
-                                            // default
-                                            return 'No';
-                                          })(),
-                                        )
-                                      else
-                                        s['key']!: PlutoCell(
-                                          value: (() {
-                                            if (v[s['key']] == null) return '';
-
-                                            // default
-                                            return v[s['key']].toString();
-                                          })(),
-                                        ),
-                                  },
-                                ),
-                              ]);
-
-                              // scroll to top
-                              state_manager?.scroll.vertical?.jumpTo(0);
-                            });
-                          },
-                        ),
-
-                        // read OK
-                        ListTile(
-                          leading: Icon(Icons.visibility_outlined),
-                          title: Text("Read"),
-                          onTap: () {
-                            Map<String, dynamic> data = {};
-                            state_manager?.currentRow!.cells.forEach((key, cell) {
-                              data[key] = cell.value;
-                            });
-                            // print("Read row $data");
-
-                            Navigator.pushReplacement(
-                              context, //
-                              MaterialPageRoute(builder: (context) => Form_Read_(input: data)),
-                            );
-                          },
-                        ),
-
-                        // update
-                        ListTile(
-                          leading: Icon(Icons.edit_outlined),
-                          title: Text("Update"),
-                          onTap: () {
-                            // print("Update row $row_number");
-
-                            Map<String, dynamic> data = {};
-                            state_manager?.currentRow!.cells.forEach((key, cell) {
-                              data[key] = (() {
-                                if (cell.value == null) return null;
-
-                                // default
-                                return cell.value.toString();
-                              })();
-                            });
-
-                            Navigator.pop(context);
-                            Navigator.push(
-                              context, //
-                              MaterialPageRoute(builder: (context) => Form_Update_(input: data)),
-                            ).then((v) {
-                              //
-                              if (v == null) return;
-
-                              final row = state_manager?.currentRow;
-                              for (var s in schema) {
-                                final key = s['key'];
-                                if (key == null) continue;
-
-                                if (s['type'] == 'date-time') {
-                                  row?.cells[key]?.value = (() {
-                                    if (v[key] == null) return '';
-
-                                    final dt = DateTime.tryParse(v[key].toString());
-                                    if (dt == null) return '';
-
-                                    // default
-                                    return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
-                                  })();
-                                } else if (s['type'] == 'boolean') {
-                                  row?.cells[key]?.value = (() {
-                                    if (v[key] == null) return '';
-                                    if (v[key] == true) return 'Yes';
-
-                                    // default
-                                    return 'No';
-                                  })();
-                                } else {
-                                  row?.cells[key]?.value = (() {
-                                    if (v[key] == null) return '';
-
-                                    // default
-                                    return v[key].toString();
-                                  })();
-                                }
-                              }
-
-                              state_manager?.notifyListeners();
-                            });
-                          },
-                        ),
-
-                        // delete OK
-                        ListTile(
-                          leading: Icon(Icons.delete_outline, color: Colors.red),
-                          title: Text("Delete", style: TextStyle(color: Colors.red)),
-                          onTap: () {
-                            //
-                            String id = state_manager?.currentRow!.cells['id']!.value;
-
-                            //
-                            Navigator.pop(context);
-                            Navigator.push(
-                              context, //
-                              MaterialPageRoute(builder: (context) => Form_Delete_(id: id)),
-                            ).then((v) {
-                              if (v == null) return;
-                              state_manager?.removeCurrentRow();
-                            });
-
-                            //
-                          },
-                        ),
-
-                        // clear filter
-                        ListTile(
-                          leading: Icon(Icons.refresh),
-                          title: Text("Refresh"),
-                          onTap: () {
-                            key = null;
-                            has = null;
-                            query = null;
-                            min = null;
-                            max = null;
-                            start = null;
-                            end = null;
-                            order = null;
-
-                            // clear sort
-                            final sorted_column = state_manager?.getSortedColumn;
-                            if (sorted_column != null) {
-                              state_manager?.sortBySortIdx(sorted_column);
-                            }
-
-                            init();
-
-                            // scroll to top
-                            state_manager?.scroll.vertical?.jumpTo(0);
-
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
               },
             ),
           ),
@@ -481,6 +239,269 @@ class _Main_State extends State<Main_> {
         ],
       ),
     );
+  }
+
+  void on_filter(row) {
+    //
+    // init
+    key = row['key'];
+    order = 1;
+
+    // clear sort
+    final sorted_column = state_manager?.getSortedColumn;
+    if (sorted_column != null) {
+      state_manager?.sortBySortIdx(sorted_column);
+    }
+
+    if (row['type'] == 'string') {
+      Navigator.push(
+        context, //
+        MaterialPageRoute(builder: (context) => Filter_String_()),
+      ).then((v) {
+        //
+        if (v == null) return;
+
+        query = v;
+        init();
+
+        // scroll to top
+        state_manager?.scroll.vertical?.jumpTo(0);
+      });
+    }
+    //
+    else if (row['type'] == 'number') {
+      Navigator.push(
+        context, //
+        MaterialPageRoute(builder: (context) => Filter_Number_()),
+      ).then((v) {
+        //
+        if (v == null) return;
+
+        min = v["min"];
+        max = v["max"];
+
+        init();
+
+        // scroll to top
+        state_manager?.scroll.vertical?.jumpTo(0);
+      });
+    }
+    //
+    else if (row['type'] == 'date-time') {
+      Navigator.push(
+        context, //
+        MaterialPageRoute(builder: (context) => Filter_Datetime_()),
+      ).then((v) {
+        //
+        if (v == null) return;
+
+        start = v["start"];
+        end = v["end"];
+
+        init();
+
+        // scroll to top
+        state_manager?.scroll.vertical?.jumpTo(0);
+      });
+    }
+    //
+    else if (row['type'] == 'boolean') {
+      Navigator.push(
+        context, //
+        MaterialPageRoute(builder: (context) => Filter_Boolean_()),
+      ).then((v) {
+        //
+        if (v == null) return;
+
+        has = v;
+        init();
+
+        // scroll to top
+        state_manager?.scroll.vertical?.jumpTo(0);
+      });
+    }
+  }
+
+  void on_create() {
+    //
+    // Navigator.pop(context);
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => Form_Create_()),
+    ).then((v) {
+      // validate
+      if (v == null) return;
+
+      // add new row to the top
+      state_manager?.prependRows([
+        PlutoRow(
+          cells: {
+            'id': PlutoCell(value: v['id'].toString()),
+            for (var s in schema)
+              if (s['type'] == 'date-time') //
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+
+                    final dt = DateTime.tryParse(v[s['key']].toString());
+                    if (dt == null) return '';
+
+                    // default
+                    return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+                  })(),
+                )
+              else if (s['type'] == 'boolean') //
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+                    if (v[s['key']] == true) return 'Yes';
+
+                    // default
+                    return 'No';
+                  })(),
+                )
+              else
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+
+                    // default
+                    return v[s['key']].toString();
+                  })(),
+                ),
+          },
+        ),
+      ]);
+
+      // scroll to top
+      state_manager?.scroll.vertical?.jumpTo(0);
+    });
+  }
+
+  void on_read() {
+    //
+    if (state_manager?.currentRow == null) {
+      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+      return;
+    }
+
+    //
+    Map<String, dynamic> data = {};
+    state_manager?.currentRow!.cells.forEach((key, cell) {
+      data[key] = cell.value;
+    });
+    // print("Read row $data");
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => Form_Read_(input: data)),
+    );
+  }
+
+  void on_update() {
+    //
+
+    if (state_manager?.currentRow == null) {
+      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+      return;
+    }
+
+    Map<String, dynamic> data = {};
+    state_manager?.currentRow!.cells.forEach((key, cell) {
+      data[key] = (() {
+        if (cell.value == null) return null;
+
+        // default
+        return cell.value.toString();
+      })();
+    });
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => Form_Update_(input: data)),
+    ).then((v) {
+      //
+      if (v == null) return;
+
+      final row = state_manager?.currentRow;
+      for (var s in schema) {
+        final key = s['key'];
+        if (key == null) continue;
+
+        if (s['type'] == 'date-time') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            final dt = DateTime.tryParse(v[key].toString());
+            if (dt == null) return '';
+
+            // default
+            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+          })();
+        } else if (s['type'] == 'boolean') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+            if (v[key] == true) return 'Yes';
+
+            // default
+            return 'No';
+          })();
+        } else {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            // default
+            return v[key].toString();
+          })();
+        }
+      }
+
+      state_manager?.notifyListeners();
+    });
+  }
+
+  void on_delete() {
+    if (state_manager?.currentRow == null) {
+      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+      return;
+    }
+
+    //
+    String id = state_manager?.currentRow!.cells['id']!.value;
+
+    //
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => Form_Delete_(id: id)),
+    ).then((v) {
+      if (v == null) return;
+      state_manager?.removeCurrentRow();
+    });
+  }
+
+  void on_refresh() {
+    //
+    key = null;
+    has = null;
+    query = null;
+    min = null;
+    max = null;
+    start = null;
+    end = null;
+    order = null;
+
+    // clear sort
+    final sorted_column = state_manager?.getSortedColumn;
+    if (sorted_column != null) {
+      state_manager?.sortBySortIdx(sorted_column);
+    }
+
+    init();
+
+    // scroll to top
+    state_manager?.scroll.vertical?.jumpTo(0);
+
+    // Navigator.pop(context);
   }
 
   void init() async {
@@ -560,6 +581,12 @@ class _Main_State extends State<Main_> {
   }
 
   void on_load_more() async {
+    // clear sort
+    final sorted_column = state_manager?.getSortedColumn;
+    if (sorted_column != null) {
+      state_manager?.sortBySortIdx(sorted_column);
+    }
+
     await dio
         .post(
           '$PATH/data_read',

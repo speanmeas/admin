@@ -9,7 +9,8 @@ void snackbar_show({
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
-        margin: EdgeInsets.fromLTRB(8, 0, 8, MediaQuery.of(context).size.height - 60),
+        // margin: EdgeInsets.fromLTRB(8, 0, 8, MediaQuery.of(context).size.height - 60),
+        margin: EdgeInsets.fromLTRB(8, 0, 8, 8),
         duration: const Duration(seconds: 1),
         content: Row(
           children: [
