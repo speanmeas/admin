@@ -1,44 +1,9 @@
 List<Map<String, dynamic>> schema = [
-  {
-    "key": "room_number",
-    "kind": "string",
-    "title": "Room Number",
-    "is_visible": 1
-  },
-  {
-    "key": "room_type",
-    "kind": "string",
-    "title": "Room Type",
-    "is_visible": 1
-  },
-  {
-    "key": "price_per_day",
-    "kind": "number",
-    "title": "Price/Day",
-    "is_visible": 1
-  },
-  {
-    "key": "price_per_3_hour",
-    "kind": "number",
-    "title": "Price/3h",
-    "is_visible": 1
-  },
-  {
-    "key": "status",
-    "kind": "string",
-    "title": "Status",
-    "is_visible": 1
-  },
-  {
-    "key": "ar",
-    "kind": "number",
-    "title": "Account Receivable",
-    "is_visible": 1
-  },
-  {
-    "key": "note",
-    "kind": "string",
-    "title": "Note",
-    "is_visible": 1
-  }
+  {"key": "room_number", "type": "string", "title": "Room Number"},
+  {"key": "room_type", "type": "string", "title": "Room Type"},
+  {"key": "price_per_day", "type": "number", "title": "Price/Day"},
+  {"key": "price_per_3_hour", "type": "number", "title": "Price/3h"},
+  {"key": "status", "type": "string", "title": "Status"},
+  {"key": "ar", "type": "number", "title": "Account Receivable"},
+  {"key": "note", "type": "string", "title": "Note"},
 ];
