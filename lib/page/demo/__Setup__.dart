@@ -1,2 +1,2 @@
-String HEADER = "Template 1";
-String PATH = "/template_1";
+String HEADER = "Demo";
+String PATH = "/demo";

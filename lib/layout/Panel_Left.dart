@@ -209,17 +209,20 @@ class _Panel_Left_State extends State<Panel_Left_> {
         //   ),
 
         // Template
-        ListTile(
-          leading: Icon(Icons.model_training_outlined),
-          title: Text("Demo"),
-          selected: global.body == "Demo",
-          selectedColor: Colors.blue,
-          onTap: () {
-            global.body = "Template 1";
-            global.notifyListeners();
-            if (is_mobile) Navigator.pop(context);
-          }, //
-        ),
+        (() {
+          String name = "Demo";
+          return ListTile(
+            leading: Icon(Icons.model_training_outlined),
+            title: Text(name),
+            selected: global.body == name,
+            selectedColor: Colors.blue,
+            onTap: () {
+              global.body = name;
+              global.notifyListeners();
+              if (is_mobile) Navigator.pop(context);
+            },
+          );
+        })(),
 
         // Template
         (() {
