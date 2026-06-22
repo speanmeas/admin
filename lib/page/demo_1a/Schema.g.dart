@@ -1,5 +1,11 @@
 List<Map<String, dynamic>> schema = [
   {
+    "key": "id",
+    "type": "id",
+    "title": "ID",
+    "value": null
+  },
+  {
     "key": "text_1a",
     "type": "string",
     "title": "Text A",

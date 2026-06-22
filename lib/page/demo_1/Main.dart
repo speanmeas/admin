@@ -23,9 +23,9 @@ import 'Schema.g.dart';
 
 import 'form_create/Demo_1.dart';
 
-import 'form_read/Main.dart';
-import 'form_update/Main.dart';
-import 'form_delete/Main.dart';
+import 'form_read/Demo_1.dart';
+import 'form_update/Demo_1.dart';
+import 'form_delete/Demo_1.dart';
 
 void main() {
   runApp(

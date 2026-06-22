@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
@@ -50,18 +51,6 @@ class Form_Create_ extends StatefulWidget {
 }
 
 class _Form_Create_State extends State<Form_Create_> {
-  // //
-  // Map<String, dynamic> output = {};
-
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  //   for (var e in schema) {
-  //     output[e["key"]] = null;
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     final screen_height = MediaQuery.of(context).size.height;
@@ -300,6 +289,7 @@ class _Form_Create_State extends State<Form_Create_> {
                   );
                 }
 
+                // boolean
                 if (row["type"] == "boolean") {
                   return Container(
                     width: 600,
@@ -327,12 +317,21 @@ class _Form_Create_State extends State<Form_Create_> {
                   );
                 }
 
+                // datetime
                 if (row["type"] == "date-time") {
+                  String value = row["value"]?.toString() ?? "";
+                  if (value.isNotEmpty) {
+                    DateTime? tmp = DateTime.tryParse(value);
+                    if (tmp != null) {
+                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                    }
+                  }
+
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      controller: TextEditingController(text: row["value"] ?? ""),
+                      controller: TextEditingController(text: value), //
                       readOnly: true,
                       decoration: InputDecoration(
                         hintText: "Select", //
@@ -345,7 +344,7 @@ class _Form_Create_State extends State<Form_Create_> {
                       onTap: () async {
                         final DateTime? datetime = await datetime_picker(context);
                         if (datetime == null) return;
-                        row["value"] = datetime_to_string(datetime);
+                        row["value"] = datetime.toIso8601String();
                         setState(() {});
                       }, //,
                     ),

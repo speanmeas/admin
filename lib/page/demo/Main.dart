@@ -692,10 +692,12 @@ class _Main_State extends State<Main_> {
   }) {
     //
     PlutoColumnType column_type = PlutoColumnType.text();
+
     //
     if (type == 'number') {
       column_type = PlutoColumnType.number();
     }
+
     //
     return PlutoColumn(
       title: title,
@@ -705,6 +707,9 @@ class _Main_State extends State<Main_> {
       minWidth: 100,
       readOnly: true,
       enableFilterMenuItem: false,
+
+      // todo: put id into schema
+      hide: field == "id" ? true : false,
 
       titleSpan: WidgetSpan(
         child: Row(

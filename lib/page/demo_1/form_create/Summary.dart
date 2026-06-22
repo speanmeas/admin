@@ -13,12 +13,8 @@ import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-// import 'package:speanmeas/page/front_desk/form_check_in/Invoice.dart';
-// import 'package:speanmeas/page/front_desk/form_check_in/__Model__.dart';
-
-import '../__Setup__.dart';
-
-import 'Model.g.dart' as demo_1;
+import '../../demo_1/__Setup__.dart';
+import '../../demo_1/Schema.g.dart' as demo_1;
 import '../../demo_1a/Schema.g.dart' as demo_1a;
 import '../../demo_1b/Schema.g.dart' as demo_1b;
 
@@ -75,11 +71,11 @@ class _Summary_State extends State<Summary_> {
         child: Center(
           child: Column(
             children: [
-              ...[...demo_1.model, ...demo_1a.schema, ...demo_1b.schema].map((row) {
+              ...[...demo_1.schema, ...demo_1a.schema, ...demo_1b.schema].map((row) {
                 //
                 if (row["key"].toString().contains("_id")) return SizedBox.shrink();
 
-                //
+                // string
                 if (row["type"] == "string") {
                   String value = row["value"]?.toString() ?? "";
                   return Container(
@@ -106,7 +102,7 @@ class _Summary_State extends State<Summary_> {
                   );
                 }
 
-                //
+                // number
                 if (row["type"] == "number") {
                   String value = row["value"]?.toString() ?? "";
                   return Container(
@@ -133,7 +129,7 @@ class _Summary_State extends State<Summary_> {
                   );
                 }
 
-                //
+                // boolean
                 if (row["type"] == "boolean") {
                   String value = row["value"]?.toString() ?? "false";
                   value = value.toLowerCase() == "true" ? "Yes" : "No";
@@ -161,7 +157,7 @@ class _Summary_State extends State<Summary_> {
                   );
                 }
 
-                //
+                // datetime
                 if (row["type"] == "date-time") {
                   String value = row["value"]?.toString() ?? "";
                   if (value.isNotEmpty) {
@@ -572,8 +568,7 @@ class _Summary_State extends State<Summary_> {
               //   //
               //   return SizedBox.shrink();
               // }),
-
-              // Divider(color: Colors.black),
+              Divider(color: Colors.black),
 
               // button create
               Container(

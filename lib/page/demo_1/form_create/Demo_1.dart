@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
@@ -12,10 +13,9 @@ import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import '../__Setup__.dart';
+import '../Schema.g.dart';
 
-import 'Model.g.dart';
-
-import 'Demo_1A.dart' as demo_2a;
+import 'Demo_1A.dart' as demo_1a;
 
 void main() {
   runApp(
@@ -71,7 +71,7 @@ class _Form_Create_State extends State<Form_Create_> {
         child: Center(
           child: Column(
             children: [
-              ...model.map((row) {
+              ...schema.map((row) {
                 //
                 //
                 //
@@ -144,6 +144,7 @@ class _Form_Create_State extends State<Form_Create_> {
                   );
                 }
 
+                // boolean
                 if (row["type"] == "boolean") {
                   return Container(
                     width: 600,
@@ -173,11 +174,18 @@ class _Form_Create_State extends State<Form_Create_> {
 
                 // datetime
                 if (row["type"] == "date-time") {
+                  String value = row["value"]?.toString() ?? "";
+                  if (value.isNotEmpty) {
+                    DateTime? tmp = DateTime.tryParse(value);
+                    if (tmp != null) {
+                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                    }
+                  }
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      controller: TextEditingController(text: row["value"] ?? ""), //
+                      controller: TextEditingController(text: value), //
                       readOnly: true,
                       decoration: InputDecoration(
                         hintText: "Select", //
@@ -223,12 +231,12 @@ class _Form_Create_State extends State<Form_Create_> {
   void on_next() async {
     //
 
-    print(model);
+    print(schema);
 
     Navigator.push(
       context, //
       MaterialPageRoute(
-        builder: (context) => demo_2a.Form_Create_(), //
+        builder: (context) => demo_1a.Form_Create_(), //
       ),
     );
   }

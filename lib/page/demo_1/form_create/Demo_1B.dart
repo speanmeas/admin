@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
@@ -14,7 +15,7 @@ import 'package:speanmeas/widget/Snackbar_Show.dart';
 import '../../demo_1b/__Setup__.dart';
 import '../../demo_1b/Schema.g.dart';
 
-import 'Model.g.dart';
+// import 'Model.g.dart';
 import 'Summary.dart';
 
 void main() {
@@ -185,6 +186,7 @@ class _Form_Create_State extends State<Form_Create_> {
                   );
                 }
 
+                // boolean
                 if (row["type"] == "boolean") {
                   return Container(
                     width: 600,
@@ -212,12 +214,21 @@ class _Form_Create_State extends State<Form_Create_> {
                   );
                 }
 
+                // datetime
                 if (row["type"] == "date-time") {
+                  String value = row["value"]?.toString() ?? "";
+                  if (value.isNotEmpty) {
+                    DateTime? tmp = DateTime.tryParse(value);
+                    if (tmp != null) {
+                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                    }
+                  }
+
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      // controller: TextEditingController(text: row["value"] ?? ""),
+                      controller: TextEditingController(text: value), //
                       readOnly: true,
                       decoration: InputDecoration(
                         hintText: "Select", //
@@ -230,7 +241,7 @@ class _Form_Create_State extends State<Form_Create_> {
                       onTap: () async {
                         final DateTime? datetime = await datetime_picker(context);
                         if (datetime == null) return;
-                        row["value"] = datetime_to_string(datetime);
+                        row["value"] = datetime.toIso8601String();
                         setState(() {});
                       }, //,
                     ),
