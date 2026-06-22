@@ -112,6 +112,8 @@ ThemeData Theme_Data() {
       sizeConstraints: const BoxConstraints.tightFor(width: 40, height: 40),
     ),
 
+    dividerColor: Colors.transparent,
+
     // iconButtonTheme: IconButtonThemeData(
     //   style: IconButton.styleFrom(
     //     foregroundColor: Colors.blue, //

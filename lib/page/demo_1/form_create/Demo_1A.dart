@@ -1,0 +1,405 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:speanmeas/Environment.dart';
+import 'package:speanmeas/Global.dart';
+
+import 'package:speanmeas/theme/Theme_Data.dart';
+import 'package:speanmeas/utility/Datetime_format.dart';
+import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/widget/Datetime_Picker.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
+
+import '../../demo_1a/__Setup__.dart';
+import '../../demo_1a/Schema.g.dart';
+
+// import 'Model.g.dart';
+
+import 'Demo_1B.dart' as demo_2b;
+
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global(), //
+      child: Main(),
+    ),
+  );
+}
+
+class Main extends StatelessWidget {
+  Main({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: Theme_Data(), //
+      debugShowCheckedModeBanner: false,
+      home: Form_Create_(),
+    );
+  }
+}
+
+class Form_Create_ extends StatefulWidget {
+  Form_Create_({
+    super.key, //
+  });
+
+  @override
+  State<Form_Create_> createState() => _Form_Create_State();
+}
+
+class _Form_Create_State extends State<Form_Create_> {
+  // //
+  // Map<String, dynamic> output = {};
+
+  // @override
+  // void initState() {
+  //   super.initState();
+
+  //   for (var e in schema) {
+  //     output[e["key"]] = null;
+  //   }
+  // }
+
+  @override
+  Widget build(BuildContext context) {
+    final screen_height = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Create - $HEADER", //
+          style: TextStyle(
+            fontSize: 20, //
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        centerTitle: false,
+        toolbarHeight: 40,
+        titleSpacing: 0,
+      ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              ...schema.map((row) {
+                //
+                //
+                //
+
+                // todo: search and select here
+                if (row == schema.first) {
+                  var options = [
+                    "apple",
+                    "banana",
+                    "cherry",
+                    "date",
+                    "elderberry",
+                    "fig",
+                    "grape",
+                    "honeydew",
+                    "kiwi",
+                    "lemon",
+                    "lime",
+                    "mango",
+                    "nectarine",
+                    "orange",
+                    "papaya",
+                    "quince",
+                    "raspberry",
+                    "strawberry",
+                    "tangerine",
+                    "ugli fruit",
+                    "voavanga",
+                    "watermelon",
+                    "xigua",
+                    "yellow passion fruit",
+                    "zucchini fruit",
+                    "apricot",
+                    "blackberry",
+                    "blueberry",
+                    "cantaloupe",
+                    "clementine",
+                    "cranberry",
+                    "currant",
+                    "dragon fruit",
+                    "durian",
+                    "feijoa",
+                    "gooseberry",
+                    "guava",
+                    "jackfruit",
+                    "jabuticaba",
+                    "kumquat",
+                    "lychee",
+                    "longan",
+                    "mulberry",
+                    "olive",
+                    "peach",
+                    "pear",
+                    "persimmon",
+                    "pineapple",
+                    "plum",
+                    "pomegranate",
+                    "pomelo",
+                    "star fruit",
+                    "boysenberry",
+                    "breadfruit",
+                    "casaba melon",
+                    "cherimoya",
+                    "cloudberry",
+                    "coconut",
+                    "cranapple",
+                    "damson",
+                    "dewberry",
+                    "eggfruit",
+                    "entawak",
+                    "finger lime",
+                    "grapefruit",
+                    "hackberry",
+                    "huckleberry",
+                    "ilama",
+                    "imbe",
+                    "jambul",
+                    "jujube",
+                    "kiwano",
+                    "langsat",
+                    "loganberry",
+                    "loquat",
+                    "mammee apple",
+                    "mangosteen",
+                    "marionberry",
+                    "melon",
+                    "miracle fruit",
+                    "monstera deliciosa",
+                    "nance",
+                    "physalis",
+                    "plantain",
+                    "prickly pear",
+                    "rambutan",
+                    "red banana",
+                    "salak",
+                    "santol",
+                    "soursop",
+                    "sapodilla",
+                    "sugar apple",
+                    "surinam cherry",
+                    "tamarillo",
+                    "tamarind",
+                    "white currant",
+                    "white sapote",
+                    "yuzu",
+                    "bilberry",
+                    "black sapote",
+                  ];
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: Autocomplete<String>(
+                      optionsBuilder: (TextEditingValue textEditingValue) {
+                        // if (textEditingValue.text.isEmpty) {
+                        //   return const Iterable<String>.empty();
+                        // }
+                        return options.where((option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                      },
+                      optionsMaxHeight: double.infinity,
+                      onSelected: (String selection) {
+                        row["value"] = selection;
+                        print('You just selected $selection');
+                      },
+                      fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                        return TextField(
+                          controller: controller,
+                          focusNode: focusNode,
+                          decoration: InputDecoration(
+                            hintText: "Search", //
+                            labelText: row['title'] + ":", //
+                            labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            suffixIcon: IconButton(
+                              icon: Icon(Icons.clear, size: 24, color: Colors.red), //
+                              onPressed: () {
+                                controller.clear();
+                                row["value"] = "";
+                              },
+                            ), //
+                          ),
+                          onChanged: (value) {
+                            row["value"] = value;
+                          },
+                          onSubmitted: (_) => onFieldSubmitted(),
+                        );
+                      },
+                    ),
+                  );
+                }
+
+                // note
+                if (row["key"] == "note") {
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: TextField(
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        hintText: "Input", //
+                        labelText: "Note:", //
+                        border: OutlineInputBorder(),
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      onChanged: (value) {
+                        row["value"] = value; //
+                      },
+                    ),
+                  );
+                }
+
+                //
+                //
+                //
+
+                // string
+                if (row["type"] == "string") {
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: "Input", //
+                        labelText: row['title'] + ":", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      onChanged: (value) {
+                        row["value"] = value; //
+                      },
+                    ),
+                  );
+                }
+
+                // number
+                if (row["type"] == "number") {
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: TextField(
+                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
+                      decoration: InputDecoration(
+                        hintText: "Input", //
+                        labelText: row['title'] + ":", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      onChanged: (value) {
+                        row["value"] = double.tryParse(value);
+                      },
+                    ),
+                  );
+                }
+
+                if (row["type"] == "boolean") {
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        hintText: "Select", //
+                        labelText: row['title'] + ":",
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
+                      items: ["Yes", "No"].map((i) {
+                        return DropdownMenuItem<String>(value: i, child: Text(i));
+                      }).toList(),
+                      onChanged: (v) {
+                        if (v == "Yes") {
+                          row["value"] = true;
+                        } else {
+                          row["value"] = false;
+                        }
+                        setState(() {});
+                      },
+                    ),
+                  );
+                }
+
+                if (row["type"] == "date-time") {
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: TextField(
+                      controller: TextEditingController(text: row["value"] ?? ""),
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        hintText: "Select", //
+                        labelText: row['title'] + ":", //
+                        border: OutlineInputBorder(), //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        suffixIcon: Icon(Icons.calendar_today, size: 20), //
+                      ),
+                      onTap: () async {
+                        final DateTime? datetime = await datetime_picker(context);
+                        if (datetime == null) return;
+                        row["value"] = datetime_to_string(datetime);
+                        setState(() {});
+                      }, //,
+                    ),
+                  );
+                }
+
+                return SizedBox.shrink();
+              }),
+
+              // button next
+              Container(
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: OutlinedButton.icon(
+                  icon: Icon(Icons.arrow_right_alt_outlined),
+                  label: Text("Next"),
+                  style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+                  onPressed: on_next,
+                ),
+              ),
+
+              SizedBox(height: screen_height - 80),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void on_next() async {
+    //
+
+    print(schema.map((i) => i["value"]).toList());
+
+    // () {
+    // print(model.map((i) => i["value"]).toList());
+    Navigator.push(
+      context, //
+      MaterialPageRoute(
+        builder: (context) => demo_2b.Form_Create_(), //
+      ),
+    );
+    // },
+
+    // print(output);
+
+    // await dio
+    //     .post('$PATH/data_create', data: FormData.fromMap({...output}))
+    //     .then((r) {
+    //       output["id"] = r.data["id"]; //
+    //       snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
+    //       Navigator.pop(context, output);
+    //     })
+    //     .catchError((error) {
+    //       snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
+    //     });
+  }
+}

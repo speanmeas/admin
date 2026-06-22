@@ -25,7 +25,8 @@ Future<DateTime?> datetime_picker(
   // Select Time
   final TimeOfDay? picked_time = await showTimePicker(
     context: context, //
-    initialTime: TimeOfDay.now(),
+    initialTime: TimeOfDay(hour: 12, minute: 0),
+    // initialTime: TimeOfDay.now(),
   );
 
   if (picked_time == null) return null;

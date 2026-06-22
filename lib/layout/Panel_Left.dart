@@ -211,8 +211,8 @@ class _Panel_Left_State extends State<Panel_Left_> {
         // Template
         ListTile(
           leading: Icon(Icons.model_training_outlined),
-          title: Text("Template 1"),
-          selected: global.body == "Template 1",
+          title: Text("Demo"),
+          selected: global.body == "Demo",
           selectedColor: Colors.blue,
           onTap: () {
             global.body = "Template 1";
@@ -223,7 +223,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
 
         // Template
         (() {
-          String name = "Template 2";
+          String name = "Demo 1";
           return ListTile(
             leading: Icon(Icons.model_training_outlined),
             title: Text(name),
@@ -239,7 +239,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
 
         // Template
         (() {
-          String name = "Template 2a";
+          String name = "Demo 1A";
           return ListTile(
             leading: Icon(Icons.model_training_outlined),
             title: Text(name),
@@ -254,7 +254,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
         })(),
 
         (() {
-          String name = "Template 2b";
+          String name = "Demo 1B";
           return ListTile(
             leading: Icon(Icons.model_training_outlined),
             title: Text(name),
