@@ -21,11 +21,12 @@ import 'Filter_Datetime.dart';
 import '__Setup__.dart';
 import 'Schema.g.dart';
 
-import 'form_check_in/Step_1_Guest_Info.dart';
 import 'Form_Create.dart';
 import 'Form_Read.dart';
 import 'Form_Update.dart';
 import 'Form_Delete.dart';
+
+import 'form_check_in/Step_1_Room_Info.dart';
 
 void main() {
   runApp(
@@ -356,7 +357,7 @@ class _Main_State extends State<Main_> {
     //
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => Guest_Info_()),
+      MaterialPageRoute(builder: (context) => Step_1_Room_Info_()),
     );
 
     // .then((v) {

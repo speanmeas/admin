@@ -36,12 +36,6 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "ar",
-    "type": "number",
-    "title": "A/R",
-    "value": null
-  },
-  {
     "key": "note",
     "type": "string",
     "title": "Note",

@@ -78,15 +78,15 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "price_total_usd",
-    "type": "number",
-    "title": "Price (USD)",
+    "key": "check_out_schedule",
+    "type": "date-time",
+    "title": "Check-out Schedule",
     "value": null
   },
   {
-    "key": "price_total_khr",
+    "key": "price_total_usd",
     "type": "number",
-    "title": "Price (KHR)",
+    "title": "Price (USD)",
     "value": null
   },
   {
@@ -114,21 +114,33 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "ar_usd",
+    "key": "paid_total_usd",
+    "type": "number",
+    "title": "Paid Total (USD)",
+    "value": null
+  },
+  {
+    "key": "return_usd",
+    "type": "number",
+    "title": "Return (USD)",
+    "value": null
+  },
+  {
+    "key": "return_khr",
+    "type": "number",
+    "title": "Return (KHR)",
+    "value": null
+  },
+  {
+    "key": "return_total_usd",
+    "type": "number",
+    "title": "Return (USD)",
+    "value": null
+  },
+  {
+    "key": "ar_total_usd",
     "type": "number",
     "title": "A/R (USD)",
-    "value": null
-  },
-  {
-    "key": "ar_khr",
-    "type": "number",
-    "title": "A/R (KHR)",
-    "value": null
-  },
-  {
-    "key": "status",
-    "type": "string",
-    "title": "Status",
     "value": null
   },
   {
@@ -168,15 +180,21 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "cleaning_date",
+    "key": "clean_date",
     "type": "date-time",
-    "title": "Cleaning Date",
+    "title": "Clean Date",
     "value": null
   },
   {
-    "key": "cleaned_by",
+    "key": "clean_by",
     "type": "string",
-    "title": "Cleaned By",
+    "title": "Clean By",
+    "value": null
+  },
+  {
+    "key": "status",
+    "type": "string",
+    "title": "Status",
     "value": null
   },
   {
