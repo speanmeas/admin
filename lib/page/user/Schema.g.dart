@@ -1,52 +1,68 @@
 List<Map<String, dynamic>> schema = [
   {
+    "key": "id",
+    "type": "id",
+    "title": "ID",
+    "value": null
+  },
+  {
     "key": "username",
     "type": "string",
-    "title": "Username"
+    "title": "Username",
+    "value": null
   },
   {
     "key": "password",
     "type": "string",
-    "title": "Password"
+    "title": "Password",
+    "value": null
   },
   {
     "key": "full_name",
     "type": "string",
-    "title": "Full Name"
+    "title": "Full Name",
+    "value": null
   },
   {
     "key": "phone_number",
     "type": "string",
-    "title": "Phone Number"
+    "title": "Phone Number",
+    "value": null
   },
   {
     "key": "email",
     "type": "string",
-    "title": "Email"
+    "title": "Email",
+    "value": null
   },
   {
     "key": "is_admin",
     "type": "boolean",
-    "title": "Is Admin"
+    "title": "Is Admin",
+    "value": null
   },
   {
     "key": "is_manager",
     "type": "boolean",
-    "title": "Is Manager"
+    "title": "Is Manager",
+    "value": null
   },
   {
     "key": "is_receptionist",
     "type": "boolean",
-    "title": "Is Receptionist"
+    "title": "Is Receptionist",
+    "value": null
   },
   {
     "key": "is_cleaner",
     "type": "boolean",
-    "title": "Is Cleaner"
+    "title": "Is Cleaner",
+    "value": null
   },
   {
     "key": "note",
     "type": "string",
-    "title": "Note"
+    "title": "Note",
+    "value": null
   }
 ];

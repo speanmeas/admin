@@ -98,34 +98,6 @@ class _Panel_Left_State extends State<Panel_Left_> {
             }, //
           ),
 
-        // Check In/Out/Clean
-        if (false)
-          ListTile(
-            leading: Icon(Icons.meeting_room_outlined),
-            title: Text("Check In"),
-            selected: global.body == "Check In",
-            selectedColor: Colors.blue,
-            onTap: () {
-              global.body = "Check In";
-              global.notifyListeners();
-              if (is_mobile) Navigator.pop(context);
-            }, //
-          ),
-
-        // Check In/Out/Clean
-        if (false)
-          ListTile(
-            leading: Icon(Icons.meeting_room_outlined),
-            title: Text("Check In/Out/Clean"),
-            selected: global.body == "Check In/Out/Clean",
-            selectedColor: Colors.blue,
-            onTap: () {
-              global.body = "Check In/Out/Clean";
-              global.notifyListeners();
-              if (is_mobile) Navigator.pop(context);
-            }, //
-          ),
-
         // Reports
         ExpansionTile(
           leading: Icon(Icons.assessment_outlined), //
@@ -207,6 +179,22 @@ class _Panel_Left_State extends State<Panel_Left_> {
         //       if (is_mobile) Navigator.pop(context);
         //     }, //
         //   ),
+
+        // Nationality
+        (() {
+          String name = "Nationality";
+          return ListTile(
+            leading: Icon(Icons.model_training_outlined),
+            title: Text(name),
+            selected: global.body == name,
+            selectedColor: Colors.blue,
+            onTap: () {
+              global.body = name;
+              global.notifyListeners();
+              if (is_mobile) Navigator.pop(context);
+            },
+          );
+        })(),
 
         // Template
         (() {

@@ -1,0 +1,154 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:speanmeas/Global.dart';
+
+import 'package:speanmeas/theme/Theme_Data.dart';
+import 'package:speanmeas/utility/Datetime_format.dart';
+import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/widget/Datetime_Picker.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
+
+import '__Setup__.dart';
+import 'Schema.g.dart';
+
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global(), //
+      child: Main(),
+    ),
+  );
+}
+
+class Main extends StatelessWidget {
+  Main({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: Theme_Data(), //
+      debugShowCheckedModeBanner: false,
+      home: Filter_Datetime_(),
+    );
+  }
+}
+
+class Filter_Datetime_ extends StatefulWidget {
+  Filter_Datetime_({super.key});
+
+  @override
+  State<Filter_Datetime_> createState() => _Filter_Datetime_State();
+}
+
+class _Filter_Datetime_State extends State<Filter_Datetime_> {
+  String? start_datetime;
+  String? end_datetime;
+
+  DateTime? start_datetime_raw;
+  DateTime? end_datetime_raw;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Filter Datetime", //
+          style: TextStyle(
+            fontSize: 20, //
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        centerTitle: false,
+        toolbarHeight: 40,
+        titleSpacing: 0,
+      ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              //
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: TextEditingController(text: start_datetime ?? "Select"),
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(), //
+                    labelText: "Start Datetime:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    suffixIcon: Icon(Icons.calendar_today, size: 20), //
+                  ),
+                  onTap: () async {
+                    final DateTime? datetime = await datetime_picker(context);
+                    if (datetime == null) return;
+                    start_datetime = datetime_to_string(datetime);
+                    start_datetime_raw = datetime;
+                    setState(() {});
+                  }, //,
+                ),
+              ),
+
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: TextEditingController(text: end_datetime ?? "Select"),
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(), //
+                    labelText: "End Datetime:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    suffixIcon: Icon(Icons.calendar_today, size: 20), //
+                  ),
+                  onTap: () async {
+                    final DateTime? datetime = await datetime_picker(context);
+                    if (datetime == null) return;
+                    end_datetime = datetime_to_string(datetime);
+                    end_datetime_raw = datetime;
+                    setState(() {});
+                  }, //,
+                ),
+              ),
+
+              Container(
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: OutlinedButton.icon(
+                  icon: Icon(Icons.date_range),
+                  label: Text("Apply"), //
+                  onPressed: on_apply_filter,
+                ),
+              ),
+              //
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void on_apply_filter() {
+    // validate start and end datetime
+    if (start_datetime_raw == null || end_datetime_raw == null) {
+      snackbar_show(context: context, message: "Please select start and end datetime", color: Colors.red);
+      return;
+    }
+
+    // please put end datetime after start datetime
+    if (end_datetime_raw!.isBefore(start_datetime_raw!)) {
+      snackbar_show(context: context, message: "End datetime must be after start datetime", color: Colors.red);
+      return;
+    }
+
+    // print start and end datetime
+    // print("Filter: $start_datetime to $end_datetime");
+
+    Navigator.pop(context, {"start": start_datetime_raw, "end": end_datetime_raw});
+
+    snackbar_show(context: context, message: "Filter applied", color: Colors.green);
+  }
+}

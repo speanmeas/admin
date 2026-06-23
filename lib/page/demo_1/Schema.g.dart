@@ -30,21 +30,21 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "demo_1a_id",
+    "key": "note",
     "type": "string",
-    "title": "Demo 1A",
+    "title": "Note",
+    "value": null
+  },
+  {
+    "key": "demo_1a_id",
+    "type": "id",
+    "title": "Demo 1A ID",
     "value": null
   },
   {
     "key": "demo_1b_id",
-    "type": "string",
-    "title": "Demo 1B",
-    "value": null
-  },
-  {
-    "key": "note",
-    "type": "string",
-    "title": "Note",
+    "type": "id",
+    "title": "Demo 1B ID",
     "value": null
   }
 ];

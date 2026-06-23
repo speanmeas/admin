@@ -35,10 +35,7 @@ class Main extends StatelessWidget {
 }
 
 class Form_Delete_ extends StatefulWidget {
-  Form_Delete_({
-    super.key, //
-    required this.id,
-  });
+  Form_Delete_({super.key, required this.id});
 
   final String id;
 
@@ -53,7 +50,7 @@ class _Form_Delete_State extends State<Form_Delete_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Delete", //
+          "Delete - $HEADER", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -87,7 +84,7 @@ class _Form_Delete_State extends State<Form_Delete_> {
                   icon: Icon(Icons.delete_outlined),
                   label: Text("Delete"),
                   style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-                  onPressed: delete_pressed,
+                  onPressed: on_delete,
                   // style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 ),
               ),
@@ -98,7 +95,7 @@ class _Form_Delete_State extends State<Form_Delete_> {
     );
   }
 
-  void delete_pressed() async {
+  void on_delete() async {
     //
     await dio
         .post(

@@ -6,24 +6,6 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "name",
-    "type": "string",
-    "title": "Name",
-    "value": null
-  },
-  {
-    "key": "gender",
-    "type": "string",
-    "title": "Gender",
-    "value": null
-  },
-  {
-    "key": "phone_number",
-    "type": "string",
-    "title": "Phone Number",
-    "value": null
-  },
-  {
     "key": "nationality",
     "type": "string",
     "title": "Nationality",

@@ -47,16 +47,6 @@ class Form_Create_ extends StatefulWidget {
 
 class _Form_Create_State extends State<Form_Create_> {
   //
-  Map<String, dynamic> output = {};
-
-  @override
-  void initState() {
-    super.initState();
-
-    for (var e in schema) {
-      output[e["key"]] = null;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +55,7 @@ class _Form_Create_State extends State<Form_Create_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Create", //
+          "Create - $HEADER", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -100,7 +90,7 @@ class _Form_Create_State extends State<Form_Create_> {
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (value) {
-                        output[row["key"]] = value; //
+                        row["value"] = value; //
                       },
                     ),
                   );
@@ -123,7 +113,7 @@ class _Form_Create_State extends State<Form_Create_> {
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (value) {
-                        output[row["key"]] = value; //
+                        row["value"] = value; //
                       },
                     ),
                   );
@@ -144,7 +134,7 @@ class _Form_Create_State extends State<Form_Create_> {
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (value) {
-                        output[row["key"]] = double.tryParse(value);
+                        row["value"] = double.tryParse(value);
                       },
                     ),
                   );
@@ -167,9 +157,9 @@ class _Form_Create_State extends State<Form_Create_> {
                       }).toList(),
                       onChanged: (v) {
                         if (v == "Yes") {
-                          output[row["key"]] = true;
+                          row["value"] = true;
                         } else {
-                          output[row["key"]] = false;
+                          row["value"] = false;
                         }
                         setState(() {});
                       },
@@ -182,7 +172,7 @@ class _Form_Create_State extends State<Form_Create_> {
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[row["key"]] ?? ""),
+                      controller: TextEditingController(text: row["value"] ?? ""),
                       readOnly: true,
                       decoration: InputDecoration(
                         hintText: "Select", //
@@ -195,7 +185,7 @@ class _Form_Create_State extends State<Form_Create_> {
                       onTap: () async {
                         final DateTime? datetime = await datetime_picker(context);
                         if (datetime == null) return;
-                        output[row["key"]] = datetime_to_string(datetime);
+                        row["value"] = datetime_to_string(datetime);
                         setState(() {});
                       }, //,
                     ),
@@ -211,7 +201,7 @@ class _Form_Create_State extends State<Form_Create_> {
                   icon: Icon(Icons.check),
                   label: Text("Create"),
                   style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                  onPressed: create_pressed,
+                  onPressed: on_create,
                 ),
               ),
 
@@ -223,15 +213,15 @@ class _Form_Create_State extends State<Form_Create_> {
     );
   }
 
-  void create_pressed() async {
+  void on_create() async {
     //
 
-    print(output);
+    Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
 
     await dio
         .post('$PATH/data_create', data: FormData.fromMap({...output}))
         .then((r) {
-          output["id"] = r.data["id"]; //
+          // output["id"] = r.data["id"]; //
           snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
           Navigator.pop(context, output);
         })

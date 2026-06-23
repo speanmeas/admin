@@ -1,37 +1,50 @@
 List<Map<String, dynamic>> schema = [
   {
+    "key": "id",
+    "type": "id",
+    "title": "ID",
+    "value": null
+  },
+  {
     "key": "room_number",
     "type": "string",
-    "title": "Room Number"
+    "title": "Room Number",
+    "value": null
   },
   {
     "key": "room_type",
     "type": "string",
-    "title": "Room Type"
+    "title": "Room Type",
+    "value": null
   },
   {
     "key": "price_per_day",
     "type": "number",
-    "title": "Price/Day"
+    "title": "Price/Day",
+    "value": null
   },
   {
     "key": "price_per_3_hour",
     "type": "number",
-    "title": "Price/3h"
+    "title": "Price/3h",
+    "value": null
   },
   {
     "key": "status",
     "type": "string",
-    "title": "Status"
+    "title": "Status",
+    "value": null
   },
   {
     "key": "ar",
     "type": "number",
-    "title": "Account Receivable"
+    "title": "A/R",
+    "value": null
   },
   {
     "key": "note",
     "type": "string",
-    "title": "Note"
+    "title": "Note",
+    "value": null
   }
 ];

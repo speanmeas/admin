@@ -6,7 +6,8 @@ class Global extends ChangeNotifier {
 
   String header = TITLE;
 
-  String body = kDebugMode ? "Demo" : "Front Desk";
+  String body = "Front Desk";
+  // String body = kDebugMode ? "Demo" : "Front Desk";
 
   String username = "";
 

@@ -79,12 +79,6 @@ class _Main_State extends State<Main_> {
   int? order;
 
   @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
     final screen_height = MediaQuery.of(context).size.height;
@@ -151,7 +145,11 @@ class _Main_State extends State<Main_> {
                 height: 32,
                 margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
                 child: InkWell(
-                  child: Icon(Icons.refresh, color: Colors.blue), //
+                  child: Icon(
+                    Icons.refresh, //
+                    size: 28,
+                    color: Colors.blue,
+                  ), //
                   onTap: on_refresh,
                 ),
               ),
@@ -164,15 +162,12 @@ class _Main_State extends State<Main_> {
               rows: [],
               //
               columns: [
-                // hidden id
-                PlutoColumn(title: "ID", field: "id", type: PlutoColumnType.text(), hide: true, readOnly: true),
-
-                ...schema.map((row) {
+                ...schema.map((s) {
                   return build_plutocolumn(
-                    field: row['key']!, //
-                    title: row['title']!,
-                    type: row['type']!,
-                    on_filter: () => on_filter(row),
+                    field: s['key']!, //
+                    title: s['title']!,
+                    type: s['type']!,
+                    on_filter: () => on_filter(s),
                   );
                 }),
               ], //
@@ -245,10 +240,16 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  void on_filter(row) {
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void on_filter(s) {
     //
     // init
-    key = row['key'];
+    key = s['key'];
     order = 1;
 
     // clear sort
@@ -257,7 +258,7 @@ class _Main_State extends State<Main_> {
       state_manager?.sortBySortIdx(sorted_column);
     }
 
-    if (row['type'] == 'string') {
+    if (s['type'] == 'string') {
       Navigator.push(
         context, //
         MaterialPageRoute(builder: (context) => Filter_String_()),
@@ -273,7 +274,7 @@ class _Main_State extends State<Main_> {
       });
     }
     //
-    else if (row['type'] == 'number') {
+    else if (s['type'] == 'number') {
       Navigator.push(
         context, //
         MaterialPageRoute(builder: (context) => Filter_Number_()),
@@ -291,7 +292,7 @@ class _Main_State extends State<Main_> {
       });
     }
     //
-    else if (row['type'] == 'date-time') {
+    else if (s['type'] == 'date-time') {
       Navigator.push(
         context, //
         MaterialPageRoute(builder: (context) => Filter_Datetime_()),
@@ -309,7 +310,7 @@ class _Main_State extends State<Main_> {
       });
     }
     //
-    else if (row['type'] == 'boolean') {
+    else if (s['type'] == 'boolean') {
       Navigator.push(
         context, //
         MaterialPageRoute(builder: (context) => Filter_Boolean_()),
@@ -414,12 +415,12 @@ class _Main_State extends State<Main_> {
     }
 
     Map<String, dynamic> data = {};
-    state_manager?.currentRow!.cells.forEach((key, cell) {
-      data[key] = (() {
-        if (cell.value == null) return null;
+    state_manager?.currentRow!.cells.forEach((k, c) {
+      data[k] = (() {
+        if (c.value == null) return null;
 
         // default
-        return cell.value.toString();
+        return c.value.toString();
       })();
     });
 
@@ -542,9 +543,8 @@ class _Main_State extends State<Main_> {
             for (var d in data)
               PlutoRow(
                 cells: {
-                  'id': PlutoCell(value: d['id'].toString()),
                   for (var s in schema)
-                    //
+                    // exclude password field
                     if (s['key'] == "password") //
                       s['key']!: PlutoCell(value: "**********")
                     //
@@ -592,9 +592,6 @@ class _Main_State extends State<Main_> {
           setState(() {});
         })
         .catchError((e) {});
-
-    // print length of state_manager?.rows
-    // print(state_manager?.rows.length);
   }
 
   void on_load_more() async {
@@ -626,7 +623,6 @@ class _Main_State extends State<Main_> {
             for (var d in data)
               PlutoRow(
                 cells: {
-                  'id': PlutoCell(value: d['id'].toString()),
                   for (var s in schema)
                     //
                     if (s['key'] == "password") //
@@ -672,9 +668,7 @@ class _Main_State extends State<Main_> {
                 },
               ),
           ]);
-
           is_loading = false;
-
           setState(() {});
         })
         .catchError((e) {});
@@ -688,10 +682,12 @@ class _Main_State extends State<Main_> {
   }) {
     //
     PlutoColumnType column_type = PlutoColumnType.text();
-    //
+
+    // make number sort correctly
     if (type == 'number') {
       column_type = PlutoColumnType.number();
     }
+
     //
     return PlutoColumn(
       title: title,
@@ -701,6 +697,7 @@ class _Main_State extends State<Main_> {
       minWidth: 100,
       readOnly: true,
       enableFilterMenuItem: false,
+      hide: type == "id" ? true : false,
 
       titleSpan: WidgetSpan(
         child: Row(

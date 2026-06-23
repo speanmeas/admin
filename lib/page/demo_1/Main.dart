@@ -80,12 +80,6 @@ class _Main_State extends State<Main_> {
   int? order;
 
   @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
     final screen_height = MediaQuery.of(context).size.height;
@@ -165,9 +159,6 @@ class _Main_State extends State<Main_> {
               rows: [],
               //
               columns: [
-                // hidden id
-                PlutoColumn(title: "ID", field: "id", type: PlutoColumnType.text(), hide: true, readOnly: true),
-
                 ...schema.map((row) {
                   return build_plutocolumn(
                     field: row['key']!, //
@@ -211,21 +202,24 @@ class _Main_State extends State<Main_> {
           ),
 
           if (is_loading)
-            Container(
-              height: 24,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 20, //
-                    height: 20,
-                    child: CircularProgressIndicator(),
-                  ),
-                  SizedBox(width: 12),
-                  Text('Loading more...'),
-                ],
-              ),
-            ),
+            (() {
+              if (state_manager == null) return SizedBox();
+              return Container(
+                height: 24,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 20, //
+                      height: 20,
+                      child: CircularProgressIndicator(),
+                    ),
+                    SizedBox(width: 12),
+                    Text('Loading more...'),
+                  ],
+                ),
+              );
+            })(),
 
           if (!is_loading)
             (() {
@@ -689,7 +683,7 @@ class _Main_State extends State<Main_> {
   }) {
     //
     PlutoColumnType column_type = PlutoColumnType.text();
-    //
+    // make number sort correctly
     if (type == 'number') {
       column_type = PlutoColumnType.number();
     }
@@ -702,6 +696,7 @@ class _Main_State extends State<Main_> {
       minWidth: 100,
       readOnly: true,
       enableFilterMenuItem: false,
+      hide: type == 'id' ? true : false,
 
       titleSpan: WidgetSpan(
         child: Row(
@@ -742,5 +737,11 @@ class _Main_State extends State<Main_> {
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
   }
 }

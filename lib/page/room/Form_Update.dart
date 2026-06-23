@@ -6,9 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
-
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Datetime_format.dart';
 import 'package:speanmeas/utility/Dio.dart';
@@ -39,7 +39,7 @@ class Main extends StatelessWidget {
     "datetime_2": "2024-02-02T00:00:00Z",
     "boolean_1": true,
     "boolean_2": false,
-    "note": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets.",
+    "note": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
   };
 
   @override
@@ -86,17 +86,6 @@ class _Form_Update_State extends State<Form_Update_> {
             fontWeight: FontWeight.bold,
           ),
         ),
-
-        actions: [
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            color: Colors.red,
-          ),
-          SizedBox(width: 8),
-        ],
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -136,7 +125,7 @@ class _Form_Update_State extends State<Form_Update_> {
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
+                      controller: TextEditingController(text: ''),
                       decoration: InputDecoration(
                         hintText: "Enter new password", //
                         labelText: row['title'], //

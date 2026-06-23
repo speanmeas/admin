@@ -8,10 +8,11 @@ import 'package:speanmeas/page/front_desk/Main.dart' as front_desk;
 import 'package:speanmeas/page/guest/Main.dart' as guest;
 import 'package:speanmeas/page/room/Main.dart' as room;
 import 'package:speanmeas/page/user/Main.dart' as user;
-import 'package:speanmeas/page/.check_in/Main.dart' as check_in;
-import 'package:speanmeas/page/.setting/Main.dart' as setting;
+import 'package:speanmeas/page/nationality/Main.dart' as natinoality;
 
 import 'package:speanmeas/page/demo/Main.dart' as demo;
+
+import 'package:speanmeas/page/.setting/Main.dart' as setting;
 
 import 'package:speanmeas/page/demo_1/Main.dart' as demo_1;
 import 'package:speanmeas/page/demo_1a/Main.dart' as demo_1a;
@@ -72,6 +73,9 @@ class _Panel_Body_State extends State<Panel_Body_> {
       return user.Main_();
     }
 
+    if (global.body == "Nationality") {
+      return natinoality.Main_();
+    }
     if (global.body == "Demo") {
       return demo.Main_();
     }
