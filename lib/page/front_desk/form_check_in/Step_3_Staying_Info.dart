@@ -32,19 +32,19 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Step_3_Stay_Info_(),
+      home: Step_3_Staying_Info_(),
     );
   }
 }
 
-class Step_3_Stay_Info_ extends StatefulWidget {
-  Step_3_Stay_Info_({super.key});
+class Step_3_Staying_Info_ extends StatefulWidget {
+  Step_3_Staying_Info_({super.key});
 
   @override
-  State<Step_3_Stay_Info_> createState() => _Step_3_Stay_Info_State();
+  State<Step_3_Staying_Info_> createState() => _Step_3_Staying_Info_State();
 }
 
-class _Step_3_Stay_Info_State extends State<Step_3_Stay_Info_> {
+class _Step_3_Staying_Info_State extends State<Step_3_Staying_Info_> {
   @override
   Widget build(BuildContext context) {
     final screen_height = MediaQuery.of(context).size.height;
@@ -220,7 +220,7 @@ class _Step_3_Stay_Info_State extends State<Step_3_Stay_Info_> {
               Container(
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: OutlinedButton.icon(
-                  icon: Icon(Icons.check),
+                  icon: Icon(Icons.arrow_right_alt_outlined),
                   label: Text("Next"),
                   style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
                   onPressed: on_next,

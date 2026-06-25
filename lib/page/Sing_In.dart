@@ -91,7 +91,7 @@ class _Sign_In_State extends State<Sign_In_> {
           data: FormData.fromMap({"access_token": access_token}),
         )
         .then((r) async {
-          print(r.data);
+          // print(r.data);
 
           if (r.data["username"] != null) {
             global.username = r.data["username"];
@@ -235,9 +235,9 @@ class _Sign_In_State extends State<Sign_In_> {
           }),
         )
         .then((r) async {
-          print("Login successful");
+          // print("Login successful");
 
-          print("Response: ${r.data}");
+          // print("Response: ${r.data}");
 
           snackbar_show(context: context, message: "Login successful", color: Colors.green);
 

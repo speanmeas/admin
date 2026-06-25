@@ -68,29 +68,19 @@ class _Step_5_Summary_State extends State<Step_5_Summary_> {
           ),
         ),
 
-        actions: [
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            color: Colors.red,
-            tooltip: "Close",
-          ),
-          SizedBox(width: 4),
-        ],
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
       ),
       body: SingleChildScrollView(
-        child: Center(
+        child: Align(
+          alignment: Alignment.topCenter,
           child: Column(
             children: [
               // button check in + print
               Container(
                 width: 600,
-                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.all(8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

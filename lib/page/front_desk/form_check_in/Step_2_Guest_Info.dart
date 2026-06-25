@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/page/front_desk/form_check_in/Step_3_Stay_Info.dart';
+import 'package:speanmeas/page/front_desk/form_check_in/Step_3_Staying_Info.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Datetime_format.dart';
@@ -104,7 +104,7 @@ class _Step_2_Guest_Info_State extends State<Step_2_Guest_Info_> {
                         return TextField(
                           controller: controller,
                           focusNode: focusNode,
-                          autofocus: true,
+                          // autofocus: true,
                           decoration: InputDecoration(
                             // hintText: "Search", //
                             labelText: "Phone Number:", //
@@ -254,7 +254,7 @@ class _Step_2_Guest_Info_State extends State<Step_2_Guest_Info_> {
               Container(
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: OutlinedButton.icon(
-                  icon: Icon(Icons.check),
+                  icon: Icon(Icons.arrow_right_alt_outlined),
                   label: Text("Next"),
                   style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
                   onPressed: on_next,
@@ -279,7 +279,7 @@ class _Step_2_Guest_Info_State extends State<Step_2_Guest_Info_> {
 
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => Step_3_Stay_Info_()),
+      MaterialPageRoute(builder: (context) => Step_3_Staying_Info_()),
     );
 
     //   Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};

@@ -374,7 +374,7 @@ class _Step_4_Payment_Info_State extends State<Step_4_Payment_Info_> {
               Container(
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: OutlinedButton.icon(
-                  icon: Icon(Icons.check),
+                  icon: Icon(Icons.arrow_right_alt_outlined),
                   label: Text("Next"),
                   style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
                   onPressed: on_next,

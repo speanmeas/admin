@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/page/front_desk/form_check_in/Step_2_Guest_Info.dart';
-
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Datetime_format.dart';
 import 'package:speanmeas/utility/Dio.dart';
@@ -12,7 +12,9 @@ import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import '../__Setup__.dart';
-import '../Schema.g.dart';
+import '../../room/Schema.g.dart';
+
+import 'Step_2_Guest_Info.dart';
 
 void main() {
   runApp(
@@ -44,16 +46,26 @@ class Step_1_Room_Info_ extends StatefulWidget {
 }
 
 class _Step_1_Room_Info_State extends State<Step_1_Room_Info_> {
-  // List<Map<String, dynamic>> rooms = [
-  //   {"room_number": "101", "room_type": "Deluxe Room"},
-  //   {"room_number": "102", "room_type": "Deluxe Room"},
-  //   {"room_number": "103", "room_type": "Standard Room"},
-  //   {"room_number": "104", "room_type": "Standard Room"},
-  //   {"room_number": "105", "room_type": "Suite Room"},
-  //   {"room_number": "106", "room_type": "Suite Room"},
-  //   {"room_number": "107", "room_type": "Single Room"},
-  //   {"room_number": "108", "room_type": "Single Room"},
-  // ];
+  String room_number = "";
+
+  List<Map<String, dynamic>> room_infos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    await dio
+        .post('/room/data_read')
+        .then((r) {
+          room_infos = List<Map<String, dynamic>>.from(r.data);
+          room_infos.sort((a, b) => "${a["room_number"]}".compareTo("${b["room_number"]}"));
+          setState(() {});
+        })
+        .catchError((_) {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,147 +86,161 @@ class _Step_1_Room_Info_State extends State<Step_1_Room_Info_> {
         titleSpacing: 0,
       ),
       body: SingleChildScrollView(
-        child: Center(
+        child: Align(
+          alignment: Alignment.topLeft,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              (() {
-                var options = List.generate(100, (index) => (100 + index).toString());
-                return Container(
-                  width: 600,
-                  margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                  child: Autocomplete<String>(
-                    optionsBuilder: (TextEditingValue textEditingValue) {
-                      // if (textEditingValue.text.isEmpty) {
-                      //   return const Iterable<String>.empty();
-                      // }
-                      return options.where((option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
-                    },
-                    optionsMaxHeight: double.infinity,
-                    onSelected: (String selection) {
-                      // row["value"] = selection;
-                      print('You just selected $selection');
-                    },
-                    fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-                      return TextField(
-                        controller: controller,
-                        focusNode: focusNode,
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          // hintText: "Search", //
-                          labelText: "Room Number:", //
-                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child: IconButton(
-                              icon: Icon(Icons.clear, size: 24, color: Colors.red), //
-                              onPressed: () {
-                                controller.clear();
-                                // row["value"] = "";
-                              },
-                            ),
+              for (var room in room_infos) ...[
+                //
+                if (room["status"] == "Available")
+                  InkWell(
+                    child: Container(
+                      height: 50,
+                      width: 600,
+                      padding: EdgeInsets.fromLTRB(8, 0, 12, 0),
+                      decoration: BoxDecoration(
+                        border: Border(top: BorderSide(color: Colors.black)),
+                      ),
+
+                      child: Row(
+                        children: [
+                          Icon(Icons.bed_outlined, color: Colors.green, size: 32), //
+                          SizedBox(width: 8),
+                          Column(
+                            mainAxisAlignment: .center,
+                            crossAxisAlignment: .start,
+                            children: [
+                              Text("Room ${room["room_number"]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("${room["price_per_day"]}\$/day | ${room["price_per_3_hour"]}\$/3h"),
+                            ],
                           ),
-                        ),
-                        onChanged: (value) {
-                          // row["value"] = value;
-                        },
-                        onSubmitted: (_) => onFieldSubmitted(),
+                          Spacer(),
+                          Text(
+                            "${room["status"]}",
+                            style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                          ), //
+                        ],
+                      ),
+                    ),
+                    onTap: () {
+                      var info = room_infos.firstWhere((e) => e["room_number"] == room["room_number"]);
+
+                      for (final e in info.entries) {
+                        if (e.key == "id") continue;
+                        var index = schema.indexWhere((s) => s["key"] == e.key);
+                        if (index != -1) {
+                          schema[index]["value"] = e.value;
+                        }
+                      }
+
+                      Navigator.push(
+                        context, //
+                        MaterialPageRoute(builder: (context) => Step_2_Guest_Info_()),
                       );
+
+                      setState(() {});
                     },
                   ),
-                );
-              })(),
 
-              (() {
-                // String value = output[row["key"]]?.toString() ?? "";
-                String value = "Deluxe Room"; //
-                return Container(
-                  width: 600,
-                  margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Room Type: ", //
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                //
+                if (room["status"] == "Occupied")
+                  InkWell(
+                    child: Container(
+                      height: 50,
+                      width: 600,
+                      padding: EdgeInsets.fromLTRB(8, 0, 12, 0),
+
+                      decoration: BoxDecoration(
+                        border: Border(top: BorderSide(color: Colors.black)),
                       ),
-                      Expanded(
-                        child: Text(
-                          value,
-                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
-                          maxLines: 4,
-                        ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.bed_outlined, color: Colors.red, size: 32), //
+                          SizedBox(width: 8),
+                          Column(
+                            mainAxisAlignment: .center,
+                            crossAxisAlignment: .start,
+                            children: [
+                              Text("Room ${room["room_number"]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("${room["price_per_day"]}\$/day | ${room["price_per_3_hour"]}\$/3h"),
+                            ],
+                          ),
+                          Spacer(),
+                          Text(
+                            "${room["status"]}",
+                            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                          ), //
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                );
-              })(),
 
-              (() {
-                // String value = output[row["key"]]?.toString() ?? "";
-                String value = "15"; //
-                return Container(
-                  width: 600,
-                  margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Room Price/Day: ", //
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                //
+                if (room["status"] == "Maintenance")
+                  InkWell(
+                    child: Container(
+                      height: 50,
+                      width: 600,
+                      padding: EdgeInsets.fromLTRB(8, 0, 12, 0),
+                      decoration: BoxDecoration(
+                        border: Border(top: BorderSide(color: Colors.black)),
                       ),
-                      Expanded(
-                        child: Text(
-                          value,
-                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
-                          maxLines: 4,
-                        ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.bed_outlined, color: Colors.grey, size: 32), //
+                          SizedBox(width: 8),
+                          Column(
+                            mainAxisAlignment: .center,
+                            crossAxisAlignment: .start,
+                            children: [
+                              Text("Room ${room["room_number"]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("${room["price_per_day"]}\$/day | ${room["price_per_3_hour"]}\$/3h"),
+                            ],
+                          ),
+                          Spacer(),
+                          Text(
+                            "${room["status"]}",
+                            style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                          ), //
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                );
-              })(),
 
-              (() {
-                // String value = output[row["key"]]?.toString() ?? "";
-                String value = "8"; //
-                return Container(
-                  width: 600,
-                  margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Room Price/3H: ", //
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                //
+                if (room["status"] == "Dirty")
+                  InkWell(
+                    child: Container(
+                      height: 50,
+                      width: 600,
+                      padding: EdgeInsets.fromLTRB(8, 0, 12, 0),
+                      decoration: BoxDecoration(
+                        border: Border(top: BorderSide(color: Colors.black)),
                       ),
-                      Expanded(
-                        child: Text(
-                          value,
-                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
-                          maxLines: 4,
-                        ),
+
+                      child: Row(
+                        children: [
+                          Icon(Icons.bed_outlined, color: Colors.amber, size: 32), //
+                          SizedBox(width: 8),
+                          Column(
+                            mainAxisAlignment: .center,
+                            crossAxisAlignment: .start,
+                            children: [
+                              Text("Room ${room["room_number"]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("${room["price_per_day"]}\$/day | ${room["price_per_3_hour"]}\$/3h"),
+                            ],
+                          ),
+                          Spacer(),
+                          Text(
+                            "${room["status"]}",
+                            style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+                          ), //
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                );
-              })(),
-
-              Container(
-                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: OutlinedButton.icon(
-                  icon: Icon(Icons.arrow_right_alt_outlined),
-                  label: Text("Next"),
-                  style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                  onPressed: on_next,
-                ),
-              ),
+              ],
 
               SizedBox(height: screen_height - 80),
             ],
@@ -222,32 +248,5 @@ class _Step_1_Room_Info_State extends State<Step_1_Room_Info_> {
         ),
       ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void on_next() async {
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => Step_2_Guest_Info_()),
-    );
-
-    //
-
-    //   Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
-
-    //   await dio
-    //       .post('$PATH/data_create', data: FormData.fromMap({...output}))
-    //       .then((r) {
-    //         // output["id"] = r.data["id"]; //
-    //         snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
-    //         Navigator.pop(context, output);
-    //       })
-    //       .catchError((error) {
-    //         snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
-    //       });
   }
 }
