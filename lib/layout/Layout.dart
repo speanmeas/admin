@@ -42,12 +42,10 @@ class Layout_ extends StatefulWidget {
 
 class _Layout_State extends State<Layout_> {
   bool is_mobile = false;
-  Global global = Global();
 
   @override
   Widget build(BuildContext context) {
     is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
-    global = context.watch<Global>();
     return Scaffold(
       appBar: AppBar(
         title: Panel_Top_(), //

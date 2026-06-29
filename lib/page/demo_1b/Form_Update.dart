@@ -6,9 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
-
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Datetime_format.dart';
 import 'package:speanmeas/utility/Dio.dart';
@@ -86,17 +86,6 @@ class _Form_Update_State extends State<Form_Update_> {
             fontWeight: FontWeight.bold,
           ),
         ),
-
-        actions: [
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            color: Colors.red,
-          ),
-          SizedBox(width: 8),
-        ],
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,

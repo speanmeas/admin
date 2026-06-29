@@ -11,6 +11,7 @@ analyzer:
   errors:
     avoid_print: ignore
     camel_case_types: ignore
+    curly_braces_in_flow_control_structures: ignore
     dead_code: ignore
     depend_on_referenced_packages: ignore
     file_names: ignore

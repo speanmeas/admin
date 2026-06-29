@@ -33,19 +33,19 @@ class Main extends StatelessWidget {
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Step_5a_Invoice_(),
+      home: Step_5a_Receipt_(),
     );
   }
 }
 
-class Step_5a_Invoice_ extends StatefulWidget {
-  const Step_5a_Invoice_({super.key});
+class Step_5a_Receipt_ extends StatefulWidget {
+  const Step_5a_Receipt_({super.key});
 
   @override
-  State<Step_5a_Invoice_> createState() => _Step_5a_Invoice_State();
+  State<Step_5a_Receipt_> createState() => _Step_5a_Receipt_State();
 }
 
-class _Step_5a_Invoice_State extends State<Step_5a_Invoice_> {
+class _Step_5a_Receipt_State extends State<Step_5a_Receipt_> {
   //
 
   @override
@@ -61,30 +61,56 @@ class _Step_5a_Invoice_State extends State<Step_5a_Invoice_> {
     }
   }
 
+  double PAPER_WIDTH = 300;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Container(
-        width: 300,
-        padding: EdgeInsets.all(4),
+        width: PAPER_WIDTH,
+        padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
         child: ListView(
           children: [
             // receipt header
-            Text("Header"),
+            Container(
+              alignment: Alignment.center, //
+              child: Text("Spean Meas Hotel"),
+            ),
 
-            const Divider(color: Colors.black),
+            Container(
+              alignment: Alignment.center, //
+              child: Text("Invoice"),
+            ),
+
+            Text("Invoice"),
+            Text("Invoice No: 123456"),
+            Text("Spean Meas Hotel"),
+            Text("Check-in: 2024-06-01 14:00"),
+            Text("Spean Meas Hotel"),
+
+            Text("Guest: John Doe"),
+
+            Divider(color: Colors.black),
 
             // receipt body
+            Text("Room No: 101"),
+            Text("Room Type: Single"),
             Text("Body"),
             Text("Body"),
             Text("Body"),
             Text("Body"),
 
-            const Divider(color: Colors.black),
+            Divider(color: Colors.black),
+            Text("Total Price: \$100.00"),
 
+            Divider(color: Colors.black),
+            Text("Paid: \$100.00"),
+
+            Divider(color: Colors.black),
             // receipt footer
             Text("Footer"),
+            Text("1Riel Technology"),
           ],
         ),
       ),

@@ -3,25 +3,27 @@ import 'package:speanmeas/Environment.dart';
 
 class Global extends ChangeNotifier {
   //
-
-  String header = TITLE;
-
-  String body = "Front Desk";
-  // String body = kDebugMode ? "Demo" : "Front Desk";
-
-  String username = "";
-
-  // foreign key
-  bool is_admin = false;
-  bool is_manager = false;
-  bool is_receptionist = false;
-  bool is_housekeeper = false;
+  static String VERSION = '0.0.0+0';
+  static double RATE = 4000; // 1 USD = 4000 KHR
 
   //
 
-  double RATE = 4000; // 1 USD = 4000 KHR
+  static String header = TITLE;
 
-  void clear() {
+  static String body = "Front Desk";
+  // static String body = kDebugMode ? "Demo" : "Front Desk";
+
+  static String username = "";
+
+  // foreign key
+  static bool is_admin = false;
+  static bool is_manager = false;
+  static bool is_receptionist = false;
+  static bool is_housekeeper = false;
+
+  //
+
+  static void clear() {
     header = TITLE;
     body = kDebugMode ? "Template" : "Front Desk";
     username = "";
@@ -29,6 +31,5 @@ class Global extends ChangeNotifier {
     is_manager = false;
     is_receptionist = false;
     is_housekeeper = false;
-    notifyListeners();
   }
 }

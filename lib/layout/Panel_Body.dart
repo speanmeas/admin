@@ -51,44 +51,40 @@ class Panel_Body_ extends StatefulWidget {
 class _Panel_Body_State extends State<Panel_Body_> {
   //
 
-  Global global = Global();
-
   @override
   Widget build(BuildContext context) {
-    global = context.watch<Global>();
-
-    if (global.body == "Front Desk") {
+    if (Global.body == "Front Desk") {
       return front_desk.Main_();
     }
 
-    if (global.body == "Room") {
+    if (Global.body == "Room") {
       return room.Main_();
     }
 
-    if (global.body == "Guest") {
+    if (Global.body == "Guest") {
       return guest.Main_();
     }
 
-    if (global.body == "User") {
+    if (Global.body == "User") {
       return user.Main_();
     }
 
-    if (global.body == "Nationality") {
+    if (Global.body == "Nationality") {
       return natinoality.Main_();
     }
-    if (global.body == "Demo") {
+    if (Global.body == "Demo") {
       return demo.Main_();
     }
 
-    if (global.body == "Demo 1") {
+    if (Global.body == "Demo 1") {
       return demo_1.Main_();
     }
 
-    if (global.body == "Demo 1A") {
+    if (Global.body == "Demo 1A") {
       return demo_1a.Main_();
     }
 
-    if (global.body == "Demo 1B") {
+    if (Global.body == "Demo 1B") {
       return demo_1b.Main_();
     }
 

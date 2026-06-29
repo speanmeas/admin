@@ -12,7 +12,8 @@ import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import '../__Setup__.dart';
-import '../../room/Schema.g.dart';
+import '../Schema.g.dart';
+import '../../room/Schema.g.dart' as room;
 
 import 'Step_2_Guest_Info.dart';
 
@@ -46,7 +47,12 @@ class Step_1_Room_Info_ extends StatefulWidget {
 }
 
 class _Step_1_Room_Info_State extends State<Step_1_Room_Info_> {
-  String room_number = "";
+  // keys
+  var NUMBER = "room_number";
+  var TYPE = "room_type";
+  var PRICE_DAY = "room_price_per_day_usd";
+  var PRICE_3H = "room_price_per_3h_usd";
+  var STATUS = "room_status";
 
   List<Map<String, dynamic>> room_infos = [];
 
@@ -61,7 +67,7 @@ class _Step_1_Room_Info_State extends State<Step_1_Room_Info_> {
         .post('/room/data_read')
         .then((r) {
           room_infos = List<Map<String, dynamic>>.from(r.data);
-          room_infos.sort((a, b) => "${a["room_number"]}".compareTo("${b["room_number"]}"));
+          room_infos.sort((a, b) => "${a[NUMBER]}".compareTo("${b[NUMBER]}"));
           setState(() {});
         })
         .catchError((_) {});
@@ -69,8 +75,6 @@ class _Step_1_Room_Info_State extends State<Step_1_Room_Info_> {
 
   @override
   Widget build(BuildContext context) {
-    final screen_height = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -93,7 +97,7 @@ class _Step_1_Room_Info_State extends State<Step_1_Room_Info_> {
             children: [
               for (var room in room_infos) ...[
                 //
-                if (room["status"] == "Available")
+                if (room[STATUS] == "Available")
                   InkWell(
                     child: Container(
                       height: 50,
@@ -111,46 +115,28 @@ class _Step_1_Room_Info_State extends State<Step_1_Room_Info_> {
                             mainAxisAlignment: .center,
                             crossAxisAlignment: .start,
                             children: [
-                              Text("Room ${room["room_number"]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
-                              Text("${room["price_per_day"]}\$/day | ${room["price_per_3_hour"]}\$/3h"),
+                              Text("Room ${room[NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("${room[PRICE_DAY]}\$/day | ${room[PRICE_3H]}\$/3h"),
                             ],
                           ),
                           Spacer(),
                           Text(
-                            "${room["status"]}",
+                            "${room[STATUS]}",
                             style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                           ), //
                         ],
                       ),
                     ),
-                    onTap: () {
-                      var info = room_infos.firstWhere((e) => e["room_number"] == room["room_number"]);
-
-                      for (final e in info.entries) {
-                        if (e.key == "id") continue;
-                        var index = schema.indexWhere((s) => s["key"] == e.key);
-                        if (index != -1) {
-                          schema[index]["value"] = e.value;
-                        }
-                      }
-
-                      Navigator.push(
-                        context, //
-                        MaterialPageRoute(builder: (context) => Step_2_Guest_Info_()),
-                      );
-
-                      setState(() {});
-                    },
+                    onTap: () => on_selected(room),
                   ),
 
                 //
-                if (room["status"] == "Occupied")
+                if (room[STATUS] == "Occupied")
                   InkWell(
                     child: Container(
                       height: 50,
                       width: 600,
                       padding: EdgeInsets.fromLTRB(8, 0, 12, 0),
-
                       decoration: BoxDecoration(
                         border: Border(top: BorderSide(color: Colors.black)),
                       ),
@@ -162,13 +148,13 @@ class _Step_1_Room_Info_State extends State<Step_1_Room_Info_> {
                             mainAxisAlignment: .center,
                             crossAxisAlignment: .start,
                             children: [
-                              Text("Room ${room["room_number"]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
-                              Text("${room["price_per_day"]}\$/day | ${room["price_per_3_hour"]}\$/3h"),
+                              Text("Room ${room[NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("${room[PRICE_DAY]}\$/day | ${room[PRICE_3H]}\$/3h"),
                             ],
                           ),
                           Spacer(),
                           Text(
-                            "${room["status"]}",
+                            "${room[STATUS]}",
                             style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
                           ), //
                         ],
@@ -177,7 +163,39 @@ class _Step_1_Room_Info_State extends State<Step_1_Room_Info_> {
                   ),
 
                 //
-                if (room["status"] == "Maintenance")
+                if (room[STATUS] == "Maintenance")
+                  InkWell(
+                    child: Container(
+                      height: 50,
+                      width: 600,
+                      padding: EdgeInsets.fromLTRB(8, 0, 12, 0),
+                      decoration: BoxDecoration(
+                        border: Border(top: BorderSide(color: Colors.black)),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.bed_outlined, color: Colors.amber, size: 32), //
+                          SizedBox(width: 8),
+                          Column(
+                            mainAxisAlignment: .center,
+                            crossAxisAlignment: .start,
+                            children: [
+                              Text("Room ${room[NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("${room[PRICE_DAY]}\$/day | ${room[PRICE_3H]}\$/3h"),
+                            ],
+                          ),
+                          Spacer(),
+                          Text(
+                            "${room[STATUS]}",
+                            style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+                          ), //
+                        ],
+                      ),
+                    ),
+                  ),
+
+                //
+                if (room[STATUS] == "Dirty")
                   InkWell(
                     child: Container(
                       height: 50,
@@ -194,59 +212,51 @@ class _Step_1_Room_Info_State extends State<Step_1_Room_Info_> {
                             mainAxisAlignment: .center,
                             crossAxisAlignment: .start,
                             children: [
-                              Text("Room ${room["room_number"]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("Room ${room[NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
                               Text("${room["price_per_day"]}\$/day | ${room["price_per_3_hour"]}\$/3h"),
                             ],
                           ),
                           Spacer(),
                           Text(
-                            "${room["status"]}",
+                            "${room[STATUS]}",
                             style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
                           ), //
                         ],
                       ),
                     ),
                   ),
-
-                //
-                if (room["status"] == "Dirty")
-                  InkWell(
-                    child: Container(
-                      height: 50,
-                      width: 600,
-                      padding: EdgeInsets.fromLTRB(8, 0, 12, 0),
-                      decoration: BoxDecoration(
-                        border: Border(top: BorderSide(color: Colors.black)),
-                      ),
-
-                      child: Row(
-                        children: [
-                          Icon(Icons.bed_outlined, color: Colors.amber, size: 32), //
-                          SizedBox(width: 8),
-                          Column(
-                            mainAxisAlignment: .center,
-                            crossAxisAlignment: .start,
-                            children: [
-                              Text("Room ${room["room_number"]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
-                              Text("${room["price_per_day"]}\$/day | ${room["price_per_3_hour"]}\$/3h"),
-                            ],
-                          ),
-                          Spacer(),
-                          Text(
-                            "${room["status"]}",
-                            style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
-                          ), //
-                        ],
-                      ),
-                    ),
-                  ),
               ],
-
-              SizedBox(height: screen_height - 80),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void on_selected(room) {
+    //
+
+    var info = room_infos.firstWhere((e) => e[NUMBER] == room[NUMBER]);
+
+    // print(info);
+
+    for (var s in schema) {
+      if (s["key"] == "room_id") s["value"] = info["id"];
+      if (s["key"] == NUMBER) s["value"] = info[NUMBER];
+      if (s["key"] == "room_type") s["value"] = info["room_type"];
+      if (s["key"] == PRICE_DAY) s["value"] = info[PRICE_DAY];
+      if (s["key"] == PRICE_3H) s["value"] = info[PRICE_3H];
+    }
+
+    // for (var s in schema) {
+    //   print(s);
+    // }
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => Step_2_Guest_Info_()),
+    );
+
+    setState(() {});
   }
 }

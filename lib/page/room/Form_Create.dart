@@ -221,7 +221,7 @@ class _Form_Create_State extends State<Form_Create_> {
     await dio
         .post('$PATH/data_create', data: FormData.fromMap({...output}))
         .then((r) {
-          // output["id"] = r.data["id"]; //
+          output["id"] = r.data["id"]; // NOTE: support to update and delete
           snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
           Navigator.pop(context, output);
         })

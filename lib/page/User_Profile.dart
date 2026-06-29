@@ -114,13 +114,8 @@ class _User_Profile_State extends State<User_Profile_> {
         });
   }
 
-  double screen_height = 0;
-  Global global = Global();
-
   @override
   Widget build(BuildContext context) {
-    screen_height = MediaQuery.of(context).size.height;
-    global = context.read<Global>();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -182,22 +177,22 @@ class _User_Profile_State extends State<User_Profile_> {
                   children: [
                     Text("Position: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
 
-                    if (global.is_admin)
+                    if (Global.is_admin)
                       Text(
                         "Administrator", //
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
                       ),
-                    if (global.is_manager)
+                    if (Global.is_manager)
                       Text(
                         "Manager", //
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
                       ),
-                    if (global.is_receptionist)
+                    if (Global.is_receptionist)
                       Text(
                         "Receptionist", //
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
                       ),
-                    if (global.is_housekeeper)
+                    if (Global.is_housekeeper)
                       Text(
                         "Housekeeper", //
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
@@ -409,8 +404,6 @@ class _User_Profile_State extends State<User_Profile_> {
                 style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
                 onPressed: sign_out_press,
               ),
-
-              SizedBox(height: screen_height - 80),
             ],
           ),
         ),
@@ -427,7 +420,8 @@ class _User_Profile_State extends State<User_Profile_> {
 
     snackbar_show(context: context, message: "Signed out successfully", color: Colors.green);
 
-    global.clear();
+    Global.clear();
+    Global().notifyListeners();
 
     Navigator.pop(context);
     Navigator.pop(context);

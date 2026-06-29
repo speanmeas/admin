@@ -1,10 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
-
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Datetime_format.dart';
 import 'package:speanmeas/utility/Dio.dart';
@@ -48,6 +49,25 @@ class Form_Create_ extends StatefulWidget {
 class _Form_Create_State extends State<Form_Create_> {
   //
 
+  TextEditingController controller_nationality = TextEditingController();
+  List<String> option_nationalities = [];
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    await dio
+        .post('/nationality/data_read', data: FormData.fromMap({}))
+        .then((r) {
+          option_nationalities = List<String>.from(r.data.map((e) => e["nationality"]));
+          option_nationalities.sort((a, b) => a.compareTo(b));
+        })
+        .catchError((_) {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final screen_height = MediaQuery.of(context).size.height;
@@ -75,6 +95,76 @@ class _Form_Create_State extends State<Form_Create_> {
                 //
                 //
 
+                // finite list of options
+                if (row["key"] == "guest_nationality") {
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: TypeAheadField<String>(
+                      controller: controller_nationality,
+                      suggestionsCallback: (query) {
+                        List<String> result = [];
+                        for (var e in option_nationalities) {
+                          if (e.toLowerCase().contains(query.toLowerCase())) {
+                            result.add(e);
+                          }
+                        }
+                        return result;
+                      },
+                      builder: (context, controller, focusNode) {
+                        return TextField(
+                          controller: controller,
+                          focusNode: focusNode,
+                          decoration: InputDecoration(
+                            labelText: row['title'] + ":",
+                            labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            suffixIcon: Padding(
+                              padding: EdgeInsets.fromLTRB(0, 0, 4, 0),
+                              child: IconButton(
+                                icon: Icon(Icons.clear, size: 24, color: Colors.red), //
+                                onPressed: controller.clear,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      itemBuilder: (context, item) {
+                        return ListTile(title: Text(item));
+                      },
+                      onSelected: (selected) {
+                        row["value"] = selected; //
+                        controller_nationality.text = selected;
+                        setState(() {});
+                      },
+                    ),
+                  );
+                }
+
+                // note
+                if (row["key"] == "guest_gender") {
+                  List<String> options = ["Male", "Female", "Other"];
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: row['title'] + ":",
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
+                      items: options.map((i) {
+                        return DropdownMenuItem<String>(value: i, child: Text(i));
+                      }).toList(),
+                      onChanged: (v) {
+                        row["value"] = v; //
+                        setState(() {});
+                      },
+                    ),
+                  );
+                }
+
                 // note
                 if (row["key"] == "note") {
                   return Container(
@@ -83,7 +173,7 @@ class _Form_Create_State extends State<Form_Create_> {
                     child: TextField(
                       maxLines: 4,
                       decoration: InputDecoration(
-                        hintText: "Input", //
+                        // hintText: "Input", //
                         labelText: "Note:", //
                         border: OutlineInputBorder(),
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -107,7 +197,7 @@ class _Form_Create_State extends State<Form_Create_> {
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       decoration: InputDecoration(
-                        hintText: "Input", //
+                        // hintText: "Input", //
                         labelText: row['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -128,7 +218,7 @@ class _Form_Create_State extends State<Form_Create_> {
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
                       decoration: InputDecoration(
-                        hintText: "Input", //
+                        // hintText: "Input", //
                         labelText: row['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -141,18 +231,19 @@ class _Form_Create_State extends State<Form_Create_> {
                 }
 
                 if (row["type"] == "boolean") {
+                  List<String> options = ["Yes", "No"];
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        hintText: "Select", //
+                        // hintText: "Select", //
                         labelText: row['title'] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
-                      items: ["Yes", "No"].map((i) {
+                      items: options.map((i) {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
@@ -175,7 +266,7 @@ class _Form_Create_State extends State<Form_Create_> {
                       controller: TextEditingController(text: row["value"] ?? ""),
                       readOnly: true,
                       decoration: InputDecoration(
-                        hintText: "Select", //
+                        // hintText: "Select", //
                         labelText: row['title'] + ":", //
                         border: OutlineInputBorder(), //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -216,12 +307,15 @@ class _Form_Create_State extends State<Form_Create_> {
   void on_create() async {
     //
 
-    Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
+    Map<String, dynamic> output = {};
+    for (var s in schema) {
+      output[s["key"]] = s["value"];
+    }
 
     await dio
         .post('$PATH/data_create', data: FormData.fromMap({...output}))
         .then((r) {
-          // output["id"] = r.data["id"]; //
+          output["id"] = r.data["id"]; // NOTE: support to update and delete
           snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
           Navigator.pop(context, output);
         })

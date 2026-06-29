@@ -14,7 +14,9 @@ import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Step_5a_Invoice.dart';
+import '../__Setup__.dart';
+import '../Schema.g.dart';
+import 'Step_5a_Receipt.dart';
 
 void main() {
   runApp(
@@ -56,8 +58,6 @@ class _Step_5_Summary_State extends State<Step_5_Summary_> {
 
   @override
   Widget build(BuildContext context) {
-    final screen_height = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -68,6 +68,19 @@ class _Step_5_Summary_State extends State<Step_5_Summary_> {
           ),
         ),
 
+        actions: [
+          // if (can_next())
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+            child: OutlinedButton.icon(
+              icon: Icon(Icons.login_outlined),
+              label: Text("Check In"),
+              style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+              onPressed: on_check_in, //
+            ),
+          ),
+        ],
+
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -77,32 +90,137 @@ class _Step_5_Summary_State extends State<Step_5_Summary_> {
           alignment: Alignment.topCenter,
           child: Column(
             children: [
+              // view search guest result
+              ...schema.map((row) {
+                //
+                if (row["type"] == "string") {
+                  // String value = "";
+                  String value = row["value"]?.toString() ?? "";
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(row['title'] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Expanded(
+                          child: Text(
+                            value,
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                            maxLines: 4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                //
+                if (row["type"] == "number") {
+                  // String value = "";
+                  String value = row["value"]?.toString() ?? "";
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          row['title'] + ": ", //
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Expanded(
+                          child: Text(
+                            value,
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                            maxLines: 4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                //
+                if (row["type"] == "boolean") {
+                  // String value = "";
+                  String value = row["value"]?.toString() ?? "false";
+                  value = value.toLowerCase() == "true" ? "Yes" : "No";
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          row['title'] + ": ", //
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Expanded(
+                          child: Text(
+                            value,
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                            maxLines: 4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                //
+                if (row["type"] == "date-time") {
+                  // String value = "";
+                  String value = row["value"]?.toString() ?? "";
+                  if (value.isNotEmpty) {
+                    DateTime? tmp = DateTime.tryParse(value);
+                    if (tmp != null) {
+                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                    }
+                  }
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          row['title'] + ": ", //
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Expanded(
+                          child: Text(
+                            value,
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                            maxLines: 4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return SizedBox.shrink();
+              }),
+
               // button check in + print
-              Container(
-                width: 600,
-                margin: EdgeInsets.all(8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(width: 80),
-
-                    OutlinedButton.icon(
-                      label: Text("Check In"), //
-                      icon: Icon(Icons.login_outlined),
-                      onPressed: on_check_in,
-                    ),
-
-                    OutlinedButton.icon(
-                      label: Text("Print"),
-                      icon: Icon(Icons.print_outlined),
-                      onPressed: on_print, //
-                    ),
-                  ],
+              if (can_print())
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                  child: OutlinedButton.icon(
+                    label: Text("Print"),
+                    icon: Icon(Icons.print_outlined),
+                    onPressed: on_print, //
+                  ),
                 ),
-              ),
-
-              // add bottom space
-              SizedBox(height: screen_height - 80),
             ],
           ),
         ),
@@ -110,16 +228,62 @@ class _Step_5_Summary_State extends State<Step_5_Summary_> {
     );
   }
 
+  bool can_print() {
+    for (var s in schema) {
+      if (s["key"] == "ar_total_usd") {
+        if (s["value"] != null) {
+          if (s["value"] == 0) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   void on_print() {
     //
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (_) => Step_5a_Invoice_()),
+      MaterialPageRoute(builder: (_) => Step_5a_Receipt_()),
     );
   }
 
   void on_check_in() async {
     //
     // todo: save guest info + stay detail + payment to database
+
+    Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
+    output.remove("id"); // NOTE: remove id for create new record
+
+    // for (var entry in output.entries) {
+    //   print(entry);
+    // }
+
+    await dio
+        .post('$PATH/data_create', data: FormData.fromMap({...output}))
+        .then((r) {
+          output["id"] = r.data["id"]; // NOTE: support to update and delete
+          snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
+          Navigator.pop(context);
+          Navigator.pop(context);
+          Navigator.pop(context);
+          Navigator.pop(context);
+          Navigator.pop(context, output);
+        })
+        .catchError((error) {
+          snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
+        });
+
+    var room_id = schema.firstWhere((s) => s["key"] == "room_id")["value"];
+
+    await dio.post(
+      '/room/data_update',
+      data: FormData.fromMap({
+        //
+        "id": room_id,
+        "room_status": "Occupied",
+      }),
+    );
   }
 }

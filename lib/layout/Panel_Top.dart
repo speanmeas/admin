@@ -60,7 +60,6 @@ class _Panel_Top_State extends State<Panel_Top_> {
   @override
   Widget build(BuildContext context) {
     isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
-    global = context.watch<Global>();
     return Container(
       height: 48,
       decoration: isMobile ? null : BoxDecoration(border: Border(bottom: BorderSide())), //
@@ -87,7 +86,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(global.body), //
+              Text(Global.body), //
               Text(
                 VERSION,
                 style: TextStyle(
@@ -143,10 +142,10 @@ class _Panel_Top_State extends State<Panel_Top_> {
   }
 
   Widget build_avatar() {
-    if (global.is_admin) return Text("A", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
-    if (global.is_manager) return Text("M", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
-    if (global.is_receptionist) return Text("R", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
-    if (global.is_housekeeper) return Text("H", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+    if (Global.is_admin) return Text("A", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+    if (Global.is_manager) return Text("M", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+    if (Global.is_receptionist) return Text("R", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+    if (Global.is_housekeeper) return Text("H", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
 
     return Text("X", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
   }

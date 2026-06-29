@@ -18,19 +18,19 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "price_per_day",
+    "key": "room_price_per_day_usd",
     "type": "number",
-    "title": "Price/Day",
+    "title": "Room Price/Day",
     "value": null
   },
   {
-    "key": "price_per_3_hour",
+    "key": "room_price_per_3h_usd",
     "type": "number",
-    "title": "Price/3h",
+    "title": "Room Price/3h",
     "value": null
   },
   {
-    "key": "status",
+    "key": "room_status",
     "type": "string",
     "title": "Status",
     "value": null

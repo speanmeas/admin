@@ -51,93 +51,15 @@ class _Sign_In_State extends State<Sign_In_> {
   final controller_username = TextEditingController();
   final controller_password = TextEditingController();
 
-  String VERSION = '0.0.0+0';
-
   @override
   void initState() {
     super.initState();
-
     read_version();
     read_access_token();
   }
 
-  void read_version() async {
-    final info = await PackageInfo.fromPlatform();
-    VERSION = '${info.version}+${info.buildNumber}';
-    setState(() {});
-  }
-
-  void read_access_token() async {
-    await secure_storage
-        .read(key: 'access_token') //
-        .then((access_token) {
-          if (access_token != null) {
-            dio.options.headers['Authorization'] = 'Bearer $access_token';
-            setState(() {});
-            // print("Access token found: $access_token");
-            // try using access token to get user info
-            try_access_token(access_token);
-          } else {
-            print("No access token found.");
-          }
-        })
-        .catchError((e) {});
-  }
-
-  void try_access_token(String access_token) async {
-    await dio
-        .post(
-          "/auth/check", //
-          data: FormData.fromMap({"access_token": access_token}),
-        )
-        .then((r) async {
-          // print(r.data);
-
-          if (r.data["username"] != null) {
-            global.username = r.data["username"];
-          }
-
-          if (r.data["is_admin"].isNotEmpty && r.data["is_admin"] == "1") {
-            global.is_admin = true;
-          }
-
-          if (r.data["is_manager"].isNotEmpty && r.data["is_manager"] == "1") {
-            global.is_manager = true;
-          }
-
-          if (r.data["is_receptionist"].isNotEmpty && r.data["is_receptionist"] == "1") {
-            global.is_receptionist = true;
-          }
-
-          if (r.data["is_housekeeper"].isNotEmpty && r.data["is_housekeeper"] == "1") {
-            global.is_housekeeper = true;
-          }
-
-          global.notifyListeners();
-
-          Navigator.pushReplacement(
-            context, //
-            MaterialPageRoute(
-              builder: (context) {
-                return Layout_(); //
-              },
-            ),
-          );
-        })
-        .catchError((e) {
-          print("Access token is invalid.");
-          secure_storage.delete(key: "access_token");
-        });
-  }
-
-  Global global = Global();
-  double screen_height = 0;
-
   @override
   Widget build(BuildContext context) {
-    screen_height = MediaQuery.of(context).size.height;
-    global = context.read<Global>();
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Center(
@@ -165,7 +87,7 @@ class _Sign_In_State extends State<Sign_In_> {
                 margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 alignment: Alignment.center,
                 child: Text(
-                  VERSION,
+                  Global.VERSION,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blue),
                 ), //
               ), //
@@ -210,8 +132,6 @@ class _Sign_In_State extends State<Sign_In_> {
                   onPressed: signin_press,
                 ),
               ),
-
-              SizedBox(height: screen_height - 80),
             ],
           ),
         ),
@@ -219,10 +139,76 @@ class _Sign_In_State extends State<Sign_In_> {
     );
   }
 
+  void read_version() async {
+    final info = await PackageInfo.fromPlatform();
+    Global.VERSION = '${info.version}+${info.buildNumber}';
+    setState(() {});
+  }
+
+  void read_access_token() async {
+    await secure_storage
+        .read(key: 'access_token') //
+        .then((access_token) {
+          if (access_token != null) {
+            dio.options.headers['Authorization'] = 'Bearer $access_token';
+            setState(() {});
+            try_access_token(access_token);
+          } else {
+            print("No access token found.");
+          }
+        })
+        .catchError((e) {});
+  }
+
+  void try_access_token(String access_token) async {
+    await dio
+        .post(
+          "/auth/check", //
+          data: FormData.fromMap({"access_token": access_token}),
+        )
+        .then((r) async {
+          // print(r.data);
+
+          if (r.data["username"] != null) {
+            Global.username = r.data["username"];
+          }
+
+          if (r.data["is_admin"].isNotEmpty && r.data["is_admin"] == "1") {
+            Global.is_admin = true;
+          }
+
+          if (r.data["is_manager"].isNotEmpty && r.data["is_manager"] == "1") {
+            Global.is_manager = true;
+          }
+
+          if (r.data["is_receptionist"].isNotEmpty && r.data["is_receptionist"] == "1") {
+            Global.is_receptionist = true;
+          }
+
+          if (r.data["is_housekeeper"].isNotEmpty && r.data["is_housekeeper"] == "1") {
+            Global.is_housekeeper = true;
+          }
+
+          Global().notifyListeners();
+
+          Navigator.pushReplacement(
+            context, //
+            MaterialPageRoute(
+              builder: (context) {
+                return Layout_(); //
+              },
+            ),
+          );
+        })
+        .catchError((e) {
+          print("Access token is invalid.");
+          secure_storage.delete(key: "access_token");
+        });
+  }
+
   void password_visibility_toggle() {
-    setState(() {
-      is_password_visible = !is_password_visible;
-    });
+    is_password_visible = !is_password_visible;
+    setState(() {});
   }
 
   void signin_press() async {
@@ -244,26 +230,26 @@ class _Sign_In_State extends State<Sign_In_> {
           await secure_storage.write(key: "access_token", value: r.data["access_token"]);
 
           if (r.data["username"] != null) {
-            global.username = r.data["username"];
+            Global.username = r.data["username"];
           }
 
           if (r.data["is_admin"].isNotEmpty && r.data["is_admin"] == "1") {
-            global.is_admin = true;
+            Global.is_admin = true;
           }
 
           if (r.data["is_manager"].isNotEmpty && r.data["is_manager"] == "1") {
-            global.is_manager = true;
+            Global.is_manager = true;
           }
 
           if (r.data["is_receptionist"].isNotEmpty && r.data["is_receptionist"] == "1") {
-            global.is_receptionist = true;
+            Global.is_receptionist = true;
           }
 
           if (r.data["is_housekeeper"].isNotEmpty && r.data["is_housekeeper"] == "1") {
-            global.is_housekeeper = true;
+            Global.is_housekeeper = true;
           }
 
-          global.notifyListeners();
+          Global().notifyListeners();
 
           Navigator.pushReplacement(
             context, //

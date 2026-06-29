@@ -10,7 +10,6 @@ import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import '__Setup__.dart';
-import 'Schema.g.dart';
 
 void main() {
   runApp(

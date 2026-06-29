@@ -20,13 +20,13 @@ List<Map<String, dynamic>> schema = [
   {
     "key": "room_price_per_day_usd",
     "type": "number",
-    "title": "Room Price/Day",
+    "title": "Room Price/Day (USD)",
     "value": null
   },
   {
     "key": "room_price_per_3h_usd",
     "type": "number",
-    "title": "Room Price/3h",
+    "title": "Room Price/3h (USD)",
     "value": null
   },
   {
@@ -48,21 +48,9 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "guest_email",
-    "type": "string",
-    "title": "Guest Email",
-    "value": null
-  },
-  {
     "key": "guest_nationality",
     "type": "string",
     "title": "Guest Nationality",
-    "value": null
-  },
-  {
-    "key": "guest_total",
-    "type": "integer",
-    "title": "Guest Total",
     "value": null
   },
   {
@@ -78,15 +66,21 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "check_out_schedule",
+    "key": "number_of_guests",
+    "type": "number",
+    "title": "Number of Guests",
+    "value": null
+  },
+  {
+    "key": "schedule_check_out",
     "type": "date-time",
-    "title": "Check-out Schedule",
+    "title": "Schedule Check-out",
     "value": null
   },
   {
     "key": "price_total_usd",
     "type": "number",
-    "title": "Price (USD)",
+    "title": "Total Price (USD)",
     "value": null
   },
   {
@@ -116,7 +110,7 @@ List<Map<String, dynamic>> schema = [
   {
     "key": "paid_total_usd",
     "type": "number",
-    "title": "Paid Total (USD)",
+    "title": "Total Paid (USD)",
     "value": null
   },
   {
@@ -134,13 +128,13 @@ List<Map<String, dynamic>> schema = [
   {
     "key": "return_total_usd",
     "type": "number",
-    "title": "Return (USD)",
+    "title": "Total Return (USD)",
     "value": null
   },
   {
     "key": "ar_total_usd",
     "type": "number",
-    "title": "A/R (USD)",
+    "title": "Total A/R (USD)",
     "value": null
   },
   {
@@ -192,15 +186,21 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "status",
-    "type": "string",
-    "title": "Status",
-    "value": null
-  },
-  {
     "key": "note",
     "type": "string",
     "title": "Note",
+    "value": null
+  },
+  {
+    "key": "room_id",
+    "type": "id",
+    "title": "Room ID",
+    "value": null
+  },
+  {
+    "key": "guest_id",
+    "type": "id",
+    "title": "Guest ID",
     "value": null
   }
 ];

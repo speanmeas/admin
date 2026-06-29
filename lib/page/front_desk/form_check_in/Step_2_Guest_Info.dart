@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/page/front_desk/form_check_in/Step_3_Staying_Info.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Datetime_format.dart';
@@ -13,7 +15,12 @@ import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import '../__Setup__.dart';
-import '../../guest/Schema.g.dart';
+import '../Schema.g.dart';
+
+import '../../guest/Form_Create.dart' as guest;
+import '../../guest/Schema.g.dart' as guest_schema;
+
+import 'Step_3_Staying_Info.dart';
 
 void main() {
   runApp(
@@ -45,21 +52,32 @@ class Step_2_Guest_Info_ extends StatefulWidget {
 }
 
 class _Step_2_Guest_Info_State extends State<Step_2_Guest_Info_> {
-  // List<Map<String, dynamic>> rooms = [
-  //   {"room_number": "101", "room_type": "Deluxe Room"},
-  //   {"room_number": "102", "room_type": "Deluxe Room"},
-  //   {"room_number": "103", "room_type": "Standard Room"},
-  //   {"room_number": "104", "room_type": "Standard Room"},
-  //   {"room_number": "105", "room_type": "Suite Room"},
-  //   {"room_number": "106", "room_type": "Suite Room"},
-  //   {"room_number": "107", "room_type": "Single Room"},
-  //   {"room_number": "108", "room_type": "Single Room"},
-  // ];
+  // keys
+  var NAME = "guest_name";
+  var GENDER = "guest_gender";
+  var PHONE_NUMBER = "guest_phone";
+  var NATIONALITY = "guest_nationality";
+
+  TextEditingController controller_search = TextEditingController();
+  Map<String, dynamic> selected_guest = {};
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    for (var s in schema) {
+      if (s["key"] == NAME) selected_guest[NAME] = s["value"] ?? "";
+      if (s["key"] == GENDER) selected_guest[GENDER] = s["value"] ?? "";
+      if (s["key"] == PHONE_NUMBER) selected_guest[PHONE_NUMBER] = s["value"] ?? "";
+      if (s["key"] == NATIONALITY) selected_guest[NATIONALITY] = s["value"] ?? "";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final screen_height = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -69,6 +87,18 @@ class _Step_2_Guest_Info_State extends State<Step_2_Guest_Info_> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          // if (can_next())
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+            child: OutlinedButton.icon(
+              icon: Icon(Icons.arrow_right_alt_outlined),
+              label: Text("Next"),
+              style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+              onPressed: on_next,
+            ),
+          ),
+        ],
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -77,173 +107,198 @@ class _Step_2_Guest_Info_State extends State<Step_2_Guest_Info_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.map((row) {
-                //
-                //
-                //
+              // search
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: (() {
+                  List<Map<String, dynamic>> guest_datas = [];
+                  return TypeAheadField<String>(
+                    controller: controller_search,
+                    suggestionsCallback: (query) async {
+                      String key = PHONE_NUMBER;
+                      List<String> option_datas = [];
+                      await dio
+                          .post(
+                            '/guest/data_read', //
+                            data: FormData.fromMap({
+                              "key": key, //
+                              "query": query, //
+                              "order": 1, //
+                              "limit": 1000, //
+                            }),
+                          )
+                          .then((r) {
+                            guest_datas = List<Map<String, dynamic>>.from(r.data);
 
-                // phone number - search
-                if (row["key"] == "phone_number") {
-                  var options = List.generate(10000, (index) => "0${12000000 + index}");
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Autocomplete<String>(
-                      optionsBuilder: (TextEditingValue textEditingValue) {
-                        // if (textEditingValue.text.isEmpty) {
-                        //   return const Iterable<String>.empty();
-                        // }
-                        return options.where((option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
-                      },
-                      optionsMaxHeight: double.infinity,
-                      onSelected: (String selection) {
-                        // row["value"] = selection;
-                        print('You just selected $selection');
-                      },
-                      fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-                        return TextField(
-                          controller: controller,
-                          focusNode: focusNode,
-                          // autofocus: true,
-                          decoration: InputDecoration(
-                            // hintText: "Search", //
-                            labelText: "Phone Number:", //
-                            labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            suffixIcon: Padding(
-                              padding: EdgeInsets.only(right: 4),
-                              child: IconButton(
-                                icon: Icon(Icons.clear, size: 24, color: Colors.red), //
-                                onPressed: () {
-                                  controller.clear();
-                                  // row["value"] = "";
-                                },
-                              ),
-                            ),
-                          ),
-                          onChanged: (value) {
-                            // row["value"] = value;
-                          },
-                          onSubmitted: (_) => onFieldSubmitted(),
-                        );
-                      },
-                    ),
+                            for (var g in guest_datas) {
+                              if (g[key] == null) continue;
+                              option_datas.add(g[key] ?? "");
+                            }
+                          })
+                          .catchError((_) {});
+
+                      return option_datas;
+
+                      //
+                    },
+                    builder: (context, controller, focusNode) {
+                      return TextField(
+                        controller: controller,
+                        focusNode: focusNode,
+                        keyboardType: TextInputType.numberWithOptions(decimal: false),
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
+                        decoration: InputDecoration(
+                          labelText: "Phone Number:", //
+                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          suffixIcon: Icon(Icons.search), //
+                        ),
+                        onChanged: (_) => setState(() {}),
+                      );
+                    },
+                    itemBuilder: (context, item) {
+                      return ListTile(
+                        title: Text(item),
+                        onTap: () {
+                          for (var g in guest_datas) {
+                            if (g[PHONE_NUMBER] == item) {
+                              selected_guest = g;
+                              break;
+                            }
+                          }
+
+                          controller_search.text = item;
+                          FocusScope.of(context).unfocus();
+                          setState(() {});
+                          // setState(() {});
+                        },
+                      );
+                    },
+                    onSelected: (_) {},
                   );
-                }
+                })(),
+              ),
 
-                // note
-                if (row["key"] == "note") {
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: TextField(
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        // hintText: "Input", //
-                        labelText: "Note:", //
-                        border: OutlineInputBorder(),
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      onChanged: (value) {
-                        row["value"] = value; //
-                      },
-                    ),
-                  );
-                }
+              // phone number - search
+
+              // view search guest result
+              ...guest_schema.schema.map((row) {
+                //
+                if (row["key"] == "note") return SizedBox.shrink();
 
                 //
-                //
-                //
-
-                // string
                 if (row["type"] == "string") {
+                  // String value = "";
+                  String value = selected_guest[row["key"]]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        // hintText: "Input", //
-                        labelText: row['title'] + ":", //
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      onChanged: (value) {
-                        row["value"] = value; //
-                      },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(row['title'] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Expanded(
+                          child: Text(
+                            value,
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                            maxLines: 4,
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 }
 
-                // number
+                //
                 if (row["type"] == "number") {
+                  // String value = "";
+                  String value = selected_guest[row["key"]]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: TextField(
-                      keyboardType: TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
-                      decoration: InputDecoration(
-                        // hintText: "Input", //
-                        labelText: row['title'] + ":", //
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      onChanged: (value) {
-                        row["value"] = double.tryParse(value);
-                      },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          row['title'] + ": ", //
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Expanded(
+                          child: Text(
+                            value,
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                            maxLines: 4,
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 }
 
+                //
                 if (row["type"] == "boolean") {
+                  // String value = "";
+                  String value = selected_guest[row["key"]]?.toString() ?? "false";
+                  value = value.toLowerCase() == "true" ? "Yes" : "No";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        // hintText: "Select", //
-                        labelText: row['title'] + ":",
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
-                      items: ["Yes", "No"].map((i) {
-                        return DropdownMenuItem<String>(value: i, child: Text(i));
-                      }).toList(),
-                      onChanged: (v) {
-                        if (v == "Yes") {
-                          row["value"] = true;
-                        } else {
-                          row["value"] = false;
-                        }
-                        setState(() {});
-                      },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          row['title'] + ": ", //
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Expanded(
+                          child: Text(
+                            value,
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                            maxLines: 4,
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 }
 
+                //
                 if (row["type"] == "date-time") {
+                  // String value = "";
+                  String value = selected_guest[row["key"]]?.toString() ?? "";
+                  if (value.isNotEmpty) {
+                    DateTime? tmp = DateTime.tryParse(value);
+                    if (tmp != null) {
+                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                    }
+                  }
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: TextField(
-                      controller: TextEditingController(text: row["value"] ?? ""),
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        // hintText: "Select", //
-                        labelText: row['title'] + ":", //
-                        border: OutlineInputBorder(), //
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        suffixIcon: Icon(Icons.calendar_today, size: 20), //
-                      ),
-                      onTap: () async {
-                        final DateTime? datetime = await datetime_picker(context);
-                        if (datetime == null) return;
-                        row["value"] = datetime_to_string(datetime);
-                        setState(() {});
-                      }, //,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          row['title'] + ": ", //
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Expanded(
+                          child: Text(
+                            value,
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                            maxLines: 4,
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 }
@@ -251,17 +306,16 @@ class _Step_2_Guest_Info_State extends State<Step_2_Guest_Info_> {
                 return SizedBox.shrink();
               }),
 
+              // button add new guest
               Container(
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: OutlinedButton.icon(
-                  icon: Icon(Icons.arrow_right_alt_outlined),
-                  label: Text("Next"),
+                  icon: Icon(Icons.person_add_alt_1_outlined),
+                  label: Text("Create New Guest"),
                   style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                  onPressed: on_next,
+                  onPressed: on_add_new,
                 ),
               ),
-
-              SizedBox(height: screen_height - 80),
             ],
           ),
         ),
@@ -269,30 +323,37 @@ class _Step_2_Guest_Info_State extends State<Step_2_Guest_Info_> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void on_next() async {
     //
+
+    for (var s in schema) {
+      if (s["key"] == "guest_id") s["value"] = selected_guest["id"];
+      if (s["key"] == NAME) s["value"] = selected_guest[NAME];
+      if (s["key"] == GENDER) s["value"] = selected_guest[GENDER];
+      if (s["key"] == PHONE_NUMBER) s["value"] = selected_guest[PHONE_NUMBER];
+      if (s["key"] == NATIONALITY) s["value"] = selected_guest[NATIONALITY];
+    }
+
+    for (var s in schema) {
+      print(s);
+    }
 
     Navigator.push(
       context, //
       MaterialPageRoute(builder: (context) => Step_3_Staying_Info_()),
     );
+  }
 
-    //   Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
+  void on_add_new() async {
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => guest.Form_Create_()),
+    ).then((value) {
+      if (value == null) return;
 
-    //   await dio
-    //       .post('$PATH/data_create', data: FormData.fromMap({...output}))
-    //       .then((r) {
-    //         // output["id"] = r.data["id"]; //
-    //         snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
-    //         Navigator.pop(context, output);
-    //       })
-    //       .catchError((error) {
-    //         snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
-    //       });
+      controller_search.text = value[PHONE_NUMBER] ?? "";
+      selected_guest = value;
+      setState(() {});
+    });
   }
 }
