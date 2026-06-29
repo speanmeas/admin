@@ -40,8 +40,8 @@ class Filter_Number_ extends StatefulWidget {
 }
 
 class _Filter_Number_State extends State<Filter_Number_> {
-  double? select_min;
-  double? select_max;
+  double? min_value;
+  double? max_value;
 
   TextEditingController controller_min = TextEditingController();
   TextEditingController controller_max = TextEditingController();
@@ -77,26 +77,11 @@ class _Filter_Number_State extends State<Filter_Number_> {
                   inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
                   decoration: InputDecoration(
                     border: OutlineInputBorder(), //
-                    hintText: "Input", //
                     labelText: "Min value:",
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
-                  onChanged: (v) {
-                    if (v.isEmpty) {
-                      select_min = 0;
-                      setState(() {});
-                      return;
-                    }
-
-                    if (double.tryParse(v) == null) {
-                      controller_min.text = v.substring(0, v.length - 1);
-                      controller_min.selection = TextSelection.collapsed(offset: controller_min.text.length);
-                    }
-
-                    select_min = double.tryParse(v) ?? 0;
-                    setState(() {});
-                  }, //,
+                  onChanged: (v) {}, //,
                 ),
               ),
 
@@ -110,26 +95,11 @@ class _Filter_Number_State extends State<Filter_Number_> {
                   inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
                   decoration: InputDecoration(
                     border: OutlineInputBorder(), //
-                    hintText: "Input", //
                     labelText: "Max value:",
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
-                  onChanged: (v) {
-                    if (v.isEmpty) {
-                      select_max = 0;
-                      setState(() {});
-                      return;
-                    }
-
-                    if (double.tryParse(v) == null) {
-                      controller_max.text = v.substring(0, v.length - 1);
-                      controller_max.selection = TextSelection.collapsed(offset: controller_max.text.length);
-                    }
-
-                    select_max = double.tryParse(v) ?? 0;
-                    setState(() {});
-                  }, //,
+                  onChanged: (v) {}, //,
                 ),
               ),
 
@@ -149,38 +119,22 @@ class _Filter_Number_State extends State<Filter_Number_> {
   }
 
   void on_apply_filter() {
-    select_min = double.parse(controller_min.text);
-    select_max = double.parse(controller_max.text);
+    min_value = double.tryParse(controller_min.text);
+    max_value = double.tryParse(controller_max.text);
 
-    // check if min and max are valid numbers
-    if (select_min == null || select_max == null) {
-      snackbar_show(
-        context: context, //
-        message: "Please enter valid numbers",
-        color: Colors.red,
-      );
+    // validate min and max
+    if (min_value == null || max_value == null) {
+      snackbar_show(context: context, message: "Please enter valid min and max.", color: Colors.red);
       return;
     }
 
     // validate min and max
-    if (select_min! > select_max!) {
-      snackbar_show(
-        context: context, //
-        message: "Min must be less or equal to max",
-        color: Colors.red,
-      );
+    if (min_value! > max_value!) {
+      snackbar_show(context: context, message: "Min must be less or equal to max", color: Colors.red);
       return;
     }
 
-    Navigator.pop(context, {
-      "min": select_min, //
-      "max": select_max,
-    });
-
-    snackbar_show(
-      context: context, //
-      message: "Filter applied",
-      color: Colors.green,
-    );
+    Navigator.pop(context, {"min": min_value, "max": max_value});
+    snackbar_show(context: context, message: "Filter applied", color: Colors.green);
   }
 }

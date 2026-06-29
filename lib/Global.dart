@@ -6,20 +6,21 @@ class Global extends ChangeNotifier {
   static final Global variable = Global._();
   Global._();
 
-  //
+  // constants
   String VERSION = '0.0.0+0';
   double RATE = 4000; // 1 USD = 4000 KHR
 
-  //
-
-  String header = TITLE;
-
+  // pages
   String body = "Front Desk";
-  //  String body = kDebugMode ? "Demo" : "Front Desk";
 
+  // credentials
+  String user_id = "";
+  String full_name = "";
+  String phone_number = "";
+  String email = "";
   String username = "";
 
-  // foreign key
+  // positions
   bool is_admin = false;
   bool is_manager = false;
   bool is_receptionist = false;
@@ -28,7 +29,11 @@ class Global extends ChangeNotifier {
   //
 
   void clear() {
-    header = TITLE;
+    body = "Front Desk";
+    user_id = "";
+    full_name = "";
+    phone_number = "";
+    email = "";
     username = "";
     is_admin = false;
     is_manager = false;

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
+import 'package:speanmeas/utility/Secure_Storage.dart';
 
 void main() {
   runApp(
@@ -38,26 +39,44 @@ class Panel_Left_ extends StatefulWidget {
 class _Panel_Left_State extends State<Panel_Left_> {
   bool is_mobile = false;
 
+  bool is_admin = false;
+  bool is_manager = false;
+  bool is_receptionist = false;
+  bool is_housekeeper = false;
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    is_admin = await secure_storage.read(key: 'is_admin') == 'true';
+    is_manager = await secure_storage.read(key: 'is_manager') == 'true';
+    is_receptionist = await secure_storage.read(key: 'is_receptionist') == 'true';
+    is_housekeeper = await secure_storage.read(key: 'is_housekeeper') == 'true';
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
     return ListView(
       children: [
-        if (Global.variable.is_admin || Global.variable.is_manager || Global.variable.is_receptionist || Global.variable.is_housekeeper)
-          ListTile(
-            leading: Icon(Icons.people_outline),
-            title: Text("Front Desk"),
-            selected: Global.variable.body == "Front Desk",
-            selectedColor: Colors.blue,
-            onTap: () {
-              Global.variable.body = "Front Desk";
-              Global.variable.notifyListeners();
-              if (is_mobile) Navigator.pop(context);
-              setState(() {});
-            }, //
-          ),
+        ListTile(
+          leading: Icon(Icons.people_outline),
+          title: Text("Front Desk"),
+          selected: Global.variable.body == "Front Desk",
+          selectedColor: Colors.blue,
+          onTap: () {
+            Global.variable.body = "Front Desk";
+            Global.variable.notifyListeners();
+            if (is_mobile) Navigator.pop(context);
+            setState(() {});
+          }, //
+        ),
 
-        if (Global.variable.is_admin || Global.variable.is_manager || Global.variable.is_receptionist)
+        if (is_admin || is_manager || is_receptionist)
           ListTile(
             leading: Icon(Icons.people_outline),
             title: Text("Guest"),
@@ -71,7 +90,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
             }, //
           ),
 
-        if (Global.variable.is_admin || Global.variable.is_manager)
+        if (is_admin || is_manager)
           ListTile(
             leading: Icon(Icons.hotel_outlined),
             title: Text("Room"),
@@ -86,7 +105,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
           ),
 
         // User
-        if (Global.variable.is_admin || Global.variable.is_manager)
+        if (is_admin || is_manager)
           ListTile(
             leading: Icon(Icons.person_outline),
             title: Text("User"),

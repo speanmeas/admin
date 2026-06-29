@@ -19,13 +19,13 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (_) => Global.variable, //
-      child: const Sign_In(),
+      child: const Main(),
     ),
   );
 }
 
-class Sign_In extends StatelessWidget {
-  const Sign_In({super.key});
+class Main extends StatelessWidget {
+  const Main({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -54,12 +54,11 @@ class _Sign_In_State extends State<Sign_In_> {
   @override
   void initState() {
     super.initState();
-    read_version();
-    read_access_token();
   }
 
   @override
   Widget build(BuildContext context) {
+    String VERSION = context.watch<Global>().VERSION;
     return Scaffold(
       body: SingleChildScrollView(
         child: Center(
@@ -87,7 +86,7 @@ class _Sign_In_State extends State<Sign_In_> {
                 margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 alignment: Alignment.center,
                 child: Text(
-                  Global.variable.VERSION,
+                  VERSION,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blue),
                 ), //
               ), //
@@ -99,10 +98,11 @@ class _Sign_In_State extends State<Sign_In_> {
                   controller: controller_username,
                   autofocus: true,
                   decoration: InputDecoration(
-                    labelText: 'Username', //
-                    prefixIcon: Icon(Icons.person, color: Colors.grey),
+                    labelText: 'Username :', //
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
-                  onSubmitted: (_) => signin_press(),
+                  onSubmitted: (_) => on_sign_in(),
                 ),
               ),
 
@@ -112,15 +112,16 @@ class _Sign_In_State extends State<Sign_In_> {
                 child: TextField(
                   controller: controller_password,
                   decoration: InputDecoration(
-                    labelText: 'Password', //
-                    prefixIcon: Icon(Icons.lock, color: Colors.grey),
+                    labelText: 'Password :', //
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     suffixIcon: InkWell(
                       child: Icon(!is_password_visible ? Icons.visibility : Icons.visibility_off),
                       onTap: password_visibility_toggle, //
                     ),
                   ),
                   obscureText: !is_password_visible,
-                  onSubmitted: (_) => signin_press(),
+                  onSubmitted: (_) => on_sign_in(),
                 ),
               ),
 
@@ -129,7 +130,7 @@ class _Sign_In_State extends State<Sign_In_> {
                 child: OutlinedButton.icon(
                   icon: Icon(Icons.login), //
                   label: Text('Signin'),
-                  onPressed: signin_press,
+                  onPressed: on_sign_in,
                 ),
               ),
             ],
@@ -139,132 +140,45 @@ class _Sign_In_State extends State<Sign_In_> {
     );
   }
 
-  void read_version() async {
-    final info = await PackageInfo.fromPlatform();
-    Global.variable.VERSION = '${info.version}+${info.buildNumber}';
-    setState(() {});
-  }
+  void on_sign_in() async {
+    String username = controller_username.text;
+    String password = controller_password.text;
 
-  void read_access_token() async {
-    await secure_storage
-        .read(key: 'access_token') //
-        .then((access_token) {
-          if (access_token != null) {
-            dio.options.headers['Authorization'] = 'Bearer $access_token';
-            setState(() {});
-            try_access_token(access_token);
-          } else {
-            print("No access token found.");
-          }
-        })
-        .catchError((e) {});
-  }
-
-  void try_access_token(String access_token) async {
     await dio
         .post(
-          "/auth/check", //
-          data: FormData.fromMap({"access_token": access_token}),
+          "/auth/sign_in",
+          data: FormData.fromMap({
+            "username": username, //
+            "password": password,
+          }),
         )
         .then((r) async {
-          // print(r.data);
+          await secure_storage.write(key: "id", value: r.data["id"]);
+          await secure_storage.write(key: "access_token", value: r.data["access_token"]);
+          await secure_storage.write(key: "full_name", value: r.data["full_name"]);
+          await secure_storage.write(key: "phone_number", value: r.data["phone_number"]);
+          await secure_storage.write(key: "username", value: r.data["username"]);
+          await secure_storage.write(key: "is_admin", value: r.data["is_admin"].toString());
+          await secure_storage.write(key: "is_manager", value: r.data["is_manager"].toString());
+          await secure_storage.write(key: "is_receptionist", value: r.data["is_receptionist"].toString());
+          await secure_storage.write(key: "is_housekeeper", value: r.data["is_housekeeper"].toString());
 
-          if (r.data["username"] != null) {
-            Global.variable.username = r.data["username"];
-          }
+          Global.variable.body = "Front Desk";
 
-          if (r.data["is_admin"].isNotEmpty && r.data["is_admin"] == "1") {
-            Global.variable.is_admin = true;
-          }
-
-          if (r.data["is_manager"].isNotEmpty && r.data["is_manager"] == "1") {
-            Global.variable.is_manager = true;
-          }
-
-          if (r.data["is_receptionist"].isNotEmpty && r.data["is_receptionist"] == "1") {
-            Global.variable.is_receptionist = true;
-          }
-
-          if (r.data["is_housekeeper"].isNotEmpty && r.data["is_housekeeper"] == "1") {
-            Global.variable.is_housekeeper = true;
-          }
-
-          Global.variable.notifyListeners();
+          snackbar_show(context: context, message: "Login successful", color: Colors.green);
 
           Navigator.pushReplacement(
             context, //
-            MaterialPageRoute(
-              builder: (context) {
-                return Layout_(); //
-              },
-            ),
+            MaterialPageRoute(builder: (context) => Layout_()),
           );
         })
-        .catchError((e) {
-          print("Access token is invalid.");
-          secure_storage.delete(key: "access_token");
+        .catchError((e) async {
+          snackbar_show(context: context, message: "Login failed", color: Colors.red);
         });
   }
 
   void password_visibility_toggle() {
     is_password_visible = !is_password_visible;
     setState(() {});
-  }
-
-  void signin_press() async {
-    await dio
-        .post(
-          "/auth/sign_in",
-          data: FormData.fromMap({
-            "username": controller_username.text, //
-            "password": controller_password.text,
-          }),
-        )
-        .then((r) async {
-          // print("Login successful");
-
-          // print("Response: ${r.data}");
-
-          snackbar_show(context: context, message: "Login successful", color: Colors.green);
-
-          await secure_storage.write(key: "access_token", value: r.data["access_token"]);
-
-          if (r.data["username"] != null) {
-            Global.variable.username = r.data["username"];
-          }
-
-          if (r.data["is_admin"].isNotEmpty && r.data["is_admin"] == "1") {
-            Global.variable.is_admin = true;
-          }
-
-          if (r.data["is_manager"].isNotEmpty && r.data["is_manager"] == "1") {
-            Global.variable.is_manager = true;
-          }
-
-          if (r.data["is_receptionist"].isNotEmpty && r.data["is_receptionist"] == "1") {
-            Global.variable.is_receptionist = true;
-          }
-
-          if (r.data["is_housekeeper"].isNotEmpty && r.data["is_housekeeper"] == "1") {
-            Global.variable.is_housekeeper = true;
-          }
-
-          Global.variable.notifyListeners();
-
-          Navigator.pushReplacement(
-            context, //
-            MaterialPageRoute(
-              builder: (context) {
-                return Layout_(); //
-              },
-            ),
-          );
-        })
-        .catchError((e) {
-          snackbar_show(context: context, message: "Login failed", color: Colors.red);
-        });
-
-    // final access_token = await secure_storage.read(key: "access_token");
-    // print("Access token: $access_token");
   }
 }

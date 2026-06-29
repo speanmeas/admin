@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
@@ -6,7 +7,7 @@ import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
 import 'package:speanmeas/Environment.dart';
 
-import 'package:speanmeas/page/Sing_In.dart';
+import 'page/main/Loading.dart';
 
 void main() {
   runApp(
@@ -27,7 +28,33 @@ class Main extends StatelessWidget {
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
       // home: Layout_Dashboard_(),
-      home: Sign_In_(),
+      home: Main_(),
     );
+  }
+}
+
+class Main_ extends StatefulWidget {
+  const Main_({super.key});
+
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+class _Main_State extends State<Main_> {
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    final info = await PackageInfo.fromPlatform();
+    Global.variable.VERSION = '${info.version}+${info.buildNumber}';
+    Global.variable.notifyListeners();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Loading_();
   }
 }

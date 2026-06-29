@@ -40,7 +40,7 @@ class Filter_Boolean_ extends StatefulWidget {
 
 class _Filter_Boolean_State extends State<Filter_Boolean_> {
   //
-  bool? filter_value = false;
+  bool? filter_value;
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +68,8 @@ class _Filter_Boolean_State extends State<Filter_Boolean_> {
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: (() {
                   return DropdownButtonFormField<String>(
-                    initialValue: "No",
                     decoration: InputDecoration(
-                      labelText: "Search: ", //
+                      labelText: "Logical:", //
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                     ),
@@ -107,6 +106,13 @@ class _Filter_Boolean_State extends State<Filter_Boolean_> {
 
   void on_apply_filter() {
     // validate
+
+    if (filter_value == null) {
+      snackbar_show(context: context, message: "Please select a value", color: Colors.red);
+      return;
+    }
+
+    filter_value ??= false;
 
     Navigator.pop(context, filter_value);
 

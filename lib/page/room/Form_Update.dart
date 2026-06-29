@@ -106,7 +106,6 @@ class _Form_Update_State extends State<Form_Update_> {
                       controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
                       maxLines: 4,
                       decoration: InputDecoration(
-                        hintText: "Enter text...", //
                         border: OutlineInputBorder(),
                         labelText: "Note:", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -127,7 +126,6 @@ class _Form_Update_State extends State<Form_Update_> {
                     child: TextField(
                       controller: TextEditingController(text: ''),
                       decoration: InputDecoration(
-                        hintText: "Enter new password", //
                         labelText: row['title'], //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -152,7 +150,6 @@ class _Form_Update_State extends State<Form_Update_> {
                     child: TextField(
                       controller: TextEditingController(text: value),
                       decoration: InputDecoration(
-                        hintText: "Input", //
                         labelText: row['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -173,7 +170,6 @@ class _Form_Update_State extends State<Form_Update_> {
                     child: TextField(
                       controller: TextEditingController(text: value),
                       decoration: InputDecoration(
-                        hintText: "Input", //
                         labelText: row['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -201,7 +197,6 @@ class _Form_Update_State extends State<Form_Update_> {
                     child: DropdownButtonFormField<String>(
                       initialValue: value,
                       decoration: InputDecoration(
-                        hintText: "Select", //
                         labelText: row['title'] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -242,7 +237,6 @@ class _Form_Update_State extends State<Form_Update_> {
                       readOnly: true,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(), //
-                        hintText: "Select",
                         labelText: row['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,

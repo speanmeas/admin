@@ -83,7 +83,6 @@ class _Form_Create_State extends State<Form_Create_> {
                     child: TextField(
                       maxLines: 4,
                       decoration: InputDecoration(
-                        hintText: "Input", //
                         labelText: "Note:", //
                         border: OutlineInputBorder(),
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -107,7 +106,6 @@ class _Form_Create_State extends State<Form_Create_> {
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       decoration: InputDecoration(
-                        hintText: "Input", //
                         labelText: row['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -128,7 +126,6 @@ class _Form_Create_State extends State<Form_Create_> {
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
                       decoration: InputDecoration(
-                        hintText: "Input", //
                         labelText: row['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -146,7 +143,6 @@ class _Form_Create_State extends State<Form_Create_> {
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        hintText: "Select", //
                         labelText: row['title'] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -175,7 +171,6 @@ class _Form_Create_State extends State<Form_Create_> {
                       controller: TextEditingController(text: row["value"] ?? ""),
                       readOnly: true,
                       decoration: InputDecoration(
-                        hintText: "Select", //
                         labelText: row['title'] + ":", //
                         border: OutlineInputBorder(), //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),

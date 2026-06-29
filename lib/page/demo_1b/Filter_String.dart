@@ -73,7 +73,6 @@ class _Filter_String_State extends State<Filter_String_> {
                   autofocus: true,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(), //
-                    hintText: "Input", //
                     labelText: "Search:",
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,

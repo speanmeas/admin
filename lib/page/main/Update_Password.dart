@@ -1,0 +1,189 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+import 'package:speanmeas/Environment.dart';
+import 'package:speanmeas/Global.dart';
+import 'package:speanmeas/theme/Theme_Data.dart';
+import 'package:speanmeas/utility/Datetime_format.dart';
+import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/utility/Secure_Storage.dart';
+import 'package:speanmeas/widget/Datetime_Picker.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
+
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global.variable, //
+      child: Main(),
+    ),
+  );
+}
+
+class Main extends StatelessWidget {
+  Main({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: Theme_Data(), //
+      debugShowCheckedModeBanner: false,
+      home: Update_Password_(),
+    );
+  }
+}
+
+class Update_Password_ extends StatefulWidget {
+  Update_Password_({
+    super.key, //
+  });
+
+  @override
+  State<Update_Password_> createState() => _Update_Password_State();
+}
+
+class _Update_Password_State extends State<Update_Password_> {
+  bool is_password_visible = false;
+  bool is_confirm_password_visible = false;
+
+  TextEditingController controller_password = TextEditingController();
+  TextEditingController controller_confirm_password = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Update - Password", //
+          style: TextStyle(
+            fontSize: 20, //
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: false,
+        toolbarHeight: 40,
+        titleSpacing: 0,
+      ),
+      body: SingleChildScrollView(
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Column(
+            children: [
+              // password
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: controller_password,
+                  autofocus: true,
+                  obscureText: !is_password_visible,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    labelText: "Password :", //
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    suffixIcon: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: IconButton(
+                        icon: Icon(is_password_visible ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () {
+                          is_password_visible = !is_password_visible;
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                  ),
+                  onSubmitted: (v) => on_update(),
+                ),
+              ),
+
+              // confirm password
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: controller_confirm_password,
+                  obscureText: !is_confirm_password_visible,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    labelText: "Confirm Password :", //
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    suffixIcon: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: IconButton(
+                        icon: Icon(is_confirm_password_visible ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () {
+                          is_confirm_password_visible = !is_confirm_password_visible;
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                  ),
+                  onSubmitted: (v) => on_update(),
+                ),
+              ),
+
+              // button update
+              Container(
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: OutlinedButton.icon(
+                  icon: Icon(Icons.check), //
+                  label: Text("Update"),
+                  style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+                  onPressed: on_update,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void on_update() async {
+    String password = controller_password.text.trim();
+    String confirm_password = controller_confirm_password.text.trim();
+
+    String id = await secure_storage.read(key: "id") ?? "";
+
+    if (id.isEmpty) {
+      snackbar_show(context: context, message: "ID not found", color: Colors.red);
+      return;
+    }
+
+    if (password != confirm_password) {
+      snackbar_show(context: context, message: "Passwords do not match", color: Colors.red);
+      return;
+    }
+
+    await dio
+        .post(
+          "/user/data_update",
+          data: FormData.fromMap({
+            "id": id, //
+            "password": password, //
+          }),
+        )
+        .then((r) async {
+          await secure_storage.write(key: "password", value: password);
+          Navigator.pop(context, password);
+          snackbar_show(context: context, message: "Update successful", color: Colors.green);
+        })
+        .catchError((error) {
+          snackbar_show(context: context, message: "Update failed", color: Colors.red);
+        });
+  }
+}

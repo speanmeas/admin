@@ -6,18 +6,6 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "username",
-    "type": "string",
-    "title": "Username",
-    "value": null
-  },
-  {
-    "key": "password",
-    "type": "string",
-    "title": "Password",
-    "value": null
-  },
-  {
     "key": "full_name",
     "type": "string",
     "title": "Full Name",
@@ -30,9 +18,15 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "email",
+    "key": "username",
     "type": "string",
-    "title": "Email",
+    "title": "Username",
+    "value": null
+  },
+  {
+    "key": "password",
+    "type": "string",
+    "title": "Password",
     "value": null
   },
   {
@@ -54,9 +48,15 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "is_cleaner",
+    "key": "is_housekeeper",
     "type": "boolean",
-    "title": "Is Cleaner",
+    "title": "Is Housekeeper",
+    "value": null
+  },
+  {
+    "key": "access_token",
+    "type": "string",
+    "title": "Access Token",
     "value": null
   },
   {

@@ -72,11 +72,11 @@ class _Filter_Datetime_State extends State<Filter_Datetime_> {
                 width: 600,
                 padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: start_datetime ?? "Select"),
+                  controller: TextEditingController(text: start_datetime ?? ""),
                   readOnly: true,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(), //
-                    labelText: "Start Datetime:",
+                    labelText: "Start Date-Time:",
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     suffixIcon: Icon(Icons.calendar_today, size: 20), //
@@ -95,11 +95,11 @@ class _Filter_Datetime_State extends State<Filter_Datetime_> {
                 width: 600,
                 padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: end_datetime ?? "Select"),
+                  controller: TextEditingController(text: end_datetime ?? ""),
                   readOnly: true,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(), //
-                    labelText: "End Datetime:",
+                    labelText: "End Date-Time:",
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     suffixIcon: Icon(Icons.calendar_today, size: 20), //
@@ -133,13 +133,13 @@ class _Filter_Datetime_State extends State<Filter_Datetime_> {
   void on_apply_filter() {
     // validate start and end datetime
     if (start_datetime_raw == null || end_datetime_raw == null) {
-      snackbar_show(context: context, message: "Please select start and end datetime", color: Colors.red);
+      snackbar_show(context: context, message: "Please select start and end date-time", color: Colors.red);
       return;
     }
 
     // please put end datetime after start datetime
     if (end_datetime_raw!.isBefore(start_datetime_raw!)) {
-      snackbar_show(context: context, message: "End datetime must be after start datetime", color: Colors.red);
+      snackbar_show(context: context, message: "End date-time must be after start date-time", color: Colors.red);
       return;
     }
 
