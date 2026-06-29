@@ -25,7 +25,7 @@ import 'Step_3_Staying_Info.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global(), //
+      create: (_) => Global.variable, //
       child: Main(),
     ),
   );

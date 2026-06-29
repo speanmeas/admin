@@ -21,7 +21,7 @@ import 'Step_5a_Receipt.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global(), //
+      create: (_) => Global.variable, //
       child: const Main(),
     ),
   );

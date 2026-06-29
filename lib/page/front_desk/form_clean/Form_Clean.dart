@@ -17,7 +17,7 @@ import 'package:speanmeas/widget/Snackbar_Show.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global(), //
+      create: (_) => Global.variable, //
       child: const Form_Check_Clean(),
     ),
   );

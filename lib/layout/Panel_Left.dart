@@ -9,7 +9,7 @@ import 'package:speanmeas/theme/Theme_Data.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global(), //
+      create: (_) => Global.variable, //
       child: const Main(),
     ),
   );
@@ -43,56 +43,61 @@ class _Panel_Left_State extends State<Panel_Left_> {
     is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
     return ListView(
       children: [
-        if (Global.is_admin || Global.is_manager || Global.is_receptionist || Global.is_housekeeper)
+        if (Global.variable.is_admin || Global.variable.is_manager || Global.variable.is_receptionist || Global.variable.is_housekeeper)
           ListTile(
             leading: Icon(Icons.people_outline),
             title: Text("Front Desk"),
-            selected: Global.body == "Front Desk",
+            selected: Global.variable.body == "Front Desk",
             selectedColor: Colors.blue,
             onTap: () {
-              Global.body = "Front Desk";
-              Global().notifyListeners();
+              Global.variable.body = "Front Desk";
+              Global.variable.notifyListeners();
               if (is_mobile) Navigator.pop(context);
+              setState(() {});
             }, //
           ),
 
-        if (Global.is_admin || Global.is_manager || Global.is_receptionist)
+        if (Global.variable.is_admin || Global.variable.is_manager || Global.variable.is_receptionist)
           ListTile(
             leading: Icon(Icons.people_outline),
             title: Text("Guest"),
-            selected: Global.body == "Guest",
+            selected: Global.variable.body == "Guest",
             selectedColor: Colors.blue,
             onTap: () {
-              Global.body = "Guest";
-              Global().notifyListeners();
+              Global.variable.body = "Guest";
+              Global.variable.notifyListeners();
               if (is_mobile) Navigator.pop(context);
+              setState(() {});
             }, //
           ),
 
-        if (Global.is_admin || Global.is_manager)
+        if (Global.variable.is_admin || Global.variable.is_manager)
           ListTile(
             leading: Icon(Icons.hotel_outlined),
             title: Text("Room"),
-            selected: Global.body == "Room",
+            selected: Global.variable.body == "Room",
             selectedColor: Colors.blue,
             onTap: () {
-              Global.body = "Room";
-              Global().notifyListeners();
+              Global.variable.body = "Room";
+              Global.variable.notifyListeners();
               if (is_mobile) Navigator.pop(context);
+              setState(() {});
             }, //
           ),
 
         // User
-        if (Global.is_admin || Global.is_manager)
+        if (Global.variable.is_admin || Global.variable.is_manager)
           ListTile(
             leading: Icon(Icons.person_outline),
             title: Text("User"),
-            selected: Global.body == "User",
+            selected: Global.variable.body == "User",
             selectedColor: Colors.blue,
             onTap: () {
-              Global.body = "User";
-              Global().notifyListeners();
+              Global.variable.body = "User";
+              Global.variable.notifyListeners();
+
               if (is_mobile) Navigator.pop(context);
+              setState(() {});
             }, //
           ),
 
@@ -103,7 +108,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
           children: [
             ListTile(
               leading: Icon(Icons.assessment_outlined), //
-              selected: Global.body == "Daily Report",
+              selected: Global.variable.body == "Daily Report",
               selectedColor: Colors.blue,
               title: Text(
                 'Daily Report', //
@@ -111,14 +116,15 @@ class _Panel_Left_State extends State<Panel_Left_> {
                 maxLines: 1,
               ),
               onTap: () {
-                //
-                Global.body = "Daily Report";
-                Global().notifyListeners();
+                Global.variable.body = "Daily Report";
+                Global.variable.notifyListeners();
+                if (is_mobile) Navigator.pop(context);
+                setState(() {});
               },
             ),
             ListTile(
               leading: Icon(Icons.assessment_outlined), //
-              selected: Global.body == "Weekly Report",
+              selected: Global.variable.body == "Weekly Report",
               selectedColor: Colors.blue,
               title: Text(
                 'Weekly Report', //
@@ -126,14 +132,15 @@ class _Panel_Left_State extends State<Panel_Left_> {
                 maxLines: 1,
               ),
               onTap: () {
-                //
-                Global.body = "Weekly Report";
-                Global().notifyListeners();
+                Global.variable.body = "Weekly Report";
+                Global.variable.notifyListeners();
+                if (is_mobile) Navigator.pop(context);
+                setState(() {});
               },
             ),
             ListTile(
               leading: Icon(Icons.assessment_outlined), //
-              selected: Global.body == "Monthly Report",
+              selected: Global.variable.body == "Monthly Report",
               selectedColor: Colors.blue,
               title: Text(
                 'Monthly Report', //
@@ -142,13 +149,15 @@ class _Panel_Left_State extends State<Panel_Left_> {
               ),
               onTap: () {
                 //
-                Global.body = "Monthly Report";
-                Global().notifyListeners();
+                Global.variable.body = "Monthly Report";
+                Global.variable.notifyListeners();
+                if (is_mobile) Navigator.pop(context);
+                setState(() {});
               },
             ),
             ListTile(
               leading: Icon(Icons.assessment_outlined), //
-              selected: Global.body == "Yearly Report",
+              selected: Global.variable.body == "Yearly Report",
               selectedColor: Colors.blue,
               title: Text(
                 'Yearly Report', //
@@ -157,8 +166,10 @@ class _Panel_Left_State extends State<Panel_Left_> {
               ),
               onTap: () {
                 //
-                Global.body = "Yearly Report";
-                Global().notifyListeners();
+                Global.variable.body = "Yearly Report";
+                Global.variable.notifyListeners();
+                if (is_mobile) Navigator.pop(context);
+                setState(() {});
               },
             ),
           ],
@@ -184,12 +195,13 @@ class _Panel_Left_State extends State<Panel_Left_> {
           return ListTile(
             leading: Icon(Icons.model_training_outlined),
             title: Text(name),
-            selected: Global.body == name,
+            selected: Global.variable.body == name,
             selectedColor: Colors.blue,
             onTap: () {
-              Global.body = name;
-              Global().notifyListeners();
+              Global.variable.body = name;
+              Global.variable.notifyListeners();
               if (is_mobile) Navigator.pop(context);
+              setState(() {});
             },
           );
         })(),
@@ -200,12 +212,13 @@ class _Panel_Left_State extends State<Panel_Left_> {
           return ListTile(
             leading: Icon(Icons.model_training_outlined),
             title: Text(name),
-            selected: Global.body == name,
+            selected: Global.variable.body == name,
             selectedColor: Colors.blue,
             onTap: () {
-              Global.body = name;
-              Global().notifyListeners();
+              Global.variable.body = name;
+              Global.variable.notifyListeners();
               if (is_mobile) Navigator.pop(context);
+              setState(() {});
             },
           );
         })(),
@@ -216,12 +229,13 @@ class _Panel_Left_State extends State<Panel_Left_> {
           return ListTile(
             leading: Icon(Icons.model_training_outlined),
             title: Text(name),
-            selected: Global.body == name,
+            selected: Global.variable.body == name,
             selectedColor: Colors.blue,
             onTap: () {
-              Global.body = name;
-              Global().notifyListeners();
+              Global.variable.body = name;
+              Global.variable.notifyListeners();
               if (is_mobile) Navigator.pop(context);
+              setState(() {});
             },
           );
         })(),
@@ -232,12 +246,13 @@ class _Panel_Left_State extends State<Panel_Left_> {
           return ListTile(
             leading: Icon(Icons.model_training_outlined),
             title: Text(name),
-            selected: Global.body == name,
+            selected: Global.variable.body == name,
             selectedColor: Colors.blue,
             onTap: () {
-              Global.body = name;
-              Global().notifyListeners();
+              Global.variable.body = name;
+              Global.variable.notifyListeners();
               if (is_mobile) Navigator.pop(context);
+              setState(() {});
             },
           );
         })(),
@@ -247,12 +262,13 @@ class _Panel_Left_State extends State<Panel_Left_> {
           return ListTile(
             leading: Icon(Icons.model_training_outlined),
             title: Text(name),
-            selected: Global.body == name,
+            selected: Global.variable.body == name,
             selectedColor: Colors.blue,
             onTap: () {
-              Global.body = name;
-              Global().notifyListeners();
+              Global.variable.body = name;
+              Global.variable.notifyListeners();
               if (is_mobile) Navigator.pop(context);
+              setState(() {});
             },
           );
         })(),

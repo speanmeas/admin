@@ -22,7 +22,7 @@ import 'Demo_1B.dart' as demo_2b;
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global(), //
+      create: (_) => Global.variable, //
       child: Main(),
     ),
   );

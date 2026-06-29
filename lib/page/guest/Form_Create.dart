@@ -18,7 +18,7 @@ import 'Schema.g.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global(), //
+      create: (_) => Global.variable, //
       child: Main(),
     ),
   );

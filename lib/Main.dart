@@ -11,7 +11,7 @@ import 'package:speanmeas/page/Sing_In.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global(), //
+      create: (_) => Global.variable, //
       child: const Main(),
     ),
   );

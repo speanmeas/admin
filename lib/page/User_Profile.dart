@@ -177,22 +177,22 @@ class _User_Profile_State extends State<User_Profile_> {
                   children: [
                     Text("Position: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
 
-                    if (Global.is_admin)
+                    if (Global.variable.is_admin)
                       Text(
                         "Administrator", //
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
                       ),
-                    if (Global.is_manager)
+                    if (Global.variable.is_manager)
                       Text(
                         "Manager", //
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
                       ),
-                    if (Global.is_receptionist)
+                    if (Global.variable.is_receptionist)
                       Text(
                         "Receptionist", //
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
                       ),
-                    if (Global.is_housekeeper)
+                    if (Global.variable.is_housekeeper)
                       Text(
                         "Housekeeper", //
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
@@ -420,8 +420,7 @@ class _User_Profile_State extends State<User_Profile_> {
 
     snackbar_show(context: context, message: "Signed out successfully", color: Colors.green);
 
-    Global.clear();
-    Global().notifyListeners();
+    Global.variable.clear();
 
     Navigator.pop(context);
     Navigator.pop(context);

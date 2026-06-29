@@ -12,7 +12,7 @@ import 'package:speanmeas/utility/Secure_Storage.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global(), //
+      create: (_) => Global.variable, //
       child: const Panel_Top(),
     ),
   );
@@ -39,27 +39,15 @@ class Panel_Top_ extends StatefulWidget {
 }
 
 class _Panel_Top_State extends State<Panel_Top_> {
-  String VERSION = '0.0.0+0';
-
   @override
   void initState() {
     super.initState();
-
-    init();
   }
-
-  void init() async {
-    final info = await PackageInfo.fromPlatform();
-    VERSION = '${info.version}+${info.buildNumber}';
-    setState(() {});
-  }
-
-  bool isMobile = false;
-  Global global = Global();
 
   @override
   Widget build(BuildContext context) {
-    isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
+    bool isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
+    String body = context.watch<Global>().body;
     return Container(
       height: 48,
       decoration: isMobile ? null : BoxDecoration(border: Border(bottom: BorderSide())), //
@@ -86,9 +74,9 @@ class _Panel_Top_State extends State<Panel_Top_> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(Global.body), //
+              Text(body), //
               Text(
-                VERSION,
+                Global.variable.VERSION,
                 style: TextStyle(
                   fontSize: 12, //
                   color: Colors.blue,
@@ -142,10 +130,10 @@ class _Panel_Top_State extends State<Panel_Top_> {
   }
 
   Widget build_avatar() {
-    if (Global.is_admin) return Text("A", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
-    if (Global.is_manager) return Text("M", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
-    if (Global.is_receptionist) return Text("R", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
-    if (Global.is_housekeeper) return Text("H", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+    if (Global.variable.is_admin) return Text("A", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+    if (Global.variable.is_manager) return Text("M", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+    if (Global.variable.is_receptionist) return Text("R", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+    if (Global.variable.is_housekeeper) return Text("H", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
 
     return Text("X", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
   }

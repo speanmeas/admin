@@ -31,7 +31,7 @@ import 'form_check_in/Step_1_Room_Info.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global(), //
+      create: (_) => Global.variable, //
       child: const Main(),
     ),
   );

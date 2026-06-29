@@ -19,7 +19,7 @@ import 'Step_5_Summary.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global(), //
+      create: (_) => Global.variable, //
       child: Main(),
     ),
   );
@@ -381,7 +381,7 @@ class _Step_4_Payment_Info_State extends State<Step_4_Payment_Info_> {
     double paid_cash_usd = double.tryParse(controller_paid_cash_usd.text) ?? 0;
     double paid_bank_khr = double.tryParse(controller_paid_bank_khr.text) ?? 0;
     double paid_cash_khr = double.tryParse(controller_paid_cash_khr.text) ?? 0;
-    double paid_total_usd = paid_bank_usd + paid_cash_usd + (paid_bank_khr + paid_cash_khr) / Global.RATE;
+    double paid_total_usd = paid_bank_usd + paid_cash_usd + (paid_bank_khr + paid_cash_khr) / Global.variable.RATE;
 
     return paid_total_usd;
   }
@@ -390,7 +390,7 @@ class _Step_4_Payment_Info_State extends State<Step_4_Payment_Info_> {
     double return_usd = double.tryParse(controller_return_usd.text) ?? 0;
     double return_khr = double.tryParse(controller_return_khr.text) ?? 0;
 
-    double return_total_usd = return_usd + (return_khr / Global.RATE);
+    double return_total_usd = return_usd + (return_khr / Global.variable.RATE);
 
     return return_total_usd;
   }

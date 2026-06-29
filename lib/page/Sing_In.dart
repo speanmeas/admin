@@ -18,7 +18,7 @@ import 'package:speanmeas/widget/Snackbar_Show.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global(), //
+      create: (_) => Global.variable, //
       child: const Sign_In(),
     ),
   );
@@ -87,7 +87,7 @@ class _Sign_In_State extends State<Sign_In_> {
                 margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                 alignment: Alignment.center,
                 child: Text(
-                  Global.VERSION,
+                  Global.variable.VERSION,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blue),
                 ), //
               ), //
@@ -141,7 +141,7 @@ class _Sign_In_State extends State<Sign_In_> {
 
   void read_version() async {
     final info = await PackageInfo.fromPlatform();
-    Global.VERSION = '${info.version}+${info.buildNumber}';
+    Global.variable.VERSION = '${info.version}+${info.buildNumber}';
     setState(() {});
   }
 
@@ -170,26 +170,26 @@ class _Sign_In_State extends State<Sign_In_> {
           // print(r.data);
 
           if (r.data["username"] != null) {
-            Global.username = r.data["username"];
+            Global.variable.username = r.data["username"];
           }
 
           if (r.data["is_admin"].isNotEmpty && r.data["is_admin"] == "1") {
-            Global.is_admin = true;
+            Global.variable.is_admin = true;
           }
 
           if (r.data["is_manager"].isNotEmpty && r.data["is_manager"] == "1") {
-            Global.is_manager = true;
+            Global.variable.is_manager = true;
           }
 
           if (r.data["is_receptionist"].isNotEmpty && r.data["is_receptionist"] == "1") {
-            Global.is_receptionist = true;
+            Global.variable.is_receptionist = true;
           }
 
           if (r.data["is_housekeeper"].isNotEmpty && r.data["is_housekeeper"] == "1") {
-            Global.is_housekeeper = true;
+            Global.variable.is_housekeeper = true;
           }
 
-          Global().notifyListeners();
+          Global.variable.notifyListeners();
 
           Navigator.pushReplacement(
             context, //
@@ -230,26 +230,26 @@ class _Sign_In_State extends State<Sign_In_> {
           await secure_storage.write(key: "access_token", value: r.data["access_token"]);
 
           if (r.data["username"] != null) {
-            Global.username = r.data["username"];
+            Global.variable.username = r.data["username"];
           }
 
           if (r.data["is_admin"].isNotEmpty && r.data["is_admin"] == "1") {
-            Global.is_admin = true;
+            Global.variable.is_admin = true;
           }
 
           if (r.data["is_manager"].isNotEmpty && r.data["is_manager"] == "1") {
-            Global.is_manager = true;
+            Global.variable.is_manager = true;
           }
 
           if (r.data["is_receptionist"].isNotEmpty && r.data["is_receptionist"] == "1") {
-            Global.is_receptionist = true;
+            Global.variable.is_receptionist = true;
           }
 
           if (r.data["is_housekeeper"].isNotEmpty && r.data["is_housekeeper"] == "1") {
-            Global.is_housekeeper = true;
+            Global.variable.is_housekeeper = true;
           }
 
-          Global().notifyListeners();
+          Global.variable.notifyListeners();
 
           Navigator.pushReplacement(
             context, //

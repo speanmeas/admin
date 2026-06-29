@@ -20,7 +20,7 @@ import 'Step_2_Guest_Info.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global(), //
+      create: (_) => Global.variable, //
       child: Main(),
     ),
   );
@@ -91,7 +91,7 @@ class _Step_1_Room_Info_State extends State<Step_1_Room_Info_> {
       ),
       body: SingleChildScrollView(
         child: Align(
-          alignment: Alignment.topLeft,
+          alignment: Alignment.topCenter,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [

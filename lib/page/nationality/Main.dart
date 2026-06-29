@@ -29,7 +29,7 @@ import 'Form_Delete.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global(), //
+      create: (_) => Global.variable, //
       child: const Main(),
     ),
   );

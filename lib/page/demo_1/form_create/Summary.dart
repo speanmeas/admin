@@ -21,7 +21,7 @@ import '../../demo_1b/Schema.g.dart' as demo_1b;
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global(), //
+      create: (_) => Global.variable, //
       child: const Summary(),
     ),
   );
