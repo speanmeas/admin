@@ -29,21 +29,21 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Form_Delete_(id: id),
+      home: Main_(id: id),
     );
   }
 }
 
-class Form_Delete_ extends StatefulWidget {
-  Form_Delete_({super.key, required this.id});
+class Main_ extends StatefulWidget {
+  Main_({super.key, required this.id});
 
   final String id;
 
   @override
-  State<Form_Delete_> createState() => _Form_Delete_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Form_Delete_State extends State<Form_Delete_> {
+class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final screen_height = MediaQuery.of(context).size.height;
@@ -98,28 +98,14 @@ class _Form_Delete_State extends State<Form_Delete_> {
   void on_delete() async {
     //
     await dio
-        .post(
-          '$PATH/data_delete',
-          data: FormData.fromMap({
-            "id": widget.id, //
-          }),
-        )
+        .post('$PATH/data_delete', data: FormData.fromMap({"id": widget.id}))
         .then((value) {
           print(value);
-          snackbar_show(
-            context: context, //
-            message: "Room deleted successfully",
-            color: Colors.green,
-          );
+          snackbar_show(context: context, message: "Room deleted successfully", color: Colors.green);
           Navigator.pop(context, true);
         })
         .catchError((error) {
-          print(error);
-          snackbar_show(
-            context: context, //
-            message: "Failed to delete room",
-            color: Colors.red,
-          );
+          snackbar_show(context: context, message: "Failed to delete room", color: Colors.red);
         });
   }
 }

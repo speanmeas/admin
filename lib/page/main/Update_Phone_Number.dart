@@ -35,13 +35,13 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Update_Phone_Number_(phone_number: phone_number),
+      home: Main_(phone_number: phone_number),
     );
   }
 }
 
-class Update_Phone_Number_ extends StatefulWidget {
-  Update_Phone_Number_({
+class Main_ extends StatefulWidget {
+  Main_({
     super.key, //
     required this.phone_number,
   });
@@ -49,10 +49,10 @@ class Update_Phone_Number_ extends StatefulWidget {
   String phone_number = "";
 
   @override
-  State<Update_Phone_Number_> createState() => _Update_Phone_Number_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Update_Phone_Number_State extends State<Update_Phone_Number_> {
+class _Main_State extends State<Main_> {
   TextEditingController controller = TextEditingController();
 
   @override
@@ -117,6 +117,8 @@ class _Update_Phone_Number_State extends State<Update_Phone_Number_> {
   }
 
   void on_update() async {
+    // todo: validation
+
     String phone_number = controller.text.trim();
 
     String id = await secure_storage.read(key: "id") ?? "";

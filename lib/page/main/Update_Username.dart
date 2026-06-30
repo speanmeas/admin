@@ -34,13 +34,13 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Update_Username_(username: username),
+      home: Main_(username: username),
     );
   }
 }
 
-class Update_Username_ extends StatefulWidget {
-  Update_Username_({
+class Main_ extends StatefulWidget {
+  Main_({
     super.key, //
     required this.username,
   });
@@ -48,10 +48,10 @@ class Update_Username_ extends StatefulWidget {
   String username = "";
 
   @override
-  State<Update_Username_> createState() => _Update_Username_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Update_Username_State extends State<Update_Username_> {
+class _Main_State extends State<Main_> {
   TextEditingController controller = TextEditingController();
 
   @override
@@ -115,6 +115,8 @@ class _Update_Username_State extends State<Update_Username_> {
   }
 
   void on_update() async {
+    // todo: validation
+
     String username = controller.text.trim();
 
     if (username.length < 6) {

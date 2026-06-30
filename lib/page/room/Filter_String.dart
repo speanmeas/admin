@@ -26,21 +26,21 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Filter_String_(),
+      home: Main_(),
     );
   }
 }
 
-class Filter_String_ extends StatefulWidget {
-  Filter_String_({
+class Main_ extends StatefulWidget {
+  Main_({
     super.key, //
   });
 
   @override
-  State<Filter_String_> createState() => _Filter_String_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Filter_String_State extends State<Filter_String_> {
+class _Main_State extends State<Main_> {
   //
   final controller_search = TextEditingController();
 

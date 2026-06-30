@@ -34,13 +34,13 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Form_Update_(full_name: full_name),
+      home: Main_(full_name: full_name),
     );
   }
 }
 
-class Form_Update_ extends StatefulWidget {
-  Form_Update_({
+class Main_ extends StatefulWidget {
+  Main_({
     super.key, //
     required this.full_name,
   });
@@ -48,10 +48,10 @@ class Form_Update_ extends StatefulWidget {
   String full_name = "";
 
   @override
-  State<Form_Update_> createState() => _Form_Update_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Form_Update_State extends State<Form_Update_> {
+class _Main_State extends State<Main_> {
   TextEditingController controller = TextEditingController();
 
   @override
@@ -114,6 +114,8 @@ class _Form_Update_State extends State<Form_Update_> {
   }
 
   void on_update() async {
+    // todo: validation
+
     String full_name = controller.text.trim();
 
     String id = await secure_storage.read(key: "id") ?? "";

@@ -13,10 +13,10 @@ import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Filter_String.dart';
-import 'Filter_Number.dart';
-import 'Filter_Boolean.dart';
-import 'Filter_Datetime.dart';
+import 'Filter_String.dart' as filter_string;
+import 'Filter_Number.dart' as filter_number;
+import 'Filter_Boolean.dart' as filter_boolean;
+import 'Filter_Datetime.dart' as filter_datetime;
 
 import '__Setup__.dart';
 import 'Schema.g.dart';
@@ -419,7 +419,7 @@ class _Main_State extends State<Main_> {
     if (s['type'] == 'string') {
       Navigator.push(
         context, //
-        MaterialPageRoute(builder: (context) => Filter_String_()),
+        MaterialPageRoute(builder: (context) => filter_string.Main_()),
       ).then((v) {
         //
         if (v == null) return;
@@ -435,7 +435,7 @@ class _Main_State extends State<Main_> {
     else if (s['type'] == 'number') {
       Navigator.push(
         context, //
-        MaterialPageRoute(builder: (context) => Filter_Number_()),
+        MaterialPageRoute(builder: (context) => filter_number.Main_()),
       ).then((v) {
         //
         if (v == null) return;
@@ -453,7 +453,7 @@ class _Main_State extends State<Main_> {
     else if (s['type'] == 'date-time') {
       Navigator.push(
         context, //
-        MaterialPageRoute(builder: (context) => Filter_Datetime_()),
+        MaterialPageRoute(builder: (context) => filter_datetime.Main_()),
       ).then((v) {
         //
         if (v == null) return;
@@ -471,7 +471,7 @@ class _Main_State extends State<Main_> {
     else if (s['type'] == 'boolean') {
       Navigator.push(
         context, //
-        MaterialPageRoute(builder: (context) => Filter_Boolean_()),
+        MaterialPageRoute(builder: (context) => filter_boolean.Main_()),
       ).then((v) {
         //
         if (v == null) return;

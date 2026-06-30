@@ -26,19 +26,19 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Filter_Boolean_(),
+      home: Main_(),
     );
   }
 }
 
-class Filter_Boolean_ extends StatefulWidget {
-  Filter_Boolean_({super.key});
+class Main_ extends StatefulWidget {
+  Main_({super.key});
 
   @override
-  State<Filter_Boolean_> createState() => _Filter_Boolean_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Filter_Boolean_State extends State<Filter_Boolean_> {
+class _Main_State extends State<Main_> {
   //
   bool? filter_value;
 

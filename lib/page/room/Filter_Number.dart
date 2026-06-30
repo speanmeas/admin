@@ -27,19 +27,19 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Filter_Number_(),
+      home: Main_(),
     );
   }
 }
 
-class Filter_Number_ extends StatefulWidget {
-  Filter_Number_({super.key});
+class Main_ extends StatefulWidget {
+  Main_({super.key});
 
   @override
-  State<Filter_Number_> createState() => _Filter_Number_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Filter_Number_State extends State<Filter_Number_> {
+class _Main_State extends State<Main_> {
   double? min_value;
   double? max_value;
 

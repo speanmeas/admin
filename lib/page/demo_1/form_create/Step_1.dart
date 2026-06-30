@@ -12,12 +12,10 @@ import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import '../../demo_1a/__Setup__.dart';
-import '../../demo_1a/Schema.g.dart';
+import '../__Setup__.dart';
+import '../Schema.g.dart';
 
-// import 'Model.g.dart';
-
-import 'Demo_1B.dart' as demo_2b;
+import 'Step_2.dart' as demo_1a;
 
 void main() {
   runApp(
@@ -78,151 +76,8 @@ class _Form_Create_State extends State<Form_Create_> {
                 //
                 //
 
-                // todo: search and select here
-                if (row == schema.first) {
-                  var options = [
-                    "apple",
-                    "banana",
-                    "cherry",
-                    "date",
-                    "elderberry",
-                    "fig",
-                    "grape",
-                    "honeydew",
-                    "kiwi",
-                    "lemon",
-                    "lime",
-                    "mango",
-                    "nectarine",
-                    "orange",
-                    "papaya",
-                    "quince",
-                    "raspberry",
-                    "strawberry",
-                    "tangerine",
-                    "ugli fruit",
-                    "voavanga",
-                    "watermelon",
-                    "xigua",
-                    "yellow passion fruit",
-                    "zucchini fruit",
-                    "apricot",
-                    "blackberry",
-                    "blueberry",
-                    "cantaloupe",
-                    "clementine",
-                    "cranberry",
-                    "currant",
-                    "dragon fruit",
-                    "durian",
-                    "feijoa",
-                    "gooseberry",
-                    "guava",
-                    "jackfruit",
-                    "jabuticaba",
-                    "kumquat",
-                    "lychee",
-                    "longan",
-                    "mulberry",
-                    "olive",
-                    "peach",
-                    "pear",
-                    "persimmon",
-                    "pineapple",
-                    "plum",
-                    "pomegranate",
-                    "pomelo",
-                    "star fruit",
-                    "boysenberry",
-                    "breadfruit",
-                    "casaba melon",
-                    "cherimoya",
-                    "cloudberry",
-                    "coconut",
-                    "cranapple",
-                    "damson",
-                    "dewberry",
-                    "eggfruit",
-                    "entawak",
-                    "finger lime",
-                    "grapefruit",
-                    "hackberry",
-                    "huckleberry",
-                    "ilama",
-                    "imbe",
-                    "jambul",
-                    "jujube",
-                    "kiwano",
-                    "langsat",
-                    "loganberry",
-                    "loquat",
-                    "mammee apple",
-                    "mangosteen",
-                    "marionberry",
-                    "melon",
-                    "miracle fruit",
-                    "monstera deliciosa",
-                    "nance",
-                    "physalis",
-                    "plantain",
-                    "prickly pear",
-                    "rambutan",
-                    "red banana",
-                    "salak",
-                    "santol",
-                    "soursop",
-                    "sapodilla",
-                    "sugar apple",
-                    "surinam cherry",
-                    "tamarillo",
-                    "tamarind",
-                    "white currant",
-                    "white sapote",
-                    "yuzu",
-                    "bilberry",
-                    "black sapote",
-                  ];
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Autocomplete<String>(
-                      optionsBuilder: (TextEditingValue textEditingValue) {
-                        // if (textEditingValue.text.isEmpty) {
-                        //   return const Iterable<String>.empty();
-                        // }
-                        return options.where((option) => option.toLowerCase().contains(textEditingValue.text.toLowerCase()));
-                      },
-                      optionsMaxHeight: double.infinity,
-                      onSelected: (String selection) {
-                        row["value"] = selection;
-                        print('You just selected $selection');
-                      },
-                      fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-                        return TextField(
-                          controller: controller,
-                          focusNode: focusNode,
-                          decoration: InputDecoration(
-                            hintText: "Search", //
-                            labelText: row['title'] + ":", //
-                            labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            suffixIcon: IconButton(
-                              icon: Icon(Icons.clear, size: 24, color: Colors.red), //
-                              onPressed: () {
-                                controller.clear();
-                                row["value"] = "";
-                              },
-                            ), //
-                          ),
-                          onChanged: (value) {
-                            row["value"] = value;
-                          },
-                          onSubmitted: (_) => onFieldSubmitted(),
-                        );
-                      },
-                    ),
-                  );
-                }
+                // skip _id
+                if (row["key"].toString().contains("_id")) return SizedBox.shrink();
 
                 // note
                 if (row["key"] == "note") {
@@ -326,7 +181,6 @@ class _Form_Create_State extends State<Form_Create_> {
                       value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
                     }
                   }
-
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -351,6 +205,7 @@ class _Form_Create_State extends State<Form_Create_> {
                   );
                 }
 
+                // default
                 return SizedBox.shrink();
               }),
 
@@ -376,29 +231,13 @@ class _Form_Create_State extends State<Form_Create_> {
   void on_next() async {
     //
 
-    print(schema.map((i) => i["value"]).toList());
+    print(schema);
 
-    // () {
-    // print(model.map((i) => i["value"]).toList());
     Navigator.push(
       context, //
       MaterialPageRoute(
-        builder: (context) => demo_2b.Form_Create_(), //
+        builder: (context) => demo_1a.Form_Create_(), //
       ),
     );
-    // },
-
-    // print(output);
-
-    // await dio
-    //     .post('$PATH/data_create', data: FormData.fromMap({...output}))
-    //     .then((r) {
-    //       output["id"] = r.data["id"]; //
-    //       snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
-    //       Navigator.pop(context, output);
-    //     })
-    //     .catchError((error) {
-    //       snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
-    //     });
   }
 }

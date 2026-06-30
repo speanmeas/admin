@@ -15,7 +15,7 @@ import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'package:speanmeas/page/main/Sign_In.dart';
+import 'Sign_In.dart' as sign_in;
 
 void main() {
   runApp(
@@ -75,7 +75,7 @@ class _Loading_State extends State<Loading_> {
     if (access_token == null) {
       Navigator.pushReplacement(
         context, //
-        MaterialPageRoute(builder: (context) => Sign_In_()),
+        MaterialPageRoute(builder: (context) => sign_in.Main_()),
       );
       return;
     }
@@ -112,7 +112,7 @@ class _Loading_State extends State<Loading_> {
           await secure_storage.delete(key: 'access_token');
           Navigator.pushReplacement(
             context, //
-            MaterialPageRoute(builder: (context) => Sign_In_()),
+            MaterialPageRoute(builder: (context) => sign_in.Main_()),
           );
         });
   }

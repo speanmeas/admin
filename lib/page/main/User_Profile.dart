@@ -7,17 +7,18 @@ import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/layout/Layout.dart';
-import 'package:speanmeas/page/main/Sign_In.dart';
-import 'package:speanmeas/page/main/Update_Username.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Update_Full_Name.dart';
-import 'Update_Password.dart';
-import 'Update_Phone_Number.dart';
+import 'Sign_In.dart' as sign_in;
+import 'Update_Full_Name.dart' as update_full_name;
+import 'Update_Phone_Number.dart' as update_phone_number;
+import 'Update_Username.dart' as update_username;
+import 'Update_Password.dart' as update_password;
+
+import 'package:speanmeas/layout/Layout.dart' as layout;
 
 void main() {
   runApp(User_Profile());
@@ -139,7 +140,7 @@ class _User_Profile_State extends State<User_Profile_> {
                         onPressed: () {
                           Navigator.push(
                             context, //
-                            MaterialPageRoute(builder: (_) => Form_Update_(full_name: full_name)),
+                            MaterialPageRoute(builder: (_) => update_full_name.Main_(full_name: full_name)),
                           ).then((value) {
                             if (value == null) return;
                             full_name = value;
@@ -171,7 +172,7 @@ class _User_Profile_State extends State<User_Profile_> {
                         onPressed: () {
                           Navigator.push(
                             context, //
-                            MaterialPageRoute(builder: (_) => Update_Phone_Number_(phone_number: phone_number)),
+                            MaterialPageRoute(builder: (_) => update_phone_number.Main_(phone_number: phone_number)),
                           ).then((value) {
                             if (value == null) return;
                             phone_number = value;
@@ -203,7 +204,7 @@ class _User_Profile_State extends State<User_Profile_> {
                         onPressed: () {
                           Navigator.push(
                             context, //
-                            MaterialPageRoute(builder: (_) => Update_Username_(username: username)),
+                            MaterialPageRoute(builder: (_) => update_username.Main_(username: username)),
                           ).then((value) {
                             if (value == null) return;
                             username = value;
@@ -235,7 +236,7 @@ class _User_Profile_State extends State<User_Profile_> {
                         onPressed: () {
                           Navigator.push(
                             context, //
-                            MaterialPageRoute(builder: (_) => Update_Password_()),
+                            MaterialPageRoute(builder: (_) => update_password.Main_()),
                           );
                         },
                         icon: Icon(Icons.edit),
@@ -281,7 +282,7 @@ class _User_Profile_State extends State<User_Profile_> {
     // navigate to sign in page
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (_) => const Sign_In_()),
+      MaterialPageRoute(builder: (_) => const sign_in.Main_()),
     );
   }
 }

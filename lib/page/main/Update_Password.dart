@@ -32,21 +32,21 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Update_Password_(),
+      home: Main_(),
     );
   }
 }
 
-class Update_Password_ extends StatefulWidget {
-  Update_Password_({
+class Main_ extends StatefulWidget {
+  Main_({
     super.key, //
   });
 
   @override
-  State<Update_Password_> createState() => _Update_Password_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Update_Password_State extends State<Update_Password_> {
+class _Main_State extends State<Main_> {
   bool is_password_visible = false;
   bool is_confirm_password_visible = false;
 
@@ -153,6 +153,8 @@ class _Update_Password_State extends State<Update_Password_> {
   }
 
   void on_update() async {
+    // todo: validation
+
     String password = controller_password.text.trim();
     String confirm_password = controller_confirm_password.text.trim();
 
