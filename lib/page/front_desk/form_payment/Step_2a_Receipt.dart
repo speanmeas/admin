@@ -80,11 +80,11 @@ class _Main_State extends State<Main_> {
 
             Container(
               alignment: Alignment.center, //
-              child: Text("Invoice"),
+              child: Text("Check Out - Receipt"),
             ),
 
-            Text("Invoice"),
-            Text("Invoice No: 123456"),
+            Text("Check Out - Receipt"),
+            Text("Receipt No: 123456"),
             Text("Spean Meas Hotel"),
             Text("Check-in: 2024-06-01 14:00"),
             Text("Spean Meas Hotel"),

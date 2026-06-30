@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
-import 'package:speanmeas/page/front_desk/form_clean/__Model__.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
@@ -32,19 +31,19 @@ class Form_Check_Clean extends StatelessWidget {
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Form_Check_Clean_(),
+      home: Clean_(),
     );
   }
 }
 
-class Form_Check_Clean_ extends StatefulWidget {
-  const Form_Check_Clean_({super.key});
+class Clean_ extends StatefulWidget {
+  const Clean_({super.key});
 
   @override
-  State<Form_Check_Clean_> createState() => _Form_Check_Clean_State();
+  State<Clean_> createState() => _Clean_State();
 }
 
-class _Form_Check_Clean_State extends State<Form_Check_Clean_> {
+class _Clean_State extends State<Clean_> {
   //
 
   @override
@@ -54,24 +53,13 @@ class _Form_Check_Clean_State extends State<Form_Check_Clean_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Form Check Clean", //
+          "Clean", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
           ),
         ),
 
-        actions: [
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            color: Colors.red,
-            tooltip: "Close",
-          ),
-          SizedBox(width: 4),
-        ],
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -81,63 +69,6 @@ class _Form_Check_Clean_State extends State<Form_Check_Clean_> {
           child: Column(
             children: [
               //
-              //
-              Container(
-                width: 600,
-                padding: EdgeInsets.fromLTRB(8, 12, 8, 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Room Number: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    Text(
-                      Model_Clean.room_number ?? "",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
-                    ),
-                  ],
-                ),
-              ),
-
-              Container(
-                width: 600,
-                padding: EdgeInsets.all(8),
-                child: TextField(
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    // hintText: "Enter text...", //
-                    border: OutlineInputBorder(),
-                    labelText: "Note:", //
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                  ),
-                ),
-              ),
-
-              OutlinedButton.icon(
-                onPressed: () async {
-                  //
-                  print("Confirm Clean");
-
-                  // todo: save data to backend
-
-                  await dio
-                      .post(
-                        "/room/data_update",
-                        data: FormData.fromMap({
-                          "id": Model_Clean.room_id, //
-                          "status": "Available",
-                        }),
-                      )
-                      .then((r) {
-                        print(r.data);
-                        Navigator.pop(context, true);
-                      })
-                      .catchError((e) {
-                        print(e);
-                      });
-                },
-                icon: const Icon(Icons.check),
-                label: const Text("Confirm Clean"), //
-              ),
             ],
           ),
         ),

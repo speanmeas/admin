@@ -15,7 +15,7 @@ import 'package:speanmeas/widget/Snackbar_Show.dart';
 import '../__Setup__.dart';
 import '../Schema.g.dart';
 
-import 'Step_5_Summary.dart' as summary;
+import 'Step_2_Summary.dart' as summary;
 
 void main() {
   runApp(
@@ -60,6 +60,8 @@ class _Main_State extends State<Main_> {
   var AR_TOTAL_USD = "ar_total_usd";
   var GET_PAID_DATE = "get_paid_date";
   var GET_PAID_BY = "get_paid_by";
+  var CHECK_OUT_DATE = "check_out_date";
+  var CHECK_OUT_BY = "check_out_by";
 
   // controllers
   TextEditingController controller_price_usd = TextEditingController();
@@ -88,6 +90,7 @@ class _Main_State extends State<Main_> {
       if (s["key"] == PAID_CASH_KHR) controller_paid_cash_khr.text = (s["value"] ?? "").toString();
       if (s["key"] == RETURN_USD) controller_return_usd.text = (s["value"] ?? "").toString();
       if (s["key"] == RETURN_KHR) controller_return_khr.text = (s["value"] ?? "").toString();
+      print(s);
     }
   }
 
@@ -96,23 +99,23 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Check In - Payment", //
+          "Check Out - Payment", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
-          // if (can_next())
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-            child: OutlinedButton.icon(
-              icon: Icon(Icons.arrow_right_alt_outlined),
-              label: Text("Next"),
-              style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: on_next,
+          if (can_next())
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+              child: OutlinedButton.icon(
+                icon: Icon(Icons.arrow_right_alt_outlined),
+                label: Text("Next"),
+                style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+                onPressed: on_next,
+              ),
             ),
-          ),
         ],
         centerTitle: false,
         toolbarHeight: 40,
@@ -373,6 +376,16 @@ class _Main_State extends State<Main_> {
     );
   }
 
+  bool can_next() {
+    if (get_paid_total_usd() >= get_price_total_usd()) {
+      if (get_ar_total_usd() == 0) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   double get_price_total_usd() {
     double price_total_usd = double.tryParse(controller_price_usd.text) ?? 0;
     return price_total_usd;
@@ -407,28 +420,6 @@ class _Main_State extends State<Main_> {
     return ar_total_usd;
   }
 
-  bool can_next() {
-    if (get_paid_total_usd() == 0) {
-      if (get_return_total_usd() == 0) {
-        return true;
-      }
-    }
-
-    if (get_paid_total_usd() == get_price_total_usd()) {
-      if (get_return_total_usd() == 0) {
-        return true;
-      }
-    }
-
-    if (get_paid_total_usd() > get_price_total_usd()) {
-      if (get_ar_total_usd() == 0) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   void on_next() async {
     //
 
@@ -460,6 +451,8 @@ class _Main_State extends State<Main_> {
       if (s["key"] == AR_TOTAL_USD) s["value"] = get_ar_total_usd();
       if (s["key"] == GET_PAID_DATE && get_paid_date != null) s["value"] = get_paid_date.toIso8601String();
       if (s["key"] == GET_PAID_BY && get_paid_date != null) s["value"] = await secure_storage.read(key: 'full_name') ?? '';
+      if (s["key"] == CHECK_OUT_DATE) s["value"] = DateTime.now().toIso8601String();
+      if (s["key"] == CHECK_OUT_BY) s["value"] = await secure_storage.read(key: 'full_name') ?? '';
     }
 
     Navigator.push(

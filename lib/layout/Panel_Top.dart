@@ -39,10 +39,7 @@ class Panel_Top_ extends StatefulWidget {
 }
 
 class _Panel_Top_State extends State<Panel_Top_> {
-  bool is_admin = false;
-  bool is_manager = false;
-  bool is_receptionist = false;
-  bool is_housekeeper = false;
+  String full_name = "";
 
   @override
   void initState() {
@@ -51,10 +48,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
   }
 
   void init() async {
-    is_admin = await secure_storage.read(key: 'is_admin') == 'true';
-    is_manager = await secure_storage.read(key: 'is_manager') == 'true';
-    is_receptionist = await secure_storage.read(key: 'is_receptionist') == 'true';
-    is_housekeeper = await secure_storage.read(key: 'is_housekeeper') == 'true';
+    full_name = await secure_storage.read(key: 'full_name') ?? '';
     setState(() {});
   }
 
@@ -128,27 +122,16 @@ class _Panel_Top_State extends State<Panel_Top_> {
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.blue, width: 2),
               ),
-              child: (() {
-                if (is_admin) //
-                  return Text("A", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
-
-                if (is_manager) //
-                  return Text("M", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
-
-                if (is_receptionist) //
-                  return Text("R", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
-
-                if (is_housekeeper) //
-                  return Text("H", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
-
-                return Text("X", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
-              })(),
+              child: Text(
+                full_name.isNotEmpty ? full_name[0].toUpperCase() : '', //
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
             ),
             onTap: () {
               Navigator.push(
                 context, //
                 MaterialPageRoute(builder: (_) => User_Profile_()),
-              );
+              ).then((v) => init());
             },
           ),
 

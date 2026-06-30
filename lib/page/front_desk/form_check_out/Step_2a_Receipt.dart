@@ -80,7 +80,7 @@ class _Main_State extends State<Main_> {
 
             Container(
               alignment: Alignment.center, //
-              child: Text("Invoice"),
+              child: Text("Check Out - Receipt"),
             ),
 
             Text("Invoice"),

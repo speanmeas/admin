@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:speanmeas/Global.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Datetime_format.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
@@ -84,7 +84,7 @@ class _Filter_Datetime_State extends State<Filter_Datetime_> {
                   onTap: () async {
                     final DateTime? datetime = await datetime_picker(context);
                     if (datetime == null) return;
-                    start_datetime = datetime_to_string(datetime);
+                    start_datetime = DateFormat('yyyy-MM-dd HH:mm:ss').format(datetime);
                     start_datetime_raw = datetime;
                     setState(() {});
                   }, //,
@@ -107,7 +107,7 @@ class _Filter_Datetime_State extends State<Filter_Datetime_> {
                   onTap: () async {
                     final DateTime? datetime = await datetime_picker(context);
                     if (datetime == null) return;
-                    end_datetime = datetime_to_string(datetime);
+                    end_datetime = DateFormat('yyyy-MM-dd HH:mm:ss').format(datetime);
                     end_datetime_raw = datetime;
                     setState(() {});
                   }, //,

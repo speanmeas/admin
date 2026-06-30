@@ -5,16 +5,18 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/page/front_desk/form_check_in/Step_4_Payment_Info.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Datetime_format.dart';
+
 import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import '../__Setup__.dart';
 import '../Schema.g.dart';
+
+import 'Step_4_Payment_Info.dart' as payment_info;
 
 void main() {
   runApp(
@@ -33,25 +35,26 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Step_3_Staying_Info_(),
+      home: Main_(),
     );
   }
 }
 
-class Step_3_Staying_Info_ extends StatefulWidget {
-  Step_3_Staying_Info_({super.key});
+class Main_ extends StatefulWidget {
+  Main_({super.key});
 
   @override
-  State<Step_3_Staying_Info_> createState() => _Step_3_Staying_Info_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Step_3_Staying_Info_State extends State<Step_3_Staying_Info_> {
+class _Main_State extends State<Main_> {
   // keys
   var STAY_DAYS = "stay_day";
   var STAY_HOURS = "stay_hour";
   var STAY_NUM_GUESTS = "number_of_guests";
   var CHECK_OUT_DATE = "schedule_check_out";
   var CHECK_IN_DATE = "check_in_date";
+  var CHECK_IN_BY = "check_in_by";
 
   var PRICE_TOTAL = "price_total_usd";
   var PRICE_DAY = "room_price_per_day_usd";
@@ -90,7 +93,7 @@ class _Step_3_Staying_Info_State extends State<Step_3_Staying_Info_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Staying - Info.", //
+          "Check In - Staying", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -298,13 +301,14 @@ class _Step_3_Staying_Info_State extends State<Step_3_Staying_Info_> {
       if (s["key"] == STAY_NUM_GUESTS) s["value"] = number_of_guests;
       if (s["key"] == CHECK_OUT_DATE) s["value"] = schedule_check_out.toIso8601String();
       if (s["key"] == CHECK_IN_DATE) s["value"] = check_in_date.toIso8601String();
+      if (s["key"] == CHECK_IN_BY) s["value"] = await secure_storage.read(key: 'full_name') ?? '';
       if (s["key"] == PRICE_TOTAL) s["value"] = price_total_usd;
       if (s["key"] == NOTE) s["value"] = controller_note.text;
     }
 
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => Step_4_Payment_Info_()),
+      MaterialPageRoute(builder: (context) => payment_info.Main_()),
     );
   }
 }

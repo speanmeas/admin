@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Datetime_format.dart';
+
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
@@ -88,8 +89,8 @@ class _Form_Create_State extends State<Form_Create_> {
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {
-                        row["value"] = value; //
+                      onChanged: (v) {
+                        row["value"] = v;
                       },
                     ),
                   );
@@ -110,8 +111,8 @@ class _Form_Create_State extends State<Form_Create_> {
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {
-                        row["value"] = value; //
+                      onChanged: (v) {
+                        row["value"] = v; //
                       },
                     ),
                   );
@@ -130,8 +131,8 @@ class _Form_Create_State extends State<Form_Create_> {
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {
-                        row["value"] = double.tryParse(value);
+                      onChanged: (v) {
+                        row["value"] = v; //
                       },
                     ),
                   );
@@ -152,11 +153,8 @@ class _Form_Create_State extends State<Form_Create_> {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
-                        if (v == "Yes") {
-                          row["value"] = true;
-                        } else {
-                          row["value"] = false;
-                        }
+                        if (v == "Yes") row["value"] = true;
+                        if (v == "No") row["value"] = false;
                         setState(() {});
                       },
                     ),
@@ -180,7 +178,7 @@ class _Form_Create_State extends State<Form_Create_> {
                       onTap: () async {
                         final DateTime? datetime = await datetime_picker(context);
                         if (datetime == null) return;
-                        row["value"] = datetime_to_string(datetime);
+                        row["value"] = DateFormat('yyyy-MM-dd HH:mm:ss').format(datetime);
                         setState(() {});
                       }, //,
                     ),
@@ -209,10 +207,35 @@ class _Form_Create_State extends State<Form_Create_> {
   }
 
   void on_create() async {
-    //
+    // todo: validation
 
+    // 0. debug
+    for (var s in schema) print(s);
+
+    // 1. validate required fields
+    for (var s in schema) {
+      if (s["key"] == "id") continue; // skip id field
+      if (s["key"] == "note") continue; // skip note field
+      if (s["value"] == null) {
+        snackbar_show(context: context, message: "${s["title"]} is required.", color: Colors.red);
+        return;
+      }
+    }
+
+    // 2. validate number fields
+    for (var s in schema) {
+      if (s["type"] == "number") {
+        if (double.tryParse(s["value"]) == null) {
+          snackbar_show(context: context, message: "${s["title"]} must be a number.", color: Colors.red);
+          return;
+        }
+      }
+    }
+
+    // prepare output
     Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
 
+    // request
     await dio
         .post('$PATH/data_create', data: FormData.fromMap({...output}))
         .then((r) {

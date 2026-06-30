@@ -100,7 +100,7 @@ class _Loading_State extends State<Loading_> {
           await secure_storage.write(key: "is_receptionist", value: r.data[0]["is_receptionist"].toString());
           await secure_storage.write(key: "is_housekeeper", value: r.data[0]["is_housekeeper"].toString());
 
-          Global.variable.body = "Front Desk";
+          Global.variable.clear();
 
           Navigator.pushReplacement(
             context, //

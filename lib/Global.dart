@@ -13,32 +13,10 @@ class Global extends ChangeNotifier {
   // pages
   String body = "Front Desk";
 
-  // credentials
-  String user_id = "";
-  String full_name = "";
-  String phone_number = "";
-  String email = "";
-  String username = "";
-
-  // positions
-  bool is_admin = false;
-  bool is_manager = false;
-  bool is_receptionist = false;
-  bool is_housekeeper = false;
-
   //
 
   void clear() {
     body = "Front Desk";
-    user_id = "";
-    full_name = "";
-    phone_number = "";
-    email = "";
-    username = "";
-    is_admin = false;
-    is_manager = false;
-    is_receptionist = false;
-    is_housekeeper = false;
     notifyListeners();
   }
 }

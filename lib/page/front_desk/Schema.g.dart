@@ -150,18 +150,6 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "check_out_date",
-    "type": "date-time",
-    "title": "Check-out Date",
-    "value": null
-  },
-  {
-    "key": "check_out_by",
-    "type": "string",
-    "title": "Check-out By",
-    "value": null
-  },
-  {
     "key": "get_paid_date",
     "type": "date-time",
     "title": "Get Paid Date",
@@ -171,6 +159,18 @@ List<Map<String, dynamic>> schema = [
     "key": "get_paid_by",
     "type": "string",
     "title": "Get Paid By",
+    "value": null
+  },
+  {
+    "key": "check_out_date",
+    "type": "date-time",
+    "title": "Check-out Date",
+    "value": null
+  },
+  {
+    "key": "check_out_by",
+    "type": "string",
+    "title": "Check-out By",
     "value": null
   },
   {

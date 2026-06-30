@@ -63,235 +63,137 @@ class _Panel_Left_State extends State<Panel_Left_> {
     is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
     return ListView(
       children: [
-        ListTile(
-          leading: Icon(Icons.people_outline),
-          title: Text("Front Desk"),
-          selected: Global.variable.body == "Front Desk",
-          selectedColor: Colors.blue,
-          onTap: () {
-            Global.variable.body = "Front Desk";
-            Global.variable.notifyListeners();
-            if (is_mobile) Navigator.pop(context);
-            setState(() {});
-          }, //
-        ),
+        // Front Desk
+        list_tile_l1(name: "Front Desk", icon: Icons.table_bar_outlined),
 
-        if (is_admin || is_manager || is_receptionist)
-          ListTile(
-            leading: Icon(Icons.people_outline),
-            title: Text("Guest"),
-            selected: Global.variable.body == "Guest",
-            selectedColor: Colors.blue,
-            onTap: () {
-              Global.variable.body = "Guest";
-              Global.variable.notifyListeners();
-              if (is_mobile) Navigator.pop(context);
-              setState(() {});
-            }, //
-          ),
+        // Guest
+        if (is_admin || is_manager || is_receptionist) list_tile_l1(name: "Guest", icon: Icons.people_outline),
 
-        if (is_admin || is_manager)
-          ListTile(
-            leading: Icon(Icons.hotel_outlined),
-            title: Text("Room"),
-            selected: Global.variable.body == "Room",
-            selectedColor: Colors.blue,
-            onTap: () {
-              Global.variable.body = "Room";
-              Global.variable.notifyListeners();
-              if (is_mobile) Navigator.pop(context);
-              setState(() {});
-            }, //
-          ),
+        // Room
+        if (is_admin || is_manager) list_tile_l1(name: "Room", icon: Icons.hotel_outlined),
 
         // User
-        if (is_admin || is_manager)
-          ListTile(
-            leading: Icon(Icons.person_outline),
-            title: Text("User"),
-            selected: Global.variable.body == "User",
-            selectedColor: Colors.blue,
-            onTap: () {
-              Global.variable.body = "User";
-              Global.variable.notifyListeners();
+        if (is_admin || is_manager) list_tile_l1(name: "User", icon: Icons.person_outline),
 
-              if (is_mobile) Navigator.pop(context);
-              setState(() {});
-            }, //
-          ),
+        list_tile_l1(name: "Nationality", icon: Icons.flag_outlined),
 
         // Reports
         ExpansionTile(
           leading: Icon(Icons.assessment_outlined), //
           title: Text('Reports'),
           children: [
-            ListTile(
-              leading: Icon(Icons.assessment_outlined), //
-              selected: Global.variable.body == "Daily Report",
-              selectedColor: Colors.blue,
-              title: Text(
-                'Daily Report', //
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-              onTap: () {
-                Global.variable.body = "Daily Report";
-                Global.variable.notifyListeners();
-                if (is_mobile) Navigator.pop(context);
-                setState(() {});
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.assessment_outlined), //
-              selected: Global.variable.body == "Weekly Report",
-              selectedColor: Colors.blue,
-              title: Text(
-                'Weekly Report', //
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-              onTap: () {
-                Global.variable.body = "Weekly Report";
-                Global.variable.notifyListeners();
-                if (is_mobile) Navigator.pop(context);
-                setState(() {});
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.assessment_outlined), //
-              selected: Global.variable.body == "Monthly Report",
-              selectedColor: Colors.blue,
-              title: Text(
-                'Monthly Report', //
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-              onTap: () {
-                //
-                Global.variable.body = "Monthly Report";
-                Global.variable.notifyListeners();
-                if (is_mobile) Navigator.pop(context);
-                setState(() {});
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.assessment_outlined), //
-              selected: Global.variable.body == "Yearly Report",
-              selectedColor: Colors.blue,
-              title: Text(
-                'Yearly Report', //
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-              onTap: () {
-                //
-                Global.variable.body = "Yearly Report";
-                Global.variable.notifyListeners();
-                if (is_mobile) Navigator.pop(context);
-                setState(() {});
-              },
-            ),
+            (() {
+              String name = "Daily Report";
+              return ListTile(
+                leading: Icon(Icons.assessment_outlined),
+                title: Text(name),
+                contentPadding: EdgeInsets.only(left: 40),
+                selected: Global.variable.body == name,
+                selectedColor: Colors.blue,
+                onTap: () {
+                  Global.variable.body = name;
+                  Global.variable.notifyListeners();
+                  if (is_mobile) Navigator.pop(context);
+                  setState(() {});
+                },
+              );
+            })(),
+            (() {
+              String name = "Weekly Report";
+              return ListTile(
+                leading: Icon(Icons.assessment_outlined),
+                title: Text(name),
+                contentPadding: EdgeInsets.only(left: 40),
+                selected: Global.variable.body == name,
+                selectedColor: Colors.blue,
+                onTap: () {
+                  Global.variable.body = name;
+                  Global.variable.notifyListeners();
+                  if (is_mobile) Navigator.pop(context);
+                  setState(() {});
+                },
+              );
+            })(),
+            (() {
+              String name = "Monthly Report";
+              return ListTile(
+                leading: Icon(Icons.assessment_outlined),
+                title: Text(name),
+                contentPadding: EdgeInsets.only(left: 40),
+                selected: Global.variable.body == name,
+                selectedColor: Colors.blue,
+                onTap: () {
+                  Global.variable.body = name;
+                  Global.variable.notifyListeners();
+                  if (is_mobile) Navigator.pop(context);
+                  setState(() {});
+                },
+              );
+            })(),
+            (() {
+              String name = "Yearly Report";
+              return ListTile(
+                leading: Icon(Icons.assessment_outlined),
+                title: Text(name),
+                contentPadding: EdgeInsets.only(left: 40),
+                selected: Global.variable.body == name,
+                selectedColor: Colors.blue,
+                onTap: () {
+                  Global.variable.body = name;
+                  Global.variable.notifyListeners();
+                  if (is_mobile) Navigator.pop(context);
+                  setState(() {});
+                },
+              );
+            })(),
           ],
         ),
 
-        // Template
-        // if (kDebugMode)
-        //   ListTile(
-        //     leading: Icon(Icons.model_training_outlined),
-        //     title: Text("Template"),
-        //     selected: global.body == "Template",
-        //     selectedColor: Colors.blue,
-        //     onTap: () {
-        //       global.body = "Template";
-        //       global.notifyListeners();
-        //       if (is_mobile) Navigator.pop(context);
-        //     }, //
-        //   ),
-
-        // Nationality
-        (() {
-          String name = "Nationality";
-          return ListTile(
-            leading: Icon(Icons.model_training_outlined),
-            title: Text(name),
-            selected: Global.variable.body == name,
-            selectedColor: Colors.blue,
-            onTap: () {
-              Global.variable.body = name;
-              Global.variable.notifyListeners();
-              if (is_mobile) Navigator.pop(context);
-              setState(() {});
-            },
-          );
-        })(),
-
-        // Template
-        (() {
-          String name = "Demo";
-          return ListTile(
-            leading: Icon(Icons.model_training_outlined),
-            title: Text(name),
-            selected: Global.variable.body == name,
-            selectedColor: Colors.blue,
-            onTap: () {
-              Global.variable.body = name;
-              Global.variable.notifyListeners();
-              if (is_mobile) Navigator.pop(context);
-              setState(() {});
-            },
-          );
-        })(),
-
-        // Template
-        (() {
-          String name = "Demo 1";
-          return ListTile(
-            leading: Icon(Icons.model_training_outlined),
-            title: Text(name),
-            selected: Global.variable.body == name,
-            selectedColor: Colors.blue,
-            onTap: () {
-              Global.variable.body = name;
-              Global.variable.notifyListeners();
-              if (is_mobile) Navigator.pop(context);
-              setState(() {});
-            },
-          );
-        })(),
-
-        // Template
-        (() {
-          String name = "Demo 1A";
-          return ListTile(
-            leading: Icon(Icons.model_training_outlined),
-            title: Text(name),
-            selected: Global.variable.body == name,
-            selectedColor: Colors.blue,
-            onTap: () {
-              Global.variable.body = name;
-              Global.variable.notifyListeners();
-              if (is_mobile) Navigator.pop(context);
-              setState(() {});
-            },
-          );
-        })(),
-
-        (() {
-          String name = "Demo 1B";
-          return ListTile(
-            leading: Icon(Icons.model_training_outlined),
-            title: Text(name),
-            selected: Global.variable.body == name,
-            selectedColor: Colors.blue,
-            onTap: () {
-              Global.variable.body = name;
-              Global.variable.notifyListeners();
-              if (is_mobile) Navigator.pop(context);
-              setState(() {});
-            },
-          );
-        })(),
+        // Demos
+        if (is_admin)
+          ExpansionTile(
+            leading: Icon(Icons.model_training_outlined), //
+            title: Text('Demos'),
+            initiallyExpanded: true,
+            children: [
+              list_tile_l2(name: "Demo", icon: Icons.model_training_outlined),
+              list_tile_l2(name: "Demo 1", icon: Icons.model_training_outlined),
+              list_tile_l2(name: "Demo 1A", icon: Icons.model_training_outlined),
+              list_tile_l2(name: "Demo 1B", icon: Icons.model_training_outlined),
+            ],
+          ),
       ],
+    );
+  }
+
+  Widget list_tile_l1({required String name, required IconData icon}) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(name),
+      selected: Global.variable.body == name,
+      selectedColor: Colors.blue,
+      onTap: () {
+        Global.variable.body = name;
+        Global.variable.notifyListeners();
+        if (is_mobile) Navigator.pop(context);
+        setState(() {});
+      },
+    );
+  }
+
+  Widget list_tile_l2({required String name, required IconData icon}) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(name),
+      selected: Global.variable.body == name,
+      selectedColor: Colors.blue,
+      contentPadding: EdgeInsets.only(left: 40),
+      onTap: () {
+        Global.variable.body = name;
+        Global.variable.notifyListeners();
+        if (is_mobile) Navigator.pop(context);
+        setState(() {});
+      },
     );
   }
 }

@@ -537,10 +537,14 @@ class _Main_State extends State<Main_> {
 
       // refresh total row count
       total_row = state_manager!.rows.length;
-      setState(() {});
 
       // scroll to top
       state_manager?.scroll.vertical?.jumpTo(0);
+
+      // clear input values
+      for (var s in schema) s['value'] = null;
+
+      setState(() {});
     });
   }
 
@@ -623,6 +627,9 @@ class _Main_State extends State<Main_> {
       }
 
       state_manager?.notifyListeners();
+
+      // clear input values
+      for (var s in schema) s['value'] = null;
     });
   }
 

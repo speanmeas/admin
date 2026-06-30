@@ -10,7 +10,7 @@ import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Datetime_format.dart';
+
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
@@ -265,7 +265,7 @@ class _Form_Update_State extends State<Form_Update_> {
                           initial_datetime: initial_datetime,
                         );
                         if (datetime == null) return;
-                        output[row["key"]] = datetime_to_string(datetime);
+                        output[row["key"]] = DateFormat('yyyy-MM-dd HH:mm:ss').format(datetime);
                         setState(() {});
                       }, //,
                     ),

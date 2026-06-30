@@ -163,7 +163,7 @@ class _Sign_In_State extends State<Sign_In_> {
           await secure_storage.write(key: "is_receptionist", value: r.data["is_receptionist"].toString());
           await secure_storage.write(key: "is_housekeeper", value: r.data["is_housekeeper"].toString());
 
-          Global.variable.body = "Front Desk";
+          Global.variable.clear();
 
           snackbar_show(context: context, message: "Login successful", color: Colors.green);
 

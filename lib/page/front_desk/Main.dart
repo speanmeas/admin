@@ -26,7 +26,9 @@ import 'Form_Read.dart';
 import 'Form_Update.dart';
 import 'Form_Delete.dart';
 
-import 'form_check_in/Step_1_Room_Info.dart';
+import 'form_check_in/Step_1_Room_Info.dart' as check_in;
+import 'form_check_out/Step_1_Payment_Info.dart' as check_out;
+import 'form_payment/Step_1_Payment_Info.dart' as payment;
 
 void main() {
   runApp(
@@ -186,7 +188,18 @@ class _Main_State extends State<Main_> {
                       child: OutlinedButton.icon(
                         icon: Icon(Icons.login), //
                         label: Text("Check In"),
-                        onPressed: on_checkin,
+                        onPressed: on_check_in,
+                      ),
+                    ),
+
+                    // payment
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.payment), //
+                        label: Text("Payment"),
+                        onPressed: on_payment,
                       ),
                     ),
 
@@ -197,7 +210,7 @@ class _Main_State extends State<Main_> {
                       child: OutlinedButton.icon(
                         icon: Icon(Icons.logout), //
                         label: Text("Check Out"),
-                        onPressed: on_checkin,
+                        onPressed: on_check_out,
                       ),
                     ),
 
@@ -208,7 +221,7 @@ class _Main_State extends State<Main_> {
                       child: OutlinedButton.icon(
                         icon: Icon(Icons.cleaning_services), //
                         label: Text("Clean"),
-                        onPressed: on_checkin,
+                        onPressed: on_check_in,
                       ),
                     ),
 
@@ -464,15 +477,154 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  void on_checkin() {
+  void on_payment() {
+    //
+
+    if (state_manager?.currentRow == null) {
+      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+      return;
+    }
+
+    Map<String, dynamic> data = {};
+    state_manager?.currentRow!.cells.forEach((k, c) {
+      data[k] = (() {
+        if (c.value == null) return null;
+
+        // default
+        return c.value.toString();
+      })();
+    });
+
+    for (var s in schema) {
+      s["value"] = data[s["key"]];
+      // print(s);
+    }
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => payment.Main_()),
+    ).then((v) {
+      //
+      if (v == null) return;
+
+      final row = state_manager?.currentRow;
+      for (var s in schema) {
+        final key = s['key'];
+        if (key == null) continue;
+
+        if (s['type'] == 'date-time') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            final dt = DateTime.tryParse(v[key].toString());
+            if (dt == null) return '';
+
+            // default
+            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+          })();
+        } else if (s['type'] == 'boolean') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+            if (v[key] == true) return 'Yes';
+
+            // default
+            return 'No';
+          })();
+        } else {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            // default
+            return v[key].toString();
+          })();
+        }
+      }
+
+      state_manager?.notifyListeners();
+
+      // clear schema values
+      for (var s in schema) s["value"] = null;
+    });
+  }
+
+  void on_check_out() {
+    //
+
+    if (state_manager?.currentRow == null) {
+      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+      return;
+    }
+
+    Map<String, dynamic> data = {};
+    state_manager?.currentRow!.cells.forEach((k, c) {
+      data[k] = (() {
+        if (c.value == null) return null;
+
+        // default
+        return c.value.toString();
+      })();
+    });
+
+    for (var s in schema) {
+      s["value"] = data[s["key"]];
+      // print(s);
+    }
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => check_out.Main_()),
+    ).then((v) {
+      //
+      if (v == null) return;
+
+      final row = state_manager?.currentRow;
+      for (var s in schema) {
+        final key = s['key'];
+        if (key == null) continue;
+
+        if (s['type'] == 'date-time') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            final dt = DateTime.tryParse(v[key].toString());
+            if (dt == null) return '';
+
+            // default
+            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+          })();
+        } else if (s['type'] == 'boolean') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+            if (v[key] == true) return 'Yes';
+
+            // default
+            return 'No';
+          })();
+        } else {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            // default
+            return v[key].toString();
+          })();
+        }
+      }
+
+      state_manager?.notifyListeners();
+
+      // clear schema values
+      for (var s in schema) s["value"] = null;
+    });
+  }
+
+  void on_check_in() {
     //
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => Step_1_Room_Info_()),
+      MaterialPageRoute(builder: (context) => check_in.Main_()),
     ).then((v) {
       // print("on_checkin $v");
       if (v == null) return;
-      for (var s in schema) s["value"] = null;
 
       state_manager?.prependRows([
         PlutoRow(
@@ -520,59 +672,10 @@ class _Main_State extends State<Main_> {
 
       // scroll to top
       state_manager?.scroll.vertical?.jumpTo(0);
+
+      // clear schema values
+      for (var s in schema) s["value"] = null;
     });
-
-    // .then((v) {
-    //   // validate
-
-    //   // add new row to the top
-    //   state_manager?.prependRows([
-    //     PlutoRow(
-    //       cells: {
-    //         'id': PlutoCell(value: v['id'].toString()),
-    //         for (var s in schema)
-    //           if (s['type'] == 'date-time') //
-    //             s['key']!: PlutoCell(
-    //               value: (() {
-    //                 if (v[s['key']] == null) return '';
-
-    //                 final dt = DateTime.tryParse(v[s['key']].toString());
-    //                 if (dt == null) return '';
-
-    //                 // default
-    //                 return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
-    //               })(),
-    //             )
-    //           else if (s['type'] == 'boolean') //
-    //             s['key']!: PlutoCell(
-    //               value: (() {
-    //                 if (v[s['key']] == null) return '';
-    //                 if (v[s['key']] == true) return 'Yes';
-
-    //                 // default
-    //                 return 'No';
-    //               })(),
-    //             )
-    //           else
-    //             s['key']!: PlutoCell(
-    //               value: (() {
-    //                 if (v[s['key']] == null) return '';
-
-    //                 // default
-    //                 return v[s['key']].toString();
-    //               })(),
-    //             ),
-    //       },
-    //     ),
-    //   ]);
-
-    //   // refresh total row count
-    //   total_row = state_manager!.rows.length;
-    //   setState(() {});
-
-    //   // scroll to top
-    //   state_manager?.scroll.vertical?.jumpTo(0);
-    // });
   }
 
   void on_read() {

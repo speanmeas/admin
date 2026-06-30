@@ -16,7 +16,8 @@ import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import '../__Setup__.dart';
 import '../Schema.g.dart';
-import 'Step_5a_Receipt.dart';
+
+import 'Step_5a_Receipt.dart' as receipt;
 
 void main() {
   runApp(
@@ -36,24 +37,32 @@ class Main extends StatelessWidget {
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Step_5_Summary_(),
+      home: Main_(),
     );
   }
 }
 
-class Step_5_Summary_ extends StatefulWidget {
-  const Step_5_Summary_({super.key});
+class Main_ extends StatefulWidget {
+  const Main_({super.key});
 
   @override
-  State<Step_5_Summary_> createState() => _Step_5_Summary_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Step_5_Summary_State extends State<Step_5_Summary_> {
+class _Main_State extends State<Main_> {
   //
+
+  String full_name = "";
 
   @override
   void initState() {
     super.initState();
+    init();
+  }
+
+  void init() async {
+    full_name = await secure_storage.read(key: 'full_name') ?? '';
+    setState(() {});
   }
 
   @override
@@ -61,7 +70,7 @@ class _Step_5_Summary_State extends State<Step_5_Summary_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Summary", //
+          "Check In - Summary", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -245,7 +254,7 @@ class _Step_5_Summary_State extends State<Step_5_Summary_> {
     //
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (_) => Step_5a_Receipt_()),
+      MaterialPageRoute(builder: (_) => receipt.Main_()),
     );
   }
 
@@ -285,5 +294,8 @@ class _Step_5_Summary_State extends State<Step_5_Summary_> {
         "room_status": "Occupied",
       }),
     );
+
+    // clear schema values
+    for (var s in schema) s["value"] = null;
   }
 }
