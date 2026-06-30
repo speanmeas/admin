@@ -13,18 +13,18 @@ import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import 'Filter_String.dart';
-import 'Filter_Number.dart';
-import 'Filter_Boolean.dart';
-import 'Filter_Datetime.dart';
-
 import '__Setup__.dart';
 import 'Schema.g.dart';
 
-import 'Form_Create.dart';
-import 'Form_Read.dart';
-import 'Form_Update.dart';
-import 'Form_Delete.dart';
+import 'Filter_String.dart' as filter_string;
+import 'Filter_Number.dart' as filter_number;
+import 'Filter_Boolean.dart' as filter_boolean;
+import 'Filter_Datetime.dart' as filter_datetime;
+
+import 'Form_Create.dart' as create;
+import 'Form_Read.dart' as read;
+import 'Form_Update.dart' as update;
+import 'Form_Delete.dart' as delete;
 
 void main() {
   runApp(
@@ -419,7 +419,7 @@ class _Main_State extends State<Main_> {
     if (s['type'] == 'string') {
       Navigator.push(
         context, //
-        MaterialPageRoute(builder: (context) => Filter_String_()),
+        MaterialPageRoute(builder: (context) => filter_string.Main_()),
       ).then((v) {
         //
         if (v == null) return;
@@ -435,7 +435,7 @@ class _Main_State extends State<Main_> {
     else if (s['type'] == 'number') {
       Navigator.push(
         context, //
-        MaterialPageRoute(builder: (context) => Filter_Number_()),
+        MaterialPageRoute(builder: (context) => filter_number.Main_()),
       ).then((v) {
         //
         if (v == null) return;
@@ -453,7 +453,7 @@ class _Main_State extends State<Main_> {
     else if (s['type'] == 'date-time') {
       Navigator.push(
         context, //
-        MaterialPageRoute(builder: (context) => Filter_Datetime_()),
+        MaterialPageRoute(builder: (context) => filter_datetime.Main_()),
       ).then((v) {
         //
         if (v == null) return;
@@ -471,7 +471,7 @@ class _Main_State extends State<Main_> {
     else if (s['type'] == 'boolean') {
       Navigator.push(
         context, //
-        MaterialPageRoute(builder: (context) => Filter_Boolean_()),
+        MaterialPageRoute(builder: (context) => filter_boolean.Main_()),
       ).then((v) {
         //
         if (v == null) return;
@@ -489,7 +489,7 @@ class _Main_State extends State<Main_> {
     //
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => Form_Create_()),
+      MaterialPageRoute(builder: (context) => create.Main_()),
     ).then((v) {
       // validate
       if (v == null) return;
@@ -537,10 +537,14 @@ class _Main_State extends State<Main_> {
 
       // refresh total row count
       total_row = state_manager!.rows.length;
-      setState(() {});
 
       // scroll to top
       state_manager?.scroll.vertical?.jumpTo(0);
+
+      // clear schema values
+      for (var s in schema) s['value'] = null;
+
+      setState(() {});
     });
   }
 
@@ -552,39 +556,124 @@ class _Main_State extends State<Main_> {
     }
 
     //
-    Map<String, dynamic> data = {};
-    state_manager?.currentRow!.cells.forEach((key, cell) {
-      data[key] = cell.value;
+    state_manager?.currentRow!.cells.forEach((k, c) {
+      for (var s in schema) {
+        // skip password
+        if (s['key'] == "password") continue;
+
+        if (s['key'] == k) {
+          // skip null
+          if (c.value == null) {
+            s['value'] = null;
+            continue;
+          }
+
+          // id
+          if (s['type'] == 'id') {
+            s['value'] = c.value;
+            continue;
+          }
+
+          // string
+          if (s['type'] == 'string') {
+            s['value'] = c.value;
+            continue;
+          }
+
+          // number
+          if (s['type'] == 'number') {
+            double? tmp = double.tryParse(c.value.toString());
+            s['value'] = tmp;
+            continue;
+          }
+
+          // date-time
+          if (s['type'] == 'date-time') {
+            DateTime? tmp = DateTime.tryParse(c.value.toString());
+            s['value'] = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp!);
+            continue;
+          }
+
+          // boolean
+          if (s['type'] == 'boolean') {
+            if (c.value == "Yes") s['value'] = true;
+            if (c.value == "No") s['value'] = false;
+            continue;
+          }
+        }
+      }
     });
-    // print("Read row $data");
+
+    // for (var s in schema) print(s);
 
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => Form_Read_(input: data)),
+      MaterialPageRoute(builder: (context) => read.Main_()),
     );
+
+    // clear schema values
+    for (var s in schema) s['value'] = null;
   }
 
   void on_update() {
     //
-
     if (state_manager?.currentRow == null) {
       snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
       return;
     }
 
-    Map<String, dynamic> data = {};
+    //
     state_manager?.currentRow!.cells.forEach((k, c) {
-      data[k] = (() {
-        if (c.value == null) return null;
+      for (var s in schema) {
+        // skip password
+        if (s['key'] == "password") continue;
 
-        // default
-        return c.value.toString();
-      })();
+        if (s['key'] == k) {
+          // skip null
+          if (c.value == null) {
+            s['value'] = null;
+            continue;
+          }
+
+          // id
+          if (s['type'] == 'id') {
+            s['value'] = c.value;
+            continue;
+          }
+
+          // string
+          if (s['type'] == 'string') {
+            s['value'] = c.value;
+            continue;
+          }
+
+          // number
+          if (s['type'] == 'number') {
+            double? tmp = double.tryParse(c.value.toString());
+            s['value'] = tmp;
+            continue;
+          }
+
+          // date-time
+          if (s['type'] == 'date-time') {
+            DateTime? tmp = DateTime.tryParse(c.value.toString());
+            s['value'] = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp!);
+            continue;
+          }
+
+          // boolean
+          if (s['type'] == 'boolean') {
+            if (c.value == "Yes") s['value'] = true;
+            if (c.value == "No") s['value'] = false;
+            continue;
+          }
+        }
+      }
     });
 
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => Form_Update_(input: data)),
+      MaterialPageRoute(builder: (context) => update.Main_()),
     ).then((v) {
       //
       if (v == null) return;
@@ -623,6 +712,9 @@ class _Main_State extends State<Main_> {
       }
 
       state_manager?.notifyListeners();
+
+      // clear schema values
+      for (var s in schema) s['value'] = null;
     });
   }
 
@@ -638,7 +730,7 @@ class _Main_State extends State<Main_> {
     //
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => Form_Delete_(id: id)),
+      MaterialPageRoute(builder: (context) => delete.Main_(id: id)),
     ).then((v) {
       if (v == null) return;
       state_manager?.removeCurrentRow();

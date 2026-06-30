@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
-import 'package:speanmeas/page/main/Sing_In.dart';
+import 'package:speanmeas/page/main/Sign_In.dart';
 import 'package:speanmeas/page/main/Update_Username.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';

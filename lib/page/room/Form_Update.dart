@@ -98,6 +98,58 @@ class _Form_Update_State extends State<Form_Update_> {
                 //
                 //
                 //
+
+                // type
+                if (row["key"] == "room_type") {
+                  List<String> room_types = ["Single", "Double", "VIP"];
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: DropdownButtonFormField<String>(
+                      initialValue: output[row["key"]]?.toString() ?? '',
+                      decoration: InputDecoration(
+                        labelText: row['title'] + ":",
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
+                      items: room_types.map((i) {
+                        return DropdownMenuItem<String>(value: i, child: Text(i));
+                      }).toList(),
+                      onChanged: (v) {
+                        row["value"] = v;
+                        setState(() {});
+                      },
+                    ),
+                  );
+                }
+
+                // status
+                if (row["key"] == "room_status") {
+                  List<String> room_types = ["Available", "Occupied", "Dirty", "Maintenance"];
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: DropdownButtonFormField<String>(
+                      initialValue: output[row["key"]]?.toString() ?? '',
+                      decoration: InputDecoration(
+                        labelText: row['title'] + ":",
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
+                      items: room_types.map((i) {
+                        return DropdownMenuItem<String>(value: i, child: Text(i));
+                      }).toList(),
+                      onChanged: (v) {
+                        row["value"] = v;
+                        setState(() {});
+                      },
+                    ),
+                  );
+                }
+
+                // note
                 if (row["key"] == "note") {
                   return Container(
                     width: 600,
@@ -108,25 +160,6 @@ class _Form_Update_State extends State<Form_Update_> {
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: "Note:", //
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      onChanged: (value) {
-                        output[row["key"]] = value; //
-                      },
-                    ),
-                  );
-                }
-
-                //
-                if (row["key"] == "password") {
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: TextField(
-                      controller: TextEditingController(text: ''),
-                      decoration: InputDecoration(
-                        labelText: row['title'], //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),

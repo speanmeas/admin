@@ -586,6 +586,16 @@ class _Main_State extends State<Main_> {
       })();
     });
 
+    for (var s in schema) {
+      //
+      s['value'] = (() {
+        if (data[s['key']] == null) return null;
+
+        // default
+        return data[s['key']].toString();
+      })();
+    }
+
     Navigator.push(
       context, //
       MaterialPageRoute(builder: (context) => Form_Update_(input: data)),

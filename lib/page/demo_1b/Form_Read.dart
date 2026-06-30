@@ -23,50 +23,29 @@ void main() {
 class Main extends StatelessWidget {
   Main({super.key});
 
-  Map<String, dynamic> input = {
-    "text_1": "a", //
-    "text_2": "aa",
-    "number_1": 1,
-    "number_2": 11,
-    "datetime_1": "2024-01-01T00:00:00Z",
-    "datetime_2": "2024-02-02T00:00:00Z",
-    "boolean_1": true,
-    "boolean_2": false,
-    "note": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets.",
-  };
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Form_Read_(input: input),
+      home: Main_(),
     );
   }
 }
 
-class Form_Read_ extends StatefulWidget {
-  Form_Read_({super.key, required this.input});
-
-  Map<String, dynamic> input;
+class Main_ extends StatefulWidget {
+  Main_({super.key});
 
   @override
-  State<Form_Read_> createState() => _Form_Read_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Form_Read_State extends State<Form_Read_> {
+class _Main_State extends State<Main_> {
   //
-  Map<String, dynamic> output = {};
-
-  final ScrollController controller_audios = ScrollController();
-  final ScrollController controller_images = ScrollController();
-  final ScrollController controller_videos = ScrollController();
 
   @override
   void initState() {
     super.initState();
-
-    output = widget.input;
   }
 
   @override
@@ -91,13 +70,13 @@ class _Form_Read_State extends State<Form_Read_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.map((row) {
+              ...schema.map((s) {
                 //
                 //
                 //
 
-                if (row["key"] == "note") {
-                  String value = output[row["key"]]?.toString() ?? "";
+                if (s["key"] == "note") {
+                  String value = s["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -105,7 +84,7 @@ class _Form_Read_State extends State<Form_Read_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          s['title'] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -122,14 +101,14 @@ class _Form_Read_State extends State<Form_Read_> {
                   );
                 }
 
-                if (row["key"] == "password") {
+                if (s["key"] == "password") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Row(
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          s['title'] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
@@ -146,8 +125,8 @@ class _Form_Read_State extends State<Form_Read_> {
                 //
 
                 //
-                if (row["type"] == "string") {
-                  String value = output[row["key"]]?.toString() ?? "";
+                if (s["type"] == "string") {
+                  String value = s["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -155,7 +134,7 @@ class _Form_Read_State extends State<Form_Read_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          s['title'] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -173,8 +152,8 @@ class _Form_Read_State extends State<Form_Read_> {
                 }
 
                 //
-                if (row["type"] == "number") {
-                  String value = output[row["key"]]?.toString() ?? "";
+                if (s["type"] == "number") {
+                  String value = s["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -182,7 +161,7 @@ class _Form_Read_State extends State<Form_Read_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          s['title'] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -200,8 +179,8 @@ class _Form_Read_State extends State<Form_Read_> {
                 }
 
                 //
-                if (row["type"] == "boolean") {
-                  String value = output[row["key"]]?.toString() ?? "false";
+                if (s["type"] == "boolean") {
+                  String value = s["value"]?.toString() ?? "false";
                   value = value.toLowerCase() == "true" ? "Yes" : "No";
                   return Container(
                     width: 600,
@@ -210,7 +189,7 @@ class _Form_Read_State extends State<Form_Read_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          s['title'] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -228,8 +207,8 @@ class _Form_Read_State extends State<Form_Read_> {
                 }
 
                 //
-                if (row["type"] == "date-time") {
-                  String value = output[row["key"]]?.toString() ?? "";
+                if (s["type"] == "date-time") {
+                  String value = s["value"]?.toString() ?? "";
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
                     if (tmp != null) {
@@ -243,7 +222,7 @@ class _Form_Read_State extends State<Form_Read_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          s['title'] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -263,56 +242,6 @@ class _Form_Read_State extends State<Form_Read_> {
                 //
                 return SizedBox.shrink();
               }),
-
-              // todo: handle images, videos, audios, and files
-
-              // if (output["images"] != null && output["images"].isNotEmpty)
-              //   Container(
-              //     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-              //     child: Text(
-              //       "Images:", //
-              //       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              //     ),
-              //   ),
-              // if (output["images"] != null && output["images"].isNotEmpty)
-              //   Scrollbar(
-              //     controller: controller_images,
-              //     thumbVisibility: true,
-              //     // notificationPredicate: (_) => true,
-              //     thickness: 12, // scrollbar width
-              //     radius: const Radius.circular(0),
-              //     // interactive: true,
-              //     // scrollbarOrientation: ScrollbarOrientation.bottom,
-              //     child: SingleChildScrollView(
-              //       controller: controller_images,
-              //       scrollDirection: Axis.horizontal,
-              //       child: Row(
-              //         children: [
-              //           for (int i = 0; i < 10; i++) ...[
-              //             if (output["images"][i.toString()] != null)
-              //               Container(
-              //                 width: 100, //
-              //                 height: 100,
-              //                 margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
-              //                 child: InkWell(
-              //                   onTap: () {
-              //                     // TODO: Handle image tap
-              //                     print('Image tapped: $i');
-              //                   },
-              //                   child: output["images"] != null && output["images"][i.toString()] != null
-              //                       ? Image.network(
-              //                           "$MINIO_PUBLIC/200/images/${output["images"][i.toString()]}", //
-              //                           fit: BoxFit.cover, //
-              //                         )
-              //                       // : Placeholder(),
-              //                       : Placeholder(),
-              //                 ),
-              //               ),
-              //           ],
-              //         ],
-              //       ),
-              //     ),
-              //   ),
 
               // more space
               SizedBox(height: screen_height - 80),

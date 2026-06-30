@@ -30,47 +30,27 @@ void main() {
 class Main extends StatelessWidget {
   Main({super.key});
 
-  Map<String, dynamic> input = {
-    "text_1": "a", //
-    "text_2": "aa",
-    "number_1": 1,
-    "number_2": 11,
-    "datetime_1": "2024-01-01T00:00:00Z",
-    "datetime_2": "2024-02-02T00:00:00Z",
-    "boolean_1": true,
-    "boolean_2": false,
-    "note": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-  };
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Form_Update_(input: input),
+      home: Main_(),
     );
   }
 }
 
-class Form_Update_ extends StatefulWidget {
-  Form_Update_({
-    super.key, //
-    required this.input,
-  });
-
-  Map<String, dynamic> input;
+class Main_ extends StatefulWidget {
+  Main_({super.key});
 
   @override
-  State<Form_Update_> createState() => _Form_Update_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Form_Update_State extends State<Form_Update_> {
-  Map<String, dynamic> output = {};
-
+class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
-    output = widget.input;
   }
 
   @override
@@ -94,16 +74,16 @@ class _Form_Update_State extends State<Form_Update_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.map((row) {
+              ...schema.map((s) {
                 //
                 //
                 //
-                if (row["key"] == "note") {
+                if (s["key"] == "note") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
+                      controller: TextEditingController(text: s["value"]?.toString() ?? ''),
                       maxLines: 4,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -111,27 +91,27 @@ class _Form_Update_State extends State<Form_Update_> {
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {
-                        output[row["key"]] = value; //
+                      onChanged: (v) {
+                        s["value"] = v; //
                       },
                     ),
                   );
                 }
 
                 //
-                if (row["key"] == "password") {
+                if (s["key"] == "password") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: ''),
                       decoration: InputDecoration(
-                        labelText: row['title'], //
+                        labelText: s['title'], //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {
-                        output[row["key"]] = value; //
+                      onChanged: (v) {
+                        s["value"] = v; //
                       },
                     ),
                   );
@@ -142,62 +122,58 @@ class _Form_Update_State extends State<Form_Update_> {
                 //
 
                 //
-                if (row["type"] == "string") {
-                  String value = output[row["key"]]?.toString() ?? '';
+                if (s["type"] == "string") {
+                  String value = s["value"]?.toString() ?? '';
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: value),
                       decoration: InputDecoration(
-                        labelText: row['title'] + ":", //
+                        labelText: s['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {
-                        output[row["key"]] = value; //
+                      onChanged: (v) {
+                        s["value"] = v; //
                       },
                     ),
                   );
                 }
 
                 // edit number
-                if (row["type"] == "number") {
-                  String? value = output[row["key"]]?.toString() ?? '';
+                if (s["type"] == "number") {
+                  String? value = s["value"]?.toString() ?? '';
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: value),
                       decoration: InputDecoration(
-                        labelText: row['title'] + ":", //
+                        labelText: s['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
-                      onChanged: (value) {
-                        output[row["key"]] = double.tryParse(value);
+                      onChanged: (v) {
+                        s["value"] = v; //
                       },
                     ),
                   );
                 }
 
-                if (row["type"] == "boolean") {
+                if (s["type"] == "boolean") {
                   String? value;
-                  if (output[row["key"]] == true) {
-                    value = "Yes";
-                  }
-                  if (output[row["key"]] == false) {
-                    value = "No";
-                  }
+                  if (s["value"] == true) value = "Yes";
+                  if (s["value"] == false) value = "No";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
                       initialValue: value,
                       decoration: InputDecoration(
-                        labelText: row['title'] + ":",
+                        labelText: s['title'] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -207,9 +183,9 @@ class _Form_Update_State extends State<Form_Update_> {
                       }).toList(),
                       onChanged: (v) {
                         if (v == "Yes") {
-                          output[row["key"]] = true;
+                          s["value"] = true;
                         } else {
-                          output[row["key"]] = false;
+                          s["value"] = false;
                         }
                         setState(() {});
                       },
@@ -217,18 +193,15 @@ class _Form_Update_State extends State<Form_Update_> {
                   );
                 }
 
-                if (row["type"] == "date-time") {
-                  String? value = output[row["key"]]?.toString() ?? '';
+                if (s["type"] == "date-time") {
+                  String? value = s["value"]?.toString() ?? '';
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
-                    if (tmp != null) {
-                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
-                    }
+                    if (tmp != null) value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
                   }
+                  //
                   DateTime? initial_datetime = DateTime.tryParse(value);
-                  if (initial_datetime != null) {
-                    initial_datetime = DateTime.now();
-                  }
+                  if (initial_datetime != null) initial_datetime = DateTime.now();
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -237,7 +210,7 @@ class _Form_Update_State extends State<Form_Update_> {
                       readOnly: true,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(), //
-                        labelText: row['title'] + ":", //
+                        labelText: s['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         suffixIcon: Icon(Icons.calendar_today, size: 20), //
@@ -248,7 +221,7 @@ class _Form_Update_State extends State<Form_Update_> {
                           initial_datetime: initial_datetime,
                         );
                         if (datetime == null) return;
-                        output[row["key"]] = DateFormat('yyyy-MM-dd HH:mm:ss').format(datetime);
+                        s["value"] = DateFormat('yyyy-MM-dd HH:mm:ss').format(datetime);
                         setState(() {});
                       }, //,
                     ),
@@ -279,7 +252,36 @@ class _Form_Update_State extends State<Form_Update_> {
   }
 
   void on_update() async {
-    print("Output: $output");
+    // todo: validation
+
+    // 0. debug
+    // for (var s in schema) print(s);
+
+    // 1. validate required fields
+    for (var s in schema) {
+      if (s["key"] == "id") continue; // skip id field
+      if (s["key"] == "note") continue; // skip note field
+      if (s["value"] == null) {
+        snackbar_show(context: context, message: "${s["title"]} is required.", color: Colors.red);
+        return;
+      }
+    }
+
+    // 2. validate number fields
+    for (var s in schema) {
+      if (s["type"] == "number") {
+        final tmp = double.tryParse(s["value"].toString());
+        if (tmp == null) {
+          snackbar_show(context: context, message: "${s["title"]} must be a number.", color: Colors.red);
+          return;
+        }
+      }
+    }
+
+    // prepare output
+    Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
+
+    // request
     await dio
         .post('$PATH/data_update', data: FormData.fromMap({...output}))
         .then((value) {
@@ -290,5 +292,8 @@ class _Form_Update_State extends State<Form_Update_> {
         .catchError((error) {
           snackbar_show(context: context, message: "$HEADER update failed", color: Colors.red);
         });
+
+    // clear schema values
+    for (var s in schema) s["value"] = null;
   }
 }

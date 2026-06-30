@@ -32,21 +32,21 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Form_Create_(),
+      home: Main_(),
     );
   }
 }
 
-class Form_Create_ extends StatefulWidget {
-  Form_Create_({
+class Main_ extends StatefulWidget {
+  Main_({
     super.key, //
   });
 
   @override
-  State<Form_Create_> createState() => _Form_Create_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Form_Create_State extends State<Form_Create_> {
+class _Main_State extends State<Main_> {
   //
 
   @override
@@ -89,8 +89,8 @@ class _Form_Create_State extends State<Form_Create_> {
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {
-                        row["value"] = value; //
+                      onChanged: (v) {
+                        row["value"] = v;
                       },
                     ),
                   );
@@ -111,8 +111,8 @@ class _Form_Create_State extends State<Form_Create_> {
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {
-                        row["value"] = value; //
+                      onChanged: (v) {
+                        row["value"] = v; //
                       },
                     ),
                   );
@@ -131,8 +131,8 @@ class _Form_Create_State extends State<Form_Create_> {
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {
-                        row["value"] = double.tryParse(value);
+                      onChanged: (v) {
+                        row["value"] = v; //
                       },
                     ),
                   );
@@ -153,11 +153,8 @@ class _Form_Create_State extends State<Form_Create_> {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
-                        if (v == "Yes") {
-                          row["value"] = true;
-                        } else {
-                          row["value"] = false;
-                        }
+                        if (v == "Yes") row["value"] = true;
+                        if (v == "No") row["value"] = false;
                         setState(() {});
                       },
                     ),
@@ -210,10 +207,35 @@ class _Form_Create_State extends State<Form_Create_> {
   }
 
   void on_create() async {
-    //
+    // todo: validation
 
+    // 0. debug
+    for (var s in schema) print(s);
+
+    // 1. validate required fields
+    for (var s in schema) {
+      if (s["key"] == "id") continue; // skip id field
+      if (s["key"] == "note") continue; // skip note field
+      if (s["value"] == null) {
+        snackbar_show(context: context, message: "${s["title"]} is required.", color: Colors.red);
+        return;
+      }
+    }
+
+    // 2. validate number fields
+    for (var s in schema) {
+      if (s["type"] == "number") {
+        if (double.tryParse(s["value"]) == null) {
+          snackbar_show(context: context, message: "${s["title"]} must be a number.", color: Colors.red);
+          return;
+        }
+      }
+    }
+
+    // prepare output
     Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
 
+    // request
     await dio
         .post('$PATH/data_create', data: FormData.fromMap({...output}))
         .then((r) {
@@ -224,5 +246,8 @@ class _Form_Create_State extends State<Form_Create_> {
         .catchError((error) {
           snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
         });
+
+    // clear input values
+    for (var s in schema) s['value'] = null;
   }
 }

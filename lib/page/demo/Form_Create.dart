@@ -32,21 +32,21 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Form_Create_(),
+      home: Main_(),
     );
   }
 }
 
-class Form_Create_ extends StatefulWidget {
-  Form_Create_({
+class Main_ extends StatefulWidget {
+  Main_({
     super.key, //
   });
 
   @override
-  State<Form_Create_> createState() => _Form_Create_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Form_Create_State extends State<Form_Create_> {
+class _Main_State extends State<Main_> {
   //
 
   @override
@@ -246,5 +246,8 @@ class _Form_Create_State extends State<Form_Create_> {
         .catchError((error) {
           snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
         });
+
+    // clear input values
+    for (var s in schema) s['value'] = null;
   }
 }

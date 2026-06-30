@@ -296,7 +296,7 @@ class _Form_Read_State extends State<Form_Read_> {
               //                 margin: EdgeInsets.fromLTRB(4, 4, 4, 20),
               //                 child: InkWell(
               //                   onTap: () {
-              //                     // TODO: Handle image tap
+              //                     // todo: Handle image tap
               //                     print('Image tapped: $i');
               //                   },
               //                   child: output["images"] != null && output["images"][i.toString()] != null
