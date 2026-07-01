@@ -48,8 +48,8 @@ class Main_ extends StatefulWidget {
 
 class _Main_State extends State<Main_> {
   // keys
-  var NUMBER = "room_number";
-  var TYPE = "room_type";
+  var ROOM_NUMBER = "room_number";
+  var ROOM_TYPE = "room_type";
   var PRICE_DAY = "room_price_per_day_usd";
   var PRICE_3H = "room_price_per_3h_usd";
   var STATUS = "room_status";
@@ -67,7 +67,7 @@ class _Main_State extends State<Main_> {
         .post('/room/data_read')
         .then((r) {
           room_infos = List<Map<String, dynamic>>.from(r.data);
-          room_infos.sort((a, b) => "${a[NUMBER]}".compareTo("${b[NUMBER]}"));
+          room_infos.sort((a, b) => "${a[ROOM_NUMBER]}".compareTo("${b[ROOM_NUMBER]}"));
           setState(() {});
         })
         .catchError((_) {});
@@ -115,7 +115,7 @@ class _Main_State extends State<Main_> {
                             mainAxisAlignment: .center,
                             crossAxisAlignment: .start,
                             children: [
-                              Text("Room ${room[NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("Room ${room[ROOM_NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
                               Text("${room[PRICE_DAY]}\$/day | ${room[PRICE_3H]}\$/3h"),
                             ],
                           ),
@@ -148,7 +148,7 @@ class _Main_State extends State<Main_> {
                             mainAxisAlignment: .center,
                             crossAxisAlignment: .start,
                             children: [
-                              Text("Room ${room[NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("Room ${room[ROOM_NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
                               Text("${room[PRICE_DAY]}\$/day | ${room[PRICE_3H]}\$/3h"),
                             ],
                           ),
@@ -180,7 +180,7 @@ class _Main_State extends State<Main_> {
                             mainAxisAlignment: .center,
                             crossAxisAlignment: .start,
                             children: [
-                              Text("Room ${room[NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("Room ${room[ROOM_NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
                               Text("${room[PRICE_DAY]}\$/day | ${room[PRICE_3H]}\$/3h"),
                             ],
                           ),
@@ -212,7 +212,7 @@ class _Main_State extends State<Main_> {
                             mainAxisAlignment: .center,
                             crossAxisAlignment: .start,
                             children: [
-                              Text("Room ${room[NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("Room ${room[ROOM_NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
                               Text("${room["price_per_day"]}\$/day | ${room["price_per_3_hour"]}\$/3h"),
                             ],
                           ),
@@ -236,16 +236,16 @@ class _Main_State extends State<Main_> {
   void on_selected(room) {
     //
 
-    var info = room_infos.firstWhere((e) => e[NUMBER] == room[NUMBER]);
+    var info = room_infos.firstWhere((e) => e[ROOM_NUMBER] == room[ROOM_NUMBER]);
 
     // print(info);
 
     for (var s in schema) {
-      if (s["key"] == "room_id") s["value"] = info["id"];
-      if (s["key"] == NUMBER) s["value"] = info[NUMBER];
-      if (s["key"] == "room_type") s["value"] = info["room_type"];
+      if (s["key"] == ROOM_NUMBER) s["value"] = info[ROOM_NUMBER];
+      if (s["key"] == ROOM_TYPE) s["value"] = info[ROOM_TYPE];
       if (s["key"] == PRICE_DAY) s["value"] = info[PRICE_DAY];
       if (s["key"] == PRICE_3H) s["value"] = info[PRICE_3H];
+      if (s["key"] == "room_id") s["value"] = info["id"];
     }
 
     // for (var s in schema) {

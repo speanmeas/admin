@@ -76,10 +76,10 @@ class _Main_State extends State<Main_> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: OutlinedButton.icon(
-              icon: Icon(Icons.logout_outlined),
-              label: Text("Check Out"),
+              icon: Icon(Icons.payment_outlined),
+              label: Text("Paid"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: on_check_out, //
+              onPressed: on_paid, //
             ),
           ),
         ],
@@ -252,22 +252,14 @@ class _Main_State extends State<Main_> {
     // );
   }
 
-  void on_check_out() async {
-    //
-    // todo: save guest info + stay detail + payment to database
-
+  void on_paid() async {
     Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
 
-    String id = output["id"];
-    Map<String, dynamic> data = Map<String, dynamic>.from(output);
-    data.remove("id");
-
-    for (var entry in output.entries) {
-      print(entry);
-    }
-
     await dio
-        .post('$PATH/data_update', data: FormData.fromMap({...output}))
+        .post(
+          '$PATH/data_update', //
+          data: FormData.fromMap({...output}),
+        )
         .then((r) {
           snackbar_show(context: context, message: "$HEADER update successfully.", color: Colors.green);
           Navigator.pop(context);
@@ -276,19 +268,5 @@ class _Main_State extends State<Main_> {
         .catchError((error) {
           snackbar_show(context: context, message: "$HEADER update failed.", color: Colors.red);
         });
-
-    var room_id = schema.firstWhere((s) => s["key"] == "room_id")["value"];
-
-    await dio.post(
-      '/room/data_update',
-      data: FormData.fromMap({
-        //
-        "id": room_id,
-        "room_status": "Dirty",
-      }),
-    );
-
-    // clear schema values
-    for (var s in schema) s["value"] = null;
   }
 }

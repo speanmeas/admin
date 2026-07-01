@@ -60,8 +60,10 @@ class _Main_State extends State<Main_> {
   var AR_TOTAL_USD = "ar_total_usd";
   var GET_PAID_DATE = "get_paid_date";
   var GET_PAID_BY = "get_paid_by";
-  var CHECK_OUT_DATE = "check_out_date";
-  var CHECK_OUT_BY = "check_out_by";
+  var PAYMENT_DATE = "payment_date";
+  var PAYMENT_BY = "payment_by";
+  var PAYMENT_BY_ID = "payment_by_id";
+  var PAYMENT_NOTE = "payment_note";
 
   // controllers
   TextEditingController controller_price_usd = TextEditingController();
@@ -74,6 +76,8 @@ class _Main_State extends State<Main_> {
 
   TextEditingController controller_return_usd = TextEditingController();
   TextEditingController controller_return_khr = TextEditingController();
+
+  TextEditingController controller_note = TextEditingController();
 
   @override
   void initState() {
@@ -90,7 +94,7 @@ class _Main_State extends State<Main_> {
       if (s["key"] == PAID_CASH_KHR) controller_paid_cash_khr.text = (s["value"] ?? "").toString();
       if (s["key"] == RETURN_USD) controller_return_usd.text = (s["value"] ?? "").toString();
       if (s["key"] == RETURN_KHR) controller_return_khr.text = (s["value"] ?? "").toString();
-      print(s);
+      if (s["key"] == PAYMENT_NOTE) controller_note.text = (s["value"] ?? "").toString();
     }
   }
 
@@ -369,6 +373,23 @@ class _Main_State extends State<Main_> {
                   ),
                 );
               })(),
+
+              // note
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: controller_note,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    labelText: "Note:", //
+                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  onChanged: (v) {},
+                ),
+              ),
             ],
           ),
         ),
@@ -451,8 +472,10 @@ class _Main_State extends State<Main_> {
       if (s["key"] == AR_TOTAL_USD) s["value"] = get_ar_total_usd();
       if (s["key"] == GET_PAID_DATE && get_paid_date != null) s["value"] = get_paid_date.toIso8601String();
       if (s["key"] == GET_PAID_BY && get_paid_date != null) s["value"] = await secure_storage.read(key: 'full_name') ?? '';
-      if (s["key"] == CHECK_OUT_DATE) s["value"] = DateTime.now().toIso8601String();
-      if (s["key"] == CHECK_OUT_BY) s["value"] = await secure_storage.read(key: 'full_name') ?? '';
+      if (s["key"] == PAYMENT_DATE) s["value"] = DateTime.now().toIso8601String();
+      if (s["key"] == PAYMENT_BY) s["value"] = await secure_storage.read(key: 'full_name') ?? '';
+      if (s["key"] == PAYMENT_BY_ID) s["value"] = await secure_storage.read(key: 'id') ?? '';
+      if (s["key"] == PAYMENT_NOTE) s["value"] = controller_note.text;
     }
 
     Navigator.push(

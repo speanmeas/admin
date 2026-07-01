@@ -27,8 +27,11 @@ import 'Form_Update.dart';
 import 'Form_Delete.dart';
 
 import 'form_check_in/Step_1_Room_Info.dart' as check_in;
-import 'form_check_out/Step_1_Payment_Info.dart' as check_out;
 import 'form_payment/Step_1_Payment_Info.dart' as payment;
+import 'form_check_out/Step_1_Note.dart' as check_out;
+import 'form_clean/Step_1_Note.dart' as clean;
+
+import 'form_update_guest/Step_1_Guest_Info.dart' as update_guest;
 
 void main() {
   runApp(
@@ -63,11 +66,8 @@ class Main_ extends StatefulWidget {
 class _Main_State extends State<Main_> {
   //
 
-  PlutoGridStateManager? state_manager;
-
   bool is_loading = false;
   bool has_more = true;
-
   int total_row = 0;
 
   //
@@ -76,11 +76,11 @@ class _Main_State extends State<Main_> {
   String? query;
   double? min;
   double? max;
-
   DateTime? start;
   DateTime? end;
-
   int? order;
+
+  PlutoGridStateManager? state_manager;
 
   @override
   void initState() {
@@ -221,7 +221,7 @@ class _Main_State extends State<Main_> {
                       child: OutlinedButton.icon(
                         icon: Icon(Icons.cleaning_services), //
                         label: Text("Clean"),
-                        onPressed: on_check_in,
+                        onPressed: on_clean,
                       ),
                     ),
 
@@ -238,17 +238,6 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
 
-                    // update room
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.edit_outlined), //
-                        label: Text("Update Room"),
-                        onPressed: on_update,
-                      ),
-                    ),
-
                     // update guest info
                     Container(
                       height: 32,
@@ -256,33 +245,24 @@ class _Main_State extends State<Main_> {
                       child: OutlinedButton.icon(
                         icon: Icon(Icons.edit_outlined), //
                         label: Text("Update Guest"),
+                        onPressed: on_update_guest,
+                      ),
+                    ),
+
+                    // update
+                    // if(is_admin || is_manager)
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.edit_outlined), //
+                        label: Text("Update"),
                         onPressed: on_update,
                       ),
                     ),
 
-                    // update stay info
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.edit_outlined), //
-                        label: Text("Update Staying"),
-                        onPressed: () {},
-                      ),
-                    ),
-
-                    // update payment
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.edit_outlined), //
-                        label: Text("Update Payment"),
-                        onPressed: () {},
-                      ),
-                    ),
-
                     // delete
+                    // if(is_admin || is_manager)
                     Container(
                       height: 32,
                       margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -477,154 +457,18 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  void on_payment() {
-    //
-
-    if (state_manager?.currentRow == null) {
-      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
-      return;
-    }
-
-    Map<String, dynamic> data = {};
-    state_manager?.currentRow!.cells.forEach((k, c) {
-      data[k] = (() {
-        if (c.value == null) return null;
-
-        // default
-        return c.value.toString();
-      })();
-    });
-
-    for (var s in schema) {
-      s["value"] = data[s["key"]];
-      // print(s);
-    }
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => payment.Main_()),
-    ).then((v) {
-      //
-      if (v == null) return;
-
-      final row = state_manager?.currentRow;
-      for (var s in schema) {
-        final key = s['key'];
-        if (key == null) continue;
-
-        if (s['type'] == 'date-time') {
-          row?.cells[key]?.value = (() {
-            if (v[key] == null) return '';
-
-            final dt = DateTime.tryParse(v[key].toString());
-            if (dt == null) return '';
-
-            // default
-            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
-          })();
-        } else if (s['type'] == 'boolean') {
-          row?.cells[key]?.value = (() {
-            if (v[key] == null) return '';
-            if (v[key] == true) return 'Yes';
-
-            // default
-            return 'No';
-          })();
-        } else {
-          row?.cells[key]?.value = (() {
-            if (v[key] == null) return '';
-
-            // default
-            return v[key].toString();
-          })();
-        }
-      }
-
-      state_manager?.notifyListeners();
-
-      // clear schema values
-      for (var s in schema) s["value"] = null;
-    });
-  }
-
-  void on_check_out() {
-    //
-
-    if (state_manager?.currentRow == null) {
-      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
-      return;
-    }
-
-    Map<String, dynamic> data = {};
-    state_manager?.currentRow!.cells.forEach((k, c) {
-      data[k] = (() {
-        if (c.value == null) return null;
-
-        // default
-        return c.value.toString();
-      })();
-    });
-
-    for (var s in schema) {
-      s["value"] = data[s["key"]];
-      // print(s);
-    }
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => check_out.Main_()),
-    ).then((v) {
-      //
-      if (v == null) return;
-
-      final row = state_manager?.currentRow;
-      for (var s in schema) {
-        final key = s['key'];
-        if (key == null) continue;
-
-        if (s['type'] == 'date-time') {
-          row?.cells[key]?.value = (() {
-            if (v[key] == null) return '';
-
-            final dt = DateTime.tryParse(v[key].toString());
-            if (dt == null) return '';
-
-            // default
-            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
-          })();
-        } else if (s['type'] == 'boolean') {
-          row?.cells[key]?.value = (() {
-            if (v[key] == null) return '';
-            if (v[key] == true) return 'Yes';
-
-            // default
-            return 'No';
-          })();
-        } else {
-          row?.cells[key]?.value = (() {
-            if (v[key] == null) return '';
-
-            // default
-            return v[key].toString();
-          })();
-        }
-      }
-
-      state_manager?.notifyListeners();
-
-      // clear schema values
-      for (var s in schema) s["value"] = null;
-    });
-  }
-
   void on_check_in() {
     //
     Navigator.push(
       context, //
       MaterialPageRoute(builder: (context) => check_in.Main_()),
     ).then((v) {
-      // print("on_checkin $v");
-      if (v == null) return;
+      //
+      if (v == null) {
+        // clear schema values
+        for (var s in schema) s["value"] = null;
+        return;
+      }
 
       state_manager?.prependRows([
         PlutoRow(
@@ -672,6 +516,522 @@ class _Main_State extends State<Main_> {
 
       // scroll to top
       state_manager?.scroll.vertical?.jumpTo(0);
+
+      // clear schema values
+      for (var s in schema) s["value"] = null;
+    });
+  }
+
+  void on_payment() {
+    if (state_manager?.currentRow == null) {
+      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+      return;
+    }
+
+    // pass current row data to schema values
+    state_manager?.currentRow!.cells.forEach((k, c) {
+      // print("on_payment $k ${c.value}");
+      for (var s in schema) {
+        // skip password
+        if (s['key'] == "password") continue;
+
+        if (s['key'] == k) {
+          // skip null
+          if (c.value == null) {
+            s['value'] = null;
+            continue;
+          }
+
+          // id
+          if (s['type'] == 'id') {
+            s['value'] = c.value;
+            continue;
+          }
+
+          // string
+          if (s['type'] == 'string') {
+            s['value'] = c.value;
+            continue;
+          }
+
+          // number
+          if (s['type'] == 'number') {
+            double? tmp = double.tryParse(c.value.toString());
+            s['value'] = tmp;
+            continue;
+          }
+
+          // date-time
+          if (s['type'] == 'date-time') {
+            final tmp = DateTime.tryParse(c.value.toString());
+            s['value'] = tmp == null ? null : DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp);
+            continue;
+          }
+
+          // boolean
+          if (s['type'] == 'boolean') {
+            if (c.value == "Yes") s['value'] = true;
+            if (c.value == "No") s['value'] = false;
+            continue;
+          }
+        }
+      }
+    });
+
+    // check if clean is already done
+    for (var s in schema) {
+      if (s['key'] == "clean_by") {
+        // print(s['value']);
+        if (s['value'] != "") {
+          snackbar_show(context: context, message: "Clean already done by ${s['value']}", color: Colors.blue);
+          return;
+        }
+      }
+    }
+
+    // check if payment is already done
+    for (var s in schema) {
+      if (s['key'] == "payment_by") {
+        // print(s['value']);
+        if (s['value'] != "") {
+          snackbar_show(context: context, message: "Payment already done by ${s['value']}", color: Colors.blue);
+          return;
+        }
+      }
+    }
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => payment.Main_()),
+    ).then((v) {
+      //
+      if (v == null) {
+        // clear schema values
+        for (var s in schema) s["value"] = null;
+        return;
+      }
+
+      final row = state_manager?.currentRow;
+      for (var s in schema) {
+        final key = s['key'];
+        if (key == null) continue;
+
+        if (s['type'] == 'date-time') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            final dt = DateTime.tryParse(v[key].toString());
+            if (dt == null) return '';
+
+            // default
+            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+          })();
+        } else if (s['type'] == 'boolean') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+            if (v[key] == true) return 'Yes';
+
+            // default
+            return 'No';
+          })();
+        } else {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            // default
+            return v[key].toString();
+          })();
+        }
+      }
+
+      state_manager?.notifyListeners();
+
+      // clear schema values
+      for (var s in schema) s["value"] = null;
+    });
+  }
+
+  void on_check_out() {
+    if (state_manager?.currentRow == null) {
+      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+      return;
+    }
+
+    //
+    state_manager?.currentRow!.cells.forEach((k, c) {
+      for (var s in schema) {
+        // skip password
+        if (s['key'] == "password") continue;
+
+        if (s['key'] == k) {
+          // skip null
+          if (c.value == null) {
+            s['value'] = null;
+            continue;
+          }
+
+          // id
+          if (s['type'] == 'id') {
+            s['value'] = c.value;
+            continue;
+          }
+
+          // string
+          if (s['type'] == 'string') {
+            s['value'] = c.value;
+            continue;
+          }
+
+          // number
+          if (s['type'] == 'number') {
+            double? tmp = double.tryParse(c.value.toString());
+            s['value'] = tmp;
+            continue;
+          }
+
+          // date-time
+          if (s['type'] == 'date-time') {
+            DateTime? tmp = DateTime.tryParse(c.value.toString());
+            s['value'] = tmp == null ? null : DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp);
+            continue;
+          }
+
+          // boolean
+          if (s['type'] == 'boolean') {
+            if (c.value == "Yes") s['value'] = true;
+            if (c.value == "No") s['value'] = false;
+            continue;
+          }
+        }
+      }
+    });
+
+    // check if clean is already done
+    for (var s in schema) {
+      if (s['key'] == "clean_by") {
+        // print(s['value']);
+        if (s['value'] != "") {
+          snackbar_show(context: context, message: "Clean already done by ${s['value']}", color: Colors.blue);
+          return;
+        }
+      }
+    }
+
+    // check if payment is already done
+    for (var s in schema) {
+      if (s['key'] == "payment_by") {
+        // print(s['value']);
+        if (s['value'] == "") {
+          snackbar_show(context: context, message: "Please complete payment first.", color: Colors.red);
+          return;
+        }
+      }
+    }
+
+    // check if check out is already done
+    for (var s in schema) {
+      if (s['key'] == "check_out_by") {
+        // print(s['value']);
+        if (s['value'] != "") {
+          snackbar_show(context: context, message: "Check out already done by ${s['value']}", color: Colors.blue);
+          return;
+        }
+      }
+    }
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => check_out.Main_()),
+    ).then((v) {
+      //
+      if (v == null) {
+        // clear schema values
+        for (var s in schema) s["value"] = null;
+        return;
+      }
+
+      final row = state_manager?.currentRow;
+      for (var s in schema) {
+        final key = s['key'];
+        if (key == null) continue;
+
+        if (s['type'] == 'date-time') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            final dt = DateTime.tryParse(v[key].toString());
+            if (dt == null) return '';
+
+            // default
+            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+          })();
+        } else if (s['type'] == 'boolean') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+            if (v[key] == true) return 'Yes';
+
+            // default
+            return 'No';
+          })();
+        } else {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            // default
+            return v[key].toString();
+          })();
+        }
+      }
+
+      state_manager?.notifyListeners();
+
+      // clear schema values
+      for (var s in schema) s["value"] = null;
+    });
+  }
+
+  void on_clean() {
+    // TODO: check if check out is already done, if yes, show snackbar "Check out already done", else go to clean page
+
+    // is selected?
+    if (state_manager?.currentRow == null) {
+      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+      return;
+    }
+
+    //
+    state_manager?.currentRow!.cells.forEach((k, c) {
+      for (var s in schema) {
+        // skip password
+        if (s['key'] == "password") continue;
+
+        if (s['key'] == k) {
+          // skip null
+          if (c.value == null) {
+            s['value'] = null;
+            continue;
+          }
+
+          // id
+          if (s['type'] == 'id') {
+            s['value'] = c.value;
+            continue;
+          }
+
+          // string
+          if (s['type'] == 'string') {
+            s['value'] = c.value;
+            continue;
+          }
+
+          // number
+          if (s['type'] == 'number') {
+            double? tmp = double.tryParse(c.value.toString());
+            s['value'] = tmp;
+            continue;
+          }
+
+          // date-time
+          if (s['type'] == 'date-time') {
+            DateTime? tmp = DateTime.tryParse(c.value.toString());
+            s['value'] = tmp == null ? null : DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp);
+            continue;
+          }
+
+          // boolean
+          if (s['type'] == 'boolean') {
+            if (c.value == "Yes") s['value'] = true;
+            if (c.value == "No") s['value'] = false;
+            continue;
+          }
+        }
+      }
+    });
+
+    // check if payment is already done
+    for (var s in schema) {
+      if (s['key'] == "payment_by") {
+        // print(s['value']);
+        if (s['value'] == "") {
+          snackbar_show(context: context, message: "Please complete payment first.", color: Colors.red);
+          return;
+        }
+      }
+    }
+
+    // check if check out is already done
+    for (var s in schema) {
+      if (s['key'] == "check_out_by") {
+        // print(s['value']);
+        if (s['value'] == "") {
+          snackbar_show(context: context, message: "Please complete check out first.", color: Colors.red);
+          return;
+        }
+      }
+    }
+
+    // check if clean is already done
+    for (var s in schema) {
+      if (s['key'] == "clean_by") {
+        // print(s['value']);
+        if (s['value'] != "") {
+          snackbar_show(context: context, message: "Clean already done by ${s['value']}", color: Colors.blue);
+          return;
+        }
+      }
+    }
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => clean.Main_()),
+    ).then((v) {
+      //
+      if (v == null) {
+        // clear schema values
+        for (var s in schema) s["value"] = null;
+        return;
+      }
+
+      final row = state_manager?.currentRow;
+      for (var s in schema) {
+        final key = s['key'];
+        if (key == null) continue;
+
+        if (s['type'] == 'date-time') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            final dt = DateTime.tryParse(v[key].toString());
+            if (dt == null) return '';
+
+            // default
+            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+          })();
+        } else if (s['type'] == 'boolean') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+            if (v[key] == true) return 'Yes';
+
+            // default
+            return 'No';
+          })();
+        } else {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            // default
+            return v[key].toString();
+          })();
+        }
+      }
+
+      state_manager?.notifyListeners();
+
+      // clear schema values
+      for (var s in schema) s["value"] = null;
+    });
+  }
+
+  void on_update_guest() {
+    if (state_manager?.currentRow == null) {
+      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+      return;
+    }
+
+    //
+    state_manager?.currentRow!.cells.forEach((k, c) {
+      for (var s in schema) {
+        // skip password
+        if (s['key'] == "password") continue;
+
+        if (s['key'] == k) {
+          // skip null
+          if (c.value == null) {
+            s['value'] = null;
+            continue;
+          }
+
+          // id
+          if (s['type'] == 'id') {
+            s['value'] = c.value;
+            continue;
+          }
+
+          // string
+          if (s['type'] == 'string') {
+            s['value'] = c.value;
+            continue;
+          }
+
+          // number
+          if (s['type'] == 'number') {
+            double? tmp = double.tryParse(c.value.toString());
+            s['value'] = tmp;
+            continue;
+          }
+
+          // date-time
+          if (s['type'] == 'date-time') {
+            DateTime? tmp = DateTime.tryParse(c.value.toString());
+            s['value'] = tmp == null ? null : DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp);
+            continue;
+          }
+
+          // boolean
+          if (s['type'] == 'boolean') {
+            if (c.value == "Yes") s['value'] = true;
+            if (c.value == "No") s['value'] = false;
+            continue;
+          }
+        }
+      }
+    });
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => update_guest.Main_()),
+    ).then((v) {
+      //
+      if (v == null) {
+        // clear schema values
+        for (var s in schema) s["value"] = null;
+        return;
+      }
+
+      final row = state_manager?.currentRow;
+      for (var s in schema) {
+        final key = s['key'];
+        if (key == null) continue;
+
+        if (s['type'] == 'date-time') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            final dt = DateTime.tryParse(v[key].toString());
+            if (dt == null) return '';
+
+            // default
+            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+          })();
+        } else if (s['type'] == 'boolean') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+            if (v[key] == true) return 'Yes';
+
+            // default
+            return 'No';
+          })();
+        } else {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            // default
+            return v[key].toString();
+          })();
+        }
+      }
+
+      state_manager?.notifyListeners();
 
       // clear schema values
       for (var s in schema) s["value"] = null;

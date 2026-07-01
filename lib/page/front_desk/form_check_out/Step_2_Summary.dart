@@ -258,14 +258,6 @@ class _Main_State extends State<Main_> {
 
     Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
 
-    String id = output["id"];
-    Map<String, dynamic> data = Map<String, dynamic>.from(output);
-    data.remove("id");
-
-    for (var entry in output.entries) {
-      print(entry);
-    }
-
     await dio
         .post('$PATH/data_update', data: FormData.fromMap({...output}))
         .then((r) {
@@ -282,13 +274,9 @@ class _Main_State extends State<Main_> {
     await dio.post(
       '/room/data_update',
       data: FormData.fromMap({
-        //
-        "id": room_id,
+        "id": room_id, //
         "room_status": "Dirty",
       }),
     );
-
-    // clear schema values
-    for (var s in schema) s["value"] = null;
   }
 }

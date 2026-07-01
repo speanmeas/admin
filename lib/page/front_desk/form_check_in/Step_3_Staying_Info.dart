@@ -55,12 +55,12 @@ class _Main_State extends State<Main_> {
   var CHECK_OUT_DATE = "schedule_check_out";
   var CHECK_IN_DATE = "check_in_date";
   var CHECK_IN_BY = "check_in_by";
+  var CHECK_IN_BY_ID = "check_in_by_id";
+  var CHECK_IN_NOTE = "check_in_note";
 
   var PRICE_TOTAL = "price_total_usd";
   var PRICE_DAY = "room_price_per_day_usd";
   var PRICE_3H = "room_price_per_3h_usd";
-
-  var NOTE = "note";
 
   // options
   var NUM_GUESTS = List.generate(10, (index) => (index + 1));
@@ -84,7 +84,7 @@ class _Main_State extends State<Main_> {
       if (s["key"] == STAY_NUM_GUESTS) controller_num_guests.text = (s["value"] ?? "").toString();
       if (s["key"] == STAY_DAYS) controller_days.text = (s["value"] ?? "").toString();
       if (s["key"] == STAY_HOURS) controller_hours.text = (s["value"] ?? "").toString();
-      if (s["key"] == NOTE) controller_note.text = (s["value"] ?? "").toString();
+      if (s["key"] == CHECK_IN_NOTE) controller_note.text = (s["value"] ?? "").toString();
     }
   }
 
@@ -300,10 +300,11 @@ class _Main_State extends State<Main_> {
       if (s["key"] == STAY_HOURS) s["value"] = stay_duration_hours;
       if (s["key"] == STAY_NUM_GUESTS) s["value"] = number_of_guests;
       if (s["key"] == CHECK_OUT_DATE) s["value"] = schedule_check_out.toIso8601String();
+      if (s["key"] == PRICE_TOTAL) s["value"] = price_total_usd;
+      if (s["key"] == CHECK_IN_NOTE) s["value"] = controller_note.text;
       if (s["key"] == CHECK_IN_DATE) s["value"] = check_in_date.toIso8601String();
       if (s["key"] == CHECK_IN_BY) s["value"] = await secure_storage.read(key: 'full_name') ?? '';
-      if (s["key"] == PRICE_TOTAL) s["value"] = price_total_usd;
-      if (s["key"] == NOTE) s["value"] = controller_note.text;
+      if (s["key"] == CHECK_IN_BY_ID) s["value"] = await secure_storage.read(key: 'id') ?? '';
     }
 
     Navigator.push(

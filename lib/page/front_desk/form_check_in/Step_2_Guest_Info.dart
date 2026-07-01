@@ -327,11 +327,11 @@ class _Main_State extends State<Main_> {
     //
 
     for (var s in schema) {
-      if (s["key"] == "guest_id") s["value"] = selected_guest["id"];
       if (s["key"] == NAME) s["value"] = selected_guest[NAME];
       if (s["key"] == GENDER) s["value"] = selected_guest[GENDER];
       if (s["key"] == PHONE_NUMBER) s["value"] = selected_guest[PHONE_NUMBER];
       if (s["key"] == NATIONALITY) s["value"] = selected_guest[NATIONALITY];
+      if (s["key"] == "guest_id") s["value"] = selected_guest["id"];
     }
 
     Navigator.push(

@@ -1,41 +1,43 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/layout/Layout.dart';
 
 import 'package:speanmeas/theme/Theme_Data.dart';
+
 import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/utility/Secure_Storage.dart';
+import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import '../__Setup__.dart';
 import '../Schema.g.dart';
 
-import 'Step_5a_Receipt.dart' as receipt;
+import '../../guest/Form_Create.dart' as guest;
+import '../../guest/Schema.g.dart' as guest_schema;
+
+import 'Step_2_Summary.dart' as summary;
 
 void main() {
   runApp(
     ChangeNotifierProvider(
       create: (_) => Global.variable, //
-      child: const Main(),
+      child: Main(),
     ),
   );
 }
 
 class Main extends StatelessWidget {
-  const Main({super.key});
+  Main({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: TITLE, //
-      theme: Theme_Data(),
+      theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
       home: Main_(),
     );
@@ -43,16 +45,21 @@ class Main extends StatelessWidget {
 }
 
 class Main_ extends StatefulWidget {
-  const Main_({super.key});
+  Main_({super.key});
 
   @override
   State<Main_> createState() => _Main_State();
 }
 
 class _Main_State extends State<Main_> {
-  //
+  // keys
+  var NAME = "guest_name";
+  var GENDER = "guest_gender";
+  var PHONE_NUMBER = "guest_phone";
+  var NATIONALITY = "guest_nationality";
 
-  String full_name = "";
+  TextEditingController controller_search = TextEditingController();
+  Map<String, dynamic> selected_guest = {};
 
   @override
   void initState() {
@@ -61,8 +68,12 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    full_name = await secure_storage.read(key: 'full_name') ?? '';
-    setState(() {});
+    for (var s in schema) {
+      if (s["key"] == NAME) selected_guest[NAME] = s["value"] ?? "";
+      if (s["key"] == GENDER) selected_guest[GENDER] = s["value"] ?? "";
+      if (s["key"] == PHONE_NUMBER) selected_guest[PHONE_NUMBER] = s["value"] ?? "";
+      if (s["key"] == NATIONALITY) selected_guest[NATIONALITY] = s["value"] ?? "";
+    }
   }
 
   @override
@@ -70,41 +81,116 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Check In - Summary", //
+          "Check In - Guest", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
           ),
         ),
-
         actions: [
           // if (can_next())
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: OutlinedButton.icon(
-              icon: Icon(Icons.login_outlined),
-              label: Text("Check In"),
+              icon: Icon(Icons.arrow_right_alt_outlined),
+              label: Text("Next"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: on_check_in, //
+              onPressed: on_next,
             ),
           ),
         ],
-
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
       ),
       body: SingleChildScrollView(
-        child: Align(
-          alignment: Alignment.topCenter,
+        child: Center(
           child: Column(
             children: [
+              // search
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: (() {
+                  List<Map<String, dynamic>> guest_datas = [];
+                  return TypeAheadField<String>(
+                    controller: controller_search,
+                    suggestionsCallback: (query) async {
+                      String key = PHONE_NUMBER;
+                      List<String> option_datas = [];
+                      await dio
+                          .post(
+                            '/guest/data_read', //
+                            data: FormData.fromMap({
+                              "key": key, //
+                              "query": query, //
+                              "order": 1, //
+                              "limit": 1000, //
+                            }),
+                          )
+                          .then((r) {
+                            guest_datas = List<Map<String, dynamic>>.from(r.data);
+
+                            for (var g in guest_datas) {
+                              if (g[key] == null) continue;
+                              option_datas.add(g[key] ?? "");
+                            }
+                          })
+                          .catchError((_) {});
+
+                      return option_datas;
+
+                      //
+                    },
+                    builder: (context, controller, focusNode) {
+                      return TextField(
+                        controller: controller,
+                        focusNode: focusNode,
+                        keyboardType: TextInputType.numberWithOptions(decimal: false),
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
+                        decoration: InputDecoration(
+                          labelText: "Phone Number:", //
+                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          suffixIcon: Icon(Icons.search), //
+                        ),
+                        onChanged: (_) => setState(() {}),
+                      );
+                    },
+                    itemBuilder: (context, item) {
+                      return ListTile(
+                        title: Text(item),
+                        onTap: () {
+                          for (var g in guest_datas) {
+                            if (g[PHONE_NUMBER] == item) {
+                              selected_guest = g;
+                              break;
+                            }
+                          }
+
+                          controller_search.text = item;
+                          FocusScope.of(context).unfocus();
+                          setState(() {});
+                          // setState(() {});
+                        },
+                      );
+                    },
+                    onSelected: (_) {},
+                  );
+                })(),
+              ),
+
+              // phone number - search
+
               // view search guest result
-              ...schema.map((row) {
+              ...guest_schema.schema.map((row) {
+                //
+                if (row["key"] == "note") return SizedBox.shrink();
+
                 //
                 if (row["type"] == "string") {
                   // String value = "";
-                  String value = row["value"]?.toString() ?? "";
+                  String value = selected_guest[row["key"]]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -129,7 +215,7 @@ class _Main_State extends State<Main_> {
                 //
                 if (row["type"] == "number") {
                   // String value = "";
-                  String value = row["value"]?.toString() ?? "";
+                  String value = selected_guest[row["key"]]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -157,7 +243,7 @@ class _Main_State extends State<Main_> {
                 //
                 if (row["type"] == "boolean") {
                   // String value = "";
-                  String value = row["value"]?.toString() ?? "false";
+                  String value = selected_guest[row["key"]]?.toString() ?? "false";
                   value = value.toLowerCase() == "true" ? "Yes" : "No";
                   return Container(
                     width: 600,
@@ -186,7 +272,7 @@ class _Main_State extends State<Main_> {
                 //
                 if (row["type"] == "date-time") {
                   // String value = "";
-                  String value = row["value"]?.toString() ?? "";
+                  String value = selected_guest[row["key"]]?.toString() ?? "";
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
                     if (tmp != null) {
@@ -220,16 +306,16 @@ class _Main_State extends State<Main_> {
                 return SizedBox.shrink();
               }),
 
-              // button check in + print
-              if (can_print())
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                  child: OutlinedButton.icon(
-                    label: Text("Print"),
-                    icon: Icon(Icons.print_outlined),
-                    onPressed: on_print, //
-                  ),
+              // button add new guest
+              Container(
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: OutlinedButton.icon(
+                  icon: Icon(Icons.person_add_alt_1_outlined),
+                  label: Text("Create New Guest"),
+                  style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+                  onPressed: on_add_new,
                 ),
+              ),
             ],
           ),
         ),
@@ -237,55 +323,33 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  bool can_print() {
-    for (var s in schema) {
-      if (s["key"] == "ar_total_usd") {
-        if (s["value"] != null) {
-          if (s["value"] == 0) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
+  void on_next() async {
+    //
 
-  void on_print() {
+    for (var s in schema) {
+      if (s["key"] == NAME) s["value"] = selected_guest[NAME];
+      if (s["key"] == GENDER) s["value"] = selected_guest[GENDER];
+      if (s["key"] == PHONE_NUMBER) s["value"] = selected_guest[PHONE_NUMBER];
+      if (s["key"] == NATIONALITY) s["value"] = selected_guest[NATIONALITY];
+      if (s["key"] == "guest_id") s["value"] = selected_guest["id"];
+    }
+
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (_) => receipt.Main_()),
+      MaterialPageRoute(builder: (context) => summary.Main_()),
     );
   }
 
-  void on_check_in() async {
-    // todo: save guest info + stay detail + payment to database
+  void on_add_new() async {
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => guest.Form_Create_()),
+    ).then((value) {
+      if (value == null) return;
 
-    Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
-    output.remove("id"); // NOTE: remove id for create new record
-
-    await dio
-        .post('$PATH/data_create', data: FormData.fromMap({...output}))
-        .then((r) {
-          output["id"] = r.data["id"]; // NOTE: support to main table
-          snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.pop(context, output);
-        })
-        .catchError((error) {
-          snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
-        });
-
-    var room_id = schema.firstWhere((s) => s["key"] == "room_id")["value"];
-
-    await dio.post(
-      '/room/data_update',
-      data: FormData.fromMap({
-        "id": room_id, //
-        "room_status": "Occupied",
-      }),
-    );
+      controller_search.text = value[PHONE_NUMBER] ?? "";
+      selected_guest = value;
+      setState(() {});
+    });
   }
 }

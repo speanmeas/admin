@@ -58,8 +58,9 @@ class _Main_State extends State<Main_> {
   var RETURN_KHR = "return_khr";
   var RETURN_TOTAL_USD = "return_total_usd";
   var AR_TOTAL_USD = "ar_total_usd";
-  var GET_PAID_DATE = "get_paid_date";
-  var GET_PAID_BY = "get_paid_by";
+  var GET_PAID_DATE = "payment_date";
+  var GET_PAID_BY = "payment_by";
+  var GET_PAID_BY_ID = "payment_by_id";
 
   // controllers
   TextEditingController controller_price_usd = TextEditingController();
@@ -72,6 +73,8 @@ class _Main_State extends State<Main_> {
 
   TextEditingController controller_return_usd = TextEditingController();
   TextEditingController controller_return_khr = TextEditingController();
+
+  TextEditingController controller_payment_note = TextEditingController();
 
   @override
   void initState() {
@@ -460,6 +463,7 @@ class _Main_State extends State<Main_> {
       if (s["key"] == AR_TOTAL_USD) s["value"] = get_ar_total_usd();
       if (s["key"] == GET_PAID_DATE && get_paid_date != null) s["value"] = get_paid_date.toIso8601String();
       if (s["key"] == GET_PAID_BY && get_paid_date != null) s["value"] = await secure_storage.read(key: 'full_name') ?? '';
+      if (s["key"] == GET_PAID_BY_ID && get_paid_date != null) s["value"] = await secure_storage.read(key: 'id') ?? '';
     }
 
     Navigator.push(

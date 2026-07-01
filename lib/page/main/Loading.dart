@@ -70,8 +70,6 @@ class _Loading_State extends State<Loading_> {
   void try_access_token() async {
     String? access_token = await secure_storage.read(key: 'access_token');
 
-    print(access_token);
-
     if (access_token == null) {
       Navigator.pushReplacement(
         context, //

@@ -150,15 +150,27 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "get_paid_date",
-    "type": "date-time",
-    "title": "Get Paid Date",
+    "key": "check_in_note",
+    "type": "string",
+    "title": "Check-in Note",
     "value": null
   },
   {
-    "key": "get_paid_by",
+    "key": "payment_date",
+    "type": "date-time",
+    "title": "Payment Date",
+    "value": null
+  },
+  {
+    "key": "payment_by",
     "type": "string",
-    "title": "Get Paid By",
+    "title": "Payment By",
+    "value": null
+  },
+  {
+    "key": "payment_note",
+    "type": "string",
+    "title": "Payment Note",
     "value": null
   },
   {
@@ -174,6 +186,12 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
+    "key": "check_out_note",
+    "type": "string",
+    "title": "Check-out Note",
+    "value": null
+  },
+  {
     "key": "clean_date",
     "type": "date-time",
     "title": "Clean Date",
@@ -186,9 +204,9 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "note",
+    "key": "clean_note",
     "type": "string",
-    "title": "Note",
+    "title": "Clean Note",
     "value": null
   },
   {
@@ -201,6 +219,30 @@ List<Map<String, dynamic>> schema = [
     "key": "guest_id",
     "type": "id",
     "title": "Guest ID",
+    "value": null
+  },
+  {
+    "key": "check_in_by_id",
+    "type": "id",
+    "title": "Check-in By ID",
+    "value": null
+  },
+  {
+    "key": "payment_by_id",
+    "type": "id",
+    "title": "Payment By ID",
+    "value": null
+  },
+  {
+    "key": "check_out_by_id",
+    "type": "id",
+    "title": "Check-out By ID",
+    "value": null
+  },
+  {
+    "key": "clean_by_id",
+    "type": "id",
+    "title": "Clean By ID",
     "value": null
   }
 ];

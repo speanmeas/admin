@@ -60,10 +60,10 @@ class _Main_State extends State<Main_> {
   var AR_TOTAL_USD = "ar_total_usd";
   var GET_PAID_DATE = "get_paid_date";
   var GET_PAID_BY = "get_paid_by";
-  var CHECK_OUT_DATE = "clean_date";
-  var CHECK_OUT_BY = "clean_by";
-  var CHECK_OUT_BY_ID = "clean_by_id";
-  var check_out_note = "clean_note";
+  var CHECK_OUT_DATE = "check_out_date";
+  var CHECK_OUT_BY = "check_out_by";
+  var CHECK_OUT_BY_ID = "check_out_by_id";
+  var check_out_note = "check_out_note";
 
   TextEditingController controller_note = TextEditingController();
 

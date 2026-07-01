@@ -17,8 +17,6 @@ import 'package:speanmeas/widget/Snackbar_Show.dart';
 import '../__Setup__.dart';
 import '../Schema.g.dart';
 
-import 'Step_5a_Receipt.dart' as receipt;
-
 void main() {
   runApp(
     ChangeNotifierProvider(
@@ -70,7 +68,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Check In - Summary", //
+          "Update Guest - Summary", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -82,10 +80,10 @@ class _Main_State extends State<Main_> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: OutlinedButton.icon(
-              icon: Icon(Icons.login_outlined),
-              label: Text("Check In"),
+              icon: Icon(Icons.edit_outlined),
+              label: Text("Update Guest"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: on_check_in, //
+              onPressed: on_update_guest, //
             ),
           ),
         ],
@@ -219,17 +217,6 @@ class _Main_State extends State<Main_> {
 
                 return SizedBox.shrink();
               }),
-
-              // button check in + print
-              if (can_print())
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                  child: OutlinedButton.icon(
-                    label: Text("Print"),
-                    icon: Icon(Icons.print_outlined),
-                    onPressed: on_print, //
-                  ),
-                ),
             ],
           ),
         ),
@@ -237,55 +224,24 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  bool can_print() {
-    for (var s in schema) {
-      if (s["key"] == "ar_total_usd") {
-        if (s["value"] != null) {
-          if (s["value"] == 0) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  void on_print() {
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (_) => receipt.Main_()),
-    );
-  }
-
-  void on_check_in() async {
+  void on_update_guest() async {
     // todo: save guest info + stay detail + payment to database
 
     Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
-    output.remove("id"); // NOTE: remove id for create new record
+
+    String id = output["id"];
+    Map<String, dynamic> data = Map<String, dynamic>.from(output);
+    data.remove("id");
 
     await dio
-        .post('$PATH/data_create', data: FormData.fromMap({...output}))
+        .post('$PATH/data_update', data: FormData.fromMap({...output}))
         .then((r) {
-          output["id"] = r.data["id"]; // NOTE: support to main table
-          snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.pop(context);
+          snackbar_show(context: context, message: "$HEADER update successfully.", color: Colors.green);
           Navigator.pop(context);
           Navigator.pop(context, output);
         })
         .catchError((error) {
-          snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
+          snackbar_show(context: context, message: "$HEADER update failed.", color: Colors.red);
         });
-
-    var room_id = schema.firstWhere((s) => s["key"] == "room_id")["value"];
-
-    await dio.post(
-      '/room/data_update',
-      data: FormData.fromMap({
-        "id": room_id, //
-        "room_status": "Occupied",
-      }),
-    );
   }
 }
