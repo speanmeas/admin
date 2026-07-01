@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
+import 'package:speanmeas/page/main/User.g.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 
 import 'package:speanmeas/utility/Dio.dart';
@@ -27,14 +28,12 @@ void main() {
 class Main extends StatelessWidget {
   Main({super.key});
 
-  String full_name = "Admin";
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Main_(full_name: full_name),
+      home: Main_(),
     );
   }
 }
@@ -42,22 +41,22 @@ class Main extends StatelessWidget {
 class Main_ extends StatefulWidget {
   Main_({
     super.key, //
-    required this.full_name,
   });
-
-  String full_name = "";
 
   @override
   State<Main_> createState() => _Main_State();
 }
 
 class _Main_State extends State<Main_> {
-  TextEditingController controller = TextEditingController();
+  bool is_password_visible = false;
+  bool is_confirm_password_visible = false;
+
+  TextEditingController controller_password = TextEditingController();
+  TextEditingController controller_confirm_password = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    controller.text = widget.full_name;
   }
 
   @override
@@ -65,7 +64,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Update - Full Name", //
+          "Update - Password", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -80,17 +79,58 @@ class _Main_State extends State<Main_> {
           alignment: Alignment.topCenter,
           child: Column(
             children: [
+              // password
               Container(
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: controller,
+                  controller: controller_password,
                   autofocus: true,
+                  obscureText: !is_password_visible,
+                  keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: "Full Name :", //
+                    labelText: "Password :", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    suffixIcon: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: IconButton(
+                        icon: Icon(is_password_visible ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () {
+                          is_password_visible = !is_password_visible;
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                  ),
+                  onSubmitted: (v) => on_update(),
+                ),
+              ),
+
+              // confirm password
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: controller_confirm_password,
+                  obscureText: !is_confirm_password_visible,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    labelText: "Confirm Password :", //
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    suffixIcon: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: IconButton(
+                        icon: Icon(is_confirm_password_visible ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () {
+                          is_confirm_password_visible = !is_confirm_password_visible;
+                          setState(() {});
+                        },
+                      ),
+                    ),
                   ),
                   onSubmitted: (v) => on_update(),
                 ),
@@ -116,12 +156,16 @@ class _Main_State extends State<Main_> {
   void on_update() async {
     // todo: validation
 
-    String full_name = controller.text.trim();
+    String password = controller_password.text;
+    String confirm_password = controller_confirm_password.text;
 
-    String id = await secure_storage.read(key: "id") ?? "";
+    if (password.length < 6) {
+      snackbar_show(context: context, message: "Password must be at least 6 characters", color: Colors.red);
+      return;
+    }
 
-    if (id.isEmpty) {
-      snackbar_show(context: context, message: "ID not found", color: Colors.red);
+    if (password != confirm_password) {
+      snackbar_show(context: context, message: "Passwords do not match", color: Colors.red);
       return;
     }
 
@@ -129,14 +173,13 @@ class _Main_State extends State<Main_> {
         .post(
           "/user/data_update",
           data: FormData.fromMap({
-            "id": id, //
-            "full_name": full_name, //
+            "id": user["id"]!["value"] ?? "", //
+            "password": password, //
           }),
         )
         .then((r) async {
-          await secure_storage.write(key: "full_name", value: full_name);
-          Navigator.pop(context, full_name);
           snackbar_show(context: context, message: "Update successful", color: Colors.green);
+          Navigator.pop(context, password);
         })
         .catchError((error) {
           snackbar_show(context: context, message: "Update failed", color: Colors.red);

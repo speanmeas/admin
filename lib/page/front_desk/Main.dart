@@ -9,6 +9,7 @@ import 'package:pluto_grid/pluto_grid.dart';
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
+import 'package:speanmeas/page/main/User.g.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
@@ -182,37 +183,40 @@ class _Main_State extends State<Main_> {
                 child: Wrap(
                   children: [
                     // check in
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.login), //
-                        label: Text("Check In"),
-                        onPressed: on_check_in,
+                    if (user["is_admin"]!["value"] || user["is_manager"]!["value"] || user["is_receptionist"]!["value"])
+                      Container(
+                        height: 32,
+                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.login), //
+                          label: Text("Check In"),
+                          onPressed: on_check_in,
+                        ),
                       ),
-                    ),
 
                     // payment
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.payment), //
-                        label: Text("Payment"),
-                        onPressed: on_payment,
+                    if (user["is_admin"]!["value"] || user["is_manager"]!["value"] || user["is_receptionist"]!["value"])
+                      Container(
+                        height: 32,
+                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.payment), //
+                          label: Text("Payment"),
+                          onPressed: on_payment,
+                        ),
                       ),
-                    ),
 
                     // check out
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.logout), //
-                        label: Text("Check Out"),
-                        onPressed: on_check_out,
+                    if (user["is_admin"]!["value"] || user["is_manager"]!["value"] || user["is_receptionist"]!["value"])
+                      Container(
+                        height: 32,
+                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.logout), //
+                          label: Text("Check Out"),
+                          onPressed: on_check_out,
+                        ),
                       ),
-                    ),
 
                     // clean
                     Container(
@@ -224,8 +228,6 @@ class _Main_State extends State<Main_> {
                         onPressed: on_clean,
                       ),
                     ),
-
-                    // SizedBox(width: double.infinity, height: 0),
 
                     // read
                     Container(
@@ -239,39 +241,40 @@ class _Main_State extends State<Main_> {
                     ),
 
                     // update guest info
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.edit_outlined), //
-                        label: Text("Update Guest"),
-                        onPressed: on_update_guest,
+                    if (user["is_admin"]!["value"] || user["is_manager"]!["value"] || user["is_receptionist"]!["value"])
+                      Container(
+                        height: 32,
+                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.edit_outlined), //
+                          label: Text("Update Guest"),
+                          onPressed: on_update_guest,
+                        ),
                       ),
-                    ),
 
                     // update
-                    // if(is_admin || is_manager)
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.edit_outlined), //
-                        label: Text("Update"),
-                        onPressed: on_update,
+                    if (user["is_admin"]!["value"] || user["is_manager"]!["value"])
+                      Container(
+                        height: 32,
+                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.edit_outlined), //
+                          label: Text("Update"),
+                          onPressed: on_update,
+                        ),
                       ),
-                    ),
 
                     // delete
-                    // if(is_admin || is_manager)
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.delete_outline, color: Colors.red), //
-                        label: Text("Delete", style: TextStyle(color: Colors.red)),
-                        onPressed: on_delete,
+                    if (user["is_admin"]!["value"] || user["is_manager"]!["value"])
+                      Container(
+                        height: 32,
+                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.delete_outline, color: Colors.red), //
+                          label: Text("Delete", style: TextStyle(color: Colors.red)),
+                          onPressed: on_delete,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),

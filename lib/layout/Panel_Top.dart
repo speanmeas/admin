@@ -5,9 +5,11 @@ import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/page/main/User_Profile.dart';
+import 'package:speanmeas/page/main/Profile.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
+
+import 'package:speanmeas/page/main/User.g.dart';
 
 void main() {
   runApp(
@@ -39,18 +41,13 @@ class Panel_Top_ extends StatefulWidget {
 }
 
 class _Panel_Top_State extends State<Panel_Top_> {
-  String full_name = "";
-
   @override
   void initState() {
     super.initState();
     init();
   }
 
-  void init() async {
-    full_name = await secure_storage.read(key: 'full_name') ?? '';
-    setState(() {});
-  }
+  void init() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +120,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
                 border: Border.all(color: Colors.blue, width: 2),
               ),
               child: Text(
-                full_name.isNotEmpty ? full_name[0].toUpperCase() : '', //
+                user["full_name"]!["value"]![0].toUpperCase() ?? '', //
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),

@@ -81,7 +81,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Check In - Guest", //
+          "Update - Guest", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,

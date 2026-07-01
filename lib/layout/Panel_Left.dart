@@ -7,6 +7,8 @@ import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Secure_Storage.dart';
 
+import 'package:speanmeas/page/main/User.g.dart';
+
 void main() {
   runApp(
     ChangeNotifierProvider(
@@ -39,11 +41,6 @@ class Panel_Left_ extends StatefulWidget {
 class _Panel_Left_State extends State<Panel_Left_> {
   bool is_mobile = false;
 
-  bool is_admin = false;
-  bool is_manager = false;
-  bool is_receptionist = false;
-  bool is_housekeeper = false;
-
   @override
   void initState() {
     super.initState();
@@ -51,10 +48,6 @@ class _Panel_Left_State extends State<Panel_Left_> {
   }
 
   void init() async {
-    is_admin = await secure_storage.read(key: 'is_admin') == 'true';
-    is_manager = await secure_storage.read(key: 'is_manager') == 'true';
-    is_receptionist = await secure_storage.read(key: 'is_receptionist') == 'true';
-    is_housekeeper = await secure_storage.read(key: 'is_housekeeper') == 'true';
     setState(() {});
   }
 
@@ -67,13 +60,16 @@ class _Panel_Left_State extends State<Panel_Left_> {
         list_tile_l1(name: "Front Desk", icon: Icons.table_bar_outlined),
 
         // Guest
-        if (is_admin || is_manager || is_receptionist) list_tile_l1(name: "Guest", icon: Icons.people_outline),
+        if (user["is_admin"]!["value"] || user["is_manager"]!["value"] || user["is_receptionist"]!["value"]) //
+          list_tile_l1(name: "Guest", icon: Icons.people_outline),
 
         // Room
-        if (is_admin || is_manager) list_tile_l1(name: "Room", icon: Icons.hotel_outlined),
+        if (user["is_admin"]!["value"] || user["is_manager"]!["value"]) //
+          list_tile_l1(name: "Room", icon: Icons.hotel_outlined),
 
         // User
-        if (is_admin || is_manager) list_tile_l1(name: "User", icon: Icons.person_outline),
+        if (user["is_admin"]!["value"] || user["is_manager"]!["value"]) //
+          list_tile_l1(name: "User", icon: Icons.person_outline),
 
         list_tile_l1(name: "Nationality", icon: Icons.flag_outlined),
 
@@ -82,75 +78,15 @@ class _Panel_Left_State extends State<Panel_Left_> {
           leading: Icon(Icons.assessment_outlined), //
           title: Text('Reports'),
           children: [
-            (() {
-              String name = "Daily Report";
-              return ListTile(
-                leading: Icon(Icons.assessment_outlined),
-                title: Text(name),
-                contentPadding: EdgeInsets.only(left: 40),
-                selected: Global.variable.body == name,
-                selectedColor: Colors.blue,
-                onTap: () {
-                  Global.variable.body = name;
-                  Global.variable.notifyListeners();
-                  if (is_mobile) Navigator.pop(context);
-                  setState(() {});
-                },
-              );
-            })(),
-            (() {
-              String name = "Weekly Report";
-              return ListTile(
-                leading: Icon(Icons.assessment_outlined),
-                title: Text(name),
-                contentPadding: EdgeInsets.only(left: 40),
-                selected: Global.variable.body == name,
-                selectedColor: Colors.blue,
-                onTap: () {
-                  Global.variable.body = name;
-                  Global.variable.notifyListeners();
-                  if (is_mobile) Navigator.pop(context);
-                  setState(() {});
-                },
-              );
-            })(),
-            (() {
-              String name = "Monthly Report";
-              return ListTile(
-                leading: Icon(Icons.assessment_outlined),
-                title: Text(name),
-                contentPadding: EdgeInsets.only(left: 40),
-                selected: Global.variable.body == name,
-                selectedColor: Colors.blue,
-                onTap: () {
-                  Global.variable.body = name;
-                  Global.variable.notifyListeners();
-                  if (is_mobile) Navigator.pop(context);
-                  setState(() {});
-                },
-              );
-            })(),
-            (() {
-              String name = "Yearly Report";
-              return ListTile(
-                leading: Icon(Icons.assessment_outlined),
-                title: Text(name),
-                contentPadding: EdgeInsets.only(left: 40),
-                selected: Global.variable.body == name,
-                selectedColor: Colors.blue,
-                onTap: () {
-                  Global.variable.body = name;
-                  Global.variable.notifyListeners();
-                  if (is_mobile) Navigator.pop(context);
-                  setState(() {});
-                },
-              );
-            })(),
+            list_tile_l2(name: "Daily Report", icon: Icons.assessment_outlined),
+            list_tile_l2(name: "Weekly Report", icon: Icons.assessment_outlined),
+            list_tile_l2(name: "Monthly Report", icon: Icons.assessment_outlined),
+            list_tile_l2(name: "Yearly Report", icon: Icons.assessment_outlined),
           ],
         ),
 
         // Demos
-        if (is_admin)
+        if (user["is_admin"]!["value"])
           ExpansionTile(
             leading: Icon(Icons.model_training_outlined), //
             title: Text('Demos'),

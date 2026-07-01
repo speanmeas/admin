@@ -16,6 +16,7 @@ import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import 'Sign_In.dart' as sign_in;
+import 'User.g.dart';
 
 void main() {
   runApp(
@@ -69,6 +70,7 @@ class _Loading_State extends State<Loading_> {
 
   void try_access_token() async {
     String? access_token = await secure_storage.read(key: 'access_token');
+    print(access_token);
 
     if (access_token == null) {
       Navigator.pushReplacement(
@@ -89,17 +91,10 @@ class _Loading_State extends State<Loading_> {
           }),
         )
         .then((r) async {
-          await secure_storage.write(key: "id", value: r.data[0]["id"]);
-          await secure_storage.write(key: "access_token", value: r.data[0]["access_token"]);
-          await secure_storage.write(key: "full_name", value: r.data[0]["full_name"]);
-          await secure_storage.write(key: "phone_number", value: r.data[0]["phone_number"]);
-          await secure_storage.write(key: "username", value: r.data[0]["username"]);
-          await secure_storage.write(key: "is_admin", value: r.data[0]["is_admin"].toString());
-          await secure_storage.write(key: "is_manager", value: r.data[0]["is_manager"].toString());
-          await secure_storage.write(key: "is_receptionist", value: r.data[0]["is_receptionist"].toString());
-          await secure_storage.write(key: "is_housekeeper", value: r.data[0]["is_housekeeper"].toString());
+          //
+          for (var key in user.keys) user[key]!["value"] = r.data[0]![key];
 
-          Global.variable.clear();
+          snackbar_show(context: context, message: "Login successful", color: Colors.green);
 
           Navigator.pushReplacement(
             context, //

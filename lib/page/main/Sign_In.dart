@@ -16,6 +16,8 @@ import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import 'package:speanmeas/layout/Layout.dart' as layout;
 
+import 'User.g.dart';
+
 void main() {
   runApp(
     ChangeNotifierProvider(
@@ -154,17 +156,10 @@ class _Main_State extends State<Main_> {
           }),
         )
         .then((r) async {
-          await secure_storage.write(key: "id", value: r.data["id"]);
           await secure_storage.write(key: "access_token", value: r.data["access_token"]);
-          await secure_storage.write(key: "full_name", value: r.data["full_name"]);
-          await secure_storage.write(key: "phone_number", value: r.data["phone_number"]);
-          await secure_storage.write(key: "username", value: r.data["username"]);
-          await secure_storage.write(key: "is_admin", value: r.data["is_admin"].toString());
-          await secure_storage.write(key: "is_manager", value: r.data["is_manager"].toString());
-          await secure_storage.write(key: "is_receptionist", value: r.data["is_receptionist"].toString());
-          await secure_storage.write(key: "is_housekeeper", value: r.data["is_housekeeper"].toString());
 
-          Global.variable.clear();
+          //
+          for (var key in user.keys) user[key]!["value"] = r.data[key];
 
           snackbar_show(context: context, message: "Login successful", color: Colors.green);
 

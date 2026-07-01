@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
+import 'package:speanmeas/page/main/User.g.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 
 import 'package:speanmeas/utility/Dio.dart';
@@ -28,25 +29,18 @@ void main() {
 class Main extends StatelessWidget {
   Main({super.key});
 
-  String phone_number = "Admin";
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Main_(phone_number: phone_number),
+      home: Main_(),
     );
   }
 }
 
 class Main_ extends StatefulWidget {
-  Main_({
-    super.key, //
-    required this.phone_number,
-  });
-
-  String phone_number = "";
+  Main_({super.key});
 
   @override
   State<Main_> createState() => _Main_State();
@@ -58,7 +52,7 @@ class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
-    controller.text = widget.phone_number;
+    controller.text = user["phone_number"]!["value"] ?? '';
   }
 
   @override
@@ -119,27 +113,17 @@ class _Main_State extends State<Main_> {
   void on_update() async {
     // todo: validation
 
-    String phone_number = controller.text.trim();
-
-    String id = await secure_storage.read(key: "id") ?? "";
-
-    if (id.isEmpty) {
-      snackbar_show(context: context, message: "ID not found", color: Colors.red);
-      return;
-    }
-
     await dio
         .post(
           "/user/data_update",
           data: FormData.fromMap({
-            "id": id, //
-            "phone_number": phone_number, //
+            "id": user["id"]!["value"] ?? "", //
+            "phone_number": controller.text, //
           }),
         )
         .then((r) async {
-          await secure_storage.write(key: "phone_number", value: phone_number);
-          Navigator.pop(context, phone_number);
           snackbar_show(context: context, message: "Update successful", color: Colors.green);
+          Navigator.pop(context, controller.text);
         })
         .catchError((error) {
           snackbar_show(context: context, message: "Update failed", color: Colors.red);

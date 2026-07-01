@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
+import 'package:speanmeas/page/main/User.g.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 
 import 'package:speanmeas/utility/Dio.dart';
@@ -27,25 +28,20 @@ void main() {
 class Main extends StatelessWidget {
   Main({super.key});
 
-  String username = "Admin";
+  // String full_name = "Admin";
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Main_(username: username),
+      home: Main_(),
     );
   }
 }
 
 class Main_ extends StatefulWidget {
-  Main_({
-    super.key, //
-    required this.username,
-  });
-
-  String username = "";
+  Main_({super.key});
 
   @override
   State<Main_> createState() => _Main_State();
@@ -57,7 +53,7 @@ class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
-    controller.text = widget.username;
+    controller.text = user["full_name"]!["value"] ?? '';
   }
 
   @override
@@ -65,7 +61,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Update - Username", //
+          "Update - Full Name", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -86,9 +82,8 @@ class _Main_State extends State<Main_> {
                 child: TextField(
                   controller: controller,
                   autofocus: true,
-                  keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: "Username :", //
+                    labelText: "Full Name :", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -115,34 +110,17 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update() async {
-    // todo: validation
-
-    String username = controller.text.trim();
-
-    if (username.length < 6) {
-      snackbar_show(context: context, message: "Username must be at least 6 characters", color: Colors.red);
-      return;
-    }
-
-    String id = await secure_storage.read(key: "id") ?? "";
-
-    if (id.isEmpty) {
-      snackbar_show(context: context, message: "ID not found", color: Colors.red);
-      return;
-    }
-
     await dio
         .post(
           "/user/data_update",
           data: FormData.fromMap({
-            "id": id, //
-            "username": username, //
+            "id": user["id"]!["value"], //
+            "full_name": controller.text, //
           }),
         )
         .then((r) async {
-          await secure_storage.write(key: "username", value: username);
-          Navigator.pop(context, username);
           snackbar_show(context: context, message: "Update successful", color: Colors.green);
+          Navigator.pop(context, controller.text);
         })
         .catchError((error) {
           snackbar_show(context: context, message: "Update failed", color: Colors.red);

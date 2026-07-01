@@ -13,12 +13,14 @@ import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import 'Sign_In.dart' as sign_in;
-import 'Update_Full_Name.dart' as update_full_name;
-import 'Update_Phone_Number.dart' as update_phone_number;
-import 'Update_Username.dart' as update_username;
-import 'Update_Password.dart' as update_password;
+import 'Edit_Full_Name.dart' as update_full_name;
+import 'Edit_Phone_Number.dart' as update_phone_number;
+import 'Edit_Username.dart' as update_username;
+import 'Edit_Password.dart' as update_password;
 
 import 'package:speanmeas/layout/Layout.dart' as layout;
+
+import 'User.g.dart';
 
 void main() {
   runApp(User_Profile());
@@ -46,35 +48,13 @@ class User_Profile_ extends StatefulWidget {
 }
 
 class _User_Profile_State extends State<User_Profile_> {
-  String full_name = "";
-  String phone_number = "";
-  String username = "";
-
-  bool is_admin = false;
-  bool is_manager = false;
-  bool is_receptionist = false;
-  bool is_housekeeper = false;
-
-  bool is_password_visible = false;
-
   @override
   void initState() {
     super.initState();
     init();
   }
 
-  void init() async {
-    is_admin = await secure_storage.read(key: "is_admin") == "true";
-    is_manager = await secure_storage.read(key: "is_manager") == "true";
-    is_receptionist = await secure_storage.read(key: "is_receptionist") == "true";
-    is_housekeeper = await secure_storage.read(key: "is_housekeeper") == "true";
-
-    full_name = await secure_storage.read(key: "full_name") ?? "";
-    phone_number = await secure_storage.read(key: "phone_number") ?? "";
-
-    username = await secure_storage.read(key: "username") ?? "";
-    setState(() {});
-  }
+  void init() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -111,10 +91,10 @@ class _User_Profile_State extends State<User_Profile_> {
                     (() {
                       var style = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue);
 
-                      if (is_admin) return Text("Administrator", style: style);
-                      if (is_manager) return Text("Manager", style: style);
-                      if (is_receptionist) return Text("Receptionist", style: style);
-                      if (is_housekeeper) return Text("Housekeeper", style: style);
+                      if (user["is_admin"]!["value"]) return Text("Administrator", style: style);
+                      if (user["is_manager"]!["value"]) return Text("Manager", style: style);
+                      if (user["is_receptionist"]!["value"]) return Text("Receptionist", style: style);
+                      if (user["is_housekeeper"]!["value"]) return Text("Housekeeper", style: style);
 
                       return const SizedBox.shrink();
                     })(),
@@ -127,7 +107,7 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: full_name),
+                  controller: TextEditingController(text: user["full_name"]!["value"] ?? ""),
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText: "Full Name :", //
@@ -140,10 +120,10 @@ class _User_Profile_State extends State<User_Profile_> {
                         onPressed: () {
                           Navigator.push(
                             context, //
-                            MaterialPageRoute(builder: (_) => update_full_name.Main_(full_name: full_name)),
+                            MaterialPageRoute(builder: (_) => update_full_name.Main_()),
                           ).then((value) {
                             if (value == null) return;
-                            full_name = value;
+                            user["full_name"]!["value"] = value;
                             setState(() {});
                           });
                         },
@@ -159,7 +139,7 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: phone_number),
+                  controller: TextEditingController(text: user["phone_number"]!["value"] ?? ""),
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText: "Phone Number :", //
@@ -172,10 +152,10 @@ class _User_Profile_State extends State<User_Profile_> {
                         onPressed: () {
                           Navigator.push(
                             context, //
-                            MaterialPageRoute(builder: (_) => update_phone_number.Main_(phone_number: phone_number)),
+                            MaterialPageRoute(builder: (_) => update_phone_number.Main_()),
                           ).then((value) {
                             if (value == null) return;
-                            phone_number = value;
+                            user["phone_number"]!["value"] = value;
                             setState(() {});
                           });
                         },
@@ -191,7 +171,7 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: username),
+                  controller: TextEditingController(text: user["username"]!["value"] ?? ""),
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText: "Username :", //
@@ -204,10 +184,10 @@ class _User_Profile_State extends State<User_Profile_> {
                         onPressed: () {
                           Navigator.push(
                             context, //
-                            MaterialPageRoute(builder: (_) => update_username.Main_(username: username)),
+                            MaterialPageRoute(builder: (_) => update_username.Main_()),
                           ).then((value) {
                             if (value == null) return;
-                            username = value;
+                            user["username"]!["value"] = value;
                             setState(() {});
                           });
                         },
@@ -262,17 +242,12 @@ class _User_Profile_State extends State<User_Profile_> {
   }
 
   void on_sign_out() async {
+    //
     dio.options.headers.remove('Authorization');
-
-    await secure_storage.delete(key: 'id');
+    //
     await secure_storage.delete(key: 'access_token');
-    await secure_storage.delete(key: 'full_name');
-    await secure_storage.delete(key: 'phone_number');
-    await secure_storage.delete(key: 'username');
-    await secure_storage.delete(key: 'is_admin');
-    await secure_storage.delete(key: 'is_manager');
-    await secure_storage.delete(key: 'is_receptionist');
-    await secure_storage.delete(key: 'is_housekeeper');
+
+    for (var key in user.keys) user[key]!["value"] = null;
 
     snackbar_show(context: context, message: "Signed out successfully", color: Colors.green);
 
