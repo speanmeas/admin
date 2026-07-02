@@ -101,7 +101,7 @@ class _Main_State extends State<Main_> {
                   controller: controller_username,
                   autofocus: true,
                   decoration: InputDecoration(
-                    labelText: 'Username :', //
+                    labelText: 'Username:', //
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
@@ -115,7 +115,7 @@ class _Main_State extends State<Main_> {
                 child: TextField(
                   controller: controller_password,
                   decoration: InputDecoration(
-                    labelText: 'Password :', //
+                    labelText: 'Password:', //
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     suffixIcon: InkWell(
@@ -156,12 +156,25 @@ class _Main_State extends State<Main_> {
           }),
         )
         .then((r) async {
+          // print(r.data);
+
           await secure_storage.write(key: "access_token", value: r.data["access_token"]);
+          dio.options.headers['Authorization'] = 'Bearer ${r.data["access_token"]}';
 
           //
-          for (var key in user.keys) user[key]!["value"] = r.data[key];
+          for (var k in user.keys) user[k] = r.data[k];
 
-          snackbar_show(context: context, message: "Login successful", color: Colors.green);
+          // print("user: $user");
+          // // print type of user["_id"]
+          // print("user['_id']: ${user["_id"].runtimeType}");
+          // // print key of user["_id"]
+          // print("user['_id'].keys: ${user["_id"].keys}");
+          // print(user["_id"]["\$oid"]);
+          // print(user["is_admin"].runtimeType);
+
+          // return;
+
+          snackbar_show(context: context, message: "Sign in successful", color: Colors.green);
 
           Navigator.pushReplacement(
             context, //
@@ -169,7 +182,7 @@ class _Main_State extends State<Main_> {
           );
         })
         .catchError((e) async {
-          snackbar_show(context: context, message: "Login failed", color: Colors.red);
+          snackbar_show(context: context, message: "Sign in failed", color: Colors.red);
         });
   }
 

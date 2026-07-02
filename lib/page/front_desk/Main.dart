@@ -183,7 +183,7 @@ class _Main_State extends State<Main_> {
                 child: Wrap(
                   children: [
                     // check in
-                    if (user["is_admin"]!["value"] || user["is_manager"]!["value"] || user["is_receptionist"]!["value"])
+                    if (user["is_admin"]! || user["is_manager"]! || user["is_receptionist"]!)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -195,7 +195,7 @@ class _Main_State extends State<Main_> {
                       ),
 
                     // payment
-                    if (user["is_admin"]!["value"] || user["is_manager"]!["value"] || user["is_receptionist"]!["value"])
+                    if (user["is_admin"]! || user["is_manager"]! || user["is_receptionist"]!)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -207,7 +207,7 @@ class _Main_State extends State<Main_> {
                       ),
 
                     // check out
-                    if (user["is_admin"]!["value"] || user["is_manager"]!["value"] || user["is_receptionist"]!["value"])
+                    if (user["is_admin"]! || user["is_manager"]! || user["is_receptionist"]!)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -217,28 +217,6 @@ class _Main_State extends State<Main_> {
                           onPressed: on_check_out,
                         ),
                       ),
-
-                    // change room
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.swap_horiz), //
-                        label: Text("Change Room"),
-                        onPressed: () {},
-                      ),
-                    ),
-
-                    // clean
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.cancel_outlined), //
-                        label: Text("Cancel"),
-                        onPressed: () {},
-                      ),
-                    ),
 
                     // clean
                     Container(
@@ -251,6 +229,40 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
 
+                    // change room
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.swap_horiz), //
+                        label: Text("Change Room"),
+                        onPressed: () {},
+                      ),
+                    ),
+
+                    // cancel
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.cancel_outlined), //
+                        label: Text("Cancel"),
+                        onPressed: () {},
+                      ),
+                    ),
+
+                    // update guest info
+                    if (user["is_admin"]! || user["is_manager"]! || user["is_receptionist"]!)
+                      Container(
+                        height: 32,
+                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.edit_outlined), //
+                          label: Text("Edit Guest"),
+                          onPressed: on_update_guest,
+                        ),
+                      ),
+
                     // read
                     Container(
                       height: 32,
@@ -262,20 +274,8 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
 
-                    // update guest info
-                    if (user["is_admin"]!["value"] || user["is_manager"]!["value"] || user["is_receptionist"]!["value"])
-                      Container(
-                        height: 32,
-                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                        child: OutlinedButton.icon(
-                          icon: Icon(Icons.edit_outlined), //
-                          label: Text("Edit Guest"),
-                          onPressed: on_update_guest,
-                        ),
-                      ),
-
                     // update
-                    if (user["is_admin"]!["value"] || user["is_manager"]!["value"])
+                    if (user["is_admin"]! || user["is_manager"]!)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -287,7 +287,7 @@ class _Main_State extends State<Main_> {
                       ),
 
                     // delete
-                    if (user["is_admin"]!["value"] || user["is_manager"]!["value"])
+                    if (user["is_admin"]! || user["is_manager"]!)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),

@@ -60,15 +60,15 @@ class _Panel_Left_State extends State<Panel_Left_> {
         list_tile_l1(name: "Front Desk", icon: Icons.table_bar_outlined),
 
         // Guest
-        if (user["is_admin"]!["value"] || user["is_manager"]!["value"] || user["is_receptionist"]!["value"]) //
+        if (user["is_admin"]! || user["is_manager"]! || user["is_receptionist"]!) //
           list_tile_l1(name: "Guest", icon: Icons.people_outline),
 
         // Room
-        if (user["is_admin"]!["value"] || user["is_manager"]!["value"]) //
+        if (user["is_admin"]! || user["is_manager"]!) //
           list_tile_l1(name: "Room", icon: Icons.hotel_outlined),
 
         // User
-        if (user["is_admin"]!["value"] || user["is_manager"]!["value"]) //
+        if (user["is_admin"]! || user["is_manager"]!) //
           list_tile_l1(name: "User", icon: Icons.person_outline),
 
         list_tile_l1(name: "Nationality", icon: Icons.flag_outlined),
@@ -86,7 +86,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
         ),
 
         // Demos
-        if (user["is_admin"]!["value"])
+        if (user["is_admin"]!)
           ExpansionTile(
             leading: Icon(Icons.model_training_outlined), //
             title: Text('Demos'),

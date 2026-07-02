@@ -302,8 +302,8 @@ class _Main_State extends State<Main_> {
       if (s["key"] == PRICE_TOTAL) s["value"] = price_total_usd;
       if (s["key"] == CHECK_IN_NOTE) s["value"] = controller_note.text;
       if (s["key"] == CHECK_IN_DATE) s["value"] = check_in_date.toIso8601String();
-      if (s["key"] == CHECK_IN_BY) s["value"] = user["full_name"]!["value"];
-      if (s["key"] == CHECK_IN_BY_ID) s["value"] = user["id"]!["value"];
+      if (s["key"] == CHECK_IN_BY) s["value"] = user["full_name"]!;
+      if (s["key"] == CHECK_IN_BY_ID) s["value"] = user["_id"]!["\$oid"]!;
     }
 
     Navigator.push(

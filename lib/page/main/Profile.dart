@@ -54,7 +54,9 @@ class _User_Profile_State extends State<User_Profile_> {
     init();
   }
 
-  void init() async {}
+  void init() async {
+    print(user);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,10 +93,10 @@ class _User_Profile_State extends State<User_Profile_> {
                     (() {
                       var style = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue);
 
-                      if (user["is_admin"]!["value"]) return Text("Administrator", style: style);
-                      if (user["is_manager"]!["value"]) return Text("Manager", style: style);
-                      if (user["is_receptionist"]!["value"]) return Text("Receptionist", style: style);
-                      if (user["is_housekeeper"]!["value"]) return Text("Housekeeper", style: style);
+                      if (user["is_admin"]!) return Text("Administrator", style: style);
+                      if (user["is_manager"]!) return Text("Manager", style: style);
+                      if (user["is_receptionist"]!) return Text("Receptionist", style: style);
+                      if (user["is_housekeeper"]!) return Text("Housekeeper", style: style);
 
                       return const SizedBox.shrink();
                     })(),
@@ -107,7 +109,7 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: user["full_name"]!["value"] ?? ""),
+                  controller: TextEditingController(text: user["full_name"] ?? ""),
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText: "Full Name :", //
@@ -123,7 +125,7 @@ class _User_Profile_State extends State<User_Profile_> {
                             MaterialPageRoute(builder: (_) => update_full_name.Main_()),
                           ).then((value) {
                             if (value == null) return;
-                            user["full_name"]!["value"] = value;
+                            user["full_name"] = value;
                             setState(() {});
                           });
                         },
@@ -139,7 +141,7 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: user["phone_number"]!["value"] ?? ""),
+                  controller: TextEditingController(text: user["phone_number"] ?? ""),
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText: "Phone Number :", //
@@ -155,7 +157,7 @@ class _User_Profile_State extends State<User_Profile_> {
                             MaterialPageRoute(builder: (_) => update_phone_number.Main_()),
                           ).then((value) {
                             if (value == null) return;
-                            user["phone_number"]!["value"] = value;
+                            user["phone_number"] = value;
                             setState(() {});
                           });
                         },
@@ -171,7 +173,7 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: user["username"]!["value"] ?? ""),
+                  controller: TextEditingController(text: user["username"] ?? ""),
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText: "Username :", //
@@ -187,7 +189,7 @@ class _User_Profile_State extends State<User_Profile_> {
                             MaterialPageRoute(builder: (_) => update_username.Main_()),
                           ).then((value) {
                             if (value == null) return;
-                            user["username"]!["value"] = value;
+                            user["username"] = value;
                             setState(() {});
                           });
                         },
@@ -247,7 +249,7 @@ class _User_Profile_State extends State<User_Profile_> {
     //
     await secure_storage.delete(key: 'access_token');
 
-    for (var key in user.keys) user[key]!["value"] = null;
+    for (var key in user.keys) user[key] = null;
 
     snackbar_show(context: context, message: "Signed out successfully", color: Colors.green);
 

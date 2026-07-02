@@ -215,15 +215,15 @@ class _Main_State extends State<Main_> {
               }),
 
               // button check in + print
-              if (can_print())
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                  child: OutlinedButton.icon(
-                    label: Text("Print"),
-                    icon: Icon(Icons.print_outlined),
-                    onPressed: on_print, //
-                  ),
-                ),
+              // if (can_print())
+              //   Container(
+              //     margin: EdgeInsets.fromLTRB(0, 16, 0, 0),
+              //     child: OutlinedButton.icon(
+              //       label: Text("Print"),
+              //       icon: Icon(Icons.print_outlined),
+              //       onPressed: on_print, //
+              //     ),
+              //   ),
             ],
           ),
         ),

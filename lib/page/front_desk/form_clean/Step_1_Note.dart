@@ -48,22 +48,10 @@ class Main_ extends StatefulWidget {
 
 class _Main_State extends State<Main_> {
   // keys
-  var PRICE_TOTAL = "price_total_usd";
-  var PAID_BANK_USD = "paid_bank_usd";
-  var PAID_BANK_KHR = "paid_bank_khr";
-  var PAID_CASH_USD = "paid_cash_usd";
-  var PAID_CASH_KHR = "paid_cash_khr";
-  var PAID_TOTAL_USD = "paid_total_usd";
-  var RETURN_USD = "return_usd";
-  var RETURN_KHR = "return_khr";
-  var RETURN_TOTAL_USD = "return_total_usd";
-  var AR_TOTAL_USD = "ar_total_usd";
-  var GET_PAID_DATE = "get_paid_date";
-  var GET_PAID_BY = "get_paid_by";
-  var CHECK_OUT_DATE = "clean_date";
-  var CHECK_OUT_BY = "clean_by";
-  var CHECK_OUT_BY_ID = "clean_by_id";
-  var check_out_note = "clean_note";
+  var CLEAN_DATE = "clean_date";
+  var CLEAN_BY = "clean_by";
+  var CLEAN_BY_ID = "clean_by_id";
+  var CLEAN_NOTE = "clean_note";
 
   TextEditingController controller_note = TextEditingController();
 
@@ -80,7 +68,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Check Out - Note", //
+          "Clean - Note", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -130,10 +118,10 @@ class _Main_State extends State<Main_> {
 
   void on_next() async {
     for (var s in schema) {
-      if (s["key"] == CHECK_OUT_DATE) s["value"] = DateTime.now().toIso8601String();
-      if (s["key"] == CHECK_OUT_BY) s["value"] = user["full_name"]!["value"];
-      if (s["key"] == CHECK_OUT_BY_ID) s["value"] = user["id"]!["value"];
-      if (s["key"] == check_out_note) s["value"] = controller_note.text;
+      if (s["key"] == CLEAN_DATE) s["value"] = DateTime.now().toIso8601String();
+      if (s["key"] == CLEAN_BY) s["value"] = user["full_name"]!;
+      if (s["key"] == CLEAN_BY_ID) s["value"] = user["_id"]!["\$oid"];
+      if (s["key"] == CLEAN_NOTE) s["value"] = controller_note.text;
     }
 
     Navigator.push(

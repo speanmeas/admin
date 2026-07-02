@@ -70,7 +70,7 @@ class _Loading_State extends State<Loading_> {
 
   void try_access_token() async {
     String? access_token = await secure_storage.read(key: 'access_token');
-    print(access_token);
+    // print(access_token);
 
     if (access_token == null) {
       Navigator.pushReplacement(
@@ -92,7 +92,7 @@ class _Loading_State extends State<Loading_> {
         )
         .then((r) async {
           //
-          for (var key in user.keys) user[key]!["value"] = r.data[0]![key];
+          for (var key in user.keys) user[key] = r.data[0]![key];
 
           snackbar_show(context: context, message: "Login successful", color: Colors.green);
 

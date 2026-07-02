@@ -53,7 +53,7 @@ class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
-    controller.text = user["full_name"]!["value"] ?? '';
+    controller.text = user["full_name"] ?? '';
   }
 
   @override
@@ -114,7 +114,7 @@ class _Main_State extends State<Main_> {
         .post(
           "/user/data_update",
           data: FormData.fromMap({
-            "id": user["id"]!["value"], //
+            "id": user["_id"]!["\$oid"], //
             "full_name": controller.text, //
           }),
         )
