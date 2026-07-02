@@ -1,30 +1,30 @@
-import 'dart:convert';
+import "dart:convert";
 
-import 'package:dio/dio.dart';
-import 'package:intl/intl.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:pluto_grid/pluto_grid.dart';
+import "package:dio/dio.dart";
+import "package:intl/intl.dart";
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:pluto_grid/pluto_grid.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/layout/Layout.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/layout/Layout.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import '__Setup__.dart';
-import 'Schema.g.dart';
+import "__Setup__.dart";
+import "Schema.g.dart";
 
-import 'Filter_String.dart' as filter_string;
-import 'Filter_Number.dart' as filter_number;
-import 'Filter_Boolean.dart' as filter_boolean;
-import 'Filter_Datetime.dart' as filter_datetime;
+import "Filter_String.dart" as filter_string;
+import "Filter_Number.dart" as filter_number;
+import "Filter_Boolean.dart" as filter_boolean;
+import "Filter_Datetime.dart" as filter_datetime;
 
-import 'Form_Create.dart' as create;
-import 'Form_Read.dart' as read;
-import 'Form_Update.dart' as update;
-import 'Form_Delete.dart' as delete;
+import "Form_Create.dart" as create;
+import "Form_Read.dart" as read;
+import "Form_Update.dart" as update;
+import "Form_Delete.dart" as delete;
 
 void main() {
   runApp(
@@ -82,12 +82,15 @@ class _Main_State extends State<Main_> {
   void initState() {
     super.initState();
     init();
+
+    DateTime now = DateTime.now();
+    print("Current DateTime: $now");
   }
 
   void init() async {
     await dio
         .post(
-          '$PATH/data_read',
+          "$PATH/data_read",
           data: FormData.fromMap({
             "key": key, //
             "has": has, //
@@ -113,30 +116,30 @@ class _Main_State extends State<Main_> {
                 cells: {
                   for (var s in schema)
                     // exclude password field
-                    if (s['key'] == "password") //
-                      s['key']!: PlutoCell(value: "**********")
+                    if (s["key"] == "password") //
+                      s["key"]!: PlutoCell(value: "**********")
                     //
-                    else if (s['type'] == 'date-time') //
-                      s['key']!: PlutoCell(
+                    else if (s["type"] == "date-time") //
+                      s["key"]!: PlutoCell(
                         value: (() {
                           //
-                          if (d[s['key']] == null) return '';
+                          if (d[s["key"]] == null) return "";
 
                           //
-                          final dt = DateTime.tryParse(d[s['key']].toString());
-                          if (dt == null) return '';
+                          final dt = DateTime.tryParse(d[s["key"]].toString());
+                          if (dt == null) return "";
 
                           // default
-                          return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+                          return DateFormat("yyyy-MM-dd HH:mm:ss").format(dt.toLocal());
                         })(),
                       )
                     //
-                    else if (s['type'] == 'boolean') //
-                      s['key']!: PlutoCell(
+                    else if (s["type"] == "boolean") //
+                      s["key"]!: PlutoCell(
                         value: (() {
                           //
-                          if (d[s['key']] == null) return '';
-                          if (d[s['key']] == true) return 'Yes';
+                          if (d[s["key"]] == null) return "";
+                          if (d[s["key"]] == true) return "Yes";
 
                           // default
                           return "No";
@@ -144,13 +147,13 @@ class _Main_State extends State<Main_> {
                       )
                     //
                     else
-                      s['key']!: PlutoCell(
+                      s["key"]!: PlutoCell(
                         value: (() {
                           //
-                          if (d[s['key']] == null) return '';
+                          if (d[s["key"]] == null) return "";
 
                           // default
-                          return d[s['key']].toString();
+                          return d[s["key"]].toString();
                         })(),
                       ),
                 },
@@ -171,7 +174,7 @@ class _Main_State extends State<Main_> {
 
     await dio
         .post(
-          '$PATH/data_read',
+          "$PATH/data_read",
           data: FormData.fromMap({
             "key": key, //
             "has": has, //
@@ -193,30 +196,30 @@ class _Main_State extends State<Main_> {
                 cells: {
                   for (var s in schema)
                     //
-                    if (s['key'] == "password") //
-                      s['key']!: PlutoCell(value: "**********")
+                    if (s["key"] == "password") //
+                      s["key"]!: PlutoCell(value: "**********")
                     //
-                    else if (s['type'] == 'date-time') //
-                      s['key']!: PlutoCell(
+                    else if (s["type"] == "date-time") //
+                      s["key"]!: PlutoCell(
                         value: (() {
                           //
-                          if (d[s['key']] == null) return '';
+                          if (d[s["key"]] == null) return "";
 
                           //
-                          final dt = DateTime.tryParse(d[s['key']].toString());
-                          if (dt == null) return '';
+                          final dt = DateTime.tryParse(d[s["key"]].toString());
+                          if (dt == null) return "";
 
                           // default
-                          return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+                          return DateFormat("yyyy-MM-dd HH:mm:ss").format(dt.toLocal());
                         })(),
                       )
                     //
-                    else if (s['type'] == 'boolean') //
-                      s['key']!: PlutoCell(
+                    else if (s["type"] == "boolean") //
+                      s["key"]!: PlutoCell(
                         value: (() {
                           //
-                          if (d[s['key']] == null) return '';
-                          if (d[s['key']] == true) return 'Yes';
+                          if (d[s["key"]] == null) return "";
+                          if (d[s["key"]] == true) return "Yes";
 
                           // default
                           return "No";
@@ -224,13 +227,13 @@ class _Main_State extends State<Main_> {
                       )
                     //
                     else
-                      s['key']!: PlutoCell(
+                      s["key"]!: PlutoCell(
                         value: (() {
                           //
-                          if (d[s['key']] == null) return '';
+                          if (d[s["key"]] == null) return "";
 
                           // default
-                          return d[s['key']].toString();
+                          return d[s["key"]].toString();
                         })(),
                       ),
                 },
@@ -244,9 +247,6 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
-    final is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
-    final screen_height = MediaQuery.of(context).size.height;
-
     return Scaffold(
       body: Column(
         children: [
@@ -328,9 +328,9 @@ class _Main_State extends State<Main_> {
               columns: [
                 ...schema.map((s) {
                   return build_plutocolumn(
-                    field: s['key']!, //
-                    title: s['title']!,
-                    type: s['type']!,
+                    field: s["key"]!, //
+                    title: s["title"]!,
+                    type: s["type"]!,
                     on_filter: () => on_filter(s),
                   );
                 }),
@@ -355,7 +355,7 @@ class _Main_State extends State<Main_> {
 
                   if (!is_loading) {
                     if (position!.pixels >= position.maxScrollExtent) {
-                      // print('Reached bottom');
+                      // print("Reached bottom");
                       if (has_more) {
                         is_loading = true;
                         on_load_more();
@@ -380,7 +380,7 @@ class _Main_State extends State<Main_> {
                     child: CircularProgressIndicator(),
                   ),
                   SizedBox(width: 12),
-                  Text('Loading more...'),
+                  Text("Loading more..."),
                 ],
               ),
             ),
@@ -394,7 +394,7 @@ class _Main_State extends State<Main_> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Loaded: $total_row items'), //
+                    Text("Loaded: $total_row items"), //
                   ],
                 ),
               );
@@ -407,7 +407,7 @@ class _Main_State extends State<Main_> {
   void on_filter(s) {
     //
     // init
-    key = s['key'];
+    key = s["key"];
     order = 1;
 
     // clear sort
@@ -416,7 +416,7 @@ class _Main_State extends State<Main_> {
       state_manager?.sortBySortIdx(sorted_column);
     }
 
-    if (s['type'] == 'string') {
+    if (s["type"] == "string") {
       Navigator.push(
         context, //
         MaterialPageRoute(builder: (context) => filter_string.Main_()),
@@ -432,7 +432,7 @@ class _Main_State extends State<Main_> {
       });
     }
     //
-    else if (s['type'] == 'number') {
+    else if (s["type"] == "number") {
       Navigator.push(
         context, //
         MaterialPageRoute(builder: (context) => filter_number.Main_()),
@@ -450,7 +450,7 @@ class _Main_State extends State<Main_> {
       });
     }
     //
-    else if (s['type'] == 'date-time') {
+    else if (s["type"] == "date-time") {
       Navigator.push(
         context, //
         MaterialPageRoute(builder: (context) => filter_datetime.Main_()),
@@ -468,7 +468,7 @@ class _Main_State extends State<Main_> {
       });
     }
     //
-    else if (s['type'] == 'boolean') {
+    else if (s["type"] == "boolean") {
       Navigator.push(
         context, //
         MaterialPageRoute(builder: (context) => filter_boolean.Main_()),
@@ -494,41 +494,43 @@ class _Main_State extends State<Main_> {
       // validate
       if (v == null) return;
 
+      print(v);
+
       // add new row to the top
       state_manager?.prependRows([
         PlutoRow(
           cells: {
-            'id': PlutoCell(value: v['id'].toString()),
+            "_id": PlutoCell(value: v["_id"].toString()),
             for (var s in schema)
-              if (s['type'] == 'date-time') //
-                s['key']!: PlutoCell(
+              if (s["type"] == "date-time") //
+                s["key"]: PlutoCell(
                   value: (() {
-                    if (v[s['key']] == null) return '';
+                    if (v[s["key"]] == null) return "";
 
-                    final dt = DateTime.tryParse(v[s['key']].toString());
-                    if (dt == null) return '';
+                    final dt = DateTime.tryParse(v[s["key"]].toString());
+                    if (dt == null) return "";
 
                     // default
-                    return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+                    return DateFormat("yyyy-MM-dd HH:mm:ss").format(dt.toLocal());
                   })(),
                 )
-              else if (s['type'] == 'boolean') //
-                s['key']!: PlutoCell(
+              else if (s["type"] == "boolean") //
+                s["key"]: PlutoCell(
                   value: (() {
-                    if (v[s['key']] == null) return '';
-                    if (v[s['key']] == true) return 'Yes';
+                    if (v[s["key"]] == null) return "";
+                    if (v[s["key"]] == true) return "Yes";
 
                     // default
-                    return 'No';
+                    return "No";
                   })(),
                 )
               else
-                s['key']!: PlutoCell(
+                s["key"]: PlutoCell(
                   value: (() {
-                    if (v[s['key']] == null) return '';
+                    if (v[s["key"]] == null) return "";
 
                     // default
-                    return v[s['key']].toString();
+                    return v[s["key"]].toString();
                   })(),
                 ),
           },
@@ -542,7 +544,7 @@ class _Main_State extends State<Main_> {
       state_manager?.scroll.vertical?.jumpTo(0);
 
       // clear schema values
-      for (var s in schema) s['value'] = null;
+      for (var s in schema) s["value"] = null;
 
       setState(() {});
     });
@@ -559,45 +561,45 @@ class _Main_State extends State<Main_> {
     state_manager?.currentRow!.cells.forEach((k, c) {
       for (var s in schema) {
         // skip password
-        if (s['key'] == "password") continue;
+        if (s["key"] == "password") continue;
 
-        if (s['key'] == k) {
+        if (s["key"] == k) {
           // skip null
           if (c.value == null) {
-            s['value'] = null;
+            s["value"] = null;
             continue;
           }
 
           // id
-          if (s['type'] == 'id') {
-            s['value'] = c.value;
+          if (s["type"] == "_id") {
+            s["value"] = c.value;
             continue;
           }
 
           // string
-          if (s['type'] == 'string') {
-            s['value'] = c.value;
+          if (s["type"] == "string") {
+            s["value"] = c.value;
             continue;
           }
 
           // number
-          if (s['type'] == 'number') {
+          if (s["type"] == "number") {
             double? tmp = double.tryParse(c.value.toString());
-            s['value'] = tmp;
+            s["value"] = tmp;
             continue;
           }
 
           // date-time
-          if (s['type'] == 'date-time') {
+          if (s["type"] == "date-time") {
             DateTime? tmp = DateTime.tryParse(c.value.toString());
-            s['value'] = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp!);
+            s["value"] = DateFormat("yyyy-MM-dd HH:mm:ss").format(tmp!);
             continue;
           }
 
           // boolean
-          if (s['type'] == 'boolean') {
-            if (c.value == "Yes") s['value'] = true;
-            if (c.value == "No") s['value'] = false;
+          if (s["type"] == "boolean") {
+            if (c.value == "Yes") s["value"] = true;
+            if (c.value == "No") s["value"] = false;
             continue;
           }
         }
@@ -612,7 +614,7 @@ class _Main_State extends State<Main_> {
     );
 
     // clear schema values
-    for (var s in schema) s['value'] = null;
+    for (var s in schema) s["value"] = null;
   }
 
   void on_update() {
@@ -626,45 +628,45 @@ class _Main_State extends State<Main_> {
     state_manager?.currentRow!.cells.forEach((k, c) {
       for (var s in schema) {
         // skip password
-        if (s['key'] == "password") continue;
+        if (s["key"] == "password") continue;
 
-        if (s['key'] == k) {
+        if (s["key"] == k) {
           // skip null
           if (c.value == null) {
-            s['value'] = null;
+            s["value"] = null;
             continue;
           }
 
           // id
-          if (s['type'] == 'id') {
-            s['value'] = c.value;
+          if (s["type"] == "_id") {
+            s["value"] = c.value;
             continue;
           }
 
           // string
-          if (s['type'] == 'string') {
-            s['value'] = c.value;
+          if (s["type"] == "string") {
+            s["value"] = c.value;
             continue;
           }
 
           // number
-          if (s['type'] == 'number') {
+          if (s["type"] == "number") {
             double? tmp = double.tryParse(c.value.toString());
-            s['value'] = tmp;
+            s["value"] = tmp;
             continue;
           }
 
           // date-time
-          if (s['type'] == 'date-time') {
+          if (s["type"] == "date-time") {
             DateTime? tmp = DateTime.tryParse(c.value.toString());
-            s['value'] = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp!);
+            s["value"] = DateFormat("yyyy-MM-dd HH:mm:ss").format(tmp!);
             continue;
           }
 
           // boolean
-          if (s['type'] == 'boolean') {
-            if (c.value == "Yes") s['value'] = true;
-            if (c.value == "No") s['value'] = false;
+          if (s["type"] == "boolean") {
+            if (c.value == "Yes") s["value"] = true;
+            if (c.value == "No") s["value"] = false;
             continue;
           }
         }
@@ -680,30 +682,30 @@ class _Main_State extends State<Main_> {
 
       final row = state_manager?.currentRow;
       for (var s in schema) {
-        final key = s['key'];
+        final key = s["key"];
         if (key == null) continue;
 
-        if (s['type'] == 'date-time') {
+        if (s["type"] == "date-time") {
           row?.cells[key]?.value = (() {
-            if (v[key] == null) return '';
+            if (v[key] == null) return "";
 
             final dt = DateTime.tryParse(v[key].toString());
-            if (dt == null) return '';
+            if (dt == null) return "";
 
             // default
-            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+            return DateFormat("yyyy-MM-dd HH:mm:ss").format(dt.toLocal());
           })();
-        } else if (s['type'] == 'boolean') {
+        } else if (s["type"] == "boolean") {
           row?.cells[key]?.value = (() {
-            if (v[key] == null) return '';
-            if (v[key] == true) return 'Yes';
+            if (v[key] == null) return "";
+            if (v[key] == true) return "Yes";
 
             // default
-            return 'No';
+            return "No";
           })();
         } else {
           row?.cells[key]?.value = (() {
-            if (v[key] == null) return '';
+            if (v[key] == null) return "";
 
             // default
             return v[key].toString();
@@ -714,7 +716,7 @@ class _Main_State extends State<Main_> {
       state_manager?.notifyListeners();
 
       // clear schema values
-      for (var s in schema) s['value'] = null;
+      for (var s in schema) s["value"] = null;
     });
   }
 
@@ -725,7 +727,7 @@ class _Main_State extends State<Main_> {
     }
 
     //
-    String id = state_manager?.currentRow!.cells['id']!.value;
+    String id = state_manager?.currentRow!.cells["_id"]!.value;
 
     //
     Navigator.push(
@@ -776,7 +778,7 @@ class _Main_State extends State<Main_> {
     PlutoColumnType column_type = PlutoColumnType.text();
 
     // make number sort correctly
-    if (type == 'number') {
+    if (type == "number") {
       column_type = PlutoColumnType.number();
     }
 
@@ -789,7 +791,7 @@ class _Main_State extends State<Main_> {
       minWidth: 100,
       readOnly: true,
       enableFilterMenuItem: false,
-      hide: type == "id" ? true : false,
+      hide: type == "_id" ? true : false,
 
       titleSpan: WidgetSpan(
         child: Row(

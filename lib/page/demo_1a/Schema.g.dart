@@ -1,32 +1,56 @@
 List<Map<String, dynamic>> schema = [
   {
-    "key": "id",
-    "type": "id",
+    "key": "_id",
+    "type": "_id",
     "title": "ID",
     "value": null
   },
   {
-    "key": "text_1a",
+    "key": "text_1",
     "type": "string",
-    "title": "Text A",
+    "title": "Text 1",
     "value": null
   },
   {
-    "key": "number_1a",
+    "key": "text_2",
+    "type": "string",
+    "title": "Text 2",
+    "value": null
+  },
+  {
+    "key": "number_1",
     "type": "number",
-    "title": "Number A",
+    "title": "Number 1",
     "value": null
   },
   {
-    "key": "datetime_1a",
+    "key": "number_2",
+    "type": "number",
+    "title": "Number 2",
+    "value": null
+  },
+  {
+    "key": "datetime_1",
     "type": "date-time",
-    "title": "Datetime A",
+    "title": "Datetime 1",
     "value": null
   },
   {
-    "key": "boolean_1a",
+    "key": "datetime_2",
+    "type": "date-time",
+    "title": "Datetime 2",
+    "value": null
+  },
+  {
+    "key": "boolean_1",
     "type": "boolean",
-    "title": "Boolean A",
+    "title": "Boolean 1",
+    "value": null
+  },
+  {
+    "key": "boolean_2",
+    "type": "boolean",
+    "title": "Boolean 2",
     "value": null
   },
   {

@@ -1,14 +1,14 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:speanmeas/Global.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/Global.dart";
 
-import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import '__Setup__.dart';
-import 'Schema.g.dart';
+import "__Setup__.dart";
+import "Schema.g.dart";
 
 void main() {
   runApp(
@@ -98,7 +98,7 @@ class _Main_State extends State<Main_> {
   void on_delete() async {
     //
     await dio
-        .post('$PATH/data_delete', data: FormData.fromMap({"id": widget.id}))
+        .post("$PATH/data_delete", data: FormData.fromMap({"_id": widget.id}))
         .then((value) {
           print(value);
           snackbar_show(context: context, message: "Room deleted successfully", color: Colors.green);

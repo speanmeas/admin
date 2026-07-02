@@ -592,7 +592,9 @@ class _Main_State extends State<Main_> {
       final row = state_manager?.currentRow;
       for (var s in schema) {
         final key = s['key'];
+
         if (key == null) continue;
+        if (key == "password") row?.cells[key]?.value = "**********";
 
         if (s['type'] == 'date-time') {
           row?.cells[key]?.value = (() {

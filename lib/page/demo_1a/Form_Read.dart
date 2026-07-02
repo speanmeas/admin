@@ -1,15 +1,15 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
 
-import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Dio.dart';
+import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/utility/Dio.dart";
 
-import '__Setup__.dart';
-import 'Schema.g.dart';
+import "__Setup__.dart";
+import "Schema.g.dart";
 
 void main() {
   runApp(
@@ -50,8 +50,6 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
-    final screen_height = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -84,7 +82,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          s['title'] + ": ", //
+                          s["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -108,7 +106,7 @@ class _Main_State extends State<Main_> {
                     child: Row(
                       children: [
                         Text(
-                          s['title'] + ": ", //
+                          s["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
@@ -134,7 +132,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          s['title'] + ": ", //
+                          s["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -161,7 +159,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          s['title'] + ": ", //
+                          s["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -189,7 +187,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          s['title'] + ": ", //
+                          s["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -212,7 +210,7 @@ class _Main_State extends State<Main_> {
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
                     if (tmp != null) {
-                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                      value = DateFormat("yyyy-MM-dd HH:mm:ss").format(tmp.toLocal());
                     }
                   }
                   return Container(
@@ -222,7 +220,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          s['title'] + ": ", //
+                          s["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -242,9 +240,6 @@ class _Main_State extends State<Main_> {
                 //
                 return SizedBox.shrink();
               }),
-
-              // more space
-              SizedBox(height: screen_height - 80),
             ],
           ),
         ),

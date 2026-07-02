@@ -1,22 +1,22 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:image_picker/image_picker.dart";
+import "package:intl/intl.dart";
+import "package:provider/provider.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
 
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/widget/Datetime_Picker.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/widget/Datetime_Picker.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import '__Setup__.dart';
-import 'Schema.g.dart';
+import "__Setup__.dart";
+import "Schema.g.dart";
 
 void main() {
   runApp(
@@ -55,8 +55,6 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
-    final screen_height = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -83,7 +81,7 @@ class _Main_State extends State<Main_> {
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      controller: TextEditingController(text: s["value"]?.toString() ?? ''),
+                      controller: TextEditingController(text: s["value"]?.toString() ?? ""),
                       maxLines: 4,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -104,9 +102,9 @@ class _Main_State extends State<Main_> {
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      controller: TextEditingController(text: ''),
+                      controller: TextEditingController(text: ""),
                       decoration: InputDecoration(
-                        labelText: s['title'], //
+                        labelText: s["title"], //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -123,14 +121,14 @@ class _Main_State extends State<Main_> {
 
                 //
                 if (s["type"] == "string") {
-                  String value = s["value"]?.toString() ?? '';
+                  String value = s["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: value),
                       decoration: InputDecoration(
-                        labelText: s['title'] + ":", //
+                        labelText: s["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -143,19 +141,19 @@ class _Main_State extends State<Main_> {
 
                 // edit number
                 if (s["type"] == "number") {
-                  String? value = s["value"]?.toString() ?? '';
+                  String? value = s["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: value),
                       decoration: InputDecoration(
-                        labelText: s['title'] + ":", //
+                        labelText: s["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
                       onChanged: (v) {
                         s["value"] = v; //
                       },
@@ -173,7 +171,7 @@ class _Main_State extends State<Main_> {
                     child: DropdownButtonFormField<String>(
                       initialValue: value,
                       decoration: InputDecoration(
-                        labelText: s['title'] + ":",
+                        labelText: s["title"] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -194,10 +192,10 @@ class _Main_State extends State<Main_> {
                 }
 
                 if (s["type"] == "date-time") {
-                  String? value = s["value"]?.toString() ?? '';
+                  String? value = s["value"]?.toString() ?? "";
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
-                    if (tmp != null) value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                    if (tmp != null) value = DateFormat("yyyy-MM-dd HH:mm:ss").format(tmp.toLocal());
                   }
                   //
                   DateTime? initial_datetime = DateTime.tryParse(value);
@@ -210,7 +208,7 @@ class _Main_State extends State<Main_> {
                       readOnly: true,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(), //
-                        labelText: s['title'] + ":", //
+                        labelText: s["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         suffixIcon: Icon(Icons.calendar_today, size: 20), //
@@ -221,7 +219,7 @@ class _Main_State extends State<Main_> {
                           initial_datetime: initial_datetime,
                         );
                         if (datetime == null) return;
-                        s["value"] = DateFormat('yyyy-MM-dd HH:mm:ss').format(datetime);
+                        s["value"] = DateFormat("yyyy-MM-dd HH:mm:ss").format(datetime);
                         setState(() {});
                       }, //,
                     ),
@@ -241,9 +239,6 @@ class _Main_State extends State<Main_> {
                   onPressed: on_update,
                 ),
               ),
-
-              // more space at the bottom
-              SizedBox(height: screen_height - 80),
             ],
           ),
         ),
@@ -259,7 +254,7 @@ class _Main_State extends State<Main_> {
 
     // 1. validate required fields
     for (var s in schema) {
-      if (s["key"] == "id") continue; // skip id field
+      if (s["key"] == "_id") continue; // skip id field
       if (s["key"] == "note") continue; // skip note field
       if (s["value"] == null) {
         snackbar_show(context: context, message: "${s["title"]} is required.", color: Colors.red);
@@ -283,7 +278,7 @@ class _Main_State extends State<Main_> {
 
     // request
     await dio
-        .post('$PATH/data_update', data: FormData.fromMap({...output}))
+        .post("$PATH/data_update", data: FormData.fromMap({...output}))
         .then((value) {
           print(output);
           snackbar_show(context: context, message: "$HEADER update successfully", color: Colors.green);
