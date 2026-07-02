@@ -218,6 +218,28 @@ class _Main_State extends State<Main_> {
                         ),
                       ),
 
+                    // change room
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.cleaning_services), //
+                        label: Text("Change Room"),
+                        onPressed: (){},
+                      ),
+                    ),
+
+                    // clean
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.cleaning_services), //
+                        label: Text("Cancel"),
+                        onPressed: (){},
+                      ),
+                    ),
+
                     // clean
                     Container(
                       height: 32,
