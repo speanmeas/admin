@@ -10,7 +10,6 @@ import 'package:speanmeas/Global.dart';
 import 'package:speanmeas/layout/Layout.dart';
 import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import '../__Setup__.dart';
@@ -46,18 +45,13 @@ class Main_ extends StatefulWidget {
 class _Main_State extends State<Main_> {
   //
 
-  String full_name = "";
-
   @override
   void initState() {
     super.initState();
     init();
   }
 
-  void init() async {
-    full_name = await secure_storage.read(key: 'full_name') ?? '';
-    setState(() {});
-  }
+  void init() async {}
 
   @override
   Widget build(BuildContext context) {

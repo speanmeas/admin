@@ -223,9 +223,9 @@ class _Main_State extends State<Main_> {
                       height: 32,
                       margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
                       child: OutlinedButton.icon(
-                        icon: Icon(Icons.cleaning_services), //
+                        icon: Icon(Icons.swap_horiz), //
                         label: Text("Change Room"),
-                        onPressed: (){},
+                        onPressed: () {},
                       ),
                     ),
 
@@ -234,9 +234,9 @@ class _Main_State extends State<Main_> {
                       height: 32,
                       margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
                       child: OutlinedButton.icon(
-                        icon: Icon(Icons.cleaning_services), //
+                        icon: Icon(Icons.cancel_outlined), //
                         label: Text("Cancel"),
-                        onPressed: (){},
+                        onPressed: () {},
                       ),
                     ),
 
@@ -269,7 +269,7 @@ class _Main_State extends State<Main_> {
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
                         child: OutlinedButton.icon(
                           icon: Icon(Icons.edit_outlined), //
-                          label: Text("Update Guest"),
+                          label: Text("Edit Guest"),
                           onPressed: on_update_guest,
                         ),
                       ),

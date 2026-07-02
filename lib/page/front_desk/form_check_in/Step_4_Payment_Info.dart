@@ -5,10 +5,9 @@ import 'package:provider/provider.dart';
 
 import 'package:speanmeas/Environment.dart';
 import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
-
 import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/utility/Secure_Storage.dart';
+import 'package:speanmeas/page/main/User.g.dart';
+import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
@@ -462,8 +461,8 @@ class _Main_State extends State<Main_> {
       if (s["key"] == RETURN_TOTAL_USD) s["value"] = get_return_total_usd();
       if (s["key"] == AR_TOTAL_USD) s["value"] = get_ar_total_usd();
       if (s["key"] == GET_PAID_DATE && get_paid_date != null) s["value"] = get_paid_date.toIso8601String();
-      if (s["key"] == GET_PAID_BY && get_paid_date != null) s["value"] = await secure_storage.read(key: 'full_name') ?? '';
-      if (s["key"] == GET_PAID_BY_ID && get_paid_date != null) s["value"] = await secure_storage.read(key: 'id') ?? '';
+      if (s["key"] == GET_PAID_BY && get_paid_date != null) s["value"] = user["full_name"]!["value"];
+      if (s["key"] == GET_PAID_BY_ID && get_paid_date != null) s["value"] = user["id"]!["value"];
     }
 
     Navigator.push(
