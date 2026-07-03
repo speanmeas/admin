@@ -105,22 +105,6 @@ class _Main_State extends State<Main_> {
                   );
                 }
 
-                if (s["key"].toString().contains("password")) {
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      children: [
-                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text(
-                          "••••••••••",
-                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
                 //
                 //
                 //
