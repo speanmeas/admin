@@ -84,7 +84,7 @@ class _Main_State extends State<Main_> {
     init();
 
     DateTime now = DateTime.now();
-    print("Current DateTime: $now");
+    print(now.toIso8601String());
   }
 
   void init() async {
@@ -796,7 +796,9 @@ class _Main_State extends State<Main_> {
       titleSpan: WidgetSpan(
         child: Row(
           children: [
-            if (type == "number")
+            if (type == "_id")
+              SizedBox()
+            else if (type == "number")
               InkWell(
                 onTap: on_filter,
                 child: Icon(Icons.tune, size: 20, color: Colors.blue),

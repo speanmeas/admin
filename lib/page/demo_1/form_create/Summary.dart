@@ -22,13 +22,13 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (_) => Global.variable, //
-      child: const Summary(),
+      child: const Main(),
     ),
   );
 }
 
-class Summary extends StatelessWidget {
-  const Summary({super.key});
+class Main extends StatelessWidget {
+  const Main({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,23 +36,21 @@ class Summary extends StatelessWidget {
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: Summary_(),
+      home: Main_(),
     );
   }
 }
 
-class Summary_ extends StatefulWidget {
-  const Summary_({super.key});
+class Main_ extends StatefulWidget {
+  const Main_({super.key});
 
   @override
-  State<Summary_> createState() => _Summary_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Summary_State extends State<Summary_> {
+class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
-    final screen_height = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -194,380 +192,6 @@ class _Summary_State extends State<Summary_> {
                 return SizedBox.shrink();
               }),
 
-              // Divider(color: Colors.black),
-
-              // ...demo_1.model.map((row) {
-              //   //
-              //   if (row["key"].toString().contains("_id")) return SizedBox.shrink();
-
-              //   //
-              //   if (row["type"] == "string") {
-              //     String value = row["value"]?.toString() ?? "";
-              //     return Container(
-              //       width: 600,
-              //       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-              //       child: Row(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Text(
-              //             row['title'] + ": ", //
-              //             style: TextStyle(fontWeight: FontWeight.bold),
-              //           ),
-              //           Expanded(
-              //             child: Text(
-              //               value,
-              //               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-              //               overflow: TextOverflow.ellipsis,
-              //               softWrap: true,
-              //               maxLines: 4,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   }
-
-              //   //
-              //   if (row["type"] == "number") {
-              //     String value = row["value"]?.toString() ?? "";
-              //     return Container(
-              //       width: 600,
-              //       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-              //       child: Row(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Text(
-              //             row['title'] + ": ", //
-              //             style: TextStyle(fontWeight: FontWeight.bold),
-              //           ),
-              //           Expanded(
-              //             child: Text(
-              //               value,
-              //               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-              //               overflow: TextOverflow.ellipsis,
-              //               softWrap: true,
-              //               maxLines: 4,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   }
-
-              //   //
-              //   if (row["type"] == "boolean") {
-              //     String value = row["value"]?.toString() ?? "false";
-              //     value = value.toLowerCase() == "true" ? "Yes" : "No";
-              //     return Container(
-              //       width: 600,
-              //       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-              //       child: Row(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Text(
-              //             row['title'] + ": ", //
-              //             style: TextStyle(fontWeight: FontWeight.bold),
-              //           ),
-              //           Expanded(
-              //             child: Text(
-              //               value,
-              //               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-              //               overflow: TextOverflow.ellipsis,
-              //               softWrap: true,
-              //               maxLines: 4,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   }
-
-              //   //
-              //   if (row["type"] == "date-time") {
-              //     String value = row["value"]?.toString() ?? "";
-              //     if (value.isNotEmpty) {
-              //       DateTime? tmp = DateTime.tryParse(value);
-              //       if (tmp != null) {
-              //         value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
-              //       }
-              //     }
-              //     return Container(
-              //       width: 600,
-              //       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-              //       child: Row(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Text(
-              //             row['title'] + ": ", //
-              //             style: TextStyle(fontWeight: FontWeight.bold),
-              //           ),
-              //           Expanded(
-              //             child: Text(
-              //               value,
-              //               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-              //               overflow: TextOverflow.ellipsis,
-              //               softWrap: true,
-              //               maxLines: 4,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   }
-
-              //   //
-              //   return SizedBox.shrink();
-              // }),
-
-              // Divider(color: Colors.black),
-
-              // ...demo_1a.schema.map((row) {
-              //   //
-              //   if (row["key"].toString().contains("_id")) return SizedBox.shrink();
-
-              //   //
-              //   if (row["type"] == "string") {
-              //     String value = row["value"]?.toString() ?? "";
-              //     return Container(
-              //       width: 600,
-              //       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-              //       child: Row(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Text(
-              //             row['title'] + ": ", //
-              //             style: TextStyle(fontWeight: FontWeight.bold),
-              //           ),
-              //           Expanded(
-              //             child: Text(
-              //               value,
-              //               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-              //               overflow: TextOverflow.ellipsis,
-              //               softWrap: true,
-              //               maxLines: 4,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   }
-
-              //   //
-              //   if (row["type"] == "number") {
-              //     String value = row["value"]?.toString() ?? "";
-              //     return Container(
-              //       width: 600,
-              //       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-              //       child: Row(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Text(
-              //             row['title'] + ": ", //
-              //             style: TextStyle(fontWeight: FontWeight.bold),
-              //           ),
-              //           Expanded(
-              //             child: Text(
-              //               value,
-              //               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-              //               overflow: TextOverflow.ellipsis,
-              //               softWrap: true,
-              //               maxLines: 4,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   }
-
-              //   //
-              //   if (row["type"] == "boolean") {
-              //     String value = row["value"]?.toString() ?? "false";
-              //     value = value.toLowerCase() == "true" ? "Yes" : "No";
-              //     return Container(
-              //       width: 600,
-              //       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-              //       child: Row(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Text(
-              //             row['title'] + ": ", //
-              //             style: TextStyle(fontWeight: FontWeight.bold),
-              //           ),
-              //           Expanded(
-              //             child: Text(
-              //               value,
-              //               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-              //               overflow: TextOverflow.ellipsis,
-              //               softWrap: true,
-              //               maxLines: 4,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   }
-
-              //   //
-              //   if (row["type"] == "date-time") {
-              //     String value = row["value"]?.toString() ?? "";
-              //     if (value.isNotEmpty) {
-              //       DateTime? tmp = DateTime.tryParse(value);
-              //       if (tmp != null) {
-              //         value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
-              //       }
-              //     }
-              //     return Container(
-              //       width: 600,
-              //       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-              //       child: Row(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Text(
-              //             row['title'] + ": ", //
-              //             style: TextStyle(fontWeight: FontWeight.bold),
-              //           ),
-              //           Expanded(
-              //             child: Text(
-              //               value,
-              //               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-              //               overflow: TextOverflow.ellipsis,
-              //               softWrap: true,
-              //               maxLines: 4,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   }
-
-              //   //
-              //   return SizedBox.shrink();
-              // }),
-
-              // Divider(color: Colors.black),
-
-              // ...demo_1b.schema.map((row) {
-              //   //
-              //   if (row["key"].toString().contains("_id")) return SizedBox.shrink();
-
-              //   //
-              //   if (row["type"] == "string") {
-              //     String value = row["value"]?.toString() ?? "";
-              //     return Container(
-              //       width: 600,
-              //       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-              //       child: Row(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Text(
-              //             row['title'] + ": ", //
-              //             style: TextStyle(fontWeight: FontWeight.bold),
-              //           ),
-              //           Expanded(
-              //             child: Text(
-              //               value,
-              //               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-              //               overflow: TextOverflow.ellipsis,
-              //               softWrap: true,
-              //               maxLines: 4,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   }
-
-              //   //
-              //   if (row["type"] == "number") {
-              //     String value = row["value"]?.toString() ?? "";
-              //     return Container(
-              //       width: 600,
-              //       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-              //       child: Row(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Text(
-              //             row['title'] + ": ", //
-              //             style: TextStyle(fontWeight: FontWeight.bold),
-              //           ),
-              //           Expanded(
-              //             child: Text(
-              //               value,
-              //               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-              //               overflow: TextOverflow.ellipsis,
-              //               softWrap: true,
-              //               maxLines: 4,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   }
-
-              //   //
-              //   if (row["type"] == "boolean") {
-              //     String value = row["value"]?.toString() ?? "false";
-              //     value = value.toLowerCase() == "true" ? "Yes" : "No";
-              //     return Container(
-              //       width: 600,
-              //       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-              //       child: Row(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Text(
-              //             row['title'] + ": ", //
-              //             style: TextStyle(fontWeight: FontWeight.bold),
-              //           ),
-              //           Expanded(
-              //             child: Text(
-              //               value,
-              //               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-              //               overflow: TextOverflow.ellipsis,
-              //               softWrap: true,
-              //               maxLines: 4,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   }
-
-              //   //
-              //   if (row["type"] == "date-time") {
-              //     String value = row["value"]?.toString() ?? "";
-              //     if (value.isNotEmpty) {
-              //       DateTime? tmp = DateTime.tryParse(value);
-              //       if (tmp != null) {
-              //         value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
-              //       }
-              //     }
-              //     return Container(
-              //       width: 600,
-              //       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-              //       child: Row(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Text(
-              //             row['title'] + ": ", //
-              //             style: TextStyle(fontWeight: FontWeight.bold),
-              //           ),
-              //           Expanded(
-              //             child: Text(
-              //               value,
-              //               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-              //               overflow: TextOverflow.ellipsis,
-              //               softWrap: true,
-              //               maxLines: 4,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   }
-
-              //   //
-              //   return SizedBox.shrink();
-              // }),
               Divider(color: Colors.black),
 
               // button create
@@ -586,9 +210,6 @@ class _Summary_State extends State<Summary_> {
                   ],
                 ),
               ),
-
-              // add bottom space
-              SizedBox(height: screen_height - 80),
             ],
           ),
         ),

@@ -15,7 +15,7 @@ import 'package:speanmeas/widget/Snackbar_Show.dart';
 import '../__Setup__.dart';
 import '../Schema.g.dart';
 
-import 'Step_2.dart' as demo_1a;
+import 'Step_2_demo_1a.dart' as step_2;
 
 void main() {
   runApp(
@@ -34,25 +34,26 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Form_Create_(),
+      home: Main_(),
     );
   }
 }
 
-class Form_Create_ extends StatefulWidget {
-  Form_Create_({
-    super.key, //
-  });
+class Main_ extends StatefulWidget {
+  Main_({super.key});
 
   @override
-  State<Form_Create_> createState() => _Form_Create_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Form_Create_State extends State<Form_Create_> {
+class _Main_State extends State<Main_> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final screen_height = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -62,7 +63,17 @@ class _Form_Create_State extends State<Form_Create_> {
             fontWeight: FontWeight.bold,
           ),
         ),
-
+        actions: [
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+            child: OutlinedButton.icon(
+              icon: Icon(Icons.arrow_right_alt_outlined),
+              label: Text("Next"),
+              style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+              onPressed: on_next,
+            ),
+          ),
+        ],
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -77,17 +88,19 @@ class _Form_Create_State extends State<Form_Create_> {
                 //
 
                 // skip _id
-                if (row["key"].toString().contains("_id")) return SizedBox.shrink();
+                if (row["key"].toString().contains("_id")) return SizedBox();
+
+                // skip none demo_1_
+                if (!row["key"].toString().contains("${NAME}_")) return SizedBox();
 
                 // note
-                if (row["key"] == "note") {
+                if (row["key"].toString().contains("_note")) {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       maxLines: 4,
                       decoration: InputDecoration(
-                        hintText: "Input", //
                         labelText: "Note:", //
                         border: OutlineInputBorder(),
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -111,7 +124,6 @@ class _Form_Create_State extends State<Form_Create_> {
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       decoration: InputDecoration(
-                        hintText: "Input", //
                         labelText: row['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -132,7 +144,6 @@ class _Form_Create_State extends State<Form_Create_> {
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
                       decoration: InputDecoration(
-                        hintText: "Input", //
                         labelText: row['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -151,7 +162,6 @@ class _Form_Create_State extends State<Form_Create_> {
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        hintText: "Select", //
                         labelText: row['title'] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -188,7 +198,6 @@ class _Form_Create_State extends State<Form_Create_> {
                       controller: TextEditingController(text: value), //
                       readOnly: true,
                       decoration: InputDecoration(
-                        hintText: "Select", //
                         labelText: row['title'] + ":", //
                         border: OutlineInputBorder(), //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -208,19 +217,6 @@ class _Form_Create_State extends State<Form_Create_> {
                 // default
                 return SizedBox.shrink();
               }),
-
-              // button next
-              Container(
-                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: OutlinedButton.icon(
-                  icon: Icon(Icons.arrow_right_alt_outlined),
-                  label: Text("Next"),
-                  style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                  onPressed: on_next,
-                ),
-              ),
-
-              SizedBox(height: screen_height - 80),
             ],
           ),
         ),
@@ -231,12 +227,12 @@ class _Form_Create_State extends State<Form_Create_> {
   void on_next() async {
     //
 
-    print(schema);
+    for (var s in schema) print(s);
 
     Navigator.push(
       context, //
       MaterialPageRoute(
-        builder: (context) => demo_1a.Form_Create_(), //
+        builder: (context) => step_2.Main_(), //
       ),
     );
   }

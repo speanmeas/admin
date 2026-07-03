@@ -6,69 +6,105 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "text_1",
+    "key": "demo_1_text",
     "type": "string",
-    "title": "Text 1",
+    "title": "Demo 1 Text",
     "value": null
   },
   {
-    "key": "text_2",
-    "type": "string",
-    "title": "Text 2",
-    "value": null
-  },
-  {
-    "key": "number_1",
+    "key": "demo_1_number",
     "type": "number",
-    "title": "Number 1",
+    "title": "Demo 1 Number",
     "value": null
   },
   {
-    "key": "number_2",
-    "type": "number",
-    "title": "Number 2",
-    "value": null
-  },
-  {
-    "key": "datetime_1",
+    "key": "demo_1_datetime",
     "type": "date-time",
-    "title": "Datetime 1",
+    "title": "Demo 1 Datetime",
     "value": null
   },
   {
-    "key": "datetime_2",
-    "type": "date-time",
-    "title": "Datetime 2",
-    "value": null
-  },
-  {
-    "key": "boolean_1",
+    "key": "demo_1_boolean",
     "type": "boolean",
-    "title": "Boolean 1",
+    "title": "Demo 1 Boolean",
     "value": null
   },
   {
-    "key": "boolean_2",
-    "type": "boolean",
-    "title": "Boolean 2",
-    "value": null
-  },
-  {
-    "key": "note",
+    "key": "demo_1_note",
     "type": "string",
-    "title": "Note",
+    "title": "Demo 1 Note",
     "value": null
   },
   {
-    "key": "foreign_id_1",
+    "key": "demo_1a_id",
     "type": "_id",
-    "title": "Foreign ID 1",
+    "title": "Demo 1A",
     "value": null
   },
   {
-    "key": "foreign_id_2",
+    "key": "demo_1a_text",
+    "type": "string",
+    "title": "Demo 1A Text",
+    "value": null
+  },
+  {
+    "key": "demo_1a_number",
+    "type": "number",
+    "title": "Demo 1A Number",
+    "value": null
+  },
+  {
+    "key": "demo_1a_datetime",
+    "type": "date-time",
+    "title": "Demo 1A Datetime",
+    "value": null
+  },
+  {
+    "key": "demo_1a_boolean",
+    "type": "boolean",
+    "title": "Demo 1A Boolean",
+    "value": null
+  },
+  {
+    "key": "demo_1a_note",
+    "type": "string",
+    "title": "Demo 1A Note",
+    "value": null
+  },
+  {
+    "key": "demo_1b_id",
     "type": "_id",
-    "title": "Foreign ID 2",
+    "title": "Demo 1B",
+    "value": null
+  },
+  {
+    "key": "demo_1b_text",
+    "type": "string",
+    "title": "Demo 1B Text",
+    "value": null
+  },
+  {
+    "key": "demo_1b_number",
+    "type": "number",
+    "title": "Demo 1B Number",
+    "value": null
+  },
+  {
+    "key": "demo_1b_datetime",
+    "type": "date-time",
+    "title": "Demo 1B Datetime",
+    "value": null
+  },
+  {
+    "key": "demo_1b_boolean",
+    "type": "boolean",
+    "title": "Demo 1B Boolean",
+    "value": null
+  },
+  {
+    "key": "demo_1b_note",
+    "type": "string",
+    "title": "Demo 1B Note",
     "value": null
   }
 ];
