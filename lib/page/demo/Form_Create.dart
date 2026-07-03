@@ -38,9 +38,7 @@ class Main extends StatelessWidget {
 }
 
 class Main_ extends StatefulWidget {
-  Main_({
-    super.key, //
-  });
+  Main_({super.key});
 
   @override
   State<Main_> createState() => _Main_State();
@@ -48,6 +46,13 @@ class Main_ extends StatefulWidget {
 
 class _Main_State extends State<Main_> {
   //
+
+  Map<String, dynamic> output = {};
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,13 +74,13 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.map((row) {
+              ...schema.map((s) {
                 //
                 //
                 //
 
                 // note
-                if (row["key"] == "note") {
+                if (s["key"].toString().contains("note")) {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -88,7 +93,7 @@ class _Main_State extends State<Main_> {
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (v) {
-                        row["value"] = v;
+                        output[s["key"]] = v;
                       },
                     ),
                   );
@@ -99,25 +104,25 @@ class _Main_State extends State<Main_> {
                 //
 
                 // string
-                if (row["type"] == "string") {
+                if (s["type"] == "string") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       decoration: InputDecoration(
-                        labelText: row["title"] + ":", //
+                        labelText: s["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (v) {
-                        row["value"] = v; //
+                        output[s["key"]] = v;
                       },
                     ),
                   );
                 }
 
                 // number
-                if (row["type"] == "number") {
+                if (s["type"] == "number") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -125,24 +130,24 @@ class _Main_State extends State<Main_> {
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
                       decoration: InputDecoration(
-                        labelText: row["title"] + ":", //
+                        labelText: s["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (v) {
-                        row["value"] = v; //
+                        output[s["key"]] = v;
                       },
                     ),
                   );
                 }
 
-                if (row["type"] == "boolean") {
+                if (s["type"] == "boolean") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        labelText: row["title"] + ":",
+                        labelText: s["title"] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -151,23 +156,23 @@ class _Main_State extends State<Main_> {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
-                        if (v == "Yes") row["value"] = true;
-                        if (v == "No") row["value"] = false;
+                        if (v == "Yes") output[s["key"]] = true;
+                        if (v == "No") output[s["key"]] = false;
                         setState(() {});
                       },
                     ),
                   );
                 }
 
-                if (row["type"] == "date-time") {
+                if (s["type"] == "date-time") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      controller: TextEditingController(text: row["value"] ?? ""),
+                      controller: TextEditingController(text: output[s["key"]] ?? ""),
                       readOnly: true,
                       decoration: InputDecoration(
-                        labelText: row["title"] + ":", //
+                        labelText: s["title"] + ":", //
                         border: OutlineInputBorder(), //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -176,14 +181,14 @@ class _Main_State extends State<Main_> {
                       onTap: () async {
                         final DateTime? datetime = await datetime_picker(context);
                         if (datetime == null) return;
-                        row["value"] = DateFormat("yyyy-MM-dd HH:mm:ss").format(datetime);
+                        output[s["key"]] = DateFormat("yyyy-MM-dd HH:mm:ss").format(datetime);
                         setState(() {});
                       }, //,
                     ),
                   );
                 }
 
-                return SizedBox.shrink();
+                return SizedBox();
               }),
 
               Container(
@@ -207,42 +212,37 @@ class _Main_State extends State<Main_> {
     // for (var s in schema) print(s);
 
     // 1. validate required fields
-    for (var s in schema) {
-      if (s["key"] == "_id") continue; // skip id field
-      if (s["key"] == "note") continue; // skip note field
-      if (s["value"] == null) {
-        snackbar_show(context: context, message: "${s["title"]} is required.", color: Colors.red);
-        return;
-      }
-    }
+    // for (var s in schema) {
+    //   if (s["key"] == "_id") continue; // skip id field
+    //   if (s["key"].toString().contains("note")) continue; // skip note field
+    //   if (s["value"] == null) {
+    //     snackbar_show(context: context, message: "${s["title"]} is required.", color: Colors.red);
+    //     return;
+    //   }
+    // }
 
     // 2. validate number fields
-    for (var s in schema) {
-      if (s["type"] == "number") {
-        if (double.tryParse(s["value"]) == null) {
-          snackbar_show(context: context, message: "${s["title"]} must be a number.", color: Colors.red);
-          return;
-        }
-      }
-    }
+    // for (var s in schema) {
+    //   if (s["type"] == "number") {
+    //     if (double.tryParse(s["value"]) == null) {
+    //       snackbar_show(context: context, message: "${s["title"]} must be a number.", color: Colors.red);
+    //       return;
+    //     }
+    //   }
+    // }
 
     // prepare output
-    Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
+    // Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
 
     // request
     await dio
         .post("$PATH/data_create", data: FormData.fromMap({...output}))
         .then((r) {
-          print(r.data);
-          output["_id"] = r.data["_id"]; // NOTE: support to update and delete
+          Navigator.pop(context, true);
           snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
-          Navigator.pop(context, output);
         })
         .catchError((error) {
           snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
         });
-
-    // clear input values
-    for (var s in schema) s["value"] = null;
   }
 }

@@ -1,22 +1,22 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:image_picker/image_picker.dart";
+import "package:intl/intl.dart";
+import "package:provider/provider.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
 
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/widget/Datetime_Picker.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/widget/Datetime_Picker.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import '__Setup__.dart';
-import 'Schema.g.dart';
+import "__Setup__.dart";
+import "Schema.g.dart";
 
 void main() {
   runApp(
@@ -30,53 +30,40 @@ void main() {
 class Main extends StatelessWidget {
   Main({super.key});
 
-  Map<String, dynamic> input = {
-    "text_1": "a", //
-    "text_2": "aa",
-    "number_1": 1,
-    "number_2": 11,
-    "datetime_1": "2024-01-01T00:00:00Z",
-    "datetime_2": "2024-02-02T00:00:00Z",
-    "boolean_1": true,
-    "boolean_2": false,
-    "note": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-  };
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Form_Update_(input: input),
+      home: Main_(input: {}), //
     );
   }
 }
 
-class Form_Update_ extends StatefulWidget {
-  Form_Update_({
+class Main_ extends StatefulWidget {
+  Main_({
     super.key, //
     required this.input,
   });
 
-  Map<String, dynamic> input;
+  final Map<String, dynamic> input;
 
   @override
-  State<Form_Update_> createState() => _Form_Update_State();
+  State<Main_> createState() => _Main_State();
 }
 
-class _Form_Update_State extends State<Form_Update_> {
+class _Main_State extends State<Main_> {
   Map<String, dynamic> output = {};
 
   @override
   void initState() {
     super.initState();
-    output = widget.input;
+    output = Map<String, dynamic>.from(widget.input);
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final screen_height = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -94,21 +81,21 @@ class _Form_Update_State extends State<Form_Update_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.map((row) {
+              ...schema.map((s) {
                 //
                 //
                 //
 
                 // type
-                if (row["key"] == "room_type") {
+                if (s["key"] == "room_type") {
                   List<String> room_types = ["Single", "Double", "VIP"];
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
-                      initialValue: output[row["key"]]?.toString() ?? '',
+                      initialValue: output[s["key"]]?.toString() ?? "",
                       decoration: InputDecoration(
-                        labelText: row['title'] + ":",
+                        labelText: s['title'] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -117,23 +104,22 @@ class _Form_Update_State extends State<Form_Update_> {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
-                        row["value"] = v;
-                        setState(() {});
+                        output[s["key"]] = v;
                       },
                     ),
                   );
                 }
 
                 // status
-                if (row["key"] == "room_status") {
+                if (s["key"] == "room_status") {
                   List<String> room_types = ["Available", "Occupied", "Dirty", "Maintenance"];
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
-                      initialValue: output[row["key"]]?.toString() ?? '',
+                      initialValue: output[s["key"]]?.toString() ?? "",
                       decoration: InputDecoration(
-                        labelText: row['title'] + ":",
+                        labelText: s['title'] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -142,20 +128,19 @@ class _Form_Update_State extends State<Form_Update_> {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
-                        row["value"] = v;
-                        setState(() {});
+                        output[s["key"]] = v;
                       },
                     ),
                   );
                 }
 
-                // note
-                if (row["key"] == "note") {
+                //
+                if (s["key"].toString().contains("note")) {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[row["key"]]?.toString() ?? ''),
+                      controller: TextEditingController(text: output[s["key"]]?.toString() ?? ""),
                       maxLines: 4,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -163,8 +148,28 @@ class _Form_Update_State extends State<Form_Update_> {
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {
-                        output[row["key"]] = value; //
+                      onChanged: (v) {
+                        output[s["key"]] = v; //
+                      },
+                    ),
+                  );
+                }
+
+                //
+                if (s["key"].toString().contains("password")) {
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: TextField(
+                      controller: TextEditingController(text: ""),
+                      decoration: InputDecoration(
+                        hintText: "New Password", //
+                        labelText: s["title"], //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      onChanged: (v) {
+                        output[s["key"]] = v; //
                       },
                     ),
                   );
@@ -175,54 +180,51 @@ class _Form_Update_State extends State<Form_Update_> {
                 //
 
                 //
-                if (row["type"] == "string") {
-                  String value = output[row["key"]]?.toString() ?? '';
+                if (s["type"] == "string") {
+                  String value = output[s["key"]]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: value),
                       decoration: InputDecoration(
-                        labelText: row['title'] + ":", //
+                        labelText: s["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (value) {
-                        output[row["key"]] = value; //
+                      onChanged: (v) {
+                        output[s["key"]] = v; //
                       },
                     ),
                   );
                 }
 
                 // edit number
-                if (row["type"] == "number") {
-                  String? value = output[row["key"]]?.toString() ?? '';
+                if (s["type"] == "number") {
+                  String? value = output[s["key"]]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: value),
                       decoration: InputDecoration(
-                        labelText: row['title'] + ":", //
+                        labelText: s["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
-                      onChanged: (value) {
-                        output[row["key"]] = double.tryParse(value);
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
+                      onChanged: (v) {
+                        output[s["key"]] = v; //
                       },
                     ),
                   );
                 }
 
-                if (row["type"] == "boolean") {
-                  String? value;
-                  if (output[row["key"]] == true) {
-                    value = "Yes";
-                  }
-                  if (output[row["key"]] == false) {
-                    value = "No";
+                if (s["type"] == "boolean") {
+                  String value = "";
+                  if (output[s["key"]] != null) {
+                    value = output[s["key"]] == true ? "Yes" : "No";
                   }
                   return Container(
                     width: 600,
@@ -230,7 +232,7 @@ class _Form_Update_State extends State<Form_Update_> {
                     child: DropdownButtonFormField<String>(
                       initialValue: value,
                       decoration: InputDecoration(
-                        labelText: row['title'] + ":",
+                        labelText: s["title"] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -240,9 +242,9 @@ class _Form_Update_State extends State<Form_Update_> {
                       }).toList(),
                       onChanged: (v) {
                         if (v == "Yes") {
-                          output[row["key"]] = true;
+                          output[s["key"]] = true;
                         } else {
-                          output[row["key"]] = false;
+                          output[s["key"]] = false;
                         }
                         setState(() {});
                       },
@@ -250,17 +252,17 @@ class _Form_Update_State extends State<Form_Update_> {
                   );
                 }
 
-                if (row["type"] == "date-time") {
-                  String? value = output[row["key"]]?.toString() ?? '';
-                  if (value.isNotEmpty) {
-                    DateTime? tmp = DateTime.tryParse(value);
+                if (s["type"] == "date-time") {
+                  String value = "";
+                  if (output[s["key"]] != null) {
+                    DateTime? tmp = DateTime.tryParse(output[s["key"]].toString());
                     if (tmp != null) {
-                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                      value = DateFormat("yyyy-MM-dd HH:mm:ss").format(tmp.toLocal());
                     }
                   }
-                  DateTime? initial_datetime = DateTime.tryParse(value);
-                  if (initial_datetime != null) {
-                    initial_datetime = DateTime.now();
+                  DateTime init = DateTime.now();
+                  if (DateTime.tryParse(value) != null) {
+                    init = DateTime.tryParse(value)!;
                   }
                   return Container(
                     width: 600,
@@ -270,25 +272,22 @@ class _Form_Update_State extends State<Form_Update_> {
                       readOnly: true,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(), //
-                        labelText: row['title'] + ":", //
+                        labelText: s["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         suffixIcon: Icon(Icons.calendar_today, size: 20), //
                       ),
                       onTap: () async {
-                        final DateTime? datetime = await datetime_picker(
-                          context, //
-                          initial_datetime: initial_datetime,
-                        );
+                        DateTime? datetime = await datetime_picker(context, initial_datetime: init);
                         if (datetime == null) return;
-                        output[row["key"]] = DateFormat('yyyy-MM-dd HH:mm:ss').format(datetime);
+                        output[s["key"]] = DateFormat("yyyy-MM-dd HH:mm:ss").format(datetime);
                         setState(() {});
                       }, //,
                     ),
                   );
                 }
 
-                return SizedBox.shrink();
+                return SizedBox();
               }),
 
               // button update
@@ -301,9 +300,6 @@ class _Form_Update_State extends State<Form_Update_> {
                   onPressed: on_update,
                 ),
               ),
-
-              // more space at the bottom
-              SizedBox(height: screen_height - 80),
             ],
           ),
         ),
@@ -312,37 +308,33 @@ class _Form_Update_State extends State<Form_Update_> {
   }
 
   void on_update() async {
-    // todo: validation
-
     // 0. debug
-    for (var s in schema) print(s);
+    // for (var s in schema) print(s);
 
     // 1. validate required fields
-    for (var s in schema) {
-      if (s["key"] == "id") continue; // skip id field
-      if (s["key"] == "note") continue; // skip note field
-      if (s["value"] == null) {
-        snackbar_show(context: context, message: "${s["title"]} is required.", color: Colors.red);
-        return;
-      }
-    }
+    // for (var s in schema) {
+    //   if (s["key"] == "_id") continue; // skip id field
+    //   if (s["key"].toString().contains("note")) continue; // skip note field
+    //   if (s["value"] == null) {
+    //     snackbar_show(context: context, message: "${s["title"]} is required.", color: Colors.red);
+    //     return;
+    //   }
+    // }
 
     // 2. validate number fields
-    for (var s in schema) {
-      if (s["type"] == "number") {
-        if (double.tryParse(s["value"]) == null) {
-          snackbar_show(context: context, message: "${s["title"]} must be a number.", color: Colors.red);
-          return;
-        }
-      }
-    }
-
-    // prepare output
-    Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
+    // for (var s in schema) {
+    //   if (s["type"] == "number") {
+    //     final tmp = double.tryParse(s["value"].toString());
+    //     if (tmp == null) {
+    //       snackbar_show(context: context, message: "${s["title"]} must be a number.", color: Colors.red);
+    //       return;
+    //     }
+    //   }
+    // }
 
     // request
     await dio
-        .post('$PATH/data_update', data: FormData.fromMap({...output}))
+        .post("$PATH/data_update", data: FormData.fromMap({...output}))
         .then((value) {
           print(output);
           snackbar_show(context: context, message: "$HEADER update successfully", color: Colors.green);

@@ -1,2 +1,6 @@
 String HEADER = "Front Desk";
-String PATH = "/front_desk";
+
+String get PATH {
+  String path = HEADER.toLowerCase().replaceAll(" ", "_");
+  return "/$path";
+}

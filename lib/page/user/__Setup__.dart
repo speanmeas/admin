@@ -1,2 +1,6 @@
 String HEADER = "User";
-String PATH = "/user";
+
+String get PATH {
+  String path = HEADER.toLowerCase().replaceAll(" ", "_");
+  return "/$path";
+}

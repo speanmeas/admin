@@ -28,13 +28,15 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Main_(),
+      home: Main_(input: {}),
     );
   }
 }
 
 class Main_ extends StatefulWidget {
-  Main_({super.key});
+  Main_({super.key, required this.input});
+
+  final Map<String, dynamic> input;
 
   @override
   State<Main_> createState() => _Main_State();
@@ -43,9 +45,13 @@ class Main_ extends StatefulWidget {
 class _Main_State extends State<Main_> {
   //
 
+  Map<String, dynamic> output = {};
+
   @override
   void initState() {
     super.initState();
+    output = Map<String, dynamic>.from(widget.input);
+    setState(() {});
   }
 
   @override
@@ -73,8 +79,8 @@ class _Main_State extends State<Main_> {
                 //
                 //
 
-                if (s["key"] == "note") {
-                  String value = s["value"]?.toString() ?? "";
+                if (s["key"].toString().contains("note")) {
+                  String value = output[s["key"]]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -99,16 +105,13 @@ class _Main_State extends State<Main_> {
                   );
                 }
 
-                if (s["key"] == "password") {
+                if (s["key"].toString().contains("password")) {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Row(
                       children: [
-                        Text(
-                          s["title"] + ": ", //
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(
                           "••••••••••",
                           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
@@ -124,17 +127,14 @@ class _Main_State extends State<Main_> {
 
                 //
                 if (s["type"] == "string") {
-                  String value = s["value"]?.toString() ?? "";
+                  String value = output[s["key"]]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          s["title"] + ": ", //
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(
                             value,
@@ -151,17 +151,14 @@ class _Main_State extends State<Main_> {
 
                 //
                 if (s["type"] == "number") {
-                  String value = s["value"]?.toString() ?? "";
+                  String value = output[s["key"]]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          s["title"] + ": ", //
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(
                             value,
@@ -178,18 +175,17 @@ class _Main_State extends State<Main_> {
 
                 //
                 if (s["type"] == "boolean") {
-                  String value = s["value"]?.toString() ?? "false";
-                  value = value.toLowerCase() == "true" ? "Yes" : "No";
+                  String value = "";
+                  if (output[s["key"]] != null) {
+                    value = output[s["key"]].toString().toLowerCase() == "true" ? "Yes" : "No";
+                  }
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          s["title"] + ": ", //
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(
                             value,
@@ -206,7 +202,7 @@ class _Main_State extends State<Main_> {
 
                 //
                 if (s["type"] == "date-time") {
-                  String value = s["value"]?.toString() ?? "";
+                  String value = output[s["key"]]?.toString() ?? "";
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
                     if (tmp != null) {
@@ -219,10 +215,7 @@ class _Main_State extends State<Main_> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          s["title"] + ": ", //
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(
                             value,
@@ -238,7 +231,7 @@ class _Main_State extends State<Main_> {
                 }
 
                 //
-                return SizedBox.shrink();
+                return SizedBox();
               }),
             ],
           ),
