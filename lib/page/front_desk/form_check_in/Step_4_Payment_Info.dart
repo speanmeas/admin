@@ -462,7 +462,7 @@ class _Main_State extends State<Main_> {
       if (s["key"] == AR_TOTAL_USD) s["value"] = get_ar_total_usd();
       if (s["key"] == GET_PAID_DATE && get_paid_date != null) s["value"] = get_paid_date.toIso8601String();
       if (s["key"] == GET_PAID_BY && get_paid_date != null) s["value"] = user["full_name"]!;
-      if (s["key"] == GET_PAID_BY_ID && get_paid_date != null) s["value"] = user["_id"]!["\$oid"]!;
+      if (s["key"] == GET_PAID_BY_ID && get_paid_date != null) s["value"] = user["_id"]!;
     }
 
     Navigator.push(

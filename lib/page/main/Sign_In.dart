@@ -158,21 +158,11 @@ class _Main_State extends State<Main_> {
         .then((r) async {
           // print(r.data);
 
-          await secure_storage.write(key: "access_token", value: r.data["access_token"]);
-          dio.options.headers['Authorization'] = 'Bearer ${r.data["access_token"]}';
+          await secure_storage.write(key: "access_token", value: r.data[0]["access_token"]);
+          dio.options.headers['Authorization'] = 'Bearer ${r.data[0]["access_token"]}';
 
           //
-          for (var k in user.keys) user[k] = r.data[k];
-
-          // print("user: $user");
-          // // print type of user["_id"]
-          // print("user['_id']: ${user["_id"].runtimeType}");
-          // // print key of user["_id"]
-          // print("user['_id'].keys: ${user["_id"].keys}");
-          // print(user["_id"]["\$oid"]);
-          // print(user["is_admin"].runtimeType);
-
-          // return;
+          for (var k in user.keys) user[k] = r.data[0][k];
 
           snackbar_show(context: context, message: "Sign in successful", color: Colors.green);
 

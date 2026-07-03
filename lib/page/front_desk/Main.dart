@@ -183,7 +183,7 @@ class _Main_State extends State<Main_> {
                 child: Wrap(
                   children: [
                     // check in
-                    if (user["is_admin"]! || user["is_manager"]! || user["is_receptionist"]!)
+                    if (user["is_admin"] == true || user["is_manager"] == true || user["is_receptionist"] == true)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -195,7 +195,7 @@ class _Main_State extends State<Main_> {
                       ),
 
                     // payment
-                    if (user["is_admin"]! || user["is_manager"]! || user["is_receptionist"]!)
+                    if (user["is_admin"] == true || user["is_manager"] == true || user["is_receptionist"] == true)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -207,7 +207,7 @@ class _Main_State extends State<Main_> {
                       ),
 
                     // check out
-                    if (user["is_admin"]! || user["is_manager"]! || user["is_receptionist"]!)
+                    if (user["is_admin"] == true || user["is_manager"] == true || user["is_receptionist"] == true)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -252,7 +252,7 @@ class _Main_State extends State<Main_> {
                     ),
 
                     // update guest info
-                    if (user["is_admin"]! || user["is_manager"]! || user["is_receptionist"]!)
+                    if (user["is_admin"] == true || user["is_manager"] == true || user["is_receptionist"] == true)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -275,7 +275,7 @@ class _Main_State extends State<Main_> {
                     ),
 
                     // update
-                    if (user["is_admin"]! || user["is_manager"]!)
+                    if (user["is_admin"] == true || user["is_manager"] == true)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -287,7 +287,7 @@ class _Main_State extends State<Main_> {
                       ),
 
                     // delete
-                    if (user["is_admin"]! || user["is_manager"]!)
+                    if (user["is_admin"] == true || user["is_manager"] == true)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),

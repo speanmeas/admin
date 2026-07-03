@@ -93,10 +93,10 @@ class _User_Profile_State extends State<User_Profile_> {
                     (() {
                       var style = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue);
 
-                      if (user["is_admin"]!) return Text("Administrator", style: style);
-                      if (user["is_manager"]!) return Text("Manager", style: style);
-                      if (user["is_receptionist"]!) return Text("Receptionist", style: style);
-                      if (user["is_housekeeper"]!) return Text("Housekeeper", style: style);
+                      if (user["is_admin"] == true) return Text("Administrator", style: style);
+                      if (user["is_manager"] == true) return Text("Manager", style: style);
+                      if (user["is_receptionist"] == true) return Text("Receptionist", style: style);
+                      if (user["is_housekeeper"] == true) return Text("Housekeeper", style: style);
 
                       return const SizedBox.shrink();
                     })(),

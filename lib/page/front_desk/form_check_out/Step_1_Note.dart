@@ -132,7 +132,7 @@ class _Main_State extends State<Main_> {
     for (var s in schema) {
       if (s["key"] == CHECK_OUT_DATE) s["value"] = DateTime.now().toIso8601String();
       if (s["key"] == CHECK_OUT_BY) s["value"] = user["full_name"]!;
-      if (s["key"] == CHECK_OUT_BY_ID) s["value"] = user["_id"]!["\$oid"]!;
+      if (s["key"] == CHECK_OUT_BY_ID) s["value"] = user["_id"]!;
       if (s["key"] == check_out_note) s["value"] = controller_note.text;
     }
 

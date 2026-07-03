@@ -122,7 +122,7 @@ class _Main_State extends State<Main_> {
         .post(
           "/user/data_update",
           data: FormData.fromMap({
-            "id": user["_id"]!["\$oid"]!, //
+            "id": user["_id"]!, //
             "username": username, //
           }),
         )
