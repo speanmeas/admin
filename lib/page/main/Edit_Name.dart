@@ -53,7 +53,7 @@ class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
-    controller.text = user["full_name"] ?? '';
+    controller.text = user["user_name"] ?? '';
   }
 
   @override
@@ -83,7 +83,7 @@ class _Main_State extends State<Main_> {
                   controller: controller,
                   autofocus: true,
                   decoration: InputDecoration(
-                    labelText: "Full Name :", //
+                    labelText: "Name:", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -114,8 +114,8 @@ class _Main_State extends State<Main_> {
         .post(
           "/user/data_update",
           data: FormData.fromMap({
-            "id": user["_id"]!["\$oid"], //
-            "full_name": controller.text, //
+            "_id": user["_id"], //
+            "user_name": controller.text, //
           }),
         )
         .then((r) async {

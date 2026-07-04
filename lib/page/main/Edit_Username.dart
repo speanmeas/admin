@@ -51,7 +51,7 @@ class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
-    controller.text = user["username"] ?? '';
+    controller.text = user["user_username"] ?? '';
   }
 
   @override
@@ -82,7 +82,7 @@ class _Main_State extends State<Main_> {
                   autofocus: true,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: "Username :", //
+                    labelText: "Username:", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -111,9 +111,9 @@ class _Main_State extends State<Main_> {
   void on_update() async {
     // todo: validation
 
-    String username = controller.text.trim();
+    String user_username = controller.text.trim();
 
-    if (username.length < 6) {
+    if (user_username.length < 6) {
       snackbar_show(context: context, message: "Username must be at least 6 characters", color: Colors.red);
       return;
     }
@@ -122,13 +122,13 @@ class _Main_State extends State<Main_> {
         .post(
           "/user/data_update",
           data: FormData.fromMap({
-            "id": user["_id"]!, //
-            "username": username, //
+            "_id": user["_id"], //
+            "user_username": user_username, //
           }),
         )
         .then((r) async {
           snackbar_show(context: context, message: "Update successful", color: Colors.green);
-          Navigator.pop(context, username);
+          Navigator.pop(context, user_username);
         })
         .catchError((error) {
           snackbar_show(context: context, message: "Update failed", color: Colors.red);

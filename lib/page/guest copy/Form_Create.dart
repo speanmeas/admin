@@ -1,20 +1,20 @@
-import "package:dio/dio.dart";
-import "package:flutter/material.dart";
-import "package:flutter/services.dart";
-import "package:flutter_typeahead/flutter_typeahead.dart";
-import "package:intl/intl.dart";
-import "package:provider/provider.dart";
-import "package:speanmeas/Environment.dart";
-import "package:speanmeas/Global.dart";
+import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
-import "package:speanmeas/theme/Theme_Data.dart";
+import 'package:speanmeas/Environment.dart';
+import 'package:speanmeas/Global.dart';
+import 'package:speanmeas/theme/Theme_Data.dart';
 
-import "package:speanmeas/utility/Dio.dart";
-import "package:speanmeas/widget/Datetime_Picker.dart";
-import "package:speanmeas/widget/Snackbar_Show.dart";
+import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/widget/Datetime_Picker.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import "__Setup__.dart";
-import "Schema.g.dart";
+import '__Setup__.dart';
+import 'Schema.g.dart';
 
 void main() {
   runApp(
@@ -33,30 +33,29 @@ class Main extends StatelessWidget {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Main_(),
+      home: Form_Create_(),
     );
   }
 }
 
-class Main_ extends StatefulWidget {
-  Main_({super.key});
+class Form_Create_ extends StatefulWidget {
+  Form_Create_({
+    super.key, //
+  });
 
   @override
-  State<Main_> createState() => _Main_State();
+  State<Form_Create_> createState() => _Form_Create_State();
 }
 
-class _Main_State extends State<Main_> {
+class _Form_Create_State extends State<Form_Create_> {
   //
 
   TextEditingController controller_nationality = TextEditingController();
   List<String> option_nationalities = [];
-  Map<String, dynamic> output = {};
 
   @override
   void initState() {
     super.initState();
-    output["guest_nationality"] = "Cambodian";
-    controller_nationality.text = output["guest_nationality"]?.toString() ?? '';
     init();
   }
 
@@ -72,6 +71,8 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
+    final screen_height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -90,13 +91,13 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.map((s) {
+              ...schema.map((row) {
                 //
                 //
                 //
 
                 // finite list of options
-                if (s["key"] == "guest_nationality") {
+                if (row["key"] == "guest_nationality") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -116,7 +117,7 @@ class _Main_State extends State<Main_> {
                           controller: controller,
                           focusNode: focusNode,
                           decoration: InputDecoration(
-                            labelText: s['title'] + ":",
+                            labelText: row['title'] + ":",
                             labelStyle: TextStyle(fontWeight: FontWeight.bold),
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             suffixIcon: Padding(
@@ -133,7 +134,7 @@ class _Main_State extends State<Main_> {
                         return ListTile(title: Text(item));
                       },
                       onSelected: (selected) {
-                        output[s["key"]] = selected; //
+                        row["value"] = selected; //
                         controller_nationality.text = selected;
                         setState(() {});
                       },
@@ -142,14 +143,14 @@ class _Main_State extends State<Main_> {
                 }
 
                 // gender
-                if (s["key"] == "guest_gender") {
+                if (row["key"] == "guest_gender") {
                   List<String> options = ["Male", "Female", "Other"];
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        labelText: s['title'] + ":",
+                        labelText: row['title'] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -158,7 +159,7 @@ class _Main_State extends State<Main_> {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
-                        output[s["key"]] = v; //
+                        row["value"] = v; //
                         setState(() {});
                       },
                     ),
@@ -166,20 +167,21 @@ class _Main_State extends State<Main_> {
                 }
 
                 // note
-                if (s["key"].toString().contains("note")) {
+                if (row["key"] == "note") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       maxLines: 4,
                       decoration: InputDecoration(
+                        // hintText: "Input", //
                         labelText: "Note:", //
                         border: OutlineInputBorder(),
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (v) {
-                        output[s["key"]] = v;
+                      onChanged: (value) {
+                        row["value"] = value; //
                       },
                     ),
                   );
@@ -190,74 +192,83 @@ class _Main_State extends State<Main_> {
                 //
 
                 // string
-                if (s["type"] == "string") {
+                if (row["type"] == "string") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       decoration: InputDecoration(
-                        labelText: s["title"] + ":", //
+                        // hintText: "Input", //
+                        labelText: row['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (v) {
-                        output[s["key"]] = v;
+                      onChanged: (value) {
+                        row["value"] = value; //
                       },
                     ),
                   );
                 }
 
                 // number
-                if (s["type"] == "number") {
+                if (row["type"] == "number") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
                       decoration: InputDecoration(
-                        labelText: s["title"] + ":", //
+                        // hintText: "Input", //
+                        labelText: row['title'] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      onChanged: (v) {
-                        output[s["key"]] = v;
+                      onChanged: (value) {
+                        row["value"] = double.tryParse(value);
                       },
                     ),
                   );
                 }
 
-                if (s["type"] == "boolean") {
+                if (row["type"] == "boolean") {
+                  List<String> options = ["Yes", "No"];
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        labelText: s["title"] + ":",
+                        // hintText: "Select", //
+                        labelText: row['title'] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
-                      items: ["Yes", "No"].map((i) {
+                      items: options.map((i) {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
-                        if (v == "Yes") output[s["key"]] = true;
-                        if (v == "No") output[s["key"]] = false;
+                        if (v == "Yes") {
+                          row["value"] = true;
+                        } else {
+                          row["value"] = false;
+                        }
+                        setState(() {});
                       },
                     ),
                   );
                 }
 
-                if (s["type"] == "date-time") {
+                if (row["type"] == "date-time") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[s["key"]] ?? ""),
+                      controller: TextEditingController(text: row["value"] ?? ""),
                       readOnly: true,
                       decoration: InputDecoration(
-                        labelText: s["title"] + ":", //
+                        // hintText: "Select", //
+                        labelText: row['title'] + ":", //
                         border: OutlineInputBorder(), //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -266,14 +277,14 @@ class _Main_State extends State<Main_> {
                       onTap: () async {
                         final DateTime? datetime = await datetime_picker(context);
                         if (datetime == null) return;
-                        output[s["key"]] = DateFormat("yyyy-MM-dd HH:mm:ss").format(datetime);
+                        row["value"] = DateFormat('yyyy-MM-dd HH:mm:ss').format(datetime);
                         setState(() {});
                       }, //,
                     ),
                   );
                 }
 
-                return SizedBox();
+                return SizedBox.shrink();
               }),
 
               Container(
@@ -285,6 +296,8 @@ class _Main_State extends State<Main_> {
                   onPressed: on_create,
                 ),
               ),
+
+              SizedBox(height: screen_height - 80),
             ],
           ),
         ),
@@ -293,38 +306,19 @@ class _Main_State extends State<Main_> {
   }
 
   void on_create() async {
-    // 0. debug
-    // for (var s in schema) print(s);
+    //
 
-    // 1. validate required fields
-    // for (var s in schema) {
-    //   if (s["key"] == "_id") continue; // skip id field
-    //   if (s["key"].toString().contains("note")) continue; // skip note field
-    //   if (s["value"] == null) {
-    //     snackbar_show(context: context, message: "${s["title"]} is required.", color: Colors.red);
-    //     return;
-    //   }
-    // }
+    Map<String, dynamic> output = {};
+    for (var s in schema) {
+      output[s["key"]] = s["value"];
+    }
 
-    // 2. validate number fields
-    // for (var s in schema) {
-    //   if (s["type"] == "number") {
-    //     if (double.tryParse(s["value"]) == null) {
-    //       snackbar_show(context: context, message: "${s["title"]} must be a number.", color: Colors.red);
-    //       return;
-    //     }
-    //   }
-    // }
-
-    // prepare output
-    // Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
-
-    // request
     await dio
-        .post("$PATH/data_create", data: FormData.fromMap({...output}))
+        .post('$PATH/data_create', data: FormData.fromMap({...output}))
         .then((r) {
-          Navigator.pop(context, true);
+          output["id"] = r.data["id"]; // NOTE: support to update and delete
           snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
+          Navigator.pop(context, output);
         })
         .catchError((error) {
           snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);

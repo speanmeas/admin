@@ -52,7 +52,7 @@ class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
-    controller.text = user["phone_number"] ?? '';
+    controller.text = user["user_phone"] ?? '';
   }
 
   @override
@@ -84,7 +84,7 @@ class _Main_State extends State<Main_> {
                   keyboardType: const TextInputType.numberWithOptions(decimal: false),
                   inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
                   decoration: InputDecoration(
-                    labelText: "Phone Number :", //
+                    labelText: "Phone Number:", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -117,8 +117,8 @@ class _Main_State extends State<Main_> {
         .post(
           "/user/data_update",
           data: FormData.fromMap({
-            "id": user["_id"]!, //
-            "phone_number": controller.text, //
+            "_id": user["_id"], //
+            "user_phone": controller.text, //
           }),
         )
         .then((r) async {

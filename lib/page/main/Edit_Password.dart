@@ -89,7 +89,7 @@ class _Main_State extends State<Main_> {
                   obscureText: !is_password_visible,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: "Password :", //
+                    labelText: "Password:", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -117,7 +117,7 @@ class _Main_State extends State<Main_> {
                   obscureText: !is_confirm_password_visible,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: "Confirm Password :", //
+                    labelText: "Confirm Password:", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),

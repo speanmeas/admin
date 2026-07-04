@@ -1,68 +1,57 @@
 List<Map<String, dynamic>> schema = [
   {
-    "key": "id",
-    "type": "id",
-    "title": "ID",
-    "value": null
+    "key": "_id",
+    "type": "_id",
+    "title": "ID"
   },
   {
-    "key": "full_name",
+    "key": "user_name",
     "type": "string",
-    "title": "Full Name",
-    "value": null
+    "title": "Name"
   },
   {
-    "key": "phone_number",
+    "key": "user_phone",
     "type": "string",
-    "title": "Phone Number",
-    "value": null
+    "title": "Phone Number"
   },
   {
-    "key": "username",
+    "key": "user_username",
     "type": "string",
-    "title": "Username",
-    "value": null
+    "title": "Username"
   },
   {
-    "key": "password",
+    "key": "user_password",
     "type": "string",
-    "title": "Password",
-    "value": null
+    "title": "Password"
   },
   {
-    "key": "is_admin",
+    "key": "user_is_admin",
     "type": "boolean",
-    "title": "Is Admin",
-    "value": null
+    "title": "Is Admin"
   },
   {
-    "key": "is_manager",
+    "key": "user_is_manager",
     "type": "boolean",
-    "title": "Is Manager",
-    "value": null
+    "title": "Is Manager"
   },
   {
-    "key": "is_receptionist",
+    "key": "user_is_receptionist",
     "type": "boolean",
-    "title": "Is Receptionist",
-    "value": null
+    "title": "Is Receptionist"
   },
   {
-    "key": "is_housekeeper",
+    "key": "user_is_housekeeper",
     "type": "boolean",
-    "title": "Is Housekeeper",
-    "value": null
+    "title": "Is Housekeeper"
   },
   {
-    "key": "access_token",
+    "key": "user_access_token",
     "type": "string",
-    "title": "Access Token",
-    "value": null
+    "title": "Access Token"
   },
   {
-    "key": "note",
+    "key": "user_note",
     "type": "string",
-    "title": "Note",
-    "value": null
+    "title": "Note"
   }
 ];

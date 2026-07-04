@@ -92,7 +92,7 @@ class _Loading_State extends State<Loading_> {
         )
         .then((r) async {
           //
-          for (var key in user.keys) user[key] = r.data[0]![key];
+          for (var k in user.keys) user[k] = r.data[0][k];
 
           snackbar_show(context: context, message: "Login successful", color: Colors.green);
 

@@ -156,10 +156,8 @@ class _Main_State extends State<Main_> {
           }),
         )
         .then((r) async {
-          // print(r.data);
-
-          await secure_storage.write(key: "access_token", value: r.data[0]["access_token"]);
-          dio.options.headers['Authorization'] = 'Bearer ${r.data[0]["access_token"]}';
+          await secure_storage.write(key: "access_token", value: r.data[0]["user_access_token"]);
+          dio.options.headers['Authorization'] = 'Bearer ${r.data[0]["user_access_token"]}';
 
           //
           for (var k in user.keys) user[k] = r.data[0][k];

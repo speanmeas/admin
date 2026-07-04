@@ -22,14 +22,12 @@ void main() {
 class Main extends StatelessWidget {
   Main({super.key});
 
-  String id = "69f984897186bcf74f8a5dde";
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Main_(id: id),
+      home: Main_(id: ""),
     );
   }
 }
@@ -56,7 +54,6 @@ class _Main_State extends State<Main_> {
             fontWeight: FontWeight.bold,
           ),
         ),
-
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -70,10 +67,7 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 alignment: Alignment.center,
-                child: Text(
-                  "Confirm to delete?", //
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
+                child: Text("Confirm to delete?", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ),
 
               // button delete
@@ -100,9 +94,8 @@ class _Main_State extends State<Main_> {
     await dio
         .post("$PATH/data_delete", data: FormData.fromMap({"_id": widget.id}))
         .then((value) {
-          print(value);
-          snackbar_show(context: context, message: "Room deleted successfully", color: Colors.green);
           Navigator.pop(context, true);
+          snackbar_show(context: context, message: "Room deleted successfully", color: Colors.green);
         })
         .catchError((error) {
           snackbar_show(context: context, message: "Failed to delete room", color: Colors.red);

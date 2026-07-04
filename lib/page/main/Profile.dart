@@ -13,8 +13,8 @@ import 'package:speanmeas/utility/Secure_Storage.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
 import 'Sign_In.dart' as sign_in;
-import 'Edit_Full_Name.dart' as update_full_name;
-import 'Edit_Phone_Number.dart' as update_phone_number;
+import 'Edit_Name.dart' as update_full_name;
+import 'Edit_Phone.dart' as update_phone_number;
 import 'Edit_Username.dart' as update_username;
 import 'Edit_Password.dart' as update_password;
 
@@ -54,9 +54,7 @@ class _User_Profile_State extends State<User_Profile_> {
     init();
   }
 
-  void init() async {
-    print(user);
-  }
+  void init() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -93,10 +91,10 @@ class _User_Profile_State extends State<User_Profile_> {
                     (() {
                       var style = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue);
 
-                      if (user["is_admin"] == true) return Text("Administrator", style: style);
-                      if (user["is_manager"] == true) return Text("Manager", style: style);
-                      if (user["is_receptionist"] == true) return Text("Receptionist", style: style);
-                      if (user["is_housekeeper"] == true) return Text("Housekeeper", style: style);
+                      if (user["user_is_admin"] == true) return Text("Administrator", style: style);
+                      if (user["user_is_manager"] == true) return Text("Manager", style: style);
+                      if (user["user_is_receptionist"] == true) return Text("Receptionist", style: style);
+                      if (user["user_is_housekeeper"] == true) return Text("Housekeeper", style: style);
 
                       return const SizedBox.shrink();
                     })(),
@@ -109,10 +107,10 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: user["full_name"] ?? ""),
+                  controller: TextEditingController(text: user["user_name"] ?? ""),
                   readOnly: true,
                   decoration: InputDecoration(
-                    labelText: "Full Name :", //
+                    labelText: "Name:", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -125,7 +123,7 @@ class _User_Profile_State extends State<User_Profile_> {
                             MaterialPageRoute(builder: (_) => update_full_name.Main_()),
                           ).then((value) {
                             if (value == null) return;
-                            user["full_name"] = value;
+                            user["user_name"] = value;
                             setState(() {});
                           });
                         },
@@ -141,10 +139,10 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: user["phone_number"] ?? ""),
+                  controller: TextEditingController(text: user["user_phone"] ?? ""),
                   readOnly: true,
                   decoration: InputDecoration(
-                    labelText: "Phone Number :", //
+                    labelText: "Phone Number:", //
                     border: OutlineInputBorder(),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -157,7 +155,7 @@ class _User_Profile_State extends State<User_Profile_> {
                             MaterialPageRoute(builder: (_) => update_phone_number.Main_()),
                           ).then((value) {
                             if (value == null) return;
-                            user["phone_number"] = value;
+                            user["user_phone"] = value;
                             setState(() {});
                           });
                         },
@@ -173,10 +171,10 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: user["username"] ?? ""),
+                  controller: TextEditingController(text: user["user_username"] ?? ""),
                   readOnly: true,
                   decoration: InputDecoration(
-                    labelText: "Username :", //
+                    labelText: "Username:", //
                     border: OutlineInputBorder(),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -189,7 +187,7 @@ class _User_Profile_State extends State<User_Profile_> {
                             MaterialPageRoute(builder: (_) => update_username.Main_()),
                           ).then((value) {
                             if (value == null) return;
-                            user["username"] = value;
+                            user["user_username"] = value;
                             setState(() {});
                           });
                         },
@@ -208,7 +206,7 @@ class _User_Profile_State extends State<User_Profile_> {
                   controller: TextEditingController(text: "**********"),
                   readOnly: true,
                   decoration: InputDecoration(
-                    labelText: "Password :", //
+                    labelText: "Password:", //
                     border: OutlineInputBorder(),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),

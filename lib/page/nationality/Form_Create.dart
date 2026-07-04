@@ -158,7 +158,6 @@ class _Main_State extends State<Main_> {
                       onChanged: (v) {
                         if (v == "Yes") output[s["key"]] = true;
                         if (v == "No") output[s["key"]] = false;
-                        setState(() {});
                       },
                     ),
                   );

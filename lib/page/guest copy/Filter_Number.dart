@@ -1,14 +1,14 @@
-import "package:dio/dio.dart";
-import "package:flutter/material.dart";
-import "package:flutter/services.dart";
-import "package:provider/provider.dart";
-import "package:speanmeas/Global.dart";
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:speanmeas/Global.dart';
 
-import "package:speanmeas/theme/Theme_Data.dart";
-import "package:speanmeas/utility/Dio.dart";
-import "package:speanmeas/widget/Snackbar_Show.dart";
+import 'package:speanmeas/theme/Theme_Data.dart';
+import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import "__Setup__.dart";
+import '__Setup__.dart';
 
 void main() {
   runApp(
@@ -74,7 +74,7 @@ class _Main_State extends State<Main_> {
                   controller: controller_min,
                   autofocus: true,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9.]"))],
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
                   decoration: InputDecoration(
                     border: OutlineInputBorder(), //
                     labelText: "Min value:",
@@ -92,7 +92,7 @@ class _Main_State extends State<Main_> {
                 child: TextField(
                   controller: controller_max,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9.]"))],
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
                   decoration: InputDecoration(
                     border: OutlineInputBorder(), //
                     labelText: "Max value:",

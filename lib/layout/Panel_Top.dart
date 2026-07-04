@@ -120,7 +120,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
                 border: Border.all(color: Colors.blue, width: 2),
               ),
               child: Text(
-                user["full_name"]!.substring(0, 1).toUpperCase() ?? '', //
+                user["user_name"]!.substring(0, 1).toUpperCase() ?? '', //
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),

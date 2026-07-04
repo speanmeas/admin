@@ -224,13 +224,13 @@ class _Main_State extends State<Main_> {
                 if (s["type"] == "boolean") {
                   String value = "";
                   if (output[s["key"]] != null) {
-                    value = output[s["key"]] == true ? "Yes" : "No";
+                    value = output[s["key"]];
                   }
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
-                      initialValue: value,
+                      initialValue: value == "" ? null : value,
                       decoration: InputDecoration(
                         labelText: s["title"] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -241,12 +241,8 @@ class _Main_State extends State<Main_> {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
-                        if (v == "Yes") {
-                          output[s["key"]] = true;
-                        } else {
-                          output[s["key"]] = false;
-                        }
-                        setState(() {});
+                        if (v == "Yes") output[s["key"]] = true;
+                        if (v == "No") output[s["key"]] = false;
                       },
                     ),
                   );

@@ -160,9 +160,7 @@ class _Main_State extends State<Main_> {
                 //
                 if (s["type"] == "boolean") {
                   String value = "";
-                  if (output[s["key"]] != null) {
-                    value = output[s["key"]].toString().toLowerCase() == "true" ? "Yes" : "No";
-                  }
+                  if (output[s["key"]] != null) value = output[s["key"]];
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),

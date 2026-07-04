@@ -594,6 +594,9 @@ class _Main_State extends State<Main_> {
 
     // scroll to top
     state_manager?.scroll.vertical?.jumpTo(0);
+
+    //
+    snackbar_show(context: context, message: "Refreshed successfully", color: Colors.green);
   }
 
   build_plutocolumn({
