@@ -6,54 +6,6 @@ List<Map<String, dynamic>> schema = [
     "value": null
   },
   {
-    "key": "room_number",
-    "type": "string",
-    "title": "Room Number",
-    "value": null
-  },
-  {
-    "key": "room_type",
-    "type": "string",
-    "title": "Room Type",
-    "value": null
-  },
-  {
-    "key": "room_price_per_day_usd",
-    "type": "number",
-    "title": "Room Price/Day (USD)",
-    "value": null
-  },
-  {
-    "key": "room_price_per_3h_usd",
-    "type": "number",
-    "title": "Room Price/3h (USD)",
-    "value": null
-  },
-  {
-    "key": "guest_name",
-    "type": "string",
-    "title": "Guest Name",
-    "value": null
-  },
-  {
-    "key": "guest_gender",
-    "type": "string",
-    "title": "Guest Gender",
-    "value": null
-  },
-  {
-    "key": "guest_phone",
-    "type": "string",
-    "title": "Guest Phone",
-    "value": null
-  },
-  {
-    "key": "guest_nationality",
-    "type": "string",
-    "title": "Guest Nationality",
-    "value": null
-  },
-  {
     "key": "stay_day",
     "type": "number",
     "title": "Stay (Days)",
@@ -243,6 +195,54 @@ List<Map<String, dynamic>> schema = [
     "key": "clean_by_id",
     "type": "id",
     "title": "Clean By ID",
+    "value": null
+  },
+  {
+    "key": "room_number",
+    "type": "string",
+    "title": "Room Number",
+    "value": null
+  },
+  {
+    "key": "room_type",
+    "type": "string",
+    "title": "Room Type",
+    "value": null
+  },
+  {
+    "key": "room_price_per_day_usd",
+    "type": "number",
+    "title": "Room Price/Day (USD)",
+    "value": null
+  },
+  {
+    "key": "room_price_per_3h_usd",
+    "type": "number",
+    "title": "Room Price/3h (USD)",
+    "value": null
+  },
+  {
+    "key": "guest_name",
+    "type": "string",
+    "title": "Guest Name",
+    "value": null
+  },
+  {
+    "key": "guest_gender",
+    "type": "string",
+    "title": "Guest Gender",
+    "value": null
+  },
+  {
+    "key": "guest_phone",
+    "type": "string",
+    "title": "Guest Phone",
+    "value": null
+  },
+  {
+    "key": "guest_nationality",
+    "type": "string",
+    "title": "Guest Nationality",
     "value": null
   }
 ];

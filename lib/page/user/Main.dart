@@ -6,11 +6,11 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
-import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/layout/Layout.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
-import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "__Setup__.dart";
@@ -120,7 +120,7 @@ class _Main_State extends State<Main_> {
                 cells: {
                   for (var s in schema)
                     // exclude password field
-                    if (s["key"] == "password") //
+                    if (s["key"].toString().contains("password")) //
                       s["key"]!: PlutoCell(value: "**********")
                     //
                     else if (s["type"] == "date-time") //
@@ -200,7 +200,7 @@ class _Main_State extends State<Main_> {
                 cells: {
                   for (var s in schema)
                     //
-                    if (s["key"] == "password") //
+                    if (s["key"].toString().contains("password")) //
                       s["key"]!: PlutoCell(value: "**********")
                     //
                     else if (s["type"] == "date-time") //
