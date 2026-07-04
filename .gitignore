@@ -58,9 +58,9 @@ app.*.map.json
 !.gitignore
 
 
-update_client.py
-update_server.py
+*copy/
 
+update_cloudflare.py
 vs.code-workspace
 
 # wrangler files
