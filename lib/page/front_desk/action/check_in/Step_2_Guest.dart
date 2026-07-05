@@ -16,8 +16,9 @@ import "package:speanmeas/page/guest/Form_Create.dart" as guest_create;
 import "package:speanmeas/page/guest/Schema.g.dart" as guest_schema;
 
 import "../../__Setup__.dart";
-import "Schema.g.dart";
-import "Step_3_Staying_Info.dart" as step_3;
+import "../../Schema.g.dart";
+
+import "Step_3_Staying.dart" as step_3;
 
 void main() {
   runApp(
@@ -62,9 +63,6 @@ class _Main_State extends State<Main_> {
   void initState() {
     super.initState();
     init();
-    //
-
-    for (var s in schema) print(s);
   }
 
   void init() async {
@@ -164,7 +162,7 @@ class _Main_State extends State<Main_> {
                           for (var g in guest_datas) {
                             if (g[PHONE_NUMBER] == item) {
                               selected_guest = g;
-                              print(selected_guest);
+                              // print(selected_guest);
                               break;
                             }
                           }
@@ -337,13 +335,12 @@ class _Main_State extends State<Main_> {
   void on_next() async {
     //
 
-    // for (var s in schema) {
-    //   if (s["key"] == NAME) s["value"] = selected_guest[NAME];
-    //   if (s["key"] == GENDER) s["value"] = selected_guest[GENDER];
-    //   if (s["key"] == PHONE_NUMBER) s["value"] = selected_guest[PHONE_NUMBER];
-    //   if (s["key"] == NATIONALITY) s["value"] = selected_guest[NATIONALITY];
-    //   if (s["key"] == "guest_id") s["value"] = selected_guest["id"];
-    // }
+    for (var e in selected_guest.entries) {
+      for (var s in schema) {
+        if (e.key == "_id" && s["key"] == "guest_id") s["value"] = e.value;
+        if (e.key == s["key"]) s["value"] = e.value;
+      }
+    }
 
     Navigator.push(
       context, //

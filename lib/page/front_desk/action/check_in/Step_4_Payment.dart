@@ -11,7 +11,7 @@ import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "Schema.g.dart";
+import "../../Schema.g.dart";
 import "Step_5_Summary.dart" as step_5;
 
 void main() {
@@ -46,6 +46,13 @@ class Main_ extends StatefulWidget {
 class _Main_State extends State<Main_> {
   // keys
   var PRICE_TOTAL = "price_total_usd";
+
+  var PRICE_DAY = "room_price_per_day_usd";
+  var PRICE_3H = "room_price_per_3h_usd";
+
+  var STAY_DAYS = "stay_duration_day";
+  var STAY_HOURS = "stay_duration_hour";
+
   var PAID_BANK_USD = "paid_bank_usd";
   var PAID_BANK_KHR = "paid_bank_khr";
   var PAID_CASH_USD = "paid_cash_usd";
@@ -55,23 +62,24 @@ class _Main_State extends State<Main_> {
   var RETURN_KHR = "return_khr";
   var RETURN_TOTAL_USD = "return_total_usd";
   var AR_TOTAL_USD = "ar_total_usd";
-  var GET_PAID_DATE = "payment_date";
+
+  var GET_PAID_DATE = "payment_at";
   var GET_PAID_BY = "payment_by";
   var GET_PAID_BY_ID = "payment_by_id";
 
   // controllers
-  TextEditingController controller_price_usd = TextEditingController();
+  TextEditingController c_price_usd = TextEditingController();
 
-  TextEditingController controller_paid_bank_usd = TextEditingController();
-  TextEditingController controller_paid_bank_khr = TextEditingController();
+  TextEditingController c_paid_bank_usd = TextEditingController();
+  TextEditingController c_paid_bank_khr = TextEditingController();
 
-  TextEditingController controller_paid_cash_usd = TextEditingController();
-  TextEditingController controller_paid_cash_khr = TextEditingController();
+  TextEditingController c_paid_cash_usd = TextEditingController();
+  TextEditingController c_paid_cash_khr = TextEditingController();
 
-  TextEditingController controller_return_usd = TextEditingController();
-  TextEditingController controller_return_khr = TextEditingController();
+  TextEditingController c_return_usd = TextEditingController();
+  TextEditingController c_return_khr = TextEditingController();
 
-  TextEditingController controller_payment_note = TextEditingController();
+  TextEditingController c_payment_note = TextEditingController();
 
   @override
   void initState() {
@@ -80,14 +88,28 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
+    double price_per_day_usd = 0;
+    double price_per_3h_usd = 0;
+    double stay_duration_days = 0;
+    double stay_duration_hours = 0;
+
     for (var s in schema) {
-      if (s["key"] == PRICE_TOTAL) controller_price_usd.text = (s["value"] ?? "").toString();
-      if (s["key"] == PAID_BANK_USD) controller_paid_bank_usd.text = (s["value"] ?? "").toString();
-      if (s["key"] == PAID_BANK_KHR) controller_paid_bank_khr.text = (s["value"] ?? "").toString();
-      if (s["key"] == PAID_CASH_USD) controller_paid_cash_usd.text = (s["value"] ?? "").toString();
-      if (s["key"] == PAID_CASH_KHR) controller_paid_cash_khr.text = (s["value"] ?? "").toString();
-      if (s["key"] == RETURN_USD) controller_return_usd.text = (s["value"] ?? "").toString();
-      if (s["key"] == RETURN_KHR) controller_return_khr.text = (s["value"] ?? "").toString();
+      if (s["key"] == PRICE_DAY) price_per_day_usd = double.tryParse("${s["value"] ?? 0}") ?? 0;
+      if (s["key"] == PRICE_3H) price_per_3h_usd = double.tryParse("${s["value"] ?? 0}") ?? 0;
+      if (s["key"] == STAY_DAYS) stay_duration_days = double.tryParse("${s["value"] ?? 0}") ?? 0;
+      if (s["key"] == STAY_HOURS) stay_duration_hours = double.tryParse("${s["value"] ?? 0}") ?? 0;
+    }
+
+    double price_total_usd = (stay_duration_days * price_per_day_usd) + ((stay_duration_hours / 3) * price_per_3h_usd);
+
+    for (var s in schema) {
+      if (s["key"] == PRICE_TOTAL) c_price_usd.text = price_total_usd.toString();
+      if (s["key"] == PAID_BANK_USD) c_paid_bank_usd.text = (s["value"] ?? "").toString();
+      if (s["key"] == PAID_BANK_KHR) c_paid_bank_khr.text = (s["value"] ?? "").toString();
+      if (s["key"] == PAID_CASH_USD) c_paid_cash_usd.text = (s["value"] ?? "").toString();
+      if (s["key"] == PAID_CASH_KHR) c_paid_cash_khr.text = (s["value"] ?? "").toString();
+      if (s["key"] == RETURN_USD) c_return_usd.text = (s["value"] ?? "").toString();
+      if (s["key"] == RETURN_KHR) c_return_khr.text = (s["value"] ?? "").toString();
     }
   }
 
@@ -103,14 +125,15 @@ class _Main_State extends State<Main_> {
           ),
         ),
         actions: [
-          // if (can_next())
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: OutlinedButton.icon(
               icon: Icon(Icons.arrow_right_alt_outlined),
               label: Text("Next"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: on_next,
+              onPressed: () {
+                print("on_next()");
+              },
             ),
           ),
         ],
@@ -127,7 +150,7 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: controller_price_usd,
+                  controller: c_price_usd,
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
                   decoration: InputDecoration(
@@ -171,7 +194,7 @@ class _Main_State extends State<Main_> {
                     // paid bank usd
                     Expanded(
                       child: TextField(
-                        controller: controller_paid_bank_usd,
+                        controller: c_paid_bank_usd,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9.]"))],
                         decoration: InputDecoration(
@@ -190,7 +213,7 @@ class _Main_State extends State<Main_> {
                     // paid bank khr
                     Expanded(
                       child: TextField(
-                        controller: controller_paid_bank_khr,
+                        controller: c_paid_bank_khr,
                         keyboardType: const TextInputType.numberWithOptions(decimal: false),
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9]"))],
                         decoration: InputDecoration(
@@ -216,7 +239,7 @@ class _Main_State extends State<Main_> {
                     // paid cash usd
                     Expanded(
                       child: TextField(
-                        controller: controller_paid_cash_usd,
+                        controller: c_paid_cash_usd,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9.]"))],
                         decoration: InputDecoration(
@@ -235,7 +258,7 @@ class _Main_State extends State<Main_> {
                     // paid cash khr
                     Expanded(
                       child: TextField(
-                        controller: controller_paid_cash_khr,
+                        controller: c_paid_cash_khr,
                         keyboardType: const TextInputType.numberWithOptions(decimal: false),
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9]"))],
                         decoration: InputDecoration(
@@ -282,7 +305,7 @@ class _Main_State extends State<Main_> {
                     // return usd
                     Expanded(
                       child: TextField(
-                        controller: controller_return_usd,
+                        controller: c_return_usd,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9.]"))],
                         decoration: InputDecoration(
@@ -301,7 +324,7 @@ class _Main_State extends State<Main_> {
                     // return khr
                     Expanded(
                       child: TextField(
-                        controller: controller_return_khr,
+                        controller: c_return_khr,
                         keyboardType: const TextInputType.numberWithOptions(decimal: false),
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9]"))],
                         decoration: InputDecoration(
@@ -339,6 +362,23 @@ class _Main_State extends State<Main_> {
                 );
               })(),
 
+              // note
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                child: TextField(
+                  controller: c_payment_note,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    labelText: "Note:", //
+                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  onChanged: (v) {},
+                ),
+              ),
+
               (() {
                 String value = get_ar_total_usd().toString(); //
                 return Container(
@@ -350,7 +390,7 @@ class _Main_State extends State<Main_> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text("Total A/R: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      Text("Balance : ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
 
                       if (get_ar_total_usd() == 0)
                         Text(
@@ -374,23 +414,23 @@ class _Main_State extends State<Main_> {
   }
 
   double get_price_total_usd() {
-    double price_total_usd = double.tryParse(controller_price_usd.text) ?? 0;
+    double price_total_usd = double.tryParse(c_price_usd.text) ?? 0;
     return price_total_usd;
   }
 
   double get_paid_total_usd() {
-    double paid_bank_usd = double.tryParse(controller_paid_bank_usd.text) ?? 0;
-    double paid_cash_usd = double.tryParse(controller_paid_cash_usd.text) ?? 0;
-    double paid_bank_khr = double.tryParse(controller_paid_bank_khr.text) ?? 0;
-    double paid_cash_khr = double.tryParse(controller_paid_cash_khr.text) ?? 0;
+    double paid_bank_usd = double.tryParse(c_paid_bank_usd.text) ?? 0;
+    double paid_cash_usd = double.tryParse(c_paid_cash_usd.text) ?? 0;
+    double paid_bank_khr = double.tryParse(c_paid_bank_khr.text) ?? 0;
+    double paid_cash_khr = double.tryParse(c_paid_cash_khr.text) ?? 0;
     double paid_total_usd = paid_bank_usd + paid_cash_usd + (paid_bank_khr + paid_cash_khr) / Global.variable.RATE;
 
     return paid_total_usd;
   }
 
   double get_return_total_usd() {
-    double return_usd = double.tryParse(controller_return_usd.text) ?? 0;
-    double return_khr = double.tryParse(controller_return_khr.text) ?? 0;
+    double return_usd = double.tryParse(c_return_usd.text) ?? 0;
+    double return_khr = double.tryParse(c_return_khr.text) ?? 0;
 
     double return_total_usd = return_usd + (return_khr / Global.variable.RATE);
 
@@ -432,20 +472,22 @@ class _Main_State extends State<Main_> {
   void on_next() async {
     //
 
-    // double paid_bank_usd = double.tryParse(controller_paid_bank_usd.text) ?? 0;
-    // double paid_cash_usd = double.tryParse(controller_paid_cash_usd.text) ?? 0;
-    // double paid_bank_khr = double.tryParse(controller_paid_bank_khr.text) ?? 0;
-    // double paid_cash_khr = double.tryParse(controller_paid_cash_khr.text) ?? 0;
+    print("on_next()");
 
-    // double return_usd = double.tryParse(controller_return_usd.text) ?? 0;
-    // double return_khr = double.tryParse(controller_return_khr.text) ?? 0;
+    double paid_bank_usd = double.tryParse(c_paid_bank_usd.text) ?? 0;
+    double paid_cash_usd = double.tryParse(c_paid_cash_usd.text) ?? 0;
+    double paid_bank_khr = double.tryParse(c_paid_bank_khr.text) ?? 0;
+    double paid_cash_khr = double.tryParse(c_paid_cash_khr.text) ?? 0;
 
-    // DateTime? get_paid_date;
-    // if (get_paid_total_usd() > 0) {
-    //   if (get_ar_total_usd() == 0) {
-    //     get_paid_date = DateTime.now();
-    //   }
-    // }
+    double return_usd = double.tryParse(c_return_usd.text) ?? 0;
+    double return_khr = double.tryParse(c_return_khr.text) ?? 0;
+
+    DateTime? get_paid_date;
+    if (get_paid_total_usd() > 0) {
+      if (get_ar_total_usd() == 0) {
+        get_paid_date = DateTime.now();
+      }
+    }
 
     // for (var s in schema) {
     //   if (s["key"] == PRICE_TOTAL) s["value"] = get_price_total_usd();
@@ -458,14 +500,19 @@ class _Main_State extends State<Main_> {
     //   if (s["key"] == RETURN_KHR) s["value"] = return_khr == 0 ? null : return_khr;
     //   if (s["key"] == RETURN_TOTAL_USD) s["value"] = get_return_total_usd();
     //   if (s["key"] == AR_TOTAL_USD) s["value"] = get_ar_total_usd();
-    //   if (s["key"] == GET_PAID_DATE && get_paid_date != null) s["value"] = get_paid_date.toIso8601String();
-    //   if (s["key"] == GET_PAID_BY && get_paid_date != null) s["value"] = user["full_name"]!;
-    //   if (s["key"] == GET_PAID_BY_ID && get_paid_date != null) s["value"] = user["_id"]!;
+
+    //   if (get_paid_total_usd() > 0) {
+    //     if (s["key"] == GET_PAID_DATE) s["value"] = get_paid_date?.toIso8601String();
+    //     if (s["key"] == GET_PAID_BY && user["full_name"] != null) s["value"] = user["full_name"]!;
+    //     if (s["key"] == GET_PAID_BY_ID && user["_id"] != null) s["value"] = user["_id"]!;
+    //   }
     // }
 
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => step_5.Main_()),
-    );
+    for (var s in schema) print(s);
+
+    // Navigator.push(
+    //   context, //
+    //   MaterialPageRoute(builder: (context) => step_5.Main_()),
+    // );
   }
 }

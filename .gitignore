@@ -58,7 +58,9 @@ app.*.map.json
 !.gitignore
 
 
-*copy/
+# ignore copy files and folders
+* copy*
+* copy/
 
 update_cloudflare.py
 vs.code-workspace

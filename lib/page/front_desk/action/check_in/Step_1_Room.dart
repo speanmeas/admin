@@ -10,10 +10,10 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
+import "../../Schema.g.dart";
 import "package:speanmeas/page/room/Schema.g.dart" as room_schema;
 
-import "Schema.g.dart";
-import "Step_2_Select_Create_Guest.dart" as step_2;
+import "Step_2_Guest.dart" as step_2;
 
 void main() {
   runApp(

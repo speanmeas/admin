@@ -104,7 +104,7 @@ class _Main_State extends State<Main_> {
 
                 // status
                 if (s["key"] == "room_status") {
-                  List<String> room_status = ["Available", "Checked-in", "Paid", "Checked-out", "Maintenance"];
+                  List<String> room_status = ["Available", "Pending Pay", "Pending Leave", "Pending Clean", "Pending Fix"];
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -280,7 +280,7 @@ class _Main_State extends State<Main_> {
     await dio
         .post("$PATH/data_create", data: FormData.fromMap({...output}))
         .then((r) {
-          output["id"] = r.data["_id"];
+          output["_id"] = r.data["_id"];
           Navigator.pop(context, output);
           snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
         })

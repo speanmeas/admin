@@ -28,7 +28,7 @@ import "Form_Read.dart" as read;
 import "Form_Update.dart" as update;
 import "Form_Delete.dart" as delete;
 
-import "action/check_in/Step_1_Select_Room.dart" as check_in;
+import "action/check_in/Step_1_Room.dart" as check_in;
 import "action/payment/Step_1_Select_Room.dart" as payment;
 import "action/check_out/Step_1_Select_Room.dart" as check_out;
 import "action/clean/Step_1_Select_Room.dart" as clean;
