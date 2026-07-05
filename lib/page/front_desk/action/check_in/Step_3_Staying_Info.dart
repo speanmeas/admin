@@ -12,10 +12,10 @@ import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import '../__Setup__.dart';
-import '../Schema.g.dart';
+import '../../__Setup__.dart';
+import '../../Schema.g.dart';
 
-import 'Step_4_Payment_Info.dart' as payment_info;
+import 'Step_4_Payment_Info.dart' as step_4;
 
 void main() {
   runApp(
@@ -92,7 +92,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Check In - Staying", //
+          "3. Check In - Staying", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -257,58 +257,58 @@ class _Main_State extends State<Main_> {
 
   void on_next() async {
     //
-    double stay_duration_days = double.tryParse(controller_days.text) ?? 0;
-    double stay_duration_hours = double.tryParse(controller_hours.text) ?? 0;
-    double number_of_guests = double.tryParse(controller_num_guests.text) ?? 0;
+    // double stay_duration_days = double.tryParse(controller_days.text) ?? 0;
+    // double stay_duration_hours = double.tryParse(controller_hours.text) ?? 0;
+    // double number_of_guests = double.tryParse(controller_num_guests.text) ?? 0;
 
-    DateTime check_in_date = DateTime.now();
-    DateTime schedule_check_out = DateTime.now();
+    // DateTime check_in_date = DateTime.now();
+    // DateTime schedule_check_out = DateTime.now();
 
-    if (stay_duration_days > 0) {
-      schedule_check_out = schedule_check_out.add(Duration(days: stay_duration_days.toInt()));
-      schedule_check_out = DateTime(schedule_check_out.year, schedule_check_out.month, schedule_check_out.day, 12, 0);
-      schedule_check_out = schedule_check_out.add(Duration(hours: stay_duration_hours.toInt()));
-      // print("schedule_check_out: $schedule_check_out");
-    }
+    // if (stay_duration_days > 0) {
+    //   schedule_check_out = schedule_check_out.add(Duration(days: stay_duration_days.toInt()));
+    //   schedule_check_out = DateTime(schedule_check_out.year, schedule_check_out.month, schedule_check_out.day, 12, 0);
+    //   schedule_check_out = schedule_check_out.add(Duration(hours: stay_duration_hours.toInt()));
+    //   // print("schedule_check_out: $schedule_check_out");
+    // }
 
-    if (stay_duration_days == 0) {
-      schedule_check_out = schedule_check_out.add(Duration(hours: stay_duration_hours.toInt()));
-      // print("schedule_check_out: $schedule_check_out");
-    }
+    // if (stay_duration_days == 0) {
+    //   schedule_check_out = schedule_check_out.add(Duration(hours: stay_duration_hours.toInt()));
+    //   // print("schedule_check_out: $schedule_check_out");
+    // }
 
-    double price_total_usd = 0;
-    double price_per_day_usd = 0;
-    double price_per_3h_usd = 0;
+    // double price_total_usd = 0;
+    // double price_per_day_usd = 0;
+    // double price_per_3h_usd = 0;
 
-    for (var s in schema) {
-      if (s["key"] == PRICE_DAY) price_per_day_usd = s["value"] ?? 0;
-      if (s["key"] == PRICE_3H) price_per_3h_usd = s["value"] ?? 0;
-    }
+    // for (var s in schema) {
+    //   if (s["key"] == PRICE_DAY) price_per_day_usd = s["value"] ?? 0;
+    //   if (s["key"] == PRICE_3H) price_per_3h_usd = s["value"] ?? 0;
+    // }
 
     // print("price_per_day_usd: $price_per_day_usd");
     // print("price_per_3h_usd: $price_per_3h_usd");
     // print("stay_duration_days: $stay_duration_days");
     // print("stay_duration_hours: $stay_duration_hours");
 
-    price_total_usd = (stay_duration_days * price_per_day_usd) + ((stay_duration_hours / 3) * price_per_3h_usd);
+    // price_total_usd = (stay_duration_days * price_per_day_usd) + ((stay_duration_hours / 3) * price_per_3h_usd);
 
     // print(price_total_usd);
 
-    for (var s in schema) {
-      if (s["key"] == STAY_DAYS) s["value"] = stay_duration_days;
-      if (s["key"] == STAY_HOURS) s["value"] = stay_duration_hours;
-      if (s["key"] == STAY_NUM_GUESTS) s["value"] = number_of_guests;
-      if (s["key"] == CHECK_OUT_DATE) s["value"] = schedule_check_out.toIso8601String();
-      if (s["key"] == PRICE_TOTAL) s["value"] = price_total_usd;
-      if (s["key"] == CHECK_IN_NOTE) s["value"] = controller_note.text;
-      if (s["key"] == CHECK_IN_DATE) s["value"] = check_in_date.toIso8601String();
-      if (s["key"] == CHECK_IN_BY) s["value"] = user["full_name"]!;
-      if (s["key"] == CHECK_IN_BY_ID) s["value"] = user["_id"]!;
-    }
+    // for (var s in schema) {
+    //   if (s["key"] == STAY_DAYS) s["value"] = stay_duration_days;
+    //   if (s["key"] == STAY_HOURS) s["value"] = stay_duration_hours;
+    //   if (s["key"] == STAY_NUM_GUESTS) s["value"] = number_of_guests;
+    //   if (s["key"] == CHECK_OUT_DATE) s["value"] = schedule_check_out.toIso8601String();
+    //   if (s["key"] == PRICE_TOTAL) s["value"] = price_total_usd;
+    //   if (s["key"] == CHECK_IN_NOTE) s["value"] = controller_note.text;
+    //   if (s["key"] == CHECK_IN_DATE) s["value"] = check_in_date.toIso8601String();
+    //   if (s["key"] == CHECK_IN_BY) s["value"] = user["full_name"]!;
+    //   if (s["key"] == CHECK_IN_BY_ID) s["value"] = user["_id"]!;
+    // }
 
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => payment_info.Main_()),
+      MaterialPageRoute(builder: (context) => step_4.Main_()),
     );
   }
 }

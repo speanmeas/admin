@@ -498,8 +498,59 @@ class _Main_State extends State<Main_> {
       //
       if (v == null) return;
 
-      //
-      init();
+      // clear sort
+      final sorted_column = state_manager?.getSortedColumn;
+      if (sorted_column != null) {
+        state_manager?.sortBySortIdx(sorted_column);
+      }
+
+      // add new row to the top
+      state_manager?.prependRows([
+        PlutoRow(
+          cells: {
+            'id': PlutoCell(value: v['id'].toString()),
+            for (var s in schema)
+              if (s['type'] == 'date-time') //
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+
+                    final dt = DateTime.tryParse(v[s['key']].toString());
+                    if (dt == null) return '';
+
+                    // default
+                    return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+                  })(),
+                )
+              else if (s['type'] == 'boolean') //
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+                    if (v[s['key']] == true) return 'Yes';
+
+                    // default
+                    return 'No';
+                  })(),
+                )
+              else
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+
+                    // default
+                    return v[s['key']].toString();
+                  })(),
+                ),
+          },
+        ),
+      ]);
+
+      // refresh total row count
+      total_row = state_manager!.rows.length;
+      setState(() {});
+
+      // scroll to top
+      state_manager?.scroll.vertical?.jumpTo(0);
     });
   }
 
@@ -542,8 +593,41 @@ class _Main_State extends State<Main_> {
       //
       if (v == null) return;
 
-      //
-      init();
+      final row = state_manager?.currentRow;
+
+      for (var s in schema) {
+        final key = s['key'];
+        if (key == null) continue;
+
+        if (s['type'] == 'date-time') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            final dt = DateTime.tryParse(v[key].toString());
+            if (dt == null) return '';
+
+            // default
+            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+          })();
+        } else if (s['type'] == 'boolean') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+            if (v[key] == true) return 'Yes';
+
+            // default
+            return 'No';
+          })();
+        } else {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            // default
+            return v[key].toString();
+          })();
+        }
+      }
+
+      state_manager?.notifyListeners();
     });
   }
 

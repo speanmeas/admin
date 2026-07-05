@@ -279,8 +279,7 @@ class _Main_State extends State<Main_> {
     // request
     await dio
         .post("$PATH/data_update", data: FormData.fromMap({...output}))
-        .then((value) {
-          print(output);
+        .then((v) {
           snackbar_show(context: context, message: "$HEADER update successfully", color: Colors.green);
           Navigator.pop(context, output);
         })

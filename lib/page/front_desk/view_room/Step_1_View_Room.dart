@@ -14,7 +14,7 @@ import '../__Setup__.dart';
 import '../Schema.g.dart';
 import '../../room/Schema.g.dart' as room;
 
-import 'Step_2_Guest_Info.dart' as room_info;
+// import 'Step_2_Guest_Info.dart' as room_info;
 
 void main() {
   runApp(
@@ -77,7 +77,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Check In - Room", //
+          "Room - Status", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -114,7 +114,7 @@ class _Main_State extends State<Main_> {
                             mainAxisAlignment: .center,
                             crossAxisAlignment: .start,
                             children: [
-                              Text("Room ${room[ROOM_NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("Room ${room[ROOM_NUMBER]} (${room[ROOM_TYPE]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
                               Text("${room[PRICE_DAY]}\$/day | ${room[PRICE_3H]}\$/3h"),
                             ],
                           ),
@@ -126,43 +126,11 @@ class _Main_State extends State<Main_> {
                         ],
                       ),
                     ),
-                    onTap: () => on_selected(room),
+                    onTap: () {},
                   ),
 
                 //
-                if (room[STATUS] == "Occupied")
-                  InkWell(
-                    child: Container(
-                      height: 50,
-                      width: 600,
-                      padding: EdgeInsets.fromLTRB(8, 0, 12, 0),
-                      decoration: BoxDecoration(
-                        border: Border(top: BorderSide(color: Colors.black)),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.bed_outlined, color: Colors.red, size: 32), //
-                          SizedBox(width: 8),
-                          Column(
-                            mainAxisAlignment: .center,
-                            crossAxisAlignment: .start,
-                            children: [
-                              Text("Room ${room[ROOM_NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
-                              Text("${room[PRICE_DAY]}\$/day | ${room[PRICE_3H]}\$/3h"),
-                            ],
-                          ),
-                          Spacer(),
-                          Text(
-                            "${room[STATUS]}",
-                            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-                          ), //
-                        ],
-                      ),
-                    ),
-                  ),
-
-                //
-                if (room[STATUS] == "Maintenance")
+                if (room[STATUS] == "Pending Pay")
                   InkWell(
                     child: Container(
                       height: 50,
@@ -179,7 +147,7 @@ class _Main_State extends State<Main_> {
                             mainAxisAlignment: .center,
                             crossAxisAlignment: .start,
                             children: [
-                              Text("Room ${room[ROOM_NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("Room ${room[ROOM_NUMBER]} (${room[ROOM_TYPE]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
                               Text("${room[PRICE_DAY]}\$/day | ${room[PRICE_3H]}\$/3h"),
                             ],
                           ),
@@ -191,10 +159,77 @@ class _Main_State extends State<Main_> {
                         ],
                       ),
                     ),
+                    onTap: () {},
                   ),
 
                 //
-                if (room[STATUS] == "Dirty")
+                if (room[STATUS] == "Pending Leave")
+                  InkWell(
+                    child: Container(
+                      height: 50,
+                      width: 600,
+                      padding: EdgeInsets.fromLTRB(8, 0, 12, 0),
+                      decoration: BoxDecoration(
+                        border: Border(top: BorderSide(color: Colors.black)),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.bed_outlined, color: Colors.red, size: 32), //
+                          SizedBox(width: 8),
+                          Column(
+                            mainAxisAlignment: .center,
+                            crossAxisAlignment: .start,
+                            children: [
+                              Text("Room ${room[ROOM_NUMBER]} (${room[ROOM_TYPE]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("${room[PRICE_DAY]}\$/day | ${room[PRICE_3H]}\$/3h"),
+                            ],
+                          ),
+                          Spacer(),
+                          Text(
+                            "${room[STATUS]}",
+                            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                          ), //
+                        ],
+                      ),
+                    ),
+                    onTap: () {},
+                  ),
+
+                //
+                if (room[STATUS] == "Pending Clean")
+                  InkWell(
+                    child: Container(
+                      height: 50,
+                      width: 600,
+                      padding: EdgeInsets.fromLTRB(8, 0, 12, 0),
+                      decoration: BoxDecoration(
+                        border: Border(top: BorderSide(color: Colors.black)),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.bed_outlined, color: Colors.teal, size: 32), //
+                          SizedBox(width: 8),
+                          Column(
+                            mainAxisAlignment: .center,
+                            crossAxisAlignment: .start,
+                            children: [
+                              Text("Room ${room[ROOM_NUMBER]} (${room[ROOM_TYPE]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("${room[PRICE_DAY]}\$/day | ${room[PRICE_3H]}\$/3h"),
+                            ],
+                          ),
+                          Spacer(),
+                          Text(
+                            "${room[STATUS]}",
+                            style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),
+                          ), //
+                        ],
+                      ),
+                    ),
+                    onTap: () {},
+                  ),
+
+                //
+                if (room[STATUS] == "Pending Fix")
                   InkWell(
                     child: Container(
                       height: 50,
@@ -211,8 +246,8 @@ class _Main_State extends State<Main_> {
                             mainAxisAlignment: .center,
                             crossAxisAlignment: .start,
                             children: [
-                              Text("Room ${room[ROOM_NUMBER]} (${room["room_type"]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
-                              Text("${room["price_per_day"]}\$/day | ${room["price_per_3_hour"]}\$/3h"),
+                              Text("Room ${room[ROOM_NUMBER]} (${room[ROOM_TYPE]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("${room[PRICE_DAY]}\$/day | ${room[PRICE_3H]}\$/3h"),
                             ],
                           ),
                           Spacer(),
@@ -223,39 +258,23 @@ class _Main_State extends State<Main_> {
                         ],
                       ),
                     ),
+                    onTap: () {},
                   ),
               ],
+
+              Container(
+                width: 600,
+                padding: EdgeInsets.fromLTRB(8, 0, 12, 0),
+                decoration: BoxDecoration(
+                  border: Border(top: BorderSide(color: Colors.black)),
+                ),
+              ),
+
+              SizedBox(height: 50),
             ],
           ),
         ),
       ),
     );
-  }
-
-  void on_selected(room) {
-    //
-
-    var info = room_infos.firstWhere((e) => e[ROOM_NUMBER] == room[ROOM_NUMBER]);
-
-    // print(info);
-
-    for (var s in schema) {
-      if (s["key"] == ROOM_NUMBER) s["value"] = info[ROOM_NUMBER];
-      if (s["key"] == ROOM_TYPE) s["value"] = info[ROOM_TYPE];
-      if (s["key"] == PRICE_DAY) s["value"] = info[PRICE_DAY];
-      if (s["key"] == PRICE_3H) s["value"] = info[PRICE_3H];
-      if (s["key"] == "room_id") s["value"] = info["id"];
-    }
-
-    // for (var s in schema) {
-    //   print(s);
-    // }
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => room_info.Main_()),
-    );
-
-    setState(() {});
   }
 }

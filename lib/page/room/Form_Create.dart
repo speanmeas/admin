@@ -104,7 +104,7 @@ class _Main_State extends State<Main_> {
 
                 // status
                 if (s["key"] == "room_status") {
-                  List<String> room_types = ["Available", "Occupied", "Dirty", "Maintenance"];
+                  List<String> room_status = ["Available", "Checked-in", "Paid", "Checked-out", "Maintenance"];
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -115,7 +115,7 @@ class _Main_State extends State<Main_> {
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
-                      items: room_types.map((i) {
+                      items: room_status.map((i) {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
@@ -283,7 +283,8 @@ class _Main_State extends State<Main_> {
     await dio
         .post("$PATH/data_create", data: FormData.fromMap({...output}))
         .then((r) {
-          Navigator.pop(context, true);
+          output["id"] = r.data["_id"];
+          Navigator.pop(context, output);
           snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
         })
         .catchError((error) {

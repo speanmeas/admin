@@ -12,10 +12,10 @@ import 'package:speanmeas/theme/Theme_Data.dart';
 import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import '../__Setup__.dart';
-import '../Schema.g.dart';
+import '../../__Setup__.dart';
+import '../../Schema.g.dart';
 
-// import 'Step_2a_Receipt.dart';
+import 'Step_2a_Receipt.dart' as receipt;
 
 void main() {
   runApp(const Main());
@@ -51,14 +51,16 @@ class _Main_State extends State<Main_> {
     init();
   }
 
-  void init() async {}
+  void init() async {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Payment - Summary", //
+          "Check Out - Summary", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -70,10 +72,10 @@ class _Main_State extends State<Main_> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: OutlinedButton.icon(
-              icon: Icon(Icons.payment_outlined),
-              label: Text("Paid"),
+              icon: Icon(Icons.logout_outlined),
+              label: Text("Check Out"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: on_paid, //
+              onPressed: on_check_out, //
             ),
           ),
         ],
@@ -240,20 +242,20 @@ class _Main_State extends State<Main_> {
 
   void on_print() {
     //
-    // Navigator.push(
-    //   context, //
-    //   MaterialPageRoute(builder: (_) => Step_2a_Receipt_()),
-    // );
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (_) => receipt.Main_()),
+    );
   }
 
-  void on_paid() async {
+  void on_check_out() async {
+    //
+    // todo: save guest info + stay detail + payment to database
+
     Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
 
     await dio
-        .post(
-          '$PATH/data_update', //
-          data: FormData.fromMap({...output}),
-        )
+        .post('$PATH/data_update', data: FormData.fromMap({...output}))
         .then((r) {
           snackbar_show(context: context, message: "$HEADER update successfully.", color: Colors.green);
           Navigator.pop(context);
@@ -262,5 +264,15 @@ class _Main_State extends State<Main_> {
         .catchError((error) {
           snackbar_show(context: context, message: "$HEADER update failed.", color: Colors.red);
         });
+
+    var room_id = schema.firstWhere((s) => s["key"] == "room_id")["value"];
+
+    await dio.post(
+      '/room/data_update',
+      data: FormData.fromMap({
+        "id": room_id, //
+        "room_status": "Dirty",
+      }),
+    );
   }
 }

@@ -112,19 +112,23 @@ class _Main_State extends State<Main_> {
 
                 // status
                 if (s["key"] == "room_status") {
-                  List<String> room_types = ["Available", "Occupied", "Dirty", "Maintenance"];
+                  List<String> room_status = ["Available", "Pending Pay", "Pending Leave", "Pending Clean", "Pending Fix"];
+                  String? init;
+                  if (output[s["key"]] != null && room_status.contains(output[s["key"]].toString())) {
+                    init = output[s["key"]].toString();
+                  }
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
-                      initialValue: output[s["key"]]?.toString() ?? "",
+                      initialValue: init,
                       decoration: InputDecoration(
                         labelText: s['title'] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
-                      items: room_types.map((i) {
+                      items: room_status.map((i) {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
@@ -332,7 +336,6 @@ class _Main_State extends State<Main_> {
     await dio
         .post("$PATH/data_update", data: FormData.fromMap({...output}))
         .then((value) {
-          print(output);
           snackbar_show(context: context, message: "$HEADER update successfully", color: Colors.green);
           Navigator.pop(context, output);
         })

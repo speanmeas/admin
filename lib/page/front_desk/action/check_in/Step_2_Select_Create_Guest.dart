@@ -12,13 +12,13 @@ import 'package:speanmeas/utility/Dio.dart';
 import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 
-import '../__Setup__.dart';
-import '../Schema.g.dart';
+import '../../__Setup__.dart';
+import '../../Schema.g.dart';
 
-import '../../guest/Form_Create.dart' as guest;
-import '../../guest/Schema.g.dart' as guest_schema;
+import '../../../guest/Form_Create.dart' as guest;
+import '../../../guest/Schema.g.dart' as guest_schema;
 
-import 'Step_3_Staying_Info.dart' as staying_info;
+import 'Step_3_Staying_Info.dart' as step_3;
 
 void main() {
   runApp(
@@ -79,7 +79,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Check In - Guest", //
+          "2. Check In - Guest", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -321,23 +321,6 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  void on_next() async {
-    //
-
-    for (var s in schema) {
-      if (s["key"] == NAME) s["value"] = selected_guest[NAME];
-      if (s["key"] == GENDER) s["value"] = selected_guest[GENDER];
-      if (s["key"] == PHONE_NUMBER) s["value"] = selected_guest[PHONE_NUMBER];
-      if (s["key"] == NATIONALITY) s["value"] = selected_guest[NATIONALITY];
-      if (s["key"] == "guest_id") s["value"] = selected_guest["id"];
-    }
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => staying_info.Main_()),
-    );
-  }
-
   void on_add_new() async {
     Navigator.push(
       context, //
@@ -349,5 +332,22 @@ class _Main_State extends State<Main_> {
       selected_guest = value;
       setState(() {});
     });
+  }
+
+  void on_next() async {
+    //
+
+    // for (var s in schema) {
+    //   if (s["key"] == NAME) s["value"] = selected_guest[NAME];
+    //   if (s["key"] == GENDER) s["value"] = selected_guest[GENDER];
+    //   if (s["key"] == PHONE_NUMBER) s["value"] = selected_guest[PHONE_NUMBER];
+    //   if (s["key"] == NATIONALITY) s["value"] = selected_guest[NATIONALITY];
+    //   if (s["key"] == "guest_id") s["value"] = selected_guest["id"];
+    // }
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => step_3.Main_()),
+    );
   }
 }

@@ -12,6 +12,6 @@ List<Map<String, dynamic>> schema = [
   {
     "key": "nationality_note",
     "type": "string",
-    "title": "Note"
+    "title": "Nationality Note"
   }
 ];

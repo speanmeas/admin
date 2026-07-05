@@ -1,6 +1,7 @@
 import "dart:convert";
 
 import "package:dio/dio.dart";
+import "package:flutter/foundation.dart";
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -8,6 +9,7 @@ import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/Global.dart";
 import "package:speanmeas/Environment.dart";
+import "package:speanmeas/page/main/User.g.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/layout/Layout.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
@@ -25,6 +27,15 @@ import "Form_Create.dart" as create;
 import "Form_Read.dart" as read;
 import "Form_Update.dart" as update;
 import "Form_Delete.dart" as delete;
+
+import "action/check_in/Step_1_Select_Room.dart" as check_in;
+import "action/payment/Step_1_Select_Room.dart" as payment;
+import "action/check_out/Step_1_Select_Room.dart" as check_out;
+import "action/clean/Step_1_Select_Room.dart" as clean;
+
+import "view_room/Step_1_View_Room.dart" as view_room;
+import "action/broke/Step_1_Select_Room.dart" as broke;
+import "action/fix/Step_1_Select_Room.dart" as fix;
 
 void main() {
   runApp(
@@ -261,16 +272,148 @@ class _Main_State extends State<Main_> {
               Expanded(
                 child: Wrap(
                   children: [
-                    // create
+                    // check in
+                    if (user["user_is_admin"] == true || user["user_is_manager"] == true || user["user_is_receptionist"] == true || kDebugMode)
+                      Container(
+                        height: 32,
+                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.login), //
+                          label: Text("Check In"),
+                          onPressed: on_check_in,
+                        ),
+                      ),
+
+                    // payment
+                    if (user["user_is_admin"] == true || user["user_is_manager"] == true || user["user_is_receptionist"] == true || kDebugMode)
+                      Container(
+                        height: 32,
+                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.payment), //
+                          label: Text("Payment"),
+                          onPressed: () {
+                            Navigator.push(
+                              context, //
+                              MaterialPageRoute(builder: (context) => payment.Main_()),
+                            ).then((v) {});
+                          },
+                        ),
+                      ),
+
+                    // check out
+                    if (user["user_is_admin"] == true || user["user_is_manager"] == true || user["user_is_receptionist"] == true || kDebugMode)
+                      Container(
+                        height: 32,
+                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.logout), //
+                          label: Text("Check Out"),
+                          onPressed: () {
+                            Navigator.push(
+                              context, //
+                              MaterialPageRoute(builder: (context) => check_out.Main_()),
+                            ).then((v) {});
+                          },
+                        ),
+                      ),
+
+                    // clean
                     Container(
                       height: 32,
                       margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
                       child: OutlinedButton.icon(
-                        icon: Icon(Icons.add), //
-                        label: Text("Create"),
-                        onPressed: on_create,
+                        icon: Icon(Icons.cleaning_services), //
+                        label: Text("Clean"),
+                        onPressed: () {
+                          Navigator.push(
+                            context, //
+                            MaterialPageRoute(builder: (context) => clean.Main_()),
+                          ).then((v) {});
+                        },
                       ),
                     ),
+
+                    // broke
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.bug_report_outlined), //
+                        label: Text("Broke"),
+                        onPressed: () {
+                          Navigator.push(
+                            context, //
+                            MaterialPageRoute(builder: (context) => broke.Main_()),
+                          ).then((v) {});
+                        },
+                      ),
+                    ),
+
+                    // fix
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.build_outlined), //
+                        label: Text("Fix"),
+                        onPressed: () {
+                          Navigator.push(
+                            context, //
+                            MaterialPageRoute(builder: (context) => fix.Main_()),
+                          ).then((v) {});
+                        },
+                      ),
+                    ),
+
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.hotel_outlined), //
+                        label: Text("Status"),
+                        onPressed: () {
+                          Navigator.push(
+                            context, //
+                            MaterialPageRoute(builder: (context) => view_room.Main_()),
+                          ).then((v) {});
+                        },
+                      ),
+                    ),
+
+                    // change room
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.swap_horiz), //
+                        label: Text("Change Room"),
+                        onPressed: () {},
+                      ),
+                    ),
+
+                    // cancel
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.cancel_outlined), //
+                        label: Text("Cancel"),
+                        onPressed: () {},
+                      ),
+                    ),
+
+                    // update guest info
+                    if (user["user_is_admin"] == true || user["user_is_manager"] == true || user["user_is_receptionist"] == true || kDebugMode)
+                      Container(
+                        height: 32,
+                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.edit_outlined), //
+                          label: Text("Update Guest"),
+                          onPressed: () {},
+                        ),
+                      ),
 
                     // read
                     Container(
@@ -284,26 +427,28 @@ class _Main_State extends State<Main_> {
                     ),
 
                     // update
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.edit_outlined), //
-                        label: Text("Update"),
-                        onPressed: on_update,
+                    if (user["user_is_admin"] == true || user["user_is_manager"] == true || kDebugMode)
+                      Container(
+                        height: 32,
+                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.edit_outlined), //
+                          label: Text("Update"),
+                          onPressed: on_update,
+                        ),
                       ),
-                    ),
 
                     // delete
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.delete_outline, color: Colors.red), //
-                        label: Text("Delete", style: TextStyle(color: Colors.red)),
-                        onPressed: on_delete,
+                    if (user["user_is_admin"] == true || user["user_is_manager"] == true || kDebugMode)
+                      Container(
+                        height: 32,
+                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.delete_outline, color: Colors.red), //
+                          label: Text("Delete", style: TextStyle(color: Colors.red)),
+                          onPressed: on_delete,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -489,7 +634,72 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  void on_create() {
+  void on_check_in() {
+    //
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => check_in.Main_()),
+    ).then((v) {
+      //
+      if (v == null) {
+        // clear schema values
+        for (var s in schema) s["value"] = null;
+        return;
+      }
+
+      state_manager?.prependRows([
+        PlutoRow(
+          cells: {
+            'id': PlutoCell(value: v['id'].toString()),
+            for (var s in schema)
+              if (s['type'] == 'date-time') //
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+
+                    final dt = DateTime.tryParse(v[s['key']].toString());
+                    if (dt == null) return '';
+
+                    // default
+                    return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+                  })(),
+                )
+              else if (s['type'] == 'boolean') //
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+                    if (v[s['key']] == true) return 'Yes';
+
+                    // default
+                    return 'No';
+                  })(),
+                )
+              else
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+
+                    // default
+                    return v[s['key']].toString();
+                  })(),
+                ),
+          },
+        ),
+      ]);
+
+      // refresh total row count
+      total_row = state_manager!.rows.length;
+      setState(() {});
+
+      // scroll to top
+      state_manager?.scroll.vertical?.jumpTo(0);
+
+      // clear schema values
+      for (var s in schema) s["value"] = null;
+    });
+  }
+
+void on_create() {
     //
     Navigator.push(
       context, //
@@ -498,11 +708,61 @@ class _Main_State extends State<Main_> {
       //
       if (v == null) return;
 
-      //
-      init();
+      // clear sort
+      final sorted_column = state_manager?.getSortedColumn;
+      if (sorted_column != null) {
+        state_manager?.sortBySortIdx(sorted_column);
+      }
+
+      // add new row to the top
+      state_manager?.prependRows([
+        PlutoRow(
+          cells: {
+            'id': PlutoCell(value: v['id'].toString()),
+            for (var s in schema)
+              if (s['type'] == 'date-time') //
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+
+                    final dt = DateTime.tryParse(v[s['key']].toString());
+                    if (dt == null) return '';
+
+                    // default
+                    return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+                  })(),
+                )
+              else if (s['type'] == 'boolean') //
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+                    if (v[s['key']] == true) return 'Yes';
+
+                    // default
+                    return 'No';
+                  })(),
+                )
+              else
+                s['key']!: PlutoCell(
+                  value: (() {
+                    if (v[s['key']] == null) return '';
+
+                    // default
+                    return v[s['key']].toString();
+                  })(),
+                ),
+          },
+        ),
+      ]);
+
+      // refresh total row count
+      total_row = state_manager!.rows.length;
+      setState(() {});
+
+      // scroll to top
+      state_manager?.scroll.vertical?.jumpTo(0);
     });
   }
-
   void on_read() {
     //
     if (state_manager?.currentRow == null) {
@@ -542,8 +802,41 @@ class _Main_State extends State<Main_> {
       //
       if (v == null) return;
 
-      //
-      init();
+      final row = state_manager?.currentRow;
+
+      for (var s in schema) {
+        final key = s['key'];
+        if (key == null) continue;
+
+        if (s['type'] == 'date-time') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            final dt = DateTime.tryParse(v[key].toString());
+            if (dt == null) return '';
+
+            // default
+            return DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toLocal());
+          })();
+        } else if (s['type'] == 'boolean') {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+            if (v[key] == true) return 'Yes';
+
+            // default
+            return 'No';
+          })();
+        } else {
+          row?.cells[key]?.value = (() {
+            if (v[key] == null) return '';
+
+            // default
+            return v[key].toString();
+          })();
+        }
+      }
+
+      state_manager?.notifyListeners();
     });
   }
 

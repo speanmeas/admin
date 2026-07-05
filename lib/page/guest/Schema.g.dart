@@ -7,26 +7,26 @@ List<Map<String, dynamic>> schema = [
   {
     "key": "guest_name",
     "type": "string",
-    "title": "Name"
+    "title": "Guest Name"
   },
   {
     "key": "guest_gender",
     "type": "string",
-    "title": "Gender"
+    "title": "Guest Gender"
   },
   {
     "key": "guest_phone",
     "type": "string",
-    "title": "Phone Number"
+    "title": "Guest Phone Number"
   },
   {
     "key": "guest_nationality",
     "type": "string",
-    "title": "Nationality"
+    "title": "Guest Nationality"
   },
   {
     "key": "guest_note",
     "type": "string",
-    "title": "Note"
+    "title": "Guest Note"
   }
 ];
