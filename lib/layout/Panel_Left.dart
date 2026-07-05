@@ -1,13 +1,13 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import "package:flutter/foundation.dart";
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Secure_Storage.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/utility/Secure_Storage.dart";
 
-import 'package:speanmeas/page/main/User.g.dart';
+import "package:speanmeas/page/main/User.g.dart";
 
 void main() {
   runApp(
@@ -24,7 +24,7 @@ class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Demo',
+      title: "Demo",
       theme: Theme_Data(),
       home: Scaffold(body: const Panel_Left_()),
     );
@@ -76,7 +76,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
         // Reports
         ExpansionTile(
           leading: Icon(Icons.assessment_outlined), //
-          title: Text('Reports'),
+          title: Text("Reports"),
           children: [
             list_tile_l2(name: "Daily Report", icon: Icons.assessment_outlined),
             list_tile_l2(name: "Weekly Report", icon: Icons.assessment_outlined),
@@ -89,7 +89,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
         if (user["user_is_admin"] == true)
           ExpansionTile(
             leading: Icon(Icons.model_training_outlined), //
-            title: Text('Demos'),
+            title: Text("Demos"),
             initiallyExpanded: true,
             children: [
               list_tile_l2(name: "Demo", icon: Icons.model_training_outlined),

@@ -195,7 +195,7 @@ class _Main_State extends State<Main_> {
                   String? value = s["value"]?.toString() ?? "";
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
-                    if (tmp != null) value = DateFormat("yyyy-MM-dd HH:mm:ss").format(tmp.toLocal());
+                    if (tmp != null) value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
                   }
                   //
                   DateTime? initial_datetime = DateTime.tryParse(value);
@@ -219,7 +219,7 @@ class _Main_State extends State<Main_> {
                           initial_datetime: initial_datetime,
                         );
                         if (datetime == null) return;
-                        s["value"] = DateFormat("yyyy-MM-dd HH:mm:ss").format(datetime);
+                        s["value"] = DateFormat(DATE_FORMAT).format(datetime);
                         setState(() {});
                       }, //,
                     ),

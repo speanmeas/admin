@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
 
-import 'Panel_Body.dart';
-import 'Panel_Left.dart';
-import 'Panel_Top.dart';
+import "Panel_Body.dart";
+import "Panel_Left.dart";
+import "Panel_Top.dart";
 
 void main() {
   runApp(
@@ -24,7 +24,7 @@ class Layout_Dashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Demo', //
+      title: "Demo", //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
       home: Layout_(),

@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 ThemeData Theme_Data() {
   return ThemeData(
     //
     //
-    fontFamily: 'NotoSansKhmer',
+    fontFamily: "NotoSansKhmer",
     //
     //
     colorScheme: ColorScheme.fromSeed(

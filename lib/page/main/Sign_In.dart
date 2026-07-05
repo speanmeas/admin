@@ -1,22 +1,22 @@
-import 'dart:convert';
+import "dart:convert";
 
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+import "package:provider/provider.dart";
+import "package:package_info_plus/package_info_plus.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
 
-import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/utility/Secure_Storage.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/utility/Secure_Storage.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import 'package:speanmeas/layout/Layout.dart' as layout;
+import "package:speanmeas/layout/Layout.dart" as layout;
 
-import 'User.g.dart';
+import "User.g.dart";
 
 void main() {
   runApp(
@@ -71,7 +71,7 @@ class _Main_State extends State<Main_> {
               Container(
                 height: 160, //
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: Image.asset('asset/logo.png'),
+                child: Image.asset("asset/logo.png"),
               ),
 
               Container(
@@ -79,7 +79,7 @@ class _Main_State extends State<Main_> {
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 alignment: Alignment.center,
                 child: Text(
-                  'Welcome to Spean Meas Hotel', //
+                  "Welcome to Spean Meas Hotel", //
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -101,7 +101,7 @@ class _Main_State extends State<Main_> {
                   controller: controller_username,
                   autofocus: true,
                   decoration: InputDecoration(
-                    labelText: 'Username:', //
+                    labelText: "Username:", //
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
@@ -115,7 +115,7 @@ class _Main_State extends State<Main_> {
                 child: TextField(
                   controller: controller_password,
                   decoration: InputDecoration(
-                    labelText: 'Password:', //
+                    labelText: "Password:", //
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     suffixIcon: InkWell(
@@ -132,7 +132,7 @@ class _Main_State extends State<Main_> {
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: OutlinedButton.icon(
                   icon: Icon(Icons.login), //
-                  label: Text('Signin'),
+                  label: Text("Signin"),
                   onPressed: on_sign_in,
                 ),
               ),
@@ -157,7 +157,7 @@ class _Main_State extends State<Main_> {
         )
         .then((r) async {
           await secure_storage.write(key: "access_token", value: r.data[0]["user_access_token"]);
-          dio.options.headers['Authorization'] = 'Bearer ${r.data[0]["user_access_token"]}';
+          dio.options.headers["Authorization"] = "Bearer ${r.data[0]["user_access_token"]}";
 
           //
           for (var k in user.keys) user[k] = r.data[0][k];

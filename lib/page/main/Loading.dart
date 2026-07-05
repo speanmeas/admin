@@ -1,22 +1,22 @@
-import 'dart:convert';
+import "dart:convert";
 
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+import "package:provider/provider.dart";
+import "package:package_info_plus/package_info_plus.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
 
-import 'package:speanmeas/layout/Layout.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/utility/Secure_Storage.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/layout/Layout.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/utility/Secure_Storage.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import 'Sign_In.dart' as sign_in;
-import 'User.g.dart';
+import "Sign_In.dart" as sign_in;
+import "User.g.dart";
 
 void main() {
   runApp(
@@ -69,7 +69,7 @@ class _Loading_State extends State<Loading_> {
   }
 
   void try_access_token() async {
-    String? access_token = await secure_storage.read(key: 'access_token');
+    String? access_token = await secure_storage.read(key: "access_token");
     // print(access_token);
 
     if (access_token == null) {
@@ -80,7 +80,7 @@ class _Loading_State extends State<Loading_> {
       return;
     }
 
-    dio.options.headers['Authorization'] = 'Bearer $access_token';
+    dio.options.headers["Authorization"] = "Bearer $access_token";
 
     await dio
         .post(
@@ -102,7 +102,7 @@ class _Loading_State extends State<Loading_> {
           );
         })
         .catchError((e) async {
-          await secure_storage.delete(key: 'access_token');
+          await secure_storage.delete(key: "access_token");
           Navigator.pushReplacement(
             context, //
             MaterialPageRoute(builder: (context) => sign_in.Main_()),

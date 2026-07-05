@@ -1,15 +1,15 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
 
-import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Dio.dart';
+import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/utility/Dio.dart";
 
-import '../__Setup__.dart';
-import '../Schema.g.dart';
+import "../__Setup__.dart";
+import "../Schema.g.dart";
 
 void main() {
   runApp(
@@ -32,7 +32,7 @@ class Main extends StatelessWidget {
     "datetime_2": "2024-02-02T00:00:00Z",
     "boolean_1": true,
     "boolean_2": false,
-    "note": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets.",
+    "note": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry",
   };
 
   @override
@@ -105,7 +105,7 @@ class _Form_Read_State extends State<Form_Read_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -129,7 +129,7 @@ class _Form_Read_State extends State<Form_Read_> {
                     child: Row(
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
@@ -155,7 +155,7 @@ class _Form_Read_State extends State<Form_Read_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -182,7 +182,7 @@ class _Form_Read_State extends State<Form_Read_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -210,7 +210,7 @@ class _Form_Read_State extends State<Form_Read_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -233,7 +233,7 @@ class _Form_Read_State extends State<Form_Read_> {
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
                     if (tmp != null) {
-                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                      value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
                     }
                   }
                   return Container(
@@ -243,7 +243,7 @@ class _Form_Read_State extends State<Form_Read_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -297,7 +297,7 @@ class _Form_Read_State extends State<Form_Read_> {
               //                 child: InkWell(
               //                   onTap: () {
               //                     // todo: Handle image tap
-              //                     print('Image tapped: $i');
+              //                     print("Image tapped: $i");
               //                   },
               //                   child: output["images"] != null && output["images"][i.toString()] != null
               //                       ? Image.network(

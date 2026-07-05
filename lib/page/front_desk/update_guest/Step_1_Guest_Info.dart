@@ -1,26 +1,26 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:intl/intl.dart";
+import "package:provider/provider.dart";
+import "package:flutter_typeahead/flutter_typeahead.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
 
-import 'package:speanmeas/theme/Theme_Data.dart';
+import "package:speanmeas/theme/Theme_Data.dart";
 
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/widget/Datetime_Picker.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/widget/Datetime_Picker.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import '../__Setup__.dart';
-import '../Schema.g.dart';
+import "../__Setup__.dart";
+import "../Schema.g.dart";
 
-import '../../guest/Form_Create.dart' as guest;
-import '../../guest/Schema.g.dart' as guest_schema;
+import "../../guest/Form_Create.dart" as guest;
+import "../../guest/Schema.g.dart" as guest_schema;
 
-import 'Step_2_Summary.dart' as summary;
+import "Step_2_Summary.dart" as summary;
 
 void main() {
   runApp(
@@ -120,7 +120,7 @@ class _Main_State extends State<Main_> {
                       List<String> option_datas = [];
                       await dio
                           .post(
-                            '/guest/data_read', //
+                            "/guest/data_read", //
                             data: FormData.fromMap({
                               "key": key, //
                               "query": query, //
@@ -147,7 +147,7 @@ class _Main_State extends State<Main_> {
                         controller: controller,
                         focusNode: focusNode,
                         keyboardType: TextInputType.numberWithOptions(decimal: false),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
                         decoration: InputDecoration(
                           labelText: "Phone Number:", //
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -197,7 +197,7 @@ class _Main_State extends State<Main_> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(row['title'] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(row["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(
                             value,
@@ -223,7 +223,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -252,7 +252,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -276,7 +276,7 @@ class _Main_State extends State<Main_> {
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
                     if (tmp != null) {
-                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                      value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
                     }
                   }
                   return Container(
@@ -286,7 +286,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(

@@ -1,22 +1,21 @@
-import 'dart:convert';
+import "dart:convert";
 
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+import "package:provider/provider.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/layout/Layout.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/layout/Layout.dart";
 
-import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import '../../__Setup__.dart';
-import '../../Schema.g.dart';
-
-import 'Step_5a_Receipt.dart' as receipt;
+import "../../__Setup__.dart";
+import "Schema.g.dart";
+import "Step_5a_Receipt.dart" as receipt;
 
 void main() {
   runApp(
@@ -105,7 +104,7 @@ class _Main_State extends State<Main_> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(row['title'] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(row["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(
                             value,
@@ -131,7 +130,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -160,7 +159,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -184,7 +183,7 @@ class _Main_State extends State<Main_> {
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
                     if (tmp != null) {
-                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                      value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
                     }
                   }
                   return Container(
@@ -194,7 +193,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -258,10 +257,10 @@ class _Main_State extends State<Main_> {
     output.remove("id"); // NOTE: remove id for create new record
 
     await dio
-        .post('$PATH/data_create', data: FormData.fromMap({...output}))
+        .post("/front_desk/data_create", data: FormData.fromMap({...output}))
         .then((r) {
           output["id"] = r.data["id"]; // NOTE: support to main table
-          snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
+          snackbar_show(context: context, message: "Create successfully.", color: Colors.green);
           Navigator.pop(context);
           Navigator.pop(context);
           Navigator.pop(context);
@@ -269,13 +268,13 @@ class _Main_State extends State<Main_> {
           Navigator.pop(context, output);
         })
         .catchError((error) {
-          snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
+          snackbar_show(context: context, message: "Create failed.", color: Colors.red);
         });
 
     var room_id = schema.firstWhere((s) => s["key"] == "room_id")["value"];
 
     await dio.post(
-      '/room/data_update',
+      "/room/data_update",
       data: FormData.fromMap({
         "id": room_id, //
         "room_status": "Occupied",

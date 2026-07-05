@@ -1,14 +1,14 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:speanmeas/Global.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/Global.dart";
 
-import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import '../__Setup__.dart';
-import '../Schema.g.dart';
+import "../__Setup__.dart";
+import "../Schema.g.dart";
 
 void main() {
   runApp(
@@ -102,7 +102,7 @@ class _Form_Delete_State extends State<Form_Delete_> {
     //
     await dio
         .post(
-          '$PATH/data_delete',
+          "$PATH/data_delete",
           data: FormData.fromMap({
             "id": widget.id, //
           }),

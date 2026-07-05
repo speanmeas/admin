@@ -210,7 +210,7 @@ class _Main_State extends State<Main_> {
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
                     if (tmp != null) {
-                      value = DateFormat("yyyy-MM-dd HH:mm:ss").format(tmp.toLocal());
+                      value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
                     }
                   }
                   return Container(

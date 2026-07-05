@@ -180,7 +180,7 @@ class _Main_State extends State<Main_> {
                       onTap: () async {
                         final DateTime? datetime = await datetime_picker(context);
                         if (datetime == null) return;
-                        output[s["key"]] = DateFormat("yyyy-MM-dd HH:mm:ss").format(datetime);
+                        output[s["key"]] = DateFormat(DATE_FORMAT).format(datetime);
                         setState(() {});
                       }, //,
                     ),
@@ -229,9 +229,6 @@ class _Main_State extends State<Main_> {
     //     }
     //   }
     // }
-
-    // prepare output
-    // Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
 
     // request
     await dio

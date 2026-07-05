@@ -1,15 +1,15 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:provider/provider.dart';
+import "package:flutter/foundation.dart";
+import "package:flutter/material.dart";
+import "package:package_info_plus/package_info_plus.dart";
+import "package:provider/provider.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/page/main/Profile.dart';
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/utility/Secure_Storage.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/page/main/Profile.dart";
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/utility/Secure_Storage.dart";
 
-import 'package:speanmeas/page/main/User.g.dart';
+import "package:speanmeas/page/main/User.g.dart";
 
 void main() {
   runApp(
@@ -69,7 +69,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
             width: 56,
             height: 32, //
             child: Image.asset(
-              'asset/logo.png', //
+              "asset/logo.png", //
               fit: BoxFit.contain,
             ),
           ),
@@ -96,7 +96,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
           // Notification Icon
           if (kDebugMode)
             Badge(
-              label: Text('3'), //
+              label: Text("3"), //
               offset: Offset(-4, 4),
               child: IconButton(
                 icon: Icon(Icons.notifications_outlined),
@@ -120,7 +120,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
                 border: Border.all(color: Colors.blue, width: 2),
               ),
               child: Text(
-                user["user_name"]!.substring(0, 1).toUpperCase() ?? '', //
+                user["user_name"]!.substring(0, 1).toUpperCase() ?? "", //
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),

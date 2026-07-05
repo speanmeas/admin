@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart';
-import 'package:speanmeas/Environment.dart';
+import "package:flutter/foundation.dart";
+import "package:speanmeas/Environment.dart";
 
 class Global extends ChangeNotifier {
   // singleton instance
@@ -7,7 +7,7 @@ class Global extends ChangeNotifier {
   Global._();
 
   // constants
-  String VERSION = '0.0.0+0';
+  String VERSION = "0.0.0+0";
   double RATE = 4000; // 1 USD = 4000 KHR
 
   // pages

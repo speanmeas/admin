@@ -203,7 +203,7 @@ class _Main_State extends State<Main_> {
                   if (output[s["key"]] != null) {
                     DateTime? tmp = DateTime.tryParse(output[s["key"]].toString());
                     if (tmp != null) {
-                      value = DateFormat("yyyy-MM-dd HH:mm:ss").format(tmp.toLocal());
+                      value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
                     }
                   }
                   DateTime init = DateTime.now();
@@ -226,7 +226,7 @@ class _Main_State extends State<Main_> {
                       onTap: () async {
                         DateTime? datetime = await datetime_picker(context, initial_datetime: init);
                         if (datetime == null) return;
-                        output[s["key"]] = DateFormat("yyyy-MM-dd HH:mm:ss").format(datetime);
+                        output[s["key"]] = DateFormat(DATE_FORMAT).format(datetime);
                         setState(() {});
                       }, //,
                     ),

@@ -1,21 +1,21 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:image_picker/image_picker.dart";
+import "package:intl/intl.dart";
+import "package:provider/provider.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/page/main/User.g.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/page/main/User.g.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
 
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/utility/Secure_Storage.dart';
-import 'package:speanmeas/widget/Datetime_Picker.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/utility/Secure_Storage.dart";
+import "package:speanmeas/widget/Datetime_Picker.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
 void main() {
   runApp(
@@ -52,7 +52,7 @@ class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
-    controller.text = user["user_phone"] ?? '';
+    controller.text = user["user_phone"] ?? "";
   }
 
   @override
@@ -82,7 +82,7 @@ class _Main_State extends State<Main_> {
                   controller: controller,
                   autofocus: true,
                   keyboardType: const TextInputType.numberWithOptions(decimal: false),
-                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9]"))],
                   decoration: InputDecoration(
                     labelText: "Phone Number:", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,

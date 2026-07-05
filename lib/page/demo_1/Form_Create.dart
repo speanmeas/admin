@@ -176,7 +176,7 @@ class _Main_State extends State<Main_> {
                       onTap: () async {
                         final DateTime? datetime = await datetime_picker(context);
                         if (datetime == null) return;
-                        row["value"] = DateFormat("yyyy-MM-dd HH:mm:ss").format(datetime);
+                        row["value"] = DateFormat(DATE_FORMAT).format(datetime);
                         setState(() {});
                       }, //,
                     ),

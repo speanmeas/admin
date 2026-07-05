@@ -1,20 +1,18 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:provider/provider.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/page/main/User.g.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/widget/Datetime_Picker.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/page/main/User.g.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/widget/Datetime_Picker.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import '../../__Setup__.dart';
-import '../../Schema.g.dart';
-
-import 'Step_5_Summary.dart' as step_5;
+import "Schema.g.dart";
+import "Step_5_Summary.dart" as step_5;
 
 void main() {
   runApp(
@@ -131,7 +129,7 @@ class _Main_State extends State<Main_> {
                 child: TextField(
                   controller: controller_price_usd,
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
                   decoration: InputDecoration(
                     labelText: "Price (USD):",
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -175,7 +173,7 @@ class _Main_State extends State<Main_> {
                       child: TextField(
                         controller: controller_paid_bank_usd,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9.]"))],
                         decoration: InputDecoration(
                           labelText: "Paid Bank (USD):",
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -194,7 +192,7 @@ class _Main_State extends State<Main_> {
                       child: TextField(
                         controller: controller_paid_bank_khr,
                         keyboardType: const TextInputType.numberWithOptions(decimal: false),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9]"))],
                         decoration: InputDecoration(
                           labelText: "Paid Bank (KHR):",
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -220,7 +218,7 @@ class _Main_State extends State<Main_> {
                       child: TextField(
                         controller: controller_paid_cash_usd,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9.]"))],
                         decoration: InputDecoration(
                           labelText: "Paid Cash (USD):",
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -239,7 +237,7 @@ class _Main_State extends State<Main_> {
                       child: TextField(
                         controller: controller_paid_cash_khr,
                         keyboardType: const TextInputType.numberWithOptions(decimal: false),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9]"))],
                         decoration: InputDecoration(
                           labelText: "Paid Cash (KHR):",
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -286,7 +284,7 @@ class _Main_State extends State<Main_> {
                       child: TextField(
                         controller: controller_return_usd,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9.]"))],
                         decoration: InputDecoration(
                           labelText: "Return (USD):",
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -305,7 +303,7 @@ class _Main_State extends State<Main_> {
                       child: TextField(
                         controller: controller_return_khr,
                         keyboardType: const TextInputType.numberWithOptions(decimal: false),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9]"))],
                         decoration: InputDecoration(
                           labelText: "Return (KHR):",
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -434,36 +432,36 @@ class _Main_State extends State<Main_> {
   void on_next() async {
     //
 
-    double paid_bank_usd = double.tryParse(controller_paid_bank_usd.text) ?? 0;
-    double paid_cash_usd = double.tryParse(controller_paid_cash_usd.text) ?? 0;
-    double paid_bank_khr = double.tryParse(controller_paid_bank_khr.text) ?? 0;
-    double paid_cash_khr = double.tryParse(controller_paid_cash_khr.text) ?? 0;
+    // double paid_bank_usd = double.tryParse(controller_paid_bank_usd.text) ?? 0;
+    // double paid_cash_usd = double.tryParse(controller_paid_cash_usd.text) ?? 0;
+    // double paid_bank_khr = double.tryParse(controller_paid_bank_khr.text) ?? 0;
+    // double paid_cash_khr = double.tryParse(controller_paid_cash_khr.text) ?? 0;
 
-    double return_usd = double.tryParse(controller_return_usd.text) ?? 0;
-    double return_khr = double.tryParse(controller_return_khr.text) ?? 0;
+    // double return_usd = double.tryParse(controller_return_usd.text) ?? 0;
+    // double return_khr = double.tryParse(controller_return_khr.text) ?? 0;
 
-    DateTime? get_paid_date;
-    if (get_paid_total_usd() > 0) {
-      if (get_ar_total_usd() == 0) {
-        get_paid_date = DateTime.now();
-      }
-    }
+    // DateTime? get_paid_date;
+    // if (get_paid_total_usd() > 0) {
+    //   if (get_ar_total_usd() == 0) {
+    //     get_paid_date = DateTime.now();
+    //   }
+    // }
 
-    for (var s in schema) {
-      if (s["key"] == PRICE_TOTAL) s["value"] = get_price_total_usd();
-      if (s["key"] == PAID_BANK_USD) s["value"] = paid_bank_usd == 0 ? null : paid_bank_usd;
-      if (s["key"] == PAID_BANK_KHR) s["value"] = paid_bank_khr == 0 ? null : paid_bank_khr;
-      if (s["key"] == PAID_CASH_USD) s["value"] = paid_cash_usd == 0 ? null : paid_cash_usd;
-      if (s["key"] == PAID_CASH_KHR) s["value"] = paid_cash_khr == 0 ? null : paid_cash_khr;
-      if (s["key"] == PAID_TOTAL_USD) s["value"] = get_paid_total_usd();
-      if (s["key"] == RETURN_USD) s["value"] = return_usd == 0 ? null : return_usd;
-      if (s["key"] == RETURN_KHR) s["value"] = return_khr == 0 ? null : return_khr;
-      if (s["key"] == RETURN_TOTAL_USD) s["value"] = get_return_total_usd();
-      if (s["key"] == AR_TOTAL_USD) s["value"] = get_ar_total_usd();
-      if (s["key"] == GET_PAID_DATE && get_paid_date != null) s["value"] = get_paid_date.toIso8601String();
-      if (s["key"] == GET_PAID_BY && get_paid_date != null) s["value"] = user["full_name"]!;
-      if (s["key"] == GET_PAID_BY_ID && get_paid_date != null) s["value"] = user["_id"]!;
-    }
+    // for (var s in schema) {
+    //   if (s["key"] == PRICE_TOTAL) s["value"] = get_price_total_usd();
+    //   if (s["key"] == PAID_BANK_USD) s["value"] = paid_bank_usd == 0 ? null : paid_bank_usd;
+    //   if (s["key"] == PAID_BANK_KHR) s["value"] = paid_bank_khr == 0 ? null : paid_bank_khr;
+    //   if (s["key"] == PAID_CASH_USD) s["value"] = paid_cash_usd == 0 ? null : paid_cash_usd;
+    //   if (s["key"] == PAID_CASH_KHR) s["value"] = paid_cash_khr == 0 ? null : paid_cash_khr;
+    //   if (s["key"] == PAID_TOTAL_USD) s["value"] = get_paid_total_usd();
+    //   if (s["key"] == RETURN_USD) s["value"] = return_usd == 0 ? null : return_usd;
+    //   if (s["key"] == RETURN_KHR) s["value"] = return_khr == 0 ? null : return_khr;
+    //   if (s["key"] == RETURN_TOTAL_USD) s["value"] = get_return_total_usd();
+    //   if (s["key"] == AR_TOTAL_USD) s["value"] = get_ar_total_usd();
+    //   if (s["key"] == GET_PAID_DATE && get_paid_date != null) s["value"] = get_paid_date.toIso8601String();
+    //   if (s["key"] == GET_PAID_BY && get_paid_date != null) s["value"] = user["full_name"]!;
+    //   if (s["key"] == GET_PAID_BY_ID && get_paid_date != null) s["value"] = user["_id"]!;
+    // }
 
     Navigator.push(
       context, //

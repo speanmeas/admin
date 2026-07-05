@@ -56,13 +56,13 @@ class _Main_State extends State<Main_> {
   void initState() {
     super.initState();
     output["guest_nationality"] = "Cambodian";
-    controller_nationality.text = output["guest_nationality"]?.toString() ?? '';
+    controller_nationality.text = output["guest_nationality"]?.toString() ?? "";
     init();
   }
 
   void init() async {
     await dio
-        .post('/nationality/data_read', data: FormData.fromMap({}))
+        .post("/nationality/data_read", data: FormData.fromMap({}))
         .then((r) {
           option_nationalities = List<String>.from(r.data.map((e) => e["nationality"]));
           option_nationalities.sort((a, b) => a.compareTo(b));
@@ -116,7 +116,7 @@ class _Main_State extends State<Main_> {
                           controller: controller,
                           focusNode: focusNode,
                           decoration: InputDecoration(
-                            labelText: s['title'] + ":",
+                            labelText: s["title"] + ":",
                             labelStyle: TextStyle(fontWeight: FontWeight.bold),
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             suffixIcon: Padding(
@@ -149,7 +149,7 @@ class _Main_State extends State<Main_> {
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        labelText: s['title'] + ":",
+                        labelText: s["title"] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -266,7 +266,7 @@ class _Main_State extends State<Main_> {
                       onTap: () async {
                         final DateTime? datetime = await datetime_picker(context);
                         if (datetime == null) return;
-                        output[s["key"]] = DateFormat("yyyy-MM-dd HH:mm:ss").format(datetime);
+                        output[s["key"]] = DateFormat(DATE_FORMAT).format(datetime);
                         setState(() {});
                       }, //,
                     ),
@@ -315,9 +315,6 @@ class _Main_State extends State<Main_> {
     //     }
     //   }
     // }
-
-    // prepare output
-    // Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
 
     // request
     await dio

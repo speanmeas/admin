@@ -1,22 +1,22 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:intl/intl.dart";
+import "package:provider/provider.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
 
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/widget/Datetime_Picker.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/widget/Datetime_Picker.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import '../../demo_1b/__Setup__.dart';
-import '../../demo_1b/Schema.g.dart';
+import "../../demo_1b/__Setup__.dart";
+import "../../demo_1b/Schema.g.dart";
 
-// import 'Model.g.dart';
-import 'Summary.dart' as summary;
+// import "Model.g.dart";
+import "Summary.dart" as summary;
 
 void main() {
   runApp(
@@ -100,7 +100,7 @@ class _Main_State extends State<Main_> {
                           focusNode: focusNode,
                           decoration: InputDecoration(
                             hintText: "Search", //
-                            labelText: row['title'] + ":", //
+                            labelText: row["title"] + ":", //
                             labelStyle: TextStyle(fontWeight: FontWeight.bold),
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             suffixIcon: IconButton(
@@ -154,7 +154,7 @@ class _Main_State extends State<Main_> {
                     child: TextField(
                       decoration: InputDecoration(
                         hintText: "Input", //
-                        labelText: row['title'] + ":", //
+                        labelText: row["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -172,10 +172,10 @@ class _Main_State extends State<Main_> {
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.]'))],
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
                       decoration: InputDecoration(
                         hintText: "Input", //
-                        labelText: row['title'] + ":", //
+                        labelText: row["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -194,7 +194,7 @@ class _Main_State extends State<Main_> {
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         hintText: "Select", //
-                        labelText: row['title'] + ":",
+                        labelText: row["title"] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -220,7 +220,7 @@ class _Main_State extends State<Main_> {
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
                     if (tmp != null) {
-                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                      value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
                     }
                   }
 
@@ -232,7 +232,7 @@ class _Main_State extends State<Main_> {
                       readOnly: true,
                       decoration: InputDecoration(
                         hintText: "Select", //
-                        labelText: row['title'] + ":", //
+                        labelText: row["title"] + ":", //
                         border: OutlineInputBorder(), //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -283,7 +283,7 @@ class _Main_State extends State<Main_> {
     // print(model);
 
     // await dio
-    //     .post('$PATH/data_create', data: FormData.fromMap({...output}))
+    //     .post("$PATH/data_create", data: FormData.fromMap({...output}))
     //     .then((r) {
     //       output["id"] = r.data["id"]; //
     //       snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);

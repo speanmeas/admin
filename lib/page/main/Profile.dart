@@ -1,26 +1,26 @@
-import 'dart:convert';
+import "dart:convert";
 
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+import "package:provider/provider.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/utility/Secure_Storage.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/utility/Secure_Storage.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import 'Sign_In.dart' as sign_in;
-import 'Edit_Name.dart' as update_full_name;
-import 'Edit_Phone.dart' as update_phone_number;
-import 'Edit_Username.dart' as update_username;
-import 'Edit_Password.dart' as update_password;
+import "Sign_In.dart" as sign_in;
+import "Edit_Name.dart" as update_full_name;
+import "Edit_Phone.dart" as update_phone_number;
+import "Edit_Username.dart" as update_username;
+import "Edit_Password.dart" as update_password;
 
-import 'package:speanmeas/layout/Layout.dart' as layout;
+import "package:speanmeas/layout/Layout.dart" as layout;
 
-import 'User.g.dart';
+import "User.g.dart";
 
 void main() {
   runApp(User_Profile());
@@ -230,7 +230,7 @@ class _User_Profile_State extends State<User_Profile_> {
 
               OutlinedButton.icon(
                 icon: Icon(Icons.logout), //
-                label: Text('Sign Out'),
+                label: Text("Sign Out"),
                 style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
                 onPressed: on_sign_out,
               ),
@@ -243,9 +243,9 @@ class _User_Profile_State extends State<User_Profile_> {
 
   void on_sign_out() async {
     //
-    dio.options.headers.remove('Authorization');
+    dio.options.headers.remove("Authorization");
     //
-    await secure_storage.delete(key: 'access_token');
+    await secure_storage.delete(key: "access_token");
 
     for (var key in user.keys) user[key] = null;
 

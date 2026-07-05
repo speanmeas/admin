@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
-import 'package:flutter_typeahead/flutter_typeahead.dart';
+import "package:flutter_typeahead/flutter_typeahead.dart";
 
 void main() {
   runApp(MaterialApp(home: const FruitPageWrapper()));
@@ -24,12 +24,12 @@ class FruitPage extends StatefulWidget {
 
 class _FruitPageState extends State<FruitPage> {
   TextEditingController controller_search = TextEditingController();
-  List<String> options = ['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry', 'Fig', 'Grape', 'Honeydew', 'Kiwi', 'Mango', 'Orange', 'Pineapple'];
+  List<String> options = ["Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig", "Grape", "Honeydew", "Kiwi", "Mango", "Orange", "Pineapple"];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('TypeAhead Example')),
+      appBar: AppBar(title: const Text("TypeAhead Example")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

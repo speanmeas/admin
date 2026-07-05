@@ -5,6 +5,8 @@ String get PATH {
   return "/$path";
 }
 
+String DATE_FORMAT = "yyyy-MM-dd HH:mm";
+
 String get NAME {
   String name = HEADER.toLowerCase().replaceAll(" ", "_");
   return name;

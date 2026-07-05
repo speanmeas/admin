@@ -1,20 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 
-import 'package:speanmeas/theme/Theme_Data.dart';
+import "package:speanmeas/theme/Theme_Data.dart";
 
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/page/front_desk/Main.dart' as front_desk;
-import 'package:speanmeas/page/guest/Main.dart' as guest;
-import 'package:speanmeas/page/room/Main.dart' as room;
-import 'package:speanmeas/page/user/Main.dart' as user;
-import 'package:speanmeas/page/nationality/Main.dart' as natinoality;
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/page/front_desk/Main.dart" as front_desk;
+import "package:speanmeas/page/guest/Main.dart" as guest;
+import "package:speanmeas/page/room/Main.dart" as room;
+import "package:speanmeas/page/user/Main.dart" as user;
+import "package:speanmeas/page/nationality/Main.dart" as natinoality;
 
-import 'package:speanmeas/page/demo/Main.dart' as demo;
+import "package:speanmeas/page/demo/Main.dart" as demo;
 
-import 'package:speanmeas/page/demo_1/Main.dart' as demo_1;
-import 'package:speanmeas/page/demo_1a/Main.dart' as demo_1a;
-import 'package:speanmeas/page/demo_1b/Main.dart' as demo_1b;
+import "package:speanmeas/page/demo_1/Main.dart" as demo_1;
+import "package:speanmeas/page/demo_1a/Main.dart" as demo_1a;
+import "package:speanmeas/page/demo_1b/Main.dart" as demo_1b;
 
 void main() {
   runApp(
@@ -31,7 +31,7 @@ class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Body',
+      title: "Body",
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
       home: Scaffold(body: const Panel_Body_()),

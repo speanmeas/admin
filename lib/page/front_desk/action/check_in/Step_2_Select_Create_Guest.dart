@@ -1,24 +1,23 @@
-import 'package:dio/dio.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
+import "package:dio/dio.dart";
+import "package:intl/intl.dart";
+import "package:provider/provider.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:flutter_typeahead/flutter_typeahead.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/widget/Datetime_Picker.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/widget/Datetime_Picker.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import '../../__Setup__.dart';
-import '../../Schema.g.dart';
+import "package:speanmeas/page/guest/Form_Create.dart" as guest_create;
+import "package:speanmeas/page/guest/Schema.g.dart" as guest_schema;
 
-import '../../../guest/Form_Create.dart' as guest;
-import '../../../guest/Schema.g.dart' as guest_schema;
-
-import 'Step_3_Staying_Info.dart' as step_3;
+import "../../__Setup__.dart";
+import "Schema.g.dart";
+import "Step_3_Staying_Info.dart" as step_3;
 
 void main() {
   runApp(
@@ -63,6 +62,9 @@ class _Main_State extends State<Main_> {
   void initState() {
     super.initState();
     init();
+    //
+
+    for (var s in schema) print(s);
   }
 
   void init() async {
@@ -118,7 +120,7 @@ class _Main_State extends State<Main_> {
                       List<String> option_datas = [];
                       await dio
                           .post(
-                            '/guest/data_read', //
+                            "/guest/data_read", //
                             data: FormData.fromMap({
                               "key": key, //
                               "query": query, //
@@ -145,7 +147,7 @@ class _Main_State extends State<Main_> {
                         controller: controller,
                         focusNode: focusNode,
                         keyboardType: TextInputType.numberWithOptions(decimal: false),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
                         decoration: InputDecoration(
                           labelText: "Phone Number:", //
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -162,6 +164,7 @@ class _Main_State extends State<Main_> {
                           for (var g in guest_datas) {
                             if (g[PHONE_NUMBER] == item) {
                               selected_guest = g;
+                              print(selected_guest);
                               break;
                             }
                           }
@@ -183,19 +186,16 @@ class _Main_State extends State<Main_> {
               // view search guest result
               ...guest_schema.schema.map((row) {
                 //
-                if (row["key"] == "note") return SizedBox.shrink();
-
-                //
                 if (row["type"] == "string") {
-                  // String value = "";
-                  String value = selected_guest[row["key"]]?.toString() ?? "";
+                  String value = "";
+                  if (selected_guest[row["key"]] != null) value = selected_guest[row["key"]]!.toString();
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(row['title'] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(row["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(
                             value,
@@ -212,8 +212,8 @@ class _Main_State extends State<Main_> {
 
                 //
                 if (row["type"] == "number") {
-                  // String value = "";
-                  String value = selected_guest[row["key"]]?.toString() ?? "";
+                  String value = "";
+                  if (selected_guest[row["key"]] != null) value = selected_guest[row["key"]]!.toString();
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -221,7 +221,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -250,7 +250,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -274,7 +274,7 @@ class _Main_State extends State<Main_> {
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
                     if (tmp != null) {
-                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                      value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
                     }
                   }
                   return Container(
@@ -284,7 +284,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -324,7 +324,7 @@ class _Main_State extends State<Main_> {
   void on_add_new() async {
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => guest.Main_()),
+      MaterialPageRoute(builder: (context) => guest_create.Main_()),
     ).then((value) {
       if (value == null) return;
 

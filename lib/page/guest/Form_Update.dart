@@ -62,14 +62,14 @@ class _Main_State extends State<Main_> {
   void initState() {
     super.initState();
     output = Map<String, dynamic>.from(widget.input);
-    controller_nationality.text = output["guest_nationality"]?.toString() ?? '';
+    controller_nationality.text = output["guest_nationality"]?.toString() ?? "";
     init();
     setState(() {});
   }
 
   void init() async {
     await dio
-        .post('/nationality/data_read', data: FormData.fromMap({}))
+        .post("/nationality/data_read", data: FormData.fromMap({}))
         .then((r) {
           option_nationalities = List<String>.from(r.data.map((e) => e["nationality"]));
           option_nationalities.sort((a, b) => a.compareTo(b));
@@ -122,7 +122,7 @@ class _Main_State extends State<Main_> {
                           controller: controller,
                           focusNode: focusNode,
                           decoration: InputDecoration(
-                            labelText: s['title'] + ":",
+                            labelText: s["title"] + ":",
                             labelStyle: TextStyle(fontWeight: FontWeight.bold),
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             suffixIcon: Padding(
@@ -154,9 +154,9 @@ class _Main_State extends State<Main_> {
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
-                      initialValue: output[s["key"]]?.toString() ?? '',
+                      initialValue: output[s["key"]]?.toString() ?? "",
                       decoration: InputDecoration(
-                        labelText: s['title'] + ":",
+                        labelText: s["title"] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -291,7 +291,7 @@ class _Main_State extends State<Main_> {
                   if (output[s["key"]] != null) {
                     DateTime? tmp = DateTime.tryParse(output[s["key"]].toString());
                     if (tmp != null) {
-                      value = DateFormat("yyyy-MM-dd HH:mm:ss").format(tmp.toLocal());
+                      value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
                     }
                   }
                   DateTime init = DateTime.now();
@@ -314,7 +314,7 @@ class _Main_State extends State<Main_> {
                       onTap: () async {
                         DateTime? datetime = await datetime_picker(context, initial_datetime: init);
                         if (datetime == null) return;
-                        output[s["key"]] = DateFormat("yyyy-MM-dd HH:mm:ss").format(datetime);
+                        output[s["key"]] = DateFormat(DATE_FORMAT).format(datetime);
                         setState(() {});
                       }, //,
                     ),

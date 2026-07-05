@@ -9,3 +9,5 @@ String get NAME {
   String name = HEADER.toLowerCase().replaceAll(" ", "_");
   return name;
 }
+
+String DATE_FORMAT = "yyyy-MM-dd HH:mm";

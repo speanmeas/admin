@@ -116,9 +116,42 @@ class _Main_State extends State<Main_> {
                 cells: {
                   for (var s in schema)
                     // exclude password field
-                    if (s["key"] == "password") //
+                    if (s["key"].toString().contains("password"))
                       s["key"]!: PlutoCell(value: "**********")
-                    //
+                    // id
+                    else if (s["type"] == "_id") //
+                      s["key"]!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s["key"]] == null) return "";
+
+                          // default
+                          return d[s["key"]].toString();
+                        })(),
+                      )
+                    // string
+                    else if (s["type"] == "string") //
+                      s["key"]!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s["key"]] == null) return "";
+
+                          // default
+                          return d[s["key"]].toString();
+                        })(),
+                      )
+                    // number
+                    else if (s["type"] == "number") //
+                      s["key"]!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s["key"]] == null) return "";
+
+                          // default
+                          return d[s["key"]].toString();
+                        })(),
+                      )
+                    // date-time
                     else if (s["type"] == "date-time") //
                       s["key"]!: PlutoCell(
                         value: (() {
@@ -130,10 +163,10 @@ class _Main_State extends State<Main_> {
                           if (dt == null) return "";
 
                           // default
-                          return DateFormat("yyyy-MM-dd HH:mm:ss").format(dt.toLocal());
+                          return DateFormat(DATE_FORMAT).format(dt.toLocal());
                         })(),
                       )
-                    //
+                    // boolean
                     else if (s["type"] == "boolean") //
                       s["key"]!: PlutoCell(
                         value: (() {
@@ -144,22 +177,10 @@ class _Main_State extends State<Main_> {
                           // default
                           return "No";
                         })(),
-                      )
-                    //
-                    else
-                      s["key"]!: PlutoCell(
-                        value: (() {
-                          //
-                          if (d[s["key"]] == null) return "";
-
-                          // default
-                          return d[s["key"]].toString();
-                        })(),
                       ),
                 },
               ),
           ]);
-
           setState(() {});
         })
         .catchError((e) {});
@@ -195,10 +216,43 @@ class _Main_State extends State<Main_> {
               PlutoRow(
                 cells: {
                   for (var s in schema)
-                    //
-                    if (s["key"] == "password") //
+                    // exclude password field
+                    if (s["key"].toString().contains("password"))
                       s["key"]!: PlutoCell(value: "**********")
-                    //
+                    // id
+                    else if (s["type"] == "_id") //
+                      s["key"]!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s["key"]] == null) return "";
+
+                          // default
+                          return d[s["key"]].toString();
+                        })(),
+                      )
+                    // string
+                    else if (s["type"] == "string") //
+                      s["key"]!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s["key"]] == null) return "";
+
+                          // default
+                          return d[s["key"]].toString();
+                        })(),
+                      )
+                    // number
+                    else if (s["type"] == "number") //
+                      s["key"]!: PlutoCell(
+                        value: (() {
+                          //
+                          if (d[s["key"]] == null) return "";
+
+                          // default
+                          return d[s["key"]].toString();
+                        })(),
+                      )
+                    // date-time
                     else if (s["type"] == "date-time") //
                       s["key"]!: PlutoCell(
                         value: (() {
@@ -210,10 +264,10 @@ class _Main_State extends State<Main_> {
                           if (dt == null) return "";
 
                           // default
-                          return DateFormat("yyyy-MM-dd HH:mm:ss").format(dt.toLocal());
+                          return DateFormat(DATE_FORMAT).format(dt.toLocal());
                         })(),
                       )
-                    //
+                    // boolean
                     else if (s["type"] == "boolean") //
                       s["key"]!: PlutoCell(
                         value: (() {
@@ -223,17 +277,6 @@ class _Main_State extends State<Main_> {
 
                           // default
                           return "No";
-                        })(),
-                      )
-                    //
-                    else
-                      s["key"]!: PlutoCell(
-                        value: (() {
-                          //
-                          if (d[s["key"]] == null) return "";
-
-                          // default
-                          return d[s["key"]].toString();
                         })(),
                       ),
                 },
@@ -511,7 +554,7 @@ class _Main_State extends State<Main_> {
                     if (dt == null) return "";
 
                     // default
-                    return DateFormat("yyyy-MM-dd HH:mm:ss").format(dt.toLocal());
+                    return DateFormat(DATE_FORMAT).format(dt.toLocal());
                   })(),
                 )
               else if (s["type"] == "boolean") //
@@ -592,7 +635,7 @@ class _Main_State extends State<Main_> {
           // date-time
           if (s["type"] == "date-time") {
             DateTime? tmp = DateTime.tryParse(c.value.toString());
-            s["value"] = DateFormat("yyyy-MM-dd HH:mm:ss").format(tmp!);
+            s["value"] = DateFormat(DATE_FORMAT).format(tmp!);
             continue;
           }
 
@@ -659,7 +702,7 @@ class _Main_State extends State<Main_> {
           // date-time
           if (s["type"] == "date-time") {
             DateTime? tmp = DateTime.tryParse(c.value.toString());
-            s["value"] = DateFormat("yyyy-MM-dd HH:mm:ss").format(tmp!);
+            s["value"] = DateFormat(DATE_FORMAT).format(tmp!);
             continue;
           }
 
@@ -693,7 +736,7 @@ class _Main_State extends State<Main_> {
             if (dt == null) return "";
 
             // default
-            return DateFormat("yyyy-MM-dd HH:mm:ss").format(dt.toLocal());
+            return DateFormat(DATE_FORMAT).format(dt.toLocal());
           })();
         } else if (s["type"] == "boolean") {
           row?.cells[key]?.value = (() {
@@ -775,11 +818,12 @@ class _Main_State extends State<Main_> {
     required VoidCallback on_filter,
   }) {
     //
-    PlutoColumnType column_type = PlutoColumnType.text();
+    PlutoColumnType column_type;
 
-    // make number sort correctly
     if (type == "number") {
       column_type = PlutoColumnType.number();
+    } else {
+      column_type = PlutoColumnType.text();
     }
 
     //

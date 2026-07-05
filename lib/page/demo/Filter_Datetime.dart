@@ -84,7 +84,7 @@ class _Main_State extends State<Main_> {
                   onTap: () async {
                     final DateTime? datetime = await datetime_picker(context);
                     if (datetime == null) return;
-                    start_datetime = DateFormat("yyyy-MM-dd HH:mm:ss").format(datetime);
+                    start_datetime = DateFormat(DATE_FORMAT).format(datetime);
                     start_datetime_raw = datetime;
                     setState(() {});
                   }, //,
@@ -107,7 +107,7 @@ class _Main_State extends State<Main_> {
                   onTap: () async {
                     final DateTime? datetime = await datetime_picker(context);
                     if (datetime == null) return;
-                    end_datetime = DateFormat("yyyy-MM-dd HH:mm:ss").format(datetime);
+                    end_datetime = DateFormat(DATE_FORMAT).format(datetime);
                     end_datetime_raw = datetime;
                     setState(() {});
                   }, //,

@@ -1,21 +1,21 @@
-import 'dart:convert';
+import "dart:convert";
 
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+import "package:provider/provider.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/layout/Layout.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/layout/Layout.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import '../../__Setup__.dart';
-import '../../Schema.g.dart';
+import "../../__Setup__.dart";
+import "../../Schema.g.dart";
 
-import 'Step_2a_Receipt.dart' as receipt;
+import "Step_2a_Receipt.dart" as receipt;
 
 void main() {
   runApp(const Main());
@@ -99,7 +99,7 @@ class _Main_State extends State<Main_> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(row['title'] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(row["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(
                             value,
@@ -125,7 +125,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -154,7 +154,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -178,7 +178,7 @@ class _Main_State extends State<Main_> {
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
                     if (tmp != null) {
-                      value = DateFormat('yyyy-MM-dd HH:mm:ss').format(tmp.toLocal());
+                      value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
                     }
                   }
                   return Container(
@@ -188,7 +188,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row['title'] + ": ", //
+                          row["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -250,7 +250,7 @@ class _Main_State extends State<Main_> {
     Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
 
     await dio
-        .post('$PATH/data_update', data: FormData.fromMap({...output}))
+        .post("$PATH/data_update", data: FormData.fromMap({...output}))
         .then((r) {
           snackbar_show(context: context, message: "$HEADER update successfully.", color: Colors.green);
           Navigator.pop(context);
@@ -263,7 +263,7 @@ class _Main_State extends State<Main_> {
     var room_id = schema.firstWhere((s) => s["key"] == "room_id")["value"];
 
     await dio.post(
-      '/room/data_update',
+      "/room/data_update",
       data: FormData.fromMap({
         "id": room_id, //
         "room_status": "Available",

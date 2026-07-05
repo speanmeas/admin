@@ -1,21 +1,19 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:provider/provider.dart';
+import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:flutter_typeahead/flutter_typeahead.dart";
+import "package:provider/provider.dart";
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-import 'package:speanmeas/page/main/User.g.dart';
-import 'package:speanmeas/theme/Theme_Data.dart';
-import 'package:speanmeas/utility/Dio.dart';
-import 'package:speanmeas/widget/Datetime_Picker.dart';
-import 'package:speanmeas/widget/Snackbar_Show.dart';
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/Global.dart";
+import "package:speanmeas/page/main/User.g.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/widget/Datetime_Picker.dart";
+import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import '../../__Setup__.dart';
-import '../../Schema.g.dart';
-
-import 'Step_4_Payment_Info.dart' as step_4;
+import "Schema.g.dart";
+import "Step_4_Payment_Info.dart" as step_4;
 
 void main() {
   runApp(
@@ -134,7 +132,7 @@ class _Main_State extends State<Main_> {
                       controller: controller,
                       focusNode: focusNode,
                       keyboardType: TextInputType.numberWithOptions(decimal: false),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
                       decoration: InputDecoration(
                         labelText: "Number of Guests:", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -168,7 +166,7 @@ class _Main_State extends State<Main_> {
                       controller: controller,
                       focusNode: focusNode,
                       keyboardType: TextInputType.numberWithOptions(decimal: false),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
                       decoration: InputDecoration(
                         labelText: "Stay Duration (Days):", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -202,7 +200,7 @@ class _Main_State extends State<Main_> {
                       controller: controller,
                       focusNode: focusNode,
                       keyboardType: TextInputType.numberWithOptions(decimal: false),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9]'))],
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
                       decoration: InputDecoration(
                         labelText: "Stay Duration (Hours):", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
