@@ -11,7 +11,9 @@ import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "../../Schema.g.dart";
+import "../../Constant.dart";
+import "../../Schema.g.dart" as schema;
+
 import "Step_5_Summary.dart" as step_5;
 
 void main() {
@@ -44,41 +46,14 @@ class Main_ extends StatefulWidget {
 }
 
 class _Main_State extends State<Main_> {
-  // keys
-  var PRICE_TOTAL = "price_total_usd";
-
-  var PRICE_DAY = "room_price_per_day_usd";
-  var PRICE_3H = "room_price_per_3h_usd";
-
-  var STAY_DAYS = "stay_duration_day";
-  var STAY_HOURS = "stay_duration_hour";
-
-  var PAID_BANK_USD = "paid_bank_usd";
-  var PAID_BANK_KHR = "paid_bank_khr";
-  var PAID_CASH_USD = "paid_cash_usd";
-  var PAID_CASH_KHR = "paid_cash_khr";
-  var PAID_TOTAL_USD = "paid_total_usd";
-  var RETURN_USD = "return_usd";
-  var RETURN_KHR = "return_khr";
-  var RETURN_TOTAL_USD = "return_total_usd";
-  var AR_TOTAL_USD = "ar_total_usd";
-
-  var GET_PAID_DATE = "payment_at";
-  var GET_PAID_BY = "payment_by";
-  var GET_PAID_BY_ID = "payment_by_id";
-
   // controllers
   TextEditingController c_price_usd = TextEditingController();
-
   TextEditingController c_paid_bank_usd = TextEditingController();
   TextEditingController c_paid_bank_khr = TextEditingController();
-
   TextEditingController c_paid_cash_usd = TextEditingController();
   TextEditingController c_paid_cash_khr = TextEditingController();
-
   TextEditingController c_return_usd = TextEditingController();
   TextEditingController c_return_khr = TextEditingController();
-
   TextEditingController c_payment_note = TextEditingController();
 
   @override
@@ -93,7 +68,7 @@ class _Main_State extends State<Main_> {
     double stay_duration_days = 0;
     double stay_duration_hours = 0;
 
-    for (var s in schema) {
+    for (var s in schema.data) {
       if (s["key"] == PRICE_DAY) price_per_day_usd = double.tryParse("${s["value"] ?? 0}") ?? 0;
       if (s["key"] == PRICE_3H) price_per_3h_usd = double.tryParse("${s["value"] ?? 0}") ?? 0;
       if (s["key"] == STAY_DAYS) stay_duration_days = double.tryParse("${s["value"] ?? 0}") ?? 0;
@@ -102,7 +77,7 @@ class _Main_State extends State<Main_> {
 
     double price_total_usd = (stay_duration_days * price_per_day_usd) + ((stay_duration_hours / 3) * price_per_3h_usd);
 
-    for (var s in schema) {
+    for (var s in schema.data) {
       if (s["key"] == PRICE_TOTAL) c_price_usd.text = price_total_usd.toString();
       if (s["key"] == PAID_BANK_USD) c_paid_bank_usd.text = (s["value"] ?? "").toString();
       if (s["key"] == PAID_BANK_KHR) c_paid_bank_khr.text = (s["value"] ?? "").toString();
@@ -110,6 +85,7 @@ class _Main_State extends State<Main_> {
       if (s["key"] == PAID_CASH_KHR) c_paid_cash_khr.text = (s["value"] ?? "").toString();
       if (s["key"] == RETURN_USD) c_return_usd.text = (s["value"] ?? "").toString();
       if (s["key"] == RETURN_KHR) c_return_khr.text = (s["value"] ?? "").toString();
+      if (s["key"] == PAYMENT_NOTE) c_payment_note.text = (s["value"] ?? "").toString();
     }
   }
 
@@ -131,9 +107,7 @@ class _Main_State extends State<Main_> {
               icon: Icon(Icons.arrow_right_alt_outlined),
               label: Text("Next"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: () {
-                print("on_next()");
-              },
+              onPressed: on_next,
             ),
           ),
         ],
@@ -472,7 +446,7 @@ class _Main_State extends State<Main_> {
   void on_next() async {
     //
 
-    print("on_next()");
+    // print("on_next()");
 
     double paid_bank_usd = double.tryParse(c_paid_bank_usd.text) ?? 0;
     double paid_cash_usd = double.tryParse(c_paid_cash_usd.text) ?? 0;
@@ -489,30 +463,31 @@ class _Main_State extends State<Main_> {
       }
     }
 
-    // for (var s in schema) {
-    //   if (s["key"] == PRICE_TOTAL) s["value"] = get_price_total_usd();
-    //   if (s["key"] == PAID_BANK_USD) s["value"] = paid_bank_usd == 0 ? null : paid_bank_usd;
-    //   if (s["key"] == PAID_BANK_KHR) s["value"] = paid_bank_khr == 0 ? null : paid_bank_khr;
-    //   if (s["key"] == PAID_CASH_USD) s["value"] = paid_cash_usd == 0 ? null : paid_cash_usd;
-    //   if (s["key"] == PAID_CASH_KHR) s["value"] = paid_cash_khr == 0 ? null : paid_cash_khr;
-    //   if (s["key"] == PAID_TOTAL_USD) s["value"] = get_paid_total_usd();
-    //   if (s["key"] == RETURN_USD) s["value"] = return_usd == 0 ? null : return_usd;
-    //   if (s["key"] == RETURN_KHR) s["value"] = return_khr == 0 ? null : return_khr;
-    //   if (s["key"] == RETURN_TOTAL_USD) s["value"] = get_return_total_usd();
-    //   if (s["key"] == AR_TOTAL_USD) s["value"] = get_ar_total_usd();
+    for (var s in schema.data) {
+      if (s["key"] == PRICE_TOTAL) s["value"] = get_price_total_usd();
+      if (s["key"] == PAID_BANK_USD) s["value"] = paid_bank_usd == 0 ? null : paid_bank_usd;
+      if (s["key"] == PAID_BANK_KHR) s["value"] = paid_bank_khr == 0 ? null : paid_bank_khr;
+      if (s["key"] == PAID_CASH_USD) s["value"] = paid_cash_usd == 0 ? null : paid_cash_usd;
+      if (s["key"] == PAID_CASH_KHR) s["value"] = paid_cash_khr == 0 ? null : paid_cash_khr;
+      if (s["key"] == PAID_TOTAL_USD) s["value"] = get_paid_total_usd();
+      if (s["key"] == RETURN_USD) s["value"] = return_usd == 0 ? null : return_usd;
+      if (s["key"] == RETURN_KHR) s["value"] = return_khr == 0 ? null : return_khr;
+      if (s["key"] == RETURN_TOTAL_USD) s["value"] = get_return_total_usd();
+      if (s["key"] == AR_TOTAL_USD) s["value"] = get_ar_total_usd();
 
-    //   if (get_paid_total_usd() > 0) {
-    //     if (s["key"] == GET_PAID_DATE) s["value"] = get_paid_date?.toIso8601String();
-    //     if (s["key"] == GET_PAID_BY && user["full_name"] != null) s["value"] = user["full_name"]!;
-    //     if (s["key"] == GET_PAID_BY_ID && user["_id"] != null) s["value"] = user["_id"]!;
-    //   }
-    // }
+      if (get_paid_total_usd() > 0) {
+        if (s["key"] == PAYMENT_AT) s["value"] = get_paid_date?.toIso8601String();
+        if (s["key"] == PAYMENT_BY && user["full_name"] != null) s["value"] = user["full_name"]!;
+        if (s["key"] == PAYMENT_BY_ID && user["_id"] != null) s["value"] = user["_id"]!;
+        if (s["key"] == PAYMENT_NOTE) s["value"] = c_payment_note.text;
+      }
+    }
 
-    for (var s in schema) print(s);
+    for (var s in schema.data) print(s);
 
-    // Navigator.push(
-    //   context, //
-    //   MaterialPageRoute(builder: (context) => step_5.Main_()),
-    // );
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => step_5.Main_()),
+    );
   }
 }

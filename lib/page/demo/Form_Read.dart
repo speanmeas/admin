@@ -9,7 +9,7 @@ import "package:speanmeas/Environment.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 
 import "__Setup__.dart";
-import "Schema.g.dart";
+import "Schema.g.dart" as schema;
 
 void main() {
   runApp(
@@ -74,7 +74,7 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.map((s) {
+              ...schema.data.map((s) {
                 //
                 //
                 //

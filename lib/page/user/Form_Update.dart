@@ -16,7 +16,7 @@ import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "__Setup__.dart";
-import "Schema.g.dart";
+import "Schema.g.dart" as schema;
 
 void main() {
   runApp(
@@ -81,7 +81,7 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.map((s) {
+              ...schema.data.map((s) {
                 //
                 //
                 //

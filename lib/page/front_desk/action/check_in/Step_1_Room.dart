@@ -10,7 +10,8 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "../../Schema.g.dart";
+import "../../Constant.dart";
+import "../../Schema.g.dart" as schema;
 import "package:speanmeas/page/room/Schema.g.dart" as room_schema;
 
 import "Step_2_Guest.dart" as step_2;
@@ -45,13 +46,6 @@ class Main_ extends StatefulWidget {
 }
 
 class _Main_State extends State<Main_> {
-  // keys
-  var NUMBER = "room_number";
-  var TYPE = "room_type";
-  var PRICE_DAY = "room_price_per_day_usd";
-  var PRICE_3H = "room_price_per_3h_usd";
-  var STATUS = "room_status";
-
   List<Map<String, dynamic>> room_infos = [];
 
   @override
@@ -65,7 +59,7 @@ class _Main_State extends State<Main_> {
         .post("/room/data_read")
         .then((r) {
           room_infos = List<Map<String, dynamic>>.from(r.data);
-          room_infos.sort((a, b) => "${a[NUMBER]}".compareTo("${b[NUMBER]}"));
+          room_infos.sort((a, b) => "${a[ROOM_NUMBER]}".compareTo("${b[ROOM_NUMBER]}"));
           setState(() {});
         })
         .catchError((_) {});
@@ -95,7 +89,7 @@ class _Main_State extends State<Main_> {
             children: [
               for (var room in room_infos) ...[
                 //
-                if (room[STATUS] == "Available")
+                if (room[ROOM_STATUS] == "Available")
                   InkWell(
                     child: Container(
                       height: 50,
@@ -113,13 +107,13 @@ class _Main_State extends State<Main_> {
                             mainAxisAlignment: .center,
                             crossAxisAlignment: .start,
                             children: [
-                              Text("Room ${room[NUMBER]} (${room[TYPE]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
-                              Text("${room[PRICE_DAY]}\$/day | ${room[PRICE_3H]}\$/3h"),
+                              Text("Room ${room[ROOM_NUMBER]} (${room[ROOM_TYPE]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("${room[ROOM_PRICE_DAY]}\$/day | ${room[ROOM_PRICE_3H]}\$/3h"),
                             ],
                           ),
                           Spacer(),
                           Text(
-                            "${room[STATUS]}",
+                            "${room[ROOM_STATUS]}",
                             style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                           ), //
                         ],
@@ -149,7 +143,7 @@ class _Main_State extends State<Main_> {
     //
 
     for (var e in room.entries) {
-      for (var s in schema) {
+      for (var s in schema.data) {
         if (e.key == "_id" && s["key"] == "room_id") s["value"] = e.value;
         if (e.key == s["key"]) s["value"] = e.value;
       }

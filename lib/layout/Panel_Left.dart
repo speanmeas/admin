@@ -93,9 +93,9 @@ class _Panel_Left_State extends State<Panel_Left_> {
             initiallyExpanded: true,
             children: [
               list_tile_l2(name: "Demo", icon: Icons.model_training_outlined),
-              list_tile_l2(name: "Demo 1", icon: Icons.model_training_outlined),
-              list_tile_l2(name: "Demo 1A", icon: Icons.model_training_outlined),
-              list_tile_l2(name: "Demo 1B", icon: Icons.model_training_outlined),
+              // list_tile_l2(name: "Demo 1", icon: Icons.model_training_outlined),
+              // list_tile_l2(name: "Demo 1A", icon: Icons.model_training_outlined),
+              // list_tile_l2(name: "Demo 1B", icon: Icons.model_training_outlined),
             ],
           ),
       ],

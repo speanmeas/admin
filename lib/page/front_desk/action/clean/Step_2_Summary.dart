@@ -88,7 +88,7 @@ class _Main_State extends State<Main_> {
           child: Column(
             children: [
               // view search guest result
-              ...schema.map((row) {
+              ...data.map((row) {
                 //
                 if (row["type"] == "string") {
                   // String value = "";
@@ -226,7 +226,7 @@ class _Main_State extends State<Main_> {
   }
 
   bool can_print() {
-    for (var s in schema) {
+    for (var s in data) {
       if (s["key"] == "ar_total_usd") {
         if (s["value"] != null) {
           if (s["value"] == 0) {
@@ -247,7 +247,7 @@ class _Main_State extends State<Main_> {
   }
 
   void on_clean() async {
-    Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
+    Map<String, dynamic> output = {for (var s in data) s["key"]: s["value"]};
 
     await dio
         .post("$PATH/data_update", data: FormData.fromMap({...output}))
@@ -260,7 +260,7 @@ class _Main_State extends State<Main_> {
           snackbar_show(context: context, message: "$HEADER update failed.", color: Colors.red);
         });
 
-    var room_id = schema.firstWhere((s) => s["key"] == "room_id")["value"];
+    var room_id = data.firstWhere((s) => s["key"] == "room_id")["value"];
 
     await dio.post(
       "/room/data_update",

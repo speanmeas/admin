@@ -12,13 +12,14 @@ import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "package:speanmeas/page/guest/Form_Create.dart" as guest_create;
-import "package:speanmeas/page/guest/Schema.g.dart" as guest_schema;
-
 import "../../__Setup__.dart";
-import "../../Schema.g.dart";
+import "../../Constant.dart";
+import "../../Schema.g.dart" as schema;
 
 import "Step_3_Staying.dart" as step_3;
+
+import "package:speanmeas/page/guest/Form_Create.dart" as guest_create;
+import "package:speanmeas/page/guest/Schema.g.dart" as guest_schema;
 
 void main() {
   runApp(
@@ -51,10 +52,6 @@ class Main_ extends StatefulWidget {
 
 class _Main_State extends State<Main_> {
   // keys
-  var NAME = "guest_name";
-  var GENDER = "guest_gender";
-  var PHONE_NUMBER = "guest_phone";
-  var NATIONALITY = "guest_nationality";
 
   TextEditingController controller_search = TextEditingController();
   Map<String, dynamic> selected_guest = {};
@@ -66,11 +63,11 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    for (var s in schema) {
-      if (s["key"] == NAME) selected_guest[NAME] = s["value"] ?? "";
-      if (s["key"] == GENDER) selected_guest[GENDER] = s["value"] ?? "";
-      if (s["key"] == PHONE_NUMBER) selected_guest[PHONE_NUMBER] = s["value"] ?? "";
-      if (s["key"] == NATIONALITY) selected_guest[NATIONALITY] = s["value"] ?? "";
+    for (var s in schema.data) {
+      if (s["key"] == GUEST_NAME) selected_guest[GUEST_NAME] = s["value"] ?? "";
+      if (s["key"] == GUEST_GENDER) selected_guest[GUEST_GENDER] = s["value"] ?? "";
+      if (s["key"] == GUEST_PHONE_NUMBER) selected_guest[GUEST_PHONE_NUMBER] = s["value"] ?? "";
+      if (s["key"] == GUEST_NATIONALITY) selected_guest[GUEST_NATIONALITY] = s["value"] ?? "";
     }
   }
 
@@ -114,7 +111,7 @@ class _Main_State extends State<Main_> {
                   return TypeAheadField<String>(
                     controller: controller_search,
                     suggestionsCallback: (query) async {
-                      String key = PHONE_NUMBER;
+                      String key = GUEST_PHONE_NUMBER;
                       List<String> option_datas = [];
                       await dio
                           .post(
@@ -160,7 +157,7 @@ class _Main_State extends State<Main_> {
                         title: Text(item),
                         onTap: () {
                           for (var g in guest_datas) {
-                            if (g[PHONE_NUMBER] == item) {
+                            if (g[GUEST_PHONE_NUMBER] == item) {
                               selected_guest = g;
                               // print(selected_guest);
                               break;
@@ -182,7 +179,7 @@ class _Main_State extends State<Main_> {
               // phone number - search
 
               // view search guest result
-              ...guest_schema.schema.map((row) {
+              ...guest_schema.data.map((row) {
                 //
                 if (row["type"] == "string") {
                   String value = "";
@@ -326,7 +323,7 @@ class _Main_State extends State<Main_> {
     ).then((value) {
       if (value == null) return;
 
-      controller_search.text = value[PHONE_NUMBER] ?? "";
+      controller_search.text = value[GUEST_PHONE_NUMBER] ?? "";
       selected_guest = value;
       setState(() {});
     });
@@ -336,7 +333,7 @@ class _Main_State extends State<Main_> {
     //
 
     for (var e in selected_guest.entries) {
-      for (var s in schema) {
+      for (var s in schema.data) {
         if (e.key == "_id" && s["key"] == "guest_id") s["value"] = e.value;
         if (e.key == s["key"]) s["value"] = e.value;
       }

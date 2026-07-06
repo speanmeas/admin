@@ -12,7 +12,8 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "../../Schema.g.dart";
+import "../../Constant.dart";
+import "../../Schema.g.dart" as schema;
 
 import "Step_4_Payment.dart" as step_4;
 
@@ -47,20 +48,6 @@ class Main_ extends StatefulWidget {
 
 class _Main_State extends State<Main_> {
   // keys
-  var STAY_DAYS = "stay_duration_day";
-  var STAY_HOURS = "stay_duration_hour";
-  var STAY_NUM_GUESTS = "number_of_guests";
-  var SCHEDULE_CHECK_OUT = "schedule_check_out";
-
-  var CHECK_IN_BY_ID = "check_in_by_id";
-  var CHECK_IN_BY = "check_in_by";
-  var CHECK_IN_DATE = "check_in_at";
-  var CHECK_IN_NOTE = "check_in_note";
-
-  // options
-  var option_num_guest = List.generate(10, (index) => (index + 1));
-  var option_day = List.generate(31, (index) => index);
-  var option_hour = [0, 3, 6, 9, 12];
 
   // controllers
   var controller_num_guests = TextEditingController();
@@ -75,7 +62,7 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    for (var s in schema) {
+    for (var s in schema.data) {
       if (s["key"] == STAY_DAYS) controller_days.text = (s["value"] ?? "").toString();
       if (s["key"] == STAY_HOURS) controller_hours.text = (s["value"] ?? "").toString();
       if (s["key"] == STAY_NUM_GUESTS) controller_num_guests.text = (s["value"] ?? "").toString();
@@ -123,7 +110,7 @@ class _Main_State extends State<Main_> {
                 child: TypeAheadField<String>(
                   controller: controller_num_guests,
                   suggestionsCallback: (q) {
-                    return option_num_guest.map((o) => o.toString()).where((o) => o.contains(q)).toList();
+                    return OPTION_NUM_GUESTS.map((o) => o.toString()).where((o) => o.contains(q)).toList();
                   },
                   builder: (context, controller, focusNode) {
                     return TextField(
@@ -157,7 +144,7 @@ class _Main_State extends State<Main_> {
                 child: TypeAheadField<String>(
                   controller: controller_days,
                   suggestionsCallback: (q) {
-                    return option_day.map((o) => o.toString()).where((o) => o.contains(q)).toList();
+                    return OPTION_DAYS.map((o) => o.toString()).where((o) => o.contains(q)).toList();
                   },
                   builder: (context, controller, focusNode) {
                     return TextField(
@@ -191,7 +178,7 @@ class _Main_State extends State<Main_> {
                 child: TypeAheadField<String>(
                   controller: controller_hours,
                   suggestionsCallback: (q) {
-                    return option_hour.map((o) => o.toString()).where((o) => o.contains(q)).toList();
+                    return OPTION_HOURS.map((o) => o.toString()).where((o) => o.contains(q)).toList();
                   },
                   builder: (context, controller, focusNode) {
                     return TextField(
@@ -269,7 +256,7 @@ class _Main_State extends State<Main_> {
       schedule_check_out = schedule_check_out.add(Duration(hours: stay_duration_hours.toInt()));
     }
 
-    for (var s in schema) {
+    for (var s in schema.data) {
       if (s["key"] == STAY_DAYS) s["value"] = stay_duration_days;
       if (s["key"] == STAY_HOURS) s["value"] = stay_duration_hours;
       if (s["key"] == STAY_NUM_GUESTS) s["value"] = number_of_guests;

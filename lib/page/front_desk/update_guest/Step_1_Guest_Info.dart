@@ -15,7 +15,7 @@ import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "../__Setup__.dart";
-import "../Schema.g.dart";
+import "../Schema.g.dart" as schema;
 
 import "../../guest/Form_Create.dart" as guest;
 import "../../guest/Schema.g.dart" as guest_schema;
@@ -68,7 +68,7 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    for (var s in schema) {
+    for (var s in schema.data) {
       if (s["key"] == NAME) selected_guest[NAME] = s["value"] ?? "";
       if (s["key"] == GENDER) selected_guest[GENDER] = s["value"] ?? "";
       if (s["key"] == PHONE_NUMBER) selected_guest[PHONE_NUMBER] = s["value"] ?? "";
@@ -183,7 +183,7 @@ class _Main_State extends State<Main_> {
               // phone number - search
 
               // view search guest result
-              ...guest_schema.schema.map((row) {
+              ...guest_schema.data.map((row) {
                 //
                 if (row["key"] == "note") return SizedBox.shrink();
 
@@ -326,7 +326,7 @@ class _Main_State extends State<Main_> {
   void on_next() async {
     //
 
-    for (var s in schema) {
+    for (var s in schema.data) {
       if (s["key"] == NAME) s["value"] = selected_guest[NAME];
       if (s["key"] == GENDER) s["value"] = selected_guest[GENDER];
       if (s["key"] == PHONE_NUMBER) s["value"] = selected_guest[PHONE_NUMBER];

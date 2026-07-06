@@ -14,7 +14,7 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "__Setup__.dart";
-import "Schema.g.dart";
+import "Schema.g.dart" as schema;
 
 import "Filter_String.dart" as filter_string;
 import "Filter_Number.dart" as filter_number;
@@ -118,7 +118,7 @@ class _Main_State extends State<Main_> {
             for (var d in data)
               PlutoRow(
                 cells: {
-                  for (var s in schema)
+                  for (var s in schema.data)
                     // exclude password field
                     if (s["key"].toString().contains("password"))
                       s["key"]!: PlutoCell(value: "**********")
@@ -219,7 +219,7 @@ class _Main_State extends State<Main_> {
             for (var d in data)
               PlutoRow(
                 cells: {
-                  for (var s in schema)
+                  for (var s in schema.data)
                     // exclude password field
                     if (s["key"].toString().contains("password"))
                       s["key"]!: PlutoCell(value: "**********")
@@ -373,7 +373,7 @@ class _Main_State extends State<Main_> {
               rows: [],
               //
               columns: [
-                ...schema.map((s) {
+                ...schema.data.map((s) {
                   return build_plutocolumn(
                     field: s["key"]!, //
                     title: s["title"]!,
@@ -552,8 +552,39 @@ class _Main_State extends State<Main_> {
         PlutoRow(
           cells: {
             "id": PlutoCell(value: v["id"].toString()),
-            for (var s in schema)
-              if (s["type"] == "date-time") //
+            for (var s in schema.data)
+              //
+              if (s["type"] == "_id") //
+                s["key"]!: PlutoCell(
+                  value: (() {
+                    if (v[s["key"]] == null) return "";
+
+                    // default
+                    return v[s["key"]].toString();
+                  })(),
+                )
+              //
+              else if (s["type"] == "string") //
+                s["key"]!: PlutoCell(
+                  value: (() {
+                    if (v[s["key"]] == null) return "";
+
+                    // default
+                    return v[s["key"]].toString();
+                  })(),
+                )
+              //
+              else if (s["type"] == "number") //
+                s["key"]!: PlutoCell(
+                  value: (() {
+                    if (v[s["key"]] == null) return "";
+
+                    // default
+                    return v[s["key"]].toString();
+                  })(),
+                )
+              //
+              else if (s["type"] == "date-time") //
                 s["key"]!: PlutoCell(
                   value: (() {
                     if (v[s["key"]] == null) return "";
@@ -565,6 +596,7 @@ class _Main_State extends State<Main_> {
                     return DateFormat(DATE_FORMAT).format(dt.toLocal());
                   })(),
                 )
+              //
               else if (s["type"] == "boolean") //
                 s["key"]!: PlutoCell(
                   value: (() {
@@ -573,15 +605,6 @@ class _Main_State extends State<Main_> {
 
                     // default
                     return "No";
-                  })(),
-                )
-              else
-                s["key"]!: PlutoCell(
-                  value: (() {
-                    if (v[s["key"]] == null) return "";
-
-                    // default
-                    return v[s["key"]].toString();
                   })(),
                 ),
           },
@@ -638,7 +661,7 @@ class _Main_State extends State<Main_> {
 
       final row = state_manager?.currentRow;
 
-      for (var s in schema) {
+      for (var s in schema.data) {
         final key = s["key"];
         if (key == null) continue;
 

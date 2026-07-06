@@ -1,4 +1,4 @@
-List<Map<String, dynamic>> schema = [
+List<Map<String, dynamic>> data = [
   {
     "key": "_id",
     "type": "_id",
@@ -55,3 +55,5 @@ List<Map<String, dynamic>> schema = [
     "title": "User Note"
   }
 ];
+
+void clear() {for (var s in data) s["value"] = null;}

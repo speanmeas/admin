@@ -88,7 +88,7 @@ class _Main_State extends State<Main_> {
           child: Column(
             children: [
               // view search guest result
-              ...schema.map((row) {
+              ...data.map((row) {
                 //
                 if (row["type"] == "string") {
                   // String value = "";
@@ -226,7 +226,7 @@ class _Main_State extends State<Main_> {
   }
 
   bool can_print() {
-    for (var s in schema) {
+    for (var s in data) {
       if (s["key"] == "ar_total_usd") {
         if (s["value"] != null) {
           if (s["value"] == 0) {
@@ -247,7 +247,7 @@ class _Main_State extends State<Main_> {
   }
 
   void on_paid() async {
-    Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
+    Map<String, dynamic> output = {for (var s in data) s["key"]: s["value"]};
 
     await dio
         .post(

@@ -14,7 +14,7 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "../__Setup__.dart";
-import "../Schema.g.dart";
+import "../Schema.g.dart" as schema;
 
 void main() {
   runApp(
@@ -92,7 +92,7 @@ class _Main_State extends State<Main_> {
           child: Column(
             children: [
               // view search guest result
-              ...schema.map((row) {
+              ...schema.data.map((row) {
                 //
                 if (row["type"] == "string") {
                   // String value = "";
@@ -221,7 +221,7 @@ class _Main_State extends State<Main_> {
   void on_update_guest() async {
     // todo: save guest info + stay detail + payment to database
 
-    Map<String, dynamic> output = {for (var s in schema) s["key"]: s["value"]};
+    Map<String, dynamic> output = {for (var s in schema.data) s["key"]: s["value"]};
 
     String id = output["id"];
     Map<String, dynamic> data = Map<String, dynamic>.from(output);

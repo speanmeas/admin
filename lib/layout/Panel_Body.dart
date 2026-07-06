@@ -12,9 +12,9 @@ import "package:speanmeas/page/nationality/Main.dart" as natinoality;
 
 import "package:speanmeas/page/demo/Main.dart" as demo;
 
-import "package:speanmeas/page/demo_1/Main.dart" as demo_1;
-import "package:speanmeas/page/demo_1a/Main.dart" as demo_1a;
-import "package:speanmeas/page/demo_1b/Main.dart" as demo_1b;
+// import "package:speanmeas/page/demo_1/Main.dart" as demo_1;
+// import "package:speanmeas/page/.demo_1a/Main.dart" as demo_1a;
+// import "package:speanmeas/page/.demo_1b/Main.dart" as demo_1b;
 
 void main() {
   runApp(
@@ -76,17 +76,17 @@ class _Panel_Body_State extends State<Panel_Body_> {
       return demo.Main_();
     }
 
-    if (body == "Demo 1") {
-      return demo_1.Main_();
-    }
+    // if (body == "Demo 1") {
+    //   return demo_1.Main_();
+    // }
 
-    if (body == "Demo 1A") {
-      return demo_1a.Main_();
-    }
+    // if (body == "Demo 1A") {
+    //   return demo_1a.Main_();
+    // }
 
-    if (body == "Demo 1B") {
-      return demo_1b.Main_();
-    }
+    // if (body == "Demo 1B") {
+    //   return demo_1b.Main_();
+    // }
 
     return const SizedBox();
   }
