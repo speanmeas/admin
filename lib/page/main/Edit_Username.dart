@@ -14,7 +14,7 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/utility/Secure_Storage.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
-import "package:speanmeas/page/main/User.g.dart" as user;
+import "package:speanmeas/page/main/_User.dart" as user;
 
 void main() {
   runApp(
@@ -51,7 +51,7 @@ class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
-    controller.text = user.data[user.USERNAME] ?? "";
+    controller.text = user.data[user.USERNAME];
   }
 
   @override
@@ -111,12 +111,12 @@ class _Main_State extends State<Main_> {
   void on_update() async {
     // todo: validation
 
-    String user_username = controller.text.trim();
-
-    if (user_username.length < 6) {
+    if (controller.text.length < 6) {
       snackbar_show(context: context, message: "Username must be at least 6 characters", color: Colors.red);
       return;
     }
+
+    String user_username = controller.text;
 
     await dio
         .post(

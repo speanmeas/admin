@@ -8,7 +8,7 @@ import "package:speanmeas/Global.dart";
 import "package:speanmeas/page/main/Profile.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/utility/Secure_Storage.dart";
-import "package:speanmeas/page/main/User.g.dart" as user;
+import "package:speanmeas/page/main/_User.dart" as user;
 
 void main() {
   runApp(

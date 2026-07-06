@@ -13,9 +13,9 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/layout/Layout.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
-import "package:speanmeas/page/main/User.g.dart" as user;
+import "package:speanmeas/page/main/_User.dart" as user;
 
-import "Setup.dart";
+import "_Setup.dart";
 import "Schema.g.dart" as schema;
 
 import "Filter_String.dart" as filter_string;
@@ -735,7 +735,11 @@ class _Main_State extends State<Main_> {
       context, //
       MaterialPageRoute(builder: (context) => clean.Main_()),
     ).then((v) {
+      //
       if (v == null) return;
+
+      //
+      init();
     });
   }
 
@@ -747,7 +751,11 @@ class _Main_State extends State<Main_> {
       context, //
       MaterialPageRoute(builder: (context) => broke.Main_()),
     ).then((v) {
+      //
       if (v == null) return;
+
+      //
+      init();
     });
   }
 
@@ -759,7 +767,11 @@ class _Main_State extends State<Main_> {
       context, //
       MaterialPageRoute(builder: (context) => fix.Main_()),
     ).then((v) {
+      //
       if (v == null) return;
+
+      //
+      init();
     });
   }
 
@@ -771,7 +783,11 @@ class _Main_State extends State<Main_> {
       context, //
       MaterialPageRoute(builder: (context) => view_room.Main_()),
     ).then((v) {
+      //
       if (v == null) return;
+
+      //
+      init();
     });
   }
 

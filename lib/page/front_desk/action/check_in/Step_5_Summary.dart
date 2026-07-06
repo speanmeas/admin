@@ -13,7 +13,7 @@ import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "../../Setup.dart";
+import "../../_Setup.dart";
 import "../../Schema.g.dart" as schema;
 
 import "Step_5a_Receipt.dart" as receipt;
@@ -273,11 +273,6 @@ class _Main_State extends State<Main_> {
     String? room_id = output[schema.ROOM_ID];
     String? payment_at = output[schema.PAYMENT_AT];
     String? id = output[schema.ID];
-    // for (var s in schema.data) {
-    //   if (s["key"] == "room_id") room_id = s["value"];
-    //   if (s["key"] == "payment_at") payment_at = s["value"];
-    // }
-
     if (payment_at != null && payment_at.isNotEmpty) {
       await dio.post(
         "/room/data_update",

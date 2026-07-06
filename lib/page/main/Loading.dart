@@ -16,7 +16,7 @@ import "package:speanmeas/utility/Secure_Storage.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "Sign_In.dart" as sign_in;
-import "User.g.dart" as user;
+import "_User.dart" as user;
 
 void main() {
   runApp(

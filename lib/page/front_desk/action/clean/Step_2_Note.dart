@@ -129,10 +129,10 @@ class _Main_State extends State<Main_> {
 
   void on_next() async {
     for (var s in schema.data) {
-      if (s["key"] == schema.CHECK_OUT_BY_ID) s["value"] = user.data[user.ID];
-      if (s["key"] == schema.CHECK_OUT_BY) s["value"] = user.data[user.FULL_NAME];
-      if (s["key"] == schema.CHECK_OUT_AT) s["value"] = DateTime.now().toIso8601String();
-      if (s["key"] == schema.CHECK_OUT_NOTE) s["value"] = controller_note.text;
+      if (s["key"] == schema.CLEAN_BY_ID) s["value"] = user.data[user.ID];
+      if (s["key"] == schema.CLEAN_BY) s["value"] = user.data[user.FULL_NAME];
+      if (s["key"] == schema.CLEAN_AT) s["value"] = DateTime.now().toIso8601String();
+      if (s["key"] == schema.CLEAN_NOTE) s["value"] = controller_note.text;
     }
 
     for (var s in schema.data) print(s);

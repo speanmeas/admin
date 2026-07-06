@@ -12,10 +12,10 @@ import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "../../Setup.dart";
-import "../../Schema.g.dart";
+import "../../_Setup.dart";
+import "../../Schema.g.dart" as schema;
 
-// import "Step_2a_Receipt.dart";
+import "Step_3a_Receipt.dart" as receipt;
 
 void main() {
   runApp(const Main());
@@ -58,7 +58,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Payment - Summary", //
+          "Check Out - Summary", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -70,10 +70,10 @@ class _Main_State extends State<Main_> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: OutlinedButton.icon(
-              icon: Icon(Icons.payment_outlined),
-              label: Text("Paid"),
+              icon: Icon(Icons.cleaning_services),
+              label: Text("Clean"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: on_paid, //
+              onPressed: on_clean, //
             ),
           ),
         ],
@@ -88,7 +88,7 @@ class _Main_State extends State<Main_> {
           child: Column(
             children: [
               // view search guest result
-              ...data.map((row) {
+              ...schema.data.map((row) {
                 //
                 if (row["type"] == "string") {
                   // String value = "";
@@ -207,17 +207,6 @@ class _Main_State extends State<Main_> {
 
                 return SizedBox.shrink();
               }),
-
-              // button check in + print
-              // if (can_print())
-              //   Container(
-              //     margin: EdgeInsets.fromLTRB(0, 16, 0, 0),
-              //     child: OutlinedButton.icon(
-              //       label: Text("Print"),
-              //       icon: Icon(Icons.print_outlined),
-              //       onPressed: on_print, //
-              //     ),
-              //   ),
             ],
           ),
         ),
@@ -225,42 +214,78 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  bool can_print() {
-    for (var s in data) {
-      if (s["key"] == "ar_total_usd") {
-        if (s["value"] != null) {
-          if (s["value"] == 0) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
+  void on_clean() async {
+    // Map<String, dynamic> output = {for (var s in data) s["key"]: s["value"]};
 
-  void on_print() {
-    //
-    // Navigator.push(
-    //   context, //
-    //   MaterialPageRoute(builder: (_) => Step_2a_Receipt_()),
+    // await dio
+    //     .post("$PATH/data_update", data: FormData.fromMap({...output}))
+    //     .then((r) {
+    //       snackbar_show(context: context, message: "$HEADER update successfully.", color: Colors.green);
+    //       Navigator.pop(context);
+    //       Navigator.pop(context, output);
+    //     })
+    //     .catchError((error) {
+    //       snackbar_show(context: context, message: "$HEADER update failed.", color: Colors.red);
+    //     });
+
+    // var room_id = data.firstWhere((s) => s["key"] == "room_id")["value"];
+
+    // await dio.post(
+    //   "/room/data_update",
+    //   data: FormData.fromMap({
+    //     "id": room_id, //
+    //     "room_status": "Available",
+    //   }),
     // );
-  }
 
-  void on_paid() async {
-    Map<String, dynamic> output = {for (var s in data) s["key"]: s["value"]};
+    // Map<String, dynamic> output = {for (var s in data) s["key"]: s["value"]};
 
+    // await dio
+    //     .post("$PATH/data_update", data: FormData.fromMap({...output}))
+    //     .then((r) {
+    //       snackbar_show(context: context, message: "$HEADER update successfully.", color: Colors.green);
+    //       Navigator.pop(context);
+    //       Navigator.pop(context, output);
+    //     })
+    //     .catchError((error) {
+    //       snackbar_show(context: context, message: "$HEADER update failed.", color: Colors.red);
+    //     });
+
+    // var room_id = data.firstWhere((s) => s["key"] == "room_id")["value"];
+
+    // await dio.post(
+    //   "/room/data_update",
+    //   data: FormData.fromMap({
+    //     "id": room_id, //
+    //     "room_status": "Dirty",
+    //   }),
+    // );
+
+    //
+    Map<String, dynamic> output = {for (var s in schema.data) s["key"]: s["value"]};
+
+    //
     await dio
-        .post(
-          "$PATH/data_update", //
-          data: FormData.fromMap({...output}),
-        )
+        .post("/front_desk/data_update", data: FormData.fromMap({...output}))
         .then((r) {
-          snackbar_show(context: context, message: "$HEADER update successfully.", color: Colors.green);
+          snackbar_show(context: context, message: "Update successfully.", color: Colors.green);
+          Navigator.pop(context);
           Navigator.pop(context);
           Navigator.pop(context, output);
         })
         .catchError((error) {
-          snackbar_show(context: context, message: "$HEADER update failed.", color: Colors.red);
+          snackbar_show(context: context, message: "Update failed.", color: Colors.red);
         });
+
+    //
+    String? room_id = output[schema.ROOM_ID];
+    await dio.post(
+      "/room/data_update",
+      data: FormData.fromMap({
+        "_id": room_id, //
+        "room_status": "Available",
+        "front_desk_id": "", //
+      }),
+    );
   }
 }

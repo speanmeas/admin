@@ -46,24 +46,6 @@ class Main_ extends StatefulWidget {
 }
 
 class _Main_State extends State<Main_> {
-  // keys
-  // var PRICE_TOTAL = "price_total_usd";
-  // var PAID_BANK_USD = "paid_bank_usd";
-  // var PAID_BANK_KHR = "paid_bank_khr";
-  // var PAID_CASH_USD = "paid_cash_usd";
-  // var PAID_CASH_KHR = "paid_cash_khr";
-  // var PAID_TOTAL_USD = "paid_total_usd";
-  // var RETURN_USD = "return_usd";
-  // var RETURN_KHR = "return_khr";
-  // var RETURN_TOTAL_USD = "return_total_usd";
-  // var AR_TOTAL_USD = "ar_total_usd";
-  // var GET_PAID_DATE = "get_paid_date";
-  // var GET_PAID_BY = "get_paid_by";
-  // var CHECK_OUT_DATE = "check_out_date";
-  // var CHECK_OUT_BY = "check_out_by";
-  // var CHECK_OUT_BY_ID = "check_out_by_id";
-  // var check_out_note = "check_out_note";
-
   TextEditingController controller_note = TextEditingController();
 
   @override
@@ -79,7 +61,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "2. Check Out - Note", //
+          "2. Broke - Note", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -129,10 +111,10 @@ class _Main_State extends State<Main_> {
 
   void on_next() async {
     for (var s in schema.data) {
-      if (s["key"] == schema.CHECK_OUT_BY_ID) s["value"] = user.data[user.ID];
-      if (s["key"] == schema.CHECK_OUT_BY) s["value"] = user.data[user.FULL_NAME];
-      if (s["key"] == schema.CHECK_OUT_AT) s["value"] = DateTime.now().toIso8601String();
-      if (s["key"] == schema.CHECK_OUT_NOTE) s["value"] = controller_note.text;
+      if (s["key"] == schema.BROKE_BY_ID) s["value"] = user.data[user.ID];
+      if (s["key"] == schema.BROKE_BY) s["value"] = user.data[user.FULL_NAME];
+      if (s["key"] == schema.BROKE_AT) s["value"] = DateTime.now().toIso8601String();
+      if (s["key"] == schema.BROKE_NOTE) s["value"] = controller_note.text;
     }
 
     for (var s in schema.data) print(s);

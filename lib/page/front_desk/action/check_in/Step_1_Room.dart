@@ -11,7 +11,7 @@ import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 import "package:speanmeas/page/room/Schema.g.dart" as room_schema;
 
-import "../../Setup.dart";
+import "../../_Setup.dart";
 import "../../Schema.g.dart" as schema;
 import "Step_2_Guest.dart" as step_2;
 
@@ -107,7 +107,7 @@ class _Main_State extends State<Main_> {
                             crossAxisAlignment: .start,
                             children: [
                               Text("Room ${room[schema.ROOM_NUMBER]} (${room[schema.ROOM_TYPE]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
-                              Text("${room[schema.ROOM_PRICE_DAY]}\$/day | ${room[schema.ROOM_PRICE_3H]}\$/3h"),
+                              Text("${room[schema.ROOM_PRICE_PER_DAY_USD]}\$/day | ${room[schema.ROOM_PRICE_PER_3H_USD]}\$/3h"),
                             ],
                           ),
                           Spacer(),

@@ -10,9 +10,9 @@ import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
-import "package:speanmeas/page/main/User.g.dart" as user;
+import "package:speanmeas/page/main/_User.dart" as user;
 
-import "../../Setup.dart";
+import "../../_Setup.dart";
 import "../../Schema.g.dart" as schema;
 
 import "Step_4_Payment.dart" as step_4;
@@ -63,9 +63,9 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     for (var s in schema.data) {
-      if (s["key"] == schema.STAY_DAYS) controller_days.text = (s["value"] ?? "").toString();
-      if (s["key"] == schema.STAY_HOURS) controller_hours.text = (s["value"] ?? "").toString();
-      if (s["key"] == schema.STAY_NUM_GUESTS) controller_num_guests.text = (s["value"] ?? "").toString();
+      if (s["key"] == schema.STAY_DURATION_DAY) controller_days.text = (s["value"] ?? "").toString();
+      if (s["key"] == schema.STAY_DURATION_HOUR) controller_hours.text = (s["value"] ?? "").toString();
+      if (s["key"] == schema.NUMBER_OF_GUESTS) controller_num_guests.text = (s["value"] ?? "").toString();
       if (s["key"] == schema.CHECK_IN_NOTE) controller_note.text = (s["value"] ?? "").toString();
     }
   }
@@ -257,20 +257,20 @@ class _Main_State extends State<Main_> {
     }
 
     for (var s in schema.data) {
-      if (s["key"] == schema.STAY_DAYS) s["value"] = stay_duration_days;
-      if (s["key"] == schema.STAY_HOURS) s["value"] = stay_duration_hours;
-      if (s["key"] == schema.STAY_NUM_GUESTS) s["value"] = number_of_guests;
+      if (s["key"] == schema.STAY_DURATION_DAY) s["value"] = stay_duration_days;
+      if (s["key"] == schema.STAY_DURATION_HOUR) s["value"] = stay_duration_hours;
+      if (s["key"] == schema.NUMBER_OF_GUESTS) s["value"] = number_of_guests;
       if (s["key"] == schema.SCHEDULE_CHECK_OUT) s["value"] = schedule_check_out.toIso8601String();
       // timestamp
       if (s["key"] == schema.CHECK_IN_BY_ID && user.data[user.ID] != null) s["value"] = user.data[user.ID]!;
       if (s["key"] == schema.CHECK_IN_BY && user.data[user.FULL_NAME] != null) s["value"] = user.data[user.FULL_NAME];
-      if (s["key"] == schema.CHECK_IN_DATE) s["value"] = check_in_date.toIso8601String();
+      if (s["key"] == schema.CHECK_IN_AT) s["value"] = check_in_date.toIso8601String();
       if (s["key"] == schema.CHECK_IN_NOTE) s["value"] = controller_note.text;
     }
 
     // print(user.data[user.FULL_NAME]);
 
-    for (var s in schema.data) print(s);
+    // for (var s in schema.data) print(s);
 
     Navigator.push(
       context, //

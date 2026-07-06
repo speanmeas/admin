@@ -15,7 +15,7 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/utility/Secure_Storage.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
-import "package:speanmeas/page/main/User.g.dart" as user;
+import "package:speanmeas/page/main/_User.dart" as user;
 
 void main() {
   runApp(
@@ -52,7 +52,7 @@ class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
-    controller.text = user.data[user.PHONE_NUMBER] ?? "";
+    controller.text = user.data[user.PHONE_NUMBER].toString().trim();
   }
 
   @override
@@ -113,17 +113,24 @@ class _Main_State extends State<Main_> {
   void on_update() async {
     // todo: validation
 
+    String phone_number = " ";
+    if (controller.text.isNotEmpty) {
+      phone_number = controller.text;
+    }
+
+    print("phone_number: $phone_number");
+
     await dio
         .post(
           "/user/data_update",
           data: FormData.fromMap({
             "_id": user.data[user.ID], //
-            "user_phone": controller.text, //
+            user.PHONE_NUMBER: phone_number, //
           }),
         )
         .then((r) async {
           snackbar_show(context: context, message: "Update successful", color: Colors.green);
-          Navigator.pop(context, controller.text);
+          Navigator.pop(context, phone_number);
         })
         .catchError((error) {
           snackbar_show(context: context, message: "Update failed", color: Colors.red);

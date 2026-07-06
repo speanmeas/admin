@@ -14,13 +14,13 @@ import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "Sign_In.dart" as sign_in;
 import "Edit_Name.dart" as update_full_name;
-import "Edit_Phone.dart" as update_phone_number;
+import "Edit_Phone_Number.dart" as update_phone_number;
 import "Edit_Username.dart" as update_username;
 import "Edit_Password.dart" as update_password;
 
 import "package:speanmeas/layout/Layout.dart" as layout;
 
-import "User.g.dart" as user;
+import "_User.dart" as user;
 
 void main() {
   runApp(User_Profile());

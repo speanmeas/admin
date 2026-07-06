@@ -8,7 +8,7 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 
-import "Setup.dart";
+import "_Setup.dart";
 import "Schema.g.dart";
 
 void main() {

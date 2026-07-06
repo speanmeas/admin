@@ -12,8 +12,10 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "Setup.dart";
+import "_Setup.dart";
 import "Schema.g.dart" as schema;
+import "_Room_Status.dart" as room_status;
+import "_Room_Type.dart" as room_type;
 
 void main() {
   runApp(
@@ -81,7 +83,6 @@ class _Main_State extends State<Main_> {
 
                 // type
                 if (s["key"] == "room_type") {
-                  List<String> room_types = ["Single", "Double", "VIP"];
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -92,7 +93,7 @@ class _Main_State extends State<Main_> {
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
-                      items: room_types.map((i) {
+                      items: room_type.data.map((i) {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
@@ -104,7 +105,6 @@ class _Main_State extends State<Main_> {
 
                 // status
                 if (s["key"] == "room_status") {
-                  List<String> room_status = ["Available", "Pending Pay", "Pending Leave", "Pending Clean", "Pending Fix"];
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -115,7 +115,7 @@ class _Main_State extends State<Main_> {
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
-                      items: room_status.map((i) {
+                      items: room_status.data.map((i) {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {

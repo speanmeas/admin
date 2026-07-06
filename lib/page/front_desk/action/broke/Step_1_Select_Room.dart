@@ -10,11 +10,11 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "../../Setup.dart";
-import "../../Schema.g.dart";
-import "../../../room/Schema.g.dart" as room;
+import "../../_Setup.dart";
+import "../../Schema.g.dart" as schema;
+import "../../../room/Schema.g.dart" as room_schema;
 
-// import "Step_2_Select_Create_Guest.dart" as room_info;
+import "Step_2_Note.dart" as step_2;
 
 void main() {
   runApp(
@@ -47,11 +47,6 @@ class Main_ extends StatefulWidget {
 
 class _Main_State extends State<Main_> {
   // keys
-  var ROOM_NUMBER = "room_number";
-  var ROOM_TYPE = "room_type";
-  var PRICE_DAY = "room_price_per_day_usd";
-  var PRICE_3H = "room_price_per_3h_usd";
-  var STATUS = "room_status";
 
   List<Map<String, dynamic>> room_infos = [];
 
@@ -66,7 +61,7 @@ class _Main_State extends State<Main_> {
         .post("/room/data_read")
         .then((r) {
           room_infos = List<Map<String, dynamic>>.from(r.data);
-          room_infos.sort((a, b) => "${a[ROOM_NUMBER]}".compareTo("${b[ROOM_NUMBER]}"));
+          room_infos.sort((a, b) => "${a[room_schema.ROOM_NUMBER]}".compareTo("${b[room_schema.ROOM_NUMBER]}"));
           setState(() {});
         })
         .catchError((_) {});
@@ -77,7 +72,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Broke - Room", //
+          "1. Broke - Room", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -96,33 +91,34 @@ class _Main_State extends State<Main_> {
             children: [
               for (var room in room_infos) ...[
                 //
-                InkWell(
-                  child: Container(
-                    height: 50,
-                    width: 600,
-                    padding: EdgeInsets.fromLTRB(8, 0, 12, 0),
-                    decoration: BoxDecoration(
-                      border: Border(top: BorderSide(color: Colors.black)),
-                    ),
+                if (room[schema.ROOM_STATUS] == "Available")
+                  InkWell(
+                    child: Container(
+                      height: 50,
+                      width: 600,
+                      padding: EdgeInsets.fromLTRB(8, 0, 12, 0),
+                      decoration: BoxDecoration(
+                        border: Border(top: BorderSide(color: Colors.black)),
+                      ),
 
-                    child: Row(
-                      children: [
-                        Icon(Icons.bed_outlined, color: Colors.blue, size: 32), //
-                        SizedBox(width: 8),
-                        Column(
-                          mainAxisAlignment: .center,
-                          crossAxisAlignment: .start,
-                          children: [
-                            Text("Room ${room[ROOM_NUMBER]} (${room[ROOM_TYPE]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
-                            Text("${room[PRICE_DAY]}\$/day | ${room[PRICE_3H]}\$/3h"),
-                          ],
-                        ),
-                        Spacer(),
-                      ],
+                      child: Row(
+                        children: [
+                          Icon(Icons.bed_outlined, color: Colors.blue, size: 32), //
+                          SizedBox(width: 8),
+                          Column(
+                            mainAxisAlignment: .center,
+                            crossAxisAlignment: .start,
+                            children: [
+                              Text("Room ${room[room_schema.ROOM_NUMBER]} (${room[room_schema.ROOM_TYPE]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("${room[room_schema.ROOM_PRICE_PER_DAY_USD]}\$/day | ${room[room_schema.ROOM_PRICE_PER_3H_USD]}\$/3h"),
+                            ],
+                          ),
+                          Spacer(),
+                        ],
+                      ),
                     ),
+                    onTap: () => on_selected(room),
                   ),
-                  onTap: () {},
-                ),
               ],
 
               Container(
@@ -133,10 +129,38 @@ class _Main_State extends State<Main_> {
                 ),
               ),
 
+              // no room here
+              (() {
+                int count = 0;
+                for (var room in room_infos) {
+                  if (room[room_schema.ROOM_STATUS] == "Available") count++;
+                }
+                if (count > 0) return SizedBox();
+                return Text("No room here.", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+              })(),
+
               SizedBox(height: 50),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void on_selected(room) async {
+    //
+    for (var e in room.entries) {
+      for (var s in schema.data) {
+        if (e.key == "_id" && s["key"] == "room_id") s["value"] = e.value;
+        if (e.key == s["key"]) s["value"] = e.value;
+      }
+    }
+
+    //
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => step_2.Main_(), //
       ),
     );
   }

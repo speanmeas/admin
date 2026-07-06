@@ -16,7 +16,7 @@ import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "package:speanmeas/layout/Layout.dart" as layout;
 
-import "User.g.dart";
+import "_User.dart";
 
 void main() {
   runApp(

@@ -14,7 +14,7 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/utility/Secure_Storage.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
-import "package:speanmeas/page/main/User.g.dart" as user;
+import "package:speanmeas/page/main/_User.dart" as user;
 
 void main() {
   runApp(
@@ -27,8 +27,6 @@ void main() {
 
 class Main extends StatelessWidget {
   Main({super.key});
-
-  // String full_name = "Admin";
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +51,7 @@ class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
-    controller.text = user.data[user.USERNAME] ?? "";
+    controller.text = user.data[user.FULL_NAME].toString().trim();
   }
 
   @override
@@ -110,17 +108,24 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update() async {
+    // todo: validation
+
+    String name = " ";
+    if (controller.text.isNotEmpty) {
+      name = controller.text;
+    }
+
     await dio
         .post(
           "/user/data_update",
           data: FormData.fromMap({
             "_id": user.data[user.ID], //
-            "user_name": controller.text, //
+            "user_name": name, //
           }),
         )
         .then((r) async {
           snackbar_show(context: context, message: "Update successful", color: Colors.green);
-          Navigator.pop(context, controller.text);
+          Navigator.pop(context, name);
         })
         .catchError((error) {
           snackbar_show(context: context, message: "Update failed", color: Colors.red);
