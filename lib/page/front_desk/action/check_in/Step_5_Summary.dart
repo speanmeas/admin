@@ -252,8 +252,6 @@ class _Main_State extends State<Main_> {
   }
 
   void on_check_in() async {
-    // todo: save guest info + stay detail + payment to database
-
     Map<String, dynamic> output = {for (var s in schema.data) s["key"]: s["value"]};
 
     await dio
@@ -272,12 +270,13 @@ class _Main_State extends State<Main_> {
         });
 
     //
-    String? room_id;
-    String? payment_at;
-    for (var s in schema.data) {
-      if (s["key"] == "room_id") room_id = s["value"];
-      if (s["key"] == "payment_at") payment_at = s["value"];
-    }
+    String? room_id = output[schema.ROOM_ID];
+    String? payment_at = output[schema.PAYMENT_AT];
+    String? id = output[schema.ID];
+    // for (var s in schema.data) {
+    //   if (s["key"] == "room_id") room_id = s["value"];
+    //   if (s["key"] == "payment_at") payment_at = s["value"];
+    // }
 
     if (payment_at != null && payment_at.isNotEmpty) {
       await dio.post(
@@ -285,6 +284,7 @@ class _Main_State extends State<Main_> {
         data: FormData.fromMap({
           "_id": room_id, //
           "room_status": "Pending Leave",
+          "front_desk_id": id, //
         }),
       );
     } else {
@@ -293,6 +293,7 @@ class _Main_State extends State<Main_> {
         data: FormData.fromMap({
           "_id": room_id, //
           "room_status": "Pending Pay",
+          "front_desk_id": id, //
         }),
       );
     }

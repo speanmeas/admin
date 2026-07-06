@@ -13,10 +13,10 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/layout/Layout.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
+import "package:speanmeas/page/main/User.g.dart" as user;
 
 import "Setup.dart";
 import "Schema.g.dart" as schema;
-import "package:speanmeas/page/main/User.g.dart" as user;
 
 import "Filter_String.dart" as filter_string;
 import "Filter_Number.dart" as filter_number;
@@ -292,12 +292,7 @@ class _Main_State extends State<Main_> {
                         child: OutlinedButton.icon(
                           icon: Icon(Icons.payment), //
                           label: Text("Payment"),
-                          onPressed: () {
-                            Navigator.push(
-                              context, //
-                              MaterialPageRoute(builder: (context) => payment.Main_()),
-                            ).then((v) {});
-                          },
+                          onPressed: on_payment,
                         ),
                       ),
 
@@ -309,12 +304,7 @@ class _Main_State extends State<Main_> {
                         child: OutlinedButton.icon(
                           icon: Icon(Icons.logout), //
                           label: Text("Check Out"),
-                          onPressed: () {
-                            Navigator.push(
-                              context, //
-                              MaterialPageRoute(builder: (context) => check_out.Main_()),
-                            ).then((v) {});
-                          },
+                          onPressed: on_check_out,
                         ),
                       ),
 
@@ -325,12 +315,7 @@ class _Main_State extends State<Main_> {
                       child: OutlinedButton.icon(
                         icon: Icon(Icons.cleaning_services), //
                         label: Text("Clean"),
-                        onPressed: () {
-                          Navigator.push(
-                            context, //
-                            MaterialPageRoute(builder: (context) => clean.Main_()),
-                          ).then((v) {});
-                        },
+                        onPressed: on_clean,
                       ),
                     ),
 
@@ -341,12 +326,7 @@ class _Main_State extends State<Main_> {
                       child: OutlinedButton.icon(
                         icon: Icon(Icons.bug_report_outlined), //
                         label: Text("Broke"),
-                        onPressed: () {
-                          Navigator.push(
-                            context, //
-                            MaterialPageRoute(builder: (context) => broke.Main_()),
-                          ).then((v) {});
-                        },
+                        onPressed: on_broke,
                       ),
                     ),
 
@@ -357,12 +337,7 @@ class _Main_State extends State<Main_> {
                       child: OutlinedButton.icon(
                         icon: Icon(Icons.build_outlined), //
                         label: Text("Fix"),
-                        onPressed: () {
-                          Navigator.push(
-                            context, //
-                            MaterialPageRoute(builder: (context) => fix.Main_()),
-                          ).then((v) {});
-                        },
+                        onPressed: on_fix,
                       ),
                     ),
 
@@ -372,12 +347,7 @@ class _Main_State extends State<Main_> {
                       child: OutlinedButton.icon(
                         icon: Icon(Icons.hotel_outlined), //
                         label: Text("Status"),
-                        onPressed: () {
-                          Navigator.push(
-                            context, //
-                            MaterialPageRoute(builder: (context) => view_room.Main_()),
-                          ).then((v) {});
-                        },
+                        onPressed: on_view_room,
                       ),
                     ),
 
@@ -636,16 +606,15 @@ class _Main_State extends State<Main_> {
 
   void on_check_in() {
     //
+    schema.clear();
+
+    //
     Navigator.push(
       context, //
       MaterialPageRoute(builder: (context) => check_in.Main_()),
     ).then((v) {
       //
-      if (v == null) {
-        // clear schema values
-        for (var s in schema.data) s["value"] = null;
-        return;
-      }
+      if (v == null) return;
 
       // clear sort
       final sorted_column = state_manager?.getSortedColumn;
@@ -726,7 +695,90 @@ class _Main_State extends State<Main_> {
     });
   }
 
+  void on_payment() {
+    //
+    schema.clear();
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => payment.Main_()),
+    ).then((v) {
+      //
+      if (v == null) return;
+
+      //
+      init();
+    });
+  }
+
+  void on_check_out() {
+    //
+    schema.clear();
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => check_out.Main_()),
+    ).then((v) {
+      //
+      if (v == null) return;
+
+      //
+      init();
+    });
+  }
+
+  void on_clean() {
+    //
+    schema.clear();
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => clean.Main_()),
+    ).then((v) {
+      if (v == null) return;
+    });
+  }
+
+  void on_broke() {
+    //
+    schema.clear();
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => broke.Main_()),
+    ).then((v) {
+      if (v == null) return;
+    });
+  }
+
+  void on_fix() {
+    //
+    schema.clear();
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => fix.Main_()),
+    ).then((v) {
+      if (v == null) return;
+    });
+  }
+
+  void on_view_room() {
+    //
+    schema.clear();
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => view_room.Main_()),
+    ).then((v) {
+      if (v == null) return;
+    });
+  }
+
   void on_create() {
+    //
+    schema.clear();
+
     //
     Navigator.push(
       context, //
@@ -816,6 +868,9 @@ class _Main_State extends State<Main_> {
 
   void on_read() {
     //
+    schema.clear();
+
+    //
     if (state_manager?.currentRow == null) {
       snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
       return;
@@ -834,6 +889,9 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update() {
+    //
+    schema.clear();
+
     //
     if (state_manager?.currentRow == null) {
       snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
@@ -892,6 +950,10 @@ class _Main_State extends State<Main_> {
   }
 
   void on_delete() {
+    //
+    schema.clear();
+
+    //
     if (state_manager?.currentRow == null) {
       snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
       return;
@@ -918,6 +980,9 @@ class _Main_State extends State<Main_> {
   }
 
   void on_refresh() {
+    //
+    schema.clear();
+
     //
     key = null;
     has = null;

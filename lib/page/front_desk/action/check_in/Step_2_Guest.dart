@@ -302,8 +302,8 @@ class _Main_State extends State<Main_> {
               Container(
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: OutlinedButton.icon(
-                  icon: Icon(Icons.person_add_alt_1_outlined),
-                  label: Text("Create New Guest"),
+                  icon: Icon(Icons.add),
+                  label: Text("Create New"),
                   style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
                   onPressed: on_add_new,
                 ),

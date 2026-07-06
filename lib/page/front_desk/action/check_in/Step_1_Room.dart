@@ -9,12 +9,10 @@ import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
+import "package:speanmeas/page/room/Schema.g.dart" as room_schema;
 
 import "../../Setup.dart";
 import "../../Schema.g.dart" as schema;
-
-import "package:speanmeas/page/room/Schema.g.dart" as room_schema;
-
 import "Step_2_Guest.dart" as step_2;
 
 void main() {
@@ -131,6 +129,16 @@ class _Main_State extends State<Main_> {
                   border: Border(top: BorderSide(color: Colors.black)),
                 ),
               ),
+
+              // no room here
+              (() {
+                int count = 0;
+                for (var room in room_infos) {
+                  if (room[room_schema.ROOM_STATUS] == "Available") count++;
+                }
+                if (count > 0) return SizedBox();
+                return Text("No room here.", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+              })(),
 
               SizedBox(height: 50),
             ],

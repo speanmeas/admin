@@ -11,8 +11,8 @@ import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "../../Setup.dart";
-import "../../Schema.g.dart";
-import "../../../room/Schema.g.dart" as room;
+import "../../Schema.g.dart" as schema;
+import "../../../room/Schema.g.dart" as room_schema;
 
 // import "Step_2_Select_Create_Guest.dart" as room_info;
 
@@ -137,6 +137,16 @@ class _Main_State extends State<Main_> {
                   border: Border(top: BorderSide(color: Colors.black)),
                 ),
               ),
+
+              // no room here
+              (() {
+                int count = 0;
+                for (var room in room_infos) {
+                  if (room[room_schema.ROOM_STATUS] == "Pending Clean") count++;
+                }
+                if (count > 0) return SizedBox();
+                return Text("No room here.", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold));
+              })(),
 
               SizedBox(height: 50),
             ],

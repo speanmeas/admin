@@ -8,7 +8,6 @@ import "package:speanmeas/Global.dart";
 import "package:speanmeas/page/main/Profile.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/utility/Secure_Storage.dart";
-
 import "package:speanmeas/page/main/User.g.dart" as user;
 
 void main() {
@@ -121,7 +120,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
               ),
               child: Text(
                 user.data[user.FULL_NAME]!.substring(0, 1).toUpperCase() ?? "", //
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
             onTap: () {

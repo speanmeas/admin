@@ -60,6 +60,7 @@ List<Map<String, dynamic>> data = [
 final ID = "_id";
 
 // room keys
+final ROOM_ID = "room_id";
 final ROOM_NUMBER = "room_number";
 final ROOM_TYPE = "room_type";
 final ROOM_PRICE_DAY = "room_price_per_day_usd";
@@ -67,6 +68,7 @@ final ROOM_PRICE_3H = "room_price_per_3h_usd";
 final ROOM_STATUS = "room_status";
 
 // guest keys
+final GUEST_ID = "guest_id";
 final GUEST_NAME = "guest_name";
 final GUEST_GENDER = "guest_gender";
 final GUEST_PHONE_NUMBER = "guest_phone";
@@ -101,6 +103,11 @@ final PAYMENT_BY_ID = "payment_by_id";
 final PAYMENT_AT = "payment_at";
 final PAYMENT_BY = "payment_by";
 final PAYMENT_NOTE = "payment_note";
+
+final CHECK_OUT_BY_ID = "check_out_by_id";
+final CHECK_OUT_BY = "check_out_by";
+final CHECK_OUT_DATE = "check_out_at";
+final CHECK_OUT_NOTE = "check_out_note";
 
 void clear() {
   for (var s in data) s["value"] = null;

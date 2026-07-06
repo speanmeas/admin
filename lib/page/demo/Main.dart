@@ -535,6 +535,9 @@ class _Main_State extends State<Main_> {
 
   void on_create() {
     //
+    schema.clear();
+
+    //
     Navigator.push(
       context, //
       MaterialPageRoute(builder: (context) => create.Main_()),
@@ -623,6 +626,9 @@ class _Main_State extends State<Main_> {
 
   void on_read() {
     //
+    schema.clear();
+
+    //
     if (state_manager?.currentRow == null) {
       snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
       return;
@@ -641,6 +647,9 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update() {
+    //
+    schema.clear();
+
     //
     if (state_manager?.currentRow == null) {
       snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
@@ -699,6 +708,10 @@ class _Main_State extends State<Main_> {
   }
 
   void on_delete() {
+    //
+    schema.clear();
+
+    //
     if (state_manager?.currentRow == null) {
       snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
       return;
@@ -726,6 +739,9 @@ class _Main_State extends State<Main_> {
 
   void on_refresh() {
     //
+    schema.clear();
+
+    //
     key = null;
     has = null;
     query = null;
@@ -741,6 +757,7 @@ class _Main_State extends State<Main_> {
       state_manager?.sortBySortIdx(sorted_column);
     }
 
+    //
     init();
 
     // scroll to top
@@ -757,9 +774,7 @@ class _Main_State extends State<Main_> {
     required VoidCallback on_filter,
   }) {
     //
-
     PlutoColumnType column_type;
-
     if (type == "number") {
       column_type = PlutoColumnType.number();
     } else {
@@ -776,7 +791,6 @@ class _Main_State extends State<Main_> {
       readOnly: true,
       enableFilterMenuItem: false,
       hide: type == "_id" ? true : false,
-
       titleSpan: WidgetSpan(
         child: Row(
           children: [
