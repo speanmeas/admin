@@ -9,7 +9,7 @@ import "package:speanmeas/page/main/Profile.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/utility/Secure_Storage.dart";
 
-import "package:speanmeas/page/main/User.g.dart";
+import "package:speanmeas/page/main/User.g.dart" as user;
 
 void main() {
   runApp(
@@ -120,7 +120,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
                 border: Border.all(color: Colors.blue, width: 2),
               ),
               child: Text(
-                user["user_name"]!.substring(0, 1).toUpperCase() ?? "", //
+                user.data[user.FULL_NAME]!.substring(0, 1).toUpperCase() ?? "", //
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),

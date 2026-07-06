@@ -8,13 +8,14 @@ import "package:provider/provider.dart";
 
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
-import "package:speanmeas/page/main/User.g.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/utility/Secure_Storage.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
+
+import "package:speanmeas/page/main/User.g.dart" as user;
 
 void main() {
   runApp(
@@ -51,7 +52,7 @@ class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
-    controller.text = user["user_username"] ?? "";
+    controller.text = user.data[user.USERNAME] ?? "";
   }
 
   @override
@@ -122,7 +123,7 @@ class _Main_State extends State<Main_> {
         .post(
           "/user/data_update",
           data: FormData.fromMap({
-            "_id": user["_id"], //
+            "_id": user.data[user.ID], //
             "user_username": user_username, //
           }),
         )

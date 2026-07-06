@@ -10,8 +10,9 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "../../Constant.dart";
+import "../../Setup.dart";
 import "../../Schema.g.dart" as schema;
+
 import "package:speanmeas/page/room/Schema.g.dart" as room_schema;
 
 import "Step_2_Guest.dart" as step_2;
@@ -59,7 +60,7 @@ class _Main_State extends State<Main_> {
         .post("/room/data_read")
         .then((r) {
           room_infos = List<Map<String, dynamic>>.from(r.data);
-          room_infos.sort((a, b) => "${a[ROOM_NUMBER]}".compareTo("${b[ROOM_NUMBER]}"));
+          room_infos.sort((a, b) => "${a[schema.ROOM_NUMBER]}".compareTo("${b[schema.ROOM_NUMBER]}"));
           setState(() {});
         })
         .catchError((_) {});
@@ -89,7 +90,7 @@ class _Main_State extends State<Main_> {
             children: [
               for (var room in room_infos) ...[
                 //
-                if (room[ROOM_STATUS] == "Available")
+                if (room[schema.ROOM_STATUS] == "Available")
                   InkWell(
                     child: Container(
                       height: 50,
@@ -107,13 +108,13 @@ class _Main_State extends State<Main_> {
                             mainAxisAlignment: .center,
                             crossAxisAlignment: .start,
                             children: [
-                              Text("Room ${room[ROOM_NUMBER]} (${room[ROOM_TYPE]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
-                              Text("${room[ROOM_PRICE_DAY]}\$/day | ${room[ROOM_PRICE_3H]}\$/3h"),
+                              Text("Room ${room[schema.ROOM_NUMBER]} (${room[schema.ROOM_TYPE]})", style: TextStyle(fontWeight: .bold, fontSize: 16)), //
+                              Text("${room[schema.ROOM_PRICE_DAY]}\$/day | ${room[schema.ROOM_PRICE_3H]}\$/3h"),
                             ],
                           ),
                           Spacer(),
                           Text(
-                            "${room[ROOM_STATUS]}",
+                            "${room[schema.ROOM_STATUS]}",
                             style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                           ), //
                         ],

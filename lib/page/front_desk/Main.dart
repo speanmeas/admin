@@ -9,14 +9,14 @@ import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/Global.dart";
 import "package:speanmeas/Environment.dart";
-import "package:speanmeas/page/main/User.g.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/layout/Layout.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "__Setup__.dart";
+import "Setup.dart";
 import "Schema.g.dart" as schema;
+import "package:speanmeas/page/main/User.g.dart" as user;
 
 import "Filter_String.dart" as filter_string;
 import "Filter_Number.dart" as filter_number;
@@ -273,7 +273,7 @@ class _Main_State extends State<Main_> {
                 child: Wrap(
                   children: [
                     // check in
-                    if (user["user_is_admin"] == true || user["user_is_manager"] == true || user["user_is_receptionist"] == true || kDebugMode)
+                    if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true || user.data[user.IS_RECEPTIONIST] == true || kDebugMode)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -285,7 +285,7 @@ class _Main_State extends State<Main_> {
                       ),
 
                     // payment
-                    if (user["user_is_admin"] == true || user["user_is_manager"] == true || user["user_is_receptionist"] == true || kDebugMode)
+                    if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true || user.data[user.IS_RECEPTIONIST] == true || kDebugMode)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -302,7 +302,7 @@ class _Main_State extends State<Main_> {
                       ),
 
                     // check out
-                    if (user["user_is_admin"] == true || user["user_is_manager"] == true || user["user_is_receptionist"] == true || kDebugMode)
+                    if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true || user.data[user.IS_RECEPTIONIST] == true || kDebugMode)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -404,7 +404,7 @@ class _Main_State extends State<Main_> {
                     ),
 
                     // update guest info
-                    if (user["user_is_admin"] == true || user["user_is_manager"] == true || user["user_is_receptionist"] == true || kDebugMode)
+                    if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true || user.data[user.IS_RECEPTIONIST] == true || kDebugMode)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -427,7 +427,7 @@ class _Main_State extends State<Main_> {
                     ),
 
                     // update
-                    if (user["user_is_admin"] == true || user["user_is_manager"] == true || kDebugMode)
+                    if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true || kDebugMode)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
@@ -439,7 +439,7 @@ class _Main_State extends State<Main_> {
                       ),
 
                     // delete
-                    if (user["user_is_admin"] == true || user["user_is_manager"] == true || kDebugMode)
+                    if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true || kDebugMode)
                       Container(
                         height: 32,
                         margin: EdgeInsets.fromLTRB(2, 2, 0, 2),

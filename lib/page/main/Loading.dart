@@ -16,7 +16,7 @@ import "package:speanmeas/utility/Secure_Storage.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "Sign_In.dart" as sign_in;
-import "User.g.dart";
+import "User.g.dart" as user;
 
 void main() {
   runApp(
@@ -92,7 +92,7 @@ class _Loading_State extends State<Loading_> {
         )
         .then((r) async {
           //
-          for (var k in user.keys) user[k] = r.data[0][k];
+          for (var k in user.data.keys) user.data[k] = r.data[0][k];
 
           snackbar_show(context: context, message: "Login successful", color: Colors.green);
 

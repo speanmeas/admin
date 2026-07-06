@@ -12,8 +12,7 @@ import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "../../__Setup__.dart";
-import "../../Constant.dart";
+import "../../Setup.dart";
 import "../../Schema.g.dart" as schema;
 
 import "Step_3_Staying.dart" as step_3;
@@ -64,10 +63,10 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     for (var s in schema.data) {
-      if (s["key"] == GUEST_NAME) selected_guest[GUEST_NAME] = s["value"] ?? "";
-      if (s["key"] == GUEST_GENDER) selected_guest[GUEST_GENDER] = s["value"] ?? "";
-      if (s["key"] == GUEST_PHONE_NUMBER) selected_guest[GUEST_PHONE_NUMBER] = s["value"] ?? "";
-      if (s["key"] == GUEST_NATIONALITY) selected_guest[GUEST_NATIONALITY] = s["value"] ?? "";
+      if (s["key"] == schema.GUEST_NAME) selected_guest[schema.GUEST_NAME] = s["value"] ?? "";
+      if (s["key"] == schema.GUEST_GENDER) selected_guest[schema.GUEST_GENDER] = s["value"] ?? "";
+      if (s["key"] == schema.GUEST_PHONE_NUMBER) selected_guest[schema.GUEST_PHONE_NUMBER] = s["value"] ?? "";
+      if (s["key"] == schema.GUEST_NATIONALITY) selected_guest[schema.GUEST_NATIONALITY] = s["value"] ?? "";
     }
   }
 
@@ -111,7 +110,7 @@ class _Main_State extends State<Main_> {
                   return TypeAheadField<String>(
                     controller: controller_search,
                     suggestionsCallback: (query) async {
-                      String key = GUEST_PHONE_NUMBER;
+                      String key = schema.GUEST_PHONE_NUMBER;
                       List<String> option_datas = [];
                       await dio
                           .post(
@@ -157,7 +156,7 @@ class _Main_State extends State<Main_> {
                         title: Text(item),
                         onTap: () {
                           for (var g in guest_datas) {
-                            if (g[GUEST_PHONE_NUMBER] == item) {
+                            if (g[schema.GUEST_PHONE_NUMBER] == item) {
                               selected_guest = g;
                               // print(selected_guest);
                               break;
@@ -323,7 +322,7 @@ class _Main_State extends State<Main_> {
     ).then((value) {
       if (value == null) return;
 
-      controller_search.text = value[GUEST_PHONE_NUMBER] ?? "";
+      controller_search.text = value[schema.GUEST_PHONE_NUMBER] ?? "";
       selected_guest = value;
       setState(() {});
     });

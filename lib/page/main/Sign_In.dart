@@ -160,7 +160,7 @@ class _Main_State extends State<Main_> {
           dio.options.headers["Authorization"] = "Bearer ${r.data[0]["user_access_token"]}";
 
           //
-          for (var k in user.keys) user[k] = r.data[0][k];
+          for (var k in data.keys) data[k] = r.data[0][k];
 
           snackbar_show(context: context, message: "Sign in successful", color: Colors.green);
 

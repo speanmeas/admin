@@ -6,13 +6,13 @@ import "package:provider/provider.dart";
 
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
-import "package:speanmeas/page/main/User.g.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
+import "package:speanmeas/page/main/User.g.dart" as user;
 
-import "../../Constant.dart";
+import "../../Setup.dart";
 import "../../Schema.g.dart" as schema;
 
 import "Step_4_Payment.dart" as step_4;
@@ -63,10 +63,10 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     for (var s in schema.data) {
-      if (s["key"] == STAY_DAYS) controller_days.text = (s["value"] ?? "").toString();
-      if (s["key"] == STAY_HOURS) controller_hours.text = (s["value"] ?? "").toString();
-      if (s["key"] == STAY_NUM_GUESTS) controller_num_guests.text = (s["value"] ?? "").toString();
-      if (s["key"] == CHECK_IN_NOTE) controller_note.text = (s["value"] ?? "").toString();
+      if (s["key"] == schema.STAY_DAYS) controller_days.text = (s["value"] ?? "").toString();
+      if (s["key"] == schema.STAY_HOURS) controller_hours.text = (s["value"] ?? "").toString();
+      if (s["key"] == schema.STAY_NUM_GUESTS) controller_num_guests.text = (s["value"] ?? "").toString();
+      if (s["key"] == schema.CHECK_IN_NOTE) controller_note.text = (s["value"] ?? "").toString();
     }
   }
 
@@ -257,18 +257,21 @@ class _Main_State extends State<Main_> {
     }
 
     for (var s in schema.data) {
-      if (s["key"] == STAY_DAYS) s["value"] = stay_duration_days;
-      if (s["key"] == STAY_HOURS) s["value"] = stay_duration_hours;
-      if (s["key"] == STAY_NUM_GUESTS) s["value"] = number_of_guests;
-      if (s["key"] == SCHEDULE_CHECK_OUT) s["value"] = schedule_check_out.toIso8601String();
+      if (s["key"] == schema.STAY_DAYS) s["value"] = stay_duration_days;
+      if (s["key"] == schema.STAY_HOURS) s["value"] = stay_duration_hours;
+      if (s["key"] == schema.STAY_NUM_GUESTS) s["value"] = number_of_guests;
+      if (s["key"] == schema.SCHEDULE_CHECK_OUT) s["value"] = schedule_check_out.toIso8601String();
       // timestamp
-      if (s["key"] == CHECK_IN_BY_ID && user["_id"] != null) s["value"] = user["_id"]!;
-      if (s["key"] == CHECK_IN_BY && user["full_name"] != null) s["value"] = user["full_name"];
-      if (s["key"] == CHECK_IN_DATE) s["value"] = check_in_date.toIso8601String();
-      if (s["key"] == CHECK_IN_NOTE) s["value"] = controller_note.text;
+      if (s["key"] == schema.CHECK_IN_BY_ID && user.data[user.ID] != null) s["value"] = user.data[user.ID]!;
+      if (s["key"] == schema.CHECK_IN_BY && user.data[user.FULL_NAME] != null) s["value"] = user.data[user.FULL_NAME];
+      if (s["key"] == schema.CHECK_IN_DATE) s["value"] = check_in_date.toIso8601String();
+      if (s["key"] == schema.CHECK_IN_NOTE) s["value"] = controller_note.text;
     }
 
-    // for (var s in schema) print(s);
+    // print(user.data[user.FULL_NAME]);
+
+    for (var s in schema.data) print(s);
+
     Navigator.push(
       context, //
       MaterialPageRoute(builder: (context) => step_4.Main_()),
