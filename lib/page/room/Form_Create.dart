@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:intl/intl.dart";
+import "package:dio/dio.dart";
 
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/utility/Dio.dart";
@@ -40,7 +41,7 @@ class _Main_State extends State<Main_> {
               ...schema.data.entries.where((e) => !e.key.contains("_id")).map((e) {
                 //
 
-                if (e.key == "room_type") {
+                if (e.key == schema.ROOM_TYPE) {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -52,7 +53,7 @@ class _Main_State extends State<Main_> {
                   );
                 }
 
-                if (e.key == "room_status") {
+                if (e.key == schema.ROOM_STATUS) {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -206,7 +207,7 @@ class _Main_State extends State<Main_> {
 
     // request
     await dio
-        .post("$PATH/data_create", data: form_data({...output}))
+        .post("$PATH/data_create", data: FormData.fromMap({...output}))
         .then((r) {
           output["_id"] = r.data["_id"];
           Navigator.pop(context, output);

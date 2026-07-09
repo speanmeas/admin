@@ -4,7 +4,7 @@ import "package:speanmeas/theme/Theme_Data.dart";
 class _Main_State extends State<Main_> {
   //
 
-  var room_status = ["Available", "Pending Pay", "Pending Leave", "Pending Clean", "Pending Fix"];
+  var options = ["Available", "Pending Pay", "Pending Leave", "Pending Clean", "Pending Fix"];
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class _Main_State extends State<Main_> {
         labelStyle: TextStyle(fontWeight: FontWeight.bold),
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
-      items: room_status.map((i) {
+      items: options.map((i) {
         return DropdownMenuItem<String>(value: i, child: Text(i));
       }).toList(),
       onChanged: (v) {

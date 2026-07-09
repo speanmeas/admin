@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:intl/intl.dart";
+import "package:dio/dio.dart";
 
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/utility/Dio.dart";
@@ -10,6 +11,9 @@ import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "_setup.dart";
 import "schema.g.dart" as schema;
+
+import "widget/guest_gender.dart" as guest_gender;
+import "widget/guest_nationality.dart" as guest_nationality;
 
 class _Main_State extends State<Main_> {
   Map<String, dynamic> output = {};
@@ -36,6 +40,30 @@ class _Main_State extends State<Main_> {
             children: [
               ...schema.data.entries.where((e) => !e.key.contains("_id")).map((e) {
                 //
+
+                if (e.key == schema.GUEST_NATIONALITY) {
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: guest_nationality.Main_(
+                      onChanged: (v) {
+                        output[e.key] = v;
+                      },
+                    ),
+                  );
+                }
+
+                if (e.key == schema.GUEST_GENDER) {
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: guest_gender.Main_(
+                      onChanged: (v) {
+                        output[e.key] = v;
+                      },
+                    ),
+                  );
+                }
 
                 //
                 //
@@ -179,7 +207,7 @@ class _Main_State extends State<Main_> {
 
     // request
     await dio
-        .post("$PATH/data_create", data: form_data({...output}))
+        .post("$PATH/data_create", data: FormData.fromMap({...output}))
         .then((r) {
           output["_id"] = r.data["_id"];
           Navigator.pop(context, output);
@@ -200,6 +228,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
+      title: HEADER, //
       theme: Theme_Data(), //
       home: const Main_(),
       debugShowCheckedModeBanner: false,

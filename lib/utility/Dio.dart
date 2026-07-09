@@ -10,7 +10,3 @@ Dio dio = Dio(
     // receiveTimeout: Duration(seconds: 10), //
   ),
 );
-
-FormData form_data(Map<String, dynamic> data) {
-  return form_data(data);
-}

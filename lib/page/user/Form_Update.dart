@@ -3,6 +3,7 @@ import "dart:io";
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:dio/dio.dart";
 
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/utility/Dio.dart";
@@ -36,35 +37,15 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              // ...schema.data.where((s) => s["hide"] == false).map((s) {
               ...schema.data.entries.where((e) => !e.key.contains("_id")).map((e) {
-                //
-                if (e.key.contains("password")) {
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: TextField(
-                      controller: TextEditingController(text: ""),
-                      decoration: InputDecoration(
-                        hintText: "New Password", //
-                        labelText: e.value["title"] + ":", //
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      onChanged: (v) {
-                        output[e.key] = v; //
-                      },
-                    ),
-                  );
-                }
-
                 //
                 //
                 //
 
                 //
                 if (e.value["type"] == "string") {
-                  String value = e.value["value"]?.toString() ?? "";
+                  String value = "";
+                  if (!e.key.contains("password")) value = e.value["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -72,6 +53,7 @@ class _Main_State extends State<Main_> {
                       controller: TextEditingController(text: value),
                       maxLines: e.key.contains("note") ? 4 : 1,
                       decoration: InputDecoration(
+                        hintText: e.key.contains("password") ? "New Password" : null, //
                         labelText: e.value["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -85,7 +67,8 @@ class _Main_State extends State<Main_> {
 
                 // edit number
                 if (e.value["type"] == "number") {
-                  String? value = e.value["value"]?.toString() ?? "";
+                  String value = "";
+                  if (e.value["value"] != null) value = e.value["value"].toString();
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -216,7 +199,7 @@ class _Main_State extends State<Main_> {
     output["_id"] = schema.data["_id"]?["value"];
 
     await dio
-        .post("$PATH/data_update", data: form_data({...output}))
+        .post("$PATH/data_update", data: FormData.fromMap({...output}))
         .then((value) {
           snackbar_show(context: context, message: "$HEADER update successfully", color: Colors.green);
           Navigator.pop(context, output);
@@ -236,6 +219,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
+      title: HEADER, //
       theme: Theme_Data(), //
       home: const Main_(),
       debugShowCheckedModeBanner: false,

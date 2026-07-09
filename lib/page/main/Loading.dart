@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:provider/provider.dart";
 import "package:package_info_plus/package_info_plus.dart";
+import "package:dio/dio.dart";
 
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
@@ -84,7 +85,7 @@ class _Loading_State extends State<Loading_> {
     await dio
         .post(
           "/user/data_read", //
-          data: form_data({
+          data: FormData.fromMap({
             "key": "access_token", //
             "query": access_token, //
           }),

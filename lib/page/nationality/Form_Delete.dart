@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:dio/dio.dart";
 
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/Environment.dart";
@@ -60,7 +61,7 @@ class _Main_State extends State<Main_> {
   void on_delete() async {
     //
     await dio
-        .post("$PATH/data_delete", data: form_data({"_id": schema.data["_id"]?["value"]}))
+        .post("$PATH/data_delete", data: FormData.fromMap({"_id": schema.data["_id"]?["value"]}))
         .then((value) {
           Navigator.pop(context, true);
           snackbar_show(context: context, message: "Delete successfully", color: Colors.green);
@@ -80,6 +81,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
+      title: HEADER, //
       theme: Theme_Data(), //
       home: const Main_(),
       debugShowCheckedModeBanner: false,

@@ -61,7 +61,7 @@ Map<String, Map<String, dynamic>> data = {
   },
   "user_note": {
     "type": "string",
-    "title": "User Note",
+    "title": "Note",
     "hide": false,
     "value": null
   }

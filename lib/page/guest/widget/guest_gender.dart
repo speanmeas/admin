@@ -4,7 +4,7 @@ import "package:speanmeas/theme/Theme_Data.dart";
 class _Main_State extends State<Main_> {
   //
 
-  var options = ["Single", "Double", "Triple", "Quad", "Queen", "King", "Twin", "Studio"];
+  var options = ["Male", "Female", "Other"];
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class _Main_State extends State<Main_> {
       initialValue: widget.initialValue,
       icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
       decoration: InputDecoration(
-        labelText: "Room Type:", //
+        labelText: "Gender:", //
         labelStyle: TextStyle(fontWeight: FontWeight.bold),
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),

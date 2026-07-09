@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 import "package:image_picker/image_picker.dart";
 import "package:intl/intl.dart";
 import "package:provider/provider.dart";
+import "package:dio/dio.dart";
 
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
@@ -171,7 +172,7 @@ class _Main_State extends State<Main_> {
     await dio
         .post(
           "/user/data_update",
-          data: form_data({
+          data: FormData.fromMap({
             "_id": user.data[user.ID]!, //
             "password": password, //
           }),

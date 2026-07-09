@@ -1,105 +1,83 @@
+import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 
-class _Main_State extends State<Main_> {
-  //
+import "../../nationality/_setup.dart";
+import "../../nationality/schema.g.dart" as schema;
 
-  TextEditingController controller_nationality = TextEditingController();
-  List<String> option_nationalities = [];
-  Map<String, dynamic> output = {};
+class _Main_State extends State<Main_> {
+  final TextEditingController c_search = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+
+  List<Map<String, dynamic>> data = [];
+  List<String> options = [];
 
   @override
   void initState() {
     super.initState();
-    output["guest_nationality"] = "Cambodian";
-    controller_nationality.text = output["guest_nationality"]?.toString() ?? "";
+
+    c_search.text = widget.initialValue ?? "";
+
+    focusNode.addListener(() {
+      if (!focusNode.hasFocus) {
+        if (!options.contains(c_search.text.trim())) {
+          c_search.clear();
+        }
+      }
+    });
+
     init();
   }
 
-  void init() async {
+  Future<void> init() async {
     await dio
-        .post("/nationality/data_read", data: form_data({}))
+        .post("$PATH/data_read", data: FormData.fromMap({}))
         .then((r) {
-          option_nationalities = List<String>.from(r.data.map((e) => e["nationality"]));
-          option_nationalities.sort((a, b) => a.compareTo(b));
+          data = List<Map<String, dynamic>>.from(r.data);
+          options = List<String>.from(data.map((e) => e[schema.NATIONALITY]).toList());
+          options.sort((a, b) => a.compareTo(b));
+          setState(() {});
         })
         .catchError((_) {});
   }
 
-  // var room_status = ["Available", "Pending Pay", "Pending Leave", "Pending Clean", "Pending Fix"];
-
   @override
   Widget build(BuildContext context) {
     return TypeAheadField<String>(
-      controller: controller_nationality,
-      suggestionsCallback: (query) {
-        List<String> result = [];
-        for (var e in option_nationalities) {
-          if (e.toLowerCase().contains(query.toLowerCase())) {
-            result.add(e);
-          }
-        }
-        return result;
+      controller: c_search,
+      focusNode: focusNode,
+      itemBuilder: (context, item) => ListTile(title: Text(item)),
+      suggestionsCallback: (q) {
+        return options.where((o) => o.toLowerCase().contains(q.trim().toLowerCase())).toList();
       },
       builder: (context, controller, focusNode) {
         return TextField(
           controller: controller,
           focusNode: focusNode,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: "Nationality:",
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
             floatingLabelBehavior: FloatingLabelBehavior.always,
-            suffixIcon: Padding(
-              padding: EdgeInsets.fromLTRB(0, 0, 4, 0),
-              child: IconButton(
-                icon: Icon(Icons.clear, size: 24, color: Colors.red), //
-                onPressed: controller.clear,
-              ),
-            ),
+            suffixIcon: Icon(Icons.search),
           ),
         );
       },
-      itemBuilder: (context, item) {
-        return ListTile(title: Text(item));
-      },
-      onSelected: (selected) {
-        // output["guest_nationality"] = selected; //
-        controller_nationality.text = selected;
-
-        setState(() {});
+      onSelected: (v) {
+        c_search.text = v;
+        widget.onChanged?.call(v);
       },
     );
-
-    // DropdownButtonFormField<String>(
-    //   initialValue: widget.initialValue,
-    //   icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
-    //   decoration: InputDecoration(
-    //     labelText: "Room Status:", //
-    //     labelStyle: TextStyle(fontWeight: FontWeight.bold),
-    //     floatingLabelBehavior: FloatingLabelBehavior.always,
-    //   ),
-    //   items: room_status.map((i) {
-    //     return DropdownMenuItem<String>(value: i, child: Text(i));
-    //   }).toList(),
-    //   onChanged: (v) {
-    //     widget.onChanged?.call(v!);
-    //   },
-    // );
   }
 }
 
 class Main_ extends StatefulWidget {
-  Main_({
-    super.key, //
-    this.initialValue,
-    this.onSelected,
-  });
+  const Main_({super.key, this.initialValue, this.onChanged});
 
   final String? initialValue;
-  final Function(String)? onSelected;
+  final ValueChanged<String>? onChanged;
 
   @override
   State<Main_> createState() => _Main_State();
@@ -108,13 +86,9 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      theme: Theme_Data(), //
-      home: Scaffold(
-        body: Center(
-          child: Main_(
-            initialValue: "Cambodian", //
-          ),
-        ),
+      theme: Theme_Data(),
+      home: const Scaffold(
+        body: Center(child: Main_(initialValue: "Cambodian")),
       ),
       debugShowCheckedModeBanner: false,
     ),

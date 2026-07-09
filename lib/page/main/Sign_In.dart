@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:provider/provider.dart";
 import "package:package_info_plus/package_info_plus.dart";
+import "package:dio/dio.dart";
 
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
@@ -149,7 +150,7 @@ class _Main_State extends State<Main_> {
     await dio
         .post(
           "/auth/sign_in",
-          data: form_data({
+          data: FormData.fromMap({
             "username": username, //
             "password": password,
           }),
