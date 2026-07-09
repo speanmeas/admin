@@ -1,6 +1,5 @@
-import "package:dio/dio.dart";
-import "package:intl/intl.dart";
 import "package:flutter/material.dart";
+import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/Environment.dart";
@@ -51,7 +50,7 @@ class _Main_State extends State<Main_> {
     await dio
         .post(
           "$PATH/data_read",
-          data: FormData.fromMap({
+          data: form_data({
             "key": key, //
             "has": has, //
             "query": query, //
@@ -146,7 +145,7 @@ class _Main_State extends State<Main_> {
     await dio
         .post(
           "$PATH/data_read",
-          data: FormData.fromMap({
+          data: form_data({
             "key": key, //
             "has": has, //
             "query": query, //
@@ -501,12 +500,12 @@ class _Main_State extends State<Main_> {
     }
 
     //
-    final id = state_manager?.currentRow!.cells["_id"]!.value;
+    schema.data["_id"]?["value"] = state_manager?.currentRow!.cells["_id"]!.value;
 
     //
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => delete.Main_(id: id)),
+      MaterialPageRoute(builder: (context) => delete.Main_()),
     ).then((v) {
       if (v == null) return;
 
@@ -609,5 +608,11 @@ class Main_ extends StatefulWidget {
 }
 
 void main() {
-  runApp(MaterialApp(title: TITLE, theme: Theme_Data(), debugShowCheckedModeBanner: false, home: const Main_()));
+  runApp(
+    MaterialApp(
+      theme: Theme_Data(), //
+      home: const Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

@@ -1,4 +1,3 @@
-import "package:dio/dio.dart";
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/utility/Dio.dart";
 
@@ -10,7 +9,7 @@ void main() async {
   await dio
       .post(
         "/template/data_read",
-        data: FormData.fromMap({
+        data: form_data({
           //
         }),
       )

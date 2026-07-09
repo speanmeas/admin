@@ -1,4 +1,3 @@
-import "package:dio/dio.dart";
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
@@ -8,7 +7,7 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "_Setup.dart";
+import "_setup.dart";
 import "schema.g.dart" as schema;
 
 import "filter_string.dart" as filter_string;
@@ -51,7 +50,7 @@ class _Main_State extends State<Main_> {
     await dio
         .post(
           "$PATH/data_read",
-          data: FormData.fromMap({
+          data: form_data({
             "key": key, //
             "has": has, //
             "query": query, //
@@ -146,7 +145,7 @@ class _Main_State extends State<Main_> {
     await dio
         .post(
           "$PATH/data_read",
-          data: FormData.fromMap({
+          data: form_data({
             "key": key, //
             "has": has, //
             "query": query, //
@@ -370,7 +369,6 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  //
   void on_filter(e) {
     // clear
     key = has = query = min = max = start = end = order = null;
@@ -430,7 +428,6 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
   void on_create() {
     //
     schema.clear();
@@ -445,7 +442,6 @@ class _Main_State extends State<Main_> {
     });
   }
 
-  //
   void on_read() {
     //
     schema.clear();
@@ -468,7 +464,6 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  //
   void on_update() {
     //
     schema.clear();
@@ -494,7 +489,6 @@ class _Main_State extends State<Main_> {
     });
   }
 
-  //
   void on_delete() {
     //
     schema.clear();
@@ -506,12 +500,12 @@ class _Main_State extends State<Main_> {
     }
 
     //
-    final id = state_manager?.currentRow!.cells["_id"]!.value;
+    schema.data["_id"]?["value"] = state_manager?.currentRow!.cells["_id"]!.value;
 
     //
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => delete.Main_(id: id)),
+      MaterialPageRoute(builder: (context) => delete.Main_()),
     ).then((v) {
       if (v == null) return;
 
@@ -614,5 +608,11 @@ class Main_ extends StatefulWidget {
 }
 
 void main() {
-  runApp(MaterialApp(title: TITLE, theme: Theme_Data(), debugShowCheckedModeBanner: false, home: const Main_()));
+  runApp(
+    MaterialApp(
+      theme: Theme_Data(), //
+      home: const Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

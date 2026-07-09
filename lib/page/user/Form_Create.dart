@@ -1,17 +1,14 @@
-import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:provider/provider.dart";
 import "package:intl/intl.dart";
 
-import "package:speanmeas/Global.dart";
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "_Setup.dart";
+import "_setup.dart";
 import "schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
@@ -37,30 +34,8 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.data.entries.where((e) => e.value["hide"] == false).map((e) {
+              ...schema.data.entries.where((e) => !e.key.contains("_id")).map((e) {
                 //
-                //
-                //
-
-                // note
-                if (e.key.contains("note")) {
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: TextField(
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        labelText: "Note:", //
-                        border: OutlineInputBorder(),
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      onChanged: (v) {
-                        output[e.key] = v;
-                      },
-                    ),
-                  );
-                }
 
                 //
                 //
@@ -72,6 +47,7 @@ class _Main_State extends State<Main_> {
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
+                      maxLines: e.key.contains("note") ? 4 : 1,
                       decoration: InputDecoration(
                         labelText: e.value["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -203,7 +179,7 @@ class _Main_State extends State<Main_> {
 
     // request
     await dio
-        .post("$PATH/data_create", data: FormData.fromMap({...output}))
+        .post("$PATH/data_create", data: form_data({...output}))
         .then((r) {
           output["_id"] = r.data["_id"];
           Navigator.pop(context, output);
@@ -222,5 +198,11 @@ class Main_ extends StatefulWidget {
 }
 
 void main() {
-  runApp(MaterialApp(title: TITLE, theme: Theme_Data(), debugShowCheckedModeBanner: false, home: const Main_()));
+  runApp(
+    MaterialApp(
+      theme: Theme_Data(), //
+      home: const Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

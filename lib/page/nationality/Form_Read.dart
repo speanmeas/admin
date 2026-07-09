@@ -1,58 +1,14 @@
-import "package:dio/dio.dart";
 import "package:flutter/material.dart";
-import "package:intl/intl.dart";
-import "package:provider/provider.dart";
-import "package:speanmeas/Environment.dart";
+
 import "package:speanmeas/Global.dart";
-
+import "package:speanmeas/Environment.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
-import "package:speanmeas/utility/Dio.dart";
 
-import "_Setup.dart";
+import "_setup.dart";
 import "schema.g.dart" as schema;
-
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global.variable, //
-      child: Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: Theme_Data(), //
-      debugShowCheckedModeBanner: false,
-      home: Main_(input: {}),
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  Main_({super.key, required this.input});
-
-  final Map<String, dynamic> input;
-
-  @override
-  State<Main_> createState() => _Main_State();
-}
 
 class _Main_State extends State<Main_> {
   //
-
-  Map<String, dynamic> output = {};
-
-  @override
-  void initState() {
-    super.initState();
-    output = Map<String, dynamic>.from(widget.input);
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,12 +16,8 @@ class _Main_State extends State<Main_> {
       appBar: AppBar(
         title: Text(
           "Read - $HEADER", //
-          style: TextStyle(
-            fontSize: 20, //
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -74,146 +26,25 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.data.map((s) {
-                //
-                //
-                //
-
-                if (s["key"].toString().contains("note")) {
-                  String value = output[s["key"]]?.toString() ?? "";
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          s["title"] + ": ", //
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
+              ...schema.data.entries.where((e) => !e.key.contains("_id")).map((e) {
+                String value = e.value["value"]?.toString() ?? "";
+                return Container(
+                  width: 600,
+                  margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  child: TextField(
+                    controller: TextEditingController(text: value),
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                    readOnly: true,
+                    maxLines: e.key.contains("note") ? 4 : 1,
+                    decoration: InputDecoration(
+                      labelText: e.value["title"] + ": ", //
+                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      border: InputBorder.none,
+                      prefix: SizedBox(width: 16),
                     ),
-                  );
-                }
-
-                //
-                //
-                //
-
-                //
-                if (s["type"] == "string") {
-                  String value = output[s["key"]]?.toString() ?? "";
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                //
-                if (s["type"] == "number") {
-                  String value = output[s["key"]]?.toString() ?? "";
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                //
-                if (s["type"] == "boolean") {
-                  String value = "";
-                  if (output[s["key"]] != null) value = output[s["key"]];
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                //
-                if (s["type"] == "date-time") {
-                  String value = output[s["key"]]?.toString() ?? "";
-                  if (value.isNotEmpty) {
-                    DateTime? tmp = DateTime.tryParse(value);
-                    if (tmp != null) {
-                      value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
-                    }
-                  }
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                //
-                return SizedBox();
+                  ),
+                );
               }),
             ],
           ),
@@ -221,4 +52,20 @@ class _Main_State extends State<Main_> {
       ),
     );
   }
+}
+
+class Main_ extends StatefulWidget {
+  const Main_({super.key});
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      theme: Theme_Data(), //
+      home: const Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

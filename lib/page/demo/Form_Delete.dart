@@ -1,45 +1,13 @@
-import "package:dio/dio.dart";
 import "package:flutter/material.dart";
-import "package:provider/provider.dart";
 
-import "package:speanmeas/Global.dart";
 import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/Environment.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "_setup.dart";
-import "schema.g.dart";
-
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global.variable, //
-      child: Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: Theme_Data(), //
-      debugShowCheckedModeBanner: false,
-      home: Main_(id: ""),
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  Main_({super.key, required this.id});
-
-  final String id;
-
-  @override
-  State<Main_> createState() => _Main_State();
-}
+import "schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
   @override
@@ -92,7 +60,7 @@ class _Main_State extends State<Main_> {
   void on_delete() async {
     //
     await dio
-        .post("$PATH/data_delete", data: FormData.fromMap({"_id": widget.id}))
+        .post("$PATH/data_delete", data: form_data({"_id": schema.data["_id"]?["value"]}))
         .then((value) {
           Navigator.pop(context, true);
           snackbar_show(context: context, message: "Delete successfully", color: Colors.green);
@@ -101,4 +69,20 @@ class _Main_State extends State<Main_> {
           snackbar_show(context: context, message: "Delete failed", color: Colors.red);
         });
   }
+}
+
+class Main_ extends StatefulWidget {
+  const Main_({super.key});
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      theme: Theme_Data(), //
+      home: const Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

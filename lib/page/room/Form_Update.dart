@@ -1,66 +1,24 @@
 import "dart:io";
 
-import "package:dio/dio.dart";
+import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:image_picker/image_picker.dart";
-import "package:intl/intl.dart";
-import "package:provider/provider.dart";
 
 import "package:speanmeas/Environment.dart";
-import "package:speanmeas/Global.dart";
-import "package:speanmeas/theme/Theme_Data.dart";
-
 import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "_Setup.dart";
+import "_setup.dart";
 import "schema.g.dart" as schema;
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global.variable, //
-      child: Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: Theme_Data(), //
-      debugShowCheckedModeBanner: false,
-      home: Main_(input: {}), //
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  Main_({
-    super.key, //
-    required this.input,
-  });
-
-  final Map<String, dynamic> input;
-
-  @override
-  State<Main_> createState() => _Main_State();
-}
+import "widget/room_type.dart" as room_type;
+import "widget/room_status.dart" as room_status;
 
 class _Main_State extends State<Main_> {
+  // need id
   Map<String, dynamic> output = {};
-
-  @override
-  void initState() {
-    super.initState();
-    output = Map<String, dynamic>.from(widget.input);
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,86 +39,35 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.data.map((s) {
-                //
-                //
-                //
-
-                // type
-                if (s["key"] == "room_type") {
-                  List<String> room_types = ["Single", "Double", "VIP"];
+              ...schema.data.entries.where((e) => !e.key.contains("_id")).map((e) {
+                if (e.key == "room_type") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: DropdownButtonFormField<String>(
-                      initialValue: output[s["key"]]?.toString() ?? "",
-                      decoration: InputDecoration(
-                        labelText: s["title"] + ":",
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
-                      items: room_types.map((i) {
-                        return DropdownMenuItem<String>(value: i, child: Text(i));
-                      }).toList(),
+                    child: room_type.Main_(
+                      initialValue: e.value["value"]?.toString(),
                       onChanged: (v) {
-                        output[s["key"]] = v;
+                        output[e.key] = v;
                       },
                     ),
                   );
                 }
 
-                // status
-                if (s["key"] == "room_status") {
-                  List<String> room_status = ["Available", "Pending Pay", "Pending Leave", "Pending Clean", "Pending Fix"];
-                  String? init;
-                  if (output[s["key"]] != null && room_status.contains(output[s["key"]].toString())) {
-                    init = output[s["key"]].toString();
-                  }
+                if (e.key == "room_status") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: DropdownButtonFormField<String>(
-                      initialValue: init,
-                      decoration: InputDecoration(
-                        labelText: s["title"] + ":",
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
-                      items: room_status.map((i) {
-                        return DropdownMenuItem<String>(value: i, child: Text(i));
-                      }).toList(),
+                    child: room_status.Main_(
+                      initialValue: e.value["value"]?.toString(),
                       onChanged: (v) {
-                        output[s["key"]] = v;
+                        output[e.key] = v;
                       },
                     ),
                   );
                 }
 
                 //
-                if (s["key"].toString().contains("note")) {
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: TextField(
-                      controller: TextEditingController(text: output[s["key"]]?.toString() ?? ""),
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "Note:", //
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      onChanged: (v) {
-                        output[s["key"]] = v; //
-                      },
-                    ),
-                  );
-                }
-
-                //
-                if (s["key"].toString().contains("password")) {
+                if (e.key.contains("password")) {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -168,12 +75,12 @@ class _Main_State extends State<Main_> {
                       controller: TextEditingController(text: ""),
                       decoration: InputDecoration(
                         hintText: "New Password", //
-                        labelText: s["title"], //
+                        labelText: e.value["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (v) {
-                        output[s["key"]] = v; //
+                        output[e.key] = v; //
                       },
                     ),
                   );
@@ -184,59 +91,60 @@ class _Main_State extends State<Main_> {
                 //
 
                 //
-                if (s["type"] == "string") {
-                  String value = output[s["key"]]?.toString() ?? "";
+                if (e.value["type"] == "string") {
+                  String value = e.value["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: value),
+                      maxLines: e.key.contains("note") ? 4 : 1,
                       decoration: InputDecoration(
-                        labelText: s["title"] + ":", //
+                        labelText: e.value["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (v) {
-                        output[s["key"]] = v; //
+                        output[e.key] = v; //
                       },
                     ),
                   );
                 }
 
                 // edit number
-                if (s["type"] == "number") {
-                  String? value = output[s["key"]]?.toString() ?? "";
+                if (e.value["type"] == "number") {
+                  String? value = e.value["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: value),
                       decoration: InputDecoration(
-                        labelText: s["title"] + ":", //
+                        labelText: e.value["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
                       onChanged: (v) {
-                        output[s["key"]] = v; //
+                        output[e.key] = v; //
                       },
                     ),
                   );
                 }
 
-                if (s["type"] == "boolean") {
+                if (e.value["type"] == "boolean") {
                   String value = "";
-                  if (output[s["key"]] != null) {
-                    value = output[s["key"]];
+                  if (e.value["value"] != null) {
+                    value = e.value["value"].toString();
                   }
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
-                      initialValue: value == "" ? null : value,
+                      initialValue: value,
                       decoration: InputDecoration(
-                        labelText: s["title"] + ":",
+                        labelText: e.value["title"] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -245,17 +153,17 @@ class _Main_State extends State<Main_> {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
-                        if (v == "Yes") output[s["key"]] = true;
-                        if (v == "No") output[s["key"]] = false;
+                        if (v == "Yes") output[e.key] = true;
+                        if (v == "No") output[e.key] = false;
                       },
                     ),
                   );
                 }
 
-                if (s["type"] == "date-time") {
+                if (e.value["type"] == "date-time") {
                   String value = "";
-                  if (output[s["key"]] != null) {
-                    DateTime? tmp = DateTime.tryParse(output[s["key"]].toString());
+                  if (e.value["value"] != null) {
+                    DateTime? tmp = DateTime.tryParse(e.value["value"].toString());
                     if (tmp != null) {
                       value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
                     }
@@ -272,7 +180,7 @@ class _Main_State extends State<Main_> {
                       readOnly: true,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(), //
-                        labelText: s["title"] + ":", //
+                        labelText: e.value["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         suffixIcon: Icon(Icons.calendar_today, size: 20), //
@@ -280,7 +188,7 @@ class _Main_State extends State<Main_> {
                       onTap: () async {
                         DateTime? datetime = await datetime_picker(context, initial_datetime: init);
                         if (datetime == null) return;
-                        output[s["key"]] = DateFormat(DATE_FORMAT).format(datetime);
+                        output[e.key] = datetime.toIso8601String();
                         setState(() {});
                       }, //,
                     ),
@@ -333,8 +241,10 @@ class _Main_State extends State<Main_> {
     // }
 
     // request
+    output["_id"] = schema.data["_id"]?["value"];
+
     await dio
-        .post("$PATH/data_update", data: FormData.fromMap({...output}))
+        .post("$PATH/data_update", data: form_data({...output}))
         .then((value) {
           snackbar_show(context: context, message: "$HEADER update successfully", color: Colors.green);
           Navigator.pop(context, output);
@@ -343,4 +253,20 @@ class _Main_State extends State<Main_> {
           snackbar_show(context: context, message: "$HEADER update failed", color: Colors.red);
         });
   }
+}
+
+class Main_ extends StatefulWidget {
+  const Main_({super.key});
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      theme: Theme_Data(), //
+      home: const Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

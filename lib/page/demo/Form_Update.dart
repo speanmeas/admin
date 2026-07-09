@@ -1,6 +1,5 @@
 import "dart:io";
 
-import "package:dio/dio.dart";
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
@@ -38,30 +37,7 @@ class _Main_State extends State<Main_> {
           child: Column(
             children: [
               // ...schema.data.where((s) => s["hide"] == false).map((s) {
-              ...schema.data.entries.where((e) => e.value["hide"] == false).map((e) {
-                //
-                //
-                //
-                if (e.key.contains("note")) {
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: TextField(
-                      controller: TextEditingController(text: e.value["value"]?.toString() ?? ""),
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "Note:", //
-                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      onChanged: (v) {
-                        output[e.key] = v; //
-                      },
-                    ),
-                  );
-                }
-
+              ...schema.data.entries.where((e) => !e.key.contains("_id")).map((e) {
                 //
                 if (e.key.contains("password")) {
                   return Container(
@@ -94,6 +70,7 @@ class _Main_State extends State<Main_> {
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: value),
+                      maxLines: e.key.contains("note") ? 4 : 1,
                       decoration: InputDecoration(
                         labelText: e.value["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -239,7 +216,7 @@ class _Main_State extends State<Main_> {
     output["_id"] = schema.data["_id"]?["value"];
 
     await dio
-        .post("$PATH/data_update", data: FormData.fromMap({...output}))
+        .post("$PATH/data_update", data: form_data({...output}))
         .then((value) {
           snackbar_show(context: context, message: "$HEADER update successfully", color: Colors.green);
           Navigator.pop(context, output);
@@ -257,5 +234,11 @@ class Main_ extends StatefulWidget {
 }
 
 void main() {
-  runApp(MaterialApp(title: TITLE, theme: Theme_Data(), debugShowCheckedModeBanner: false, home: const Main_()));
+  runApp(
+    MaterialApp(
+      theme: Theme_Data(), //
+      home: const Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

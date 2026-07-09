@@ -1,27 +1,27 @@
-List<Map<String, dynamic>> data = [
-  {
-    "key": "_id",
+Map<String, Map<String, dynamic>> data = {
+  "_id": {
     "type": "_id",
     "title": "ID",
-    "hide": true
+    "hide": true,
+    "value": null
   },
-  {
-    "key": "nationality",
+  "nationality": {
     "type": "string",
     "title": "Nationality",
-    "hide": false
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "nationality_note",
+  "nationality_note": {
     "type": "string",
-    "title": "Nationality Note",
-    "hide": false
+    "title": "Note",
+    "hide": false,
+    "value": null
   }
-];
+};
 
 final ID = "_id";
 final NATIONALITY = "nationality";
 final NATIONALITY_NOTE = "nationality_note";
 
 
-void clear() {for (var s in data) s["value"] = null;}
+void clear() { for (var k in data.keys) data[k]!["value"] = null; }

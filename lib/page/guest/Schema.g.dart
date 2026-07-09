@@ -1,41 +1,41 @@
-List<Map<String, dynamic>> data = [
-  {
-    "key": "_id",
+Map<String, Map<String, dynamic>> data = {
+  "_id": {
     "type": "_id",
     "title": "ID",
-    "hide": true
+    "hide": true,
+    "value": null
   },
-  {
-    "key": "guest_name",
+  "guest_name": {
     "type": "string",
-    "title": "Guest Name",
-    "hide": false
+    "title": "Name",
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "guest_phone",
+  "guest_phone": {
     "type": "string",
-    "title": "Guest Phone Number",
-    "hide": false
+    "title": "Phone Number",
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "guest_gender",
+  "guest_gender": {
     "type": "string",
-    "title": "Guest Gender",
-    "hide": false
+    "title": "Gender",
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "guest_nationality",
+  "guest_nationality": {
     "type": "string",
-    "title": "Guest Nationality",
-    "hide": false
+    "title": "Nationality",
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "guest_note",
+  "guest_note": {
     "type": "string",
-    "title": "Guest Note",
-    "hide": false
+    "title": "Note",
+    "hide": false,
+    "value": null
   }
-];
+};
 
 final ID = "_id";
 final GUEST_NAME = "guest_name";
@@ -45,4 +45,4 @@ final GUEST_NATIONALITY = "guest_nationality";
 final GUEST_NOTE = "guest_note";
 
 
-void clear() {for (var s in data) s["value"] = null;}
+void clear() { for (var k in data.keys) data[k]!["value"] = null; }

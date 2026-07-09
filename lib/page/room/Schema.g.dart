@@ -1,53 +1,53 @@
-List<Map<String, dynamic>> data = [
-  {
-    "key": "_id",
+Map<String, Map<String, dynamic>> data = {
+  "_id": {
     "type": "_id",
     "title": "ID",
-    "hide": true
+    "hide": true,
+    "value": null
   },
-  {
-    "key": "room_number",
+  "room_number": {
     "type": "string",
-    "title": "Room Number",
-    "hide": false
+    "title": "Number",
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "room_type",
+  "room_type": {
     "type": "string",
-    "title": "Room Type",
-    "hide": false
+    "title": "Type",
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "room_price_per_day_usd",
+  "room_price_per_day_usd": {
     "type": "number",
-    "title": "Room Price/Day",
-    "hide": false
+    "title": "Price/Day",
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "room_price_per_3h_usd",
+  "room_price_per_3h_usd": {
     "type": "number",
-    "title": "Room Price/3H",
-    "hide": false
+    "title": "Price/3H",
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "room_status",
+  "room_status": {
     "type": "string",
-    "title": "Room Status",
-    "hide": false
+    "title": "Status",
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "room_note",
+  "room_note": {
     "type": "string",
-    "title": "Room Note",
-    "hide": false
+    "title": "Note",
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "front_desk_id",
+  "front_desk_id": {
     "type": "_id",
     "title": "Front Desk ID",
-    "hide": false
+    "hide": true,
+    "value": null
   }
-];
+};
 
 final ID = "_id";
 final ROOM_NUMBER = "room_number";
@@ -59,4 +59,4 @@ final ROOM_NOTE = "room_note";
 final FRONT_DESK_ID = "front_desk_id";
 
 
-void clear() {for (var s in data) s["value"] = null;}
+void clear() { for (var k in data.keys) data[k]!["value"] = null; }

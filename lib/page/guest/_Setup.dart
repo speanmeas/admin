@@ -1,4 +1,4 @@
-String HEADER = "Guest";
+String HEADER = "Demo";
 
 String get PATH {
   String path = HEADER.toLowerCase().replaceAll(" ", "_");
@@ -6,3 +6,4 @@ String get PATH {
 }
 
 String DATE_FORMAT = "yyyy-MM-dd HH:mm";
+int ROW_LIMIT = 10000;
