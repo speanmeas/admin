@@ -6,3 +6,4 @@ String get PATH {
 }
 
 String DATE_FORMAT = "yyyy-MM-dd HH:mm";
+int ROW_LIMIT = 10000;

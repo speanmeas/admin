@@ -32,9 +32,7 @@ class Main extends StatelessWidget {
 }
 
 class Main_ extends StatefulWidget {
-  Main_({
-    super.key, //
-  });
+  Main_({super.key});
 
   @override
   State<Main_> createState() => _Main_State();

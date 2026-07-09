@@ -4,7 +4,7 @@ import "package:provider/provider.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 
 import "package:speanmeas/Global.dart";
-import "package:speanmeas/page/front_desk/main.dart" as front_desk;
+// import "package:speanmeas/page/.front_desk/main.dart" as front_desk;
 import "package:speanmeas/page/guest/Main.dart" as guest;
 import "package:speanmeas/page/room/Main.dart" as room;
 import "package:speanmeas/page/user/Main.dart" as user;
@@ -53,9 +53,9 @@ class _Panel_Body_State extends State<Panel_Body_> {
   Widget build(BuildContext context) {
     String body = context.watch<Global>().body;
 
-    if (body == "Front Desk") {
-      return front_desk.Main_();
-    }
+    // if (body == "Front Desk") {
+    //   return front_desk.Main_();
+    // }
 
     if (body == "Room") {
       return room.Main_();

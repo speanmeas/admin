@@ -1,89 +1,89 @@
-List<Map<String, dynamic>> data = [
-  {
-    "key": "_id",
+Map<String, Map<String, dynamic>> data = {
+  "_id": {
     "type": "_id",
     "title": "ID",
-    "hide": true
+    "hide": true,
+    "value": null
   },
-  {
-    "key": "demo_text_1",
+  "demo_text_1": {
     "type": "string",
     "title": "Text 1",
-    "hide": false
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "demo_text_2",
+  "demo_text_2": {
     "type": "string",
     "title": "Text 2",
-    "hide": false
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "demo_text_3",
+  "demo_text_3": {
     "type": "string",
     "title": "Text 3",
-    "hide": true
+    "hide": true,
+    "value": null
   },
-  {
-    "key": "demo_number_1",
+  "demo_number_1": {
     "type": "number",
     "title": "Number 1",
-    "hide": false
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "demo_number_2",
+  "demo_number_2": {
     "type": "number",
     "title": "Number 2",
-    "hide": false
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "demo_number_3",
+  "demo_number_3": {
     "type": "number",
     "title": "Number 3",
-    "hide": true
+    "hide": true,
+    "value": null
   },
-  {
-    "key": "demo_datetime_1",
+  "demo_datetime_1": {
     "type": "date-time",
     "title": "Datetime 1",
-    "hide": false
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "demo_datetime_2",
+  "demo_datetime_2": {
     "type": "date-time",
     "title": "Datetime 2",
-    "hide": false
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "demo_datetime_3",
+  "demo_datetime_3": {
     "type": "date-time",
     "title": "Datetime 3",
-    "hide": true
+    "hide": true,
+    "value": null
   },
-  {
-    "key": "demo_boolean_1",
+  "demo_boolean_1": {
     "type": "boolean",
     "title": "Boolean 1",
-    "hide": false
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "demo_boolean_2",
+  "demo_boolean_2": {
     "type": "boolean",
     "title": "Boolean 2",
-    "hide": false
+    "hide": false,
+    "value": null
   },
-  {
-    "key": "demo_boolean_3",
+  "demo_boolean_3": {
     "type": "boolean",
     "title": "Boolean 3",
-    "hide": true
+    "hide": true,
+    "value": null
   },
-  {
-    "key": "demo_note",
+  "demo_note": {
     "type": "string",
     "title": "Note",
-    "hide": false
+    "hide": false,
+    "value": null
   }
-];
+};
 
 final ID = "_id";
 final DEMO_TEXT_1 = "demo_text_1";
@@ -101,4 +101,4 @@ final DEMO_BOOLEAN_3 = "demo_boolean_3";
 final DEMO_NOTE = "demo_note";
 
 
-void clear() {for (var s in data) s["value"] = null;}
+void clear() { for (var k in data.keys) data[k]!["value"] = null; }

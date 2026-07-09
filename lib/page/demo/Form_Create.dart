@@ -14,44 +14,8 @@ import "package:speanmeas/widget/Snackbar_Show.dart";
 import "_Setup.dart";
 import "schema.g.dart" as schema;
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global.variable, //
-      child: Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: Theme_Data(), //
-      debugShowCheckedModeBanner: false,
-      home: Main_(),
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  Main_({super.key});
-
-  @override
-  State<Main_> createState() => _Main_State();
-}
-
 class _Main_State extends State<Main_> {
-  //
-
   Map<String, dynamic> output = {};
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,13 +37,13 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.data.where((s) => s["hide"] == false).map((s) {
+              ...schema.data.entries.where((e) => e.value["hide"] == false).map((e) {
                 //
                 //
                 //
 
                 // note
-                if (s["key"].toString().contains("note")) {
+                if (e.key.contains("note")) {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -92,7 +56,7 @@ class _Main_State extends State<Main_> {
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (v) {
-                        output[s["key"]] = v;
+                        output[e.key] = v;
                       },
                     ),
                   );
@@ -103,25 +67,25 @@ class _Main_State extends State<Main_> {
                 //
 
                 // string
-                if (s["type"] == "string") {
+                if (e.value["type"] == "string") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       decoration: InputDecoration(
-                        labelText: s["title"] + ":", //
+                        labelText: e.value["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (v) {
-                        output[s["key"]] = v;
+                        output[e.key] = v;
                       },
                     ),
                   );
                 }
 
                 // number
-                if (s["type"] == "number") {
+                if (e.value["type"] == "number") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -129,24 +93,24 @@ class _Main_State extends State<Main_> {
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
                       decoration: InputDecoration(
-                        labelText: s["title"] + ":", //
+                        labelText: e.value["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (v) {
-                        output[s["key"]] = v;
+                        output[e.key] = v;
                       },
                     ),
                   );
                 }
 
-                if (s["type"] == "boolean") {
+                if (e.value["type"] == "boolean") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        labelText: s["title"] + ":",
+                        labelText: e.value["title"] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -155,21 +119,21 @@ class _Main_State extends State<Main_> {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
-                        if (v == "Yes") output[s["key"]] = true;
-                        if (v == "No") output[s["key"]] = false;
+                        if (v == "Yes") output[e.key] = true;
+                        if (v == "No") output[e.key] = false;
                       },
                     ),
                   );
                 }
 
-                if (s["type"] == "date-time") {
+                if (e.value["type"] == "date-time") {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(
                         text: (() {
-                          final value = output[s["key"]]?.toString() ?? "";
+                          final value = output[e.key]?.toString() ?? "";
                           final dt = DateTime.tryParse(value);
                           if (dt == null) return value;
                           return DateFormat(DATE_FORMAT).format(dt.toLocal());
@@ -177,7 +141,7 @@ class _Main_State extends State<Main_> {
                       ),
                       readOnly: true,
                       decoration: InputDecoration(
-                        labelText: s["title"] + ":", //
+                        labelText: e.value["title"] + ":", //
                         border: OutlineInputBorder(), //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -186,7 +150,7 @@ class _Main_State extends State<Main_> {
                       onTap: () async {
                         final DateTime? datetime = await datetime_picker(context);
                         if (datetime == null) return;
-                        output[s["key"]] = datetime.toIso8601String();
+                        output[e.key] = datetime.toIso8601String();
                         setState(() {});
                       }, //,
                     ),
@@ -196,6 +160,7 @@ class _Main_State extends State<Main_> {
                 return SizedBox();
               }),
 
+              //
               Container(
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: OutlinedButton.icon(
@@ -248,4 +213,14 @@ class _Main_State extends State<Main_> {
           snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
         });
   }
+}
+
+class Main_ extends StatefulWidget {
+  const Main_({super.key});
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(MaterialApp(title: TITLE, theme: Theme_Data(), debugShowCheckedModeBanner: false, home: const Main_()));
 }

@@ -11,48 +11,8 @@ import "package:speanmeas/theme/Theme_Data.dart";
 import "_Setup.dart";
 import "schema.g.dart" as schema;
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global.variable, //
-      child: Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: Theme_Data(), //
-      debugShowCheckedModeBanner: false,
-      home: Main_(input: {}),
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  Main_({super.key, required this.input});
-
-  final Map<String, dynamic> input;
-
-  @override
-  State<Main_> createState() => _Main_State();
-}
-
 class _Main_State extends State<Main_> {
   //
-
-  Map<String, dynamic> output = {};
-
-  @override
-  void initState() {
-    super.initState();
-    output = Map<String, dynamic>.from(widget.input);
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,13 +34,12 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.data.where((s) => s["hide"] == false).map((s) {
+              ...schema.data.entries.where((e) => e.value["hide"] == false).map((e) {
                 //
                 //
                 //
-
-                if (s["key"].toString().contains("note")) {
-                  String value = output[s["key"]]?.toString() ?? "";
+                if (e.key.contains("note")) {
+                  String value = e.value["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -88,7 +47,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          s["title"] + ": ", //
+                          e.value["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -110,15 +69,15 @@ class _Main_State extends State<Main_> {
                 //
 
                 //
-                if (s["type"] == "string") {
-                  String value = output[s["key"]]?.toString() ?? "";
+                if (e.value["type"] == "string") {
+                  String value = e.value["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(e.value["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(
                             value,
@@ -134,15 +93,15 @@ class _Main_State extends State<Main_> {
                 }
 
                 //
-                if (s["type"] == "number") {
-                  String value = output[s["key"]]?.toString() ?? "";
+                if (e.value["type"] == "number") {
+                  String value = e.value["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(e.value["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(
                             value,
@@ -158,18 +117,18 @@ class _Main_State extends State<Main_> {
                 }
 
                 //
-                if (s["type"] == "boolean") {
+                if (e.value["type"] == "boolean") {
                   String value = "";
-                  if (output[s["key"]] == true) value = "Yes";
-                  if (output[s["key"]] == false) value = "No";
-                  if (output[s["key"]] == "Yes" || output[s["key"]] == "No") value = output[s["key"]].toString();
+                  if (e.value["value"] == true) value = "Yes";
+                  if (e.value["value"] == false) value = "No";
+                  if (e.value["value"] == "Yes" || e.value["value"] == "No") value = e.value["value"].toString();
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(e.value["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(
                             value,
@@ -185,8 +144,8 @@ class _Main_State extends State<Main_> {
                 }
 
                 //
-                if (s["type"] == "date-time") {
-                  String value = output[s["key"]]?.toString() ?? "";
+                if (e.value["type"] == "date-time") {
+                  String value = e.value["value"]?.toString() ?? "";
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
                     if (tmp != null) {
@@ -199,7 +158,7 @@ class _Main_State extends State<Main_> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(e.value["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(
                             value,
@@ -223,4 +182,14 @@ class _Main_State extends State<Main_> {
       ),
     );
   }
+}
+
+class Main_ extends StatefulWidget {
+  const Main_({super.key});
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(MaterialApp(title: TITLE, theme: Theme_Data(), debugShowCheckedModeBanner: false, home: const Main_()));
 }
