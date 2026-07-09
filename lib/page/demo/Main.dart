@@ -8,7 +8,7 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "_Setup.dart";
+import "_setup.dart";
 import "schema.g.dart" as schema;
 
 import "filter_string.dart" as filter_string;

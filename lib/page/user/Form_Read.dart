@@ -1,58 +1,18 @@
 import "package:dio/dio.dart";
-import "package:flutter/material.dart";
 import "package:intl/intl.dart";
+import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/Environment.dart";
+
 import "package:speanmeas/Global.dart";
-
-import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
 
-import "Setup.dart";
+import "_Setup.dart";
 import "schema.g.dart" as schema;
-
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global.variable, //
-      child: Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: Theme_Data(), //
-      debugShowCheckedModeBanner: false,
-      home: Main_(input: {}),
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  Main_({super.key, required this.input});
-
-  final Map<String, dynamic> input;
-
-  @override
-  State<Main_> createState() => _Main_State();
-}
 
 class _Main_State extends State<Main_> {
   //
-
-  Map<String, dynamic> output = {};
-
-  @override
-  void initState() {
-    super.initState();
-    output = Map<String, dynamic>.from(widget.input);
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,36 +34,30 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.data.map((s) {
+              ...schema.data.entries.where((e) => e.value["hide"] == false).map((e) {
                 //
                 //
                 //
-
-                if (s["key"].toString().contains("password")) return SizedBox();
-                if (s["key"].toString().contains("access_token")) return SizedBox();
-
-                if (s["key"].toString().contains("note")) {
-                  String value = output[s["key"]]?.toString() ?? "";
+                if (e.key.contains("note")) {
+                  String value = e.value["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          s["title"] + ": ", //
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
+                    child: TextField(
+                      controller: TextEditingController(text: value),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                      readOnly: true,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        labelText: e.value["title"] + ": ", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border: InputBorder.none,
+                        prefix: SizedBox(width: 16),
+                      ),
+                      onChanged: (v) {
+                        //
+                      },
                     ),
                   );
                 }
@@ -113,81 +67,83 @@ class _Main_State extends State<Main_> {
                 //
 
                 //
-                if (s["type"] == "string") {
-                  String value = output[s["key"]]?.toString() ?? "";
+                if (e.value["type"] == "string") {
+                  String value = e.value["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
+                    child: TextField(
+                      readOnly: true,
+                      controller: TextEditingController(text: value),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                      decoration: InputDecoration(
+                        labelText: e.value["title"] + ": ", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border: InputBorder.none,
+                        prefix: SizedBox(width: 16),
+                      ),
+                      onChanged: (v) {
+                        //
+                      },
                     ),
                   );
                 }
 
                 //
-                if (s["type"] == "number") {
-                  String value = output[s["key"]]?.toString() ?? "";
+                if (e.value["type"] == "number") {
+                  String value = e.value["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
+                    child: TextField(
+                      readOnly: true,
+                      controller: TextEditingController(text: value),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                      decoration: InputDecoration(
+                        labelText: e.value["title"] + ": ", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border: InputBorder.none,
+                        prefix: SizedBox(width: 16),
+                      ),
+                      onChanged: (v) {
+                        //
+                      },
                     ),
                   );
                 }
 
                 //
-                if (s["type"] == "boolean") {
+                if (e.value["type"] == "boolean") {
                   String value = "";
-                  if (output[s["key"]] != null) value = output[s["key"]];
+                  if (e.value["value"] == true) value = "Yes";
+                  if (e.value["value"] == false) value = "No";
+                  if (e.value["value"] == "Yes" || e.value["value"] == "No") value = e.value["value"].toString();
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
+                    child: TextField(
+                      readOnly: true,
+                      controller: TextEditingController(text: value),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                      decoration: InputDecoration(
+                        labelText: e.value["title"] + ": ", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border: InputBorder.none,
+                        prefix: SizedBox(width: 16),
+                      ),
+                      onChanged: (v) {
+                        //
+                      },
                     ),
                   );
                 }
 
                 //
-                if (s["type"] == "date-time") {
-                  String value = output[s["key"]]?.toString() ?? "";
+                if (e.value["type"] == "date-time") {
+                  String value = e.value["value"]?.toString() ?? "";
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
                     if (tmp != null) {
@@ -197,20 +153,20 @@ class _Main_State extends State<Main_> {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
+                    child: TextField(
+                      readOnly: true,
+                      controller: TextEditingController(text: value),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                      decoration: InputDecoration(
+                        labelText: e.value["title"] + ": ", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border: InputBorder.none,
+                        prefix: SizedBox(width: 16),
+                      ),
+                      onChanged: (v) {
+                        //
+                      },
                     ),
                   );
                 }
@@ -224,4 +180,14 @@ class _Main_State extends State<Main_> {
       ),
     );
   }
+}
+
+class Main_ extends StatefulWidget {
+  const Main_({super.key});
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(MaterialApp(title: TITLE, theme: Theme_Data(), debugShowCheckedModeBanner: false, home: const Main_()));
 }

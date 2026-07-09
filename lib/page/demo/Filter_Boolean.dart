@@ -7,7 +7,7 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "_Setup.dart";
+import "_setup.dart";
 
 void main() {
   runApp(

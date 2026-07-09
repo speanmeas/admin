@@ -5,10 +5,10 @@ import "package:speanmeas/theme/Theme_Data.dart";
 
 import "package:speanmeas/Global.dart";
 // import "package:speanmeas/page/.front_desk/main.dart" as front_desk;
-import "package:speanmeas/page/guest/Main.dart" as guest;
-import "package:speanmeas/page/room/Main.dart" as room;
-import "package:speanmeas/page/user/Main.dart" as user;
-import "package:speanmeas/page/nationality/Main.dart" as natinoality;
+import "package:speanmeas/page/guest/main.dart" as guest;
+import "package:speanmeas/page/room/main.dart" as room;
+import "package:speanmeas/page/user/main.dart" as user;
+import "package:speanmeas/page/nationality/main.dart" as nationality;
 
 import "package:speanmeas/page/demo/main.dart" as demo;
 
@@ -70,7 +70,7 @@ class _Panel_Body_State extends State<Panel_Body_> {
     }
 
     if (body == "Nationality") {
-      return natinoality.Main_();
+      return nationality.Main_();
     }
     if (body == "Demo") {
       return demo.Main_();

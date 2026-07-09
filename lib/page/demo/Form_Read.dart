@@ -8,7 +8,7 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 
-import "_Setup.dart";
+import "_setup.dart";
 import "schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
@@ -43,23 +43,21 @@ class _Main_State extends State<Main_> {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          e.value["title"] + ": ", //
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
+                    child: TextField(
+                      controller: TextEditingController(text: value),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                      readOnly: true,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        labelText: e.value["title"] + ": ", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border: InputBorder.none,
+                        prefix: SizedBox(width: 16),
+                      ),
+                      onChanged: (v) {
+                        //
+                      },
                     ),
                   );
                 }
@@ -74,20 +72,20 @@ class _Main_State extends State<Main_> {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(e.value["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
+                    child: TextField(
+                      readOnly: true,
+                      controller: TextEditingController(text: value),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                      decoration: InputDecoration(
+                        labelText: e.value["title"] + ": ", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border: InputBorder.none,
+                        prefix: SizedBox(width: 16),
+                      ),
+                      onChanged: (v) {
+                        //
+                      },
                     ),
                   );
                 }
@@ -98,20 +96,20 @@ class _Main_State extends State<Main_> {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(e.value["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
+                    child: TextField(
+                      readOnly: true,
+                      controller: TextEditingController(text: value),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                      decoration: InputDecoration(
+                        labelText: e.value["title"] + ": ", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border: InputBorder.none,
+                        prefix: SizedBox(width: 16),
+                      ),
+                      onChanged: (v) {
+                        //
+                      },
                     ),
                   );
                 }
@@ -125,20 +123,20 @@ class _Main_State extends State<Main_> {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(e.value["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
+                    child: TextField(
+                      readOnly: true,
+                      controller: TextEditingController(text: value),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                      decoration: InputDecoration(
+                        labelText: e.value["title"] + ": ", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border: InputBorder.none,
+                        prefix: SizedBox(width: 16),
+                      ),
+                      onChanged: (v) {
+                        //
+                      },
                     ),
                   );
                 }
@@ -155,20 +153,20 @@ class _Main_State extends State<Main_> {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(e.value["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
+                    child: TextField(
+                      readOnly: true,
+                      controller: TextEditingController(text: value),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                      decoration: InputDecoration(
+                        labelText: e.value["title"] + ": ", //
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border: InputBorder.none,
+                        prefix: SizedBox(width: 16),
+                      ),
+                      onChanged: (v) {
+                        //
+                      },
                     ),
                   );
                 }

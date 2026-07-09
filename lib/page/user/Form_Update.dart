@@ -1,66 +1,22 @@
 import "dart:io";
 
 import "package:dio/dio.dart";
+import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:image_picker/image_picker.dart";
-import "package:intl/intl.dart";
-import "package:provider/provider.dart";
 
 import "package:speanmeas/Environment.dart";
-import "package:speanmeas/Global.dart";
-import "package:speanmeas/theme/Theme_Data.dart";
-
 import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "Setup.dart";
+import "_Setup.dart";
 import "schema.g.dart" as schema;
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global.variable, //
-      child: Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: Theme_Data(), //
-      debugShowCheckedModeBanner: false,
-      home: Main_(input: {}), //
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  Main_({
-    super.key, //
-    required this.input,
-  });
-
-  final Map<String, dynamic> input;
-
-  @override
-  State<Main_> createState() => _Main_State();
-}
-
 class _Main_State extends State<Main_> {
+  // need id
   Map<String, dynamic> output = {};
-
-  @override
-  void initState() {
-    super.initState();
-    output = Map<String, dynamic>.from(widget.input);
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,19 +37,17 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.data.map((s) {
+              // ...schema.data.where((s) => s["hide"] == false).map((s) {
+              ...schema.data.entries.where((e) => e.value["hide"] == false).map((e) {
                 //
                 //
                 //
-
-                if (s["key"].toString().contains("access_token")) return SizedBox();
-
-                if (s["key"].toString().contains("note")) {
+                if (e.key.contains("note")) {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[s["key"]]?.toString() ?? ""),
+                      controller: TextEditingController(text: e.value["value"]?.toString() ?? ""),
                       maxLines: 4,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -102,14 +56,14 @@ class _Main_State extends State<Main_> {
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (v) {
-                        output[s["key"]] = v; //
+                        output[e.key] = v; //
                       },
                     ),
                   );
                 }
 
                 //
-                if (s["key"].toString().contains("password")) {
+                if (e.key.contains("password")) {
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -117,12 +71,12 @@ class _Main_State extends State<Main_> {
                       controller: TextEditingController(text: ""),
                       decoration: InputDecoration(
                         hintText: "New Password", //
-                        labelText: s["title"], //
+                        labelText: e.value["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (v) {
-                        output[s["key"]] = v; //
+                        output[e.key] = v; //
                       },
                     ),
                   );
@@ -133,59 +87,59 @@ class _Main_State extends State<Main_> {
                 //
 
                 //
-                if (s["type"] == "string") {
-                  String value = output[s["key"]]?.toString() ?? "";
+                if (e.value["type"] == "string") {
+                  String value = e.value["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: value),
                       decoration: InputDecoration(
-                        labelText: s["title"] + ":", //
+                        labelText: e.value["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       onChanged: (v) {
-                        output[s["key"]] = v; //
+                        output[e.key] = v; //
                       },
                     ),
                   );
                 }
 
                 // edit number
-                if (s["type"] == "number") {
-                  String? value = output[s["key"]]?.toString() ?? "";
+                if (e.value["type"] == "number") {
+                  String? value = e.value["value"]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
                       controller: TextEditingController(text: value),
                       decoration: InputDecoration(
-                        labelText: s["title"] + ":", //
+                        labelText: e.value["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
                       onChanged: (v) {
-                        output[s["key"]] = v; //
+                        output[e.key] = v; //
                       },
                     ),
                   );
                 }
 
-                if (s["type"] == "boolean") {
+                if (e.value["type"] == "boolean") {
                   String value = "";
-                  if (output[s["key"]] != null) {
-                    value = output[s["key"]];
+                  if (e.value["value"] != null) {
+                    value = e.value["value"].toString();
                   }
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
-                      initialValue: value == "" ? null : value,
+                      initialValue: value,
                       decoration: InputDecoration(
-                        labelText: s["title"] + ":",
+                        labelText: e.value["title"] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
@@ -194,17 +148,17 @@ class _Main_State extends State<Main_> {
                         return DropdownMenuItem<String>(value: i, child: Text(i));
                       }).toList(),
                       onChanged: (v) {
-                        if (v == "Yes") output[s["key"]] = true;
-                        if (v == "No") output[s["key"]] = false;
+                        if (v == "Yes") output[e.key] = true;
+                        if (v == "No") output[e.key] = false;
                       },
                     ),
                   );
                 }
 
-                if (s["type"] == "date-time") {
+                if (e.value["type"] == "date-time") {
                   String value = "";
-                  if (output[s["key"]] != null) {
-                    DateTime? tmp = DateTime.tryParse(output[s["key"]].toString());
+                  if (e.value["value"] != null) {
+                    DateTime? tmp = DateTime.tryParse(e.value["value"].toString());
                     if (tmp != null) {
                       value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
                     }
@@ -221,7 +175,7 @@ class _Main_State extends State<Main_> {
                       readOnly: true,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(), //
-                        labelText: s["title"] + ":", //
+                        labelText: e.value["title"] + ":", //
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         suffixIcon: Icon(Icons.calendar_today, size: 20), //
@@ -229,7 +183,7 @@ class _Main_State extends State<Main_> {
                       onTap: () async {
                         DateTime? datetime = await datetime_picker(context, initial_datetime: init);
                         if (datetime == null) return;
-                        output[s["key"]] = DateFormat(DATE_FORMAT).format(datetime);
+                        output[e.key] = datetime.toIso8601String();
                         setState(() {});
                       }, //,
                     ),
@@ -282,6 +236,8 @@ class _Main_State extends State<Main_> {
     // }
 
     // request
+    output["_id"] = schema.data["_id"]?["value"];
+
     await dio
         .post("$PATH/data_update", data: FormData.fromMap({...output}))
         .then((value) {
@@ -292,4 +248,14 @@ class _Main_State extends State<Main_> {
           snackbar_show(context: context, message: "$HEADER update failed", color: Colors.red);
         });
   }
+}
+
+class Main_ extends StatefulWidget {
+  const Main_({super.key});
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(MaterialApp(title: TITLE, theme: Theme_Data(), debugShowCheckedModeBanner: false, home: const Main_()));
 }

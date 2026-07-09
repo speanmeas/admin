@@ -1,13 +1,13 @@
 import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/Global.dart";
 
-import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/Global.dart";
 import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "Setup.dart";
+import "_Setup.dart";
 import "schema.g.dart";
 
 void main() {
@@ -95,10 +95,10 @@ class _Main_State extends State<Main_> {
         .post("$PATH/data_delete", data: FormData.fromMap({"_id": widget.id}))
         .then((value) {
           Navigator.pop(context, true);
-          snackbar_show(context: context, message: "Room deleted successfully", color: Colors.green);
+          snackbar_show(context: context, message: "Delete successfully", color: Colors.green);
         })
         .catchError((error) {
-          snackbar_show(context: context, message: "Failed to delete room", color: Colors.red);
+          snackbar_show(context: context, message: "Delete failed", color: Colors.red);
         });
   }
 }
