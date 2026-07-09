@@ -9,7 +9,7 @@ import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/utility/Dio.dart";
 
 import "Setup.dart";
-import "Schema.g.dart" as schema;
+import "schema.g.dart" as schema;
 
 void main() {
   runApp(

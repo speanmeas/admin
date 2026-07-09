@@ -13,18 +13,18 @@ import "package:speanmeas/layout/Layout.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "Setup.dart";
-import "Schema.g.dart" as schema;
+import "_Setup.dart";
+import "schema.g.dart" as schema;
 
-import "Filter_String.dart" as filter_string;
-import "Filter_Number.dart" as filter_number;
-import "Filter_Boolean.dart" as filter_boolean;
-import "Filter_Datetime.dart" as filter_datetime;
+import "filter_string.dart" as filter_string;
+import "filter_number.dart" as filter_number;
+import "filter_boolean.dart" as filter_boolean;
+import "filter_datetime.dart" as filter_datetime;
 
-import "Form_Create.dart" as create;
-import "Form_Read.dart" as read;
-import "Form_Update.dart" as update;
-import "Form_Delete.dart" as delete;
+import "form_create.dart" as create;
+import "form_read.dart" as read;
+import "form_update.dart" as update;
+import "form_delete.dart" as delete;
 
 void main() {
   runApp(
@@ -60,6 +60,7 @@ class _Main_State extends State<Main_> {
   //
 
   PlutoGridStateManager? state_manager;
+  Map<String, Map<String, dynamic>> raw_data_by_id = {};
 
   bool is_loading = false;
   bool has_more = true;
@@ -72,11 +73,36 @@ class _Main_State extends State<Main_> {
   String? query;
   double? min;
   double? max;
-
   DateTime? start;
   DateTime? end;
-
   int? order;
+
+  void set_raw_data(Map<String, dynamic> data) {
+    /// Example:
+    /// INPUT: {"_id": "123", "name": "John Doe"}
+    /// OUTPUT: raw_data_by_id = {"123": {"_id": "123", "name": "John Doe"}}
+
+    final id = data["_id"]?.toString() ?? "";
+    if (id.isEmpty) return;
+    raw_data_by_id[id] = Map<String, dynamic>.from(data);
+  }
+
+  Map<String, dynamic> get_current_row_input() {
+    /// Example:
+    /// INPUT: currentRow = {"_id": "123", "name": "John Doe"}
+    /// OUTPUT: input = {"_id": "123", "name": "John Doe"}
+
+    Map<String, dynamic> input = {};
+    state_manager?.currentRow!.cells.forEach((k, c) {
+      input[k] = c.value;
+    });
+
+    final id = input["_id"]?.toString() ?? "";
+    final raw_data = raw_data_by_id[id];
+    if (raw_data == null) return input;
+
+    return Map<String, dynamic>.from(raw_data);
+  }
 
   @override
   void initState() {
@@ -101,6 +127,10 @@ class _Main_State extends State<Main_> {
         ) //
         .then((r) {
           final data = List<Map<String, dynamic>>.from(r.data);
+          raw_data_by_id.clear();
+          for (var d in data) {
+            set_raw_data(d);
+          }
 
           if (r.data.length == 10000) has_more = true;
           if (r.data.length != 10000) has_more = false;
@@ -215,6 +245,9 @@ class _Main_State extends State<Main_> {
         ) //
         .then((r) {
           final data = List<Map<String, dynamic>>.from(r.data);
+          for (var d in data) {
+            set_raw_data(d);
+          }
 
           state_manager?.appendRows([
             for (var d in data)
@@ -379,6 +412,7 @@ class _Main_State extends State<Main_> {
                     field: s["key"]!, //
                     title: s["title"]!,
                     type: s["type"]!,
+                    hide: s["hide"]!,
                     on_filter: () => on_filter(s),
                   );
                 }),
@@ -544,6 +578,7 @@ class _Main_State extends State<Main_> {
     ).then((v) {
       //
       if (v == null) return;
+      set_raw_data(v);
 
       // clear sort
       final sorted_column = state_manager?.getSortedColumn;
@@ -635,10 +670,7 @@ class _Main_State extends State<Main_> {
     }
 
     //
-    Map<String, dynamic> input = {};
-    state_manager?.currentRow!.cells.forEach((k, c) {
-      input[k] = c.value;
-    });
+    Map<String, dynamic> input = get_current_row_input();
 
     Navigator.push(
       context, //
@@ -657,10 +689,7 @@ class _Main_State extends State<Main_> {
     }
 
     //
-    Map<String, dynamic> input = {};
-    state_manager?.currentRow!.cells.forEach((k, c) {
-      input[k] = c.value;
-    });
+    Map<String, dynamic> input = get_current_row_input();
 
     Navigator.push(
       context, //
@@ -668,6 +697,7 @@ class _Main_State extends State<Main_> {
     ).then((v) {
       //
       if (v == null) return;
+      set_raw_data(v);
 
       final row = state_manager?.currentRow;
 
@@ -718,7 +748,7 @@ class _Main_State extends State<Main_> {
     }
 
     //
-    String id = state_manager?.currentRow!.cells["_id"]!.value;
+    final id = state_manager?.currentRow!.cells["_id"]!.value;
 
     //
     Navigator.push(
@@ -726,6 +756,7 @@ class _Main_State extends State<Main_> {
       MaterialPageRoute(builder: (context) => delete.Main_(id: id)),
     ).then((v) {
       if (v == null) return;
+      raw_data_by_id.remove(id);
 
       // remove current row
       state_manager?.removeCurrentRow();
@@ -771,6 +802,7 @@ class _Main_State extends State<Main_> {
     required String title, //
     required String field,
     required String type,
+    required bool hide,
     required VoidCallback on_filter,
   }) {
     //
@@ -790,32 +822,32 @@ class _Main_State extends State<Main_> {
       minWidth: 100,
       readOnly: true,
       enableFilterMenuItem: false,
-      hide: type == "_id" ? true : false,
+      hide: hide,
       titleSpan: WidgetSpan(
         child: Row(
           children: [
-            if (type == "_id")
-              SizedBox()
+            if (type == "string")
+              InkWell(
+                onTap: on_filter,
+                child: Icon(Icons.filter_alt_outlined, size: 20, color: Colors.blue),
+              )
             else if (type == "number")
               InkWell(
                 onTap: on_filter,
                 child: Icon(Icons.tune, size: 20, color: Colors.blue),
-              )
-            else if (type == "boolean")
-              InkWell(
-                onTap: on_filter,
-                child: Icon(Icons.toggle_on_outlined, size: 20, color: Colors.blue),
               )
             else if (type == "date-time")
               InkWell(
                 onTap: on_filter,
                 child: Icon(Icons.date_range, size: 20, color: Colors.blue),
               )
-            else
+            else if (type == "boolean")
               InkWell(
                 onTap: on_filter,
-                child: Icon(Icons.filter_alt_outlined, size: 20, color: Colors.blue),
-              ),
+                child: Icon(Icons.toggle_on_outlined, size: 20, color: Colors.blue),
+              )
+            else
+              SizedBox(),
 
             SizedBox(width: 4),
 

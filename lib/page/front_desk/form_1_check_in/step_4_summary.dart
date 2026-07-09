@@ -13,10 +13,8 @@ import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "../../_Setup.dart";
-import "../../Schema.g.dart" as schema;
-
-import "Step_5a_Receipt.dart" as receipt;
+import "../_Setup.dart";
+import "../schema.g.dart" as schema;
 
 void main() {
   runApp(
@@ -64,7 +62,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "5. Check In - Summary", //
+          "4. Check In - Summary", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -231,26 +229,6 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  bool can_print() {
-    for (var s in schema.data) {
-      if (s["key"] == "ar_total_usd") {
-        if (s["value"] != null) {
-          if (s["value"] == 0) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  void on_print() {
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (_) => receipt.Main_()),
-    );
-  }
-
   void on_check_in() async {
     Map<String, dynamic> output = {for (var s in schema.data) s["key"]: s["value"]};
 
@@ -271,8 +249,8 @@ class _Main_State extends State<Main_> {
 
     //
     String? room_id = output[schema.ROOM_ID];
-    String? payment_at = output[schema.PAYMENT_AT];
-    String? id = output[schema.ID];
+    String? payment_at = output[schema.ROOM_PAYMENT_AT];
+    String? id = output[schema.ROOM_PAYMENT_BY_ID];
     if (payment_at != null && payment_at.isNotEmpty) {
       await dio.post(
         "/room/data_update",

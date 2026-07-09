@@ -11,8 +11,8 @@ import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "Setup.dart";
-import "Schema.g.dart" as schema;
+import "_Setup.dart";
+import "schema.g.dart" as schema;
 
 void main() {
   runApp(
@@ -73,7 +73,7 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.data.map((s) {
+              ...schema.data.where((s) => s["hide"] == false).map((s) {
                 //
                 //
                 //
@@ -167,7 +167,14 @@ class _Main_State extends State<Main_> {
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: TextField(
-                      controller: TextEditingController(text: output[s["key"]] ?? ""),
+                      controller: TextEditingController(
+                        text: (() {
+                          final value = output[s["key"]]?.toString() ?? "";
+                          final dt = DateTime.tryParse(value);
+                          if (dt == null) return value;
+                          return DateFormat(DATE_FORMAT).format(dt.toLocal());
+                        })(),
+                      ),
                       readOnly: true,
                       decoration: InputDecoration(
                         labelText: s["title"] + ":", //
@@ -179,7 +186,7 @@ class _Main_State extends State<Main_> {
                       onTap: () async {
                         final DateTime? datetime = await datetime_picker(context);
                         if (datetime == null) return;
-                        output[s["key"]] = DateFormat(DATE_FORMAT).format(datetime);
+                        output[s["key"]] = datetime.toIso8601String();
                         setState(() {});
                       }, //,
                     ),

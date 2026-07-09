@@ -2,32 +2,38 @@ List<Map<String, dynamic>> data = [
   {
     "key": "_id",
     "type": "_id",
-    "title": "ID"
+    "title": "ID",
+    "hide": true
   },
   {
     "key": "guest_name",
     "type": "string",
-    "title": "Guest Name"
+    "title": "Guest Name",
+    "hide": false
   },
   {
     "key": "guest_phone",
     "type": "string",
-    "title": "Guest Phone Number"
+    "title": "Guest Phone Number",
+    "hide": false
   },
   {
     "key": "guest_gender",
     "type": "string",
-    "title": "Guest Gender"
+    "title": "Guest Gender",
+    "hide": false
   },
   {
     "key": "guest_nationality",
     "type": "string",
-    "title": "Guest Nationality"
+    "title": "Guest Nationality",
+    "hide": false
   },
   {
     "key": "guest_note",
     "type": "string",
-    "title": "Guest Note"
+    "title": "Guest Note",
+    "hide": false
   }
 ];
 

@@ -13,7 +13,7 @@ import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "_Setup.dart";
-import "Schema.g.dart" as schema;
+import "schema.g.dart" as schema;
 import "_Room_Status.dart" as room_status;
 import "_Room_Type.dart" as room_type;
 

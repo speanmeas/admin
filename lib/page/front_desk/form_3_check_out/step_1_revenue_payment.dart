@@ -11,10 +11,10 @@ import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 import "package:speanmeas/page/main/_User.dart" as user;
 
-import "../../_Setup.dart";
-import "../../Schema.g.dart" as schema;
+import "../_setup.dart";
+import "../schema.g.dart" as schema;
 
-import "Step_3_Summary.dart" as step_3;
+import "step_2_summary.dart" as step_2;
 
 void main() {
   runApp(
@@ -78,14 +78,14 @@ class _Main_State extends State<Main_> {
     double price_total_usd = (stay_duration_days * price_per_day_usd) + ((stay_duration_hours / 3) * price_per_3h_usd);
 
     for (var s in schema.data) {
-      if (s["key"] == schema.PRICE_TOTAL_USD) c_price_usd.text = price_total_usd.toString();
-      if (s["key"] == schema.PAID_BANK_USD) c_paid_bank_usd.text = (s["value"] ?? "").toString();
-      if (s["key"] == schema.PAID_BANK_KHR) c_paid_bank_khr.text = (s["value"] ?? "").toString();
-      if (s["key"] == schema.PAID_CASH_USD) c_paid_cash_usd.text = (s["value"] ?? "").toString();
-      if (s["key"] == schema.PAID_CASH_KHR) c_paid_cash_khr.text = (s["value"] ?? "").toString();
-      if (s["key"] == schema.RETURN_USD) c_return_usd.text = (s["value"] ?? "").toString();
-      if (s["key"] == schema.RETURN_KHR) c_return_khr.text = (s["value"] ?? "").toString();
-      if (s["key"] == schema.PAYMENT_NOTE) c_payment_note.text = (s["value"] ?? "").toString();
+      if (s["key"] == schema.ROOM_PRICE_TOTAL_USD) c_price_usd.text = price_total_usd.toString();
+      if (s["key"] == schema.ROOM_PAID_BANK_USD) c_paid_bank_usd.text = (s["value"] ?? "").toString();
+      if (s["key"] == schema.ROOM_PAID_BANK_KHR) c_paid_bank_khr.text = (s["value"] ?? "").toString();
+      if (s["key"] == schema.ROOM_PAID_CASH_USD) c_paid_cash_usd.text = (s["value"] ?? "").toString();
+      if (s["key"] == schema.ROOM_PAID_CASH_KHR) c_paid_cash_khr.text = (s["value"] ?? "").toString();
+      if (s["key"] == schema.ROOM_RETURN_USD) c_return_usd.text = (s["value"] ?? "").toString();
+      if (s["key"] == schema.ROOM_RETURN_KHR) c_return_khr.text = (s["value"] ?? "").toString();
+      if (s["key"] == schema.ROOM_PAYMENT_NOTE) c_payment_note.text = (s["value"] ?? "").toString();
     }
   }
 
@@ -94,23 +94,22 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "2. Payment - Detail", //
+          "4. Check In - Payment", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
-          if (can_next())
-            Container(
-              margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-              child: OutlinedButton.icon(
-                icon: Icon(Icons.arrow_right_alt_outlined),
-                label: Text("Next"),
-                style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                onPressed: on_next,
-              ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+            child: OutlinedButton.icon(
+              icon: Icon(Icons.arrow_right_alt_outlined),
+              label: Text("Next"),
+              style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+              onPressed: on_next,
             ),
+          ),
         ],
         centerTitle: false,
         toolbarHeight: 40,
@@ -422,11 +421,6 @@ class _Main_State extends State<Main_> {
     return balance_usd;
   }
 
-  bool can_next() {
-    if (balance_usd() == 0) return true;
-    return false;
-  }
-
   void on_next() async {
     //
 
@@ -442,22 +436,22 @@ class _Main_State extends State<Main_> {
     if (balance_usd() == 0) get_paid_date = DateTime.now();
 
     for (var s in schema.data) {
-      if (s["key"] == schema.PRICE_TOTAL_USD) s["value"] = get_price_total_usd();
-      if (s["key"] == schema.PAID_BANK_USD) s["value"] = paid_bank_usd == 0 ? null : paid_bank_usd;
-      if (s["key"] == schema.PAID_BANK_KHR) s["value"] = paid_bank_khr == 0 ? null : paid_bank_khr;
-      if (s["key"] == schema.PAID_CASH_USD) s["value"] = paid_cash_usd == 0 ? null : paid_cash_usd;
-      if (s["key"] == schema.PAID_CASH_KHR) s["value"] = paid_cash_khr == 0 ? null : paid_cash_khr;
-      if (s["key"] == schema.PAID_TOTAL_USD) s["value"] = get_paid_total_usd();
-      if (s["key"] == schema.RETURN_USD) s["value"] = return_usd == 0 ? null : return_usd;
-      if (s["key"] == schema.RETURN_KHR) s["value"] = return_khr == 0 ? null : return_khr;
-      if (s["key"] == schema.RETURN_TOTAL_USD) s["value"] = get_return_total_usd();
-      if (s["key"] == schema.BALANCE_TOTAL_USD) s["value"] = balance_usd();
+      if (s["key"] == schema.ROOM_PRICE_TOTAL_USD) s["value"] = get_price_total_usd();
+      if (s["key"] == schema.ROOM_PAID_BANK_USD) s["value"] = paid_bank_usd == 0 ? null : paid_bank_usd;
+      if (s["key"] == schema.ROOM_PAID_BANK_KHR) s["value"] = paid_bank_khr == 0 ? null : paid_bank_khr;
+      if (s["key"] == schema.ROOM_PAID_CASH_USD) s["value"] = paid_cash_usd == 0 ? null : paid_cash_usd;
+      if (s["key"] == schema.ROOM_PAID_CASH_KHR) s["value"] = paid_cash_khr == 0 ? null : paid_cash_khr;
+      if (s["key"] == schema.ROOM_PAID_TOTAL_USD) s["value"] = get_paid_total_usd();
+      if (s["key"] == schema.ROOM_RETURN_USD) s["value"] = return_usd == 0 ? null : return_usd;
+      if (s["key"] == schema.ROOM_RETURN_KHR) s["value"] = return_khr == 0 ? null : return_khr;
+      if (s["key"] == schema.ROOM_RETURN_TOTAL_USD) s["value"] = get_return_total_usd();
+      if (s["key"] == schema.ROOM_BALANCE_TOTAL_USD) s["value"] = balance_usd();
 
       if (balance_usd() == 0) {
-        if (s["key"] == schema.PAYMENT_BY_ID && user.data[user.ID] != null) s["value"] = user.data[user.ID]!;
-        if (s["key"] == schema.PAYMENT_BY && user.data[user.FULL_NAME] != null) s["value"] = user.data[user.FULL_NAME]!;
-        if (s["key"] == schema.PAYMENT_AT) s["value"] = get_paid_date?.toIso8601String();
-        if (s["key"] == schema.PAYMENT_NOTE) s["value"] = c_payment_note.text;
+        if (s["key"] == schema.ROOM_PAYMENT_BY_ID && user.data[user.ID] != null) s["value"] = user.data[user.ID]!;
+        if (s["key"] == schema.ROOM_PAYMENT_BY && user.data[user.FULL_NAME] != null) s["value"] = user.data[user.FULL_NAME]!;
+        if (s["key"] == schema.ROOM_PAYMENT_AT) s["value"] = get_paid_date?.toIso8601String();
+        if (s["key"] == schema.ROOM_PAYMENT_NOTE) s["value"] = c_payment_note.text;
       }
     }
 
@@ -465,7 +459,7 @@ class _Main_State extends State<Main_> {
 
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => step_3.Main_()),
+      MaterialPageRoute(builder: (context) => step_2.Main_()),
     );
   }
 }

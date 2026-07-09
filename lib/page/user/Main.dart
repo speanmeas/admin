@@ -14,7 +14,7 @@ import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "Setup.dart";
-import "Schema.g.dart" as schema;
+import "schema.g.dart" as schema;
 
 import "Filter_String.dart" as filter_string;
 import "Filter_Number.dart" as filter_number;

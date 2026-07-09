@@ -8,8 +8,8 @@ import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
 
-import "Setup.dart";
-import "Schema.g.dart" as schema;
+import "_Setup.dart";
+import "schema.g.dart" as schema;
 
 void main() {
   runApp(
@@ -74,7 +74,7 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.data.map((s) {
+              ...schema.data.where((s) => s["hide"] == false).map((s) {
                 //
                 //
                 //
@@ -160,7 +160,9 @@ class _Main_State extends State<Main_> {
                 //
                 if (s["type"] == "boolean") {
                   String value = "";
-                  if (output[s["key"]] != null) value = output[s["key"]];
+                  if (output[s["key"]] == true) value = "Yes";
+                  if (output[s["key"]] == false) value = "No";
+                  if (output[s["key"]] == "Yes" || output[s["key"]] == "No") value = output[s["key"]].toString();
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),

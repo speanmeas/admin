@@ -8,17 +8,21 @@ import "package:provider/provider.dart";
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
 import "package:speanmeas/layout/Layout.dart";
+
 import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "../../_Setup.dart";
-import "../../Schema.g.dart" as schema;
-
-import "Step_3a_Receipt.dart" as receipt;
+import "../_setup.dart";
+import "../schema.g.dart" as schema;
 
 void main() {
-  runApp(const Main());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global.variable, //
+      child: const Main(),
+    ),
+  );
 }
 
 class Main extends StatelessWidget {
@@ -51,16 +55,14 @@ class _Main_State extends State<Main_> {
     init();
   }
 
-  void init() async {
-    setState(() {});
-  }
+  void init() async {}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Check Out - Summary", //
+          "5. Check In - Summary", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -72,10 +74,10 @@ class _Main_State extends State<Main_> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: OutlinedButton.icon(
-              icon: Icon(Icons.logout_outlined),
-              label: Text("Check Out"),
+              icon: Icon(Icons.login_outlined),
+              label: Text("Check In"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: on_check_out, //
+              onPressed: on_check_in, //
             ),
           ),
         ],
@@ -220,7 +222,6 @@ class _Main_State extends State<Main_> {
               //       onPressed: on_print, //
               //     ),
               //   ),
-              SizedBox(height: 50),
             ],
           ),
         ),
@@ -228,58 +229,46 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  void on_print() {
-    //
-  }
-
-  void on_check_out() async {
-    // Map<String, dynamic> output = {for (var s in data) s["key"]: s["value"]};
-
-    // await dio
-    //     .post("$PATH/data_update", data: FormData.fromMap({...output}))
-    //     .then((r) {
-    //       snackbar_show(context: context, message: "$HEADER update successfully.", color: Colors.green);
-    //       Navigator.pop(context);
-    //       Navigator.pop(context, output);
-    //     })
-    //     .catchError((error) {
-    //       snackbar_show(context: context, message: "$HEADER update failed.", color: Colors.red);
-    //     });
-
-    // var room_id = data.firstWhere((s) => s["key"] == "room_id")["value"];
-
-    // await dio.post(
-    //   "/room/data_update",
-    //   data: FormData.fromMap({
-    //     "id": room_id, //
-    //     "room_status": "Dirty",
-    //   }),
-    // );
-
-    //
+  void on_check_in() async {
     Map<String, dynamic> output = {for (var s in schema.data) s["key"]: s["value"]};
 
-    //
     await dio
-        .post("/front_desk/data_update", data: FormData.fromMap({...output}))
+        .post("/front_desk/data_create", data: FormData.fromMap({...output}))
         .then((r) {
-          snackbar_show(context: context, message: "Update successfully.", color: Colors.green);
+          output["_id"] = r.data["_id"]; // NOTE: support to main table
+          snackbar_show(context: context, message: "Create successfully.", color: Colors.green);
+          Navigator.pop(context);
+          Navigator.pop(context);
           Navigator.pop(context);
           Navigator.pop(context);
           Navigator.pop(context, output);
         })
         .catchError((error) {
-          snackbar_show(context: context, message: "Update failed.", color: Colors.red);
+          snackbar_show(context: context, message: "Create failed.", color: Colors.red);
         });
 
     //
     String? room_id = output[schema.ROOM_ID];
-    await dio.post(
-      "/room/data_update",
-      data: FormData.fromMap({
-        "_id": room_id, //
-        "room_status": "Pending Clean",
-      }),
-    );
+    String? payment_at = output[schema.ROOM_PAYMENT_AT];
+    String? id = output[schema.ROOM_PAYMENT_BY_ID];
+    if (payment_at != null && payment_at.isNotEmpty) {
+      await dio.post(
+        "/room/data_update",
+        data: FormData.fromMap({
+          "_id": room_id, //
+          "room_status": "Pending Leave",
+          "front_desk_id": id, //
+        }),
+      );
+    } else {
+      await dio.post(
+        "/room/data_update",
+        data: FormData.fromMap({
+          "_id": room_id, //
+          "room_status": "Pending Pay",
+          "front_desk_id": id, //
+        }),
+      );
+    }
   }
 }

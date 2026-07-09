@@ -2,42 +2,50 @@ List<Map<String, dynamic>> data = [
   {
     "key": "_id",
     "type": "_id",
-    "title": "ID"
+    "title": "ID",
+    "hide": true
   },
   {
     "key": "room_number",
     "type": "string",
-    "title": "Room Number"
+    "title": "Room Number",
+    "hide": false
   },
   {
     "key": "room_type",
     "type": "string",
-    "title": "Room Type"
+    "title": "Room Type",
+    "hide": false
   },
   {
     "key": "room_price_per_day_usd",
     "type": "number",
-    "title": "Room Price/Day"
+    "title": "Room Price/Day",
+    "hide": false
   },
   {
     "key": "room_price_per_3h_usd",
     "type": "number",
-    "title": "Room Price/3H"
+    "title": "Room Price/3H",
+    "hide": false
   },
   {
     "key": "room_status",
     "type": "string",
-    "title": "Room Status"
+    "title": "Room Status",
+    "hide": false
   },
   {
     "key": "room_note",
     "type": "string",
-    "title": "Room Note"
+    "title": "Room Note",
+    "hide": false
   },
   {
     "key": "front_desk_id",
     "type": "_id",
-    "title": "Front Desk ID"
+    "title": "Front Desk ID",
+    "hide": false
   }
 ];
 

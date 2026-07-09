@@ -8,17 +8,21 @@ import "package:provider/provider.dart";
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
 import "package:speanmeas/layout/Layout.dart";
+
 import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "../../_Setup.dart";
-import "../../Schema.g.dart" as schema;
-
-import "Step_3a_Receipt.dart" as receipt;
+import "../../schema.g.dart" as schema;
 
 void main() {
-  runApp(const Main());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global.variable, //
+      child: const Main(),
+    ),
+  );
 }
 
 class Main extends StatelessWidget {
@@ -58,7 +62,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Check Out - Summary", //
+          "Clean - Summary", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -70,10 +74,10 @@ class _Main_State extends State<Main_> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: OutlinedButton.icon(
-              icon: Icon(Icons.cleaning_services),
-              label: Text("Clean"),
+              icon: Icon(Icons.edit_outlined),
+              label: Text("Update Guest"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: on_clean, //
+              onPressed: on_update_guest, //
             ),
           ),
         ],
@@ -214,78 +218,24 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  void on_clean() async {
-    // Map<String, dynamic> output = {for (var s in data) s["key"]: s["value"]};
+  void on_update_guest() async {
+    // todo: save guest info + stay detail + payment to database
 
-    // await dio
-    //     .post("$PATH/data_update", data: FormData.fromMap({...output}))
-    //     .then((r) {
-    //       snackbar_show(context: context, message: "$HEADER update successfully.", color: Colors.green);
-    //       Navigator.pop(context);
-    //       Navigator.pop(context, output);
-    //     })
-    //     .catchError((error) {
-    //       snackbar_show(context: context, message: "$HEADER update failed.", color: Colors.red);
-    //     });
-
-    // var room_id = data.firstWhere((s) => s["key"] == "room_id")["value"];
-
-    // await dio.post(
-    //   "/room/data_update",
-    //   data: FormData.fromMap({
-    //     "id": room_id, //
-    //     "room_status": "Available",
-    //   }),
-    // );
-
-    // Map<String, dynamic> output = {for (var s in data) s["key"]: s["value"]};
-
-    // await dio
-    //     .post("$PATH/data_update", data: FormData.fromMap({...output}))
-    //     .then((r) {
-    //       snackbar_show(context: context, message: "$HEADER update successfully.", color: Colors.green);
-    //       Navigator.pop(context);
-    //       Navigator.pop(context, output);
-    //     })
-    //     .catchError((error) {
-    //       snackbar_show(context: context, message: "$HEADER update failed.", color: Colors.red);
-    //     });
-
-    // var room_id = data.firstWhere((s) => s["key"] == "room_id")["value"];
-
-    // await dio.post(
-    //   "/room/data_update",
-    //   data: FormData.fromMap({
-    //     "id": room_id, //
-    //     "room_status": "Dirty",
-    //   }),
-    // );
-
-    //
     Map<String, dynamic> output = {for (var s in schema.data) s["key"]: s["value"]};
 
-    //
+    String id = output["id"];
+    Map<String, dynamic> data = Map<String, dynamic>.from(output);
+    data.remove("id");
+
     await dio
-        .post("/front_desk/data_update", data: FormData.fromMap({...output}))
+        .post("$PATH/data_update", data: FormData.fromMap({...output}))
         .then((r) {
-          snackbar_show(context: context, message: "Update successfully.", color: Colors.green);
-          Navigator.pop(context);
+          snackbar_show(context: context, message: "$HEADER update successfully.", color: Colors.green);
           Navigator.pop(context);
           Navigator.pop(context, output);
         })
         .catchError((error) {
-          snackbar_show(context: context, message: "Update failed.", color: Colors.red);
+          snackbar_show(context: context, message: "$HEADER update failed.", color: Colors.red);
         });
-
-    //
-    String? room_id = output[schema.ROOM_ID];
-    await dio.post(
-      "/room/data_update",
-      data: FormData.fromMap({
-        "_id": room_id, //
-        "room_status": "Available",
-        "front_desk_id": "", //
-      }),
-    );
   }
 }

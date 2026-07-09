@@ -1,64 +1,29 @@
 import "package:dio/dio.dart";
-import "package:flutter/material.dart";
-import "package:flutter/services.dart";
 import "package:intl/intl.dart";
 import "package:provider/provider.dart";
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
-import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
-
-import "package:speanmeas/theme/Theme_Data.dart";
-
+import "package:speanmeas/Environment.dart";
 import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "../_Setup.dart";
-import "../Schema.g.dart" as schema;
+import "../_setup.dart";
+import "../schema.g.dart" as schema;
 
-import "../../guest/Form_Create.dart" as guest;
-import "../../guest/Schema.g.dart" as guest_schema;
+import "package:speanmeas/page/guest/Form_Create.dart" as guest_create;
+import "package:speanmeas/page/guest/schema.g.dart" as guest_schema;
 
-import "Step_2_Summary.dart" as summary;
-
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global.variable, //
-      child: Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: Theme_Data(), //
-      debugShowCheckedModeBanner: false,
-      home: Main_(),
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  Main_({super.key});
-
-  @override
-  State<Main_> createState() => _Main_State();
-}
+import "step_2_stay.dart" as step_2;
 
 class _Main_State extends State<Main_> {
   // keys
-  var NAME = "guest_name";
-  var GENDER = "guest_gender";
-  var PHONE_NUMBER = "guest_phone";
-  var NATIONALITY = "guest_nationality";
 
-  TextEditingController controller_search = TextEditingController();
+  var controller_search = TextEditingController();
   Map<String, dynamic> selected_guest = {};
 
   @override
@@ -68,12 +33,14 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    for (var s in schema.data) {
-      if (s["key"] == NAME) selected_guest[NAME] = s["value"] ?? "";
-      if (s["key"] == GENDER) selected_guest[GENDER] = s["value"] ?? "";
-      if (s["key"] == PHONE_NUMBER) selected_guest[PHONE_NUMBER] = s["value"] ?? "";
-      if (s["key"] == NATIONALITY) selected_guest[NATIONALITY] = s["value"] ?? "";
-    }
+    // for (var s in schema.data) print(s);
+
+    // for (var s in schema.data) {
+    //   if (s["key"] == schema.GUEST_NAME) selected_guest[schema.GUEST_NAME] = s["value"] ?? "";
+    //   if (s["key"] == schema.GUEST_GENDER) selected_guest[schema.GUEST_GENDER] = s["value"] ?? "";
+    //   if (s["key"] == schema.GUEST_PHONE) selected_guest[schema.GUEST_PHONE] = s["value"] ?? "";
+    //   if (s["key"] == schema.GUEST_NATIONALITY) selected_guest[schema.GUEST_NATIONALITY] = s["value"] ?? "";
+    // }
   }
 
   @override
@@ -81,7 +48,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Update - Guest", //
+          "1. Check In - Guest", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -116,7 +83,7 @@ class _Main_State extends State<Main_> {
                   return TypeAheadField<String>(
                     controller: controller_search,
                     suggestionsCallback: (query) async {
-                      String key = PHONE_NUMBER;
+                      String key = schema.GUEST_PHONE;
                       List<String> option_datas = [];
                       await dio
                           .post(
@@ -162,8 +129,9 @@ class _Main_State extends State<Main_> {
                         title: Text(item),
                         onTap: () {
                           for (var g in guest_datas) {
-                            if (g[PHONE_NUMBER] == item) {
+                            if (g[schema.GUEST_PHONE] == item) {
                               selected_guest = g;
+                              // print(selected_guest);
                               break;
                             }
                           }
@@ -185,12 +153,9 @@ class _Main_State extends State<Main_> {
               // view search guest result
               ...guest_schema.data.map((row) {
                 //
-                if (row["key"] == "note") return SizedBox.shrink();
-
-                //
                 if (row["type"] == "string") {
-                  // String value = "";
-                  String value = selected_guest[row["key"]]?.toString() ?? "";
+                  String value = "";
+                  if (selected_guest[row["key"]] != null) value = selected_guest[row["key"]]!.toString();
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -214,8 +179,8 @@ class _Main_State extends State<Main_> {
 
                 //
                 if (row["type"] == "number") {
-                  // String value = "";
-                  String value = selected_guest[row["key"]]?.toString() ?? "";
+                  String value = "";
+                  if (selected_guest[row["key"]] != null) value = selected_guest[row["key"]]!.toString();
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -310,8 +275,8 @@ class _Main_State extends State<Main_> {
               Container(
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: OutlinedButton.icon(
-                  icon: Icon(Icons.person_add_alt_1_outlined),
-                  label: Text("Create New Guest"),
+                  icon: Icon(Icons.add),
+                  label: Text("Create New"),
                   style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
                   onPressed: on_add_new,
                 ),
@@ -326,30 +291,39 @@ class _Main_State extends State<Main_> {
   void on_next() async {
     //
 
-    for (var s in schema.data) {
-      if (s["key"] == NAME) s["value"] = selected_guest[NAME];
-      if (s["key"] == GENDER) s["value"] = selected_guest[GENDER];
-      if (s["key"] == PHONE_NUMBER) s["value"] = selected_guest[PHONE_NUMBER];
-      if (s["key"] == NATIONALITY) s["value"] = selected_guest[NATIONALITY];
-      if (s["key"] == "guest_id") s["value"] = selected_guest["id"];
+    for (var e in selected_guest.entries) {
+      for (var s in schema.data) {
+        if (s["key"] == "_id") continue;
+        if (e.key == "_id" && s["key"] == "guest_id") s["value"] = e.value;
+        if (e.key == s["key"]) s["value"] = e.value;
+      }
     }
+
+    for (var s in schema.data) print(s);
 
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => summary.Main_()),
+      MaterialPageRoute(builder: (context) => step_2.Main_()),
     );
   }
 
   void on_add_new() async {
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => guest.Main_()),
+      MaterialPageRoute(builder: (context) => guest_create.Main_()),
     ).then((value) {
       if (value == null) return;
 
-      controller_search.text = value[PHONE_NUMBER] ?? "";
+      controller_search.text = value[schema.GUEST_PHONE] ?? "";
       selected_guest = value;
       setState(() {});
     });
   }
+}
+
+class Main_ extends StatefulWidget {
+  Main_({super.key});
+
+  @override
+  State<Main_> createState() => _Main_State();
 }

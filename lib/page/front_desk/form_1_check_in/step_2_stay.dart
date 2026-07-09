@@ -12,10 +12,10 @@ import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 import "package:speanmeas/page/main/_User.dart" as user;
 
-import "../../_Setup.dart";
-import "../../Schema.g.dart" as schema;
+import "../_setup.dart";
+import "../schema.g.dart" as schema;
 
-import "Step_4_Payment.dart" as step_4;
+import "step_3_room_payment.dart" as step_3;
 
 void main() {
   runApp(
@@ -62,12 +62,12 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    for (var s in schema.data) {
-      if (s["key"] == schema.STAY_DURATION_DAY) controller_days.text = (s["value"] ?? "").toString();
-      if (s["key"] == schema.STAY_DURATION_HOUR) controller_hours.text = (s["value"] ?? "").toString();
-      if (s["key"] == schema.NUMBER_OF_GUESTS) controller_num_guests.text = (s["value"] ?? "").toString();
-      if (s["key"] == schema.CHECK_IN_NOTE) controller_note.text = (s["value"] ?? "").toString();
-    }
+    // for (var s in schema.data) {
+    //   if (s["key"] == schema.STAY_DURATION_DAY) controller_days.text = (s["value"] ?? "").toString();
+    //   if (s["key"] == schema.STAY_DURATION_HOUR) controller_hours.text = (s["value"] ?? "").toString();
+    //   if (s["key"] == schema.STAY_NUMBER_OF_GUESTS) controller_num_guests.text = (s["value"] ?? "").toString();
+    //   if (s["key"] == schema.CHECK_IN_NOTE) controller_note.text = (s["value"] ?? "").toString();
+    // }
   }
 
   @override
@@ -75,7 +75,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "3. Check In - Staying", //
+          "2. Check In - Staying", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -256,11 +256,20 @@ class _Main_State extends State<Main_> {
       schedule_check_out = schedule_check_out.add(Duration(hours: stay_duration_hours.toInt()));
     }
 
+    double room_price_per_day_usd = 0;
+    double room_price_per_3h_usd = 0;
+    for (var s in schema.data) {
+      if (s["key"] == schema.ROOM_PRICE_PER_DAY_USD) room_price_per_day_usd = double.tryParse("${s["value"] ?? 0}") ?? 0;
+      if (s["key"] == schema.ROOM_PRICE_PER_3H_USD) room_price_per_3h_usd = double.tryParse("${s["value"] ?? 0}") ?? 0;
+    }
+    double room_price_total_usd = (stay_duration_days * room_price_per_day_usd) + ((stay_duration_hours / 3) * room_price_per_3h_usd);
+
     for (var s in schema.data) {
       if (s["key"] == schema.STAY_DURATION_DAY) s["value"] = stay_duration_days;
       if (s["key"] == schema.STAY_DURATION_HOUR) s["value"] = stay_duration_hours;
-      if (s["key"] == schema.NUMBER_OF_GUESTS) s["value"] = number_of_guests;
-      if (s["key"] == schema.SCHEDULE_CHECK_OUT) s["value"] = schedule_check_out.toIso8601String();
+      if (s["key"] == schema.STAY_NUMBER_OF_GUESTS) s["value"] = number_of_guests;
+      if (s["key"] == schema.STAY_SCHEDULE_CHECK_OUT) s["value"] = schedule_check_out.toIso8601String();
+      if (s["key"] == schema.ROOM_PRICE_TOTAL_USD) s["value"] = room_price_total_usd;
       // timestamp
       if (s["key"] == schema.CHECK_IN_BY_ID && user.data[user.ID] != null) s["value"] = user.data[user.ID]!;
       if (s["key"] == schema.CHECK_IN_BY && user.data[user.FULL_NAME] != null) s["value"] = user.data[user.FULL_NAME];
@@ -270,11 +279,11 @@ class _Main_State extends State<Main_> {
 
     // print(user.data[user.FULL_NAME]);
 
-    // for (var s in schema.data) print(s);
+    for (var s in schema.data) print(s);
 
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => step_4.Main_()),
+      MaterialPageRoute(builder: (context) => step_3.Main_()),
     );
   }
 }

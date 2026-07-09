@@ -1,42 +1,42 @@
-import "dart:convert";
-
 import "package:dio/dio.dart";
-import "package:flutter/material.dart";
 import "package:intl/intl.dart";
+import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
-import "package:speanmeas/layout/Layout.dart";
-import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/utility/Dio.dart";
-import "package:speanmeas/widget/Snackbar_Show.dart";
+import "package:speanmeas/Environment.dart";
+import "package:speanmeas/theme/Theme_Data.dart";
 
-import "../../_Setup.dart";
-import "../../Schema.g.dart";
-
-// import "Step_2a_Receipt.dart";
+import "../_Setup.dart";
+import "../schema.g.dart" as schema;
 
 void main() {
-  runApp(const Main());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global.variable, //
+      child: Main(),
+    ),
+  );
 }
 
 class Main extends StatelessWidget {
-  const Main({super.key});
+  Main({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: TITLE, //
-      theme: Theme_Data(),
+      theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
-      home: Main_(),
+      home: Main_(input: {}),
     );
   }
 }
 
 class Main_ extends StatefulWidget {
-  const Main_({super.key});
+  Main_({super.key, required this.input});
+
+  final Map<String, dynamic> input;
 
   @override
   State<Main_> createState() => _Main_State();
@@ -45,79 +45,44 @@ class Main_ extends StatefulWidget {
 class _Main_State extends State<Main_> {
   //
 
+  Map<String, dynamic> output = {};
+
   @override
   void initState() {
     super.initState();
-    init();
+    output = Map<String, dynamic>.from(widget.input);
+    setState(() {});
   }
-
-  void init() async {}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Payment - Summary", //
+          "Read - $HEADER", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
           ),
         ),
 
-        actions: [
-          // if (can_next())
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-            child: OutlinedButton.icon(
-              icon: Icon(Icons.payment_outlined),
-              label: Text("Paid"),
-              style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: on_paid, //
-            ),
-          ),
-        ],
-
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
       ),
       body: SingleChildScrollView(
-        child: Align(
-          alignment: Alignment.topCenter,
+        child: Center(
           child: Column(
             children: [
-              // view search guest result
-              ...data.map((row) {
+              ...schema.data
+              // .where((s) => s["read"] == true) //
+              .map((s) {
                 //
-                if (row["type"] == "string") {
-                  // String value = "";
-                  String value = row["value"]?.toString() ?? "";
-                  return Container(
-                    width: 600,
-                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(row["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Expanded(
-                          child: Text(
-                            value,
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
+                //
+                //
 
-                //
-                if (row["type"] == "number") {
-                  // String value = "";
-                  String value = row["value"]?.toString() ?? "";
+                if (s["key"].toString().contains("note")) {
+                  String value = output[s["key"]]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -125,7 +90,7 @@ class _Main_State extends State<Main_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          row["title"] + ": ", //
+                          s["title"] + ": ", //
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Expanded(
@@ -143,20 +108,19 @@ class _Main_State extends State<Main_> {
                 }
 
                 //
-                if (row["type"] == "boolean") {
-                  // String value = "";
-                  String value = row["value"]?.toString() ?? "false";
-                  value = value.toLowerCase() == "true" ? "Yes" : "No";
+                //
+                //
+
+                //
+                if (s["type"] == "string") {
+                  String value = output[s["key"]]?.toString() ?? "";
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          row["title"] + ": ", //
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(
                             value,
@@ -172,9 +136,57 @@ class _Main_State extends State<Main_> {
                 }
 
                 //
-                if (row["type"] == "date-time") {
-                  // String value = "";
-                  String value = row["value"]?.toString() ?? "";
+                if (s["type"] == "number") {
+                  String value = output[s["key"]]?.toString() ?? "";
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Expanded(
+                          child: Text(
+                            value,
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                            maxLines: 4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                //
+                if (s["type"] == "boolean") {
+                  String value = "";
+                  if (output[s["key"]] != null) value = output[s["key"]];
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Expanded(
+                          child: Text(
+                            value,
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                            maxLines: 4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                //
+                if (s["type"] == "date-time") {
+                  String value = output[s["key"]]?.toString() ?? "";
                   if (value.isNotEmpty) {
                     DateTime? tmp = DateTime.tryParse(value);
                     if (tmp != null) {
@@ -187,10 +199,7 @@ class _Main_State extends State<Main_> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          row["title"] + ": ", //
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        Text(s["title"] + ": ", style: TextStyle(fontWeight: FontWeight.bold)),
                         Expanded(
                           child: Text(
                             value,
@@ -205,62 +214,13 @@ class _Main_State extends State<Main_> {
                   );
                 }
 
-                return SizedBox.shrink();
+                //
+                return SizedBox();
               }),
-
-              // button check in + print
-              // if (can_print())
-              //   Container(
-              //     margin: EdgeInsets.fromLTRB(0, 16, 0, 0),
-              //     child: OutlinedButton.icon(
-              //       label: Text("Print"),
-              //       icon: Icon(Icons.print_outlined),
-              //       onPressed: on_print, //
-              //     ),
-              //   ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  bool can_print() {
-    for (var s in data) {
-      if (s["key"] == "ar_total_usd") {
-        if (s["value"] != null) {
-          if (s["value"] == 0) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  void on_print() {
-    //
-    // Navigator.push(
-    //   context, //
-    //   MaterialPageRoute(builder: (_) => Step_2a_Receipt_()),
-    // );
-  }
-
-  void on_paid() async {
-    Map<String, dynamic> output = {for (var s in data) s["key"]: s["value"]};
-
-    await dio
-        .post(
-          "$PATH/data_update", //
-          data: FormData.fromMap({...output}),
-        )
-        .then((r) {
-          snackbar_show(context: context, message: "$HEADER update successfully.", color: Colors.green);
-          Navigator.pop(context);
-          Navigator.pop(context, output);
-        })
-        .catchError((error) {
-          snackbar_show(context: context, message: "$HEADER update failed.", color: Colors.red);
-        });
   }
 }

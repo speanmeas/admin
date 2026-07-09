@@ -8,6 +8,11 @@ bool is_local = false;
 
 int MOBILE_SCREEN_WIDTH = 1000;
 
+// const String LOCAL_ROUTER_HOST = String.fromEnvironment(
+//   "LOCAL_ROUTER_HOST", //
+//   defaultValue: "192.168.1.100",
+// );
+
 String get_api_host() {
   if (kDebugMode) {
     return "http://localhost:8000";

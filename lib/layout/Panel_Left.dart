@@ -57,6 +57,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
       children: [
         // Front Desk
         list_tile_l1(name: "Front Desk", icon: Icons.table_bar_outlined),
+        list_tile_l1(name: "Data", icon: Icons.data_array_outlined),
 
         // Guest
         if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true || user.data[user.IS_RECEPTIONIST] == true) //

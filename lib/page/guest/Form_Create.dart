@@ -14,7 +14,7 @@ import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "_Setup.dart";
-import "Schema.g.dart" as schema;
+import "schema.g.dart" as schema;
 
 void main() {
   runApp(

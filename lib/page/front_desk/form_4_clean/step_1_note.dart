@@ -11,10 +11,10 @@ import 'package:speanmeas/widget/Datetime_Picker.dart';
 import 'package:speanmeas/widget/Snackbar_Show.dart';
 import 'package:speanmeas/page/main/_User.dart' as user;
 
-import '../../_Setup.dart';
-import '../../Schema.g.dart' as schema;
+import '../_setup.dart';
+import '../schema.g.dart' as schema;
 
-import 'Step_3_Summary.dart' as step_3;
+import 'step_2_summary.dart' as step_2;
 
 void main() {
   runApp(
@@ -46,24 +46,6 @@ class Main_ extends StatefulWidget {
 }
 
 class _Main_State extends State<Main_> {
-  // keys
-  // var PRICE_TOTAL = "price_total_usd";
-  // var PAID_BANK_USD = "paid_bank_usd";
-  // var PAID_BANK_KHR = "paid_bank_khr";
-  // var PAID_CASH_USD = "paid_cash_usd";
-  // var PAID_CASH_KHR = "paid_cash_khr";
-  // var PAID_TOTAL_USD = "paid_total_usd";
-  // var RETURN_USD = "return_usd";
-  // var RETURN_KHR = "return_khr";
-  // var RETURN_TOTAL_USD = "return_total_usd";
-  // var AR_TOTAL_USD = "ar_total_usd";
-  // var GET_PAID_DATE = "get_paid_date";
-  // var GET_PAID_BY = "get_paid_by";
-  // var CHECK_OUT_DATE = "check_out_date";
-  // var CHECK_OUT_BY = "check_out_by";
-  // var CHECK_OUT_BY_ID = "check_out_by_id";
-  // var check_out_note = "check_out_note";
-
   TextEditingController controller_note = TextEditingController();
 
   @override
@@ -139,7 +121,7 @@ class _Main_State extends State<Main_> {
 
     Navigator.push(
       context, //
-      MaterialPageRoute(builder: (context) => step_3.Main_()),
+      MaterialPageRoute(builder: (context) => step_2.Main_()),
     );
   }
 }

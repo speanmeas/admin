@@ -1,41 +1,21 @@
 import "dart:convert";
 
-import "package:dio/dio.dart";
-import "package:flutter/foundation.dart";
-import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/Global.dart";
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/layout/Layout.dart";
 import "package:speanmeas/theme/Theme_Data.dart";
-import "package:speanmeas/widget/Snackbar_Show.dart";
-import "package:speanmeas/page/main/_User.dart" as user;
 
-import "_Setup.dart";
-import "Schema.g.dart" as schema;
+import "_setup.dart";
+import "schema.g.dart" as schema;
 
-import "Filter_String.dart" as filter_string;
-import "Filter_Number.dart" as filter_number;
-import "Filter_Boolean.dart" as filter_boolean;
-import "Filter_Datetime.dart" as filter_datetime;
-
-import "Form_Create.dart" as create;
-import "Form_Read.dart" as read;
-import "Form_Update.dart" as update;
-import "Form_Delete.dart" as delete;
-
-import "action/check_in/Step_1_Room.dart" as check_in;
-import "action/payment/Step_1_Select_Room.dart" as payment;
-import "action/check_out/Step_1_Select_Room.dart" as check_out;
-import "action/clean/Step_1_Select_Room.dart" as clean;
-
-import "view_room/Step_1_View_Room.dart" as view_room;
-import "action/broke/Step_1_Select_Room.dart" as broke;
-import "action/fix/Step_1_Select_Room.dart" as fix;
+import "form_1_check_in/step_1_guest.dart" as check_in;
+import "form_2_payment/step_1_payment.dart" as payment;
+import "form_3_check_out/step_1_revenue_payment.dart" as check_out;
+import "form_4_clean/step_1_note.dart" as clean;
 
 void main() {
   runApp(
@@ -70,24 +50,7 @@ class Main_ extends StatefulWidget {
 class _Main_State extends State<Main_> {
   //
 
-  PlutoGridStateManager? state_manager;
-
-  bool is_loading = false;
-  bool has_more = true;
-
-  int total_row = 0;
-
-  //
-  String? key;
-  bool? has;
-  String? query;
-  double? min;
-  double? max;
-
-  DateTime? start;
-  DateTime? end;
-
-  int? order;
+  List<Map<String, dynamic>> data_rooms = [];
 
   @override
   void initState() {
@@ -97,999 +60,297 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     await dio
-        .post(
-          "$PATH/data_read",
-          data: FormData.fromMap({
-            "key": key, //
-            "has": has, //
-            "query": query, //
-            "min": min, //
-            "max": max, //
-            "start": start, //
-            "end": end, //
-            "order": order, //
-          }),
-        ) //
+        .post("/room/data_read")
         .then((r) {
-          final data = List<Map<String, dynamic>>.from(r.data);
-
-          if (r.data.length == 10000) has_more = true;
-          if (r.data.length != 10000) has_more = false;
-
-          // clear data
-          state_manager?.removeAllRows();
-
-          // clear sort
-          final sorted_column = state_manager?.getSortedColumn;
-          if (sorted_column != null) {
-            state_manager?.sortBySortIdx(sorted_column);
-          }
-
-          state_manager?.appendRows([
-            for (var d in data)
-              PlutoRow(
-                cells: {
-                  for (var s in schema.data)
-                    // exclude password field
-                    if (s["key"].toString().contains("password")) //
-                      s["key"]!: PlutoCell(value: "**********")
-                    //
-                    else if (s["type"] == "date-time") //
-                      s["key"]!: PlutoCell(
-                        value: (() {
-                          //
-                          if (d[s["key"]] == null) return "";
-
-                          //
-                          final dt = DateTime.tryParse(d[s["key"]].toString());
-                          if (dt == null) return "";
-
-                          // default
-                          return DateFormat(DATE_FORMAT).format(dt.toLocal());
-                        })(),
-                      )
-                    //
-                    else if (s["type"] == "boolean") //
-                      s["key"]!: PlutoCell(
-                        value: (() {
-                          //
-                          if (d[s["key"]] == null) return "";
-                          if (d[s["key"]] == true) return "Yes";
-
-                          // default
-                          return "No";
-                        })(),
-                      )
-                    //
-                    else
-                      s["key"]!: PlutoCell(
-                        value: (() {
-                          //
-                          if (d[s["key"]] == null) return "";
-
-                          // default
-                          return d[s["key"]].toString();
-                        })(),
-                      ),
-                },
-              ),
-          ]);
-
+          data_rooms = List<Map<String, dynamic>>.from(r.data);
+          data_rooms.sort((a, b) => "${a[schema.ROOM_NUMBER]}".compareTo("${b[schema.ROOM_NUMBER]}"));
           setState(() {});
         })
-        .catchError((e) {});
-  }
-
-  void on_load_more() async {
-    // clear sort
-    final sorted_column = state_manager?.getSortedColumn;
-    if (sorted_column != null) {
-      state_manager?.sortBySortIdx(sorted_column);
-    }
-
-    await dio
-        .post(
-          "$PATH/data_read",
-          data: FormData.fromMap({
-            "key": key, //
-            "has": has, //
-            "query": query, //
-            "min": min, //
-            "max": max, //
-            "start": start, //
-            "end": end, //
-            "order": order, //
-            "offset": state_manager?.rows.length, //
-          }),
-        ) //
-        .then((r) {
-          final data = List<Map<String, dynamic>>.from(r.data);
-
-          state_manager?.appendRows([
-            for (var d in data)
-              PlutoRow(
-                cells: {
-                  for (var s in schema.data)
-                    //
-                    if (s["key"].toString().contains("password")) //
-                      s["key"]!: PlutoCell(value: "**********")
-                    //
-                    else if (s["type"] == "date-time") //
-                      s["key"]!: PlutoCell(
-                        value: (() {
-                          //
-                          if (d[s["key"]] == null) return "";
-
-                          //
-                          final dt = DateTime.tryParse(d[s["key"]].toString());
-                          if (dt == null) return "";
-
-                          // default
-                          return DateFormat(DATE_FORMAT).format(dt.toLocal());
-                        })(),
-                      )
-                    //
-                    else if (s["type"] == "boolean") //
-                      s["key"]!: PlutoCell(
-                        value: (() {
-                          //
-                          if (d[s["key"]] == null) return "";
-                          if (d[s["key"]] == true) return "Yes";
-
-                          // default
-                          return "No";
-                        })(),
-                      )
-                    //
-                    else
-                      s["key"]!: PlutoCell(
-                        value: (() {
-                          //
-                          if (d[s["key"]] == null) return "";
-
-                          // default
-                          return d[s["key"]].toString();
-                        })(),
-                      ),
-                },
-              ),
-          ]);
-          is_loading = false;
-          setState(() {});
-        })
-        .catchError((e) {});
+        .catchError((_) {});
   }
 
   @override
   Widget build(BuildContext context) {
+    bool is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
+
     return Scaffold(
-      body: Column(
-        children: [
-          // menu
+      body:
+          // is_mobile
+          //     ? SizedBox()
+          //     :
           Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
+              // check in
               Expanded(
-                child: Wrap(
+                child: Column(
                   children: [
-                    // check in
-                    if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true || user.data[user.IS_RECEPTIONIST] == true || kDebugMode)
-                      Container(
-                        height: 32,
-                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                        child: OutlinedButton.icon(
-                          icon: Icon(Icons.login), //
-                          label: Text("Check In"),
-                          onPressed: on_check_in,
-                        ),
-                      ),
+                    //
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.login_outlined, color: Colors.green), //
 
-                    // payment
-                    if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true || user.data[user.IS_RECEPTIONIST] == true || kDebugMode)
-                      Container(
-                        height: 32,
-                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                        child: OutlinedButton.icon(
-                          icon: Icon(Icons.payment), //
-                          label: Text("Payment"),
-                          onPressed: on_payment,
-                        ),
-                      ),
+                        SizedBox(width: 4), //
 
-                    // check out
-                    if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true || user.data[user.IS_RECEPTIONIST] == true || kDebugMode)
-                      Container(
-                        height: 32,
-                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                        child: OutlinedButton.icon(
-                          icon: Icon(Icons.logout), //
-                          label: Text("Check Out"),
-                          onPressed: on_check_out,
-                        ),
-                      ),
-
-                    // clean
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.cleaning_services), //
-                        label: Text("Clean"),
-                        onPressed: on_clean,
-                      ),
+                        Text(
+                          "Check In", //
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+                        ), //
+                      ],
                     ),
 
-                    // broke
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.bug_report_outlined), //
-                        label: Text("Broke"),
-                        onPressed: on_broke,
-                      ),
+                    Expanded(
+                      child: ListView(
+                        padding: .fromLTRB(4, 0, 16, 0),
+                        children: [
+                          //
+                          for (var r in data_rooms.where((r) => r[schema.ROOM_STATUS] == "Available"))
+                            InkWell(
+                              child: Row(
+                                children: [
+                                  Icon(Icons.hotel_outlined, color: Colors.green), //
+
+                                  SizedBox(width: 4), //
+
+                                  Text(
+                                    "${r[schema.ROOM_NUMBER]}",
+                                    style: TextStyle(
+                                      fontSize: 14, //
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.green,
+                                    ),
+                                  ), //
+
+                                  Spacer(),
+
+                                  PopupMenuButton<String>(
+                                    padding: EdgeInsets.zero,
+                                    icon: Icon(Icons.more_vert, color: Colors.blue),
+                                    itemBuilder: (context) => [
+                                      PopupMenuItem(value: "view", child: Text("View")), //
+                                      PopupMenuItem(value: "broke", child: Text("Set to Broke")),
+                                    ],
+                                    onSelected: (value) {
+                                      print(value);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              onTap: () {
+                                //
+                                schema.clear();
+
+                                //
+                                for (var e in r.entries) {
+                                  for (var s in schema.data) {
+                                    if (s["key"] == "_id") continue;
+                                    if (e.key == "_id" && s["key"] == "room_id") s["value"] = e.value;
+                                    if (e.key == s["key"]) s["value"] = e.value;
+                                  }
+                                }
+
+                                for (var s in schema.data) print(s);
+
+                                //
+                                Navigator.push(
+                                  context, //
+                                  MaterialPageRoute(builder: (context) => check_in.Main_()),
+                                );
+                              },
+                            ),
+                        ],
+                      ), //
                     ),
-
-                    // fix
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.build_outlined), //
-                        label: Text("Fix"),
-                        onPressed: on_fix,
-                      ),
-                    ),
-
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.hotel_outlined), //
-                        label: Text("Status"),
-                        onPressed: on_view_room,
-                      ),
-                    ),
-
-                    // change room
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.swap_horiz), //
-                        label: Text("Change Room"),
-                        onPressed: () {},
-                      ),
-                    ),
-
-                    // cancel
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.cancel_outlined), //
-                        label: Text("Cancel"),
-                        onPressed: () {},
-                      ),
-                    ),
-
-                    // update guest info
-                    if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true || user.data[user.IS_RECEPTIONIST] == true || kDebugMode)
-                      Container(
-                        height: 32,
-                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                        child: OutlinedButton.icon(
-                          icon: Icon(Icons.edit_outlined), //
-                          label: Text("Update Guest"),
-                          onPressed: () {},
-                        ),
-                      ),
-
-                    // read
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.visibility_outlined), //
-                        label: Text("Read"),
-                        onPressed: on_read,
-                      ),
-                    ),
-
-                    // update
-                    if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true || kDebugMode)
-                      Container(
-                        height: 32,
-                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                        child: OutlinedButton.icon(
-                          icon: Icon(Icons.edit_outlined), //
-                          label: Text("Update"),
-                          onPressed: on_update,
-                        ),
-                      ),
-
-                    // delete
-                    if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true || kDebugMode)
-                      Container(
-                        height: 32,
-                        margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                        child: OutlinedButton.icon(
-                          icon: Icon(Icons.delete_outline, color: Colors.red), //
-                          label: Text("Delete", style: TextStyle(color: Colors.red)),
-                          onPressed: on_delete,
-                        ),
-                      ),
                   ],
                 ),
               ),
 
-              // refresh
-              Container(
-                height: 32,
-                margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                child: InkWell(
-                  child: Icon(
-                    Icons.refresh, //
-                    size: 28,
-                    color: Colors.blue,
-                  ), //
-                  onTap: on_refresh,
+              // payment
+              Expanded(
+                child: Column(
+                  children: [
+                    //
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.payment, color: Colors.orange), //
+
+                        SizedBox(width: 4), //
+                        Text(
+                          "Payment", //
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.orange),
+                        ), //
+                      ],
+                    ),
+
+                    Expanded(
+                      child: ListView(
+                        padding: .fromLTRB(4, 0, 16, 0),
+                        children: [
+                          //
+                          for (var r in data_rooms.where((r) => r[schema.ROOM_STATUS] == "Pending Pay"))
+                            InkWell(
+                              child: Row(
+                                children: [
+                                  Icon(Icons.hotel_outlined, color: Colors.orange), //
+
+                                  SizedBox(width: 4), //
+
+                                  Text(
+                                    "${r[schema.ROOM_NUMBER]}", //
+                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.orange),
+                                  ), //
+
+                                  Spacer(),
+                                  // options
+                                  PopupMenuButton<String>(
+                                    icon: Icon(Icons.more_vert, color: Colors.blue),
+                                    itemBuilder: (context) => [
+                                      PopupMenuItem(value: "view", child: Text("View")), //
+                                      PopupMenuItem(value: "change_room", child: Text("Change Room")),
+                                      PopupMenuItem(value: "update_guest", child: Text("Update Guest")),
+                                      PopupMenuItem(value: "change_room", child: Text("Update Staying")),
+                                      PopupMenuItem(value: "update_guest", child: Text("Update Revenue")),
+                                    ],
+                                    onSelected: (value) {},
+                                  ),
+                                ],
+                              ),
+                              onTap: () {},
+                            ),
+                        ],
+                      ), //
+                    ),
+                  ],
+                ),
+              ),
+
+              // check out
+              Expanded(
+                child: Column(
+                  children: [
+                    //
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.logout, color: Colors.red), //
+
+                        SizedBox(width: 4), //
+                        Text(
+                          "Check Out", //
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red),
+                        ), //
+                      ],
+                    ),
+
+                    Expanded(
+                      child: ListView(
+                        padding: .fromLTRB(4, 0, 16, 0),
+                        children: [
+                          //
+                          for (var r in data_rooms.where((r) => r[schema.ROOM_STATUS] == "Pending Leave"))
+                            InkWell(
+                              child: Row(
+                                children: [
+                                  Icon(Icons.hotel_outlined, color: Colors.red), //
+
+                                  SizedBox(width: 4), //
+
+                                  Text(
+                                    "${r[schema.ROOM_NUMBER]}",
+                                    style: TextStyle(
+                                      fontSize: 14, //
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red,
+                                    ),
+                                  ), //
+
+                                  Spacer(),
+                                  // options
+                                  PopupMenuButton<String>(
+                                    icon: Icon(Icons.more_vert, color: Colors.blue),
+                                    itemBuilder: (context) => [
+                                      PopupMenuItem(value: "view", child: Text("View")), //
+                                      PopupMenuItem(value: "change_room", child: Text("Change Room")),
+                                      PopupMenuItem(value: "update_guest", child: Text("Update Guest")),
+                                      PopupMenuItem(value: "change_room", child: Text("Update Staying")),
+                                      PopupMenuItem(value: "update_guest", child: Text("Update Guest")),
+                                      PopupMenuItem(value: "update_guest", child: Text("Update Revenue")),
+                                    ],
+                                    onSelected: (value) {},
+                                  ),
+                                ],
+                              ),
+                              onTap: () {},
+                            ),
+                        ],
+                      ), //
+                    ),
+                  ],
+                ),
+              ),
+
+              // clean
+              Expanded(
+                child: Column(
+                  children: [
+                    //
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.cleaning_services, color: Colors.grey), //
+
+                        SizedBox(width: 4), //
+                        Text(
+                          "Clean", //
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
+                        ), //
+                      ],
+                    ),
+
+                    Expanded(
+                      child: ListView(
+                        padding: .fromLTRB(4, 0, 16, 0),
+                        children: [
+                          //
+                          for (var r in data_rooms.where((r) => r[schema.ROOM_STATUS] == "Pending Clean"))
+                            InkWell(
+                              child: Row(
+                                children: [
+                                  Icon(Icons.hotel_outlined, color: Colors.grey), //
+
+                                  SizedBox(width: 4), //
+
+                                  Text(
+                                    "${r[schema.ROOM_NUMBER]}",
+                                    style: TextStyle(
+                                      fontSize: 14, //
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                    ),
+                                  ), //
+
+                                  Spacer(),
+                                  // options
+                                  PopupMenuButton<String>(
+                                    icon: Icon(Icons.more_vert, color: Colors.blue),
+                                    itemBuilder: (context) => [
+                                      PopupMenuItem(value: "view", child: Text("View")), //
+                                    ],
+                                    onSelected: (value) {},
+                                  ),
+                                ],
+                              ),
+                              onTap: () {},
+                            ),
+                        ],
+                      ), //
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          // filter
-          Expanded(
-            child: PlutoGrid(
-              //
-              rows: [],
-              //
-              columns: [
-                ...schema.data.map((s) {
-                  return build_plutocolumn(
-                    field: s["key"]!, //
-                    title: s["title"]!,
-                    type: s["type"]!,
-                    on_filter: () => on_filter(s),
-                  );
-                }),
-              ], //
-              //
-              configuration: PlutoGridConfiguration(
-                scrollbar: PlutoGridScrollbarConfig(
-                  scrollbarThickness: 12, //
-                  scrollbarThicknessWhileDragging: 12,
-                  isAlwaysShown: true,
-                ),
-                style: PlutoGridStyleConfig(
-                  rowHeight: 28, //
-                  columnHeight: 32,
-                ),
-              ),
-              onLoaded: (event) {
-                state_manager = event.stateManager;
-
-                state_manager?.scroll.bodyRowsVertical!.addListener(() {
-                  final position = state_manager?.scroll.bodyRowsVertical!.position;
-
-                  if (!is_loading) {
-                    // reached bottom
-                    if (position!.pixels >= position.maxScrollExtent) {
-                      if (has_more) {
-                        is_loading = true;
-                        on_load_more();
-                      }
-                      setState(() {});
-                    }
-                  }
-                });
-              },
-            ),
-          ),
-
-          if (is_loading)
-            Container(
-              height: 24,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 20, //
-                    height: 20,
-                    child: CircularProgressIndicator(),
-                  ),
-                  SizedBox(width: 12),
-                  Text("Loading more..."),
-                ],
-              ),
-            ),
-
-          if (!is_loading)
-            (() {
-              if (state_manager == null) return SizedBox();
-              total_row = state_manager!.rows.length;
-              return Container(
-                height: 24,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Loaded: $total_row items"), //
-                  ],
-                ),
-              );
-            })(),
-        ],
-      ),
-    );
-  }
-
-  void on_filter(s) {
-    //
-    // init
-    key = s["key"];
-    order = 1;
-
-    // clear sort
-    final sorted_column = state_manager?.getSortedColumn;
-    if (sorted_column != null) {
-      state_manager?.sortBySortIdx(sorted_column);
-    }
-
-    if (s["type"] == "string") {
-      Navigator.push(
-        context, //
-        MaterialPageRoute(builder: (context) => filter_string.Main_()),
-      ).then((v) {
-        //
-        if (v == null) return;
-
-        query = v;
-        init();
-
-        // scroll to top
-        state_manager?.scroll.vertical?.jumpTo(0);
-      });
-    }
-    //
-    else if (s["type"] == "number") {
-      Navigator.push(
-        context, //
-        MaterialPageRoute(builder: (context) => filter_number.Main_()),
-      ).then((v) {
-        //
-        if (v == null) return;
-
-        min = v["min"];
-        max = v["max"];
-
-        init();
-
-        // scroll to top
-        state_manager?.scroll.vertical?.jumpTo(0);
-      });
-    }
-    //
-    else if (s["type"] == "date-time") {
-      Navigator.push(
-        context, //
-        MaterialPageRoute(builder: (context) => filter_datetime.Main_()),
-      ).then((v) {
-        //
-        if (v == null) return;
-
-        start = v["start"];
-        end = v["end"];
-
-        init();
-
-        // scroll to top
-        state_manager?.scroll.vertical?.jumpTo(0);
-      });
-    }
-    //
-    else if (s["type"] == "boolean") {
-      Navigator.push(
-        context, //
-        MaterialPageRoute(builder: (context) => filter_boolean.Main_()),
-      ).then((v) {
-        //
-        if (v == null) return;
-
-        has = v;
-        init();
-
-        // scroll to top
-        state_manager?.scroll.vertical?.jumpTo(0);
-      });
-    }
-  }
-
-  void on_check_in() {
-    //
-    schema.clear();
-
-    //
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => check_in.Main_()),
-    ).then((v) {
-      //
-      if (v == null) return;
-
-      // clear sort
-      final sorted_column = state_manager?.getSortedColumn;
-      if (sorted_column != null) {
-        state_manager?.sortBySortIdx(sorted_column);
-      }
-
-      // add new row to the top
-      state_manager?.prependRows([
-        PlutoRow(
-          cells: {
-            "id": PlutoCell(value: v["id"].toString()),
-            for (var s in schema.data)
-              //
-              if (s["type"] == "_id") //
-                s["key"]!: PlutoCell(
-                  value: (() {
-                    if (v[s["key"]] == null) return "";
-
-                    // default
-                    return v[s["key"]].toString();
-                  })(),
-                )
-              //
-              else if (s["type"] == "string") //
-                s["key"]!: PlutoCell(
-                  value: (() {
-                    if (v[s["key"]] == null) return "";
-
-                    // default
-                    return v[s["key"]].toString();
-                  })(),
-                )
-              //
-              else if (s["type"] == "number") //
-                s["key"]!: PlutoCell(
-                  value: (() {
-                    if (v[s["key"]] == null) return "";
-
-                    // default
-                    return v[s["key"]].toString();
-                  })(),
-                )
-              //
-              else if (s["type"] == "date-time") //
-                s["key"]!: PlutoCell(
-                  value: (() {
-                    if (v[s["key"]] == null) return "";
-
-                    final dt = DateTime.tryParse(v[s["key"]].toString());
-                    if (dt == null) return "";
-
-                    // default
-                    return DateFormat(DATE_FORMAT).format(dt.toLocal());
-                  })(),
-                )
-              //
-              else if (s["type"] == "boolean") //
-                s["key"]!: PlutoCell(
-                  value: (() {
-                    if (v[s["key"]] == null) return "";
-                    if (v[s["key"]] == true) return "Yes";
-
-                    // default
-                    return "No";
-                  })(),
-                ),
-          },
-        ),
-      ]);
-
-      // refresh total row count
-      total_row = state_manager!.rows.length;
-      setState(() {});
-
-      // scroll to top
-      state_manager?.scroll.vertical?.jumpTo(0);
-    });
-  }
-
-  void on_payment() {
-    //
-    schema.clear();
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => payment.Main_()),
-    ).then((v) {
-      //
-      if (v == null) return;
-
-      //
-      init();
-    });
-  }
-
-  void on_check_out() {
-    //
-    schema.clear();
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => check_out.Main_()),
-    ).then((v) {
-      //
-      if (v == null) return;
-
-      //
-      init();
-    });
-  }
-
-  void on_clean() {
-    //
-    schema.clear();
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => clean.Main_()),
-    ).then((v) {
-      //
-      if (v == null) return;
-
-      //
-      init();
-    });
-  }
-
-  void on_broke() {
-    //
-    schema.clear();
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => broke.Main_()),
-    ).then((v) {
-      //
-      if (v == null) return;
-
-      //
-      init();
-    });
-  }
-
-  void on_fix() {
-    //
-    schema.clear();
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => fix.Main_()),
-    ).then((v) {
-      //
-      if (v == null) return;
-
-      //
-      init();
-    });
-  }
-
-  void on_view_room() {
-    //
-    schema.clear();
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => view_room.Main_()),
-    ).then((v) {
-      //
-      if (v == null) return;
-
-      //
-      init();
-    });
-  }
-
-  void on_create() {
-    //
-    schema.clear();
-
-    //
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => create.Main_()),
-    ).then((v) {
-      //
-      if (v == null) return;
-
-      // clear sort
-      final sorted_column = state_manager?.getSortedColumn;
-      if (sorted_column != null) {
-        state_manager?.sortBySortIdx(sorted_column);
-      }
-
-      // add new row to the top
-      state_manager?.prependRows([
-        PlutoRow(
-          cells: {
-            "id": PlutoCell(value: v["id"].toString()),
-            for (var s in schema.data)
-              //
-              if (s["type"] == "_id") //
-                s["key"]!: PlutoCell(
-                  value: (() {
-                    if (v[s["key"]] == null) return "";
-
-                    // default
-                    return v[s["key"]].toString();
-                  })(),
-                )
-              //
-              else if (s["type"] == "string") //
-                s["key"]!: PlutoCell(
-                  value: (() {
-                    if (v[s["key"]] == null) return "";
-
-                    // default
-                    return v[s["key"]].toString();
-                  })(),
-                )
-              //
-              else if (s["type"] == "number") //
-                s["key"]!: PlutoCell(
-                  value: (() {
-                    if (v[s["key"]] == null) return "";
-
-                    // default
-                    return v[s["key"]].toString();
-                  })(),
-                )
-              //
-              else if (s["type"] == "date-time") //
-                s["key"]!: PlutoCell(
-                  value: (() {
-                    if (v[s["key"]] == null) return "";
-
-                    final dt = DateTime.tryParse(v[s["key"]].toString());
-                    if (dt == null) return "";
-
-                    // default
-                    return DateFormat(DATE_FORMAT).format(dt.toLocal());
-                  })(),
-                )
-              //
-              else if (s["type"] == "boolean") //
-                s["key"]!: PlutoCell(
-                  value: (() {
-                    if (v[s["key"]] == null) return "";
-                    if (v[s["key"]] == true) return "Yes";
-
-                    // default
-                    return "No";
-                  })(),
-                ),
-          },
-        ),
-      ]);
-
-      // refresh total row count
-      total_row = state_manager!.rows.length;
-      setState(() {});
-
-      // scroll to top
-      state_manager?.scroll.vertical?.jumpTo(0);
-    });
-  }
-
-  void on_read() {
-    //
-    schema.clear();
-
-    //
-    if (state_manager?.currentRow == null) {
-      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
-      return;
-    }
-
-    //
-    Map<String, dynamic> input = {};
-    state_manager?.currentRow!.cells.forEach((k, c) {
-      input[k] = c.value;
-    });
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => read.Main_(input: input)),
-    );
-  }
-
-  void on_update() {
-    //
-    schema.clear();
-
-    //
-    if (state_manager?.currentRow == null) {
-      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
-      return;
-    }
-
-    //
-    Map<String, dynamic> input = {};
-    state_manager?.currentRow!.cells.forEach((k, c) {
-      input[k] = c.value;
-    });
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => update.Main_(input: input)),
-    ).then((v) {
-      //
-      if (v == null) return;
-
-      final row = state_manager?.currentRow;
-
-      for (var s in schema.data) {
-        final key = s["key"];
-        if (key == null) continue;
-
-        if (s["type"] == "date-time") {
-          row?.cells[key]?.value = (() {
-            if (v[key] == null) return "";
-
-            final dt = DateTime.tryParse(v[key].toString());
-            if (dt == null) return "";
-
-            // default
-            return DateFormat(DATE_FORMAT).format(dt.toLocal());
-          })();
-        } else if (s["type"] == "boolean") {
-          row?.cells[key]?.value = (() {
-            if (v[key] == null) return "";
-            if (v[key] == true) return "Yes";
-
-            // default
-            return "No";
-          })();
-        } else {
-          row?.cells[key]?.value = (() {
-            if (v[key] == null) return "";
-
-            // default
-            return v[key].toString();
-          })();
-        }
-      }
-
-      state_manager?.notifyListeners();
-    });
-  }
-
-  void on_delete() {
-    //
-    schema.clear();
-
-    //
-    if (state_manager?.currentRow == null) {
-      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
-      return;
-    }
-
-    //
-    String id = state_manager?.currentRow!.cells["_id"]!.value;
-
-    //
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => delete.Main_(id: id)),
-    ).then((v) {
-      if (v == null) return;
-
-      // remove current row
-      state_manager?.removeCurrentRow();
-
-      // refresh total row count
-      total_row = state_manager!.rows.length;
-
-      setState(() {});
-    });
-  }
-
-  void on_refresh() {
-    //
-    schema.clear();
-
-    //
-    key = null;
-    has = null;
-    query = null;
-    min = null;
-    max = null;
-    start = null;
-    end = null;
-    order = null;
-
-    // clear sort
-    final sorted_column = state_manager?.getSortedColumn;
-    if (sorted_column != null) {
-      state_manager?.sortBySortIdx(sorted_column);
-    }
-
-    init();
-
-    // scroll to top
-    state_manager?.scroll.vertical?.jumpTo(0);
-
-    //
-    snackbar_show(context: context, message: "Refreshed successfully", color: Colors.green);
-  }
-
-  build_plutocolumn({
-    required String title, //
-    required String field,
-    required String type,
-    required VoidCallback on_filter,
-  }) {
-    //
-    PlutoColumnType column_type;
-
-    if (type == "number") {
-      column_type = PlutoColumnType.number();
-    } else {
-      column_type = PlutoColumnType.text();
-    }
-
-    //
-    return PlutoColumn(
-      title: title,
-      field: field,
-      type: column_type,
-      width: 160,
-      minWidth: 100,
-      readOnly: true,
-      enableFilterMenuItem: false,
-      hide: type == "_id" ? true : false,
-
-      titleSpan: WidgetSpan(
-        child: Row(
-          children: [
-            if (type == "_id")
-              SizedBox()
-            else if (type == "number")
-              InkWell(
-                onTap: on_filter,
-                child: Icon(Icons.tune, size: 20, color: Colors.blue),
-              )
-            else if (type == "boolean")
-              InkWell(
-                onTap: on_filter,
-                child: Icon(Icons.toggle_on_outlined, size: 20, color: Colors.blue),
-              )
-            else if (type == "date-time")
-              InkWell(
-                onTap: on_filter,
-                child: Icon(Icons.date_range, size: 20, color: Colors.blue),
-              )
-            else
-              InkWell(
-                onTap: on_filter,
-                child: Icon(Icons.filter_alt_outlined, size: 20, color: Colors.blue),
-              ),
-
-            SizedBox(width: 4),
-
-            Expanded(
-              child: Text(
-                title,
-                style: TextStyle(fontWeight: FontWeight.bold),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-
-            SizedBox(width: 20),
-          ],
-        ),
-      ),
     );
   }
 }

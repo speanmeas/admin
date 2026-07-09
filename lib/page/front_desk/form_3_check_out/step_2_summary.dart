@@ -8,17 +8,21 @@ import "package:provider/provider.dart";
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
 import "package:speanmeas/layout/Layout.dart";
+
 import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "../../_Setup.dart";
-import "../../Schema.g.dart" as schema;
-
-import "Step_3a_Receipt.dart" as step_3a;
+import "../_Setup.dart";
+import "../schema.g.dart" as schema;
 
 void main() {
-  runApp(const Main());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => Global.variable, //
+      child: const Main(),
+    ),
+  );
 }
 
 class Main extends StatelessWidget {
@@ -58,7 +62,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "3. Broke - Summary", //
+          "5. Check In - Summary", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -70,10 +74,10 @@ class _Main_State extends State<Main_> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: OutlinedButton.icon(
-              icon: Icon(Icons.bug_report_outlined),
-              label: Text("Broke"),
+              icon: Icon(Icons.login_outlined),
+              label: Text("Check In"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: on_clean, //
+              onPressed: on_check_in, //
             ),
           ),
         ],
@@ -207,6 +211,17 @@ class _Main_State extends State<Main_> {
 
                 return SizedBox.shrink();
               }),
+
+              // button check in + print
+              // if (can_print())
+              //   Container(
+              //     margin: EdgeInsets.fromLTRB(0, 16, 0, 0),
+              //     child: OutlinedButton.icon(
+              //       label: Text("Print"),
+              //       icon: Icon(Icons.print_outlined),
+              //       onPressed: on_print, //
+              //     ),
+              //   ),
             ],
           ),
         ),
@@ -214,33 +229,46 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  void on_clean() async {
-    //
+  void on_check_in() async {
     Map<String, dynamic> output = {for (var s in schema.data) s["key"]: s["value"]};
 
-    //
     await dio
-        .post("/front_desk/data_update", data: FormData.fromMap({...output}))
+        .post("/front_desk/data_create", data: FormData.fromMap({...output}))
         .then((r) {
-          snackbar_show(context: context, message: "Update successfully.", color: Colors.green);
+          output["_id"] = r.data["_id"]; // NOTE: support to main table
+          snackbar_show(context: context, message: "Create successfully.", color: Colors.green);
+          Navigator.pop(context);
+          Navigator.pop(context);
           Navigator.pop(context);
           Navigator.pop(context);
           Navigator.pop(context, output);
         })
         .catchError((error) {
-          snackbar_show(context: context, message: "Update failed.", color: Colors.red);
+          snackbar_show(context: context, message: "Create failed.", color: Colors.red);
         });
 
     //
     String? room_id = output[schema.ROOM_ID];
-    String? id = output[schema.ID];
-    await dio.post(
-      "/room/data_update",
-      data: FormData.fromMap({
-        "_id": room_id, //
-        "room_status": "Maintenance", //
-        "front_desk_id": id, //
-      }),
-    );
+    String? payment_at = output[schema.ROOM_PAYMENT_AT];
+    String? id = output[schema.ROOM_PAYMENT_BY_ID];
+    if (payment_at != null && payment_at.isNotEmpty) {
+      await dio.post(
+        "/room/data_update",
+        data: FormData.fromMap({
+          "_id": room_id, //
+          "room_status": "Pending Leave",
+          "front_desk_id": id, //
+        }),
+      );
+    } else {
+      await dio.post(
+        "/room/data_update",
+        data: FormData.fromMap({
+          "_id": room_id, //
+          "room_status": "Pending Pay",
+          "front_desk_id": id, //
+        }),
+      );
+    }
   }
 }

@@ -13,8 +13,8 @@ import "package:speanmeas/theme/Theme_Data.dart";
 import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
-import "Setup.dart";
-import "Schema.g.dart" as schema;
+import "_Setup.dart";
+import "schema.g.dart" as schema;
 
 void main() {
   runApp(
@@ -57,7 +57,27 @@ class _Main_State extends State<Main_> {
   void initState() {
     super.initState();
     output = Map<String, dynamic>.from(widget.input);
-    setState(() {});
+    normalize_boolean_fields();
+  }
+
+  void normalize_boolean_fields() {
+    for (var s in schema.data) {
+      if (s["type"] != "boolean") continue;
+
+      final key = s["key"];
+      if (key == null) continue;
+
+      final value = output[key];
+      if (value == "Yes") output[key] = true;
+      if (value == "No") output[key] = false;
+    }
+  }
+
+  String? get_boolean_display_value(dynamic value) {
+    if (value == true) return "Yes";
+    if (value == false) return "No";
+    if (value == "Yes" || value == "No") return value.toString();
+    return null;
   }
 
   @override
@@ -79,7 +99,7 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              ...schema.data.map((s) {
+              ...schema.data.where((s) => s["hide"] == false).map((s) {
                 //
                 //
                 //
@@ -170,15 +190,12 @@ class _Main_State extends State<Main_> {
                 }
 
                 if (s["type"] == "boolean") {
-                  String value = "";
-                  if (output[s["key"]] != null) {
-                    value = output[s["key"]];
-                  }
+                  String? value = get_boolean_display_value(output[s["key"]]);
                   return Container(
                     width: 600,
                     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: DropdownButtonFormField<String>(
-                      initialValue: value == "" ? null : value,
+                      initialValue: value,
                       decoration: InputDecoration(
                         labelText: s["title"] + ":",
                         labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -224,7 +241,7 @@ class _Main_State extends State<Main_> {
                       onTap: () async {
                         DateTime? datetime = await datetime_picker(context, initial_datetime: init);
                         if (datetime == null) return;
-                        output[s["key"]] = DateFormat(DATE_FORMAT).format(datetime);
+                        output[s["key"]] = datetime.toIso8601String();
                         setState(() {});
                       }, //,
                     ),
@@ -277,6 +294,8 @@ class _Main_State extends State<Main_> {
     // }
 
     // request
+    normalize_boolean_fields();
+
     await dio
         .post("$PATH/data_update", data: FormData.fromMap({...output}))
         .then((value) {

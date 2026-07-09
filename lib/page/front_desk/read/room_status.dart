@@ -11,8 +11,8 @@ import "package:speanmeas/widget/Datetime_Picker.dart";
 import "package:speanmeas/widget/Snackbar_Show.dart";
 
 import "../_Setup.dart";
-import "../Schema.g.dart";
-import "../../room/Schema.g.dart" as room;
+import "../schema.g.dart";
+import "../../room/schema.g.dart" as room;
 
 // import "Step_2_Guest_Info.dart" as room_info;
 
