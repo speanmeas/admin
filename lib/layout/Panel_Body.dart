@@ -1,14 +1,15 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/theme/theme_data.dart";
 
 import "package:speanmeas/Global.dart";
-// import "package:speanmeas/page/.front_desk/main.dart" as front_desk;
 import "package:speanmeas/page/guest/main.dart" as guest;
 import "package:speanmeas/page/room/main.dart" as room;
 import "package:speanmeas/page/user/main.dart" as user;
 import "package:speanmeas/page/nationality/main.dart" as nationality;
+
+import "package:speanmeas/page/front_desk_design/main.dart" as front_desk_design;
 
 import "package:speanmeas/page/demo/main.dart" as demo;
 
@@ -53,9 +54,9 @@ class _Panel_Body_State extends State<Panel_Body_> {
   Widget build(BuildContext context) {
     String body = context.watch<Global>().body;
 
-    // if (body == "Front Desk") {
-    //   return front_desk.Main_();
-    // }
+    if (body == "Front Desk") {
+      return front_desk_design.Main_();
+    }
 
     if (body == "Room") {
       return room.Main_();

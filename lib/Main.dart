@@ -2,12 +2,12 @@ import "package:flutter/material.dart";
 import "package:package_info_plus/package_info_plus.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/Global.dart";
 import "package:speanmeas/layout/Layout.dart";
 import "package:speanmeas/Environment.dart";
 
-import "page/main/Loading.dart";
+import "page/main/loading.dart";
 
 void main() {
   runApp(

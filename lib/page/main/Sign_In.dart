@@ -9,14 +9,14 @@ import "package:dio/dio.dart";
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
 
-import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/utility/Secure_Storage.dart";
-import "package:speanmeas/widget/Snackbar_Show.dart";
+import "package:speanmeas/widget/snackbar_show.dart";
 
 import "package:speanmeas/layout/Layout.dart" as layout;
 
-import "_User.dart";
+import "user.g.dart";
 
 void main() {
   runApp(

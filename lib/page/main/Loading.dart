@@ -10,13 +10,13 @@ import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
 
 import "package:speanmeas/layout/Layout.dart";
-import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/utility/Secure_Storage.dart";
-import "package:speanmeas/widget/Snackbar_Show.dart";
+import "package:speanmeas/widget/snackbar_show.dart";
 
 import "Sign_In.dart" as sign_in;
-import "_User.dart" as user;
+import "user.g.dart" as user;
 
 void main() {
   runApp(

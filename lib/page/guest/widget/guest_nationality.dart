@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/utility/Dio.dart";
-import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/theme/theme_data.dart";
 
 import "../../nationality/_setup.dart";
 import "../../nationality/schema.g.dart" as schema;
@@ -13,6 +13,7 @@ class _Main_State extends State<Main_> {
   final FocusNode focusNode = FocusNode();
 
   List<Map<String, dynamic>> data = [];
+  bool is_selected = false;
   List<String> options = [];
 
   @override
@@ -63,10 +64,12 @@ class _Main_State extends State<Main_> {
             floatingLabelBehavior: FloatingLabelBehavior.always,
             suffixIcon: Icon(Icons.search),
           ),
+          onChanged: (v) => is_selected = false,
         );
       },
       onSelected: (v) {
         c_search.text = v;
+        is_selected = true;
         widget.onChanged?.call(v);
       },
     );

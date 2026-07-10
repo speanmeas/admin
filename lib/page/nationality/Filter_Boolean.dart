@@ -1,10 +1,10 @@
 import "package:flutter/material.dart";
 
 import "package:speanmeas/Environment.dart";
-import "package:speanmeas/theme/Theme_Data.dart";
-import "package:speanmeas/widget/Snackbar_Show.dart";
+import "package:speanmeas/theme/theme_data.dart";
+import "package:speanmeas/widget/snackbar_show.dart";
 
-import "_setup.dart";
+import "../nationality/_setup.dart";
 
 class _Main_State extends State<Main_> {
   //

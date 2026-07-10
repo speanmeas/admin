@@ -2,7 +2,8 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/Global.dart";
 import "package:speanmeas/Environment.dart";
-import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/theme/theme_data.dart";
+import "package:speanmeas/widget/show_data.dart" as show_data;
 
 import "_setup.dart";
 import "schema.g.dart" as schema;
@@ -31,18 +32,10 @@ class _Main_State extends State<Main_> {
                 return Container(
                   width: 600,
                   margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                  child: TextField(
-                    controller: TextEditingController(text: value),
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
-                    readOnly: true,
-                    maxLines: e.key.contains("note") ? 4 : 1,
-                    decoration: InputDecoration(
-                      labelText: e.value["title"] + ": ", //
-                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      border: InputBorder.none,
-                      prefix: SizedBox(width: 16),
-                    ),
+                  child: show_data.Main_(
+                    title: e.value["title"], //
+                    value: value,
+                    max_lines: e.key.contains("note") ? 4 : 1,
                   ),
                 );
               }),
@@ -61,5 +54,12 @@ class Main_ extends StatefulWidget {
 }
 
 void main() {
-  runApp(MaterialApp(theme: Theme_Data(), debugShowCheckedModeBanner: false, home: const Main_()));
+  runApp(
+    MaterialApp(
+      title: HEADER, //
+      theme: Theme_Data(), //
+      home: const Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

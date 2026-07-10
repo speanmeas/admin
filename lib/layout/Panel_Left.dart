@@ -4,9 +4,9 @@ import "package:provider/provider.dart";
 
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
-import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/Secure_Storage.dart";
-import "package:speanmeas/page/main/_User.dart" as user;
+import "package:speanmeas/page/main/user.g.dart" as user;
 
 void main() {
   runApp(

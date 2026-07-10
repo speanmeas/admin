@@ -6,20 +6,20 @@ import "package:provider/provider.dart";
 
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
-import "package:speanmeas/theme/Theme_Data.dart";
+import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/utility/Secure_Storage.dart";
-import "package:speanmeas/widget/Snackbar_Show.dart";
+import "package:speanmeas/widget/snackbar_show.dart";
 
 import "Sign_In.dart" as sign_in;
-import "Edit_Name.dart" as update_full_name;
-import "Edit_Phone_Number.dart" as update_phone_number;
-import "Edit_Username.dart" as update_username;
-import "Edit_Password.dart" as update_password;
+import "edit_name.dart" as update_full_name;
+import "edit_phone_number.dart" as update_phone_number;
+import "edit_username.dart" as update_username;
+import "edit_password.dart" as update_password;
 
 import "package:speanmeas/layout/Layout.dart" as layout;
 
-import "_User.dart" as user;
+import "user.g.dart" as user;
 
 void main() {
   runApp(User_Profile());

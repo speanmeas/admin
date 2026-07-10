@@ -5,10 +5,10 @@ import "package:provider/provider.dart";
 
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/Global.dart";
-import "package:speanmeas/page/main/Profile.dart";
+import "package:speanmeas/page/main/profile.dart";
 import "package:speanmeas/utility/Dio.dart";
 import "package:speanmeas/utility/Secure_Storage.dart";
-import "package:speanmeas/page/main/_User.dart" as user;
+import "package:speanmeas/page/main/user.g.dart" as user;
 
 void main() {
   runApp(

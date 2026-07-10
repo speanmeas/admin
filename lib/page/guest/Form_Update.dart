@@ -7,12 +7,15 @@ import "package:dio/dio.dart";
 
 import "package:speanmeas/Environment.dart";
 import "package:speanmeas/utility/Dio.dart";
-import "package:speanmeas/theme/Theme_Data.dart";
-import "package:speanmeas/widget/Datetime_Picker.dart";
-import "package:speanmeas/widget/Snackbar_Show.dart";
+import "package:speanmeas/theme/theme_data.dart";
+import "package:speanmeas/widget/datetime_picker.dart";
+import "package:speanmeas/widget/snackbar_show.dart";
 
 import "_setup.dart";
 import "schema.g.dart" as schema;
+
+import "widget/guest_gender.dart" as guest_gender;
+import "widget/guest_nationality.dart" as guest_nationality;
 
 class _Main_State extends State<Main_> {
   // need id
@@ -39,6 +42,32 @@ class _Main_State extends State<Main_> {
             children: [
               ...schema.data.entries.where((e) => !e.key.contains("_id")).map((e) {
                 //
+
+                if (e.key == schema.GUEST_NATIONALITY) {
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: guest_nationality.Main_(
+                      initialValue: e.value["value"]?.toString(),
+                      onChanged: (v) {
+                        output[e.key] = v;
+                      },
+                    ),
+                  );
+                }
+
+                if (e.key == schema.GUEST_GENDER) {
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: guest_gender.Main_(
+                      initialValue: e.value["value"]?.toString(),
+                      onChanged: (v) {
+                        output[e.key] = v;
+                      },
+                    ),
+                  );
+                }
 
                 //
                 //
