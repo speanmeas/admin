@@ -1,5 +1,6 @@
 import "dart:convert";
 
+import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
@@ -36,7 +37,9 @@ class _Main_State extends State<Main_> {
           data_rooms.sort((a, b) => "${a[schema.ROOM_NUMBER]}".compareTo("${b[schema.ROOM_NUMBER]}"));
           setState(() {});
         })
-        .catchError((_) {});
+        .catchError((e) {
+          print(e.toString());
+        });
   }
 
   @override
@@ -158,7 +161,7 @@ class _Main_State extends State<Main_> {
                               ),
                             ],
                           ),
-                          onTap: () => on_check_pay(r),
+                          onTap: () => on_payment(r),
                         ),
                     ],
                   ), //
@@ -243,6 +246,7 @@ class _Main_State extends State<Main_> {
                     Icon(Icons.cleaning_services, color: Colors.grey), //
 
                     SizedBox(width: 4), //
+
                     Text(
                       "Clean", //
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
@@ -265,20 +269,15 @@ class _Main_State extends State<Main_> {
 
                               Text(
                                 "${r[schema.ROOM_NUMBER]}",
-                                style: TextStyle(
-                                  fontSize: 14, //
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
-                                ),
+                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey),
                               ), //
 
                               Spacer(),
+
                               // options
                               PopupMenuButton<String>(
                                 icon: Icon(Icons.more_vert, color: Colors.blue),
-                                itemBuilder: (context) => [
-                                  PopupMenuItem(value: "view", child: Text("View")), //
-                                ],
+                                itemBuilder: (context) => [PopupMenuItem(value: "view", child: Text("View"))],
                                 onSelected: (value) {},
                               ),
                             ],
@@ -317,23 +316,56 @@ class _Main_State extends State<Main_> {
     //
   }
 
-  void on_check_pay(r) async {
+  void on_payment(r) async {
     //
     schema.clear();
 
-    schema.data[schema.ROOM_ID]?["value"] = r["_id"];
+    var front_desk_id = r["front_desk_id"];
 
-    for (var e in r.entries) {
-      if (e.key == "_id") continue;
-      schema.data[e.key]?["value"] = e.value;
-    }
+    await dio
+        .post("/front_desk/data_read", data: FormData.fromMap({"_id": front_desk_id}))
+        .then((r) {
+          // print(r.data);
+          // for (var e in r.data[0].entries) print(e);
 
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => payment.Main_()),
-    ).then((v) {
-      if (v == true) init();
-    });
+          for (var e in r.data[0].entries) {
+            // if (e.key == "_id") continue;
+            schema.data[e.key]?["value"] = e.value;
+          }
+
+          // for (var e in schema.data.entries) print(e);
+
+          // for (var e in r.data.entries) {
+          //   if (e.key == "_id") continue;
+          //   schema.data[e.key]?["value"] = e.value;
+          // }
+
+          Navigator.push(
+            context, //
+            MaterialPageRoute(builder: (context) => payment.Main_()),
+          ).then((v) {
+            if (v == true) init();
+          });
+        })
+        .catchError((e) {
+          print(e.toString());
+        });
+
+    // print(r);
+
+    // schema.data[schema.ROOM_ID]?["value"] = r["_id"];
+
+    // for (var e in r.entries) {
+    //   if (e.key == "_id") continue;
+    //   schema.data[e.key]?["value"] = e.value;
+    // }
+
+    // Navigator.push(
+    //   context, //
+    //   MaterialPageRoute(builder: (context) => payment.Main_()),
+    // ).then((v) {
+    //   if (v == true) init();
+    // });
 
     //
   }

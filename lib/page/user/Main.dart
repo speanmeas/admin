@@ -138,7 +138,9 @@ class _Main_State extends State<Main_> {
           // notify
           setState(() {});
         })
-        .catchError((e) {});
+        .catchError((e) {
+          print(e.toString());
+        });
   }
 
   //
@@ -223,7 +225,9 @@ class _Main_State extends State<Main_> {
           is_loading = false;
           setState(() {});
         })
-        .catchError((e) {});
+        .catchError((e) {
+          print(e.toString());
+        });
   }
 
   @override

@@ -186,7 +186,7 @@ class _Main_State extends State<Main_> {
           Navigator.pop(context, output);
           snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
         })
-        .catchError((error) {
+        .catchError((e) {
           snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
         });
   }

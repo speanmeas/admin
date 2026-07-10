@@ -89,7 +89,9 @@ class _Main_State extends State<Main_> {
             options.add(g[schema.GUEST_PHONE] ?? "");
           }
         })
-        .catchError((_) {});
+        .catchError((e) {
+          print(e.toString());
+        });
 
     return options;
   }

@@ -118,7 +118,7 @@ class _Main_State extends State<Main_> {
       phone_number = controller.text;
     }
 
-    print("phone_number: $phone_number");
+    // print("phone_number: $phone_number");
 
     await dio
         .post(
@@ -132,7 +132,7 @@ class _Main_State extends State<Main_> {
           snackbar_show(context: context, message: "Update successful", color: Colors.green);
           Navigator.pop(context, phone_number);
         })
-        .catchError((error) {
+        .catchError((e) {
           snackbar_show(context: context, message: "Update failed", color: Colors.red);
         });
   }

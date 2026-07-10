@@ -81,11 +81,25 @@ class _Main_State extends State<Main_> {
   }
 
   void on_check_in() async {
+    String? id;
     Map<String, dynamic> output = {for (var e in schema.data.entries) e.key: e.value["value"]};
+
+    await dio
+        .post("/front_desk/data_create", data: FormData.fromMap({...output}))
+        .then((r) {
+          id = r.data["_id"];
+          snackbar_show(context: context, message: "Create successfully.", color: Colors.green);
+          Navigator.pop(context);
+          Navigator.pop(context);
+          Navigator.pop(context);
+          Navigator.pop(context, true);
+        })
+        .catchError((e) {
+          snackbar_show(context: context, message: "Create failed.", color: Colors.red);
+        });
 
     String? room_id = output[schema.ROOM_ID];
     String? payment_at = output[schema.ROOM_PAYMENT_AT];
-    String? id = output[schema.ROOM_PAYMENT_BY_ID];
     if (payment_at != null && payment_at.isNotEmpty) {
       await dio.post(
         "/room/data_update",
@@ -105,19 +119,6 @@ class _Main_State extends State<Main_> {
         }),
       );
     }
-
-    await dio
-        .post("/front_desk/data_create", data: FormData.fromMap({...output}))
-        .then((r) {
-          snackbar_show(context: context, message: "Create successfully.", color: Colors.green);
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.pop(context, true);
-        })
-        .catchError((error) {
-          snackbar_show(context: context, message: "Create failed.", color: Colors.red);
-        });
   }
 }
 

@@ -152,6 +152,9 @@ class _Main_State extends State<Main_> {
       context, //
       MaterialPageRoute(builder: (context) => guest_create.Main_()),
     ).then((v) {
+      //
+      if (v == null) return;
+
       schema.data[schema.GUEST_ID]?["value"] = v["_id"];
       for (var e in v.entries) {
         if (e.key == "_id") continue;

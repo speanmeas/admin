@@ -69,7 +69,9 @@ class _Main_State extends State<Main_> {
           room_infos.sort((a, b) => "${a[ROOM_NUMBER]}".compareTo("${b[ROOM_NUMBER]}"));
           setState(() {});
         })
-        .catchError((_) {});
+        .catchError((e) {
+          print(e.toString());
+        });
   }
 
   @override

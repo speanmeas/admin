@@ -17,5 +17,7 @@ void main() async {
       .then((r) {
         print(r.data);
       })
-      .catchError((error) {});
+      .catchError((e) {
+        print(e.toString());
+      });
 }

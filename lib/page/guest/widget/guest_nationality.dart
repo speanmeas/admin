@@ -42,7 +42,9 @@ class _Main_State extends State<Main_> {
           options.sort((a, b) => a.compareTo(b));
           setState(() {});
         })
-        .catchError((_) {});
+        .catchError((e) {
+          print(e.toString());
+        });
   }
 
   @override
