@@ -5,47 +5,17 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/Environment.dart";
-import "package:speanmeas/Global.dart";
-import "package:speanmeas/layout/Layout.dart";
+import "package:speanmeas/environment.dart";
+import "package:speanmeas/global.dart";
+import "package:speanmeas/layout/layout.dart";
 
-import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/widget/show_data.dart" as show_data;
 
 import "../_setup.dart";
 import "../schema.g.dart" as schema;
-
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global.variable, //
-      child: const Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  const Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: TITLE, //
-      theme: Theme_Data(),
-      debugShowCheckedModeBanner: false,
-      home: Main_(),
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  const Main_({super.key});
-
-  @override
-  State<Main_> createState() => _Main_State();
-}
 
 class _Main_State extends State<Main_> {
   //
@@ -122,7 +92,7 @@ class _Main_State extends State<Main_> {
         data: FormData.fromMap({
           "_id": room_id, //
           "room_status": "Pending Leave",
-          // "front_desk_id": id, //
+          "front_desk_id": id, //
         }),
       );
     } else {
@@ -131,7 +101,7 @@ class _Main_State extends State<Main_> {
         data: FormData.fromMap({
           "_id": room_id, //
           "room_status": "Pending Pay",
-          // "front_desk_id": id, //
+          "front_desk_id": id, //
         }),
       );
     }
@@ -149,4 +119,21 @@ class _Main_State extends State<Main_> {
           snackbar_show(context: context, message: "Create failed.", color: Colors.red);
         });
   }
+}
+
+class Main_ extends StatefulWidget {
+  Main_({super.key});
+
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      theme: Theme_Data(), //
+      home: Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

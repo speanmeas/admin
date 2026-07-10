@@ -1,6 +1,6 @@
 import "package:dio/dio.dart";
-import "package:speanmeas/Environment.dart";
-import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/environment.dart";
+import "package:speanmeas/utility/dio.dart";
 
 void main() async {
   print("Testing Dio...");

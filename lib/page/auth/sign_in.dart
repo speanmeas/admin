@@ -6,17 +6,15 @@ import "package:provider/provider.dart";
 import "package:package_info_plus/package_info_plus.dart";
 import "package:dio/dio.dart";
 
-import "package:speanmeas/Environment.dart";
-import "package:speanmeas/Global.dart";
+import "package:speanmeas/environment.dart";
+import "package:speanmeas/global.dart";
 
 import "package:speanmeas/theme/theme_data.dart";
-import "package:speanmeas/utility/Dio.dart";
-import "package:speanmeas/utility/Secure_Storage.dart";
+import "package:speanmeas/utility/dio.dart";
+import "package:speanmeas/utility/secure_storage.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
-
-import "package:speanmeas/layout/Layout.dart" as layout;
-
-import "user.g.dart";
+import "package:speanmeas/layout/layout.dart" as layout;
+import "package:speanmeas/page/auth/user.g.dart" as user;
 
 void main() {
   runApp(
@@ -156,11 +154,14 @@ class _Main_State extends State<Main_> {
           }),
         )
         .then((r) async {
-          await secure_storage.write(key: "access_token", value: r.data[0]["user_access_token"]);
-          dio.options.headers["Authorization"] = "Bearer ${r.data[0]["user_access_token"]}";
-
           //
-          for (var k in data.keys) data[k] = r.data[0][k];
+          // print(r.data);
+
+          await secure_storage.write(key: "access_token", value: r.data[0][user.USER_ACCESS_TOKEN]);
+          dio.options.headers["Authorization"] = "Bearer ${r.data[0][user.USER_ACCESS_TOKEN]}";
+
+          for (var e in user.data.entries) user.data[e.key]!["value"] = r.data[0][e.key];
+          // for (var e in user.data.entries) print(e);
 
           snackbar_show(context: context, message: "Sign in successful", color: Colors.green);
 

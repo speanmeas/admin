@@ -3,9 +3,9 @@ import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/Global.dart";
-import "package:speanmeas/utility/Dio.dart";
-import "package:speanmeas/Environment.dart";
+import "package:speanmeas/global.dart";
+import "package:speanmeas/utility/dio.dart";
+import "package:speanmeas/environment.dart";
 import "package:speanmeas/theme/theme_data.dart";
 
 import "../_setup.dart";

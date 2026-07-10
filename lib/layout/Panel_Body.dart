@@ -3,7 +3,7 @@ import "package:provider/provider.dart";
 
 import "package:speanmeas/theme/theme_data.dart";
 
-import "package:speanmeas/Global.dart";
+import "package:speanmeas/global.dart";
 import "package:speanmeas/page/guest/main.dart" as guest;
 import "package:speanmeas/page/room/main.dart" as room;
 import "package:speanmeas/page/user/main.dart" as user;

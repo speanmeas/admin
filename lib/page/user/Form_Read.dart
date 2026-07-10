@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 
-import "package:speanmeas/Global.dart";
-import "package:speanmeas/Environment.dart";
+import "package:speanmeas/global.dart";
+import "package:speanmeas/environment.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/show_data.dart" as show_data;
 

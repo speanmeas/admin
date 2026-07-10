@@ -3,20 +3,15 @@ import "package:flutter/material.dart";
 import "package:package_info_plus/package_info_plus.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/Environment.dart";
-import "package:speanmeas/Global.dart";
-import "package:speanmeas/page/main/profile.dart";
-import "package:speanmeas/utility/Dio.dart";
-import "package:speanmeas/utility/Secure_Storage.dart";
-import "package:speanmeas/page/main/user.g.dart" as user;
+import "package:speanmeas/environment.dart";
+import "package:speanmeas/global.dart";
+import "package:speanmeas/page/auth/profile.dart";
+import "package:speanmeas/utility/dio.dart";
+import "package:speanmeas/utility/secure_storage.dart";
+import "package:speanmeas/page/auth/user.g.dart" as user;
 
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global.variable, //
-      child: const Panel_Top(),
-    ),
-  );
+  runApp(ChangeNotifierProvider(create: (_) => Global.variable, child: const Panel_Top()));
 }
 
 class Panel_Top extends StatelessWidget {
@@ -26,7 +21,7 @@ class Panel_Top extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: TITLE,
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
+      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)), // todo: fix this later
       home: Scaffold(body: const Panel_Top_()),
     );
   }
@@ -119,7 +114,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
                 border: Border.all(color: Colors.blue, width: 2),
               ),
               child: Text(
-                user.data[user.FULL_NAME]!.substring(0, 1).toUpperCase() ?? "", //
+                user.data[user.USER_FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "", //
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),

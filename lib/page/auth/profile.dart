@@ -4,20 +4,20 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/Environment.dart";
-import "package:speanmeas/Global.dart";
+import "package:speanmeas/environment.dart";
+import "package:speanmeas/global.dart";
 import "package:speanmeas/theme/theme_data.dart";
-import "package:speanmeas/utility/Dio.dart";
-import "package:speanmeas/utility/Secure_Storage.dart";
+import "package:speanmeas/utility/dio.dart";
+import "package:speanmeas/utility/secure_storage.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "Sign_In.dart" as sign_in;
-import "edit_name.dart" as update_full_name;
+import "../auth/sign_in.dart" as sign_in;
+import "edit_full_name.dart" as update_full_name;
 import "edit_phone_number.dart" as update_phone_number;
 import "edit_username.dart" as update_username;
 import "edit_password.dart" as update_password;
 
-import "package:speanmeas/layout/Layout.dart" as layout;
+import "package:speanmeas/layout/layout.dart" as layout;
 
 import "user.g.dart" as user;
 
@@ -90,10 +90,10 @@ class _User_Profile_State extends State<User_Profile_> {
                     (() {
                       var style = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue);
 
-                      if (user.data[user.IS_ADMIN] == true) return Text("Administrator", style: style);
-                      if (user.data[user.IS_MANAGER] == true) return Text("Manager", style: style);
-                      if (user.data[user.IS_RECEPTIONIST] == true) return Text("Receptionist", style: style);
-                      if (user.data[user.IS_HOUSEKEEPER] == true) return Text("Housekeeper", style: style);
+                      if (user.data[user.USER_IS_ADMIN]!["value"] == true) return Text("Administrator", style: style);
+                      if (user.data[user.USER_IS_MANAGER]!["value"] == true) return Text("Manager", style: style);
+                      if (user.data[user.USER_IS_RECEPTIONIST]!["value"] == true) return Text("Receptionist", style: style);
+                      if (user.data[user.USER_IS_HOUSEKEEPER]!["value"] == true) return Text("Housekeeper", style: style);
 
                       return const SizedBox.shrink();
                     })(),
@@ -106,7 +106,7 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: user.data[user.FULL_NAME] ?? ""),
+                  controller: TextEditingController(text: user.data[user.USER_FULL_NAME]!["value"].toString().trim()),
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText: "Name:", //
@@ -122,7 +122,7 @@ class _User_Profile_State extends State<User_Profile_> {
                             MaterialPageRoute(builder: (_) => update_full_name.Main_()),
                           ).then((value) {
                             if (value == null) return;
-                            user.data[user.FULL_NAME] = value;
+                            user.data[user.USER_FULL_NAME]!["value"] = value;
                             setState(() {});
                           });
                         },
@@ -138,7 +138,7 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: user.data[user.PHONE_NUMBER] ?? ""),
+                  controller: TextEditingController(text: user.data[user.USER_PHONE_NUMBER]!["value"].toString().trim()),
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText: "Phone Number:", //
@@ -154,7 +154,7 @@ class _User_Profile_State extends State<User_Profile_> {
                             MaterialPageRoute(builder: (_) => update_phone_number.Main_()),
                           ).then((value) {
                             if (value == null) return;
-                            user.data[user.PHONE_NUMBER] = value;
+                            user.data[user.USER_PHONE_NUMBER]!["value"] = value;
                             setState(() {});
                           });
                         },
@@ -170,7 +170,7 @@ class _User_Profile_State extends State<User_Profile_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: user.data["user_username"] ?? ""),
+                  controller: TextEditingController(text: user.data[user.USER_USERNAME]!["value"].toString().trim()),
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText: "Username:", //
@@ -186,7 +186,7 @@ class _User_Profile_State extends State<User_Profile_> {
                             MaterialPageRoute(builder: (_) => update_username.Main_()),
                           ).then((value) {
                             if (value == null) return;
-                            user.data["user_username"] = value;
+                            user.data[user.USER_USERNAME]!["value"] = value;
                             setState(() {});
                           });
                         },
@@ -246,7 +246,8 @@ class _User_Profile_State extends State<User_Profile_> {
     //
     await secure_storage.delete(key: "access_token");
 
-    for (var key in user.data.keys) user.data[key] = null;
+    // for (var key in user.data.keys) user.data[key] = null;
+    user.clear();
 
     snackbar_show(context: context, message: "Signed out successfully", color: Colors.green);
 

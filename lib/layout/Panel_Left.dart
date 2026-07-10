@@ -2,11 +2,11 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/Environment.dart";
-import "package:speanmeas/Global.dart";
+import "package:speanmeas/environment.dart";
+import "package:speanmeas/global.dart";
 import "package:speanmeas/theme/theme_data.dart";
-import "package:speanmeas/utility/Secure_Storage.dart";
-import "package:speanmeas/page/main/user.g.dart" as user;
+import "package:speanmeas/utility/secure_storage.dart";
+import "package:speanmeas/page/auth/user.g.dart" as user;
 
 void main() {
   runApp(
@@ -60,15 +60,15 @@ class _Panel_Left_State extends State<Panel_Left_> {
         list_tile_l1(name: "Data", icon: Icons.data_array_outlined),
 
         // Guest
-        if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true || user.data[user.IS_RECEPTIONIST] == true) //
+        if (user.data[user.USER_IS_ADMIN]!["value"] == true || user.data[user.USER_IS_MANAGER]!["value"] == true || user.data[user.USER_IS_RECEPTIONIST]!["value"] == true) //
           list_tile_l1(name: "Guest", icon: Icons.people_outline),
 
         // Room
-        if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true) //
+        if (user.data[user.USER_IS_ADMIN]!["value"] == true || user.data[user.USER_IS_MANAGER]!["value"] == true) //
           list_tile_l1(name: "Room", icon: Icons.hotel_outlined),
 
         // User
-        if (user.data[user.IS_ADMIN] == true || user.data[user.IS_MANAGER] == true) //
+        if (user.data[user.USER_IS_ADMIN]!["value"] == true || user.data[user.USER_IS_MANAGER]!["value"] == true) //
           list_tile_l1(name: "User", icon: Icons.person_outline),
 
         list_tile_l1(name: "Nationality", icon: Icons.flag_outlined),
@@ -86,7 +86,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
         ),
 
         // Demos
-        if (user.data[user.IS_ADMIN] == true)
+        if (user.data[user.USER_IS_ADMIN]!["value"] == true)
           ExpansionTile(
             leading: Icon(Icons.model_training_outlined), //
             title: Text("Demos"),

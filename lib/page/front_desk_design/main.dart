@@ -3,17 +3,17 @@ import "dart:convert";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/Global.dart";
-import "package:speanmeas/Environment.dart";
-import "package:speanmeas/utility/Dio.dart";
-import "package:speanmeas/layout/Layout.dart";
+import "package:speanmeas/global.dart";
+import "package:speanmeas/environment.dart";
+import "package:speanmeas/utility/dio.dart";
+import "package:speanmeas/layout/layout.dart";
 import "package:speanmeas/theme/theme_data.dart";
 
 import "_setup.dart";
 import "schema.g.dart" as schema;
 
 import "form_1_check_in/step_1_guest.dart" as check_in;
-// import "../front_desk/form_2_payment/step_1_payment.dart" as payment;
+import "form_2_payment/step_1_room_payment.dart" as payment;
 // import "../front_desk/form_3_check_out/step_1_revenue_payment.dart" as check_out;
 // import "../front_desk/form_4_clean/step_1_note.dart" as clean;
 
@@ -313,9 +313,28 @@ class _Main_State extends State<Main_> {
     ).then((v) {
       if (v == true) init();
     });
+
+    //
   }
 
   void on_check_pay(r) async {
+    //
+    schema.clear();
+
+    schema.data[schema.ROOM_ID]?["value"] = r["_id"];
+
+    for (var e in r.entries) {
+      if (e.key == "_id") continue;
+      schema.data[e.key]?["value"] = e.value;
+    }
+
+    Navigator.push(
+      context, //
+      MaterialPageRoute(builder: (context) => payment.Main_()),
+    ).then((v) {
+      if (v == true) init();
+    });
+
     //
   }
 

@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/Environment.dart";
-import "package:speanmeas/Global.dart";
+import "package:speanmeas/environment.dart";
+import "package:speanmeas/global.dart";
 import "package:speanmeas/theme/theme_data.dart";
 
 import "Panel_Body.dart";

@@ -1,18 +1,18 @@
 import "package:dio/dio.dart";
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
+// import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:intl/intl.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/Environment.dart";
-// import "package:speanmeas/Global.dart";
+import "package:speanmeas/environment.dart";
+// import "package:speanmeas/global.dart";
 import "package:speanmeas/theme/theme_data.dart";
-import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "package:speanmeas/page/main/user.g.dart" as user;
+import "package:speanmeas/page/auth/user.g.dart" as user;
 
 import "../_setup.dart";
 import "../schema.g.dart" as schema;
@@ -158,8 +158,8 @@ class _Main_State extends State<Main_> {
           schema.data[schema.STAY_DURATION_DAY]?["value"] = stay_duration_days;
           if (schedule_check_out != null) schema.data[schema.STAY_SCHEDULE_CHECK_OUT]?["value"] = DateFormat(DATE_FORMAT).format(schedule_check_out);
           if (check_in_date != null) schema.data[schema.CHECK_IN_AT]?["value"] = DateFormat(DATE_FORMAT).format(check_in_date);
-          if (user.data[user.ID] != null) schema.data[schema.CHECK_IN_BY_ID]?["value"] = user.data[user.ID];
-          if (user.data[user.FULL_NAME] != null) schema.data[schema.CHECK_IN_BY]?["value"] = user.data[user.FULL_NAME];
+          if (user.data[user.ID]!["value"] != null) schema.data[schema.CHECK_IN_BY_ID]?["value"] = user.data[user.ID]!["value"];
+          if (user.data[user.USER_FULL_NAME]!["value"] != null) schema.data[schema.CHECK_IN_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
           schema.data[schema.ROOM_PRICE_TOTAL_USD]?["value"] = room_price_total_usd;
 
           // for (var e in schema.data.entries) print(e);

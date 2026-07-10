@@ -2,7 +2,7 @@ import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
-import "package:speanmeas/utility/Dio.dart";
+import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 
 import "../../nationality/_setup.dart";

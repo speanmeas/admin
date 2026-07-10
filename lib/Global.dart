@@ -1,5 +1,7 @@
 import "package:flutter/foundation.dart";
-import "package:speanmeas/Environment.dart";
+import "package:speanmeas/environment.dart";
+
+// todo:  fix this later
 
 class Global extends ChangeNotifier {
   // singleton instance

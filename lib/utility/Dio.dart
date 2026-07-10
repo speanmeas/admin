@@ -1,6 +1,6 @@
 import "package:dio/dio.dart";
 import "package:flutter/material.dart";
-import "package:speanmeas/Environment.dart";
+import "package:speanmeas/environment.dart";
 
 Dio dio = Dio(
   BaseOptions(

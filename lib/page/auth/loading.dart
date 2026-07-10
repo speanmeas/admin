@@ -6,17 +6,16 @@ import "package:provider/provider.dart";
 import "package:package_info_plus/package_info_plus.dart";
 import "package:dio/dio.dart";
 
-import "package:speanmeas/Environment.dart";
-import "package:speanmeas/Global.dart";
+import "package:speanmeas/environment.dart";
+import "package:speanmeas/global.dart";
 
-import "package:speanmeas/layout/Layout.dart";
+import "package:speanmeas/layout/layout.dart";
 import "package:speanmeas/theme/theme_data.dart";
-import "package:speanmeas/utility/Dio.dart";
-import "package:speanmeas/utility/Secure_Storage.dart";
+import "package:speanmeas/utility/dio.dart";
+import "package:speanmeas/utility/secure_storage.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
-
-import "Sign_In.dart" as sign_in;
-import "user.g.dart" as user;
+import "package:speanmeas/page/auth/user.g.dart" as user;
+import "package:speanmeas/page/auth/sign_in.dart" as sign_in;
 
 void main() {
   runApp(
@@ -86,13 +85,18 @@ class _Loading_State extends State<Loading_> {
         .post(
           "/user/data_read", //
           data: FormData.fromMap({
-            "key": "access_token", //
+            "key": user.USER_ACCESS_TOKEN, //
             "query": access_token, //
           }),
         )
         .then((r) async {
           //
-          for (var k in user.data.keys) user.data[k] = r.data[0][k];
+
+          // print(r.data);
+
+          for (var e in user.data.entries) user.data[e.key]!["value"] = r.data[0][e.key];
+
+          // print(user.data);
 
           snackbar_show(context: context, message: "Login successful", color: Colors.green);
 

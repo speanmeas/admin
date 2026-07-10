@@ -3,11 +3,11 @@ import "package:package_info_plus/package_info_plus.dart";
 import "package:provider/provider.dart";
 
 import "package:speanmeas/theme/theme_data.dart";
-import "package:speanmeas/Global.dart";
-import "package:speanmeas/layout/Layout.dart";
-import "package:speanmeas/Environment.dart";
+import "package:speanmeas/global.dart";
+import "package:speanmeas/layout/layout.dart";
+import "package:speanmeas/environment.dart";
 
-import "page/main/loading.dart";
+import "page/auth/loading.dart";
 
 void main() {
   runApp(

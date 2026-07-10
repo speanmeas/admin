@@ -1,15 +1,10 @@
-import "package:dio/dio.dart";
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
 
-import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 
 class _Main_State extends State<Main_> {
   //
   var controller = TextEditingController();
-
-  bool is_valid = true;
 
   @override
   void initState() {
@@ -21,37 +16,14 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
-      keyboardType: TextInputType.numberWithOptions(decimal: true),
-      inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
+      maxLines: 4,
       decoration: InputDecoration(
-        labelText: "Paid Cash (KHR):",
+        labelText: "Note:",
         labelStyle: TextStyle(fontWeight: FontWeight.bold),
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        prefixIcon: Icon(Icons.payments_outlined, size: 20, color: Colors.black),
-        suffixText: "៛",
-        errorText: is_valid ? null : "Invalid number",
       ),
-
       onChanged: (v) {
-        if (v.isEmpty) {
-          is_valid = true;
-          widget.onChanged?.call(null);
-          setState(() {});
-          return;
-        }
-
-        double? value = double.tryParse(v);
-        if (value == null) {
-          is_valid = false;
-          controller.clear();
-          widget.onChanged?.call(null);
-          setState(() {});
-          return;
-        }
-
-        is_valid = true;
-        widget.onChanged?.call(value);
-        setState(() {});
+        widget.onChanged?.call(v);
       },
     );
   }
@@ -64,8 +36,8 @@ class Main_ extends StatefulWidget {
     this.onChanged,
   });
 
-  final double? initialValue;
-  final ValueChanged<double?>? onChanged;
+  final String? initialValue;
+  final ValueChanged<String?>? onChanged;
 
   @override
   State<Main_> createState() => _Main_State();
@@ -79,7 +51,7 @@ void main() {
         body: Center(
           child: Main_(
             //
-            initialValue: 100.0,
+            initialValue: "Hello World",
           ),
         ),
       ),
