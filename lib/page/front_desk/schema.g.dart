@@ -275,30 +275,6 @@ Map<String, Map<String, dynamic>> data = {
     "hide": false,
     "value": null
   },
-  "revenue_payment_by_id": {
-    "type": "_id",
-    "title": "Revenue Payment By ID",
-    "hide": true,
-    "value": null
-  },
-  "revenue_payment_at": {
-    "type": "date-time",
-    "title": "Revenue Payment At",
-    "hide": false,
-    "value": null
-  },
-  "revenue_payment_by": {
-    "type": "string",
-    "title": "Revenue Payment By",
-    "hide": false,
-    "value": null
-  },
-  "revenue_payment_note": {
-    "type": "string",
-    "title": "Revenue Payment Note",
-    "hide": false,
-    "value": null
-  },
   "check_out_by_id": {
     "type": "_id",
     "title": "Check-out By ID",
@@ -395,10 +371,6 @@ final ROOM_PAYMENT_BY_ID = "room_payment_by_id";
 final ROOM_PAYMENT_AT = "room_payment_at";
 final ROOM_PAYMENT_BY = "room_payment_by";
 final ROOM_PAYMENT_NOTE = "room_payment_note";
-final REVENUE_PAYMENT_BY_ID = "revenue_payment_by_id";
-final REVENUE_PAYMENT_AT = "revenue_payment_at";
-final REVENUE_PAYMENT_BY = "revenue_payment_by";
-final REVENUE_PAYMENT_NOTE = "revenue_payment_note";
 final CHECK_OUT_BY_ID = "check_out_by_id";
 final CHECK_OUT_AT = "check_out_at";
 final CHECK_OUT_BY = "check_out_by";

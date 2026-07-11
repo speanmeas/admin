@@ -1,71 +1,29 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import 'package:speanmeas/Environment.dart';
-import 'package:speanmeas/Global.dart';
-
+import 'package:speanmeas/environment.dart';
+import 'package:speanmeas/global.dart';
 import 'package:speanmeas/theme/theme_data.dart';
-import 'package:speanmeas/utility/Dio.dart';
+import 'package:speanmeas/utility/dio.dart';
 import 'package:speanmeas/widget/datetime_picker.dart';
 import 'package:speanmeas/widget/snackbar_show.dart';
 import 'package:speanmeas/page/auth/user.g.dart' as user;
 
 import '../_setup.dart';
 import '../schema.g.dart' as schema;
-
 import 'step_2_summary.dart' as step_2;
-
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global.variable, //
-      child: Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: Theme_Data(), //
-      debugShowCheckedModeBanner: false,
-      home: Main_(),
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  Main_({super.key});
-
-  @override
-  State<Main_> createState() => _Main_State();
-}
+import "widget/input_note.dart" as input_note;
 
 class _Main_State extends State<Main_> {
-  TextEditingController controller_note = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  void init() async {}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "2. Check Out - Note", //
-          style: TextStyle(
-            fontSize: 20, //
-            fontWeight: FontWeight.bold,
-          ),
+          "1. Clean - Note", //
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), //
         ),
         actions: [
           Container(
@@ -90,16 +48,12 @@ class _Main_State extends State<Main_> {
               Container(
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: TextField(
-                  controller: controller_note,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    labelText: "Note:", //
-                    border: OutlineInputBorder(),
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                  ),
-                  onChanged: (v) {},
+                child: input_note.Main_(
+                  initialValue: schema.data[schema.CLEAN_NOTE]?["value"]?.toString() ?? "",
+                  onChanged: (v) {
+                    schema.data[schema.CLEAN_NOTE]?["value"] = v;
+                    setState(() {});
+                  },
                 ),
               ),
             ],
@@ -110,18 +64,44 @@ class _Main_State extends State<Main_> {
   }
 
   void on_next() async {
-    // for (var s in schema.data) {
-    //   if (s["key"] == schema.CLEAN_BY_ID) s["value"] = user.data[user.ID];
-    //   if (s["key"] == schema.CLEAN_BY) s["value"] = user.data[user.FULL_NAME];
-    //   if (s["key"] == schema.CLEAN_AT) s["value"] = DateTime.now().toIso8601String();
-    //   if (s["key"] == schema.CLEAN_NOTE) s["value"] = controller_note.text;
-    // }
+    try {
+      //
+      final response = await dio.post("/variable/datetime_now");
+      if (DateTime.tryParse(response.data.toString()) == null) throw Exception("Invalid date time from server.");
+      DateTime now = DateTime.tryParse(response.data.toString())!;
 
-    // for (var s in schema.data) print(s);
+      //
 
-    // Navigator.push(
-    //   context, //
-    //   MaterialPageRoute(builder: (context) => step_2.Main_()),
-    // );
+      // timestamp
+      schema.data[schema.CLEAN_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
+      if (user.data[user.ID]!["value"] != null) //
+        schema.data[schema.CLEAN_BY_ID]?["value"] = user.data[user.ID]!["value"];
+      if (user.data[user.USER_FULL_NAME]!["value"] != null) //
+        schema.data[schema.CLEAN_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
+
+      // navigate to next screen
+      Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
+
+      //
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
   }
+}
+
+class Main_ extends StatefulWidget {
+  Main_({super.key});
+
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      theme: Theme_Data(), //
+      home: Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

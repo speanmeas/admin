@@ -32,7 +32,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "3. Check In - Payment", //
+          "3. Check In - Room Payment", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -310,49 +310,42 @@ class _Main_State extends State<Main_> {
   }
 
   void on_next() async {
-    if (get_price_total_usd() > 0 && get_balance_usd() == 0) {
-      await dio
-          .post("/variable/datetime_now")
-          .then((r) {
-            DateTime? get_paid_date = DateTime.tryParse(r.data.toString());
-            //
-
-            schema.data[schema.ROOM_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
-            schema.data[schema.ROOM_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
-            schema.data[schema.ROOM_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
-
-            if (user.data[user.ID]!["value"] != null) schema.data[schema.ROOM_PAYMENT_BY_ID]?["value"] = user.data[user.ID]!["value"];
-            if (user.data[user.USER_FULL_NAME]!["value"] != null) schema.data[schema.ROOM_PAYMENT_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
-            if (get_paid_date != null) schema.data[schema.ROOM_PAYMENT_AT]?["value"] = DateFormat(DATE_FORMAT).format(get_paid_date);
-
-            // for (var e in schema.data.entries) print(e);
-
-            Navigator.push(
-              context, //
-              MaterialPageRoute(builder: (context) => step_4.Main_()),
-            );
-          })
-          .catchError((e) {
-            snackbar_show(context: context, message: e.toString(), color: Colors.red);
-          });
-    } else {
+    try {
       //
-      // print("Price total: ${get_price_total_usd()}");
-      schema.data[schema.ROOM_PAID_BANK_USD]?["value"] = null;
-      schema.data[schema.ROOM_PAID_CASH_USD]?["value"] = null;
-      schema.data[schema.ROOM_PAID_BANK_KHR]?["value"] = null;
-      schema.data[schema.ROOM_PAID_CASH_KHR]?["value"] = null;
-      schema.data[schema.ROOM_RETURN_USD]?["value"] = null;
-      schema.data[schema.ROOM_RETURN_KHR]?["value"] = null;
-      schema.data[schema.ROOM_PAYMENT_NOTE]?["value"] = null;
+      final response = await dio.post("/variable/datetime_now");
+      if (DateTime.tryParse(response.data.toString()) == null) throw Exception("Invalid date time from server.");
+      DateTime now = DateTime.tryParse(response.data.toString())!;
 
       //
-      // for (var e in schema.data.entries) print(e);
+      schema.data[schema.ROOM_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
+      schema.data[schema.ROOM_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
+      schema.data[schema.ROOM_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
+      schema.data[schema.ROOM_PAYMENT_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 
-      Navigator.push(
-        context, //
-        MaterialPageRoute(builder: (context) => step_4.Main_()),
-      );
+      // clear if no payment
+      if (get_price_total_usd() > 0 && get_balance_usd() == 0) {
+        schema.data[schema.ROOM_PAID_BANK_USD]?["value"] = null;
+        schema.data[schema.ROOM_PAID_CASH_USD]?["value"] = null;
+        schema.data[schema.ROOM_PAID_BANK_KHR]?["value"] = null;
+        schema.data[schema.ROOM_PAID_CASH_KHR]?["value"] = null;
+        schema.data[schema.ROOM_PAID_TOTAL_USD]?["value"] = null;
+        schema.data[schema.ROOM_RETURN_USD]?["value"] = null;
+        schema.data[schema.ROOM_RETURN_KHR]?["value"] = null;
+        schema.data[schema.ROOM_RETURN_TOTAL_USD]?["value"] = null;
+        schema.data[schema.ROOM_BALANCE_TOTAL_USD]?["value"] = null;
+      }
+
+      if (user.data[user.ID]!["value"] != null) //
+        schema.data[schema.ROOM_PAYMENT_BY_ID]?["value"] = user.data[user.ID]!["value"];
+      if (user.data[user.USER_FULL_NAME]!["value"] != null) //
+        schema.data[schema.ROOM_PAYMENT_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
+
+      //
+      Navigator.push(context, MaterialPageRoute(builder: (context) => step_4.Main_()));
+
+      //
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }
   }
 

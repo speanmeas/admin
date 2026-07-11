@@ -1,7 +1,7 @@
-import "package:intl/intl.dart";
 import "package:flutter/material.dart";
-import "package:pluto_grid/pluto_grid.dart";
 import "package:dio/dio.dart";
+import "package:intl/intl.dart";
+import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/environment.dart";
 import "package:speanmeas/utility/dio.dart";
@@ -47,187 +47,186 @@ class _Main_State extends State<Main_> {
 
   //
   void init() async {
-    //
-    await dio
-        .post(
-          "$PATH/data_read",
-          data: FormData.fromMap({
-            "key": key, //
-            "has": has, //
-            "query": query, //
-            "min": min, //
-            "max": max, //
-            "start": start, //
-            "end": end, //
-            "order": order, //
-            "limit": ROW_LIMIT, //
-          }),
-        )
-        .then((r) {
-          final data = List<Map<String, dynamic>>.from(r.data);
+    try {
+      final response = await dio.post(
+        "$PATH/data_read",
+        data: FormData.fromMap({
+          "key": key, //
+          "has": has, //
+          "query": query, //
+          "min": min, //
+          "max": max, //
+          "start": start, //
+          "end": end, //
+          "order": order, //
+          "limit": ROW_LIMIT, //
+        }),
+      );
 
-          if (r.data.length == ROW_LIMIT) has_more = true;
-          if (r.data.length != ROW_LIMIT) has_more = false;
+      final data = List<Map<String, dynamic>>.from(response.data);
 
-          // clear data
-          state_manager?.removeAllRows();
+      if (response.data.length == ROW_LIMIT) has_more = true;
+      if (response.data.length != ROW_LIMIT) has_more = false;
 
-          // add data to row
-          state_manager?.appendRows([
-            for (var d in data)
-              PlutoRow(
-                cells: {
-                  for (var e in schema.data.entries)
-                    // exclude password field
-                    if (e.key.toString().contains("password"))
-                      e.key: PlutoCell(value: "**********")
-                    // id
-                    else if (e.value["type"] == "_id") //
-                      e.key: PlutoCell(
-                        value: (() {
-                          if (d[e.key] == null) return "";
-                          return d[e.key].toString();
-                        })(),
-                      )
-                    // string
-                    else if (e.value["type"] == "string") //
-                      e.key: PlutoCell(
-                        value: (() {
-                          if (d[e.key] == null) return "";
-                          return d[e.key].toString();
-                        })(),
-                      )
-                    // number
-                    else if (e.value["type"] == "number") //
-                      e.key: PlutoCell(
-                        value: (() {
-                          if (d[e.key] == null) return "";
-                          return d[e.key].toString();
-                        })(),
-                      )
-                    // date-time
-                    else if (e.value["type"] == "date-time") //
-                      e.key: PlutoCell(
-                        value: (() {
-                          if (d[e.key] == null) return "";
-                          final dt = DateTime.tryParse(d[e.key].toString());
-                          if (dt == null) return "";
-                          return DateFormat(DATE_FORMAT).format(dt.toLocal());
-                        })(),
-                      )
-                    // boolean
-                    else if (e.value["type"] == "boolean") //
-                      e.key: PlutoCell(
-                        value: (() {
-                          if (d[e.key] == null) return "";
-                          if (d[e.key] == true) return "Yes";
-                          return "No";
-                        })(),
-                      ),
-                },
-              ),
-          ]);
+      // clear data
+      state_manager?.removeAllRows();
 
-          // clear sort
-          final sorted_column = state_manager?.getSortedColumn;
-          if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
+      // add data to row
+      state_manager?.appendRows([
+        for (var d in data)
+          PlutoRow(
+            cells: {
+              for (var e in schema.data.entries)
+                // exclude password field
+                if (e.key.toString().contains("password"))
+                  e.key: PlutoCell(value: "**********")
+                // id
+                else if (e.value["type"] == "_id") //
+                  e.key: PlutoCell(
+                    value: (() {
+                      if (d[e.key] == null) return "";
+                      return d[e.key].toString();
+                    })(),
+                  )
+                // string
+                else if (e.value["type"] == "string") //
+                  e.key: PlutoCell(
+                    value: (() {
+                      if (d[e.key] == null) return "";
+                      return d[e.key].toString();
+                    })(),
+                  )
+                // number
+                else if (e.value["type"] == "number") //
+                  e.key: PlutoCell(
+                    value: (() {
+                      if (d[e.key] == null) return "";
+                      return d[e.key].toString();
+                    })(),
+                  )
+                // date-time
+                else if (e.value["type"] == "date-time") //
+                  e.key: PlutoCell(
+                    value: (() {
+                      if (d[e.key] == null) return "";
+                      final dt = DateTime.tryParse(d[e.key].toString());
+                      if (dt == null) return "";
+                      return DateFormat(DATE_FORMAT).format(dt.toLocal());
+                    })(),
+                  )
+                // boolean
+                else if (e.value["type"] == "boolean") //
+                  e.key: PlutoCell(
+                    value: (() {
+                      if (d[e.key] == null) return "";
+                      if (d[e.key] == true) return "Yes";
+                      return "No";
+                    })(),
+                  ),
+            },
+          ),
+      ]);
 
-          // jump to top
-          state_manager?.scroll.vertical?.jumpTo(0);
+      // clear sort
+      final sorted_column = state_manager?.getSortedColumn;
+      if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
 
-          // notify
-          setState(() {});
-        })
-        .catchError((e) {
-          print(e.toString());
-        });
+      // jump to top
+      state_manager?.scroll.vertical?.jumpTo(0);
+
+      // notify
+      setState(() {});
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 
   //
   void on_load_more() async {
-    await dio
-        .post(
-          "$PATH/data_read",
-          data: FormData.fromMap({
-            "key": key, //
-            "has": has, //
-            "query": query, //
-            "min": min, //
-            "max": max, //
-            "start": start, //
-            "end": end, //
-            "order": order, //
-            "offset": state_manager?.rows.length, //
-            "limit": ROW_LIMIT, //
-          }),
-        ) //
-        .then((r) {
-          final data = List<Map<String, dynamic>>.from(r.data);
+    try {
+      //
 
-          if (r.data.length == ROW_LIMIT) has_more = true;
-          if (r.data.length != ROW_LIMIT) has_more = false;
+      final response = await dio.post(
+        "$PATH/data_read",
+        data: FormData.fromMap({
+          "key": key, //
+          "has": has, //
+          "query": query, //
+          "min": min, //
+          "max": max, //
+          "start": start, //
+          "end": end, //
+          "order": order, //
+          "offset": state_manager?.rows.length, //
+          "limit": ROW_LIMIT, //
+        }),
+      );
 
-          // add data to row
-          state_manager?.appendRows([
-            for (var d in data)
-              PlutoRow(
-                cells: {
-                  for (var e in schema.data.entries)
-                    // exclude password field
-                    if (e.key.toString().contains("password"))
-                      e.key: PlutoCell(value: "**********")
-                    // id
-                    else if (e.value["type"] == "_id") //
-                      e.key: PlutoCell(
-                        value: (() {
-                          if (d[e.key] == null) return "";
-                          return d[e.key].toString();
-                        })(),
-                      )
-                    // string
-                    else if (e.value["type"] == "string") //
-                      e.key: PlutoCell(
-                        value: (() {
-                          if (d[e.key] == null) return "";
-                          return d[e.key].toString();
-                        })(),
-                      )
-                    // number
-                    else if (e.value["type"] == "number") //
-                      e.key: PlutoCell(
-                        value: (() {
-                          if (d[e.key] == null) return "";
-                          return d[e.key].toString();
-                        })(),
-                      )
-                    // date-time
-                    else if (e.value["type"] == "date-time") //
-                      e.key: PlutoCell(
-                        value: (() {
-                          if (d[e.key] == null) return "";
-                          final dt = DateTime.tryParse(d[e.key].toString());
-                          if (dt == null) return "";
-                          return DateFormat(DATE_FORMAT).format(dt.toLocal());
-                        })(),
-                      )
-                    // boolean
-                    else if (e.value["type"] == "boolean") //
-                      e.key: PlutoCell(
-                        value: (() {
-                          if (d[e.key] == null) return "";
-                          if (d[e.key] == true) return "Yes";
-                          return "No";
-                        })(),
-                      ),
-                },
-              ),
-          ]);
-          is_loading = false;
-          setState(() {});
-        })
-        .catchError((e) {
-          print(e.toString());
-        });
+      final data = List<Map<String, dynamic>>.from(response.data);
+
+      if (response.data.length == ROW_LIMIT) has_more = true;
+      if (response.data.length != ROW_LIMIT) has_more = false;
+
+      // add data to row
+      state_manager?.appendRows([
+        for (var d in data)
+          PlutoRow(
+            cells: {
+              for (var e in schema.data.entries)
+                // exclude password field
+                if (e.key.toString().contains("password"))
+                  e.key: PlutoCell(value: "**********")
+                // id
+                else if (e.value["type"] == "_id") //
+                  e.key: PlutoCell(
+                    value: (() {
+                      if (d[e.key] == null) return "";
+                      return d[e.key].toString();
+                    })(),
+                  )
+                // string
+                else if (e.value["type"] == "string") //
+                  e.key: PlutoCell(
+                    value: (() {
+                      if (d[e.key] == null) return "";
+                      return d[e.key].toString();
+                    })(),
+                  )
+                // number
+                else if (e.value["type"] == "number") //
+                  e.key: PlutoCell(
+                    value: (() {
+                      if (d[e.key] == null) return "";
+                      return d[e.key].toString();
+                    })(),
+                  )
+                // date-time
+                else if (e.value["type"] == "date-time") //
+                  e.key: PlutoCell(
+                    value: (() {
+                      if (d[e.key] == null) return "";
+                      final dt = DateTime.tryParse(d[e.key].toString());
+                      if (dt == null) return "";
+                      return DateFormat(DATE_FORMAT).format(dt.toLocal());
+                    })(),
+                  )
+                // boolean
+                else if (e.value["type"] == "boolean") //
+                  e.key: PlutoCell(
+                    value: (() {
+                      if (d[e.key] == null) return "";
+                      if (d[e.key] == true) return "Yes";
+                      return "No";
+                    })(),
+                  ),
+            },
+          ),
+      ]);
+      is_loading = false;
+      setState(() {});
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 
   @override
@@ -374,164 +373,170 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  void on_filter(e) {
-    // clear
-    key = has = query = min = max = start = end = order = null;
+  void on_filter(e) async {
+    try {
+      // clear
+      key = has = query = min = max = start = end = order = null;
 
-    // init
-    key = e.key;
-    order = 1;
+      // init
+      key = e.key;
+      order = 1;
 
-    //
-    if (e.value["type"] == "string") {
-      Navigator.push(
-        context, //
-        MaterialPageRoute(builder: (context) => filter_string.Main_()),
-      ).then((v) {
-        if (v == null) return;
-        query = v;
-        init();
-      });
-    }
+      //
+      if (e.value["type"] == "string") {
+        final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => filter_string.Main_()));
+        if (value == null) return;
+        query = value;
+      }
 
-    //
-    if (e.value["type"] == "number") {
-      Navigator.push(
-        context, //
-        MaterialPageRoute(builder: (context) => filter_number.Main_()),
-      ).then((v) {
-        if (v == null) return;
-        min = v["min"];
-        max = v["max"];
-        init();
-      });
-    }
+      //
+      if (e.value["type"] == "number") {
+        final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => filter_number.Main_()));
+        if (value == null) return;
+        min = value["min"];
+        max = value["max"];
+      }
 
-    //
-    if (e.value["type"] == "date-time") {
-      Navigator.push(
-        context, //
-        MaterialPageRoute(builder: (context) => filter_datetime.Main_()),
-      ).then((v) {
-        if (v == null) return;
-        start = v["start"];
-        end = v["end"];
-        init();
-      });
-    }
+      //
+      if (e.value["type"] == "date-time") {
+        final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => filter_datetime.Main_()));
+        if (value == null) return;
+        start = value["start"];
+        end = value["end"];
+      }
 
-    //
-    if (e.value["type"] == "boolean") {
-      Navigator.push(
-        context, //
-        MaterialPageRoute(builder: (context) => filter_boolean.Main_()),
-      ).then((v) {
-        if (v == null) return;
-        has = v;
-        init();
-      });
-    }
-  }
+      //
+      if (e.value["type"] == "boolean") {
+        final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => filter_boolean.Main_()));
+        if (value == null) return;
+        has = value;
+      }
 
-  void on_create() {
-    //
-    schema.clear();
-
-    //
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => create.Main_()),
-    ).then((v) {
-      if (v == null) return;
+      //
       init();
-    });
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 
-  void on_read() {
-    //
-    schema.clear();
+  void on_create() async {
+    try {
+      //
+      schema.clear();
 
-    //
-    if (state_manager?.currentRow == null) {
-      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
-      return;
-    }
+      //
+      final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
 
-    //
-    final row = state_manager?.currentRow;
-    row!.cells.forEach((k, c) {
-      schema.data[k]?["value"] = c.value;
-    });
+      //
+      if (value == null) return;
 
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => read.Main_()),
-    );
-  }
-
-  void on_update() {
-    //
-    schema.clear();
-
-    //
-    if (state_manager?.currentRow == null) {
-      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
-      return;
-    }
-
-    //
-    final row = state_manager?.currentRow;
-    row!.cells.forEach((k, c) {
-      schema.data[k]?["value"] = c.value;
-    });
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => update.Main_()),
-    ).then((v) {
-      if (v == null) return;
+      //
       init();
-    });
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 
-  void on_delete() {
-    //
-    schema.clear();
+  void on_read() async {
+    try {
+      //
+      schema.clear();
 
-    //
-    if (state_manager?.currentRow == null) {
-      snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
-      return;
+      //
+      if (state_manager?.currentRow == null) {
+        snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+        return;
+      }
+
+      //
+      final row = state_manager?.currentRow;
+      row!.cells.forEach((k, c) {
+        schema.data[k]?["value"] = c.value;
+      });
+
+      Navigator.push(context, MaterialPageRoute(builder: (context) => read.Main_()));
+
+      //
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }
+  }
 
-    //
-    schema.data["_id"]?["value"] = state_manager?.currentRow!.cells["_id"]!.value;
+  void on_update() async {
+    try {
+      //
+      schema.clear();
 
-    //
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => delete.Main_()),
-    ).then((v) {
-      if (v == null) return;
+      //
+      if (state_manager?.currentRow == null) {
+        snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+        return;
+      }
 
-      // remove current row
+      //
+      final row = state_manager?.currentRow;
+      row!.cells.forEach((k, c) {
+        schema.data[k]?["value"] = c.value;
+      });
+
+      //
+      final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_()));
+      if (value == null) return;
+
+      //
+      init();
+
+      //
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
+  void on_delete() async {
+    try {
+      //
+      schema.clear();
+
+      //
+      if (state_manager?.currentRow == null) {
+        snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
+        return;
+      }
+
+      //
+      schema.data["_id"]?["value"] = state_manager?.currentRow!.cells["_id"]!.value;
+
+      //
+
+      final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_()));
+      if (value == null) return;
+
       state_manager?.removeCurrentRow();
-
       state_manager?.notifyListeners();
       setState(() {});
-    });
+
+      //
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 
   //
-  void on_refresh() {
-    //
-    key = has = query = min = max = start = end = order = null;
+  void on_refresh() async {
+    try {
+      //
+      key = has = query = min = max = start = end = order = null;
 
-    //
-    init();
+      //
+      init();
 
-    //
-    snackbar_show(context: context, message: "Refreshed successfully", color: Colors.green);
+      //
+      snackbar_show(context: context, message: "Refreshed successfully", color: Colors.green);
+
+      //
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 
   //

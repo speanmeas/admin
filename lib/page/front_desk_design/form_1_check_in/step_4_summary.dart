@@ -13,6 +13,7 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/widget/show_data.dart" as show_data;
+import "package:speanmeas/page/room/schema.g.dart" as room_schema;
 
 import "../_setup.dart";
 import "../schema.g.dart" as schema;
@@ -81,43 +82,40 @@ class _Main_State extends State<Main_> {
   }
 
   void on_check_in() async {
-    String? id;
-    Map<String, dynamic> output = {for (var e in schema.data.entries) e.key: e.value["value"]};
+    try {
+      //
+      final output = {for (var e in schema.data.entries) e.key: e.value["value"]};
 
-    await dio
-        .post("/front_desk/data_create", data: FormData.fromMap({...output}))
-        .then((r) {
-          id = r.data["_id"];
-          snackbar_show(context: context, message: "Create successfully.", color: Colors.green);
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.pop(context, true);
-        })
-        .catchError((e) {
-          snackbar_show(context: context, message: "Create failed.", color: Colors.red);
-        });
+      //
+      final response = await dio.post(
+        "/front_desk/data_create", //
+        data: FormData.fromMap(output),
+      );
 
-    String? room_id = output[schema.ROOM_ID];
-    String? payment_at = output[schema.ROOM_PAYMENT_AT];
-    if (payment_at != null && payment_at.isNotEmpty) {
+      //
+      var status = "Pending Pay";
+      if (output[schema.ROOM_PAYMENT_AT]?.isNotEmpty ?? false) status = "Pending Leave";
+
+      //
       await dio.post(
-        "/room/data_update",
+        "/room/data_update", //
         data: FormData.fromMap({
-          "_id": room_id, //
-          "room_status": "Pending Leave",
-          "front_desk_id": id, //
+          "_id": output[schema.ROOM_ID], //
+          room_schema.ROOM_STATUS: status, //
+          room_schema.FRONT_DESK_ID: response.data["_id"],
         }),
       );
-    } else {
-      await dio.post(
-        "/room/data_update",
-        data: FormData.fromMap({
-          "_id": room_id, //
-          "room_status": "Pending Pay",
-          "front_desk_id": id, //
-        }),
-      );
+
+      //
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.pop(context, true);
+
+      //
+      snackbar_show(context: context, message: "Create successfully.", color: Colors.green);
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }
   }
 }

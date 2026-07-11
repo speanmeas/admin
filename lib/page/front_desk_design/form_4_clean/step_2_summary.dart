@@ -9,79 +9,38 @@ import "package:speanmeas/environment.dart";
 import "package:speanmeas/global.dart";
 import "package:speanmeas/layout/layout.dart";
 
-import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/dio.dart";
+import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
+import "package:speanmeas/widget/show_data.dart" as show_data;
+import "package:speanmeas/page/room/schema.g.dart" as room_schema;
 
 import "../_setup.dart";
 import "../schema.g.dart" as schema;
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global.variable, //
-      child: const Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  const Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: TITLE, //
-      theme: Theme_Data(),
-      debugShowCheckedModeBanner: false,
-      home: Main_(),
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  const Main_({super.key});
-
-  @override
-  State<Main_> createState() => _Main_State();
-}
-
 class _Main_State extends State<Main_> {
-  //
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  void init() async {}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "5. Check In - Summary", //
+          "2. Clean - Summary", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
           ),
         ),
-
         actions: [
-          // if (can_next())
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: OutlinedButton.icon(
               icon: Icon(Icons.login_outlined),
-              label: Text("Check In"),
+              label: Text("Clean"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
               onPressed: on_check_in, //
             ),
           ),
         ],
-
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -91,18 +50,17 @@ class _Main_State extends State<Main_> {
           alignment: Alignment.topCenter,
           child: Column(
             children: [
-              // view search guest result
-
-              // button check in + print
-              // if (can_print())
-              //   Container(
-              //     margin: EdgeInsets.fromLTRB(0, 16, 0, 0),
-              //     child: OutlinedButton.icon(
-              //       label: Text("Print"),
-              //       icon: Icon(Icons.print_outlined),
-              //       onPressed: on_print, //
-              //     ),
-              //   ),
+              ...schema.data.entries.where((e) => !e.key.contains("_id")).map((e) {
+                String value = e.value["value"]?.toString() ?? "";
+                return Container(
+                  width: 600,
+                  margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  child: show_data.Main_(
+                    title: e.value["title"], //
+                    value: value,
+                  ),
+                );
+              }),
             ],
           ),
         ),
@@ -111,6 +69,50 @@ class _Main_State extends State<Main_> {
   }
 
   void on_check_in() async {
-    //
+    try {
+      // prepare data
+      final output = {for (var e in schema.data.entries) e.key: e.value["value"]};
+
+      // update front desk data
+      await dio.post(
+        "/front_desk/data_update", //
+        data: FormData.fromMap({...output}),
+      );
+
+      // update room data
+      await dio.post(
+        "/room/data_update", //
+        data: FormData.fromMap({
+          "_id": output[schema.ROOM_ID], //
+          room_schema.ROOM_STATUS: "Available",
+        }),
+      );
+
+      // close context
+      Navigator.pop(context);
+      Navigator.pop(context, true);
+
+      // show status
+      snackbar_show(context: context, message: "Updated successfully.", color: Colors.green);
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
   }
+}
+
+class Main_ extends StatefulWidget {
+  Main_({super.key});
+
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      theme: Theme_Data(), //
+      home: Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

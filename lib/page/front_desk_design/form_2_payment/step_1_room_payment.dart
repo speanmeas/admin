@@ -319,30 +319,27 @@ class _Main_State extends State<Main_> {
   }
 
   void on_next() async {
-    await dio
-        .post("/variable/datetime_now")
-        .then((r) {
-          DateTime? get_paid_date = DateTime.tryParse(r.data.toString());
-          //
+    try {
+      //
+      final response = await dio.post("/variable/datetime_now");
+      if (DateTime.tryParse(response.data.toString()) == null) throw Exception("Invalid date time from server.");
+      DateTime now = DateTime.tryParse(response.data.toString())!;
 
-          schema.data[schema.ROOM_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
-          schema.data[schema.ROOM_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
-          schema.data[schema.ROOM_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
+      schema.data[schema.ROOM_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
+      schema.data[schema.ROOM_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
+      schema.data[schema.ROOM_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
+      schema.data[schema.ROOM_PAYMENT_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 
-          if (user.data[user.ID]!["value"] != null) schema.data[schema.ROOM_PAYMENT_BY_ID]?["value"] = user.data[user.ID]!["value"];
-          if (user.data[user.USER_FULL_NAME]!["value"] != null) schema.data[schema.ROOM_PAYMENT_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
-          if (get_paid_date != null) schema.data[schema.ROOM_PAYMENT_AT]?["value"] = DateFormat(DATE_FORMAT).format(get_paid_date);
+      if (user.data[user.ID]!["value"] != null) //
+        schema.data[schema.ROOM_PAYMENT_BY_ID]?["value"] = user.data[user.ID]!["value"];
+      if (user.data[user.USER_FULL_NAME]!["value"] != null) //
+        schema.data[schema.ROOM_PAYMENT_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
 
-          // for (var e in schema.data.entries) print(e);
-
-          Navigator.push(
-            context, //
-            MaterialPageRoute(builder: (context) => step_2.Main_()),
-          );
-        })
-        .catchError((e) {
-          snackbar_show(context: context, message: e.toString(), color: Colors.red);
-        });
+      Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
+      //
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 
   //

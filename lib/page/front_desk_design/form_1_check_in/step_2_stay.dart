@@ -127,51 +127,33 @@ class _Main_State extends State<Main_> {
   }
 
   void on_next() async {
-    await dio
-        .post("/variable/datetime_now")
-        .then((r) {
-          // DateTime? now = DateTime.tryParse(r.data.toString());
+    try {
+      //
+      final response = await dio.post("/variable/datetime_now");
+      if (DateTime.tryParse(response.data.toString()) == null) throw Exception("Invalid date time from server.");
+      DateTime now = DateTime.tryParse(response.data.toString())!;
 
-          double number_of_guests = double.tryParse(schema.data[schema.STAY_NUMBER_OF_GUESTS]?["value"]?.toString() ?? "0") ?? 0;
-          double stay_duration_days = double.tryParse(schema.data[schema.STAY_DURATION_DAY]?["value"]?.toString() ?? "0") ?? 0;
-          double stay_duration_hours = double.tryParse(schema.data[schema.STAY_DURATION_HOUR]?["value"]?.toString() ?? "0") ?? 0;
+      double stay_duration_days = double.tryParse(schema.data[schema.STAY_DURATION_DAY]?["value"]?.toString() ?? "0") ?? 0;
+      double stay_duration_hours = double.tryParse(schema.data[schema.STAY_DURATION_HOUR]?["value"]?.toString() ?? "0") ?? 0;
+      double room_price_per_day_usd = schema.data[schema.ROOM_PRICE_PER_DAY_USD]?["value"]?.toDouble() ?? 0;
+      double room_price_per_3h_usd = schema.data[schema.ROOM_PRICE_PER_3H_USD]?["value"]?.toDouble() ?? 0;
+      double room_price_total_usd = (stay_duration_days * room_price_per_day_usd) + ((stay_duration_hours / 3) * room_price_per_3h_usd);
 
-          DateTime? check_in_date = DateTime.tryParse(r.data.toString());
-          DateTime? schedule_check_out = DateTime.tryParse(r.data.toString());
+      DateTime schedule_check_out = now.add(Duration(days: stay_duration_days.toInt(), hours: stay_duration_hours.toInt()));
 
-          if (stay_duration_days > 0) {
-            schedule_check_out = schedule_check_out?.add(Duration(days: stay_duration_days.toInt()));
-            schedule_check_out = DateTime(schedule_check_out!.year, schedule_check_out.month, schedule_check_out.day, 12, 0);
-            schedule_check_out = schedule_check_out.add(Duration(hours: stay_duration_hours.toInt()));
-          }
+      schema.data[schema.STAY_SCHEDULE_CHECK_OUT]?["value"] = DateFormat(DATE_FORMAT).format(schedule_check_out);
+      schema.data[schema.CHECK_IN_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
+      schema.data[schema.ROOM_PRICE_TOTAL_USD]?["value"] = room_price_total_usd;
 
-          if (stay_duration_days == 0) {
-            schedule_check_out = schedule_check_out?.add(Duration(hours: stay_duration_hours.toInt()));
-          }
+      if (user.data[user.ID]!["value"] != null) //
+        schema.data[schema.CHECK_IN_BY_ID]?["value"] = user.data[user.ID]!["value"];
+      if (user.data[user.USER_FULL_NAME]!["value"] != null) //
+        schema.data[schema.CHECK_IN_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
 
-          double room_price_per_day_usd = schema.data[schema.ROOM_PRICE_PER_DAY_USD]?["value"]?.toDouble() ?? 0;
-          double room_price_per_3h_usd = schema.data[schema.ROOM_PRICE_PER_3H_USD]?["value"]?.toDouble() ?? 0;
-          double room_price_total_usd = (stay_duration_days * room_price_per_day_usd) + ((stay_duration_hours / 3) * room_price_per_3h_usd);
-
-          schema.data[schema.STAY_NUMBER_OF_GUESTS]?["value"] = number_of_guests;
-          schema.data[schema.STAY_DURATION_HOUR]?["value"] = stay_duration_hours;
-          schema.data[schema.STAY_DURATION_DAY]?["value"] = stay_duration_days;
-          if (schedule_check_out != null) schema.data[schema.STAY_SCHEDULE_CHECK_OUT]?["value"] = DateFormat(DATE_FORMAT).format(schedule_check_out);
-          if (check_in_date != null) schema.data[schema.CHECK_IN_AT]?["value"] = DateFormat(DATE_FORMAT).format(check_in_date);
-          if (user.data[user.ID]!["value"] != null) schema.data[schema.CHECK_IN_BY_ID]?["value"] = user.data[user.ID]!["value"];
-          if (user.data[user.USER_FULL_NAME]!["value"] != null) schema.data[schema.CHECK_IN_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
-          schema.data[schema.ROOM_PRICE_TOTAL_USD]?["value"] = room_price_total_usd;
-
-          // for (var e in schema.data.entries) print(e);
-
-          Navigator.push(
-            context, //
-            MaterialPageRoute(builder: (context) => step_3.Main_()),
-          );
-        })
-        .catchError((e) {
-          snackbar_show(context: context, message: e.toString(), color: Colors.red);
-        });
+      Navigator.push(context, MaterialPageRoute(builder: (context) => step_3.Main_()));
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 }
 

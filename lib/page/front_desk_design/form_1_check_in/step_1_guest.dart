@@ -139,29 +139,33 @@ class _Main_State extends State<Main_> {
   }
 
   void on_next() async {
-    // for (var e in schema.data.entries) print(e);
-
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => step_2.Main_()),
-    );
+    try {
+      //
+      Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 
   void on_add_new() async {
-    Navigator.push(
-      context, //
-      MaterialPageRoute(builder: (context) => guest_create.Main_()),
-    ).then((v) {
+    try {
       //
-      if (v == null) return;
+      final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => guest_create.Main_()));
+      if (value == null) return;
 
-      schema.data[schema.GUEST_ID]?["value"] = v["_id"];
-      for (var e in v.entries) {
+      schema.data[schema.GUEST_ID]?["value"] = value["_id"];
+      for (var e in value.entries) {
         if (e.key == "_id") continue;
         schema.data[e.key]?["value"] = e.value;
       }
+
+      //
       setState(() {});
-    });
+
+      //
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 }
 
@@ -175,8 +179,8 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      theme: Theme_Data(), //
       home: Main_(),
+      theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
     ),
   );
