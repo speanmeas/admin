@@ -323,16 +323,17 @@ class _Main_State extends State<Main_> {
       schema.data[schema.ROOM_PAYMENT_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 
       // clear if no payment
-      if (get_price_total_usd() > 0 && get_balance_usd() == 0) {
+      if (get_balance_usd() != 0) {
         schema.data[schema.ROOM_PAID_BANK_USD]?["value"] = null;
         schema.data[schema.ROOM_PAID_CASH_USD]?["value"] = null;
         schema.data[schema.ROOM_PAID_BANK_KHR]?["value"] = null;
         schema.data[schema.ROOM_PAID_CASH_KHR]?["value"] = null;
-        schema.data[schema.ROOM_PAID_TOTAL_USD]?["value"] = null;
         schema.data[schema.ROOM_RETURN_USD]?["value"] = null;
         schema.data[schema.ROOM_RETURN_KHR]?["value"] = null;
         schema.data[schema.ROOM_RETURN_TOTAL_USD]?["value"] = null;
+        schema.data[schema.ROOM_PAID_TOTAL_USD]?["value"] = null;
         schema.data[schema.ROOM_BALANCE_TOTAL_USD]?["value"] = null;
+        schema.data[schema.ROOM_PAYMENT_AT]?["value"] = null;
       }
 
       if (user.data[user.ID]!["value"] != null) //
