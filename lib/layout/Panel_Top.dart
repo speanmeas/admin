@@ -103,28 +103,27 @@ class _Panel_Top_State extends State<Panel_Top_> {
           SizedBox(width: 4),
 
           // User Avatar
-          InkWell(
-            customBorder: const CircleBorder(),
-            child: Container(
-              width: 40,
-              height: 40,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.blue, width: 2),
+          if (user.data[user.USER_FULL_NAME]!["value"] != null) //
+            InkWell(
+              customBorder: const CircleBorder(),
+              child: Container(
+                width: 40,
+                height: 40,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.blue, width: 2),
+                ),
+                child: Text(
+                  user.data[user.USER_FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "", //
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
               ),
-              child: Text(
-                user.data[user.USER_FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "", //
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => User_Profile_()));
+                init();
+              },
             ),
-            onTap: () {
-              Navigator.push(
-                context, //
-                MaterialPageRoute(builder: (_) => User_Profile_()),
-              ).then((v) => init());
-            },
-          ),
 
           SizedBox(width: 8), //
         ],
