@@ -176,7 +176,7 @@ class _Main_State extends State<Main_> {
                 ),
                 style: PlutoGridStyleConfig(
                   rowHeight: 28, //
-                  columnHeight: 32,
+                  // columnHeight: 32,
                   columnFilterHeight: 36,
                 ),
               ),
@@ -190,7 +190,7 @@ class _Main_State extends State<Main_> {
           if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
           Container(
-            height: 50, //
+            height: 40, //
             alignment: Alignment.topCenter,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -176,7 +176,7 @@ class _Main_State extends State<Main_> {
                 ),
                 style: PlutoGridStyleConfig(
                   rowHeight: 28, //
-                  columnHeight: 32,
+                  // columnHeight: 32,
                   columnFilterHeight: 36,
                 ),
               ),
