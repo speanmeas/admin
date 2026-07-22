@@ -154,21 +154,23 @@ class _Main_State extends State<Main_> {
               ),
 
               // refresh
-              Container(
-                height: 32,
-                margin: EdgeInsets.fromLTRB(0, 2, 4, 2),
-                child: InkWell(
+              InkWell(
+                child: Container(
+                  height: 32,
+                  width: 32,
+                  alignment: Alignment.center,
+                  margin: EdgeInsets.fromLTRB(0, 2, 2, 2),
                   child: Icon(
                     is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
                     size: 24,
                     color: Colors.blue,
                   ), //
-                  onTap: () {
-                    is_filter = !is_filter;
-                    state_manager?.setShowColumnFilter(is_filter);
-                    setState(() {});
-                  },
                 ),
+                onTap: () {
+                  is_filter = !is_filter;
+                  state_manager?.setShowColumnFilter(is_filter);
+                  setState(() {});
+                },
               ),
             ],
           ),
@@ -211,61 +213,119 @@ class _Main_State extends State<Main_> {
 
           if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
-          Container(
-            height: 32, //
-            alignment: Alignment.topCenter,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                //
-                TextButton(
-                  child: Icon(Icons.first_page), //
-                  onPressed: () {
-                    page = 1;
-                    load_page(page);
-                  }, //
-                ),
-                //
-                TextButton(
-                  child: Icon(Icons.navigate_before), //
-                  onPressed: () {
-                    if (page == 1) return;
-                    page = page - 1;
-                    load_page(page);
-                  }, //
-                ),
-                //
-                TextButton(
-                  child: Text("$page / ${(row_total / LIMIT).floor() + 1} Pages"), //
-                  onPressed: () async {
-                    final v = await popup_select_page();
-                    if (v == null) return;
-                    page = v;
-                    load_page(page);
-                  }, //
-                ),
+          (() {
+            double HEIGHT = 32;
+            return Container(
+              height: HEIGHT, //
+              alignment: Alignment.topCenter,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  //
+                  InkWell(
+                    child: Container(
+                      width: 32,
+                      height: HEIGHT,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.first_page, //
+                        size: 24,
+                        color: Colors.blue,
+                      ), //
+                    ), //
+                    onTap: () {
+                      page = 1;
+                      load_page(page);
+                    },
+                  ),
 
-                //
-                TextButton(
-                  child: Icon(Icons.navigate_next), //
-                  onPressed: () {
-                    if (page == (row_total / LIMIT).floor() + 1) return;
-                    page = page + 1;
-                    load_page(page);
-                  }, //
-                ),
-                //
-                TextButton(
-                  child: Icon(Icons.last_page), //
-                  onPressed: () {
-                    page = (row_total / LIMIT).floor() + 1;
-                    load_page(page);
-                  }, //
-                ),
-              ],
-            ),
-          ),
+                  SizedBox(width: 4),
+
+                  //
+                  InkWell(
+                    child: Container(
+                      width: 32,
+                      height: HEIGHT,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.navigate_before, //
+                        size: 24,
+                        color: Colors.blue,
+                      ), //
+                    ), //
+                    onTap: () {
+                      if (page == 1) return;
+                      page = page - 1;
+                      load_page(page);
+                    },
+                  ),
+
+                  SizedBox(width: 4),
+
+                  //
+                  InkWell(
+                    child: Container(
+                      height: HEIGHT,
+                      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        "$page / ${(row_total / LIMIT).floor() + 1} Pages", //
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
+                      ), //
+                    ), //
+                    onTap: () async {
+                      final v = await popup_select_page();
+                      if (v == null) return;
+                      page = v;
+                      load_page(page);
+                    }, //
+                  ),
+
+                  SizedBox(width: 4),
+
+                  //
+                  InkWell(
+                    child: Container(
+                      width: 32,
+                      height: HEIGHT,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.navigate_next, //
+                        size: 24,
+                        color: Colors.blue,
+                      ), //
+                    ), //
+                    onTap: () {
+                      if (page == (row_total / LIMIT).floor() + 1) return;
+                      page = page + 1;
+                      load_page(page);
+                    },
+                  ),
+
+                  SizedBox(width: 4),
+
+                  //
+                  InkWell(
+                    child: Container(
+                      width: 32,
+                      height: HEIGHT,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.last_page, //
+                        size: 24,
+                        color: Colors.blue,
+                      ), //
+                    ), //
+                    onTap: () {
+                      page = (row_total / LIMIT).floor() + 1;
+                      load_page(page);
+                    },
+                  ),
+                ],
+              ),
+            );
+          })(),
         ],
       ),
     );
@@ -467,14 +527,14 @@ class _Main_State extends State<Main_> {
   }
 
   Future<int?> popup_select_page() async {
-    const ITEM_HEIGHT = 48.0;
+    const ITEM_HEIGHT = 32.0;
     final controller = ScrollController(initialScrollOffset: (page - 1) * ITEM_HEIGHT);
 
     final result = await showDialog<int>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Center(child: Text("Select Page")),
+          // title: Center(child: Text("Select Page")),
           titlePadding: EdgeInsets.fromLTRB(4, 4, 4, 4),
           contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
           content: SizedBox(
@@ -484,9 +544,33 @@ class _Main_State extends State<Main_> {
               controller: controller,
               itemExtent: ITEM_HEIGHT,
               itemCount: (row_total / LIMIT).floor() + 1,
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
               itemBuilder: (context, index) {
                 final p = index + 1;
-                return ListTile(
+                return InkWell(
+                  child: Container(
+                    height: ITEM_HEIGHT,
+                    decoration: BoxDecoration(
+                      border: Border(top: BorderSide(color: Colors.black12)),
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(width: 8),
+
+                        Text("Page $p", style: TextStyle(fontWeight: FontWeight.bold)), //
+
+                        Spacer(),
+
+                        if (p == page) Icon(Icons.check, color: Colors.blue),
+
+                        SizedBox(width: 16),
+                      ],
+                    ), //
+                  ), //
+                  onTap: () => Navigator.pop(context, p),
+                );
+
+                ListTile(
                   title: Text("Page $p"), //
                   trailing: p == page ? Icon(Icons.check) : null,
                   onTap: () => Navigator.pop(context, p),
