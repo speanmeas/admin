@@ -7,7 +7,7 @@ String TITLE = "Spean Meas";
 int MOBILE_SCREEN_WIDTH = 1000;
 
 bool is_local = false;
-bool is_github = true;
+bool is_github = false;
 String get_api_host() {
   if (kDebugMode) {
     return "http://localhost:8000";
