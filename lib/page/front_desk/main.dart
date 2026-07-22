@@ -560,6 +560,7 @@ class _Main_State extends State<Main_> {
       minWidth: 100,
       readOnly: true,
       enableFilterMenuItem: false,
+      enableEditingMode: false,
       hide: hide,
       titleSpan: WidgetSpan(
         child: Row(

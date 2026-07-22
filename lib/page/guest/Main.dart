@@ -8,220 +8,88 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "_setup.dart";
-import "schema.g.dart" as schema;
+import "__config__.dart";
+import "__variable__.dart";
+import "schema.r.dart" as schema_r;
+import "schema.w.dart" as schema_w;
 
-import "filter_string.dart" as filter_string;
-import "filter_number.dart" as filter_number;
-import "filter_boolean.dart" as filter_boolean;
-import "filter_datetime.dart" as filter_datetime;
-
-import "form_create.dart" as create;
-import "form_read.dart" as read;
-import "form_update.dart" as update;
-import "form_delete.dart" as delete;
+import "form/create.dart" as create;
+import "form/read.dart" as read;
+import "form/update.dart" as update;
+import "form/delete.dart" as delete;
 
 class _Main_State extends State<Main_> {
   //
 
+  int page = 1;
+  int row_total = 0;
+
+  bool is_loading = true;
   PlutoGridStateManager? state_manager;
-
-  bool is_loading = false;
-  bool has_more = true;
-
-  //
-  String? key;
-  String? query;
-  double? min;
-  double? max;
-  DateTime? start;
-  DateTime? end;
-  bool? has;
-  int? order;
 
   @override
   void initState() {
     super.initState();
+
+    // print(nationality.data);
+
     init();
   }
 
   //
   void init() async {
     try {
-      final response = await dio.post(
-        "$PATH/data_read",
-        data: FormData.fromMap({
-          "key": key, //
-          "has": has, //
-          "query": query, //
-          "min": min, //
-          "max": max, //
-          "start": start, //
-          "end": end, //
-          "order": order, //
-          "limit": ROW_LIMIT, //
-        }),
-      );
+      //
+      final r = await dio.post("$PATH/read_count", data: FormData.fromMap({"count": true}));
+      row_total = int.parse(r.data.toString());
 
-      final data = List<Map<String, dynamic>>.from(response.data);
+      //
+      load_page(page);
 
-      if (response.data.length == ROW_LIMIT) has_more = true;
-      if (response.data.length != ROW_LIMIT) has_more = false;
-
-      // clear data
-      state_manager?.removeAllRows();
-
-      // add data to row
-      state_manager?.appendRows([
-        for (var d in data)
-          PlutoRow(
-            cells: {
-              for (var e in schema.data.entries)
-                // exclude password field
-                if (e.key.toString().contains("password"))
-                  e.key: PlutoCell(value: "**********")
-                // id
-                else if (e.value["type"] == "_id") //
-                  e.key: PlutoCell(
-                    value: (() {
-                      if (d[e.key] == null) return "";
-                      return d[e.key].toString();
-                    })(),
-                  )
-                // string
-                else if (e.value["type"] == "string") //
-                  e.key: PlutoCell(
-                    value: (() {
-                      if (d[e.key] == null) return "";
-                      return d[e.key].toString();
-                    })(),
-                  )
-                // number
-                else if (e.value["type"] == "number") //
-                  e.key: PlutoCell(
-                    value: (() {
-                      if (d[e.key] == null) return "";
-                      return d[e.key].toString();
-                    })(),
-                  )
-                // date-time
-                else if (e.value["type"] == "date-time") //
-                  e.key: PlutoCell(
-                    value: (() {
-                      if (d[e.key] == null) return "";
-                      final dt = DateTime.tryParse(d[e.key].toString());
-                      if (dt == null) return "";
-                      return DateFormat(DATE_FORMAT).format(dt.toLocal());
-                    })(),
-                  )
-                // boolean
-                else if (e.value["type"] == "boolean") //
-                  e.key: PlutoCell(
-                    value: (() {
-                      if (d[e.key] == null) return "";
-                      if (d[e.key] == true) return "Yes";
-                      return "No";
-                    })(),
-                  ),
-            },
-          ),
-      ]);
-
-      // clear sort
-      final sorted_column = state_manager?.getSortedColumn;
-      if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
-
-      // jump to top
-      state_manager?.scroll.vertical?.jumpTo(0);
-
-      // notify
-      setState(() {});
+      //
     } catch (e) {
+      print(e.toString());
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
   //
-  void on_load_more() async {
+  void load_page(int p) async {
     try {
       //
+      is_loading = true;
+      setState(() {});
 
-      final response = await dio.post(
-        "$PATH/data_read",
-        data: FormData.fromMap({
-          "key": key, //
-          "has": has, //
-          "query": query, //
-          "min": min, //
-          "max": max, //
-          "start": start, //
-          "end": end, //
-          "order": order, //
-          "offset": state_manager?.rows.length, //
-          "limit": ROW_LIMIT, //
-        }),
-      );
+      //
+      final r = await dio.post("$PATH/read_all", data: FormData.fromMap({"offset": (p - 1) * LIMIT, "limit": LIMIT}));
+      final data = List<Map<String, dynamic>>.from(r.data);
 
-      final data = List<Map<String, dynamic>>.from(response.data);
-
-      if (response.data.length == ROW_LIMIT) has_more = true;
-      if (response.data.length != ROW_LIMIT) has_more = false;
+      // keep sort + filter
+      final sorted_column = state_manager?.getSortedColumn;
+      final filter_rows = List<PlutoRow>.from(state_manager?.filterRows ?? const <PlutoRow>[]);
 
       // add data to row
+      state_manager?.removeAllRows();
       state_manager?.appendRows([
         for (var d in data)
           PlutoRow(
             cells: {
-              for (var e in schema.data.entries)
-                // exclude password field
-                if (e.key.toString().contains("password"))
-                  e.key: PlutoCell(value: "**********")
-                // id
-                else if (e.value["type"] == "_id") //
-                  e.key: PlutoCell(
-                    value: (() {
-                      if (d[e.key] == null) return "";
-                      return d[e.key].toString();
-                    })(),
-                  )
-                // string
-                else if (e.value["type"] == "string") //
-                  e.key: PlutoCell(
-                    value: (() {
-                      if (d[e.key] == null) return "";
-                      return d[e.key].toString();
-                    })(),
-                  )
-                // number
-                else if (e.value["type"] == "number") //
-                  e.key: PlutoCell(
-                    value: (() {
-                      if (d[e.key] == null) return "";
-                      return d[e.key].toString();
-                    })(),
-                  )
-                // date-time
-                else if (e.value["type"] == "date-time") //
-                  e.key: PlutoCell(
-                    value: (() {
-                      if (d[e.key] == null) return "";
-                      final dt = DateTime.tryParse(d[e.key].toString());
-                      if (dt == null) return "";
-                      return DateFormat(DATE_FORMAT).format(dt.toLocal());
-                    })(),
-                  )
-                // boolean
-                else if (e.value["type"] == "boolean") //
-                  e.key: PlutoCell(
-                    value: (() {
-                      if (d[e.key] == null) return "";
-                      if (d[e.key] == true) return "Yes";
-                      return "No";
-                    })(),
-                  ),
+              for (var e in schema_r.data.entries) //
+                e.key: PlutoCell(
+                  value: data_to_cell(data: d[e.key], type: e.value["type"]),
+                ),
             },
           ),
       ]);
+
+      // reuse sort + filter
+      if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
+      state_manager?.setFilterWithFilterRows(filter_rows);
+
+      // move to top
+      state_manager?.scroll.vertical?.jumpTo(0);
+
+      //
       is_loading = false;
       setState(() {});
     } catch (e) {
@@ -235,73 +103,55 @@ class _Main_State extends State<Main_> {
       body: Column(
         children: [
           // menu
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Wrap(
-                  children: [
-                    // create
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.add), //
-                        label: Text("Create"),
-                        onPressed: on_create,
-                      ),
-                    ),
-
-                    // read
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.visibility_outlined), //
-                        label: Text("Read"),
-                        onPressed: on_read,
-                      ),
-                    ),
-
-                    // update
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.edit_outlined), //
-                        label: Text("Update"),
-                        onPressed: on_update,
-                      ),
-                    ),
-
-                    // delete
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.delete_outline, color: Colors.red), //
-                        label: Text("Delete", style: TextStyle(color: Colors.red)),
-                        onPressed: on_delete,
-                      ),
-                    ),
-                  ],
+          Align(
+            alignment: Alignment.topLeft,
+            child: Wrap(
+              children: [
+                // create
+                Container(
+                  height: 32,
+                  margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                  child: OutlinedButton.icon(
+                    icon: Icon(Icons.add), //
+                    label: Text("Create"),
+                    onPressed: on_create,
+                  ),
                 ),
-              ),
 
-              // refresh
-              Container(
-                height: 32,
-                margin: EdgeInsets.fromLTRB(0, 2, 2, 2),
-                child: InkWell(
-                  child: Icon(
-                    Icons.refresh, //
-                    size: 28,
-                    color: Colors.blue,
-                  ), //
-                  onTap: on_refresh,
+                // read
+                Container(
+                  height: 32,
+                  margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                  child: OutlinedButton.icon(
+                    icon: Icon(Icons.visibility_outlined), //
+                    label: Text("Read"),
+                    onPressed: on_read,
+                  ),
                 ),
-              ),
-            ],
+
+                // update
+                Container(
+                  height: 32,
+                  margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                  child: OutlinedButton.icon(
+                    icon: Icon(Icons.edit_outlined), //
+                    label: Text("Update"),
+                    onPressed: on_update,
+                  ),
+                ),
+
+                // delete
+                Container(
+                  height: 32,
+                  margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                  child: OutlinedButton.icon(
+                    icon: Icon(Icons.delete_outline, color: Colors.red), //
+                    label: Text("Delete", style: TextStyle(color: Colors.red)),
+                    onPressed: on_delete,
+                  ),
+                ),
+              ],
+            ),
           ),
 
           // pluto table
@@ -309,13 +159,16 @@ class _Main_State extends State<Main_> {
             child: PlutoGrid(
               rows: [],
               columns: [
-                for (var e in schema.data.entries)
-                  build_plutocolumn(
+                for (var e in schema_r.data.entries)
+                  PlutoColumn(
                     field: e.key, //
                     title: e.value["title"]!,
-                    type: e.value["type"]!,
+                    type: e.value["type"] == "number"
+                        ? PlutoColumnType.number() //
+                        : PlutoColumnType.text(),
                     hide: e.value["hide"]!,
-                    on_filter: () => on_filter(e),
+                    width: 160,
+                    enableEditingMode: false,
                   ),
               ], //
               //
@@ -328,110 +181,96 @@ class _Main_State extends State<Main_> {
                 style: PlutoGridStyleConfig(
                   rowHeight: 28, //
                   columnHeight: 32,
+                  columnFilterHeight: 36,
                 ),
               ),
               onLoaded: (event) {
                 state_manager = event.stateManager;
-                state_manager?.scroll.bodyRowsVertical!.addListener(() {
-                  final position = state_manager?.scroll.bodyRowsVertical!.position;
-                  if (!is_loading) {
-                    if (position!.pixels >= position.maxScrollExtent) {
-                      if (has_more) {
-                        is_loading = true;
-                        on_load_more();
-                      }
-                      setState(() {});
-                    }
-                  }
-                });
+                state_manager?.setShowColumnFilter(true);
               },
             ),
           ),
 
-          // footer loading
-          if (is_loading)
-            Container(
-              height: 24, //
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(width: 20, height: 20, child: CircularProgressIndicator()),
-                  SizedBox(width: 12),
-                  Text("Loading more..."),
-                ],
-              ),
-            ),
+          if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
-          // footer total row count
-          if (!is_loading && state_manager != null)
-            Container(
-              height: 24, //
-              child: Text("Loaded: ${state_manager!.rows.length} items"),
+          Container(
+            height: 30, //
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //
+                TextButton(
+                  child: Icon(Icons.first_page), //
+                  onPressed: () {
+                    page = 1;
+                    load_page(page);
+                  }, //
+                ),
+                //
+                TextButton(
+                  child: Icon(Icons.navigate_before), //
+                  onPressed: () {
+                    if (page == 1) return;
+                    page = page - 1;
+                    load_page(page);
+                  }, //
+                ),
+                //
+                TextButton(
+                  child: Text("$page / ${(row_total / LIMIT).floor() + 1} Pages"), //
+                  onPressed: () async {
+                    final v = await popup_select_page();
+                    if (v == null) return;
+                    page = v;
+                    load_page(page);
+                  }, //
+                ),
+
+                //
+                TextButton(
+                  child: Icon(Icons.navigate_next), //
+                  onPressed: () {
+                    if (page == (row_total / LIMIT).floor() + 1) return;
+                    page = page + 1;
+                    load_page(page);
+                  }, //
+                ),
+                //
+                TextButton(
+                  child: Icon(Icons.last_page), //
+                  onPressed: () {
+                    page = (row_total / LIMIT).floor() + 1;
+                    load_page(page);
+                  }, //
+                ),
+              ],
             ),
+          ),
         ],
       ),
     );
   }
 
-  void on_filter(e) async {
-    try {
-      // clear
-      key = has = query = min = max = start = end = order = null;
-
-      // init
-      key = e.key;
-      order = 1;
-
-      //
-      if (e.value["type"] == "string") {
-        final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => filter_string.Main_()));
-        if (value == null) return;
-        query = value;
-      }
-
-      //
-      if (e.value["type"] == "number") {
-        final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => filter_number.Main_()));
-        if (value == null) return;
-        min = value["min"];
-        max = value["max"];
-      }
-
-      //
-      if (e.value["type"] == "date-time") {
-        final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => filter_datetime.Main_()));
-        if (value == null) return;
-        start = value["start"];
-        end = value["end"];
-      }
-
-      //
-      if (e.value["type"] == "boolean") {
-        final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => filter_boolean.Main_()));
-        if (value == null) return;
-        has = value;
-      }
-
-      //
-      init();
-    } catch (e) {
-      snackbar_show(context: context, message: e.toString(), color: Colors.red);
-    }
-  }
-
   void on_create() async {
     try {
       //
-      schema.clear();
+      schema_w.clear();
 
       //
-      final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
+      final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
+      if (v == null) return;
+
+      // clear sort + filter
+      final sorted_column = state_manager?.getSortedColumn;
+      if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
+      state_manager?.setFilterWithFilterRows([]);
 
       //
-      if (value == null) return;
+      row_total = row_total + 1;
+      page = 1;
+      load_page(page);
 
       //
-      init();
     } catch (e) {
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }
@@ -440,20 +279,21 @@ class _Main_State extends State<Main_> {
   void on_read() async {
     try {
       //
-      schema.clear();
+      schema_w.clear();
 
       //
-      if (state_manager?.currentRow == null) {
+      final row = state_manager?.currentRow;
+      if (row == null) {
         snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
         return;
       }
 
       //
-      final row = state_manager?.currentRow;
-      row!.cells.forEach((k, c) {
-        schema.data[k]?["value"] = c.value;
-      });
+      for (var e in schema_w.data.entries) {
+        e.value["value"] = cell_to_data(data: row.cells[e.key]?.value, type: e.value["type"]);
+      }
 
+      //
       Navigator.push(context, MaterialPageRoute(builder: (context) => read.Main_()));
 
       //
@@ -465,26 +305,30 @@ class _Main_State extends State<Main_> {
   void on_update() async {
     try {
       //
-      schema.clear();
+      schema_w.clear();
 
       //
-      if (state_manager?.currentRow == null) {
+      final row = state_manager?.currentRow;
+      if (row == null) {
         snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
         return;
       }
 
       //
-      final row = state_manager?.currentRow;
-      row!.cells.forEach((k, c) {
-        schema.data[k]?["value"] = c.value;
-      });
+      for (var e in schema_w.data.entries) {
+        e.value["value"] = cell_to_data(data: row.cells[e.key]?.value, type: e.value["type"]);
+      }
 
       //
-      final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_()));
-      if (value == null) return;
+      final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_()));
+      if (v == null) return;
 
       //
-      init();
+      for (var e in schema_w.data.entries) {
+        if (v[e.key] != null) {
+          row.cells[e.key]?.value = data_to_cell(data: v[e.key], type: e.value["type"]);
+        }
+      }
 
       //
     } catch (e) {
@@ -495,25 +339,25 @@ class _Main_State extends State<Main_> {
   void on_delete() async {
     try {
       //
-      schema.clear();
+      schema_w.clear();
 
       //
-      if (state_manager?.currentRow == null) {
+      final row = state_manager?.currentRow;
+      if (row == null) {
         snackbar_show(context: context, message: "Please select a row.", color: Colors.red);
         return;
       }
 
       //
-      schema.data["_id"]?["value"] = state_manager?.currentRow!.cells["_id"]!.value;
+      schema_w.data[schema_w.ID]?["value"] = row.cells[schema_w.ID]!.value;
 
       //
-
       final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_()));
       if (value == null) return;
 
+      //
+      row_total = row_total - 1;
       state_manager?.removeCurrentRow();
-      state_manager?.notifyListeners();
-      setState(() {});
 
       //
     } catch (e) {
@@ -521,90 +365,121 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
-  void on_refresh() async {
-    try {
-      //
-      key = has = query = min = max = start = end = order = null;
-
-      //
-      init();
-
-      //
-      snackbar_show(context: context, message: "Refreshed successfully", color: Colors.green);
-
-      //
-    } catch (e) {
-      snackbar_show(context: context, message: e.toString(), color: Colors.red);
-    }
-  }
-
-  //
-  build_plutocolumn({
-    required String title, //
-    required String field,
-    required String type,
-    required bool hide,
-    required VoidCallback on_filter,
+  dynamic cell_to_data({
+    dynamic data, //
+    String? type, //
   }) {
     //
-    PlutoColumnType column_type = PlutoColumnType.text();
-    if (type == "number") column_type = PlutoColumnType.number();
+    if (type == "_id") {
+      if (data == "") return null;
+      if (data != "") return data.toString();
+    }
 
     //
-    return PlutoColumn(
-      title: title,
-      field: field,
-      type: column_type,
-      width: 160,
-      minWidth: 100,
-      readOnly: true,
-      enableFilterMenuItem: false,
-      hide: hide,
-      titleSpan: WidgetSpan(
-        child: Row(
-          children: [
-            if (type == "string")
-              InkWell(
-                onTap: on_filter,
-                child: Icon(Icons.filter_alt_outlined, size: 20, color: Colors.blue),
-              )
-            else if (type == "number")
-              InkWell(
-                onTap: on_filter,
-                child: Icon(Icons.tune, size: 20, color: Colors.blue),
-              )
-            else if (type == "date-time")
-              InkWell(
-                onTap: on_filter,
-                child: Icon(Icons.date_range, size: 20, color: Colors.blue),
-              )
-            else if (type == "boolean")
-              InkWell(
-                onTap: on_filter,
-                child: Icon(Icons.toggle_on_outlined, size: 20, color: Colors.blue),
-              )
-            else
-              SizedBox(),
+    if (type == "string") {
+      if (data == "") return null;
+      if (data != "") return data.toString();
+    }
 
-            SizedBox(width: 4),
+    //
+    if (type == "number") {
+      if (data == 0) return null;
+      if (data != 0) return double.tryParse(data.toString());
+    }
 
-            Expanded(
-              child: Text(
-                title,
-                style: TextStyle(fontWeight: FontWeight.bold),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
+    //
+    if (type == "date-time") {
+      if (data == "") return null;
+      if (data != "") return DateTime.parse(data.toString());
+    }
 
-            SizedBox(width: 20),
-          ],
-        ),
-      ),
-    );
+    if (type == "boolean") {
+      if (data == "") return null;
+      if (data == "Yes") return true;
+      if (data == "No") return false;
+    }
+
+    return null;
   }
 
-  //
+  String data_to_cell({
+    dynamic data, //
+    String? type, //
+  }) {
+    //
+    if (type == "_id") {
+      if (data != null) {
+        return data.toString();
+      }
+    }
+
+    //
+    if (type == "string") {
+      if (data != null) {
+        return data.toString();
+      }
+    }
+
+    //
+    if (type == "number") {
+      if (data != null) {
+        return data.toString();
+      }
+    }
+
+    //
+    if (type == "date-time") {
+      if (data != null) {
+        final dt = DateTime.tryParse(data.toString());
+        if (dt != null) return DateFormat(DATE_FORMAT).format(dt.toLocal());
+      }
+    }
+
+    //
+    if (type == "boolean") {
+      if (data != null) {
+        if (data == true) return "Yes";
+        if (data == false) return "No";
+      }
+    }
+
+    return "";
+  }
+
+  Future<int?> popup_select_page() async {
+    const ITEM_HEIGHT = 48.0;
+    final controller = ScrollController(initialScrollOffset: (page - 1) * ITEM_HEIGHT);
+
+    final result = await showDialog<int>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Center(child: Text("Select Page")),
+          titlePadding: EdgeInsets.fromLTRB(4, 4, 4, 4),
+          contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+          content: SizedBox(
+            width: 300,
+            height: 600,
+            child: ListView.builder(
+              controller: controller,
+              itemExtent: ITEM_HEIGHT,
+              itemCount: (row_total / LIMIT).floor() + 1,
+              itemBuilder: (context, index) {
+                final p = index + 1;
+                return ListTile(
+                  title: Text("Page $p"), //
+                  trailing: p == page ? Icon(Icons.check) : null,
+                  onTap: () => Navigator.pop(context, p),
+                );
+              },
+            ),
+          ),
+          // actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel"))],
+        );
+      },
+    );
+    return result;
+  }
 }
 
 class Main_ extends StatefulWidget {
