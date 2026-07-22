@@ -27,8 +27,7 @@ class Main extends StatelessWidget {
       title: "$TITLE Admin", //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      // home: Layout_Dashboard_(),
-      home: Main_(),
+      home: SafeArea(child: Main_()), //
     );
   }
 }
