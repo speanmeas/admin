@@ -21,7 +21,7 @@ if content_new != content_old:
 
 
 #! build for github
-os.system("flutter build web --release --base-href /app/ --output=build/github")
+os.system("flutter build web --release --base-href /admin/ --output=build/github")
 
 
 #! delay for 10 seconds
@@ -33,6 +33,10 @@ for _ in tqdm(range(100)):
 os.system("git add .")
 os.system(f'git commit -m "update"')
 os.system("git push")
+
+
+with open("lib/__config__.dart", "w", encoding="utf-8") as f:
+    f.write(content_old)
 
 
 print(f"Built and pushed to GitHub successfully!")
