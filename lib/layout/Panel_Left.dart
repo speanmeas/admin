@@ -51,12 +51,12 @@ class _Main_State extends State<Main_> {
               // Reports
               ExpansionTile(
                 leading: Icon(Icons.assessment_outlined), //
-                title: Text("Reports"),
+                title: Text("Report"),
                 children: [
-                  list_tile_l2(prefix: "Reports", name: "Daily", icon: Icons.today_outlined),
-                  list_tile_l2(prefix: "Reports", name: "Weekly", icon: Icons.date_range_outlined),
-                  list_tile_l2(prefix: "Reports", name: "Monthly", icon: Icons.calendar_month_outlined),
-                  list_tile_l2(prefix: "Reports", name: "Yearly", icon: Icons.event_note_outlined),
+                  list_tile_l2(prefix: "Report", name: "Daily", icon: Icons.today_outlined),
+                  list_tile_l2(prefix: "Report", name: "Weekly", icon: Icons.date_range_outlined),
+                  list_tile_l2(prefix: "Report", name: "Monthly", icon: Icons.calendar_month_outlined),
+                  list_tile_l2(prefix: "Report", name: "Yearly", icon: Icons.event_note_outlined),
                 ],
               ),
 
@@ -64,10 +64,10 @@ class _Main_State extends State<Main_> {
               if (user.data[user.IS_ADMIN]!["value"] == true)
                 ExpansionTile(
                   leading: Icon(Icons.model_training_outlined), //
-                  title: Text("Demos"),
+                  title: Text("Demo"),
                   initiallyExpanded: true,
                   children: [
-                    list_tile_l2(prefix: "Demos", name: "Demo 1", icon: Icons.model_training_outlined), //
+                    list_tile_l2(prefix: "Demo", name: "Demo 1", icon: Icons.model_training_outlined), //
                   ],
                 ),
 

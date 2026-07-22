@@ -24,6 +24,7 @@ class _Main_State extends State<Main_> {
   int row_total = 0;
 
   bool is_loading = true;
+  bool is_filter = false;
   PlutoGridStateManager? state_manager;
 
   @override
@@ -99,55 +100,77 @@ class _Main_State extends State<Main_> {
       body: Column(
         children: [
           // menu
-          Align(
-            alignment: Alignment.topLeft,
-            child: Wrap(
-              children: [
-                // create
-                Container(
-                  height: 32,
-                  margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                  child: OutlinedButton.icon(
-                    icon: Icon(Icons.add), //
-                    label: Text("Create"),
-                    onPressed: on_create,
-                  ),
-                ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Wrap(
+                  children: [
+                    // create
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.add), //
+                        label: Text("Create"),
+                        onPressed: on_create,
+                      ),
+                    ),
 
-                // read
-                Container(
-                  height: 32,
-                  margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                  child: OutlinedButton.icon(
-                    icon: Icon(Icons.visibility_outlined), //
-                    label: Text("Read"),
-                    onPressed: on_read,
-                  ),
-                ),
+                    // read
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.visibility_outlined), //
+                        label: Text("Read"),
+                        onPressed: on_read,
+                      ),
+                    ),
 
-                // update
-                Container(
-                  height: 32,
-                  margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                  child: OutlinedButton.icon(
-                    icon: Icon(Icons.edit_outlined), //
-                    label: Text("Update"),
-                    onPressed: on_update,
-                  ),
-                ),
+                    // update
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.edit_outlined), //
+                        label: Text("Update"),
+                        onPressed: on_update,
+                      ),
+                    ),
 
-                // delete
-                Container(
-                  height: 32,
-                  margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                  child: OutlinedButton.icon(
-                    icon: Icon(Icons.delete_outline, color: Colors.red), //
-                    label: Text("Delete", style: TextStyle(color: Colors.red)),
-                    onPressed: on_delete,
-                  ),
+                    // delete
+                    Container(
+                      height: 32,
+                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
+                      child: OutlinedButton.icon(
+                        icon: Icon(Icons.delete_outline, color: Colors.red), //
+                        label: Text("Delete", style: TextStyle(color: Colors.red)),
+                        onPressed: on_delete,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+
+              // refresh
+              Container(
+                height: 32,
+                margin: EdgeInsets.fromLTRB(0, 2, 4, 2),
+                child: InkWell(
+                  child: Icon(
+                    is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
+                    size: 24,
+                    color: Colors.blue,
+                  ), //
+                  onTap: () {
+                    is_filter = !is_filter;
+                    state_manager?.setShowColumnFilter(is_filter);
+                    setState(() {});
+                  },
+                ),
+              ),
+            ],
           ),
 
           // pluto table
@@ -176,13 +199,12 @@ class _Main_State extends State<Main_> {
                 ),
                 style: PlutoGridStyleConfig(
                   rowHeight: 28, //
-                  // columnHeight: 32,
+                  columnHeight: 32,
                   columnFilterHeight: 36,
                 ),
               ),
               onLoaded: (event) {
                 state_manager = event.stateManager;
-                state_manager?.setShowColumnFilter(true);
               },
             ),
           ),
@@ -190,7 +212,7 @@ class _Main_State extends State<Main_> {
           if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
           Container(
-            height: 40, //
+            height: 32, //
             alignment: Alignment.topCenter,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
