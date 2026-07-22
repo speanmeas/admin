@@ -78,6 +78,9 @@ class _Main_State extends State<Main_> {
 
         //
         list_tile_l1(name: "Setting", icon: Icons.settings_outlined),
+
+        //
+        SizedBox(height: 8),
       ],
     );
   }
