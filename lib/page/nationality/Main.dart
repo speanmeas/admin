@@ -190,9 +190,11 @@ class _Main_State extends State<Main_> {
           if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
           Container(
-            height: 30, //
+            height: 40, //
+            alignment: Alignment.topCenter,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 //
                 TextButton(

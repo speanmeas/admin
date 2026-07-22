@@ -17,7 +17,7 @@ class Global extends ChangeNotifier {
   //
 
   void clear() {
-    body = "Front Desk";
+    body = "Database - Nationality"; //
     notifyListeners();
   }
 }
