@@ -6,53 +6,26 @@ import "package:intl/intl.dart";
 import "package:provider/provider.dart";
 import "package:dio/dio.dart";
 
-import "package:speanmeas/environment.dart";
-import "package:speanmeas/global.dart";
+import "package:speanmeas/__config__.dart";
+import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/theme/theme_data.dart";
 
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/utility/secure_storage.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
-import "package:speanmeas/page/auth/user.g.dart" as user;
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => Global.variable, //
-      child: Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: Theme_Data(), //
-      debugShowCheckedModeBanner: false,
-      home: Main_(),
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  Main_({
-    super.key, //
-  });
-
-  @override
-  State<Main_> createState() => _Main_State();
-}
+import "schema.w.dart" as user;
 
 class _Main_State extends State<Main_> {
   bool is_password_visible = false;
   bool is_confirm_password_visible = false;
 
-  TextEditingController controller_password = TextEditingController();
-  TextEditingController controller_confirm_password = TextEditingController();
+  String password = "";
+  String confirm_password = "";
+
+  // TextEditingController controller_password = TextEditingController();
+  // TextEditingController controller_confirm_password = TextEditingController();
 
   @override
   void initState() {
@@ -84,7 +57,7 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: controller_password,
+                  controller: TextEditingController(text: password),
                   autofocus: true,
                   obscureText: !is_password_visible,
                   keyboardType: TextInputType.text,
@@ -104,6 +77,9 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
                   ),
+                  onChanged: (v) {
+                    password = v;
+                  },
                   onSubmitted: (v) => on_update(),
                 ),
               ),
@@ -113,7 +89,7 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: controller_confirm_password,
+                  controller: TextEditingController(text: confirm_password),
                   obscureText: !is_confirm_password_visible,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
@@ -132,6 +108,9 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
                   ),
+                  onChanged: (v) {
+                    confirm_password = v;
+                  },
                   onSubmitted: (v) => on_update(),
                 ),
               ),
@@ -154,35 +133,54 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update() async {
-    // todo: validation
+    try {
+      if (password.length < 6) throw Exception("Password must be at least 6 characters.");
+      if (password != confirm_password) throw Exception("Passwords do not match.");
 
-    String password = controller_password.text;
-    String confirm_password = controller_confirm_password.text;
+      final r = await dio.post(
+        "/user/data_update",
+        data: FormData.fromMap({
+          "_id": user.data[user.ID]!["value"], //
+          user.PASSWORD: password, //
+        }),
+      );
 
-    if (password.length < 6) {
-      snackbar_show(context: context, message: "Password must be at least 6 characters", color: Colors.red);
-      return;
+      user.data[user.PASSWORD]!["value"] = r.data[user.PASSWORD];
+      snackbar_show(context: context, message: "Update successful", color: Colors.green);
+      Navigator.pop(context, true);
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }
-
-    if (password != confirm_password) {
-      snackbar_show(context: context, message: "Passwords do not match", color: Colors.red);
-      return;
-    }
-
-    await dio
-        .post(
-          "/user/data_update",
-          data: FormData.fromMap({
-            "_id": user.data[user.ID]!["value"], //
-            user.USER_PASSWORD: password, //
-          }),
-        )
-        .then((r) async {
-          snackbar_show(context: context, message: "Update successful", color: Colors.green);
-          Navigator.pop(context, password);
-        })
-        .catchError((e) {
-          snackbar_show(context: context, message: "Update failed", color: Colors.red);
-        });
   }
+}
+
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => global, //
+      child: Main(),
+    ),
+  );
+}
+
+class Main extends StatelessWidget {
+  Main({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: Theme_Data(), //
+      debugShowCheckedModeBanner: false,
+      home: Main_(),
+    );
+  }
+}
+
+class Main_ extends StatefulWidget {
+  Main_({
+    super.key, //
+  });
+
+  @override
+  State<Main_> createState() => _Main_State();
 }

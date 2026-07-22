@@ -3,7 +3,7 @@ import "package:dio/dio.dart";
 import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
-import "package:speanmeas/environment.dart";
+import "package:speanmeas/__config__.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";

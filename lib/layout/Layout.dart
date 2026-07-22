@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/environment.dart";
-import "package:speanmeas/global.dart";
+import "package:speanmeas/__config__.dart";
+import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/theme/theme_data.dart";
 
 import "Panel_Body.dart";
@@ -12,7 +12,7 @@ import "Panel_Top.dart";
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global.variable, //
+      create: (_) => global, //
       child: const Layout_Dashboard(),
     ),
   );

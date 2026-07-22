@@ -1,11 +1,9 @@
 import "package:flutter/foundation.dart";
-import "package:speanmeas/environment.dart";
-
-// todo:  fix this later
+import "package:speanmeas/__config__.dart";
 
 class Global extends ChangeNotifier {
-  // singleton instance
-  static final Global variable = Global._();
+  // singleton
+  static final Global instance = Global._();
   Global._();
 
   // constants
@@ -13,7 +11,8 @@ class Global extends ChangeNotifier {
   double RATE = 4000; // 1 USD = 4000 KHR
 
   // pages
-  String body = "Front Desk";
+  // String body = "Front Desk";
+  String body = "User";
 
   //
 
@@ -22,3 +21,5 @@ class Global extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+Global global = Global.instance;

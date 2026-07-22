@@ -15,7 +15,7 @@ void snackbar_show({
           children: [
             Icon(Icons.info_outline, color: Colors.white),
             SizedBox(width: 8),
-            Text(message),
+            Expanded(child: Text(message, softWrap: true)),
           ],
         ),
         backgroundColor: color,

@@ -2,16 +2,16 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/environment.dart";
-import "package:speanmeas/global.dart";
+import "package:speanmeas/__config__.dart";
+import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/secure_storage.dart";
-import "package:speanmeas/page/auth/user.g.dart" as user;
+import "package:speanmeas/page/auth/schema.w.dart" as user;
 
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global.variable, //
+      create: (_) => global, //
       child: const Main(),
     ),
   );
@@ -58,19 +58,20 @@ class _Panel_Left_State extends State<Panel_Left_> {
         // Front Desk
         list_tile_l1(name: "Front Desk", icon: Icons.table_bar_outlined),
 
-        if (user.data[user.USER_IS_ADMIN]!["value"] == true) //
+        //
+        if (user.data[user.IS_ADMIN]!["value"] == true) //
           list_tile_l1(name: "Data", icon: Icons.data_array_outlined),
 
         // Guest
-        if (user.data[user.USER_IS_ADMIN]!["value"] == true || user.data[user.USER_IS_MANAGER]!["value"] == true || user.data[user.USER_IS_RECEPTIONIST]!["value"] == true) //
+        if (user.data[user.IS_ADMIN]!["value"] == true || user.data[user.IS_MANAGER]!["value"] == true || user.data[user.IS_RECEPTIONIST]!["value"] == true) //
           list_tile_l1(name: "Guest", icon: Icons.people_outline),
 
         // Room
-        if (user.data[user.USER_IS_ADMIN]!["value"] == true || user.data[user.USER_IS_MANAGER]!["value"] == true) //
+        if (user.data[user.IS_ADMIN]!["value"] == true || user.data[user.IS_MANAGER]!["value"] == true) //
           list_tile_l1(name: "Room", icon: Icons.hotel_outlined),
 
         // User
-        if (user.data[user.USER_IS_ADMIN]!["value"] == true || user.data[user.USER_IS_MANAGER]!["value"] == true) //
+        if (user.data[user.IS_ADMIN]!["value"] == true || user.data[user.IS_MANAGER]!["value"] == true) //
           list_tile_l1(name: "User", icon: Icons.person_outline),
 
         list_tile_l1(name: "Nationality", icon: Icons.flag_outlined),
@@ -88,7 +89,7 @@ class _Panel_Left_State extends State<Panel_Left_> {
         ),
 
         // Demos
-        if (user.data[user.USER_IS_ADMIN]!["value"] == true)
+        if (user.data[user.IS_ADMIN]!["value"] == true)
           ExpansionTile(
             leading: Icon(Icons.model_training_outlined), //
             title: Text("Demos"),
@@ -108,11 +109,11 @@ class _Panel_Left_State extends State<Panel_Left_> {
     return ListTile(
       leading: Icon(icon),
       title: Text(name),
-      selected: Global.variable.body == name,
+      selected: global.body == name,
       selectedColor: Colors.blue,
       onTap: () {
-        Global.variable.body = name;
-        Global.variable.notifyListeners();
+        global.body = name;
+        global.notifyListeners();
         if (is_mobile) Navigator.pop(context);
         setState(() {});
       },
@@ -123,12 +124,12 @@ class _Panel_Left_State extends State<Panel_Left_> {
     return ListTile(
       leading: Icon(icon),
       title: Text(name),
-      selected: Global.variable.body == name,
+      selected: global.body == name,
       selectedColor: Colors.blue,
       contentPadding: EdgeInsets.only(left: 40),
       onTap: () {
-        Global.variable.body = name;
-        Global.variable.notifyListeners();
+        global.body = name;
+        global.notifyListeners();
         if (is_mobile) Navigator.pop(context);
         setState(() {});
       },

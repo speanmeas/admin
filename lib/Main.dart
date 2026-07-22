@@ -3,16 +3,16 @@ import "package:package_info_plus/package_info_plus.dart";
 import "package:provider/provider.dart";
 
 import "package:speanmeas/theme/theme_data.dart";
-import "package:speanmeas/global.dart";
+import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/layout/layout.dart";
-import "package:speanmeas/environment.dart";
+import "package:speanmeas/__config__.dart";
 
 import "page/auth/loading.dart";
 
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => Global.variable, //
+      create: (_) => global, //
       child: const Main(),
     ),
   );
@@ -49,8 +49,8 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     final info = await PackageInfo.fromPlatform();
-    Global.variable.VERSION = "${info.version}+${info.buildNumber}";
-    Global.variable.notifyListeners();
+    global.VERSION = "${info.version}+${info.buildNumber}";
+    global.notifyListeners();
   }
 
   @override

@@ -3,15 +3,16 @@ import "package:flutter/material.dart";
 import "package:package_info_plus/package_info_plus.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/environment.dart";
-import "package:speanmeas/global.dart";
+import "package:speanmeas/__config__.dart";
+import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/page/auth/profile.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/utility/secure_storage.dart";
-import "package:speanmeas/page/auth/user.g.dart" as user;
+
+import "package:speanmeas/page/auth/schema.w.dart" as user;
 
 void main() {
-  runApp(ChangeNotifierProvider(create: (_) => Global.variable, child: const Panel_Top()));
+  runApp(ChangeNotifierProvider(create: (_) => global, child: const Panel_Top()));
 }
 
 class Panel_Top extends StatelessWidget {
@@ -103,7 +104,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
           SizedBox(width: 4),
 
           // User Avatar
-          if (user.data[user.USER_FULL_NAME]!["value"] != null) //
+          if (user.data[user.FULL_NAME]!["value"] != null) //
             InkWell(
               customBorder: const CircleBorder(),
               child: Container(
@@ -115,7 +116,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
                   border: Border.all(color: Colors.blue, width: 2),
                 ),
                 child: Text(
-                  user.data[user.USER_FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "", //
+                  user.data[user.FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "", //
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
