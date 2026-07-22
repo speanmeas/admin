@@ -16,9 +16,7 @@ class _Main_State extends State<Main_> {
         labelStyle: TextStyle(fontWeight: FontWeight.bold),
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
-      items: options.map((i) {
-        return DropdownMenuItem<String>(value: i, child: Text(i));
-      }).toList(),
+      items: options.map((i) => DropdownMenuItem<String>(value: i, child: Text(i))).toList(),
       onChanged: (v) {
         widget.onChanged?.call(v!);
       },

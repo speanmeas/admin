@@ -1,54 +1,12 @@
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
-import "package:provider/provider.dart";
 
 import "package:speanmeas/__config__.dart";
 import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/theme/theme_data.dart";
-import "package:speanmeas/utility/secure_storage.dart";
 import "package:speanmeas/page/auth/schema.w.dart" as user;
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => global, //
-      child: const Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  const Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Demo",
-      theme: Theme_Data(),
-      home: Scaffold(body: const Panel_Left_()),
-    );
-  }
-}
-
-class Panel_Left_ extends StatefulWidget {
-  const Panel_Left_({super.key});
-
-  @override
-  State<Panel_Left_> createState() => _Panel_Left_State();
-}
-
-class _Panel_Left_State extends State<Panel_Left_> {
+class _Main_State extends State<Main_> {
   bool is_mobile = false;
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  void init() async {
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,12 +53,12 @@ class _Panel_Left_State extends State<Panel_Left_> {
             title: Text("Demos"),
             initiallyExpanded: true,
             children: [
-              list_tile_l2(name: "Demo", icon: Icons.model_training_outlined),
-              // list_tile_l2(name: "Demo 1", icon: Icons.model_training_outlined),
-              // list_tile_l2(name: "Demo 1A", icon: Icons.model_training_outlined),
-              // list_tile_l2(name: "Demo 1B", icon: Icons.model_training_outlined),
+              list_tile_l2(name: "Demo 1", icon: Icons.model_training_outlined), //
             ],
           ),
+
+        //
+        list_tile_l1(name: "Setting", icon: Icons.settings_outlined),
       ],
     );
   }
@@ -135,4 +93,21 @@ class _Panel_Left_State extends State<Panel_Left_> {
       },
     );
   }
+}
+
+class Main_ extends StatefulWidget {
+  Main_({super.key});
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      title: "Development", //
+      theme: Theme_Data(), //
+      home: Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

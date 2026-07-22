@@ -5,41 +5,11 @@ import "package:speanmeas/__config__.dart";
 import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/theme/theme_data.dart";
 
-import "Panel_Body.dart";
-import "Panel_Left.dart";
-import "Panel_Top.dart";
+import "panel_body.dart" as body;
+import "panel_left.dart" as left;
+import "panel_top.dart" as top;
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => global, //
-      child: const Layout_Dashboard(),
-    ),
-  );
-}
-
-class Layout_Dashboard extends StatelessWidget {
-  const Layout_Dashboard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Demo", //
-      theme: Theme_Data(),
-      debugShowCheckedModeBanner: false,
-      home: Layout_(),
-    );
-  }
-}
-
-class Layout_ extends StatefulWidget {
-  const Layout_({super.key});
-
-  @override
-  State<Layout_> createState() => _Layout_State();
-}
-
-class _Layout_State extends State<Layout_> {
+class _Main_State extends State<Main_> {
   bool is_mobile = false;
 
   @override
@@ -47,7 +17,7 @@ class _Layout_State extends State<Layout_> {
     is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
     return Scaffold(
       appBar: AppBar(
-        title: Panel_Top_(), //
+        title: top.Main_(), //
         // backgroundColor: Colors.blue[50],
         titleSpacing: 0,
         toolbarHeight: 48,
@@ -64,7 +34,7 @@ class _Layout_State extends State<Layout_> {
                     // margin: const EdgeInsets.fromLTRB(4, 0, 0, 0),
                     width: 250,
                     decoration: BoxDecoration(border: Border(right: BorderSide())), //
-                    child: Panel_Left_(), //
+                    child: left.Main_(), //
                     // color: Colors.grey[50],
                   ),
 
@@ -76,7 +46,7 @@ class _Layout_State extends State<Layout_> {
                     height: double.infinity,
                     // decoration: BoxDecoration(border: Border.all()),
                     color: Colors.white,
-                    child: Panel_Body_(), //
+                    child: body.Main_(), //
                   ),
                 ),
               ],
@@ -84,7 +54,24 @@ class _Layout_State extends State<Layout_> {
           ),
         ],
       ),
-      drawer: is_mobile ? Drawer(child: Panel_Left_()) : null,
+      drawer: is_mobile ? Drawer(child: left.Main_()) : null,
     );
   }
+}
+
+class Main_ extends StatefulWidget {
+  Main_({super.key});
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      title: "Development", //
+      theme: Theme_Data(), //
+      home: Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

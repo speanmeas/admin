@@ -86,7 +86,7 @@ class _Main_State extends State<Main_> {
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                print(textController.text);
+                                // print(textController.text);
                                 Navigator.pop(ctx, textController.text);
                               },
                               style: ButtonStyle(backgroundColor: WidgetStateProperty.all<Color>(Colors.blue)),

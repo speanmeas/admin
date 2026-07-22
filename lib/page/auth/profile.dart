@@ -19,7 +19,7 @@ import "edit_password.dart" as update_password;
 import "schema.w.dart" as user;
 import "sign_in.dart" as sign_in;
 
-class _User_Profile_State extends State<User_Profile_> {
+class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,8 +87,7 @@ class _User_Profile_State extends State<User_Profile_> {
                         padding: EdgeInsets.only(right: 4),
                         child: IconButton(
                           onPressed: () async {
-                            final v = await Navigator.push(context, MaterialPageRoute(builder: (_) => update_full_name.Main_()));
-                            if (v == null) return;
+                            await Navigator.push(context, MaterialPageRoute(builder: (_) => update_full_name.Main_()));
                             setState(() {});
                           },
                           icon: Icon(Icons.edit),
@@ -120,8 +119,7 @@ class _User_Profile_State extends State<User_Profile_> {
                         padding: EdgeInsets.only(right: 4),
                         child: IconButton(
                           onPressed: () async {
-                            final v = await Navigator.push(context, MaterialPageRoute(builder: (_) => update_phone_number.Main_()));
-                            if (v == null) return;
+                            await Navigator.push(context, MaterialPageRoute(builder: (_) => update_phone_number.Main_()));
                             setState(() {});
                           },
                           icon: Icon(Icons.edit),
@@ -153,8 +151,7 @@ class _User_Profile_State extends State<User_Profile_> {
                         padding: EdgeInsets.only(right: 4),
                         child: IconButton(
                           onPressed: () async {
-                            final v = await Navigator.push(context, MaterialPageRoute(builder: (_) => update_username.Main_()));
-                            if (v == null) return;
+                            await Navigator.push(context, MaterialPageRoute(builder: (_) => update_username.Main_()));
                             setState(() {});
                           },
                           icon: Icon(Icons.edit),
@@ -221,7 +218,7 @@ class _User_Profile_State extends State<User_Profile_> {
       // goto to sign in
       Navigator.pop(context);
       Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (_) => const sign_in.Main_()));
+      Navigator.push(context, MaterialPageRoute(builder: (_) => sign_in.Main_()));
 
       //
       snackbar_show(context: context, message: "Signed out successfully", color: Colors.green);
@@ -244,14 +241,14 @@ class User_Profile extends StatelessWidget {
       title: TITLE, //
       theme: Theme_Data(),
       debugShowCheckedModeBanner: false,
-      home: const User_Profile_(),
+      home: const Main_(),
     );
   }
 }
 
-class User_Profile_ extends StatefulWidget {
-  const User_Profile_({super.key});
+class Main_ extends StatefulWidget {
+  const Main_({super.key});
 
   @override
-  State<User_Profile_> createState() => _User_Profile_State();
+  State<Main_> createState() => _Main_State();
 }

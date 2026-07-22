@@ -1,54 +1,21 @@
 import "dart:convert";
 
 import "package:flutter/material.dart";
-import "package:intl/intl.dart";
-import "package:provider/provider.dart";
-import "package:package_info_plus/package_info_plus.dart";
 import "package:dio/dio.dart";
 
 import "package:speanmeas/__config__.dart";
 import "package:speanmeas/__variable__.dart";
 
-import "package:speanmeas/layout/layout.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/utility/secure_storage.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
+import "package:speanmeas/layout/layout.dart" as layout;
 
 import "sign_in.dart" as sign_in;
 import "schema.w.dart" as schema_w;
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => global, //
-      child: const Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  const Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: TITLE, //
-      theme: Theme_Data(),
-      debugShowCheckedModeBanner: false,
-      home: const Loading_(),
-    );
-  }
-}
-
-class Loading_ extends StatefulWidget {
-  const Loading_({super.key});
-
-  @override
-  State<Loading_> createState() => _Loading_State();
-}
-
-class _Loading_State extends State<Loading_> {
+class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
@@ -94,11 +61,28 @@ class _Loading_State extends State<Loading_> {
       snackbar_show(context: context, message: "Login successful", color: Colors.green);
 
       //
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Layout_()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
 
       //
     } catch (e) {
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }
   }
+}
+
+class Main_ extends StatefulWidget {
+  Main_({super.key});
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      title: "Development", //
+      theme: Theme_Data(), //
+      home: Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

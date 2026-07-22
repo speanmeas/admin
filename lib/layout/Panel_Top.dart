@@ -1,41 +1,15 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
-import "package:package_info_plus/package_info_plus.dart";
 import "package:provider/provider.dart";
 
 import "package:speanmeas/__config__.dart";
 import "package:speanmeas/__variable__.dart";
-import "package:speanmeas/page/auth/profile.dart";
-import "package:speanmeas/utility/dio.dart";
-import "package:speanmeas/utility/secure_storage.dart";
+import "package:speanmeas/theme/theme_data.dart";
 
 import "package:speanmeas/page/auth/schema.w.dart" as user;
+import "package:speanmeas/page/auth/profile.dart" as profile;
 
-void main() {
-  runApp(ChangeNotifierProvider(create: (_) => global, child: const Panel_Top()));
-}
-
-class Panel_Top extends StatelessWidget {
-  const Panel_Top({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: TITLE,
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)), // todo: fix this later
-      home: Scaffold(body: const Panel_Top_()),
-    );
-  }
-}
-
-class Panel_Top_ extends StatefulWidget {
-  const Panel_Top_({super.key});
-
-  @override
-  State<Panel_Top_> createState() => _Panel_Top_State();
-}
-
-class _Panel_Top_State extends State<Panel_Top_> {
+class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
@@ -121,7 +95,7 @@ class _Panel_Top_State extends State<Panel_Top_> {
                 ),
               ),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => User_Profile_()));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => profile.Main_()));
                 init();
               },
             ),
@@ -131,4 +105,21 @@ class _Panel_Top_State extends State<Panel_Top_> {
       ),
     );
   }
+}
+
+class Main_ extends StatefulWidget {
+  Main_({super.key});
+  @override
+  State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      title: "Development", //
+      theme: Theme_Data(), //
+      home: Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

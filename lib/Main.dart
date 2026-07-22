@@ -7,7 +7,7 @@ import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/layout/layout.dart";
 import "package:speanmeas/__config__.dart";
 
-import "page/auth/loading.dart";
+import "page/auth/loading.dart" as loading;
 
 void main() {
   runApp(
@@ -55,6 +55,6 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
-    return Loading_();
+    return loading.Main_();
   }
 }

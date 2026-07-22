@@ -126,7 +126,7 @@ class _Main_State extends State<Main_> {
       snackbar_show(context: context, message: "Sign in successful", color: Colors.green);
 
       //
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Layout_()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
 
       //
     } catch (e) {
@@ -140,32 +140,19 @@ class _Main_State extends State<Main_> {
   }
 }
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => global, //
-      child: const Main(),
-    ),
-  );
-}
-
-class Main extends StatelessWidget {
-  const Main({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: TITLE, //
-      theme: Theme_Data(),
-      debugShowCheckedModeBanner: false,
-      home: const Main_(),
-    );
-  }
-}
-
 class Main_ extends StatefulWidget {
-  const Main_({super.key});
-
+  Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      title: "Development", //
+      theme: Theme_Data(), //
+      home: Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

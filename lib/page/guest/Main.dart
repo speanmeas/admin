@@ -45,7 +45,7 @@ class _Main_State extends State<Main_> {
 
       //
       await Nationality.init();
-      print(Nationality.data);
+      // print(Nationality.data);
 
       //
     } catch (e) {
