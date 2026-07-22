@@ -9,7 +9,6 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
 import "__config__.dart";
-import "__variable__.dart";
 import "schema.r.dart" as schema_r;
 import "schema.w.dart" as schema_w;
 
@@ -44,10 +43,6 @@ class _Main_State extends State<Main_> {
       load_page(page);
 
       //
-      await Nationality.init();
-      // print(Nationality.data);
-
-      //
     } catch (e) {
       print(e.toString());
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
@@ -62,7 +57,7 @@ class _Main_State extends State<Main_> {
       setState(() {});
 
       //
-      final r = await dio.post("$PATH/read_all", data: FormData.fromMap({"offset": (p - 1) * LIMIT, "limit": LIMIT}));
+      final r = await dio.post("$PATH/read_all", data: FormData.fromMap({"key": KEY, "order": ORDER, "offset": (p - 1) * LIMIT, "limit": LIMIT}));
       final data = List<Map<String, dynamic>>.from(r.data);
 
       // keep sort + filter

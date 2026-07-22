@@ -11,51 +11,70 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
-    return ListView(
+    return Column(
       children: [
-        // Front Desk
-        list_tile_l1(name: "Front Desk", icon: Icons.table_bar_outlined),
-
-        //
-        if (user.data[user.IS_ADMIN]!["value"] == true) //
-          list_tile_l1(name: "Data", icon: Icons.data_array_outlined),
-
-        // Guest
-        if (user.data[user.IS_ADMIN]!["value"] == true || user.data[user.IS_MANAGER]!["value"] == true || user.data[user.IS_RECEPTIONIST]!["value"] == true) //
-          list_tile_l1(name: "Guest", icon: Icons.people_outline),
-
-        // Room
-        if (user.data[user.IS_ADMIN]!["value"] == true || user.data[user.IS_MANAGER]!["value"] == true) //
-          list_tile_l1(name: "Room", icon: Icons.hotel_outlined),
-
-        // User
-        if (user.data[user.IS_ADMIN]!["value"] == true || user.data[user.IS_MANAGER]!["value"] == true) //
-          list_tile_l1(name: "User", icon: Icons.person_outline),
-
-        list_tile_l1(name: "Nationality", icon: Icons.flag_outlined),
-
-        // Reports
-        ExpansionTile(
-          leading: Icon(Icons.assessment_outlined), //
-          title: Text("Reports"),
-          children: [
-            list_tile_l2(name: "Daily Report", icon: Icons.assessment_outlined),
-            list_tile_l2(name: "Weekly Report", icon: Icons.assessment_outlined),
-            list_tile_l2(name: "Monthly Report", icon: Icons.assessment_outlined),
-            list_tile_l2(name: "Yearly Report", icon: Icons.assessment_outlined),
-          ],
-        ),
-
-        // Demos
-        if (user.data[user.IS_ADMIN]!["value"] == true)
-          ExpansionTile(
-            leading: Icon(Icons.model_training_outlined), //
-            title: Text("Demos"),
-            initiallyExpanded: true,
+        Expanded(
+          child: ListView(
             children: [
-              list_tile_l2(name: "Demo 1", icon: Icons.model_training_outlined), //
+              // dashboard
+              ExpansionTile(
+                leading: Icon(Icons.dashboard_outlined), //
+                title: Text("Dashboard"),
+                initiallyExpanded: true,
+                children: [
+                  list_tile_l2(prefix: "Dashboard", name: "Front Desk", icon: Icons.table_bar_outlined), //
+                ],
+              ),
+
+              // data
+              ExpansionTile(
+                leading: Icon(Icons.storage_outlined), //
+                title: Text("Database"),
+                children: [
+                  list_tile_l2(prefix: "Database", name: "Front Desk", icon: Icons.table_bar_outlined), //
+                  // Guest
+                  if (user.data[user.IS_ADMIN]!["value"] == true || user.data[user.IS_MANAGER]!["value"] == true || user.data[user.IS_RECEPTIONIST]!["value"] == true) //
+                    list_tile_l2(prefix: "Database", name: "Guest", icon: Icons.people_outline),
+
+                  // Room
+                  if (user.data[user.IS_ADMIN]!["value"] == true || user.data[user.IS_MANAGER]!["value"] == true) //
+                    list_tile_l2(prefix: "Database", name: "Room", icon: Icons.hotel_outlined),
+
+                  // User
+                  if (user.data[user.IS_ADMIN]!["value"] == true || user.data[user.IS_MANAGER]!["value"] == true) //
+                    list_tile_l2(prefix: "Database", name: "User", icon: Icons.person_outline),
+
+                  list_tile_l2(prefix: "Database", name: "Nationality", icon: Icons.flag_outlined),
+                ],
+              ),
+
+              // Reports
+              ExpansionTile(
+                leading: Icon(Icons.assessment_outlined), //
+                title: Text("Reports"),
+                children: [
+                  list_tile_l2(prefix: "Reports", name: "Daily", icon: Icons.today_outlined),
+                  list_tile_l2(prefix: "Reports", name: "Weekly", icon: Icons.date_range_outlined),
+                  list_tile_l2(prefix: "Reports", name: "Monthly", icon: Icons.calendar_month_outlined),
+                  list_tile_l2(prefix: "Reports", name: "Yearly", icon: Icons.event_note_outlined),
+                ],
+              ),
+
+              // Demos
+              if (user.data[user.IS_ADMIN]!["value"] == true)
+                ExpansionTile(
+                  leading: Icon(Icons.model_training_outlined), //
+                  title: Text("Demos"),
+                  initiallyExpanded: true,
+                  children: [
+                    list_tile_l2(prefix: "Demos", name: "Demo 1", icon: Icons.model_training_outlined), //
+                  ],
+                ),
+
+              //
             ],
           ),
+        ),
 
         //
         list_tile_l1(name: "Setting", icon: Icons.settings_outlined),
@@ -63,7 +82,10 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  Widget list_tile_l1({required String name, required IconData icon}) {
+  Widget list_tile_l1({
+    required String name, //
+    required IconData icon,
+  }) {
     return ListTile(
       leading: Icon(icon),
       title: Text(name),
@@ -78,15 +100,19 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  Widget list_tile_l2({required String name, required IconData icon}) {
+  Widget list_tile_l2({
+    required String prefix, //
+    required String name, //
+    required IconData icon,
+  }) {
     return ListTile(
       leading: Icon(icon),
       title: Text(name),
-      selected: global.body == name,
+      selected: global.body == "$prefix - $name",
       selectedColor: Colors.blue,
       contentPadding: EdgeInsets.only(left: 40),
       onTap: () {
-        global.body = name;
+        global.body = "$prefix - $name";
         global.notifyListeners();
         if (is_mobile) Navigator.pop(context);
         setState(() {});

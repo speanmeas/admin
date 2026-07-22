@@ -7,8 +7,8 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "_setup.dart";
-import "schema.g.dart" as schema;
+import "../__config__.dart";
+import "../schema.w.dart" as schema_w;
 
 class _Main_State extends State<Main_> {
   @override
@@ -61,7 +61,7 @@ class _Main_State extends State<Main_> {
   void on_delete() async {
     //
     await dio
-        .post("$PATH/data_delete", data: FormData.fromMap({"_id": schema.data["_id"]?["value"]}))
+        .post("$PATH/delete", data: FormData.fromMap({"_id": schema_w.data[schema_w.ID]?["value"]}))
         .then((value) {
           Navigator.pop(context, true);
           snackbar_show(context: context, message: "Delete successfully", color: Colors.green);
