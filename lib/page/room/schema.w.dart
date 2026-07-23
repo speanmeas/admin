@@ -2,7 +2,6 @@ Map<String, Map<String, dynamic>> data = {
   "_id": {
     "type": "_id",
     "title": "ID",
-    "hide": true,
     "value": null
   },
   "number": {

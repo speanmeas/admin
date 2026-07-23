@@ -55,7 +55,10 @@ class _Main_State extends State<Main_> {
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                         ),
                         onChanged: (v) {
-                          e.value["value"] = v; //
+                          if (v.isEmpty)
+                            e.value["value"] = " "; //
+                          else
+                            e.value["value"] = v.trim(); //
                         },
                       ),
                     );

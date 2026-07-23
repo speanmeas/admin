@@ -148,46 +148,29 @@ class _Main_State extends State<Main_> {
   }
 
   void on_create() async {
-    // 0. debug
-    // for (var s in schema) print(s);
+    try {
+      //
+      Map<String, dynamic> payload = {};
+      for (var e in schema_w.data.entries) {
+        payload[e.key] = e.value["value"];
+      }
 
-    // 1. validate required fields
-    // for (var s in schema) {
-    //   if (s["key"] == "_id") continue; // skip id field
-    //   if (s["key"].toString().contains("note")) continue; // skip note field
-    //   if (s["value"] == null) {
-    //     snackbar_show(context: context, message: "${s["title"]} is required.", color: Colors.red);
-    //     return;
-    //   }
-    // }
+      // request
+      final r = await dio.post("$PATH/create", data: FormData.fromMap({...payload}));
 
-    // 2. validate number fields
-    // for (var s in schema) {
-    //   if (s["type"] == "number") {
-    //     if (double.tryParse(s["value"]) == null) {
-    //       snackbar_show(context: context, message: "${s["title"]} must be a number.", color: Colors.red);
-    //       return;
-    //     }
-    //   }
-    // }
+      //
+      payload["_id"] = r.data["_id"];
 
-    // prepare payload
-    Map<String, dynamic> payload = {};
-    for (var e in schema_w.data.entries) {
-      payload[e.key] = e.value["value"];
+      //
+      Navigator.pop(context, payload);
+
+      //
+      snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
+
+      //
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }
-
-    // request
-    await dio
-        .post("$PATH/create", data: FormData.fromMap({...payload}))
-        .then((r) {
-          payload["_id"] = r.data["_id"];
-          Navigator.pop(context, payload);
-          snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
-        })
-        .catchError((e) {
-          snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
-        });
   }
 }
 

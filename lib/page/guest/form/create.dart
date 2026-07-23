@@ -11,8 +11,9 @@ import "package:speanmeas/widget/snackbar_show.dart";
 
 import "../__config__.dart";
 import "../schema.w.dart" as schema_w;
-import "../widget/guest_gender.dart" as guest_gender;
-import "../widget/guest_nationality.dart" as guest_nationality;
+import "../widget/select_gender.dart" as select_gender;
+import "../widget/search_nationality.dart" as search_nation;
+import "package:speanmeas/page/nationality/schema.r.dart" as nation_schema_r;
 
 class _Main_State extends State<Main_> {
   @override
@@ -40,8 +41,8 @@ class _Main_State extends State<Main_> {
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: guest_gender.Main_(
-                        initialValue: e.value["value"], //
+                      child: select_gender.Main_(
+                        initialValue: null, //
                         onChanged: (v) {
                           e.value["value"] = v;
                         },
@@ -49,18 +50,14 @@ class _Main_State extends State<Main_> {
                     );
                   }
 
-                  // todo: fix this for select nationality set id to e.value["value"]
                   if (e.key == schema_w.NATIONALITY_LINK) {
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: guest_nationality.Main_(
-                        initialValue: e.value["value"], //
+                      child: search_nation.Main_(
+                        initialValue: "Cambodia", //
                         onChanged: (v) {
-                          e.value["value"] = v;
-                        },
-                        onCreate: () {
-                          print("onCreate");
+                          e.value["value"] = v[nation_schema_r.ID];
                         },
                       ),
                     );
@@ -179,46 +176,29 @@ class _Main_State extends State<Main_> {
   }
 
   void on_create() async {
-    // 0. debug
-    // for (var s in schema) print(s);
+    try {
+      //
+      Map<String, dynamic> payload = {};
+      for (var e in schema_w.data.entries) {
+        payload[e.key] = e.value["value"];
+      }
 
-    // 1. validate required fields
-    // for (var s in schema) {
-    //   if (s["key"] == "_id") continue; // skip id field
-    //   if (s["key"].toString().contains("note")) continue; // skip note field
-    //   if (s["value"] == null) {
-    //     snackbar_show(context: context, message: "${s["title"]} is required.", color: Colors.red);
-    //     return;
-    //   }
-    // }
+      // request
+      final r = await dio.post("$PATH/create", data: FormData.fromMap({...payload}));
 
-    // 2. validate number fields
-    // for (var s in schema) {
-    //   if (s["type"] == "number") {
-    //     if (double.tryParse(s["value"]) == null) {
-    //       snackbar_show(context: context, message: "${s["title"]} must be a number.", color: Colors.red);
-    //       return;
-    //     }
-    //   }
-    // }
+      //
+      payload["_id"] = r.data["_id"];
 
-    // prepare payload
-    Map<String, dynamic> payload = {};
-    for (var e in schema_w.data.entries) {
-      payload[e.key] = e.value["value"];
+      //
+      Navigator.pop(context, payload);
+
+      //
+      snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
+
+      //
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }
-
-    // request
-    await dio
-        .post("$PATH/create", data: FormData.fromMap({...payload}))
-        .then((r) {
-          payload["_id"] = r.data["_id"];
-          Navigator.pop(context, payload);
-          snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);
-        })
-        .catchError((e) {
-          snackbar_show(context: context, message: "$HEADER create failed.", color: Colors.red);
-        });
   }
 }
 

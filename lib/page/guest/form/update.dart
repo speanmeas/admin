@@ -13,6 +13,9 @@ import "package:speanmeas/widget/snackbar_show.dart";
 
 import "../__config__.dart";
 import "../schema.w.dart" as schema_w;
+import "../widget/select_gender.dart" as select_gender;
+import "../widget/search_nationality.dart" as search_nation;
+import "package:speanmeas/page/nationality/schema.r.dart" as nation_schema_r;
 
 class _Main_State extends State<Main_> {
   @override
@@ -36,6 +39,32 @@ class _Main_State extends State<Main_> {
             children: [
               for (var e in schema_w.data.entries)
                 (() {
+                  if (e.key == schema_w.GENDER) {
+                    return Container(
+                      width: 600,
+                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      child: select_gender.Main_(
+                        initialValue: e.value["value"], //
+                        onChanged: (v) {
+                          e.value["value"] = v;
+                        },
+                      ),
+                    );
+                  }
+
+                  if (e.key == schema_w.NATIONALITY_LINK) {
+                    return Container(
+                      width: 600,
+                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      child: search_nation.Main_(
+                        initialValue: e.value["value"] ?? "Cambodia", //
+                        onChanged: (v) {
+                          e.value["value"] = v[nation_schema_r.ID];
+                        },
+                      ),
+                    );
+                  }
+
                   //
                   if (e.value["type"] == "string") {
                     String value = "";
@@ -55,7 +84,10 @@ class _Main_State extends State<Main_> {
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                         ),
                         onChanged: (v) {
-                          e.value["value"] = v; //
+                          if (v.isEmpty)
+                            e.value["value"] = " "; //
+                          else
+                            e.value["value"] = v.trim(); //
                         },
                       ),
                     );
@@ -173,30 +205,6 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update() async {
-    // 0. debug
-    // for (var s in schema) print(s);
-
-    // 1. validate required fields
-    // for (var s in schema) {
-    //   if (s["key"] == "_id") continue; // skip id field
-    //   if (s["key"].toString().contains("note")) continue; // skip note field
-    //   if (s["value"] == null) {
-    //     snackbar_show(context: context, message: "${s["title"]} is required.", color: Colors.red);
-    //     return;
-    //   }
-    // }
-
-    // 2. validate number fields
-    // for (var s in schema) {
-    //   if (s["type"] == "number") {
-    //     final tmp = double.tryParse(s["value"].toString());
-    //     if (tmp == null) {
-    //       snackbar_show(context: context, message: "${s["title"]} must be a number.", color: Colors.red);
-    //       return;
-    //     }
-    //   }
-    // }
-
     // prepare payload
     Map<String, dynamic> payload = {};
     for (var e in schema_w.data.entries) {
