@@ -13,10 +13,10 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/widget/show_data.dart" as show_data;
-import "package:speanmeas/page/room/schema.g.dart" as room_schema;
+import "package:speanmeas/page/room/schema.r.dart" as room_schema;
 
 import "../__config__.dart";
-import "../schema.g.dart" as schema;
+import "../schema.w.dart" as schema;
 
 class _Main_State extends State<Main_> {
   @override
@@ -80,13 +80,13 @@ class _Main_State extends State<Main_> {
       );
 
       // update room data
-      await dio.post(
-        "/room/data_update", //
-        data: FormData.fromMap({
-          "_id": output[schema.ROOM_ID], //
-          room_schema.ROOM_STATUS: "Available",
-        }),
-      );
+      // await dio.post(
+      //   "/room/data_update", //
+      //   data: FormData.fromMap({
+      //     "_id": output[schema.ROOM_ID], //
+      //     room_schema.ROOM_STATUS: "Available",
+      //   }),
+      // );
 
       // close context
       Navigator.pop(context);

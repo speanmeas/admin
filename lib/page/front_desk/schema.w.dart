@@ -4,6 +4,16 @@ Map<String, Map<String, dynamic>> data = {
     "title": "ID",
     "value": null
   },
+  "room_link": {
+    "type": "link",
+    "title": "Room Link",
+    "value": null
+  },
+  "guest_link": {
+    "type": "link",
+    "title": "Guest Link",
+    "value": null
+  },
   "stay_day": {
     "type": "number",
     "title": "Stay (Days)",
@@ -129,16 +139,6 @@ Map<String, Map<String, dynamic>> data = {
     "title": "Note",
     "value": null
   },
-  "room_link": {
-    "type": "link",
-    "title": "Room Link",
-    "value": null
-  },
-  "guest_link": {
-    "type": "link",
-    "title": "Guest Link",
-    "value": null
-  },
   "check_in_by_link": {
     "type": "link",
     "title": "Check-in By Link",
@@ -147,6 +147,11 @@ Map<String, Map<String, dynamic>> data = {
   "check_in_at": {
     "type": "date-time",
     "title": "Check-in At",
+    "value": null
+  },
+  "check_in_note": {
+    "type": "string",
+    "title": "Check-in Note",
     "value": null
   },
   "check_out_by_link": {
@@ -159,6 +164,11 @@ Map<String, Map<String, dynamic>> data = {
     "title": "Check-out At",
     "value": null
   },
+  "check_out_note": {
+    "type": "string",
+    "title": "Check-out Note",
+    "value": null
+  },
   "room_paid_by_link": {
     "type": "link",
     "title": "Room Payment By Link",
@@ -167,6 +177,11 @@ Map<String, Map<String, dynamic>> data = {
   "room_paid_at": {
     "type": "date-time",
     "title": "Room Payment At",
+    "value": null
+  },
+  "room_paid_note": {
+    "type": "string",
+    "title": "Room Payment Note",
     "value": null
   },
   "revenue_paid_by_link": {
@@ -179,6 +194,11 @@ Map<String, Map<String, dynamic>> data = {
     "title": "Revenue Payment At",
     "value": null
   },
+  "revenue_paid_note": {
+    "type": "string",
+    "title": "Revenue Payment Note",
+    "value": null
+  },
   "clean_by_link": {
     "type": "link",
     "title": "Clean By Link",
@@ -188,10 +208,17 @@ Map<String, Map<String, dynamic>> data = {
     "type": "date-time",
     "title": "Clean At",
     "value": null
+  },
+  "clean_note": {
+    "type": "string",
+    "title": "Clean Note",
+    "value": null
   }
 };
 
 final ID = "_id";
+final ROOM_LINK = "room_link";
+final GUEST_LINK = "guest_link";
 final STAY_DAY = "stay_day";
 final STAY_HOUR = "stay_hour";
 final NUMBER_OF_GUESTS = "number_of_guests";
@@ -217,18 +244,21 @@ final REVENUE_RETURN_KHR = "revenue_return_khr";
 final REVENUE_RETURN_TOTAL_USD = "revenue_return_total_usd";
 final REVENUE_BALANCE_TOTAL_USD = "revenue_balance_total_usd";
 final NOTE = "note";
-final ROOM_LINK = "room_link";
-final GUEST_LINK = "guest_link";
 final CHECK_IN_BY_LINK = "check_in_by_link";
 final CHECK_IN_AT = "check_in_at";
+final CHECK_IN_NOTE = "check_in_note";
 final CHECK_OUT_BY_LINK = "check_out_by_link";
 final CHECK_OUT_AT = "check_out_at";
+final CHECK_OUT_NOTE = "check_out_note";
 final ROOM_PAID_BY_LINK = "room_paid_by_link";
 final ROOM_PAID_AT = "room_paid_at";
+final ROOM_PAID_NOTE = "room_paid_note";
 final REVENUE_PAID_BY_LINK = "revenue_paid_by_link";
 final REVENUE_PAID_AT = "revenue_paid_at";
+final REVENUE_PAID_NOTE = "revenue_paid_note";
 final CLEAN_BY_LINK = "clean_by_link";
 final CLEAN_AT = "clean_at";
+final CLEAN_NOTE = "clean_note";
 
 
 void clear() { for (var k in data.keys) data[k]!["value"] = null; }

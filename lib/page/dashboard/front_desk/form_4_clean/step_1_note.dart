@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import 'package:speanmeas/environment.dart';
-import 'package:speanmeas/global.dart';
+import 'package:speanmeas/__config__.dart';
+import 'package:speanmeas/__variable__.dart';
 import 'package:speanmeas/theme/theme_data.dart';
 import 'package:speanmeas/utility/dio.dart';
 import 'package:speanmeas/widget/datetime_picker.dart';
 import 'package:speanmeas/widget/snackbar_show.dart';
-import 'package:speanmeas/page/auth/user.g.dart' as user;
+import 'package:speanmeas/page/auth/schema.r.dart' as user;
 
 import '../__config__.dart';
-import '../schema.g.dart' as schema;
+import '../schema.w.dart' as schema;
 import 'step_2_summary.dart' as step_2;
 import "widget/input_note.dart" as input_note;
 
@@ -74,10 +74,10 @@ class _Main_State extends State<Main_> {
 
       // timestamp
       schema.data[schema.CLEAN_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
-      if (user.data[user.ID]!["value"] != null) //
-        schema.data[schema.CLEAN_BY_ID]?["value"] = user.data[user.ID]!["value"];
-      if (user.data[user.USER_FULL_NAME]!["value"] != null) //
-        schema.data[schema.CLEAN_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
+      // if (user.data[user.ID]!["value"] != null) //
+      //   schema.data[schema.CLEAN_BY_ID]?["value"] = user.data[user.ID]!["value"];
+      // if (user.data[user.USER_FULL_NAME]!["value"] != null) //
+      //   schema.data[schema.CLEAN_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
 
       // navigate to next screen
       Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));

@@ -9,7 +9,7 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "schema.w.dart" as user;
+import "schema.w.dart" as user_w;
 
 class _Main_State extends State<Main_> {
   bool is_password_visible = false;
@@ -132,10 +132,10 @@ class _Main_State extends State<Main_> {
       if (password != confirm_password) throw "Passwords do not match.";
 
       //
-      final r = await dio.post("/user/data_update", data: FormData.fromMap({"_id": user.data[user.ID]!["value"], user.PASSWORD: password}));
+      final r = await dio.post("/user/data_update", data: FormData.fromMap({"_id": user_w.data[user_w.ID]!["value"], user_w.PASSWORD: password}));
 
       //
-      user.data[user.PASSWORD]!["value"] = r.data[user.PASSWORD];
+      user_w.data[user_w.PASSWORD]!["value"] = r.data[user_w.PASSWORD];
 
       //
       snackbar_show(context: context, message: "Update successful.", color: Colors.green);

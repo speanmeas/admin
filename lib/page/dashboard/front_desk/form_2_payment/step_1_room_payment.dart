@@ -10,10 +10,10 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
-import "package:speanmeas/page/auth/user.g.dart" as user;
+import "package:speanmeas/page/auth/schema.r.dart" as user;
 
 import "../__config__.dart";
-import "../schema.g.dart" as schema;
+import "../schema.w.dart" as schema;
 
 import "step_2_summary.dart" as step_2;
 
@@ -238,9 +238,9 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: input_note.Main_(
-                  initialValue: schema.data[schema.ROOM_PAYMENT_NOTE]?["value"]?.toString(),
+                  initialValue: "XXXXX",
                   onChanged: (v) {
-                    schema.data[schema.ROOM_PAYMENT_NOTE]?["value"] = v;
+                    // schema.data[schema.ROOM_PAYMENT_NOTE]?["value"] = v;
                     setState(() {});
                   },
                 ),
@@ -328,12 +328,12 @@ class _Main_State extends State<Main_> {
       schema.data[schema.ROOM_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
       schema.data[schema.ROOM_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
       schema.data[schema.ROOM_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
-      schema.data[schema.ROOM_PAYMENT_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
+      // schema.data[schema.ROOM_PAYMENT_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 
-      if (user.data[user.ID]!["value"] != null) //
-        schema.data[schema.ROOM_PAYMENT_BY_ID]?["value"] = user.data[user.ID]!["value"];
-      if (user.data[user.USER_FULL_NAME]!["value"] != null) //
-        schema.data[schema.ROOM_PAYMENT_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
+      // if (user.data[user.ID]!["value"] != null) //
+      //   schema.data[schema.ROOM_PAYMENT_BY_ID]?["value"] = user.data[user.ID]!["value"];
+      // if (user.data[user.USER_FULL_NAME]!["value"] != null) //
+      //   schema.data[schema.ROOM_PAYMENT_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
 
       Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
       //

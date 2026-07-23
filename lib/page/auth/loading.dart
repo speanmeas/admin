@@ -13,7 +13,7 @@ import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/layout/layout.dart" as layout;
 
 import "sign_in.dart" as sign_in;
-import "schema.w.dart" as schema_w;
+import "schema.r.dart" as user_r;
 
 class _Main_State extends State<Main_> {
   @override
@@ -52,7 +52,7 @@ class _Main_State extends State<Main_> {
       final r = await dio.post("/auth/access_token", data: FormData.fromMap({"access_token": access_token}));
 
       //
-      for (var e in schema_w.data.entries) schema_w.data[e.key]!["value"] = r.data[e.key];
+      for (var e in user_r.data.entries) user_r.data[e.key]!["value"] = r.data[e.key];
 
       //
       dio.options.headers["Authorization"] = "Bearer $access_token";

@@ -13,7 +13,6 @@ import "../schema.w.dart" as schema_w;
 class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
-    final screen_height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -31,7 +30,7 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              // confirmation
+              // * បញ្ជាក់
               Container(
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -39,7 +38,7 @@ class _Main_State extends State<Main_> {
                 child: Text("Confirm to delete?", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ),
 
-              // button delete
+              // * ប៊ូតុង Delete
               Container(
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: OutlinedButton.icon(
@@ -59,16 +58,20 @@ class _Main_State extends State<Main_> {
   }
 
   void on_delete() async {
-    //
-    await dio
-        .post("$PATH/delete", data: FormData.fromMap({"_id": schema_w.data[schema_w.ID]?["value"]}))
-        .then((value) {
-          Navigator.pop(context, true);
-          snackbar_show(context: context, message: "Delete successfully", color: Colors.green);
-        })
-        .catchError((e) {
-          snackbar_show(context: context, message: "Delete failed", color: Colors.red);
-        });
+    try {
+      // * ធ្វើការស្នើសុំទៅកាន់ Server ដើម្បីលុបទិន្នន័យ
+      final r = await dio.post("$PATH/delete", data: FormData.fromMap({"_id": schema_w.data[schema_w.ID]?["value"]}));
+
+      // * បង្ហាញសារថា លុបទិន្នន័យដោយជោគជ័យ
+      snackbar_show(context: context, message: "Delete successfully", color: Colors.green);
+
+      // * បិទ Form និងបញ្ជូនតម្លៃ true ទៅកាន់ទំព័រមុន
+      Navigator.pop(context, true);
+
+      //
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 }
 

@@ -7,7 +7,7 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/show_data.dart" as show_data;
 
 import "../__config__.dart";
-import "../schema.w.dart" as schema_w;
+import "../schema.r.dart" as schema_r;
 
 class _Main_State extends State<Main_> {
   @override
@@ -26,8 +26,7 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              // TODO: គួរតែប្រើ schema_w ឬ schema_r ដើម្បីបង្ហាញទិន្នន័យ?
-              for (var e in schema_w.data.entries)
+              for (var e in schema_r.data.entries)
                 (() {
                   if (e.value["type"] == "string") {
                     String value = "";

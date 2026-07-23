@@ -2,31 +2,26 @@ import "package:dio/dio.dart";
 import "package:intl/intl.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
-// import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
-import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/__config__.dart";
+import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-// import "package:speanmeas/page/guest/form_create.dart" as guest_create;
-
 import "../__config__.dart";
 import "../schema.w.dart" as schema_w;
 import "widget/search_guest.dart" as search_guest;
 
-import "package:speanmeas/page/guest/schema.r.dart" as guest_schema_r;
+import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
 
 import "package:speanmeas/widget/show_data.dart" as show_data;
 
-// import "step_2_stay.dart" as step_2;
+import "step_2_stay.dart" as step_2;
 
 class _Main_State extends State<Main_> {
-  Map<String, dynamic> data = {};
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,73 +58,81 @@ class _Main_State extends State<Main_> {
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: search_guest.Main_(
                   onChanged: (v) {
-                    data = v;
+                    for (var e in g_schema_r.data.entries) //
+                      if (v[e.key] != null) //
+                        g_schema_r.data[e.key]?["value"] = v[e.key];
+
                     setState(() {});
                   },
                 ),
               ),
 
-              // guest name
-              Container(
-                width: 600,
-                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: show_data.Main_(
-                  title: "Name", //
-                  value: data[guest_schema_r.FULL_NAME]?.toString() ?? "",
-                ),
-              ),
+              for (var e in g_schema_r.data.entries)
+                (() {
+                  if (e.value["type"] == "string") {
+                    String value = "";
+                    if (e.value["value"] != null) value = e.value["value"].toString();
+                    return Container(
+                      width: 600,
+                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      child: show_data.Main_(
+                        title: e.value["title"], //
+                        value: value,
+                        max_lines: e.key.contains("note") ? 4 : 1,
+                      ),
+                    );
+                  }
 
-              // guest phone number
-              Container(
-                width: 600,
-                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: show_data.Main_(
-                  title: "Phone Number", //
-                  value: data[guest_schema_r.PHONE_NUMBER]?.toString() ?? "",
-                ),
-              ),
+                  //
+                  if (e.value["type"] == "number") {
+                    String value = "";
+                    if (e.value["value"] != null) value = e.value["value"].toString();
+                    return Container(
+                      width: 600,
+                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      child: show_data.Main_(
+                        title: e.value["title"], //
+                        value: value,
+                      ),
+                    );
+                  }
 
-              // guest gender
-              Container(
-                width: 600,
-                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: show_data.Main_(
-                  title: "Gender", //
-                  value: data[guest_schema_r.GENDER]?.toString() ?? "",
-                ),
-              ),
+                  //
+                  if (e.value["type"] == "date-time") {
+                    String value = "";
+                    if (e.value["value"] != null) {
+                      final dt = e.value["value"];
+                      value = DateFormat(DATE_FORMAT).format(dt);
+                    }
+                    return Container(
+                      width: 600,
+                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      child: show_data.Main_(
+                        title: e.value["title"], //
+                        value: value,
+                      ),
+                    );
+                  }
 
-              // guest nationality
-              Container(
-                width: 600,
-                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: show_data.Main_(
-                  title: "Nationality", //
-                  value: data[guest_schema_r.NATIONALITY_NAME]?.toString() ?? "",
-                ),
-              ),
-
-              // guest note
-              Container(
-                width: 600,
-                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: show_data.Main_(
-                  title: "Note", //
-                  value: data[guest_schema_r.NOTE]?.toString() ?? "",
-                  max_lines: 4,
-                ),
-              ),
-
-              // button add
-              Container(
-                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: OutlinedButton.icon(
-                  icon: Icon(Icons.add),
-                  label: Text("Create New"),
-                  style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                  onPressed: on_add_new,
-                ),
-              ),
+                  //
+                  if (e.value["type"] == "boolean") {
+                    String value = "";
+                    if (e.value["value"] != null) {
+                      if (e.value["value"] == true) value = "Yes";
+                      if (e.value["value"] == false) value = "No";
+                    }
+                    return Container(
+                      width: 600,
+                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      child: show_data.Main_(
+                        title: e.value["title"], //
+                        value: value,
+                      ),
+                    );
+                  }
+                  //
+                  return SizedBox();
+                })(),
             ],
           ),
         ),
@@ -140,26 +143,10 @@ class _Main_State extends State<Main_> {
   void on_next() async {
     try {
       //
-      // Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
-    } catch (e) {
-      snackbar_show(context: context, message: e.toString(), color: Colors.red);
-    }
-  }
 
-  void on_add_new() async {
-    try {
-      //
-      // final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => guest_create.Main_()));
-      // if (value == null) return;
+      schema_w.data[schema_w.GUEST_LINK]?["value"] = g_schema_r.data[g_schema_r.ID]?["value"];
 
-      // schema_w.data[schema.GUEST_ID]?["value"] = value["_id"];
-      // for (var e in value.entries) {
-      //   if (e.key == "_id") continue;
-      //   schema_w.data[e.key]?["value"] = e.value;
-      // }
-
-      // //
-      // setState(() {});
+      Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
 
       //
     } catch (e) {

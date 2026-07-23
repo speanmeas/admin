@@ -359,7 +359,7 @@ class _Main_State extends State<Main_> {
   void on_read() async {
     try {
       //
-      schema_w.clear();
+      schema_r.clear();
 
       //
       final row = state_manager?.currentRow;

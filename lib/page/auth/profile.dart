@@ -16,7 +16,8 @@ import "edit_phone_number.dart" as update_phone_number;
 import "edit_username.dart" as update_username;
 import "edit_password.dart" as update_password;
 
-import "schema.w.dart" as user;
+import "schema.w.dart" as user_w;
+import "schema.r.dart" as user_r;
 import "sign_in.dart" as sign_in;
 
 class _Main_State extends State<Main_> {
@@ -55,10 +56,10 @@ class _Main_State extends State<Main_> {
                     (() {
                       var style = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue);
 
-                      if (user.data[user.IS_ADMIN]!["value"] == true) return Text("Administrator", style: style);
-                      if (user.data[user.IS_MANAGER]!["value"] == true) return Text("Manager", style: style);
-                      if (user.data[user.IS_RECEPTIONIST]!["value"] == true) return Text("Receptionist", style: style);
-                      if (user.data[user.IS_HOUSEKEEPER]!["value"] == true) return Text("Housekeeper", style: style);
+                      if (user_r.data[user_r.IS_ADMIN]!["value"] == true) return Text("Administrator", style: style);
+                      if (user_r.data[user_r.IS_MANAGER]!["value"] == true) return Text("Manager", style: style);
+                      if (user_r.data[user_r.IS_RECEPTIONIST]!["value"] == true) return Text("Receptionist", style: style);
+                      if (user_r.data[user_r.IS_HOUSEKEEPER]!["value"] == true) return Text("Housekeeper", style: style);
 
                       return const SizedBox.shrink();
                     })(),
@@ -69,8 +70,8 @@ class _Main_State extends State<Main_> {
               // textfield full name
               (() {
                 String value = "";
-                if (user.data[user.FULL_NAME]!["value"] != null) {
-                  value = user.data[user.FULL_NAME]!["value"].toString().trim();
+                if (user_r.data[user_r.FULL_NAME]!["value"] != null) {
+                  value = user_r.data[user_r.FULL_NAME]!["value"].toString().trim();
                 }
                 return Container(
                   width: 600,
@@ -87,6 +88,8 @@ class _Main_State extends State<Main_> {
                         padding: EdgeInsets.only(right: 4),
                         child: IconButton(
                           onPressed: () async {
+                            user_w.clear();
+                            user_w.data[user_w.FULL_NAME]!["value"] = user_r.data[user_r.FULL_NAME]!["value"];
                             await Navigator.push(context, MaterialPageRoute(builder: (_) => update_full_name.Main_()));
                             setState(() {});
                           },
@@ -101,8 +104,8 @@ class _Main_State extends State<Main_> {
               // textfield phone
               (() {
                 String value = "";
-                if (user.data[user.PHONE_NUMBER]!["value"] != null) {
-                  value = user.data[user.PHONE_NUMBER]!["value"].toString().trim();
+                if (user_r.data[user_r.PHONE_NUMBER]!["value"] != null) {
+                  value = user_r.data[user_r.PHONE_NUMBER]!["value"].toString().trim();
                 }
                 return Container(
                   width: 600,
@@ -119,6 +122,8 @@ class _Main_State extends State<Main_> {
                         padding: EdgeInsets.only(right: 4),
                         child: IconButton(
                           onPressed: () async {
+                            user_w.clear();
+                            user_w.data[user_w.PHONE_NUMBER]!["value"] = user_r.data[user_r.PHONE_NUMBER]!["value"];
                             await Navigator.push(context, MaterialPageRoute(builder: (_) => update_phone_number.Main_()));
                             setState(() {});
                           },
@@ -133,8 +138,8 @@ class _Main_State extends State<Main_> {
               // textfield username
               (() {
                 String value = "";
-                if (user.data[user.USERNAME]!["value"] != null) {
-                  value = user.data[user.USERNAME]!["value"].toString().trim();
+                if (user_r.data[user_r.USERNAME]!["value"] != null) {
+                  value = user_r.data[user_r.USERNAME]!["value"].toString().trim();
                 }
                 return Container(
                   width: 600,
@@ -151,6 +156,8 @@ class _Main_State extends State<Main_> {
                         padding: EdgeInsets.only(right: 4),
                         child: IconButton(
                           onPressed: () async {
+                            user_w.clear();
+                            user_w.data[user_w.USERNAME]!["value"] = user_r.data[user_r.USERNAME]!["value"];
                             await Navigator.push(context, MaterialPageRoute(builder: (_) => update_username.Main_()));
                             setState(() {});
                           },
@@ -179,7 +186,10 @@ class _Main_State extends State<Main_> {
                         padding: EdgeInsets.only(right: 4),
                         child: IconButton(
                           onPressed: () async {
+                            user_w.clear();
+                            user_w.data[user_w.PASSWORD]!["value"] = user_r.data[user_r.PASSWORD]!["value"];
                             await Navigator.push(context, MaterialPageRoute(builder: (_) => update_password.Main_()));
+                            setState(() {});
                           },
                           icon: Icon(Icons.edit),
                         ),
@@ -213,7 +223,7 @@ class _Main_State extends State<Main_> {
       await secure_storage.delete(key: "access_token");
 
       //
-      user.clear();
+      user_r.clear();
 
       // goto to sign in
       Navigator.pop(context);

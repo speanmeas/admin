@@ -9,10 +9,10 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
-import "package:speanmeas/page/auth/user.g.dart" as user;
+import "package:speanmeas/page/auth/schema.r.dart" as user;
 
 import "../__config__.dart";
-import "../schema.g.dart" as schema;
+import "../schema.w.dart" as schema;
 
 import "step_2_summary.dart" as step_2;
 
@@ -343,10 +343,10 @@ class _Main_State extends State<Main_> {
 
       // timestamp
       schema.data[schema.CHECK_OUT_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
-      if (user.data[user.ID]!["value"] != null) //
-        schema.data[schema.CHECK_OUT_BY_ID]?["value"] = user.data[user.ID]!["value"];
-      if (user.data[user.USER_FULL_NAME]!["value"] != null) //
-        schema.data[schema.CHECK_OUT_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
+      // if (user.data[user.ID]!["value"] != null) //
+      //   schema.data[schema.CHECK_OUT_BY_ID]?["value"] = user.data[user.ID]!["value"];
+      // if (user.data[user.USER_FULL_NAME]!["value"] != null) //
+      //   schema.data[schema.CHECK_OUT_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
 
       //
       Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));

@@ -359,7 +359,7 @@ class _Main_State extends State<Main_> {
   void on_read() async {
     try {
       //
-      schema_w.clear();
+      schema_r.clear();
 
       //
       final row = state_manager?.currentRow;
@@ -369,7 +369,7 @@ class _Main_State extends State<Main_> {
       }
 
       //
-      for (var e in schema_w.data.entries) {
+      for (var e in schema_r.data.entries) {
         e.value["value"] = cell_to_data(data: row.cells[e.key]?.value, type: e.value["type"]);
       }
 

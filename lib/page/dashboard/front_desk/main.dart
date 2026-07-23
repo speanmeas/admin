@@ -13,7 +13,9 @@ import "package:speanmeas/widget/snackbar_show.dart";
 
 import "__config__.dart";
 import "schema.w.dart" as schema_w;
-import "package:speanmeas/page/room/schema.w.dart" as room_schema_w;
+
+import "package:speanmeas/page/room/schema.r.dart" as r_schema_r;
+import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
 
 import "form_1_check_in/step_1_guest.dart" as check_in;
 // import "form_2_payment/step_1_room_payment.dart" as payment;
@@ -36,18 +38,20 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       //
-      final r = await dio.post("/room/read_all");
+      final r = await dio.post(
+        "/room/read_all", //
+        data: FormData.fromMap({
+          "key": r_schema_r.NUMBER, //
+          "order": 1, //
+          "limit": 1000,
+        }),
+      );
 
       //
       rooms = List<Map<String, dynamic>>.from(r.data);
-      // print(rooms);
 
       //
-      rooms.sort((a, b) => "${a[room_schema_w.NUMBER]}".compareTo("${b[room_schema_w.NUMBER]}"));
-
       setState(() {});
-
-      //
     } catch (e) {
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }
@@ -92,12 +96,11 @@ class _Main_State extends State<Main_> {
                         children: [
                           for (var r in rooms)
                             (() {
-                              if (r[room_schema_w.STATUS] == "Available")
+                              if (r[r_schema_r.STATUS] == "Available")
                                 return button_icon_menu.Main_(
                                   color: Colors.green,
                                   icon: Icons.hotel_outlined,
-                                  text: r[room_schema_w.NUMBER],
-                                  // text: "Lorem Ipsum Dolor Sit Amet",
+                                  text: r[r_schema_r.NUMBER],
                                   menuChildren: [
                                     MenuItemButton(
                                       leadingIcon: Icon(Icons.info_outline),
@@ -160,11 +163,11 @@ class _Main_State extends State<Main_> {
                         children: [
                           for (var r in rooms)
                             (() {
-                              if (r[room_schema_w.STATUS] == "Pending Pay")
+                              if (r[r_schema_r.STATUS] == "Pending Pay")
                                 return button_icon_menu.Main_(
                                   color: Colors.orange,
                                   icon: Icons.hotel_outlined,
-                                  text: r[room_schema_w.NUMBER],
+                                  text: r[r_schema_r.NUMBER],
                                   menuChildren: [
                                     MenuItemButton(
                                       leadingIcon: Icon(Icons.info_outline),
@@ -237,11 +240,11 @@ class _Main_State extends State<Main_> {
                         children: [
                           for (var r in rooms)
                             (() {
-                              if (r[room_schema_w.STATUS] == "Pending Leave")
+                              if (r[r_schema_r.STATUS] == "Pending Leave")
                                 return button_icon_menu.Main_(
                                   color: Colors.blue,
                                   icon: Icons.hotel_outlined,
-                                  text: r[room_schema_w.NUMBER],
+                                  text: r[r_schema_r.NUMBER],
                                   menuChildren: [
                                     MenuItemButton(
                                       leadingIcon: Icon(Icons.info_outline),
@@ -319,11 +322,11 @@ class _Main_State extends State<Main_> {
                         children: [
                           for (var r in rooms)
                             (() {
-                              if (r[room_schema_w.STATUS] == "Pending Clean")
+                              if (r[r_schema_r.STATUS] == "Pending Clean")
                                 return button_icon_menu.Main_(
                                   color: Colors.black,
                                   icon: Icons.hotel_outlined,
-                                  text: r[room_schema_w.NUMBER],
+                                  text: r[r_schema_r.NUMBER],
                                   menuChildren: [
                                     MenuItemButton(
                                       leadingIcon: Icon(Icons.info_outline),
@@ -357,16 +360,14 @@ class _Main_State extends State<Main_> {
 
   void on_check_in(r) async {
     try {
-      // print(r);
       //
       schema_w.clear();
+      g_schema_r.clear();
+      r_schema_r.clear();
 
       schema_w.data[schema_w.ROOM_LINK]?["value"] = r["_id"];
 
-      // for (var e in r.entries) {
-      //   if (e.key == "_id") continue;
-      //   schema_w.data[e.key]?["value"] = e.value;
-      // }
+      for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
 
       final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_in.Main_()));
 

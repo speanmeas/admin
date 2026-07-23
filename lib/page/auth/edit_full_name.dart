@@ -9,10 +9,10 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "schema.w.dart" as user;
+import "schema.w.dart" as user_w;
 
 class _Main_State extends State<Main_> {
-  String full_name = user.data[user.FULL_NAME]!["value"] ?? "";
+  String full_name = user_w.data[user_w.FULL_NAME]!["value"] ?? "";
 
   @override
   Widget build(BuildContext context) {
@@ -77,10 +77,10 @@ class _Main_State extends State<Main_> {
       if (full_name.trim().isEmpty) throw "Full name cannot be empty.";
 
       //
-      final r = await dio.post("/user/update", data: FormData.fromMap({"_id": user.data[user.ID]!["value"], user.FULL_NAME: full_name}));
+      final r = await dio.post("/user/update", data: FormData.fromMap({"_id": user_w.data[user_w.ID]!["value"], user_w.FULL_NAME: full_name}));
 
       //
-      user.data[user.FULL_NAME]!["value"] = r.data[user.FULL_NAME];
+      user_w.data[user_w.FULL_NAME]!["value"] = r.data[user_w.FULL_NAME];
 
       //
       snackbar_show(context: context, message: "Update successful.", color: Colors.green);

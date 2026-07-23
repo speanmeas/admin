@@ -12,10 +12,13 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "package:speanmeas/page/auth/user.g.dart" as user;
+// import "package:speanmeas/page/auth/user.g.dart" as user;
 
 import "../__config__.dart";
-import "../schema.g.dart" as schema;
+import "../schema.w.dart" as schema_w;
+import "package:speanmeas/page/room/schema.r.dart" as r_schema_r;
+import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
+import "package:speanmeas/page/auth/schema.r.dart" as user_r;
 
 import "step_3_room_payment.dart" as step_3;
 
@@ -63,9 +66,9 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: select_number_of_guest.Main_(
-                  initialValue: schema.data[schema.STAY_NUMBER_OF_GUESTS]?["value"]?.toInt(),
+                  initialValue: schema_w.data[schema_w.NUMBER_OF_GUESTS]?["value"]?.toInt(),
                   onChanged: (v) {
-                    schema.data[schema.STAY_NUMBER_OF_GUESTS]?["value"] = v;
+                    schema_w.data[schema_w.NUMBER_OF_GUESTS]?["value"] = v;
                     setState(() {});
                   },
                 ),
@@ -76,9 +79,9 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: select_stay_duration_days.Main_(
-                  initialValue: schema.data[schema.STAY_DURATION_DAY]?["value"]?.toInt(),
+                  initialValue: schema_w.data[schema_w.STAY_DAY]?["value"]?.toInt(),
                   onChanged: (v) {
-                    schema.data[schema.STAY_DURATION_DAY]?["value"] = v;
+                    schema_w.data[schema_w.STAY_DAY]?["value"] = v;
                     setState(() {});
                   },
                 ),
@@ -89,9 +92,9 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: select_stay_duration_hours.Main_(
-                  initialValue: schema.data[schema.STAY_DURATION_HOUR]?["value"]?.toInt(),
+                  initialValue: schema_w.data[schema_w.STAY_HOUR]?["value"]?.toInt(),
                   onChanged: (v) {
-                    schema.data[schema.STAY_DURATION_HOUR]?["value"] = v;
+                    schema_w.data[schema_w.STAY_HOUR]?["value"] = v;
                     setState(() {});
                   },
                 ),
@@ -101,9 +104,9 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: input_note.Main_(
-                  initialValue: schema.data[schema.CHECK_IN_NOTE]?["value"]?.toString(),
+                  initialValue: schema_w.data[schema_w.CHECK_IN_NOTE]?["value"]?.toString(),
                   onChanged: (v) {
-                    schema.data[schema.CHECK_IN_NOTE]?["value"] = v;
+                    schema_w.data[schema_w.CHECK_IN_NOTE]?["value"] = v;
                     setState(() {});
                   },
                 ),
@@ -116,11 +119,11 @@ class _Main_State extends State<Main_> {
   }
 
   bool can_next() {
-    double number_of_guests = double.tryParse(schema.data[schema.STAY_NUMBER_OF_GUESTS]?["value"]?.toString() ?? "0") ?? 0;
+    double number_of_guests = double.tryParse(schema_w.data[schema_w.NUMBER_OF_GUESTS]?["value"]?.toString() ?? "0") ?? 0;
     if (number_of_guests == 0) return false;
 
-    double stay_duration_days = double.tryParse(schema.data[schema.STAY_DURATION_DAY]?["value"]?.toString() ?? "0") ?? 0;
-    double stay_duration_hours = double.tryParse(schema.data[schema.STAY_DURATION_HOUR]?["value"]?.toString() ?? "0") ?? 0;
+    double stay_duration_days = double.tryParse(schema_w.data[schema_w.STAY_DAY]?["value"]?.toString() ?? "0") ?? 0;
+    double stay_duration_hours = double.tryParse(schema_w.data[schema_w.STAY_HOUR]?["value"]?.toString() ?? "0") ?? 0;
     if (stay_duration_days == 0 && stay_duration_hours == 0) return false;
 
     return true;
@@ -129,28 +132,35 @@ class _Main_State extends State<Main_> {
   void on_next() async {
     try {
       //
-      final response = await dio.post("/variable/datetime_now");
-      if (DateTime.tryParse(response.data.toString()) == null) throw Exception("Invalid date time from server.");
-      DateTime now = DateTime.tryParse(response.data.toString())!;
+      int stay_duration_days = schema_w.data[schema_w.STAY_DAY]?["value"]?.toInt() ?? 0;
+      int stay_duration_hours = schema_w.data[schema_w.STAY_HOUR]?["value"]?.toInt() ?? 0;
+      double room_price_per_day_usd = r_schema_r.data[r_schema_r.USD_PER_DAY]?["value"]?.toDouble() ?? 0;
+      double room_price_per_3h_usd = r_schema_r.data[r_schema_r.USD_PER_3H]?["value"]?.toDouble() ?? 0;
 
-      double stay_duration_days = double.tryParse(schema.data[schema.STAY_DURATION_DAY]?["value"]?.toString() ?? "0") ?? 0;
-      double stay_duration_hours = double.tryParse(schema.data[schema.STAY_DURATION_HOUR]?["value"]?.toString() ?? "0") ?? 0;
-      double room_price_per_day_usd = schema.data[schema.ROOM_PRICE_PER_DAY_USD]?["value"]?.toDouble() ?? 0;
-      double room_price_per_3h_usd = schema.data[schema.ROOM_PRICE_PER_3H_USD]?["value"]?.toDouble() ?? 0;
       double room_price_total_usd = (stay_duration_days * room_price_per_day_usd) + ((stay_duration_hours / 3) * room_price_per_3h_usd);
+      schema_w.data[schema_w.ROOM_PRICE_TOTAL_USD]?["value"] = room_price_total_usd;
 
-      DateTime schedule_check_out = now.add(Duration(days: stay_duration_days.toInt(), hours: stay_duration_hours.toInt()));
+      // schema_w.data[schema_w.STAY_SCHEDULE_CHECK_OUT]?["value"] = DateFormat(DATE_FORMAT).format(schedule_check_out);
+      // schema_w.data[schema_w.CHECK_IN_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 
-      schema.data[schema.STAY_SCHEDULE_CHECK_OUT]?["value"] = DateFormat(DATE_FORMAT).format(schedule_check_out);
-      schema.data[schema.CHECK_IN_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
-      schema.data[schema.ROOM_PRICE_TOTAL_USD]?["value"] = room_price_total_usd;
+      // todo: should it move to backend?
+      var r = await dio.post("/setting/now");
+      if (DateTime.tryParse(r.data.toString()) == null) throw Exception("Invalid date time from server.");
+      DateTime now = DateTime.tryParse(r.data.toString())!;
+      schema_w.data[schema_w.CHECK_OUT_DATE]?["value"] = now.add(Duration(days: stay_duration_days, hours: stay_duration_hours));
 
-      if (user.data[user.ID]!["value"] != null) //
-        schema.data[schema.CHECK_IN_BY_ID]?["value"] = user.data[user.ID]!["value"];
-      if (user.data[user.USER_FULL_NAME]!["value"] != null) //
-        schema.data[schema.CHECK_IN_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
+      if (user_r.data[user_r.ID]!["value"] != null) //
+        schema_w.data[schema_w.CHECK_IN_BY_LINK]?["value"] = user_r.data[user_r.ID]!["value"];
+
+      schema_w.data[schema_w.CHECK_IN_AT]?["value"] = now.toLocal();
+
+      for (var e in schema_w.data.entries) print(e);
+      // if (user_r.data[user_r.FULL_NAME]!["value"] != null) //
+      //   schema_w.data[schema_w.CHECK_IN_BY]?["value"] = user_r.data[user_r.FULL_NAME]!["value"];
 
       Navigator.push(context, MaterialPageRoute(builder: (context) => step_3.Main_()));
+
+      //
     } catch (e) {
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }
@@ -167,8 +177,8 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      theme: Theme_Data(), //
       home: Main_(),
+      theme: Theme_Data(), //
       debugShowCheckedModeBanner: false,
     ),
   );

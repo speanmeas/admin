@@ -35,50 +35,135 @@ class _Main_State extends State<Main_> {
             children: [
               for (var e in schema_w.data.entries)
                 (() {
-                  // string
+                  // * អក្សរ
                   if (e.value["type"] == "string") {
+                    String value = "";
+                    if (e.value["value"] != null) {
+                      value = e.value["value"]?.toString() ?? "";
+                    }
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                       child: TextField(
+                        controller: TextEditingController(text: value.trim()),
                         maxLines: e.key.contains("note") ? 4 : 1,
                         decoration: InputDecoration(
+                          hintText: e.key.contains("password") ? "New Password" : null, //
                           labelText: e.value["title"] + ":", //
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
+                          suffixIcon: Padding(
+                            padding: EdgeInsets.only(right: 4),
+                            child: IconButton(
+                              icon: Icon(Icons.clear, color: Colors.red),
+                              onPressed: () {
+                                e.value["value"] = " ";
+                                setState(() {});
+                              },
+                            ), //
+                          ),
                         ),
                         onChanged: (v) {
-                          e.value["value"] = v;
+                          if (v.isEmpty)
+                            e.value["value"] = " "; //
+                          else
+                            e.value["value"] = v.trim(); //
                         },
                       ),
                     );
                   }
 
-                  // number
+                  // * លេខ
                   if (e.value["type"] == "number") {
+                    String value = "";
+                    if (e.value["value"] != null && e.value["value"] != 0) {
+                      value = e.value["value"].toString();
+                    }
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                       child: TextField(
-                        keyboardType: TextInputType.numberWithOptions(decimal: true),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
+                        controller: TextEditingController(text: value.trim()),
                         decoration: InputDecoration(
                           labelText: e.value["title"] + ":", //
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
+                          suffixIcon: Padding(
+                            padding: EdgeInsets.only(right: 4),
+                            child: IconButton(
+                              icon: Icon(Icons.clear, color: Colors.red),
+                              onPressed: () {
+                                e.value["value"] = 0;
+                                setState(() {});
+                              },
+                            ), //
+                          ),
                         ),
+                        keyboardType: TextInputType.numberWithOptions(decimal: true),
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
                         onChanged: (v) {
-                          e.value["value"] = v;
+                          if (v.isEmpty)
+                            e.value["value"] = 0;
+                          else
+                            e.value["value"] = double.tryParse(v) ?? 0;
                         },
                       ),
                     );
                   }
 
+                  // * ថ្ងៃខែឆ្នាំ និង ​ម៉ោង
+                  // todo: clear date-time?
+                  if (e.value["type"] == "date-time") {
+                    String value = "";
+                    if (e.value["value"] != null) {
+                      DateTime? tmp = DateTime.tryParse(e.value["value"].toString());
+                      if (tmp != null) {
+                        value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
+                      }
+                    }
+                    DateTime init = DateTime.now();
+                    if (DateTime.tryParse(value) != null) {
+                      init = DateTime.tryParse(value)!;
+                    }
+                    return Container(
+                      width: 600,
+                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      child: TextField(
+                        controller: TextEditingController(text: value),
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(), //
+                          labelText: e.value["title"] + ":", //
+                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          suffixIcon: Padding(
+                            padding: EdgeInsets.only(right: 8),
+                            child: Icon(Icons.calendar_today), //,
+                          ), //
+                        ),
+                        onTap: () async {
+                          DateTime? datetime = await datetime_picker(context, initial_datetime: init);
+                          if (datetime == null) return;
+                          e.value["value"] = datetime.toIso8601String();
+                          setState(() {});
+                        }, //,
+                      ),
+                    );
+                  }
+
+                  // * តក្កវិទ្យា
+                  // todo: clear boolean?
                   if (e.value["type"] == "boolean") {
+                    String? value;
+                    if (e.value["value"] != null) {
+                      if (e.value["value"] == true) value = "Yes";
+                      if (e.value["value"] == false) value = "No";
+                    }
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                       child: DropdownButtonFormField<String>(
+                        initialValue: value,
                         decoration: InputDecoration(
                           labelText: e.value["title"] + ":",
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -92,37 +177,6 @@ class _Main_State extends State<Main_> {
                           if (v == "Yes") e.value["value"] = true;
                           if (v == "No") e.value["value"] = false;
                         },
-                      ),
-                    );
-                  }
-
-                  if (e.value["type"] == "date-time") {
-                    return Container(
-                      width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: TextField(
-                        controller: TextEditingController(
-                          text: (() {
-                            final value = e.value["value"]?.toString() ?? "";
-                            final dt = DateTime.tryParse(value);
-                            if (dt == null) return value;
-                            return DateFormat(DATE_FORMAT).format(dt.toLocal());
-                          })(),
-                        ),
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          labelText: e.value["title"] + ":", //
-                          border: OutlineInputBorder(), //
-                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          suffixIcon: Icon(Icons.calendar_today, size: 20), //
-                        ),
-                        onTap: () async {
-                          final DateTime? datetime = await datetime_picker(context);
-                          if (datetime == null) return;
-                          e.value["value"] = datetime.toIso8601String();
-                          setState(() {});
-                        }, //,
                       ),
                     );
                   }

@@ -13,22 +13,13 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/widget/show_data.dart" as show_data;
-import "package:speanmeas/page/room/schema.g.dart" as room_schema;
+
+import "package:speanmeas/page/room/schema.w.dart" as r_schema_w;
 
 import "../__config__.dart";
-import "../schema.g.dart" as schema;
+import "../schema.w.dart" as schema_w;
 
 class _Main_State extends State<Main_> {
-  //
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  void init() async {}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +54,7 @@ class _Main_State extends State<Main_> {
           alignment: Alignment.topCenter,
           child: Column(
             children: [
-              ...schema.data.entries.where((e) => !e.key.contains("_id")).map((e) {
+              ...schema_w.data.entries.where((e) => !e.key.contains("_id")).map((e) {
                 String value = e.value["value"]?.toString() ?? "";
                 return Container(
                   width: 600,
@@ -84,7 +75,7 @@ class _Main_State extends State<Main_> {
   void on_check_in() async {
     try {
       //
-      final output = {for (var e in schema.data.entries) e.key: e.value["value"]};
+      final output = {for (var e in schema_w.data.entries) e.key: e.value["value"]};
 
       //
       final response = await dio.post(
@@ -94,15 +85,15 @@ class _Main_State extends State<Main_> {
 
       //
       var status = "Pending Pay";
-      if (output[schema.ROOM_PAYMENT_AT]?.isNotEmpty ?? false) status = "Pending Leave";
+      if (output[schema_w.ROOM_PAID_AT]?.isNotEmpty ?? false) status = "Pending Leave";
 
       //
       await dio.post(
-        "/room/data_update", //
+        "/room/update", //
         data: FormData.fromMap({
-          "_id": output[schema.ROOM_ID], //
-          room_schema.ROOM_STATUS: status, //
-          room_schema.FRONT_DESK_ID: response.data["_id"],
+          "_id": output[schema_w.ROOM_LINK], //
+          r_schema_w.STATUS: status, //
+          r_schema_w.FRONT_DESK_ID: response.data["_id"],
         }),
       );
 

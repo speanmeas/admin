@@ -15,7 +15,7 @@ import "package:speanmeas/utility/secure_storage.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/layout/layout.dart" as layout;
 
-import "schema.w.dart" as user;
+import "schema.r.dart" as user_r;
 
 class _Main_State extends State<Main_> {
   bool is_password_visible = false;
@@ -120,7 +120,7 @@ class _Main_State extends State<Main_> {
       dio.options.headers["Authorization"] = "Bearer ${r.data["access_token"]}";
 
       //
-      for (var e in user.data.entries) user.data[e.key]!["value"] = r.data[e.key];
+      for (var e in user_r.data.entries) user_r.data[e.key]!["value"] = r.data[e.key];
 
       //
       snackbar_show(context: context, message: "Sign in successful", color: Colors.green);
