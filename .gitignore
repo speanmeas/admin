@@ -63,6 +63,7 @@ app.*.map.json
 * copy/
 
 update_cloudflare.py
+update_github.py
 vs.code-workspace
 
 # wrangler files
