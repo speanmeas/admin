@@ -76,7 +76,7 @@ class _Main_State extends State<Main_> {
   void on_update() async {
     try {
       //
-      if (phone_number.trim().isEmpty) throw "Phone number cannot be empty.";
+      // if (phone_number.trim().isEmpty) throw "Phone number cannot be empty.";
 
       //
       final r = await dio.post("/user/update", data: FormData.fromMap({"_id": user_w.data[user_w.ID]!["value"], user_w.PHONE_NUMBER: phone_number}));

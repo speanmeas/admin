@@ -6,7 +6,7 @@ import "package:speanmeas/__config__.dart";
 import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/theme/theme_data.dart";
 
-import "package:speanmeas/page/auth/schema.r.dart" as u_schema_r;
+import "package:speanmeas/page/auth/schema.r.dart" as user_r;
 import "package:speanmeas/page/auth/profile.dart" as profile;
 
 class _Main_State extends State<Main_> {
@@ -78,7 +78,7 @@ class _Main_State extends State<Main_> {
           SizedBox(width: 4),
 
           // User Avatar
-          if (u_schema_r.data[u_schema_r.FULL_NAME]!["value"] != null) //
+          if (user_r.data[user_r.FULL_NAME]!["value"] != null) //
             InkWell(
               customBorder: const CircleBorder(),
               child: Container(
@@ -90,7 +90,7 @@ class _Main_State extends State<Main_> {
                   border: Border.all(color: Colors.blue, width: 2),
                 ),
                 child: Text(
-                  u_schema_r.data[u_schema_r.FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "", //
+                  user_r.data[user_r.FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "", //
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),

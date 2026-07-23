@@ -128,8 +128,8 @@ class _Main_State extends State<Main_> {
 
   void on_update() async {
     try {
-      if (password.length < 6) throw "Password must be at least 6 characters.";
-      if (password != confirm_password) throw "Passwords do not match.";
+      // if (password.length < 6) throw "Password must be at least 6 characters.";
+      // if (password != confirm_password) throw "Passwords do not match.";
 
       //
       final r = await dio.post("/user/data_update", data: FormData.fromMap({"_id": user_w.data[user_w.ID]!["value"], user_w.PASSWORD: password}));

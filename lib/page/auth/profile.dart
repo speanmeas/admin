@@ -16,8 +16,9 @@ import "edit_phone_number.dart" as update_phone_number;
 import "edit_username.dart" as update_username;
 import "edit_password.dart" as update_password;
 
-import "schema.w.dart" as user_w;
 import "schema.r.dart" as user_r;
+import "schema.w.dart" as user_w;
+
 import "sign_in.dart" as sign_in;
 
 class _Main_State extends State<Main_> {

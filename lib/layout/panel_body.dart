@@ -4,6 +4,8 @@ import "package:provider/provider.dart";
 import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/theme/theme_data.dart";
 
+import "package:speanmeas/page/dashboard/front_desk/main.dart" as d_front_desk;
+
 import "package:speanmeas/page/front_desk/main.dart" as front_desk;
 import "package:speanmeas/page/guest/main.dart" as guest;
 import "package:speanmeas/page/room/main.dart" as room;
@@ -17,7 +19,7 @@ class _Main_State extends State<Main_> {
   List<Map<String, dynamic>> panels = [
     {"name": "", "panel": Text("This page is under development.")},
     //
-    {"name": "Dashboard - Front Desk", "panel": front_desk.Main_()}, //
+    {"name": "Dashboard - Front Desk", "panel": d_front_desk.Main_()}, //
     //
     {"name": "Database - Front Desk", "panel": front_desk.Main_()}, //
     {"name": "Database - Room", "panel": room.Main_()}, //

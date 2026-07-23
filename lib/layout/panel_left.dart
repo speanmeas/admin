@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 import "package:speanmeas/__config__.dart";
 import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/theme/theme_data.dart";
-import "package:speanmeas/page/auth/schema.w.dart" as user;
+import "package:speanmeas/page/auth/schema.r.dart" as user;
 
 class _Main_State extends State<Main_> {
   bool is_mobile = false;
