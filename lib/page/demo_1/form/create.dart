@@ -205,9 +205,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       Map<String, dynamic> payload = {};
-      for (var e in schema_w.data.entries) {
-        payload[e.key] = e.value["value"];
-      }
+      for (var e in schema_w.data.entries) payload[e.key] = e.value["value"];
 
       // request
       final r = await dio.post("$PATH/create", data: FormData.fromMap({...payload}));

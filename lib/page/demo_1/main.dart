@@ -222,7 +222,7 @@ class _Main_State extends State<Main_> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  //
+                  // * ត្រលប់ទៅទំព័រដំបូង
                   InkWell(
                     child: Container(
                       width: 32,
@@ -235,6 +235,7 @@ class _Main_State extends State<Main_> {
                       ), //
                     ), //
                     onTap: () {
+                      if (page == 1) return;
                       page = 1;
                       load_page(page);
                     },
@@ -275,7 +276,7 @@ class _Main_State extends State<Main_> {
                       ), //
                     ), //
                     onTap: () async {
-                      final v = await popup_select_page();
+                      final v = await select_page();
                       if (v == null) return;
                       page = v;
                       load_page(page);
@@ -318,6 +319,7 @@ class _Main_State extends State<Main_> {
                       ), //
                     ), //
                     onTap: () {
+                      if (page == (row_total / LIMIT).floor() + 1) return;
                       page = (row_total / LIMIT).floor() + 1;
                       load_page(page);
                     },
@@ -526,7 +528,7 @@ class _Main_State extends State<Main_> {
     return "";
   }
 
-  Future<int?> popup_select_page() async {
+  Future<int?> select_page() async {
     const ITEM_HEIGHT = 32.0;
     final controller = ScrollController(initialScrollOffset: (page - 1) * ITEM_HEIGHT);
 

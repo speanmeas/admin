@@ -19,16 +19,37 @@ import "package:speanmeas/page/auth/schema.r.dart" as user_r;
 
 import "step_4_summary.dart" as step_4;
 
-import "widget/input_room_price.dart" as input_room_price;
-import "widget/input_paid_bank_usd.dart" as input_paid_bank_usd;
-import "widget/input_paid_cash_usd.dart" as input_paid_cash_usd;
-import "widget/input_paid_bank_khr.dart" as input_paid_bank_khr;
-import "widget/input_paid_cash_khr.dart" as input_paid_cash_khr;
-import "widget/input_return_cash_usd.dart" as input_return_cash_usd;
-import "widget/input_return_cash_khr.dart" as input_return_cash_khr;
-import "widget/input_note.dart" as input_note;
+import "widget/input_number.dart" as input_number;
 
 class _Main_State extends State<Main_> {
+  final c_room_price_usd = TextEditingController();
+  final c_paid_bank_usd = TextEditingController();
+  final c_paid_bank_khr = TextEditingController();
+  final c_paid_cash_usd = TextEditingController();
+  final c_paid_cash_khr = TextEditingController();
+  final c_return_cash_khr = TextEditingController();
+  final c_return_cash_usd = TextEditingController();
+  final c_note = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    c_room_price_usd.text = schema_w.data[schema_w.ROOM_PRICE_TOTAL_USD]?["value"]?.toString() ?? "";
+    c_paid_bank_usd.text = schema_w.data[schema_w.ROOM_PAID_BANK_USD]?["value"]?.toString() ?? "";
+    c_paid_bank_khr.text = schema_w.data[schema_w.ROOM_PAID_BANK_KHR]?["value"]?.toString() ?? "";
+    c_paid_cash_usd.text = schema_w.data[schema_w.ROOM_PAID_CASH_USD]?["value"]?.toString() ?? "";
+    c_paid_cash_khr.text = schema_w.data[schema_w.ROOM_PAID_CASH_KHR]?["value"]?.toString() ?? "";
+    c_return_cash_usd.text = schema_w.data[schema_w.ROOM_RETURN_USD]?["value"]?.toString() ?? "";
+    c_return_cash_khr.text = schema_w.data[schema_w.ROOM_RETURN_KHR]?["value"]?.toString() ?? "";
+    c_note.text = schema_w.data[schema_w.ROOM_PAID_NOTE]?["value"]?.toString() ?? "";
+
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,8 +84,11 @@ class _Main_State extends State<Main_> {
               Container(
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: input_room_price.Main_(
-                  initialValue: schema_w.data[schema_w.ROOM_PRICE_TOTAL_USD]?["value"],
+                child: input_number.Main_(
+                  controller: c_room_price_usd, //
+                  title: "Room Price (USD):",
+                  prefixIcon: Icons.bed_outlined,
+                  suffixText: "\$",
                   onChanged: (v) {
                     schema_w.data[schema_w.ROOM_PRICE_TOTAL_USD]?["value"] = v;
                     setState(() {});
@@ -97,13 +121,14 @@ class _Main_State extends State<Main_> {
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-
                   children: [
                     // paid bank usd
                     Expanded(
-                      // todo: don't use custom widget
-                      child: input_paid_bank_usd.Main_(
-                        initialValue: schema_w.data[schema_w.ROOM_PAID_BANK_USD]?["value"],
+                      child: input_number.Main_(
+                        controller: c_paid_bank_usd, //
+                        title: "Paid Bank (USD):",
+                        prefixIcon: Icons.account_balance,
+                        suffixText: "\$",
                         onChanged: (v) {
                           schema_w.data[schema_w.ROOM_PAID_BANK_USD]?["value"] = v;
                           setState(() {});
@@ -115,8 +140,11 @@ class _Main_State extends State<Main_> {
 
                     // paid bank khr
                     Expanded(
-                      child: input_paid_bank_khr.Main_(
-                        initialValue: schema_w.data[schema_w.ROOM_PAID_BANK_KHR]?["value"],
+                      child: input_number.Main_(
+                        controller: c_paid_bank_khr, //
+                        title: "Paid Bank (KHR):",
+                        prefixIcon: Icons.account_balance,
+                        suffixText: "៛",
                         onChanged: (v) {
                           schema_w.data[schema_w.ROOM_PAID_BANK_KHR]?["value"] = v;
                           setState(() {});
@@ -136,8 +164,11 @@ class _Main_State extends State<Main_> {
                   children: [
                     // paid cash usd
                     Expanded(
-                      child: input_paid_cash_usd.Main_(
-                        initialValue: schema_w.data[schema_w.ROOM_PAID_CASH_USD]?["value"],
+                      child: input_number.Main_(
+                        controller: c_paid_cash_usd,
+                        title: "Paid Cash (USD):",
+                        prefixIcon: Icons.account_balance_wallet_outlined,
+                        suffixText: "\$",
                         onChanged: (v) {
                           schema_w.data[schema_w.ROOM_PAID_CASH_USD]?["value"] = v;
                           setState(() {});
@@ -149,8 +180,11 @@ class _Main_State extends State<Main_> {
 
                     // paid cash khr
                     Expanded(
-                      child: input_paid_cash_khr.Main_(
-                        initialValue: schema_w.data[schema_w.ROOM_PAID_CASH_KHR]?["value"],
+                      child: input_number.Main_(
+                        controller: c_paid_cash_khr,
+                        title: "Paid Cash (KHR):",
+                        prefixIcon: Icons.account_balance_wallet_outlined,
+                        suffixText: "៛",
                         onChanged: (v) {
                           schema_w.data[schema_w.ROOM_PAID_CASH_KHR]?["value"] = v;
                           setState(() {});
@@ -189,8 +223,11 @@ class _Main_State extends State<Main_> {
                   children: [
                     // return usd
                     Expanded(
-                      child: input_return_cash_usd.Main_(
-                        initialValue: schema_w.data[schema_w.ROOM_RETURN_USD]?["value"],
+                      child: input_number.Main_(
+                        controller: c_return_cash_usd,
+                        title: "Return Cash (USD):",
+                        prefixIcon: Icons.account_balance_wallet_outlined,
+                        suffixText: "\$",
                         onChanged: (v) {
                           schema_w.data[schema_w.ROOM_RETURN_USD]?["value"] = v;
                           setState(() {});
@@ -202,8 +239,11 @@ class _Main_State extends State<Main_> {
 
                     // return khr
                     Expanded(
-                      child: input_return_cash_khr.Main_(
-                        initialValue: schema_w.data[schema_w.ROOM_RETURN_KHR]?["value"],
+                      child: input_number.Main_(
+                        controller: c_return_cash_khr,
+                        title: "Return Cash (KHR):",
+                        prefixIcon: Icons.account_balance_wallet_outlined,
+                        suffixText: "៛",
                         onChanged: (v) {
                           schema_w.data[schema_w.ROOM_RETURN_KHR]?["value"] = v;
                           setState(() {});
@@ -237,8 +277,14 @@ class _Main_State extends State<Main_> {
               Container(
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: input_note.Main_(
-                  initialValue: schema_w.data[schema_w.ROOM_PAID_NOTE]?["value"]?.toString(),
+                child: TextField(
+                  controller: c_note,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    labelText: "Note:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
                   onChanged: (v) {
                     schema_w.data[schema_w.ROOM_PAID_NOTE]?["value"] = v;
                     setState(() {});
@@ -328,7 +374,7 @@ class _Main_State extends State<Main_> {
         if (user_r.data[user_r.ID]!["value"] != null) //
           schema_w.data[schema_w.ROOM_PAID_BY_LINK]?["value"] = user_r.data[user_r.ID]!["value"];
       }
-      // clear if no payment
+      // clear data if no payment
       else {
         schema_w.data[schema_w.ROOM_PAID_BANK_USD]?["value"] = null;
         schema_w.data[schema_w.ROOM_PAID_CASH_USD]?["value"] = null;
@@ -342,8 +388,11 @@ class _Main_State extends State<Main_> {
         schema_w.data[schema_w.ROOM_PAID_AT]?["value"] = null;
       }
 
-      for (var e in schema_w.data.entries) print(e);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => step_4.Main_()));
+      // move to next page
+      await Navigator.push(context, MaterialPageRoute(builder: (context) => step_4.Main_()));
+
+      // if turn back to this page
+      init();
 
       //
     } catch (e) {

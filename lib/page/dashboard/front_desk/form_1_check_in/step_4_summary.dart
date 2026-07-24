@@ -54,6 +54,7 @@ class _Main_State extends State<Main_> {
           alignment: Alignment.topCenter,
           child: Column(
             children: [
+              // ! use schema_r to show data
               ...schema_w.data.entries.where((e) => !e.key.contains("_id")).map((e) {
                 String value = e.value["value"]?.toString() ?? "";
                 return Container(
@@ -79,7 +80,7 @@ class _Main_State extends State<Main_> {
 
       //
       final response = await dio.post(
-        "/front_desk/data_create", //
+        "/front_desk/create", //
         data: FormData.fromMap(output),
       );
 

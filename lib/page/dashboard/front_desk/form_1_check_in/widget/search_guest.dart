@@ -1,5 +1,6 @@
 import "package:dio/dio.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
 //
@@ -76,7 +77,9 @@ class _Main_State extends State<Main_> {
               return TextField(
                 controller: controller,
                 focusNode: focusNode,
-                decoration: const InputDecoration(
+                keyboardType: TextInputType.numberWithOptions(decimal: false),
+                inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
+                decoration: InputDecoration(
                   labelText: "Search:",
                   labelStyle: TextStyle(fontWeight: FontWeight.bold),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
