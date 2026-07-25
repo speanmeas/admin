@@ -15,8 +15,8 @@ import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/widget/show_data.dart" as show_data;
 import "package:speanmeas/page/room/schema.r.dart" as room_schema;
 
-import "../__config__.dart";
-import "../schema.w.dart" as schema;
+import "../../__config__.dart";
+import "../../schema.w.dart" as schema;
 
 class _Main_State extends State<Main_> {
   //

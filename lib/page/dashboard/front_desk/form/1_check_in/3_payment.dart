@@ -11,51 +11,34 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "../__config__.dart";
+import "../../__config__.dart";
 
-import "../schema.w.dart" as schema_w;
+import "../../schema.w.dart" as schema_w;
 
 import "package:speanmeas/page/auth/schema.r.dart" as user_r;
 
-import "step_4_summary.dart" as step_4;
+import "4_summary.dart" as step_4;
 
 import "widget/input_number.dart" as input_number;
 
 class _Main_State extends State<Main_> {
-  final c_room_price_usd = TextEditingController();
-  final c_paid_bank_usd = TextEditingController();
-  final c_paid_bank_khr = TextEditingController();
-  final c_paid_cash_usd = TextEditingController();
-  final c_paid_cash_khr = TextEditingController();
-  final c_return_cash_khr = TextEditingController();
-  final c_return_cash_usd = TextEditingController();
-  final c_note = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  void init() async {
-    c_room_price_usd.text = schema_w.data[schema_w.ROOM_PRICE_TOTAL_USD]?["value"]?.toString() ?? "";
-    c_paid_bank_usd.text = schema_w.data[schema_w.ROOM_PAID_BANK_USD]?["value"]?.toString() ?? "";
-    c_paid_bank_khr.text = schema_w.data[schema_w.ROOM_PAID_BANK_KHR]?["value"]?.toString() ?? "";
-    c_paid_cash_usd.text = schema_w.data[schema_w.ROOM_PAID_CASH_USD]?["value"]?.toString() ?? "";
-    c_paid_cash_khr.text = schema_w.data[schema_w.ROOM_PAID_CASH_KHR]?["value"]?.toString() ?? "";
-    c_return_cash_usd.text = schema_w.data[schema_w.ROOM_RETURN_USD]?["value"]?.toString() ?? "";
-    c_return_cash_khr.text = schema_w.data[schema_w.ROOM_RETURN_KHR]?["value"]?.toString() ?? "";
-    c_note.text = schema_w.data[schema_w.ROOM_PAID_NOTE]?["value"]?.toString() ?? "";
-
-    setState(() {});
-  }
+  double room_price_total_usd = 0;
+  double paid_bank_usd = 0;
+  double paid_cash_usd = 0;
+  double paid_bank_khr = 0;
+  double paid_cash_khr = 0;
+  double return_usd = 0;
+  double return_khr = 0;
+  double paid_total_usd = 0;
+  double return_total_usd = 0;
+  double balance_total_usd = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "3. Check In - Room Payment", //
+          "3. Room Payment", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -65,8 +48,8 @@ class _Main_State extends State<Main_> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: OutlinedButton.icon(
-              icon: Icon(Icons.arrow_right_alt_outlined),
-              label: Text("Next"),
+              icon: Icon(Icons.login_outlined),
+              label: Text("Check In"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
               onPressed: on_next,
             ),
@@ -85,7 +68,7 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: input_number.Main_(
-                  controller: c_room_price_usd, //
+                  controller: TextEditingController(text: schema_w.data[schema_w.ROOM_PRICE_TOTAL_USD]?["value"]?.toString() ?? ""),
                   title: "Room Price (USD):",
                   prefixIcon: Icons.bed_outlined,
                   suffixText: "\$",
@@ -125,7 +108,7 @@ class _Main_State extends State<Main_> {
                     // paid bank usd
                     Expanded(
                       child: input_number.Main_(
-                        controller: c_paid_bank_usd, //
+                        controller: TextEditingController(text: schema_w.data[schema_w.ROOM_PAID_BANK_USD]?["value"]?.toString() ?? ""),
                         title: "Paid Bank (USD):",
                         prefixIcon: Icons.account_balance,
                         suffixText: "\$",
@@ -141,7 +124,7 @@ class _Main_State extends State<Main_> {
                     // paid bank khr
                     Expanded(
                       child: input_number.Main_(
-                        controller: c_paid_bank_khr, //
+                        controller: TextEditingController(text: schema_w.data[schema_w.ROOM_PAID_BANK_KHR]?["value"]?.toString() ?? ""),
                         title: "Paid Bank (KHR):",
                         prefixIcon: Icons.account_balance,
                         suffixText: "៛",
@@ -165,7 +148,7 @@ class _Main_State extends State<Main_> {
                     // paid cash usd
                     Expanded(
                       child: input_number.Main_(
-                        controller: c_paid_cash_usd,
+                        controller: TextEditingController(text: schema_w.data[schema_w.ROOM_PAID_CASH_USD]?["value"]?.toString() ?? ""),
                         title: "Paid Cash (USD):",
                         prefixIcon: Icons.account_balance_wallet_outlined,
                         suffixText: "\$",
@@ -181,7 +164,7 @@ class _Main_State extends State<Main_> {
                     // paid cash khr
                     Expanded(
                       child: input_number.Main_(
-                        controller: c_paid_cash_khr,
+                        controller: TextEditingController(text: schema_w.data[schema_w.ROOM_PAID_CASH_KHR]?["value"]?.toString() ?? ""),
                         title: "Paid Cash (KHR):",
                         prefixIcon: Icons.account_balance_wallet_outlined,
                         suffixText: "៛",
@@ -224,7 +207,7 @@ class _Main_State extends State<Main_> {
                     // return usd
                     Expanded(
                       child: input_number.Main_(
-                        controller: c_return_cash_usd,
+                        controller: TextEditingController(text: schema_w.data[schema_w.ROOM_RETURN_USD]?["value"]?.toString() ?? ""),
                         title: "Return Cash (USD):",
                         prefixIcon: Icons.account_balance_wallet_outlined,
                         suffixText: "\$",
@@ -240,7 +223,7 @@ class _Main_State extends State<Main_> {
                     // return khr
                     Expanded(
                       child: input_number.Main_(
-                        controller: c_return_cash_khr,
+                        controller: TextEditingController(text: schema_w.data[schema_w.ROOM_RETURN_KHR]?["value"]?.toString() ?? ""),
                         title: "Return Cash (KHR):",
                         prefixIcon: Icons.account_balance_wallet_outlined,
                         suffixText: "៛",
@@ -278,7 +261,7 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: c_note,
+                  controller: TextEditingController(text: schema_w.data[schema_w.ROOM_PAID_NOTE]?["value"]?.toString() ?? ""),
                   maxLines: 4,
                   decoration: InputDecoration(
                     labelText: "Note:",
@@ -388,11 +371,10 @@ class _Main_State extends State<Main_> {
         schema_w.data[schema_w.ROOM_PAID_AT]?["value"] = null;
       }
 
+      // todo: send to backend
+
       // move to next page
       await Navigator.push(context, MaterialPageRoute(builder: (context) => step_4.Main_()));
-
-      // if turn back to this page
-      init();
 
       //
     } catch (e) {

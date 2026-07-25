@@ -13,34 +13,39 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/widget/show_data.dart" as show_data;
-import "package:speanmeas/page/room/schema.r.dart" as room_schema;
+import "package:speanmeas/page/room/schema.w.dart" as room_schema;
 
-import "../__config__.dart";
-import "../schema.w.dart" as schema;
+import "../../__config__.dart";
+import "../../schema.w.dart" as schema;
 
 class _Main_State extends State<Main_> {
+  //
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "2. Clean - Summary", //
+          "2. Check Out - Summary", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
           ),
         ),
+
         actions: [
+          // if (can_next())
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: OutlinedButton.icon(
-              icon: Icon(Icons.login_outlined),
-              label: Text("Clean"),
+              icon: Icon(Icons.logout_outlined),
+              label: Text("Check Out"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: on_check_in, //
+              onPressed: on_check_out, //
             ),
           ),
         ],
+
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -68,31 +73,31 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  void on_check_in() async {
+  void on_check_out() async {
     try {
-      // prepare data
+      //
       final output = {for (var e in schema.data.entries) e.key: e.value["value"]};
 
-      // update front desk data
+      //
       await dio.post(
         "/front_desk/data_update", //
         data: FormData.fromMap({...output}),
       );
 
-      // update room data
+      //
       // await dio.post(
-      //   "/room/data_update", //
+      //   "/room/data_update",
       //   data: FormData.fromMap({
       //     "_id": output[schema.ROOM_ID], //
-      //     room_schema.ROOM_STATUS: "Available",
+      //     room_schema.ROOM_STATUS: "Pending Clean",
       //   }),
       // );
 
-      // close context
+      //
       Navigator.pop(context);
       Navigator.pop(context, true);
 
-      // show status
+      //
       snackbar_show(context: context, message: "Updated successfully.", color: Colors.green);
     } catch (e) {
       snackbar_show(context: context, message: e.toString(), color: Colors.red);

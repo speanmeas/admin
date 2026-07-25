@@ -17,10 +17,10 @@ import "schema.w.dart" as schema_w;
 import "package:speanmeas/page/room/schema.r.dart" as r_schema_r;
 import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
 
-import "form_1_check_in/step_1_guest.dart" as check_in;
-import "form_2_payment/step_1_room_payment.dart" as payment;
-import "form_3_check_out/step_1_revenue_payment.dart" as check_out;
-import "form_4_clean/step_1_note.dart" as clean;
+import "form/1_check_in/1_guest.dart" as check_in;
+import "form/2_payment/step_1_room_payment.dart" as payment;
+import "form/3_check_out/step_1_revenue_payment.dart" as check_out;
+import "form/4_clean/step_1_note.dart" as clean;
 
 import "widget/button_icon_menu.dart" as button_icon_menu;
 
@@ -59,7 +59,7 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
-    final is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
+    final is_mobile = MediaQuery.of(context).size.width < 400;
 
     return Scaffold(
       body: LayoutBuilder(

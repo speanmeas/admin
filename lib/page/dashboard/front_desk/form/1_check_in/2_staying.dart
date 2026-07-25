@@ -1,31 +1,20 @@
 import "package:dio/dio.dart";
 import "package:flutter/material.dart";
-// import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
-import "package:intl/intl.dart";
-import "package:provider/provider.dart";
 
-import "package:speanmeas/__config__.dart";
-// import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/dio.dart";
-import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
-
-// import "package:speanmeas/page/auth/user.g.dart" as user;
-
-import "../__config__.dart";
-import "../schema.w.dart" as schema_w;
 import "package:speanmeas/page/room/schema.r.dart" as r_schema_r;
 import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
 import "package:speanmeas/page/auth/schema.r.dart" as user_r;
 
-import "step_3_room_payment.dart" as step_3;
+import "../../__config__.dart";
+import "../../schema.w.dart" as schema_w;
 
-import "widget/select_number_of_guest.dart" as select_number_of_guest;
-import "widget/select_stay_duration_days.dart" as select_stay_duration_days;
-import "widget/select_stay_duration_hours.dart" as select_stay_duration_hours;
-import "widget/input_note.dart" as input_note;
+import "3_payment.dart" as step_3;
+
+import "widget/select_number.dart" as select_number;
 
 class _Main_State extends State<Main_> {
   @override
@@ -33,11 +22,8 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "2. Check In - Staying", //
-          style: TextStyle(
-            fontSize: 20, //
-            fontWeight: FontWeight.bold,
-          ),
+          "2. Staying", //
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
 
         actions: [
@@ -65,8 +51,10 @@ class _Main_State extends State<Main_> {
               Container(
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: select_number_of_guest.Main_(
-                  initialValue: schema_w.data[schema_w.NUMBER_OF_GUESTS]?["value"]?.toInt(),
+                child: select_number.Main_(
+                  controller: TextEditingController(text: schema_w.data[schema_w.NUMBER_OF_GUESTS]?["value"]?.toString() ?? ""),
+                  title: "Number of Guests:",
+                  options: List.generate(10, (index) => index + 1),
                   onChanged: (v) {
                     schema_w.data[schema_w.NUMBER_OF_GUESTS]?["value"] = v;
                     setState(() {});
@@ -78,8 +66,10 @@ class _Main_State extends State<Main_> {
               Container(
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: select_stay_duration_days.Main_(
-                  initialValue: schema_w.data[schema_w.STAY_DAY]?["value"]?.toInt(),
+                child: select_number.Main_(
+                  controller: TextEditingController(text: schema_w.data[schema_w.STAY_DAY]?["value"]?.toString() ?? ""),
+                  title: "Stay Duration (Days):",
+                  options: List.generate(365, (index) => index),
                   onChanged: (v) {
                     schema_w.data[schema_w.STAY_DAY]?["value"] = v;
                     setState(() {});
@@ -91,8 +81,10 @@ class _Main_State extends State<Main_> {
               Container(
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: select_stay_duration_hours.Main_(
-                  initialValue: schema_w.data[schema_w.STAY_HOUR]?["value"]?.toInt(),
+                child: select_number.Main_(
+                  controller: TextEditingController(text: schema_w.data[schema_w.STAY_HOUR]?["value"]?.toString() ?? ""),
+                  title: "Stay Duration (Hours):",
+                  options: [0, 3, 6, 9, 12, 15, 18, 21],
                   onChanged: (v) {
                     schema_w.data[schema_w.STAY_HOUR]?["value"] = v;
                     setState(() {});
@@ -100,14 +92,30 @@ class _Main_State extends State<Main_> {
                 ),
               ),
 
+              // note
               Container(
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: input_note.Main_(
-                  initialValue: schema_w.data[schema_w.CHECK_IN_NOTE]?["value"]?.toString(),
+                child: TextField(
+                  controller: TextEditingController(text: schema_w.data[schema_w.CHECK_IN_NOTE]?["value"]?.toString() ?? ""),
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    labelText: "Note:", //
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    suffixIcon: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: IconButton(
+                        icon: Icon(Icons.clear, color: Colors.red),
+                        onPressed: () {
+                          schema_w.data[schema_w.CHECK_IN_NOTE]?["value"] = "";
+                          setState(() {});
+                        },
+                      ), //
+                    ),
+                  ),
                   onChanged: (v) {
-                    schema_w.data[schema_w.CHECK_IN_NOTE]?["value"] = v;
-                    setState(() {});
+                    schema_w.data[schema_w.CHECK_IN_NOTE]?["value"] = v.trim(); //
                   },
                 ),
               ),
@@ -140,9 +148,6 @@ class _Main_State extends State<Main_> {
       double room_price_total_usd = (stay_duration_days * room_price_per_day_usd) + ((stay_duration_hours / 3) * room_price_per_3h_usd);
       schema_w.data[schema_w.ROOM_PRICE_TOTAL_USD]?["value"] = room_price_total_usd;
 
-      // schema_w.data[schema_w.STAY_SCHEDULE_CHECK_OUT]?["value"] = DateFormat(DATE_FORMAT).format(schedule_check_out);
-      // schema_w.data[schema_w.CHECK_IN_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
-
       // todo: should it move to backend?
       var r = await dio.post("/setting/now");
       if (DateTime.tryParse(r.data.toString()) == null) throw Exception("Invalid date time from server.");
@@ -153,10 +158,6 @@ class _Main_State extends State<Main_> {
         schema_w.data[schema_w.CHECK_IN_BY_LINK]?["value"] = user_r.data[user_r.ID]!["value"];
 
       schema_w.data[schema_w.CHECK_IN_AT]?["value"] = now.toLocal();
-
-      for (var e in schema_w.data.entries) print(e);
-      // if (user_r.data[user_r.FULL_NAME]!["value"] != null) //
-      //   schema_w.data[schema_w.CHECK_IN_BY]?["value"] = user_r.data[user_r.FULL_NAME]!["value"];
 
       Navigator.push(context, MaterialPageRoute(builder: (context) => step_3.Main_()));
 

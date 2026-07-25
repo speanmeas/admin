@@ -11,15 +11,15 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "../__config__.dart";
-import "../schema.w.dart" as schema_w;
+import "../../__config__.dart";
+import "../../schema.w.dart" as schema_w;
 import "widget/search_guest.dart" as search_guest;
 
 import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
 
 import "package:speanmeas/widget/show_data.dart" as show_data;
 
-import "step_2_stay.dart" as step_2;
+import "2_staying.dart" as step_2;
 
 class _Main_State extends State<Main_> {
   @override
@@ -27,11 +27,8 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "1. Check In - Guest", //
-          style: TextStyle(
-            fontSize: 20, //
-            fontWeight: FontWeight.bold,
-          ),
+          "1. Guest", //
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         actions: [
           Container(
@@ -146,6 +143,7 @@ class _Main_State extends State<Main_> {
 
       schema_w.data[schema_w.GUEST_LINK]?["value"] = g_schema_r.data[g_schema_r.ID]?["value"];
 
+      //
       Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
 
       //

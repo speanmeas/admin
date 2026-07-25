@@ -13,20 +13,29 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/widget/show_data.dart" as show_data;
-import "package:speanmeas/page/room/schema.w.dart" as room_schema;
 
-import "../__config__.dart";
-import "../schema.w.dart" as schema;
+import "package:speanmeas/page/room/schema.w.dart" as r_schema_w;
+
+import "../../__config__.dart";
+import "../../schema.w.dart" as schema_w;
 
 class _Main_State extends State<Main_> {
-  //
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    //
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "2. Check Out - Summary", //
+          "4. Summary", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -38,10 +47,10 @@ class _Main_State extends State<Main_> {
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: OutlinedButton.icon(
-              icon: Icon(Icons.logout_outlined),
-              label: Text("Check Out"),
+              icon: Icon(Icons.login_outlined),
+              label: Text("Check In"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: on_check_out, //
+              onPressed: on_check_in, //
             ),
           ),
         ],
@@ -55,7 +64,8 @@ class _Main_State extends State<Main_> {
           alignment: Alignment.topCenter,
           child: Column(
             children: [
-              ...schema.data.entries.where((e) => !e.key.contains("_id")).map((e) {
+              // ! use schema_r to show data
+              ...schema_w.data.entries.where((e) => !e.key.contains("_id")).map((e) {
                 String value = e.value["value"]?.toString() ?? "";
                 return Container(
                   width: 600,
@@ -73,32 +83,39 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  void on_check_out() async {
+  void on_check_in() async {
     try {
       //
-      final output = {for (var e in schema.data.entries) e.key: e.value["value"]};
+      final output = {for (var e in schema_w.data.entries) e.key: e.value["value"]};
 
       //
-      await dio.post(
-        "/front_desk/data_update", //
-        data: FormData.fromMap({...output}),
+      final response = await dio.post(
+        "/front_desk/create", //
+        data: FormData.fromMap(output),
       );
 
       //
-      // await dio.post(
-      //   "/room/data_update",
-      //   data: FormData.fromMap({
-      //     "_id": output[schema.ROOM_ID], //
-      //     room_schema.ROOM_STATUS: "Pending Clean",
-      //   }),
-      // );
+      var status = "Pending Pay";
+      if (output[schema_w.ROOM_PAID_AT]?.isNotEmpty ?? false) status = "Pending Leave";
 
       //
+      await dio.post(
+        "/room/update", //
+        data: FormData.fromMap({
+          "_id": output[schema_w.ROOM_LINK], //
+          r_schema_w.STATUS: status, //
+          r_schema_w.FRONT_DESK_ID: response.data["_id"],
+        }),
+      );
+
+      //
+      Navigator.pop(context);
+      Navigator.pop(context);
       Navigator.pop(context);
       Navigator.pop(context, true);
 
       //
-      snackbar_show(context: context, message: "Updated successfully.", color: Colors.green);
+      snackbar_show(context: context, message: "Create successfully.", color: Colors.green);
     } catch (e) {
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }

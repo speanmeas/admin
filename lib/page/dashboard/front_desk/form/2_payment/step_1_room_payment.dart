@@ -12,8 +12,8 @@ import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/page/auth/schema.r.dart" as user;
 
-import "../__config__.dart";
-import "../schema.w.dart" as schema;
+import "../../__config__.dart";
+import "../../schema.w.dart" as schema;
 
 import "step_2_summary.dart" as step_2;
 
