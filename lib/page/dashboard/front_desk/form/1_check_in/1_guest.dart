@@ -44,6 +44,10 @@ class _Main_State extends State<Main_> {
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(2), //
+          child: LinearProgressIndicator(value: 1 / 4),
+        ),
       ),
       body: SingleChildScrollView(
         child: Center(

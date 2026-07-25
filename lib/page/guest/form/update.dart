@@ -57,7 +57,7 @@ class _Main_State extends State<Main_> {
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                       child: search_nation.Main_(
-                        initialValue: e.value["value"] ?? "Cambodia", //
+                        initialValue: e.value["value"] ?? "Cambodian", //
                         onChanged: (v) {
                           e.value["value"] = v[nation_schema_r.ID];
                         },

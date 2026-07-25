@@ -14,7 +14,8 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/widget/show_data.dart" as show_data;
 
-import "package:speanmeas/page/room/schema.w.dart" as r_schema_w;
+import "package:speanmeas/page/room/schema.r.dart" as r_schema_r;
+import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
 
 import "../../__config__.dart";
 import "../../schema.w.dart" as schema_w;
@@ -58,6 +59,10 @@ class _Main_State extends State<Main_> {
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(2), //
+          child: LinearProgressIndicator(value: 4 / 4),
+        ),
       ),
       body: SingleChildScrollView(
         child: Align(
@@ -65,17 +70,70 @@ class _Main_State extends State<Main_> {
           child: Column(
             children: [
               // ! use schema_r to show data
-              ...schema_w.data.entries.where((e) => !e.key.contains("_id")).map((e) {
-                String value = e.value["value"]?.toString() ?? "";
-                return Container(
-                  width: 600,
-                  margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                  child: show_data.Main_(
-                    title: e.value["title"], //
-                    value: value,
-                  ),
-                );
-              }),
+              for (var e in schema_w.data.entries)
+                (() {
+                  if (e.value["type"] == "_id") return SizedBox();
+
+                  if (e.key == schema_w.ROOM_LINK) {
+                    return Column(
+                      children: [
+                        for (var r in r_schema_r.data.entries)
+                          (() {
+                            if (r.value["type"] == "_id") return SizedBox();
+                            String value = r.value["value"]?.toString() ?? "";
+                            return Container(
+                              width: 600,
+                              margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                              child: show_data.Main_(
+                                title: "Room " + r.value["title"], //
+                                value: value,
+                              ),
+                            );
+                          })(),
+                      ],
+                    );
+                  }
+
+                  if (e.key == schema_w.GUEST_LINK) {
+                    return Column(
+                      children: [
+                        for (var r in g_schema_r.data.entries)
+                          (() {
+                            if (r.value["type"] == "_id") return SizedBox();
+                            String value = r.value["value"]?.toString() ?? "";
+                            return Container(
+                              width: 600,
+                              margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                              child: show_data.Main_(
+                                title: "Guest " + r.value["title"], //
+                                value: value,
+                              ),
+                            );
+                          })(),
+                      ],
+                    );
+
+                    String value = e.value["value"]?.toString() ?? "";
+                    return Container(
+                      width: 600,
+                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      child: show_data.Main_(
+                        title: e.value["title"], //
+                        value: value,
+                      ),
+                    );
+                  }
+
+                  String value = e.value["value"]?.toString() ?? "";
+                  return Container(
+                    width: 600,
+                    margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: show_data.Main_(
+                      title: e.value["title"], //
+                      value: value,
+                    ),
+                  );
+                })(),
             ],
           ),
         ),
@@ -103,8 +161,8 @@ class _Main_State extends State<Main_> {
         "/room/update", //
         data: FormData.fromMap({
           "_id": output[schema_w.ROOM_LINK], //
-          r_schema_w.STATUS: status, //
-          r_schema_w.FRONT_DESK_ID: response.data["_id"],
+          r_schema_r.STATUS: status, //
+          r_schema_r.FRONT_DESK_ID: response.data["_id"],
         }),
       );
 

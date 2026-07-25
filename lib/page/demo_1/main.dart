@@ -83,9 +83,6 @@ class _Main_State extends State<Main_> {
       if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
       state_manager?.setFilterWithFilterRows(filter_rows);
 
-      // move to top
-      state_manager?.scroll.vertical?.jumpTo(0);
-
       //
       is_loading = false;
       setState(() {});
@@ -352,6 +349,8 @@ class _Main_State extends State<Main_> {
       page = 1;
       load_page(page);
 
+      state_manager?.scroll.vertical?.jumpTo(0);
+
       //
     } catch (e) {
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
@@ -406,11 +405,7 @@ class _Main_State extends State<Main_> {
       if (v == null) return;
 
       //
-      for (var e in schema_w.data.entries) {
-        if (v[e.key] != null) {
-          row.cells[e.key]?.value = data_to_cell(data: v[e.key], type: e.value["type"]);
-        }
-      }
+      load_page(page);
 
       //
     } catch (e) {

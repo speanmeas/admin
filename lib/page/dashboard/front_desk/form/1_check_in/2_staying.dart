@@ -17,6 +17,28 @@ import "3_payment.dart" as step_3;
 import "widget/select_number.dart" as select_number;
 
 class _Main_State extends State<Main_> {
+  final c_number_of_guests = TextEditingController();
+  final c_stay_duration_days = TextEditingController();
+  final c_stay_duration_hours = TextEditingController();
+  final c_note = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    schema_w.data[schema_w.NUMBER_OF_GUESTS]?["value"] = 1;
+
+    c_number_of_guests.text = schema_w.data[schema_w.NUMBER_OF_GUESTS]?["value"]?.toString() ?? "";
+    c_stay_duration_days.text = schema_w.data[schema_w.STAY_DAY]?["value"]?.toString() ?? "";
+    c_stay_duration_hours.text = schema_w.data[schema_w.STAY_HOUR]?["value"]?.toString() ?? "";
+    c_note.text = schema_w.data[schema_w.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
+
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,21 +49,23 @@ class _Main_State extends State<Main_> {
         ),
 
         actions: [
-          if (can_next())
-            Container(
-              margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-              child: OutlinedButton.icon(
-                icon: Icon(Icons.arrow_right_alt_outlined),
-                label: Text("Next"),
-                style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                onPressed: on_next,
-              ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
+            child: OutlinedButton.icon(
+              icon: Icon(Icons.arrow_right_alt_outlined),
+              label: Text("Next"),
+              style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+              onPressed: can_next() ? on_next : null,
             ),
+          ),
         ],
-
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(2), //
+          child: LinearProgressIndicator(value: 2 / 4),
+        ),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -52,7 +76,7 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: select_number.Main_(
-                  controller: TextEditingController(text: schema_w.data[schema_w.NUMBER_OF_GUESTS]?["value"]?.toString() ?? ""),
+                  controller: c_number_of_guests,
                   title: "Number of Guests:",
                   options: List.generate(10, (index) => index + 1),
                   onChanged: (v) {
@@ -67,7 +91,7 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: select_number.Main_(
-                  controller: TextEditingController(text: schema_w.data[schema_w.STAY_DAY]?["value"]?.toString() ?? ""),
+                  controller: c_stay_duration_days,
                   title: "Stay Duration (Days):",
                   options: List.generate(365, (index) => index),
                   onChanged: (v) {
@@ -82,7 +106,7 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: select_number.Main_(
-                  controller: TextEditingController(text: schema_w.data[schema_w.STAY_HOUR]?["value"]?.toString() ?? ""),
+                  controller: c_stay_duration_hours,
                   title: "Stay Duration (Hours):",
                   options: [0, 3, 6, 9, 12, 15, 18, 21],
                   onChanged: (v) {
@@ -97,7 +121,7 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: schema_w.data[schema_w.CHECK_IN_NOTE]?["value"]?.toString() ?? ""),
+                  controller: c_note,
                   maxLines: 4,
                   decoration: InputDecoration(
                     labelText: "Note:", //
@@ -145,10 +169,10 @@ class _Main_State extends State<Main_> {
       double room_price_per_day_usd = r_schema_r.data[r_schema_r.USD_PER_DAY]?["value"]?.toDouble() ?? 0;
       double room_price_per_3h_usd = r_schema_r.data[r_schema_r.USD_PER_3H]?["value"]?.toDouble() ?? 0;
 
+      // calculate total price
       double room_price_total_usd = (stay_duration_days * room_price_per_day_usd) + ((stay_duration_hours / 3) * room_price_per_3h_usd);
       schema_w.data[schema_w.ROOM_PRICE_TOTAL_USD]?["value"] = room_price_total_usd;
 
-      // todo: should it move to backend?
       var r = await dio.post("/setting/now");
       if (DateTime.tryParse(r.data.toString()) == null) throw Exception("Invalid date time from server.");
       DateTime now = DateTime.tryParse(r.data.toString())!;
@@ -159,7 +183,11 @@ class _Main_State extends State<Main_> {
 
       schema_w.data[schema_w.CHECK_IN_AT]?["value"] = now.toLocal();
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => step_3.Main_()));
+      //
+      await Navigator.push(context, MaterialPageRoute(builder: (context) => step_3.Main_()));
+
+      //
+      init();
 
       //
     } catch (e) {

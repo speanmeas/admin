@@ -59,7 +59,7 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
-    final is_mobile = MediaQuery.of(context).size.width < 400;
+    final is_mobile = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
       body: LayoutBuilder(
@@ -73,246 +73,219 @@ class _Main_State extends State<Main_> {
               mainAxisExtent: constraints.maxHeight / row_count,
             ),
             children: [
-              Column(
-                children: [
-                  // header
-                  Container(
-                    height: 40,
-                    decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.login_outlined, color: Colors.green), //
-                        SizedBox(width: 4), //
-                        Text(
-                          "Check In", //
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
-                        ), //
-                      ],
-                    ),
-                  ),
+              Container(
+                decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
+                child: Column(
+                  children: [
+                    // header
+                    Text(
+                      "Check In", //
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+                    ), //
 
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      child: Wrap(
-                        children: [
-                          for (var r in rooms)
-                            (() {
-                              if (r[r_schema_r.STATUS] == "Available")
-                                return Container(
-                                  width: 120,
-                                  margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
-                                  child: button_icon_menu.Main_(
-                                    color: Colors.green,
-                                    icon: Icons.hotel_outlined,
-                                    text: r[r_schema_r.NUMBER],
-                                    menuChildren: [
-                                      MenuItemButton(
-                                        leadingIcon: Icon(Icons.info_outline),
-                                        child: Text("Status"),
-                                        onPressed: () {}, //
-                                      ),
-                                      Divider(height: 1),
-                                      MenuItemButton(
-                                        leadingIcon: Icon(Icons.edit_outlined),
-                                        child: Text("Update Status"),
-                                        onPressed: () {}, //
-                                      ),
-                                    ],
-                                    onPressed: () => on_check_in(r), //
-                                  ),
-                                );
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        child: Wrap(
+                          children: [
+                            for (var r in rooms)
+                              (() {
+                                if (r[r_schema_r.STATUS] == "Available")
+                                  return Container(
+                                    width: 120,
+                                    margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
+                                    child: button_icon_menu.Main_(
+                                      color: Colors.green,
+                                      icon: Icons.hotel_outlined,
+                                      text: r[r_schema_r.NUMBER],
+                                      menuChildren: [
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.info_outline),
+                                          child: Text("Status"),
+                                          onPressed: () {}, //
+                                        ),
+                                        Divider(height: 1),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.edit_outlined),
+                                          child: Text("Update Status"),
+                                          onPressed: () {}, //
+                                        ),
+                                      ],
+                                      onPressed: () => on_check_in(r), //
+                                    ),
+                                  );
 
-                              //
-                              return SizedBox.shrink();
-                            })(),
-                        ],
+                                //
+                                return SizedBox.shrink();
+                              })(),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  // header
-                  Container(
-                    height: 40,
-                    decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.payment_outlined, color: Colors.orange), //
-                        SizedBox(width: 4), //
-                        Text(
-                          "Payment", //
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.orange),
-                        ), //
-                      ],
-                    ),
-                  ),
-
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      child: Wrap(
-                        children: [
-                          for (var r in rooms)
-                            (() {
-                              if (r[r_schema_r.STATUS] == "Pending Pay")
-                                return Container(
-                                  width: 120,
-                                  margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
-                                  child: button_icon_menu.Main_(
-                                    color: Colors.orange,
-                                    icon: Icons.hotel_outlined,
-                                    text: r[r_schema_r.NUMBER],
-                                    menuChildren: [
-                                      MenuItemButton(
-                                        leadingIcon: Icon(Icons.info_outline),
-                                        child: Text("Status"),
-                                        onPressed: () {}, //
-                                      ),
-                                      Divider(height: 1),
-                                      MenuItemButton(
-                                        leadingIcon: Icon(Icons.edit_outlined),
-                                        child: Text("Update Status"),
-                                        onPressed: () {}, //
-                                      ),
-                                    ],
-                                    onPressed: () => on_payment(r), //
-                                  ),
-                                );
-
-                              //
-                              return SizedBox.shrink();
-                            })(),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  // header
-                  Container(
-                    height: 40,
-                    decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.logout_outlined, color: Colors.blue), //
-                        SizedBox(width: 4), //
-                        Text(
-                          "Check Out", //
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
-                        ), //
-                      ],
-                    ),
-                  ),
-
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      child: Wrap(
-                        children: [
-                          for (var r in rooms)
-                            (() {
-                              if (r[r_schema_r.STATUS] == "Pending Leave")
-                                return Container(
-                                  width: 120,
-                                  margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
-                                  child: button_icon_menu.Main_(
-                                    color: Colors.blue,
-                                    icon: Icons.hotel_outlined,
-                                    text: r[r_schema_r.NUMBER],
-                                    menuChildren: [
-                                      MenuItemButton(
-                                        leadingIcon: Icon(Icons.info_outline),
-                                        child: Text("Status"),
-                                        onPressed: () {}, //
-                                      ),
-                                      Divider(height: 1),
-                                      MenuItemButton(
-                                        leadingIcon: Icon(Icons.edit_outlined),
-                                        child: Text("Update Status"),
-                                        onPressed: () {}, //
-                                      ),
-                                    ],
-                                    onPressed: () => on_payment(r), //
-                                  ),
-                                );
-
-                              //
-                              return SizedBox.shrink();
-                            })(),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
-              Column(
-                children: [
-                  // header
-                  Container(
-                    height: 40,
-                    decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.cleaning_services_outlined, color: Colors.black), //
-                        SizedBox(width: 4), //
-                        Text(
-                          "Clean", //
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
-                        ), //
-                      ],
-                    ),
-                  ),
+              //
+              Container(
+                decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
+                child: Column(
+                  children: [
+                    // header
+                    Text(
+                      "Payment", //
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.orange),
+                    ), //
 
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      child: Wrap(
-                        children: [
-                          for (var r in rooms)
-                            (() {
-                              if (r[r_schema_r.STATUS] == "Pending Clean")
-                                return Container(
-                                  width: 120,
-                                  margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
-                                  child: button_icon_menu.Main_(
-                                    color: Colors.black,
-                                    icon: Icons.hotel_outlined,
-                                    text: r[r_schema_r.NUMBER],
-                                    menuChildren: [
-                                      MenuItemButton(
-                                        leadingIcon: Icon(Icons.info_outline),
-                                        child: Text("Status"),
-                                        onPressed: () {}, //
-                                      ),
-                                      Divider(height: 1),
-                                      MenuItemButton(
-                                        leadingIcon: Icon(Icons.edit_outlined),
-                                        child: Text("Update Status"),
-                                        onPressed: () {}, //
-                                      ),
-                                    ],
-                                    onPressed: () => on_payment(r), //
-                                  ),
-                                );
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        child: Wrap(
+                          children: [
+                            for (var r in rooms)
+                              (() {
+                                if (r[r_schema_r.STATUS] == "Pending Pay")
+                                  return Container(
+                                    width: 120,
+                                    margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
+                                    child: button_icon_menu.Main_(
+                                      color: Colors.orange,
+                                      icon: Icons.hotel_outlined,
+                                      text: r[r_schema_r.NUMBER],
+                                      menuChildren: [
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.info_outline),
+                                          child: Text("Status"),
+                                          onPressed: () {}, //
+                                        ),
+                                        Divider(height: 1),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.edit_outlined),
+                                          child: Text("Update Status"),
+                                          onPressed: () {}, //
+                                        ),
+                                      ],
+                                      onPressed: () => on_payment(r), //
+                                    ),
+                                  );
 
-                              //
-                              return SizedBox.shrink();
-                            })(),
-                        ],
+                                //
+                                return SizedBox.shrink();
+                              })(),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              ),
+
+              //
+              Container(
+                decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
+                child: Column(
+                  children: [
+                    // header
+                    Text(
+                      "Check Out", //
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+                    ), //
+
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        child: Wrap(
+                          children: [
+                            for (var r in rooms)
+                              (() {
+                                if (r[r_schema_r.STATUS] == "Pending Leave")
+                                  return Container(
+                                    width: 120,
+                                    margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
+                                    child: button_icon_menu.Main_(
+                                      color: Colors.blue,
+                                      icon: Icons.hotel_outlined,
+                                      text: r[r_schema_r.NUMBER],
+                                      menuChildren: [
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.info_outline),
+                                          child: Text("Status"),
+                                          onPressed: () {}, //
+                                        ),
+                                        Divider(height: 1),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.edit_outlined),
+                                          child: Text("Update Status"),
+                                          onPressed: () {}, //
+                                        ),
+                                      ],
+                                      onPressed: () => on_payment(r), //
+                                    ),
+                                  );
+
+                                //
+                                return SizedBox.shrink();
+                              })(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              //
+              Container(
+                decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
+                child: Column(
+                  children: [
+                    // header
+                    Text(
+                      "Clean", //
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                    ), //
+
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        child: Wrap(
+                          children: [
+                            for (var r in rooms)
+                              (() {
+                                if (r[r_schema_r.STATUS] == "Pending Clean")
+                                  return Container(
+                                    width: 120,
+                                    margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
+                                    child: button_icon_menu.Main_(
+                                      color: Colors.black,
+                                      icon: Icons.hotel_outlined,
+                                      text: r[r_schema_r.NUMBER],
+                                      menuChildren: [
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.info_outline),
+                                          child: Text("Status"),
+                                          onPressed: () {}, //
+                                        ),
+                                        Divider(height: 1),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.edit_outlined),
+                                          child: Text("Update Status"),
+                                          onPressed: () {}, //
+                                        ),
+                                      ],
+                                      onPressed: () => on_payment(r), //
+                                    ),
+                                  );
+
+                                //
+                                return SizedBox.shrink();
+                              })(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           );
@@ -329,14 +302,18 @@ class _Main_State extends State<Main_> {
       r_schema_r.clear();
 
       schema_w.data[schema_w.ROOM_LINK]?["value"] = r["_id"];
+      schema_w.data["room_number"]?["value"] = r["number"];
 
-      for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
+      for (var e in schema_w.data.entries) print(e);
+      // print(r);
 
-      final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_in.Main_()));
+      // for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
 
-      if (v == null) return;
+      // final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_in.Main_()));
 
-      init();
+      // if (v == null) return;
+
+      // init();
 
       //
     } catch (e) {
