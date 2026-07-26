@@ -47,7 +47,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "4. Summary", //
+          "2. Summary", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -55,9 +55,10 @@ class _Main_State extends State<Main_> {
         ),
 
         actions: [
+          // if (can_next())
           OutlinedButton.icon(
-            icon: Icon(Icons.login_outlined),
-            label: Text("Check In"),
+            icon: Icon(Icons.cleaning_services_outlined), //
+            label: Text("Clean"), //
             style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
             onPressed: on_check_in, //
           ),
@@ -70,7 +71,7 @@ class _Main_State extends State<Main_> {
         //
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(2), //
-          child: LinearProgressIndicator(value: 4 / 4),
+          child: LinearProgressIndicator(value: 2 / 2),
         ),
       ),
       body: SingleChildScrollView(
@@ -315,11 +316,13 @@ class _Main_State extends State<Main_> {
       final output = {for (var e in schema_w.data.entries) e.key: e.value["value"]};
 
       //
-      final response = await dio.post("/front_desk/create", data: FormData.fromMap(output));
+      final response = await dio.post(
+        "/front_desk/update", //
+        data: FormData.fromMap(output),
+      );
 
       //
-      var status = "Pending Pay";
-      if (output[schema_w.ROOM_PAID_AT]?.isNotEmpty ?? false) status = "Pending Leave";
+      var status = "Available";
 
       //
       await dio.post(
@@ -327,13 +330,11 @@ class _Main_State extends State<Main_> {
         data: FormData.fromMap({
           "_id": output[schema_w.ROOM_ID], //
           r_schema_r.STATUS: status, //
-          r_schema_r.FRONT_DESK_ID: response.data["_id"],
+          r_schema_r.FRONT_DESK_ID: " ",
         }),
       );
 
       //
-      Navigator.pop(context);
-      Navigator.pop(context);
       Navigator.pop(context);
       Navigator.pop(context, true);
 

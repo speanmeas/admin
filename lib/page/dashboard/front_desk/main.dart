@@ -19,9 +19,9 @@ import "package:speanmeas/page/room/schema.r.dart" as r_schema_r;
 import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
 
 import "form/check_in/1_guest.dart" as check_in;
-import "form/payment/step_1_room_payment.dart" as payment;
-import "form/check_out/step_1_revenue_payment.dart" as check_out;
-import "form/clean/step_1_note.dart" as clean;
+import "form/payment/1_room_payment.dart" as payment;
+import "form/check_out/1_revenue_payment.dart" as check_out;
+import "form/check_out/2_note.dart" as clean;
 
 import "widget/button_icon_menu.dart" as button_icon_menu;
 
@@ -159,10 +159,24 @@ class _Main_State extends State<Main_> {
                                           child: Text("Status"),
                                           onPressed: () {}, //
                                         ),
-                                        Divider(height: 1),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.change_circle_outlined),
+                                          child: Text("Change Room"),
+                                          onPressed: () {}, //
+                                        ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.add_outlined),
+                                          child: Text("Add Revenue Payment"),
+                                          onPressed: () {}, //
+                                        ),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.edit_outlined),
-                                          child: Text("Update Status"),
+                                          child: Text("Update Guest"),
+                                          onPressed: () {}, //
+                                        ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
+                                          child: Text("Cancel", style: TextStyle(color: Colors.red)),
                                           onPressed: () {}, //
                                         ),
                                       ],
@@ -213,10 +227,31 @@ class _Main_State extends State<Main_> {
                                           child: Text("Status"),
                                           onPressed: () {}, //
                                         ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.change_circle_outlined),
+                                          child: Text("Change Room"),
+                                          onPressed: () {}, //
+                                        ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.add_outlined),
+                                          child: Text("Revenue Payment"),
+                                          onPressed: () {}, //
+                                        ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.edit_outlined),
+                                          child: Text("Room Payment"),
+                                          onPressed: () {}, //
+                                        ),
                                         Divider(height: 1),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.edit_outlined),
-                                          child: Text("Update Status"),
+                                          child: Text("Update Guest"),
+                                          onPressed: () {}, //
+                                        ),
+                                        Divider(height: 1),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
+                                          child: Text("Cancel", style: TextStyle(color: Colors.red)),
                                           onPressed: () {}, //
                                         ),
                                       ],
@@ -270,7 +305,7 @@ class _Main_State extends State<Main_> {
                                         Divider(height: 1),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.edit_outlined),
-                                          child: Text("Update Status"),
+                                          child: Text("Update Guest"),
                                           onPressed: () {}, //
                                         ),
                                       ],
@@ -302,7 +337,7 @@ class _Main_State extends State<Main_> {
       g_schema_r.clear();
       r_schema_r.clear();
 
-      schema_w.data[schema_w.ROOM_LINK]?["value"] = r["_id"];
+      schema_w.data[schema_w.ROOM_ID]?["value"] = r["_id"];
 
       for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
 
@@ -323,26 +358,43 @@ class _Main_State extends State<Main_> {
   void on_payment(r) async {
     try {
       //
-      // schema.clear();
+      schema_w.clear();
+      g_schema_r.clear();
+      r_schema_r.clear();
 
       // print(r[r_schema_r.FRONT_DESK_ID]);
+      for (var e in r_schema_r.data.entries) {
+        e.value["value"] = r[e.key];
+        // print(e);
+      }
 
-      var res = await dio.post(
+      var f = await dio.post(
         "/front_desk/read_id",
         data: FormData.fromMap({
           "_id": r[r_schema_r.FRONT_DESK_ID], //
         }),
       );
 
-      print(res);
+      for (var e in schema_w.data.entries) {
+        e.value["value"] = f.data[0][e.key];
+      }
 
-      // for (var e in response.data[0].entries) schema_r.data[e.key]?["value"] = e.value;
+      if (schema_w.data[schema_w.GUEST_ID]?["value"] != null) {
+        var g = await dio.post(
+          "/guest/read_id",
+          data: FormData.fromMap({
+            "_id": f.data[0][schema_w.GUEST_ID], //
+          }),
+        );
 
-      // var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => payment.Main_()));
+        for (var e in g_schema_r.data.entries) e.value["value"] = g.data[0][e.key];
+      }
 
-      // if (value == null) return;
+      var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => payment.Main_()));
 
-      // init();
+      if (value == null) return;
+
+      init();
 
       //
     } catch (e) {
@@ -355,17 +407,45 @@ class _Main_State extends State<Main_> {
     try {
       //
 
-      // schema.clear();
+      //
+      schema_w.clear();
+      g_schema_r.clear();
+      r_schema_r.clear();
 
-      // var response = await dio.post("/front_desk/data_read", data: FormData.fromMap({"key": schema.ID, schema.ID: r[room_schema.FRONT_DESK_ID]}));
+      //
+      for (var e in r_schema_r.data.entries) {
+        e.value["value"] = r[e.key];
+      }
 
-      // for (var e in response.data[0].entries) schema.data[e.key]?["value"] = e.value;
+      //
+      var f = await dio.post(
+        "/front_desk/read_id",
+        data: FormData.fromMap({
+          "_id": r[r_schema_r.FRONT_DESK_ID], //
+        }),
+      );
 
-      // var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_out.Main_()));
+      for (var e in schema_w.data.entries) {
+        e.value["value"] = f.data[0][e.key];
+      }
 
-      // if (value == null) return;
+      //
+      if (schema_w.data[schema_w.GUEST_ID]?["value"] != null) {
+        var g = await dio.post(
+          "/guest/read_id",
+          data: FormData.fromMap({
+            "_id": f.data[0][schema_w.GUEST_ID], //
+          }),
+        );
 
-      // init();
+        for (var e in g_schema_r.data.entries) e.value["value"] = g.data[0][e.key];
+      }
+
+      var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_out.Main_()));
+
+      if (value == null) return;
+
+      init();
 
       //
     } catch (e) {
@@ -376,17 +456,44 @@ class _Main_State extends State<Main_> {
   void on_clean(r) async {
     try {
       //
-      // schema.clear();
+      schema_w.clear();
+      g_schema_r.clear();
+      r_schema_r.clear();
 
-      // var response = await dio.post("/front_desk/data_read", data: FormData.fromMap({"key": schema.ID, schema.ID: r[room_schema.FRONT_DESK_ID]}));
+      //
+      for (var e in r_schema_r.data.entries) {
+        e.value["value"] = r[e.key];
+      }
 
-      // for (var e in response.data[0].entries) schema.data[e.key]?["value"] = e.value;
+      //
+      var f = await dio.post(
+        "/front_desk/read_id",
+        data: FormData.fromMap({
+          "_id": r[r_schema_r.FRONT_DESK_ID], //
+        }),
+      );
 
-      // var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => clean.Main_()));
+      for (var e in schema_w.data.entries) {
+        e.value["value"] = f.data[0][e.key];
+      }
 
-      // if (value == null) return;
+      //
+      if (schema_w.data[schema_w.GUEST_ID]?["value"] != null) {
+        var g = await dio.post(
+          "/guest/read_id",
+          data: FormData.fromMap({
+            "_id": f.data[0][schema_w.GUEST_ID], //
+          }),
+        );
 
-      // init();
+        for (var e in g_schema_r.data.entries) e.value["value"] = g.data[0][e.key];
+      }
+
+      var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => clean.Main_()));
+
+      if (value == null) return;
+
+      init();
 
       //
     } catch (e) {

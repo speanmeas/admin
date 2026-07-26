@@ -50,12 +50,12 @@ class _Main_State extends State<Main_> {
                     );
                   }
 
-                  if (e.key == schema_w.NATIONALITY_LINK) {
+                  if (e.key == schema_w.NATIONALITY_ID) {
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                       child: search_nation.Main_(
-                        initialValue: "Cambodia", //
+                        initialValue: "Cambodian", //
                         onChanged: (v) {
                           e.value["value"] = v[nation_schema_r.ID];
                         },

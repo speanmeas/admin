@@ -12,17 +12,30 @@ import 'package:speanmeas/widget/snackbar_show.dart';
 import 'package:speanmeas/page/auth/schema.r.dart' as user;
 
 import '../../__config__.dart';
-import '../../schema.w.dart' as schema;
-import 'step_2_summary.dart' as step_2;
-import "widget/input_note.dart" as input_note;
+import '../../schema.w.dart' as schema_w;
+import '../clean/2_summary.dart' as step_2;
+// import "widget/input_note.dart" as input_note;
 
 class _Main_State extends State<Main_> {
+  final c_note = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    c_note.text = schema_w.data[schema_w.CLEAN_NOTE]?["value"]?.toString() ?? "";
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "1. Clean - Note", //
+          "1. Note", //
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), //
         ),
         actions: [
@@ -39,24 +52,35 @@ class _Main_State extends State<Main_> {
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
+        //
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(2), //
+          child: LinearProgressIndicator(value: 1 / 2),
+        ),
       ),
       body: SingleChildScrollView(
         child: Center(
-          child: Column(
-            children: [
-              // note
-              Container(
-                width: 600,
-                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: input_note.Main_(
-                  initialValue: schema.data[schema.CLEAN_NOTE]?["value"]?.toString() ?? "",
+          child: Container(
+            width: 600,
+            margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+            child: Column(
+              children: [
+                // note
+                TextField(
+                  controller: c_note,
+                  decoration: InputDecoration(
+                    labelText: "Note:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  maxLines: 4,
                   onChanged: (v) {
-                    schema.data[schema.CLEAN_NOTE]?["value"] = v;
+                    schema_w.data[schema_w.CLEAN_NOTE]?["value"] = v;
                     setState(() {});
                   },
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -66,21 +90,23 @@ class _Main_State extends State<Main_> {
   void on_next() async {
     try {
       //
-      final response = await dio.post("/variable/datetime_now");
+      final response = await dio.post("/setting/now");
       if (DateTime.tryParse(response.data.toString()) == null) throw Exception("Invalid date time from server.");
       DateTime now = DateTime.tryParse(response.data.toString())!;
 
       //
 
       // timestamp
-      schema.data[schema.CLEAN_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
+      schema_w.data[schema_w.CLEAN_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
       // if (user.data[user.ID]!["value"] != null) //
       //   schema.data[schema.CLEAN_BY_ID]?["value"] = user.data[user.ID]!["value"];
       // if (user.data[user.USER_FULL_NAME]!["value"] != null) //
       //   schema.data[schema.CLEAN_BY]?["value"] = user.data[user.USER_FULL_NAME]!["value"];
 
       // navigate to next screen
-      Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
+      await Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
+
+      init(); //
 
       //
     } catch (e) {

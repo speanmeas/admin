@@ -15,7 +15,6 @@ import "package:speanmeas/page/guest/schema.w.dart" as g_schema_w;
 class _Main_State extends State<Main_> {
   // *
   final FocusNode focusNode = FocusNode();
-  final TextEditingController controller_search = TextEditingController();
 
   // *
   bool is_selected = false;
@@ -28,16 +27,10 @@ class _Main_State extends State<Main_> {
     //
     focusNode.addListener(() {
       if (!focusNode.hasFocus && !is_selected) {
-        controller_search.clear();
+        widget.controller.clear();
         widget.onChanged?.call({});
       }
     });
-
-    //
-    if (widget.initialValue != null) {
-      controller_search.text = widget.initialValue ?? "";
-      init(widget.initialValue ?? "");
-    }
   }
 
   init(String q) async {
@@ -69,7 +62,7 @@ class _Main_State extends State<Main_> {
       children: [
         Expanded(
           child: TypeAheadField<String>(
-            controller: controller_search,
+            controller: widget.controller,
             focusNode: focusNode,
             itemBuilder: (context, item) => ListTile(title: Text(item)),
             suggestionsCallback: on_search,
@@ -93,7 +86,7 @@ class _Main_State extends State<Main_> {
             },
             onSelected: (v) {
               //
-              controller_search.text = v;
+              widget.controller.text = v;
               is_selected = true;
 
               //
@@ -121,13 +114,25 @@ class _Main_State extends State<Main_> {
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
             //
+            g_schema_w.clear();
+
+            //
             final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => g_form_create.Main_()));
             if (v == null) return;
 
             //
-            controller_search.text = v[g_schema_w.PHONE_NUMBER] ?? "";
+            widget.controller.text = v[g_schema_w.PHONE_NUMBER] ?? "";
+
+            //
+            final r = await dio.post(
+              "/guest/read_id", //
+              data: FormData.fromMap({"_id": v["_id"]}),
+            );
+
+            final d = List<Map<String, dynamic>>.from(r.data).first;
+
             is_selected = true;
-            widget.onChanged?.call(v);
+            widget.onChanged?.call(d);
           },
         ),
       ],
@@ -171,10 +176,12 @@ class _Main_State extends State<Main_> {
 class Main_ extends StatefulWidget {
   Main_({
     super.key, //
+    required this.controller,
     this.initialValue, //
     required this.onChanged,
   });
 
+  final TextEditingController controller;
   final String? initialValue;
   final ValueChanged<Map<String, dynamic>>? onChanged;
 
@@ -189,7 +196,7 @@ void main() {
       home: Scaffold(
         body: Center(
           child: Main_(
-            // initialValue: "Cambodian",
+            controller: TextEditingController(),
             onChanged: (data) {
               print("Selected Data: $data");
             },

@@ -1,6 +1,6 @@
-import "package:intl/intl.dart";
 import "package:dio/dio.dart";
 import "package:flutter/material.dart";
+import "package:intl/intl.dart";
 import "package:provider/provider.dart";
 
 import "package:speanmeas/__config__.dart";
@@ -9,22 +9,20 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
+import "package:speanmeas/page/auth/schema.r.dart" as user;
 
 import "../../__config__.dart";
+import "../../schema.w.dart" as schema;
 
-import "../../schema.w.dart" as fd_schema_w;
+import "2_note.dart" as step_2;
 
 import "widget/input_number.dart" as input_number;
-
-import "package:speanmeas/page/auth/schema.r.dart" as user_r;
-
-import "4_summary.dart" as step_4;
 
 class _Main_State extends State<Main_> {
   final c_room_price_total_usd = TextEditingController();
   final c_paid_bank_usd = TextEditingController();
-  final c_paid_bank_khr = TextEditingController();
   final c_paid_cash_usd = TextEditingController();
+  final c_paid_bank_khr = TextEditingController();
   final c_paid_cash_khr = TextEditingController();
   final c_return_usd = TextEditingController();
   final c_return_khr = TextEditingController();
@@ -37,14 +35,14 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    c_room_price_total_usd.text = fd_schema_w.data[fd_schema_w.ROOM_PRICE_TOTAL_USD]?["value"]?.toString() ?? "";
-    c_paid_bank_usd.text = fd_schema_w.data[fd_schema_w.ROOM_PAID_BANK_USD]?["value"]?.toString() ?? "";
-    c_paid_bank_khr.text = fd_schema_w.data[fd_schema_w.ROOM_PAID_BANK_KHR]?["value"]?.toString() ?? "";
-    c_paid_cash_usd.text = fd_schema_w.data[fd_schema_w.ROOM_PAID_CASH_USD]?["value"]?.toString() ?? "";
-    c_paid_cash_khr.text = fd_schema_w.data[fd_schema_w.ROOM_PAID_CASH_KHR]?["value"]?.toString() ?? "";
-    c_return_usd.text = fd_schema_w.data[fd_schema_w.ROOM_RETURN_USD]?["value"]?.toString() ?? "";
-    c_return_khr.text = fd_schema_w.data[fd_schema_w.ROOM_RETURN_KHR]?["value"]?.toString() ?? "";
-    c_note.text = fd_schema_w.data[fd_schema_w.ROOM_PAID_NOTE]?["value"]?.toString() ?? "";
+    c_room_price_total_usd.text = schema.data[schema.REVENUE_PRICE_TOTAL_USD]?["value"]?.toString() ?? "";
+    c_paid_bank_usd.text = schema.data[schema.REVENUE_PAID_BANK_USD]?["value"]?.toString() ?? "";
+    c_paid_cash_usd.text = schema.data[schema.REVENUE_PAID_CASH_USD]?["value"]?.toString() ?? "";
+    c_paid_bank_khr.text = schema.data[schema.REVENUE_PAID_BANK_KHR]?["value"]?.toString() ?? "";
+    c_paid_cash_khr.text = schema.data[schema.REVENUE_PAID_CASH_KHR]?["value"]?.toString() ?? "";
+    c_return_usd.text = schema.data[schema.REVENUE_RETURN_USD]?["value"]?.toString() ?? "";
+    c_return_khr.text = schema.data[schema.REVENUE_RETURN_KHR]?["value"]?.toString() ?? "";
+    c_note.text = schema.data[schema.REVENUE_PAID_NOTE]?["value"]?.toString() ?? "";
 
     setState(() {});
   }
@@ -54,7 +52,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "3. Room Payment", //
+          "1. Revenue Payment", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -65,7 +63,7 @@ class _Main_State extends State<Main_> {
             icon: Icon(Icons.arrow_right_alt_outlined),
             label: Text("Next"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-            onPressed: on_next,
+            onPressed: can_next() ? on_next : null, //
           ),
           SizedBox(width: 8),
         ],
@@ -75,7 +73,7 @@ class _Main_State extends State<Main_> {
         //
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(2), //
-          child: LinearProgressIndicator(value: 3 / 4),
+          child: LinearProgressIndicator(value: 1 / 3),
         ),
       ),
       body: SingleChildScrollView(
@@ -85,13 +83,18 @@ class _Main_State extends State<Main_> {
             margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
             child: Column(
               children: [
+                //
+
                 // room price
                 input_number.Main_(
                   controller: c_room_price_total_usd,
-                  title: "Room Price (USD)", //
+                  title: "Revenue Price (USD)", //
                   prefixIcon: Icons.attach_money_outlined,
                   suffixText: "\$",
-                  onChanged: (v) => setState(() {}), //
+                  onChanged: (v) {
+                    // schema.data[schema.REVENUE_PRICE_TOTAL_USD]?["value"] = v;
+                    setState(() {});
+                  },
                 ),
 
                 // total price
@@ -99,7 +102,7 @@ class _Main_State extends State<Main_> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text("Total Price: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text("Price Total: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     Text(
                       "${get_price_total_usd().toString()}\$",
                       style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 16),
@@ -117,7 +120,10 @@ class _Main_State extends State<Main_> {
                         title: "Paid Bank (USD)", //
                         prefixIcon: Icons.account_balance,
                         suffixText: "\$",
-                        onChanged: (v) => setState(() {}), //
+                        onChanged: (v) {
+                          // schema.data[schema.REVENUE_PAID_BANK_USD]?["value"] = v;
+                          setState(() {});
+                        },
                       ),
                     ),
 
@@ -130,7 +136,10 @@ class _Main_State extends State<Main_> {
                         title: "Paid Bank (KHR)", //
                         prefixIcon: Icons.account_balance,
                         suffixText: "៛",
-                        onChanged: (v) => setState(() {}), //
+                        onChanged: (v) {
+                          // schema.data[schema.REVENUE_PAID_BANK_KHR]?["value"] = v;
+                          setState(() {});
+                        },
                       ),
                     ),
                   ],
@@ -140,26 +149,35 @@ class _Main_State extends State<Main_> {
 
                 // paid cash
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // paid cash usd
                     Expanded(
                       child: input_number.Main_(
                         controller: c_paid_cash_usd,
                         title: "Paid Cash (USD)", //
                         prefixIcon: Icons.payments_outlined,
                         suffixText: "\$",
-                        onChanged: (v) => setState(() {}), //
+                        onChanged: (v) {
+                          // schema.data[schema.REVENUE_PAID_CASH_USD]?["value"] = v;
+                          setState(() {});
+                        },
                       ),
                     ),
 
                     SizedBox(width: 4),
 
+                    // paid cash khr
                     Expanded(
                       child: input_number.Main_(
                         controller: c_paid_cash_khr,
                         title: "Paid Cash (KHR)", //
                         prefixIcon: Icons.payments_outlined,
                         suffixText: "៛",
-                        onChanged: (v) => setState(() {}), //
+                        onChanged: (v) {
+                          // schema.data[schema.REVENUE_PAID_CASH_KHR]?["value"] = v;
+                          setState(() {});
+                        },
                       ),
                     ),
                   ],
@@ -170,7 +188,7 @@ class _Main_State extends State<Main_> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text("Total Paid: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text("Paid Total: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     Text(
                       "${get_paid_total_usd().toString()}\$",
                       style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 16),
@@ -180,16 +198,21 @@ class _Main_State extends State<Main_> {
 
                 SizedBox(height: 32),
 
-                // return  usd and khr
+                // return
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // return usd
                     Expanded(
                       child: input_number.Main_(
                         controller: c_return_usd,
                         title: "Return Cash (USD)", //
                         prefixIcon: Icons.payments_outlined,
                         suffixText: "\$",
-                        onChanged: (v) => setState(() {}), //
+                        onChanged: (v) {
+                          // schema.data[schema.REVENUE_RETURN_USD]?["value"] = v;
+                          setState(() {});
+                        },
                       ),
                     ),
 
@@ -202,7 +225,10 @@ class _Main_State extends State<Main_> {
                         title: "Return Cash (KHR)", //
                         prefixIcon: Icons.payments_outlined,
                         suffixText: "៛",
-                        onChanged: (v) => setState(() {}), //
+                        onChanged: (v) {
+                          // schema.data[schema.REVENUE_RETURN_KHR]?["value"] = v;
+                          setState(() {});
+                        },
                       ),
                     ),
                   ],
@@ -213,7 +239,7 @@ class _Main_State extends State<Main_> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text("Total Return: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text("Returned Total: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     Text(
                       "${get_return_total_usd().toString()}\$",
                       style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 16),
@@ -232,7 +258,10 @@ class _Main_State extends State<Main_> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
                   maxLines: 4,
-                  onChanged: (v) => setState(() {}), //
+                  onChanged: (v) {
+                    // schema.data[schema.REVENUE_PAID_NOTE]?["value"] = v;
+                    setState(() {});
+                  },
                 ),
 
                 // balance
@@ -240,7 +269,7 @@ class _Main_State extends State<Main_> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text("Balance : ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text("Balanced: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
 
                     if (get_balance_usd() == 0)
                       Text(
@@ -296,49 +325,43 @@ class _Main_State extends State<Main_> {
     return balance_usd;
   }
 
+  bool can_next() {
+    if (get_balance_usd() == 0) return true;
+
+    return false;
+  }
+
   void on_next() async {
     try {
-      fd_schema_w.data[fd_schema_w.ROOM_PRICE_TOTAL_USD]?["value"] = get_price_total_usd();
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_BANK_USD]?["value"] = double.tryParse(c_paid_bank_usd.text.trim());
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_BANK_KHR]?["value"] = double.tryParse(c_paid_bank_khr.text.trim());
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_CASH_USD]?["value"] = double.tryParse(c_paid_cash_usd.text.trim());
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_CASH_KHR]?["value"] = double.tryParse(c_paid_cash_khr.text.trim());
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
-      fd_schema_w.data[fd_schema_w.ROOM_RETURN_USD]?["value"] = double.tryParse(c_return_usd.text.trim());
-      fd_schema_w.data[fd_schema_w.ROOM_RETURN_KHR]?["value"] = double.tryParse(c_return_khr.text.trim());
-      fd_schema_w.data[fd_schema_w.ROOM_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
-      fd_schema_w.data[fd_schema_w.ROOM_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_NOTE]?["value"] = c_note.text.trim();
-
       //
-      if (get_balance_usd() == 0) {
-        final r = await dio.post("/setting/now");
-        if (DateTime.tryParse(r.data.toString()) == null) throw Exception("Invalid date time from server.");
-        DateTime now = DateTime.tryParse(r.data.toString())!;
+      final n = await dio.post("/setting/now");
+      if (DateTime.tryParse(n.data.toString()) == null) throw Exception("Invalid date time from server.");
+      DateTime now = DateTime.tryParse(n.data.toString())!;
 
-        //
-        fd_schema_w.data[fd_schema_w.ROOM_PAID_BY]?["value"] = user_r.data[user_r.ID]!["value"]?.toString() ?? "System";
-        fd_schema_w.data[fd_schema_w.ROOM_PAID_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
-      }
-      // clear data if no payment
-      else {
-        fd_schema_w.data[fd_schema_w.ROOM_PAID_BANK_USD]?["value"] = null;
-        fd_schema_w.data[fd_schema_w.ROOM_PAID_CASH_USD]?["value"] = null;
-        fd_schema_w.data[fd_schema_w.ROOM_PAID_BANK_KHR]?["value"] = null;
-        fd_schema_w.data[fd_schema_w.ROOM_PAID_CASH_KHR]?["value"] = null;
-        fd_schema_w.data[fd_schema_w.ROOM_RETURN_USD]?["value"] = null;
-        fd_schema_w.data[fd_schema_w.ROOM_RETURN_KHR]?["value"] = null;
-        fd_schema_w.data[fd_schema_w.ROOM_RETURN_TOTAL_USD]?["value"] = null;
-        fd_schema_w.data[fd_schema_w.ROOM_PAID_TOTAL_USD]?["value"] = null;
-        fd_schema_w.data[fd_schema_w.ROOM_PAID_BY]?["value"] = null;
-        fd_schema_w.data[fd_schema_w.ROOM_PAID_AT]?["value"] = null;
-      }
+      schema.data[schema.REVENUE_PRICE_TOTAL_USD]?["value"] = get_price_total_usd();
+      schema.data[schema.REVENUE_PAID_BANK_USD]?["value"] = double.tryParse(c_paid_bank_usd.text.trim());
+      schema.data[schema.REVENUE_PAID_CASH_USD]?["value"] = double.tryParse(c_paid_cash_usd.text.trim());
+      schema.data[schema.REVENUE_PAID_BANK_KHR]?["value"] = double.tryParse(c_paid_bank_khr.text.trim());
+      schema.data[schema.REVENUE_PAID_CASH_KHR]?["value"] = double.tryParse(c_paid_cash_khr.text.trim());
+      schema.data[schema.REVENUE_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
+      schema.data[schema.REVENUE_RETURN_USD]?["value"] = double.tryParse(c_return_usd.text.trim());
+      schema.data[schema.REVENUE_RETURN_KHR]?["value"] = double.tryParse(c_return_khr.text.trim());
+      schema.data[schema.REVENUE_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
+      schema.data[schema.REVENUE_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
+      schema.data[schema.REVENUE_PAID_BY]?["value"] = user.data[user.ID]!["value"] ?? "System";
+      schema.data[schema.REVENUE_PAID_NOTE]?["value"] = c_note.text.trim();
+      schema.data[schema.REVENUE_PAID_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 
-      // move to next page
-      await Navigator.push(context, MaterialPageRoute(builder: (context) => step_4.Main_()));
+      if (user.data[user.ID]!["value"] != null) //
+        schema.data[schema.ROOM_PAID_BY]?["value"] = user.data[user.ID]!["value"];
 
-      //
+      schema.data[schema.CHECK_OUT_BY]?["value"] = user.data[user.ID]!["value"] ?? "System";
+      schema.data[schema.CHECK_OUT_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
+
+      await Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
+
       init();
+      //
     } catch (e) {
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }

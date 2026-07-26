@@ -22,6 +22,20 @@ import "package:speanmeas/widget/show_data.dart" as show_data;
 import "2_staying.dart" as step_2;
 
 class _Main_State extends State<Main_> {
+  final c_search_guest = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    c_search_guest.text = g_schema_r.data[g_schema_r.PHONE_NUMBER]?["value"]?.toString() ?? "";
+
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,19 +45,19 @@ class _Main_State extends State<Main_> {
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         actions: [
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 8, 0),
-            child: OutlinedButton.icon(
-              icon: Icon(Icons.arrow_right_alt_outlined),
-              label: Text("Next"),
-              style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: on_next,
-            ),
+          OutlinedButton.icon(
+            icon: Icon(Icons.arrow_right_alt_outlined),
+            label: Text("Next"),
+            style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+            onPressed: on_next,
           ),
+          SizedBox(width: 8),
         ],
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
+
+        //
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(2), //
           child: LinearProgressIndicator(value: 1 / 4),
@@ -51,90 +65,75 @@ class _Main_State extends State<Main_> {
       ),
       body: SingleChildScrollView(
         child: Center(
-          child: Column(
-            children: [
-              // search
-              Container(
-                width: 600,
-                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: search_guest.Main_(
+          child: Container(
+            width: 600,
+            margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+
+            child: Column(
+              children: [
+                // search
+                SizedBox(height: 8),
+                search_guest.Main_(
+                  controller: c_search_guest,
                   onChanged: (v) {
                     for (var e in g_schema_r.data.entries) //
-                      if (v[e.key] != null) //
-                        g_schema_r.data[e.key]?["value"] = v[e.key];
-
+                      g_schema_r.data[e.key]?["value"] = v[e.key];
                     setState(() {});
                   },
                 ),
-              ),
 
-              for (var e in g_schema_r.data.entries)
-                (() {
-                  if (e.value["type"] == "string") {
-                    String value = "";
-                    if (e.value["value"] != null) value = e.value["value"].toString();
-                    return Container(
-                      width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: show_data.Main_(
+                for (var e in g_schema_r.data.entries)
+                  (() {
+                    if (e.value["type"] == "string") {
+                      String value = "";
+                      if (e.value["value"] != null) value = e.value["value"].toString();
+                      return show_data.Main_(
                         title: e.value["title"], //
                         value: value,
                         max_lines: e.key.contains("note") ? 4 : 1,
-                      ),
-                    );
-                  }
-
-                  //
-                  if (e.value["type"] == "number") {
-                    String value = "";
-                    if (e.value["value"] != null) value = e.value["value"].toString();
-                    return Container(
-                      width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: show_data.Main_(
-                        title: e.value["title"], //
-                        value: value,
-                      ),
-                    );
-                  }
-
-                  //
-                  if (e.value["type"] == "date-time") {
-                    String value = "";
-                    if (e.value["value"] != null) {
-                      final dt = e.value["value"];
-                      value = DateFormat(DATE_FORMAT).format(dt);
+                      );
                     }
-                    return Container(
-                      width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: show_data.Main_(
-                        title: e.value["title"], //
-                        value: value,
-                      ),
-                    );
-                  }
 
-                  //
-                  if (e.value["type"] == "boolean") {
-                    String value = "";
-                    if (e.value["value"] != null) {
-                      if (e.value["value"] == true) value = "Yes";
-                      if (e.value["value"] == false) value = "No";
-                    }
-                    return Container(
-                      width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: show_data.Main_(
+                    //
+                    if (e.value["type"] == "number") {
+                      String value = "";
+                      if (e.value["value"] != null) value = e.value["value"].toString();
+                      return show_data.Main_(
                         title: e.value["title"], //
                         value: value,
-                      ),
-                    );
-                  }
-                  //
-                  return SizedBox();
-                })(),
-            ],
+                      );
+                    }
+
+                    //
+                    if (e.value["type"] == "date-time") {
+                      String value = "";
+                      if (e.value["value"] != null) {
+                        final dt = e.value["value"];
+                        value = DateFormat(DATE_FORMAT).format(dt);
+                      }
+                      return show_data.Main_(
+                        title: e.value["title"], //
+                        value: value,
+                      );
+                    }
+
+                    //
+                    if (e.value["type"] == "boolean") {
+                      String value = "";
+                      if (e.value["value"] != null) {
+                        if (e.value["value"] == true) value = "Yes";
+                        if (e.value["value"] == false) value = "No";
+                      }
+                      return show_data.Main_(
+                        title: e.value["title"], //
+                        value: value,
+                      );
+                    }
+                    //
+                    return SizedBox();
+                  })(),
+              ],
+            ),
           ),
         ),
       ),
@@ -144,8 +143,7 @@ class _Main_State extends State<Main_> {
   void on_next() async {
     try {
       //
-
-      schema_w.data[schema_w.GUEST_LINK]?["value"] = g_schema_r.data[g_schema_r.ID]?["value"];
+      schema_w.data[schema_w.GUEST_ID]?["value"] = g_schema_r.data[g_schema_r.ID]?["value"];
 
       //
       Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
