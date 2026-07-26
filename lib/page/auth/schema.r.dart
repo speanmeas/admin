@@ -65,18 +65,6 @@ Map<String, Map<String, dynamic>> data = {
     "hide": false,
     "value": null
   },
-  "access_token": {
-    "type": "string",
-    "title": "Access Token",
-    "hide": false,
-    "value": null
-  },
-  "token_type": {
-    "type": "string",
-    "title": "Token Type",
-    "hide": false,
-    "value": null
-  },
   "last_sign_in_at": {
     "type": "date-time",
     "title": "Last Sign In At",
@@ -102,8 +90,6 @@ final IS_RECEPTIONIST = "is_receptionist";
 final IS_HOUSEKEEPER = "is_housekeeper";
 final IS_CLIENT = "is_client";
 final NOTE = "note";
-final ACCESS_TOKEN = "access_token";
-final TOKEN_TYPE = "token_type";
 final LAST_SIGN_IN_AT = "last_sign_in_at";
 final LAST_SIGN_OUT_AT = "last_sign_out_at";
 

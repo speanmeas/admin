@@ -13,14 +13,15 @@ import "package:speanmeas/widget/snackbar_show.dart";
 
 import "__config__.dart";
 import "schema.w.dart" as schema_w;
+import "schema.r.dart" as schema_r;
 
 import "package:speanmeas/page/room/schema.r.dart" as r_schema_r;
 import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
 
-import "form/1_check_in/1_guest.dart" as check_in;
-import "form/2_payment/step_1_room_payment.dart" as payment;
-import "form/3_check_out/step_1_revenue_payment.dart" as check_out;
-import "form/4_clean/step_1_note.dart" as clean;
+import "form/check_in/1_guest.dart" as check_in;
+import "form/payment/step_1_room_payment.dart" as payment;
+import "form/check_out/step_1_revenue_payment.dart" as check_out;
+import "form/clean/step_1_note.dart" as clean;
 
 import "widget/button_icon_menu.dart" as button_icon_menu;
 
@@ -219,7 +220,7 @@ class _Main_State extends State<Main_> {
                                           onPressed: () {}, //
                                         ),
                                       ],
-                                      onPressed: () => on_payment(r), //
+                                      onPressed: () => on_check_out(r), //
                                     ),
                                   );
 
@@ -273,7 +274,7 @@ class _Main_State extends State<Main_> {
                                           onPressed: () {}, //
                                         ),
                                       ],
-                                      onPressed: () => on_payment(r), //
+                                      onPressed: () => on_clean(r), //
                                     ),
                                   );
 
@@ -302,18 +303,14 @@ class _Main_State extends State<Main_> {
       r_schema_r.clear();
 
       schema_w.data[schema_w.ROOM_LINK]?["value"] = r["_id"];
-      schema_w.data["room_number"]?["value"] = r["number"];
 
-      for (var e in schema_w.data.entries) print(e);
-      // print(r);
+      for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
 
-      // for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
+      final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_in.Main_()));
 
-      // final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_in.Main_()));
+      if (v == null) return;
 
-      // if (v == null) return;
-
-      // init();
+      init();
 
       //
     } catch (e) {
@@ -328,9 +325,18 @@ class _Main_State extends State<Main_> {
       //
       // schema.clear();
 
-      // var response = await dio.post("/front_desk/data_read", data: FormData.fromMap({"key": schema.ID, schema.ID: r[room_schema.FRONT_DESK_ID]}));
+      // print(r[r_schema_r.FRONT_DESK_ID]);
 
-      // for (var e in response.data[0].entries) schema.data[e.key]?["value"] = e.value;
+      var res = await dio.post(
+        "/front_desk/read_id",
+        data: FormData.fromMap({
+          "_id": r[r_schema_r.FRONT_DESK_ID], //
+        }),
+      );
+
+      print(res);
+
+      // for (var e in response.data[0].entries) schema_r.data[e.key]?["value"] = e.value;
 
       // var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => payment.Main_()));
 

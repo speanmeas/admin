@@ -364,6 +364,10 @@ class _Main_State extends State<Main_> {
 
   void on_next() async {
     try {
+      schema_w.data[schema_w.ROOM_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
+      schema_w.data[schema_w.ROOM_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
+      schema_w.data[schema_w.ROOM_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
+
       //
       if (get_balance_usd() == 0) {
         final r = await dio.post("/setting/now");
@@ -371,9 +375,6 @@ class _Main_State extends State<Main_> {
         DateTime now = DateTime.tryParse(r.data.toString())!;
 
         //
-        schema_w.data[schema_w.ROOM_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
-        schema_w.data[schema_w.ROOM_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
-        schema_w.data[schema_w.ROOM_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
         schema_w.data[schema_w.ROOM_PAID_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
         if (user_r.data[user_r.ID]!["value"] != null) //
           schema_w.data[schema_w.ROOM_PAID_BY_LINK]?["value"] = user_r.data[user_r.ID]!["value"];
@@ -388,7 +389,7 @@ class _Main_State extends State<Main_> {
         schema_w.data[schema_w.ROOM_RETURN_KHR]?["value"] = null;
         schema_w.data[schema_w.ROOM_RETURN_TOTAL_USD]?["value"] = null;
         schema_w.data[schema_w.ROOM_PAID_TOTAL_USD]?["value"] = null;
-        schema_w.data[schema_w.ROOM_BALANCE_TOTAL_USD]?["value"] = null;
+        schema_w.data[schema_w.ROOM_PAID_BY_LINK]?["value"] = null;
         schema_w.data[schema_w.ROOM_PAID_AT]?["value"] = null;
       }
 
@@ -397,8 +398,6 @@ class _Main_State extends State<Main_> {
 
       //
       init();
-
-      //
     } catch (e) {
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }

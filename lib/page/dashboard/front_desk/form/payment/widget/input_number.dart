@@ -6,30 +6,21 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 
 class _Main_State extends State<Main_> {
-  //
-  var controller = TextEditingController();
-
   bool is_valid = true;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.initialValue != null) controller.text = widget.initialValue.toString();
-  }
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: controller,
+      controller: widget.controller,
       keyboardType: TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
       decoration: InputDecoration(
-        labelText: "Paid Cash (KHR):",
+        labelText: widget.title,
         labelStyle: TextStyle(fontWeight: FontWeight.bold),
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        prefixIcon: Icon(Icons.payments_outlined, size: 20, color: Colors.black),
-        suffixText: "៛",
-        errorText: is_valid ? null : "Invalid number",
+        prefixIcon: Icon(widget.prefixIcon, size: 20, color: Colors.black),
+        suffixText: widget.suffixText,
+        errorText: is_valid ? null : "Invalid number.",
       ),
 
       onChanged: (v) {
@@ -43,7 +34,7 @@ class _Main_State extends State<Main_> {
         double? value = double.tryParse(v);
         if (value == null) {
           is_valid = false;
-          controller.clear();
+          widget.controller.clear();
           widget.onChanged?.call(null);
           setState(() {});
           return;
@@ -60,11 +51,17 @@ class _Main_State extends State<Main_> {
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
-    this.initialValue,
-    this.onChanged,
+    required this.controller,
+    required this.title,
+    required this.prefixIcon,
+    required this.suffixText,
+    required this.onChanged,
   });
 
-  final double? initialValue;
+  final TextEditingController controller;
+  final String title;
+  final IconData prefixIcon;
+  final String suffixText;
   final ValueChanged<double?>? onChanged;
 
   @override
@@ -72,14 +69,24 @@ class Main_ extends StatefulWidget {
 }
 
 void main() {
+  double? num = 100.0;
+
+  final controller = TextEditingController(text: num.toString());
+
   runApp(
     MaterialApp(
       theme: Theme_Data(), //
-      home: const Scaffold(
+      home: Scaffold(
         body: Center(
           child: Main_(
-            //
-            initialValue: 100.0,
+            controller: controller, //
+            title: "Paid Bank USD:",
+            prefixIcon: Icons.account_balance,
+            suffixText: "\$",
+            onChanged: (v) {
+              print(v);
+              num = v;
+            },
           ),
         ),
       ),
