@@ -376,12 +376,9 @@ class _Main_State extends State<Main_> {
       var f = await dio.post("/front_desk/read_id", data: FormData.fromMap({"_id": r[r_schema_r.FRONT_DESK_ID]}));
 
       //
-      fd_schema_w.data[fd_schema_w.ID]?["value"] = f.data[0][fd_schema_w.ID];
+      fd_schema_w.data[fd_schema_w.ID]?["value"] = r[r_schema_r.FRONT_DESK_ID];
       fd_schema_w.data[fd_schema_w.ROOM_PRICE_TOTAL_USD]?["value"] = f.data[0][fd_schema_w.ROOM_PRICE_TOTAL_USD];
-
-      //
       for (var e in fd_schema_r.data.entries) e.value["value"] = f.data[0][e.key];
-      for (var e in fd_schema_r.data.entries) print(e);
 
       //
       if (fd_schema_w.data[fd_schema_w.GUEST_LINK]?["value"] != null) {
@@ -421,9 +418,7 @@ class _Main_State extends State<Main_> {
       var f = await dio.post("/front_desk/read_id", data: FormData.fromMap({"_id": r[r_schema_r.FRONT_DESK_ID]}));
 
       //
-      fd_schema_w.data[fd_schema_w.ROOM_PRICE_TOTAL_USD]?["value"] = f.data[0][fd_schema_w.ROOM_PRICE_TOTAL_USD];
-
-      //
+      fd_schema_w.data[fd_schema_w.ID]?["value"] = r[r_schema_r.FRONT_DESK_ID];
       for (var e in fd_schema_r.data.entries) e.value["value"] = f.data[0][e.key];
 
       //
@@ -457,38 +452,29 @@ class _Main_State extends State<Main_> {
       r_schema_r.clear();
 
       //
-      for (var e in r_schema_r.data.entries) {
-        e.value["value"] = r[e.key];
-      }
+      for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
 
       //
-      var f = await dio.post(
-        "/front_desk/read_id",
-        data: FormData.fromMap({
-          "_id": r[r_schema_r.FRONT_DESK_ID], //
-        }),
-      );
+      var f = await dio.post("/front_desk/read_id", data: FormData.fromMap({"_id": r[r_schema_r.FRONT_DESK_ID]}));
 
-      for (var e in fd_schema_w.data.entries) {
-        e.value["value"] = f.data[0][e.key];
-      }
+      //
+      fd_schema_w.data[fd_schema_w.ID]?["value"] = r[r_schema_r.FRONT_DESK_ID];
+      for (var e in fd_schema_r.data.entries) e.value["value"] = f.data[0][e.key];
 
       //
       if (fd_schema_w.data[fd_schema_w.GUEST_LINK]?["value"] != null) {
-        var g = await dio.post(
-          "/guest/read_id",
-          data: FormData.fromMap({
-            "_id": f.data[0][fd_schema_w.GUEST_LINK], //
-          }),
-        );
+        var g = await dio.post("/guest/read_id", data: FormData.fromMap({"_id": f.data[0][fd_schema_w.GUEST_LINK]}));
 
         for (var e in g_schema_r.data.entries) e.value["value"] = g.data[0][e.key];
       }
 
+      //
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => clean.Main_()));
 
+      //
       if (value == null) return;
 
+      //
       init();
 
       //

@@ -93,8 +93,9 @@ class _Main_State extends State<Main_> {
       DateTime now = DateTime.tryParse(response.data.toString())!;
 
       //
-      fd_schema_w.data[fd_schema_w.CHECK_OUT_NOTE]?["value"] = c_note.text.trim();
-      fd_schema_w.data[fd_schema_w.CHECK_OUT_BY_LINK]?["value"] = user_r.data[user_r.ID]?["value"]?.toString();
+      fd_schema_w.data[fd_schema_w.CHECK_OUT_NOTE]?["value"] = c_note.text;
+      fd_schema_w.data[fd_schema_w.CHECK_OUT_BY_LINK]?["value"] = user_r.data[user_r.ID]?["value"];
+      fd_schema_r.data[fd_schema_r.CHECK_OUT_BY]?["value"] = user_r.data[user_r.FULL_NAME]?["value"];
       fd_schema_w.data[fd_schema_w.CHECK_OUT_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 
       // navigate to next screen

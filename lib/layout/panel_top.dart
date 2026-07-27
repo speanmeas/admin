@@ -9,6 +9,8 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/page/auth/schema.r.dart" as user_r;
 import "package:speanmeas/page/auth/profile.dart" as profile;
 
+import "notification.dart" as notification;
+
 class _Main_State extends State<Main_> {
   @override
   void initState() {
@@ -71,6 +73,7 @@ class _Main_State extends State<Main_> {
                 icon: Icon(Icons.notifications_outlined),
                 onPressed: () {
                   // Handle notification tap
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => notification.Main_()));
                 },
               ),
             ),

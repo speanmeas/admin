@@ -80,7 +80,19 @@ class _Main_State extends State<Main_> {
         list_tile_l1(name: "Setting", icon: Icons.settings_outlined),
 
         //
-        SizedBox(height: 8),
+        Container(
+          height: 32,
+          alignment: .topCenter,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "This footer is under development.", //
+                style: TextStyle(fontSize: 12, color: Colors.black),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
