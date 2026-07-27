@@ -129,7 +129,7 @@ class _Main_State extends State<Main_> {
                 // guest nationality
                 show_data.Main_(
                   title: "Guest Nationality", //
-                  value: g_schema_r.data[g_schema_r.NATIONALITY_NAME]?["value"]?.toString() ?? "",
+                  value: g_schema_r.data[g_schema_r.NATIONALITY]?["value"]?.toString() ?? "",
                 ),
 
                 Divider(height: 8, color: Colors.grey),
@@ -137,25 +137,25 @@ class _Main_State extends State<Main_> {
                 // stay duration (days)
                 show_data.Main_(
                   title: "Stay Duration (Days)", //
-                  value: fd_schema_w.data[fd_schema_w.STAY_DAY]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.STAY_DAY]?["value"]?.toString() ?? "",
                 ),
 
                 // stay duration (hours)
                 show_data.Main_(
                   title: "Stay Duration (Hours)", //
-                  value: fd_schema_w.data[fd_schema_w.STAY_HOUR]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.STAY_HOUR]?["value"]?.toString() ?? "",
                 ),
 
                 // stay guest total
                 show_data.Main_(
                   title: "Stay Guest Total", //
-                  value: fd_schema_w.data[fd_schema_w.NUMBER_OF_GUESTS]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.NUMBER_OF_GUESTS]?["value"]?.toString() ?? "",
                 ),
 
                 // check in note
                 show_data.Main_(
                   title: "Check-In Note", //
-                  value: fd_schema_w.data[fd_schema_w.CHECK_IN_NOTE]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.CHECK_IN_NOTE]?["value"]?.toString() ?? "",
                 ),
 
                 // check in by

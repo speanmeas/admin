@@ -1,6 +1,6 @@
 Map<String, Map<String, dynamic>> data = {
   "_id": {
-    "type": "_id",
+    "type": "id",
     "title": "ID",
     "hide": true,
     "value": null
@@ -24,12 +24,12 @@ Map<String, Map<String, dynamic>> data = {
     "value": null
   },
   "nationality_id": {
-    "type": "_id",
+    "type": "id",
     "title": "Nationality ID",
     "hide": true,
     "value": null
   },
-  "nationality_name": {
+  "nationality": {
     "type": "string",
     "title": "Nationality",
     "hide": false,
@@ -60,7 +60,7 @@ final FULL_NAME = "full_name";
 final PHONE_NUMBER = "phone_number";
 final GENDER = "gender";
 final NATIONALITY_ID = "nationality_id";
-final NATIONALITY_NAME = "nationality_name";
+final NATIONALITY = "nationality";
 final ID_NUMBER = "id_number";
 final PASSPORT_NUMBER = "passport_number";
 final NOTE = "note";

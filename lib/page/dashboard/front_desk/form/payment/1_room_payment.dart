@@ -325,7 +325,7 @@ class _Main_State extends State<Main_> {
       fd_schema_w.data[fd_schema_w.ROOM_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
       fd_schema_w.data[fd_schema_w.ROOM_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
       fd_schema_w.data[fd_schema_w.ROOM_PAID_NOTE]?["value"] = c_note.text;
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_BY_LINK]?["value"] = user_r.data[user_r.ID]!["value"];
+      fd_schema_w.data[fd_schema_w.ROOM_PAID_BY_ID]?["value"] = user_r.data[user_r.ID]!["value"];
       fd_schema_r.data[fd_schema_r.ROOM_PAID_BY]?["value"] = user_r.data[user_r.FULL_NAME]!["value"];
       fd_schema_w.data[fd_schema_w.ROOM_PAID_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 

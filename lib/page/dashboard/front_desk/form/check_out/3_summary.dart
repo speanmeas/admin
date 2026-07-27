@@ -128,7 +128,7 @@ class _Main_State extends State<Main_> {
                 // guest nationality
                 show_data.Main_(
                   title: "Guest Nationality", //
-                  value: g_schema_r.data[g_schema_r.NATIONALITY_NAME]?["value"]?.toString() ?? "",
+                  value: g_schema_r.data[g_schema_r.NATIONALITY]?["value"]?.toString() ?? "",
                 ),
 
                 Divider(height: 8, color: Colors.grey),
@@ -294,7 +294,7 @@ class _Main_State extends State<Main_> {
                 // cleaned by
                 show_data.Main_(
                   title: "Cleaned By", //
-                  value: fd_schema_w.data[fd_schema_w.CLEAN_BY_LINK]?["value"]?.toString() ?? "",
+                  value: fd_schema_w.data[fd_schema_w.CLEAN_BY_ID]?["value"]?.toString() ?? "",
                 ),
 
                 // cleaned at

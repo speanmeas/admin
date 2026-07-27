@@ -5,33 +5,27 @@ Map<String, Map<String, dynamic>> data = {
     "hide": true,
     "value": null
   },
-  "number": {
+  "text_1": {
     "type": "string",
-    "title": "Number",
+    "title": "Text 1",
     "hide": false,
     "value": null
   },
-  "kind": {
-    "type": "string",
-    "title": "Kind",
-    "hide": false,
-    "value": null
-  },
-  "usd_per_day": {
+  "number_1": {
     "type": "number",
-    "title": "USD/Day",
+    "title": "Number 1",
     "hide": false,
     "value": null
   },
-  "usd_per_3h": {
-    "type": "number",
-    "title": "USD/3H",
+  "datetime_1": {
+    "type": "date-time",
+    "title": "Datetime 1",
     "hide": false,
     "value": null
   },
-  "status": {
-    "type": "string",
-    "title": "Status",
+  "logic_1": {
+    "type": "boolean",
+    "title": "Logic 1",
     "hide": false,
     "value": null
   },
@@ -41,22 +35,28 @@ Map<String, Map<String, dynamic>> data = {
     "hide": false,
     "value": null
   },
-  "front_desk_id": {
+  "nationality_id": {
     "type": "id",
-    "title": "Front Desk ID",
+    "title": "Nationality ID",
     "hide": true,
+    "value": null
+  },
+  "nationality_name": {
+    "type": "string",
+    "title": "Nationality",
+    "hide": false,
     "value": null
   }
 };
 
 final ID = "_id";
-final NUMBER = "number";
-final KIND = "kind";
-final USD_PER_DAY = "usd_per_day";
-final USD_PER_3H = "usd_per_3h";
-final STATUS = "status";
+final TEXT_1 = "text_1";
+final NUMBER_1 = "number_1";
+final DATETIME_1 = "datetime_1";
+final LOGIC_1 = "logic_1";
 final NOTE = "note";
-final FRONT_DESK_ID = "front_desk_id";
+final NATIONALITY_ID = "nationality_id";
+final NATIONALITY_NAME = "nationality_name";
 
 
 void clear() { for (var k in data.keys) data[k]!["value"] = null; }

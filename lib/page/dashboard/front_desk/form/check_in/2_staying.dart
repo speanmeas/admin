@@ -150,7 +150,7 @@ class _Main_State extends State<Main_> {
       fd_schema_w.data[fd_schema_w.STAY_DAY]?["value"] = stay_duration_days;
       fd_schema_w.data[fd_schema_w.STAY_HOUR]?["value"] = stay_duration_hours;
       fd_schema_w.data[fd_schema_w.NUMBER_OF_GUESTS]?["value"] = double.tryParse(c_number_of_guests.text.trim());
-      fd_schema_w.data[fd_schema_w.CHECK_IN_BY_LINK]?["value"] = user_r.data[user_r.ID]?["value"]?.toString();
+      fd_schema_w.data[fd_schema_w.CHECK_IN_BY_ID]?["value"] = user_r.data[user_r.ID]?["value"]?.toString();
       fd_schema_r.data[fd_schema_r.CHECK_IN_BY]?["value"] = user_r.data[user_r.FULL_NAME]?["value"]?.toString();
       fd_schema_w.data[fd_schema_w.CHECK_IN_AT]?["value"] = now.toLocal();
       fd_schema_w.data[fd_schema_w.CHECK_OUT_DATE]?["value"] = now.add(Duration(days: stay_duration_days, hours: stay_duration_hours));

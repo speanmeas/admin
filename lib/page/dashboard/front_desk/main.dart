@@ -339,7 +339,7 @@ class _Main_State extends State<Main_> {
       r_schema_r.clear();
 
       //
-      fd_schema_w.data[fd_schema_w.ROOM_LINK]?["value"] = r["_id"];
+      fd_schema_w.data[fd_schema_w.ROOM_ID]?["value"] = r["_id"];
 
       //
       for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
@@ -373,7 +373,10 @@ class _Main_State extends State<Main_> {
       for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
 
       //
-      var f = await dio.post("/front_desk/read_id", data: FormData.fromMap({"_id": r[r_schema_r.FRONT_DESK_ID]}));
+      var f = await dio.post(
+        "/front_desk/read_id", //
+        data: FormData.fromMap({"_id": r[r_schema_r.FRONT_DESK_ID]}),
+      );
 
       //
       fd_schema_w.data[fd_schema_w.ID]?["value"] = r[r_schema_r.FRONT_DESK_ID];
@@ -381,8 +384,11 @@ class _Main_State extends State<Main_> {
       for (var e in fd_schema_r.data.entries) e.value["value"] = f.data[0][e.key];
 
       //
-      if (fd_schema_w.data[fd_schema_w.GUEST_LINK]?["value"] != null) {
-        var g = await dio.post("/guest/read_id", data: FormData.fromMap({"_id": f.data[0][fd_schema_w.GUEST_LINK]}));
+      if (fd_schema_r.data[fd_schema_r.GUEST_ID]?["value"] != null) {
+        var g = await dio.post(
+          "/guest/read_id", //
+          data: FormData.fromMap({"_id": f.data[0][fd_schema_r.GUEST_ID]}),
+        );
 
         for (var e in g_schema_r.data.entries) e.value["value"] = g.data[0][e.key];
       }
@@ -415,15 +421,21 @@ class _Main_State extends State<Main_> {
       for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
 
       //
-      var f = await dio.post("/front_desk/read_id", data: FormData.fromMap({"_id": r[r_schema_r.FRONT_DESK_ID]}));
+      var f = await dio.post(
+        "/front_desk/read_id", //
+        data: FormData.fromMap({"_id": r[r_schema_r.FRONT_DESK_ID]}),
+      );
 
       //
       fd_schema_w.data[fd_schema_w.ID]?["value"] = r[r_schema_r.FRONT_DESK_ID];
       for (var e in fd_schema_r.data.entries) e.value["value"] = f.data[0][e.key];
 
       //
-      if (fd_schema_w.data[fd_schema_w.GUEST_LINK]?["value"] != null) {
-        var g = await dio.post("/guest/read_id", data: FormData.fromMap({"_id": f.data[0][fd_schema_w.GUEST_LINK]}));
+      if (fd_schema_r.data[fd_schema_r.GUEST_ID]?["value"] != null) {
+        var g = await dio.post(
+          "/guest/read_id", //
+          data: FormData.fromMap({"_id": f.data[0][fd_schema_r.GUEST_ID]}),
+        );
 
         for (var e in g_schema_r.data.entries) e.value["value"] = g.data[0][e.key];
       }
@@ -455,15 +467,21 @@ class _Main_State extends State<Main_> {
       for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
 
       //
-      var f = await dio.post("/front_desk/read_id", data: FormData.fromMap({"_id": r[r_schema_r.FRONT_DESK_ID]}));
+      var f = await dio.post(
+        "/front_desk/read_id", //
+        data: FormData.fromMap({"_id": r[r_schema_r.FRONT_DESK_ID]}),
+      );
 
       //
       fd_schema_w.data[fd_schema_w.ID]?["value"] = r[r_schema_r.FRONT_DESK_ID];
       for (var e in fd_schema_r.data.entries) e.value["value"] = f.data[0][e.key];
 
       //
-      if (fd_schema_w.data[fd_schema_w.GUEST_LINK]?["value"] != null) {
-        var g = await dio.post("/guest/read_id", data: FormData.fromMap({"_id": f.data[0][fd_schema_w.GUEST_LINK]}));
+      if (fd_schema_r.data[fd_schema_r.GUEST_ID]?["value"] != null) {
+        var g = await dio.post(
+          "/guest/read_id", //
+          data: FormData.fromMap({"_id": f.data[0][fd_schema_r.GUEST_ID]}),
+        );
 
         for (var e in g_schema_r.data.entries) e.value["value"] = g.data[0][e.key];
       }

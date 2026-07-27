@@ -50,7 +50,7 @@ class _Main_State extends State<Main_> {
                     );
                   }
 
-                  if (e.key == schema_w.NATIONALITY_LINK) {
+                  if (e.key == schema_w.NATIONALITY_ID) {
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),

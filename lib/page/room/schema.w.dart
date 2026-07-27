@@ -1,6 +1,6 @@
 Map<String, Map<String, dynamic>> data = {
   "_id": {
-    "type": "_id",
+    "type": "id",
     "title": "ID",
     "value": null
   },
@@ -35,7 +35,7 @@ Map<String, Map<String, dynamic>> data = {
     "value": null
   },
   "front_desk_id": {
-    "type": "link",
+    "type": "id",
     "title": "Front Desk ID",
     "value": null
   }

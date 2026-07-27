@@ -1,6 +1,6 @@
 Map<String, Map<String, dynamic>> data = {
   "_id": {
-    "type": "_id",
+    "type": "id",
     "title": "ID",
     "hide": true,
     "value": null
@@ -64,18 +64,6 @@ Map<String, Map<String, dynamic>> data = {
     "title": "Note",
     "hide": false,
     "value": null
-  },
-  "last_sign_in_at": {
-    "type": "date-time",
-    "title": "Last Sign In At",
-    "hide": false,
-    "value": null
-  },
-  "last_sign_out_at": {
-    "type": "date-time",
-    "title": "Last Sign Out At",
-    "hide": false,
-    "value": null
   }
 };
 
@@ -90,8 +78,6 @@ final IS_RECEPTIONIST = "is_receptionist";
 final IS_HOUSEKEEPER = "is_housekeeper";
 final IS_CLIENT = "is_client";
 final NOTE = "note";
-final LAST_SIGN_IN_AT = "last_sign_in_at";
-final LAST_SIGN_OUT_AT = "last_sign_out_at";
 
 
 void clear() { for (var k in data.keys) data[k]!["value"] = null; }

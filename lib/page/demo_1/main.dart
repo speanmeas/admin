@@ -448,7 +448,7 @@ class _Main_State extends State<Main_> {
     String? type, //
   }) {
     //
-    if (type == "_id") {
+    if (type == "id") {
       if (data == "") return null;
       if (data != "") return data.toString();
     }
@@ -485,7 +485,7 @@ class _Main_State extends State<Main_> {
     String? type, //
   }) {
     //
-    if (type == "_id") {
+    if (type == "id") {
       if (data != null) {
         return data.toString();
       }

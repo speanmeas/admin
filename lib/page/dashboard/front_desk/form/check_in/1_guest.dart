@@ -144,7 +144,7 @@ class _Main_State extends State<Main_> {
   void on_next() async {
     try {
       //
-      fd_schema_w.data[fd_schema_w.GUEST_LINK]?["value"] = g_schema_r.data[g_schema_r.ID]?["value"];
+      fd_schema_w.data[fd_schema_w.GUEST_ID]?["value"] = g_schema_r.data[g_schema_r.ID]?["value"];
 
       //
       Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));

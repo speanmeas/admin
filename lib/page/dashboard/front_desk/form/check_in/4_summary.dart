@@ -128,7 +128,7 @@ class _Main_State extends State<Main_> {
                 // guest nationality
                 show_data.Main_(
                   title: "Guest Nationality", //
-                  value: g_schema_r.data[g_schema_r.NATIONALITY_NAME]?["value"]?.toString() ?? "",
+                  value: g_schema_r.data[g_schema_r.NATIONALITY]?["value"]?.toString() ?? "",
                 ),
 
                 Divider(height: 8, color: Colors.grey),
@@ -326,7 +326,7 @@ class _Main_State extends State<Main_> {
       await dio.post(
         "/room/update", //
         data: FormData.fromMap({
-          "_id": output[fd_schema_w.ROOM_LINK], //
+          "_id": output[fd_schema_w.ROOM_ID], //
           r_schema_r.STATUS: status, //
           r_schema_r.FRONT_DESK_ID: response.data["_id"],
         }),

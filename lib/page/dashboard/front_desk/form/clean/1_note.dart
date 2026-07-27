@@ -93,7 +93,7 @@ class _Main_State extends State<Main_> {
 
       //
       fd_schema_w.data[fd_schema_w.CLEAN_NOTE]?["value"] = c_note.text.trim();
-      fd_schema_w.data[fd_schema_w.CLEAN_BY_LINK]?["value"] = user_r.data[user_r.ID]?["value"];
+      fd_schema_w.data[fd_schema_w.CLEAN_BY_ID]?["value"] = user_r.data[user_r.ID]?["value"];
       fd_schema_r.data[fd_schema_r.CLEAN_BY]?["value"] = user_r.data[user_r.FULL_NAME]?["value"];
       fd_schema_w.data[fd_schema_w.CLEAN_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 
