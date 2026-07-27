@@ -317,7 +317,7 @@ class _Main_State extends State<Main_> {
         DateTime now = DateTime.tryParse(r.data.toString())!;
 
         //
-        fd_schema_w.data[fd_schema_w.ROOM_PAID_BY]?["value"] = user_r.data[user_r.ID]!["value"]?.toString() ?? "System";
+        fd_schema_w.data[fd_schema_w.ROOM_PAID_BY_LINK]?["value"] = user_r.data[user_r.ID]!["value"];
         fd_schema_w.data[fd_schema_w.ROOM_PAID_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
       }
       // clear data if no payment
@@ -330,7 +330,7 @@ class _Main_State extends State<Main_> {
         fd_schema_w.data[fd_schema_w.ROOM_RETURN_KHR]?["value"] = null;
         fd_schema_w.data[fd_schema_w.ROOM_RETURN_TOTAL_USD]?["value"] = null;
         fd_schema_w.data[fd_schema_w.ROOM_PAID_TOTAL_USD]?["value"] = null;
-        fd_schema_w.data[fd_schema_w.ROOM_PAID_BY]?["value"] = null;
+        fd_schema_w.data[fd_schema_w.ROOM_PAID_BY_LINK]?["value"] = null;
         fd_schema_w.data[fd_schema_w.ROOM_PAID_AT]?["value"] = null;
       }
 

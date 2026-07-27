@@ -12,8 +12,8 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
 import "__config__.dart";
-import "schema.w.dart" as schema_w;
-import "schema.r.dart" as schema_r;
+import "schema.w.dart" as fd_schema_w;
+import "schema.r.dart" as fd_schema_r;
 
 import "package:speanmeas/page/room/schema.r.dart" as r_schema_r;
 import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
@@ -21,7 +21,7 @@ import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
 import "form/check_in/1_guest.dart" as check_in;
 import "form/payment/1_room_payment.dart" as payment;
 import "form/check_out/1_revenue_payment.dart" as check_out;
-import "form/check_out/2_note.dart" as clean;
+import "form/clean/1_note.dart" as clean;
 
 import "widget/button_icon_menu.dart" as button_icon_menu;
 
@@ -333,18 +333,24 @@ class _Main_State extends State<Main_> {
   void on_check_in(r) async {
     try {
       //
-      schema_w.clear();
+      fd_schema_w.clear();
+      fd_schema_r.clear();
       g_schema_r.clear();
       r_schema_r.clear();
 
-      schema_w.data[schema_w.ROOM_ID]?["value"] = r["_id"];
+      //
+      fd_schema_w.data[fd_schema_w.ROOM_LINK]?["value"] = r["_id"];
 
+      //
       for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
 
+      //
       final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_in.Main_()));
 
+      //
       if (v == null) return;
 
+      //
       init();
 
       //
@@ -358,42 +364,39 @@ class _Main_State extends State<Main_> {
   void on_payment(r) async {
     try {
       //
-      schema_w.clear();
+      fd_schema_w.clear();
+      fd_schema_r.clear();
       g_schema_r.clear();
       r_schema_r.clear();
 
       // print(r[r_schema_r.FRONT_DESK_ID]);
-      for (var e in r_schema_r.data.entries) {
-        e.value["value"] = r[e.key];
-        // print(e);
-      }
+      for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
 
-      var f = await dio.post(
-        "/front_desk/read_id",
-        data: FormData.fromMap({
-          "_id": r[r_schema_r.FRONT_DESK_ID], //
-        }),
-      );
+      //
+      var f = await dio.post("/front_desk/read_id", data: FormData.fromMap({"_id": r[r_schema_r.FRONT_DESK_ID]}));
 
-      for (var e in schema_w.data.entries) {
-        e.value["value"] = f.data[0][e.key];
-      }
+      //
+      fd_schema_w.data[fd_schema_w.ID]?["value"] = f.data[0][fd_schema_w.ID];
+      fd_schema_w.data[fd_schema_w.ROOM_PRICE_TOTAL_USD]?["value"] = f.data[0][fd_schema_w.ROOM_PRICE_TOTAL_USD];
 
-      if (schema_w.data[schema_w.GUEST_ID]?["value"] != null) {
-        var g = await dio.post(
-          "/guest/read_id",
-          data: FormData.fromMap({
-            "_id": f.data[0][schema_w.GUEST_ID], //
-          }),
-        );
+      //
+      for (var e in fd_schema_r.data.entries) e.value["value"] = f.data[0][e.key];
+      for (var e in fd_schema_r.data.entries) print(e);
+
+      //
+      if (fd_schema_w.data[fd_schema_w.GUEST_LINK]?["value"] != null) {
+        var g = await dio.post("/guest/read_id", data: FormData.fromMap({"_id": f.data[0][fd_schema_w.GUEST_LINK]}));
 
         for (var e in g_schema_r.data.entries) e.value["value"] = g.data[0][e.key];
       }
 
+      //
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => payment.Main_()));
 
+      //
       if (value == null) return;
 
+      //
       init();
 
       //
@@ -406,45 +409,37 @@ class _Main_State extends State<Main_> {
     //
     try {
       //
-
-      //
-      schema_w.clear();
+      fd_schema_w.clear();
+      fd_schema_r.clear();
       g_schema_r.clear();
       r_schema_r.clear();
 
       //
-      for (var e in r_schema_r.data.entries) {
-        e.value["value"] = r[e.key];
-      }
+      for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
 
       //
-      var f = await dio.post(
-        "/front_desk/read_id",
-        data: FormData.fromMap({
-          "_id": r[r_schema_r.FRONT_DESK_ID], //
-        }),
-      );
-
-      for (var e in schema_w.data.entries) {
-        e.value["value"] = f.data[0][e.key];
-      }
+      var f = await dio.post("/front_desk/read_id", data: FormData.fromMap({"_id": r[r_schema_r.FRONT_DESK_ID]}));
 
       //
-      if (schema_w.data[schema_w.GUEST_ID]?["value"] != null) {
-        var g = await dio.post(
-          "/guest/read_id",
-          data: FormData.fromMap({
-            "_id": f.data[0][schema_w.GUEST_ID], //
-          }),
-        );
+      fd_schema_w.data[fd_schema_w.ROOM_PRICE_TOTAL_USD]?["value"] = f.data[0][fd_schema_w.ROOM_PRICE_TOTAL_USD];
+
+      //
+      for (var e in fd_schema_r.data.entries) e.value["value"] = f.data[0][e.key];
+
+      //
+      if (fd_schema_w.data[fd_schema_w.GUEST_LINK]?["value"] != null) {
+        var g = await dio.post("/guest/read_id", data: FormData.fromMap({"_id": f.data[0][fd_schema_w.GUEST_LINK]}));
 
         for (var e in g_schema_r.data.entries) e.value["value"] = g.data[0][e.key];
       }
 
+      //
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_out.Main_()));
 
+      //
       if (value == null) return;
 
+      //
       init();
 
       //
@@ -456,7 +451,8 @@ class _Main_State extends State<Main_> {
   void on_clean(r) async {
     try {
       //
-      schema_w.clear();
+      fd_schema_w.clear();
+      fd_schema_r.clear();
       g_schema_r.clear();
       r_schema_r.clear();
 
@@ -473,16 +469,16 @@ class _Main_State extends State<Main_> {
         }),
       );
 
-      for (var e in schema_w.data.entries) {
+      for (var e in fd_schema_w.data.entries) {
         e.value["value"] = f.data[0][e.key];
       }
 
       //
-      if (schema_w.data[schema_w.GUEST_ID]?["value"] != null) {
+      if (fd_schema_w.data[fd_schema_w.GUEST_LINK]?["value"] != null) {
         var g = await dio.post(
           "/guest/read_id",
           data: FormData.fromMap({
-            "_id": f.data[0][schema_w.GUEST_ID], //
+            "_id": f.data[0][fd_schema_w.GUEST_LINK], //
           }),
         );
 

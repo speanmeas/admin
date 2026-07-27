@@ -160,7 +160,7 @@ class _Main_State extends State<Main_> {
                 // check in by
                 show_data.Main_(
                   title: "Checked-In By", //
-                  value: schema_w.data[schema_w.CHECK_IN_BY]?["value"]?.toString() ?? "",
+                  value: schema_w.data[schema_w.CHECK_IN_BY_LINK]?["value"]?.toString() ?? "",
                 ),
 
                 // check-in at
@@ -210,7 +210,7 @@ class _Main_State extends State<Main_> {
                 // room paid by
                 show_data.Main_(
                   title: "Received Room Payment By", //
-                  value: schema_w.data[schema_w.ROOM_PAID_BY]?["value"]?.toString() ?? "",
+                  value: schema_w.data[schema_w.ROOM_PAID_BY_LINK]?["value"]?.toString() ?? "",
                 ),
 
                 // check in note
@@ -254,7 +254,7 @@ class _Main_State extends State<Main_> {
                 // revenue paid by
                 show_data.Main_(
                   title: "Received Revenue Payment By", //
-                  value: schema_w.data[schema_w.REVENUE_PAID_BY]?["value"]?.toString() ?? "",
+                  value: schema_w.data[schema_w.REVENUE_PAID_BY_LINK]?["value"]?.toString() ?? "",
                 ),
 
                 // received revenue payment at
@@ -274,7 +274,7 @@ class _Main_State extends State<Main_> {
                 // check-out by
                 show_data.Main_(
                   title: "Checked-Out By", //
-                  value: schema_w.data[schema_w.CHECK_OUT_BY]?["value"]?.toString() ?? "",
+                  value: schema_w.data[schema_w.CHECK_OUT_BY_LINK]?["value"]?.toString() ?? "",
                 ),
 
                 // check-out at
@@ -294,7 +294,7 @@ class _Main_State extends State<Main_> {
                 // cleaned by
                 show_data.Main_(
                   title: "Cleaned By", //
-                  value: schema_w.data[schema_w.CLEAN_BY]?["value"]?.toString() ?? "",
+                  value: schema_w.data[schema_w.CLEAN_BY_LINK]?["value"]?.toString() ?? "",
                 ),
 
                 // cleaned at
@@ -328,7 +328,7 @@ class _Main_State extends State<Main_> {
       await dio.post(
         "/room/update", //
         data: FormData.fromMap({
-          "_id": output[schema_w.ROOM_ID], //
+          "_id": output[schema_w.ROOM_LINK], //
           r_schema_r.STATUS: status, //
           r_schema_r.FRONT_DESK_ID: " ",
         }),

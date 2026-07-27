@@ -12,9 +12,10 @@ import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
 import "../../__config__.dart";
-import "../../schema.w.dart" as schema_w;
 import "widget/search_guest.dart" as search_guest;
 
+import "../../schema.w.dart" as fd_schema_w;
+import "../../schema.r.dart" as fd_schema_r;
 import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
 
 import "package:speanmeas/widget/show_data.dart" as show_data;
@@ -143,7 +144,7 @@ class _Main_State extends State<Main_> {
   void on_next() async {
     try {
       //
-      schema_w.data[schema_w.GUEST_ID]?["value"] = g_schema_r.data[g_schema_r.ID]?["value"];
+      fd_schema_w.data[fd_schema_w.GUEST_LINK]?["value"] = g_schema_r.data[g_schema_r.ID]?["value"];
 
       //
       Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));

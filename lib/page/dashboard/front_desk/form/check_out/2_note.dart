@@ -13,7 +13,8 @@ import 'package:speanmeas/widget/snackbar_show.dart';
 import 'package:speanmeas/page/auth/schema.r.dart' as user_r;
 
 import '../../__config__.dart';
-import '../../schema.w.dart' as schema_w;
+import '../../schema.w.dart' as fd_schema_w;
+import '../../schema.r.dart' as fd_schema_r;
 import '3_summary.dart' as step_3;
 
 class _Main_State extends State<Main_> {
@@ -26,7 +27,7 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    c_note.text = schema_w.data[schema_w.CHECK_OUT_NOTE]?["value"]?.toString() ?? "";
+    c_note.text = fd_schema_w.data[fd_schema_w.CHECK_OUT_NOTE]?["value"]?.toString() ?? "";
     setState(() {});
   }
 
@@ -74,10 +75,7 @@ class _Main_State extends State<Main_> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
                   maxLines: 4,
-                  onChanged: (v) {
-                    // schema_w.data[schema_w.CLEAN_NOTE]?["value"] = v;
-                    setState(() {});
-                  },
+                  onChanged: (v) => setState(() {}),
                 ),
               ],
             ),
@@ -95,16 +93,15 @@ class _Main_State extends State<Main_> {
       DateTime now = DateTime.tryParse(response.data.toString())!;
 
       //
-
-      // timestamp
-      schema_w.data[schema_w.CHECK_OUT_NOTE]?["value"] = c_note.text.trim();
-      schema_w.data[schema_w.CHECK_OUT_BY]?["value"] = user_r.data[user_r.ID]?["value"]?.toString() ?? "System";
-      schema_w.data[schema_w.CHECK_OUT_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
+      fd_schema_w.data[fd_schema_w.CHECK_OUT_NOTE]?["value"] = c_note.text.trim();
+      fd_schema_w.data[fd_schema_w.CHECK_OUT_BY_LINK]?["value"] = user_r.data[user_r.ID]?["value"]?.toString();
+      fd_schema_w.data[fd_schema_w.CHECK_OUT_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 
       // navigate to next screen
       await Navigator.push(context, MaterialPageRoute(builder: (context) => step_3.Main_()));
 
-      init(); //
+      //
+      init();
 
       //
     } catch (e) {

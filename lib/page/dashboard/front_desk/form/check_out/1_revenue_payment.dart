@@ -9,10 +9,11 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
-import "package:speanmeas/page/auth/schema.r.dart" as user;
+import "package:speanmeas/page/auth/schema.r.dart" as user_r;
 
 import "../../__config__.dart";
-import "../../schema.w.dart" as schema;
+import "../../schema.w.dart" as fd_schema_w;
+import "../../schema.r.dart" as fd_schema_r;
 
 import "2_note.dart" as step_2;
 
@@ -35,14 +36,14 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    c_room_price_total_usd.text = schema.data[schema.REVENUE_PRICE_TOTAL_USD]?["value"]?.toString() ?? "";
-    c_paid_bank_usd.text = schema.data[schema.REVENUE_PAID_BANK_USD]?["value"]?.toString() ?? "";
-    c_paid_cash_usd.text = schema.data[schema.REVENUE_PAID_CASH_USD]?["value"]?.toString() ?? "";
-    c_paid_bank_khr.text = schema.data[schema.REVENUE_PAID_BANK_KHR]?["value"]?.toString() ?? "";
-    c_paid_cash_khr.text = schema.data[schema.REVENUE_PAID_CASH_KHR]?["value"]?.toString() ?? "";
-    c_return_usd.text = schema.data[schema.REVENUE_RETURN_USD]?["value"]?.toString() ?? "";
-    c_return_khr.text = schema.data[schema.REVENUE_RETURN_KHR]?["value"]?.toString() ?? "";
-    c_note.text = schema.data[schema.REVENUE_PAID_NOTE]?["value"]?.toString() ?? "";
+    c_room_price_total_usd.text = fd_schema_w.data[fd_schema_w.REVENUE_PRICE_TOTAL_USD]?["value"]?.toString() ?? "";
+    c_paid_bank_usd.text = fd_schema_w.data[fd_schema_w.REVENUE_PAID_BANK_USD]?["value"]?.toString() ?? "";
+    c_paid_cash_usd.text = fd_schema_w.data[fd_schema_w.REVENUE_PAID_CASH_USD]?["value"]?.toString() ?? "";
+    c_paid_bank_khr.text = fd_schema_w.data[fd_schema_w.REVENUE_PAID_BANK_KHR]?["value"]?.toString() ?? "";
+    c_paid_cash_khr.text = fd_schema_w.data[fd_schema_w.REVENUE_PAID_CASH_KHR]?["value"]?.toString() ?? "";
+    c_return_usd.text = fd_schema_w.data[fd_schema_w.REVENUE_RETURN_USD]?["value"]?.toString() ?? "";
+    c_return_khr.text = fd_schema_w.data[fd_schema_w.REVENUE_RETURN_KHR]?["value"]?.toString() ?? "";
+    c_note.text = fd_schema_w.data[fd_schema_w.REVENUE_PAID_NOTE]?["value"]?.toString() ?? "";
 
     setState(() {});
   }
@@ -63,7 +64,7 @@ class _Main_State extends State<Main_> {
             icon: Icon(Icons.arrow_right_alt_outlined),
             label: Text("Next"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-            onPressed: can_next() ? on_next : null, //
+            onPressed: get_balance_usd() == 0 ? on_next : null, //
           ),
           SizedBox(width: 8),
         ],
@@ -91,10 +92,7 @@ class _Main_State extends State<Main_> {
                   title: "Revenue Price (USD)", //
                   prefixIcon: Icons.attach_money_outlined,
                   suffixText: "\$",
-                  onChanged: (v) {
-                    // schema.data[schema.REVENUE_PRICE_TOTAL_USD]?["value"] = v;
-                    setState(() {});
-                  },
+                  onChanged: (v) => setState(() {}),
                 ),
 
                 // total price
@@ -120,10 +118,7 @@ class _Main_State extends State<Main_> {
                         title: "Paid Bank (USD)", //
                         prefixIcon: Icons.account_balance,
                         suffixText: "\$",
-                        onChanged: (v) {
-                          // schema.data[schema.REVENUE_PAID_BANK_USD]?["value"] = v;
-                          setState(() {});
-                        },
+                        onChanged: (v) => setState(() {}),
                       ),
                     ),
 
@@ -136,10 +131,7 @@ class _Main_State extends State<Main_> {
                         title: "Paid Bank (KHR)", //
                         prefixIcon: Icons.account_balance,
                         suffixText: "៛",
-                        onChanged: (v) {
-                          // schema.data[schema.REVENUE_PAID_BANK_KHR]?["value"] = v;
-                          setState(() {});
-                        },
+                        onChanged: (v) => setState(() {}),
                       ),
                     ),
                   ],
@@ -158,10 +150,7 @@ class _Main_State extends State<Main_> {
                         title: "Paid Cash (USD)", //
                         prefixIcon: Icons.payments_outlined,
                         suffixText: "\$",
-                        onChanged: (v) {
-                          // schema.data[schema.REVENUE_PAID_CASH_USD]?["value"] = v;
-                          setState(() {});
-                        },
+                        onChanged: (v) => setState(() {}),
                       ),
                     ),
 
@@ -174,10 +163,7 @@ class _Main_State extends State<Main_> {
                         title: "Paid Cash (KHR)", //
                         prefixIcon: Icons.payments_outlined,
                         suffixText: "៛",
-                        onChanged: (v) {
-                          // schema.data[schema.REVENUE_PAID_CASH_KHR]?["value"] = v;
-                          setState(() {});
-                        },
+                        onChanged: (v) => setState(() {}),
                       ),
                     ),
                   ],
@@ -209,10 +195,7 @@ class _Main_State extends State<Main_> {
                         title: "Return Cash (USD)", //
                         prefixIcon: Icons.payments_outlined,
                         suffixText: "\$",
-                        onChanged: (v) {
-                          // schema.data[schema.REVENUE_RETURN_USD]?["value"] = v;
-                          setState(() {});
-                        },
+                        onChanged: (v) => setState(() {}),
                       ),
                     ),
 
@@ -225,10 +208,7 @@ class _Main_State extends State<Main_> {
                         title: "Return Cash (KHR)", //
                         prefixIcon: Icons.payments_outlined,
                         suffixText: "៛",
-                        onChanged: (v) {
-                          // schema.data[schema.REVENUE_RETURN_KHR]?["value"] = v;
-                          setState(() {});
-                        },
+                        onChanged: (v) => setState(() {}),
                       ),
                     ),
                   ],
@@ -258,10 +238,7 @@ class _Main_State extends State<Main_> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
                   maxLines: 4,
-                  onChanged: (v) {
-                    // schema.data[schema.REVENUE_PAID_NOTE]?["value"] = v;
-                    setState(() {});
-                  },
+                  onChanged: (v) => setState(() {}),
                 ),
 
                 // balance
@@ -292,23 +269,23 @@ class _Main_State extends State<Main_> {
   }
 
   double get_price_total_usd() {
-    double price_total_usd = double.tryParse(c_room_price_total_usd.text.trim()) ?? 0;
+    double price_total_usd = double.tryParse(c_room_price_total_usd.text) ?? 0;
     return price_total_usd;
   }
 
   double get_paid_total_usd() {
-    double paid_bank_usd = double.tryParse(c_paid_bank_usd.text.trim()) ?? 0;
-    double paid_cash_usd = double.tryParse(c_paid_cash_usd.text.trim()) ?? 0;
-    double paid_bank_khr = double.tryParse(c_paid_bank_khr.text.trim()) ?? 0;
-    double paid_cash_khr = double.tryParse(c_paid_cash_khr.text.trim()) ?? 0;
+    double paid_bank_usd = double.tryParse(c_paid_bank_usd.text) ?? 0;
+    double paid_cash_usd = double.tryParse(c_paid_cash_usd.text) ?? 0;
+    double paid_bank_khr = double.tryParse(c_paid_bank_khr.text) ?? 0;
+    double paid_cash_khr = double.tryParse(c_paid_cash_khr.text) ?? 0;
     double paid_total_usd = paid_bank_usd + paid_cash_usd + (paid_bank_khr + paid_cash_khr) / global.RATE;
 
     return paid_total_usd;
   }
 
   double get_return_total_usd() {
-    double return_usd = double.tryParse(c_return_usd.text.trim()) ?? 0;
-    double return_khr = double.tryParse(c_return_khr.text.trim()) ?? 0;
+    double return_usd = double.tryParse(c_return_usd.text) ?? 0;
+    double return_khr = double.tryParse(c_return_khr.text) ?? 0;
 
     double return_total_usd = return_usd + (return_khr / global.RATE);
 
@@ -325,12 +302,6 @@ class _Main_State extends State<Main_> {
     return balance_usd;
   }
 
-  bool can_next() {
-    if (get_balance_usd() == 0) return true;
-
-    return false;
-  }
-
   void on_next() async {
     try {
       //
@@ -338,25 +309,21 @@ class _Main_State extends State<Main_> {
       if (DateTime.tryParse(n.data.toString()) == null) throw Exception("Invalid date time from server.");
       DateTime now = DateTime.tryParse(n.data.toString())!;
 
-      schema.data[schema.REVENUE_PRICE_TOTAL_USD]?["value"] = get_price_total_usd();
-      schema.data[schema.REVENUE_PAID_BANK_USD]?["value"] = double.tryParse(c_paid_bank_usd.text.trim());
-      schema.data[schema.REVENUE_PAID_CASH_USD]?["value"] = double.tryParse(c_paid_cash_usd.text.trim());
-      schema.data[schema.REVENUE_PAID_BANK_KHR]?["value"] = double.tryParse(c_paid_bank_khr.text.trim());
-      schema.data[schema.REVENUE_PAID_CASH_KHR]?["value"] = double.tryParse(c_paid_cash_khr.text.trim());
-      schema.data[schema.REVENUE_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
-      schema.data[schema.REVENUE_RETURN_USD]?["value"] = double.tryParse(c_return_usd.text.trim());
-      schema.data[schema.REVENUE_RETURN_KHR]?["value"] = double.tryParse(c_return_khr.text.trim());
-      schema.data[schema.REVENUE_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
-      schema.data[schema.REVENUE_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
-      schema.data[schema.REVENUE_PAID_BY]?["value"] = user.data[user.ID]!["value"] ?? "System";
-      schema.data[schema.REVENUE_PAID_NOTE]?["value"] = c_note.text.trim();
-      schema.data[schema.REVENUE_PAID_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
+      fd_schema_w.data[fd_schema_w.REVENUE_PRICE_TOTAL_USD]?["value"] = get_price_total_usd();
+      fd_schema_w.data[fd_schema_w.REVENUE_PAID_BANK_USD]?["value"] = double.tryParse(c_paid_bank_usd.text);
+      fd_schema_w.data[fd_schema_w.REVENUE_PAID_CASH_USD]?["value"] = double.tryParse(c_paid_cash_usd.text);
+      fd_schema_w.data[fd_schema_w.REVENUE_PAID_BANK_KHR]?["value"] = double.tryParse(c_paid_bank_khr.text);
+      fd_schema_w.data[fd_schema_w.REVENUE_PAID_CASH_KHR]?["value"] = double.tryParse(c_paid_cash_khr.text);
+      fd_schema_w.data[fd_schema_w.REVENUE_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
+      fd_schema_w.data[fd_schema_w.REVENUE_RETURN_USD]?["value"] = double.tryParse(c_return_usd.text);
+      fd_schema_w.data[fd_schema_w.REVENUE_RETURN_KHR]?["value"] = double.tryParse(c_return_khr.text);
+      fd_schema_w.data[fd_schema_w.REVENUE_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
+      fd_schema_w.data[fd_schema_w.REVENUE_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
 
-      if (user.data[user.ID]!["value"] != null) //
-        schema.data[schema.ROOM_PAID_BY]?["value"] = user.data[user.ID]!["value"];
-
-      schema.data[schema.CHECK_OUT_BY]?["value"] = user.data[user.ID]!["value"] ?? "System";
-      schema.data[schema.CHECK_OUT_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
+      fd_schema_w.data[fd_schema_w.REVENUE_PAID_NOTE]?["value"] = c_note.text;
+      fd_schema_w.data[fd_schema_w.REVENUE_PAID_BY_LINK]?["value"] = user_r.data[user_r.ID]!["value"];
+      fd_schema_r.data[fd_schema_r.REVENUE_PAID_BY]?["value"] = user_r.data[user_r.FULL_NAME]!["value"];
+      fd_schema_w.data[fd_schema_w.REVENUE_PAID_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 
       await Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
 

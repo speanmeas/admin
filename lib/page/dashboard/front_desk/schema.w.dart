@@ -4,12 +4,12 @@ Map<String, Map<String, dynamic>> data = {
     "title": "ID",
     "value": null
   },
-  "room_id": {
+  "room_link": {
     "type": "link",
     "title": "Room Link",
     "value": null
   },
-  "guest_id": {
+  "guest_link": {
     "type": "link",
     "title": "Guest Link",
     "value": null
@@ -139,7 +139,7 @@ Map<String, Map<String, dynamic>> data = {
     "title": "Note",
     "value": null
   },
-  "check_in_by": {
+  "check_in_by_link": {
     "type": "link",
     "title": "Check-in By",
     "value": null
@@ -154,7 +154,7 @@ Map<String, Map<String, dynamic>> data = {
     "title": "Check-in Note",
     "value": null
   },
-  "check_out_by": {
+  "check_out_by_link": {
     "type": "link",
     "title": "Check-out By",
     "value": null
@@ -169,7 +169,7 @@ Map<String, Map<String, dynamic>> data = {
     "title": "Check-out Note",
     "value": null
   },
-  "room_paid_by": {
+  "room_paid_by_link": {
     "type": "link",
     "title": "Room Payment By",
     "value": null
@@ -184,7 +184,7 @@ Map<String, Map<String, dynamic>> data = {
     "title": "Room Payment Note",
     "value": null
   },
-  "revenue_paid_by": {
+  "revenue_paid_by_link": {
     "type": "link",
     "title": "Revenue Payment By",
     "value": null
@@ -199,7 +199,7 @@ Map<String, Map<String, dynamic>> data = {
     "title": "Revenue Payment Note",
     "value": null
   },
-  "clean_by": {
+  "clean_by_link": {
     "type": "link",
     "title": "Clean By",
     "value": null
@@ -217,8 +217,8 @@ Map<String, Map<String, dynamic>> data = {
 };
 
 final ID = "_id";
-final ROOM_ID = "room_id";
-final GUEST_ID = "guest_id";
+final ROOM_LINK = "room_link";
+final GUEST_LINK = "guest_link";
 final STAY_DAY = "stay_day";
 final STAY_HOUR = "stay_hour";
 final NUMBER_OF_GUESTS = "number_of_guests";
@@ -244,19 +244,19 @@ final REVENUE_RETURN_KHR = "revenue_return_khr";
 final REVENUE_RETURN_TOTAL_USD = "revenue_return_total_usd";
 final REVENUE_BALANCE_TOTAL_USD = "revenue_balance_total_usd";
 final NOTE = "note";
-final CHECK_IN_BY = "check_in_by";
+final CHECK_IN_BY_LINK = "check_in_by_link";
 final CHECK_IN_AT = "check_in_at";
 final CHECK_IN_NOTE = "check_in_note";
-final CHECK_OUT_BY = "check_out_by";
+final CHECK_OUT_BY_LINK = "check_out_by_link";
 final CHECK_OUT_AT = "check_out_at";
 final CHECK_OUT_NOTE = "check_out_note";
-final ROOM_PAID_BY = "room_paid_by";
+final ROOM_PAID_BY_LINK = "room_paid_by_link";
 final ROOM_PAID_AT = "room_paid_at";
 final ROOM_PAID_NOTE = "room_paid_note";
-final REVENUE_PAID_BY = "revenue_paid_by";
+final REVENUE_PAID_BY_LINK = "revenue_paid_by_link";
 final REVENUE_PAID_AT = "revenue_paid_at";
 final REVENUE_PAID_NOTE = "revenue_paid_note";
-final CLEAN_BY = "clean_by";
+final CLEAN_BY_LINK = "clean_by_link";
 final CLEAN_AT = "clean_at";
 final CLEAN_NOTE = "clean_note";
 

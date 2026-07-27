@@ -20,7 +20,8 @@ import "package:speanmeas/page/room/schema.r.dart" as r_schema_r;
 import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
 
 import "../../__config__.dart";
-import "../../schema.w.dart" as schema_w;
+import "../../schema.w.dart" as fd_schema_w;
+import "../../schema.r.dart" as fd_schema_r;
 
 class _Main_State extends State<Main_> {
   @override
@@ -136,43 +137,43 @@ class _Main_State extends State<Main_> {
                 // stay duration (days)
                 show_data.Main_(
                   title: "Stay Duration (Days)", //
-                  value: schema_w.data[schema_w.STAY_DAY]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.STAY_DAY]?["value"]?.toString() ?? "",
                 ),
 
                 // stay duration (hours)
                 show_data.Main_(
                   title: "Stay Duration (Hours)", //
-                  value: schema_w.data[schema_w.STAY_HOUR]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.STAY_HOUR]?["value"]?.toString() ?? "",
                 ),
 
                 // stay guest total
                 show_data.Main_(
                   title: "Stay Guest Total", //
-                  value: schema_w.data[schema_w.NUMBER_OF_GUESTS]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.NUMBER_OF_GUESTS]?["value"]?.toString() ?? "",
                 ),
 
                 // check in note
                 show_data.Main_(
                   title: "Check-In Note", //
-                  value: schema_w.data[schema_w.CHECK_IN_NOTE]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.CHECK_IN_NOTE]?["value"]?.toString() ?? "",
                 ),
 
                 // check in by
                 show_data.Main_(
                   title: "Checked-In By", //
-                  value: schema_w.data[schema_w.CHECK_IN_BY]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.CHECK_IN_BY]?["value"]?.toString() ?? "",
                 ),
 
                 // check-in at
                 show_data.Main_(
                   title: "Checked-In At", //
-                  value: _dateValue(schema_w.data[schema_w.CHECK_IN_AT]?["value"]),
+                  value: _dateValue(fd_schema_r.data[fd_schema_r.CHECK_IN_AT]?["value"]),
                 ),
 
                 // scheduled check-out date
                 show_data.Main_(
                   title: "Scheduled to Check-Out", //
-                  value: _dateValue(schema_w.data[schema_w.CHECK_OUT_DATE]?["value"]),
+                  value: _dateValue(fd_schema_r.data[fd_schema_r.CHECK_OUT_DATE]?["value"]),
                 ),
 
                 Divider(height: 8, color: Colors.grey),
@@ -180,43 +181,43 @@ class _Main_State extends State<Main_> {
                 // room price total
                 show_data.Main_(
                   title: "Room Price Total (USD)", //
-                  value: schema_w.data[schema_w.ROOM_PRICE_TOTAL_USD]?["value"]?.toString() ?? "",
+                  value: fd_schema_w.data[fd_schema_w.ROOM_PRICE_TOTAL_USD]?["value"]?.toString() ?? "",
                 ),
 
                 // room paid total
                 show_data.Main_(
                   title: "Room Paid Total (USD)", //
-                  value: schema_w.data[schema_w.ROOM_PAID_TOTAL_USD]?["value"]?.toString() ?? "",
+                  value: fd_schema_w.data[fd_schema_w.ROOM_PAID_TOTAL_USD]?["value"]?.toString() ?? "",
                 ),
 
                 // room return total
                 show_data.Main_(
                   title: "Room Returned Total (USD)", //
-                  value: schema_w.data[schema_w.ROOM_RETURN_TOTAL_USD]?["value"]?.toString() ?? "",
+                  value: fd_schema_w.data[fd_schema_w.ROOM_RETURN_TOTAL_USD]?["value"]?.toString() ?? "",
                 ),
 
                 // room balance total
                 show_data.Main_(
                   title: "Room Balanced Total (USD)", //
-                  value: schema_w.data[schema_w.ROOM_BALANCE_TOTAL_USD]?["value"]?.toString() ?? "",
+                  value: fd_schema_w.data[fd_schema_w.ROOM_BALANCE_TOTAL_USD]?["value"]?.toString() ?? "",
                 ),
 
                 // room paid note
                 show_data.Main_(
                   title: "Room Paid Note", //
-                  value: schema_w.data[schema_w.ROOM_PAID_NOTE]?["value"]?.toString() ?? "",
+                  value: fd_schema_w.data[fd_schema_w.ROOM_PAID_NOTE]?["value"]?.toString() ?? "",
                 ),
 
                 // room paid by
                 show_data.Main_(
                   title: "Received Room Payment By", //
-                  value: schema_w.data[schema_w.ROOM_PAID_BY]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.ROOM_PAID_BY]?["value"]?.toString() ?? "",
                 ),
 
-                // check in note
+                //
                 show_data.Main_(
                   title: "Received Room Payment At", //
-                  value: _dateValue(schema_w.data[schema_w.ROOM_PAID_AT]?["value"]),
+                  value: _dateValue(fd_schema_w.data[fd_schema_w.ROOM_PAID_AT]?["value"]),
                 ),
 
                 Divider(height: 8, color: Colors.grey),
@@ -224,43 +225,43 @@ class _Main_State extends State<Main_> {
                 // revenue price total
                 show_data.Main_(
                   title: "Revenue Price Total (USD)", //
-                  value: schema_w.data[schema_w.REVENUE_PRICE_TOTAL_USD]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.REVENUE_PRICE_TOTAL_USD]?["value"]?.toString() ?? "",
                 ),
 
                 // revenue paid total
                 show_data.Main_(
                   title: "Revenue Paid Total (USD)", //
-                  value: schema_w.data[schema_w.REVENUE_PAID_TOTAL_USD]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.REVENUE_PAID_TOTAL_USD]?["value"]?.toString() ?? "",
                 ),
 
                 // revenue return total
                 show_data.Main_(
                   title: "Revenue Returned Total (USD)", //
-                  value: schema_w.data[schema_w.REVENUE_RETURN_TOTAL_USD]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.REVENUE_RETURN_TOTAL_USD]?["value"]?.toString() ?? "",
                 ),
 
                 // revenue balance total
                 show_data.Main_(
                   title: "Revenue Balanced Total (USD)", //
-                  value: schema_w.data[schema_w.REVENUE_BALANCE_TOTAL_USD]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.REVENUE_BALANCE_TOTAL_USD]?["value"]?.toString() ?? "",
                 ),
 
                 // revenue note
                 show_data.Main_(
                   title: "Revenue Note", //
-                  value: schema_w.data[schema_w.REVENUE_PAID_NOTE]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.REVENUE_PAID_NOTE]?["value"]?.toString() ?? "",
                 ),
 
                 // revenue paid by
                 show_data.Main_(
                   title: "Received Revenue Payment By", //
-                  value: schema_w.data[schema_w.REVENUE_PAID_BY]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.REVENUE_PAID_BY]?["value"]?.toString() ?? "",
                 ),
 
                 // received revenue payment at
                 show_data.Main_(
                   title: "Received Revenue Payment At", //
-                  value: _dateValue(schema_w.data[schema_w.REVENUE_PAID_AT]?["value"]),
+                  value: _dateValue(fd_schema_r.data[fd_schema_r.REVENUE_PAID_AT]?["value"]),
                 ),
 
                 Divider(height: 8, color: Colors.grey),
@@ -268,19 +269,19 @@ class _Main_State extends State<Main_> {
                 // check-out note
                 show_data.Main_(
                   title: "Checked-Out Note", //
-                  value: schema_w.data[schema_w.CHECK_OUT_NOTE]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.CHECK_OUT_NOTE]?["value"]?.toString() ?? "",
                 ),
 
                 // check-out by
                 show_data.Main_(
                   title: "Checked-Out By", //
-                  value: schema_w.data[schema_w.CHECK_OUT_BY]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.CHECK_OUT_BY]?["value"]?.toString() ?? "",
                 ),
 
                 // check-out at
                 show_data.Main_(
                   title: "Checked-Out At", //
-                  value: _dateValue(schema_w.data[schema_w.CHECK_OUT_AT]?["value"]),
+                  value: _dateValue(fd_schema_r.data[fd_schema_r.CHECK_OUT_AT]?["value"]),
                 ),
 
                 Divider(height: 8, color: Colors.grey),
@@ -288,19 +289,19 @@ class _Main_State extends State<Main_> {
                 // cleaned note
                 show_data.Main_(
                   title: "Cleaned Note", //
-                  value: schema_w.data[schema_w.CLEAN_NOTE]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.CLEAN_NOTE]?["value"]?.toString() ?? "",
                 ),
 
                 // cleaned by
                 show_data.Main_(
                   title: "Cleaned By", //
-                  value: schema_w.data[schema_w.CLEAN_BY]?["value"]?.toString() ?? "",
+                  value: fd_schema_r.data[fd_schema_r.CLEAN_BY]?["value"]?.toString() ?? "",
                 ),
 
                 // cleaned at
                 show_data.Main_(
                   title: "Cleaned At", //
-                  value: _dateValue(schema_w.data[schema_w.CLEAN_AT]?["value"]),
+                  value: _dateValue(fd_schema_r.data[fd_schema_r.CLEAN_AT]?["value"]),
                 ),
               ],
             ),
@@ -313,7 +314,7 @@ class _Main_State extends State<Main_> {
   void on_check_in() async {
     try {
       //
-      final output = {for (var e in schema_w.data.entries) e.key: e.value["value"]};
+      final output = {for (var e in fd_schema_r.data.entries) e.key: e.value["value"]};
       print(output);
 
       //
@@ -329,7 +330,7 @@ class _Main_State extends State<Main_> {
       await dio.post(
         "/room/update", //
         data: FormData.fromMap({
-          "_id": output[schema_w.ROOM_ID], //
+          "_id": output[fd_schema_r.ROOM_ID], //
           r_schema_r.STATUS: status, //
           // r_schema_r.FRONT_DESK_ID: response.data["_id"],
         }),

@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 import "package:speanmeas/__config__.dart";
 import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/theme/theme_data.dart";
-import "package:speanmeas/page/auth/schema.r.dart" as user;
+import "package:speanmeas/page/auth/schema.r.dart" as user_r;
 
 class _Main_State extends State<Main_> {
   bool is_mobile = false;
@@ -33,15 +33,15 @@ class _Main_State extends State<Main_> {
                 children: [
                   list_tile_l2(prefix: "Database", name: "Front Desk", icon: Icons.table_bar_outlined), //
                   // Guest
-                  if (user.data[user.IS_ADMIN]!["value"] == true || user.data[user.IS_MANAGER]!["value"] == true || user.data[user.IS_RECEPTIONIST]!["value"] == true) //
+                  if (user_r.data[user_r.IS_ADMIN]!["value"] == true || user_r.data[user_r.IS_MANAGER]!["value"] == true || user_r.data[user_r.IS_RECEPTIONIST]!["value"] == true) //
                     list_tile_l2(prefix: "Database", name: "Guest", icon: Icons.people_outline),
 
                   // Room
-                  if (user.data[user.IS_ADMIN]!["value"] == true || user.data[user.IS_MANAGER]!["value"] == true) //
+                  if (user_r.data[user_r.IS_ADMIN]!["value"] == true || user_r.data[user_r.IS_MANAGER]!["value"] == true) //
                     list_tile_l2(prefix: "Database", name: "Room", icon: Icons.hotel_outlined),
 
                   // User
-                  if (user.data[user.IS_ADMIN]!["value"] == true || user.data[user.IS_MANAGER]!["value"] == true) //
+                  if (user_r.data[user_r.IS_ADMIN]!["value"] == true || user_r.data[user_r.IS_MANAGER]!["value"] == true) //
                     list_tile_l2(prefix: "Database", name: "User", icon: Icons.person_outline),
 
                   list_tile_l2(prefix: "Database", name: "Nationality", icon: Icons.flag_outlined),
@@ -61,7 +61,7 @@ class _Main_State extends State<Main_> {
               ),
 
               // Demos
-              if (user.data[user.IS_ADMIN]!["value"] == true)
+              if (user_r.data[user_r.IS_ADMIN]!["value"] == true)
                 ExpansionTile(
                   leading: Icon(Icons.model_training_outlined), //
                   title: Text("Demo"),

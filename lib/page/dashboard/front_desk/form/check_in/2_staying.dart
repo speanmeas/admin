@@ -10,7 +10,8 @@ import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
 import "package:speanmeas/page/auth/schema.r.dart" as user_r;
 
 import "../../__config__.dart";
-import "../../schema.w.dart" as schema_w;
+import "../../schema.w.dart" as fd_schema_w;
+import "../../schema.r.dart" as fd_schema_r;
 
 import "3_payment.dart" as step_3;
 
@@ -29,10 +30,10 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    c_number_of_guests.text = schema_w.data[schema_w.NUMBER_OF_GUESTS]?["value"]?.toString() ?? "1";
-    c_stay_duration_days.text = schema_w.data[schema_w.STAY_DAY]?["value"]?.toString() ?? "";
-    c_stay_duration_hours.text = schema_w.data[schema_w.STAY_HOUR]?["value"]?.toString() ?? "";
-    c_note.text = schema_w.data[schema_w.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
+    c_number_of_guests.text = fd_schema_w.data[fd_schema_w.NUMBER_OF_GUESTS]?["value"]?.toString() ?? "1";
+    c_stay_duration_days.text = fd_schema_w.data[fd_schema_w.STAY_DAY]?["value"]?.toString() ?? "";
+    c_stay_duration_hours.text = fd_schema_w.data[fd_schema_w.STAY_HOUR]?["value"]?.toString() ?? "";
+    c_note.text = fd_schema_w.data[fd_schema_w.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
 
     setState(() {});
   }
@@ -146,14 +147,15 @@ class _Main_State extends State<Main_> {
       if (DateTime.tryParse(r.data.toString()) == null) throw Exception("Invalid date time from server.");
       DateTime now = DateTime.tryParse(r.data.toString())!;
 
-      schema_w.data[schema_w.STAY_DAY]?["value"] = stay_duration_days;
-      schema_w.data[schema_w.STAY_HOUR]?["value"] = stay_duration_hours;
-      schema_w.data[schema_w.NUMBER_OF_GUESTS]?["value"] = double.tryParse(c_number_of_guests.text.trim());
-      schema_w.data[schema_w.CHECK_IN_BY]?["value"] = user_r.data[user_r.ID]?["value"]?.toString() ?? "System";
-      schema_w.data[schema_w.CHECK_IN_AT]?["value"] = now.toLocal();
-      schema_w.data[schema_w.CHECK_OUT_DATE]?["value"] = now.add(Duration(days: stay_duration_days, hours: stay_duration_hours));
+      fd_schema_w.data[fd_schema_w.STAY_DAY]?["value"] = stay_duration_days;
+      fd_schema_w.data[fd_schema_w.STAY_HOUR]?["value"] = stay_duration_hours;
+      fd_schema_w.data[fd_schema_w.NUMBER_OF_GUESTS]?["value"] = double.tryParse(c_number_of_guests.text.trim());
+      fd_schema_w.data[fd_schema_w.CHECK_IN_BY_LINK]?["value"] = user_r.data[user_r.ID]?["value"]?.toString();
+      fd_schema_r.data[fd_schema_r.CHECK_IN_BY]?["value"] = user_r.data[user_r.FULL_NAME]?["value"]?.toString();
+      fd_schema_w.data[fd_schema_w.CHECK_IN_AT]?["value"] = now.toLocal();
+      fd_schema_w.data[fd_schema_w.CHECK_OUT_DATE]?["value"] = now.add(Duration(days: stay_duration_days, hours: stay_duration_hours));
 
-      schema_w.data[schema_w.ROOM_PRICE_TOTAL_USD]?["value"] = room_price_total_usd;
+      fd_schema_w.data[fd_schema_w.ROOM_PRICE_TOTAL_USD]?["value"] = room_price_total_usd;
 
       //
       await Navigator.push(context, MaterialPageRoute(builder: (context) => step_3.Main_()));
