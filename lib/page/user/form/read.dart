@@ -1,13 +1,11 @@
-import "package:flutter/material.dart";
 import "package:intl/intl.dart";
+import "package:flutter/material.dart";
 
-import "package:speanmeas/__variable__.dart";
-import "package:speanmeas/__config__.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/show_data.dart" as show_data;
 
 import "../__config__.dart";
-import "../schema.r.dart" as schema_r;
+import "../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
   @override
@@ -26,7 +24,8 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              for (var e in schema_r.data.entries)
+              SizedBox(height: 8),
+              for (var e in schema.data.entries)
                 (() {
                   if (e.value["type"] == "string") {
                     String value = "";
@@ -34,7 +33,7 @@ class _Main_State extends State<Main_> {
                     if (e.key.contains("password")) value = "**********";
                     return Container(
                       width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                       child: show_data.Main_(
                         title: e.value["title"], //
                         value: value,
@@ -49,7 +48,7 @@ class _Main_State extends State<Main_> {
                     if (e.value["value"] != null) value = e.value["value"].toString();
                     return Container(
                       width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                       child: show_data.Main_(
                         title: e.value["title"], //
                         value: value,
@@ -66,7 +65,7 @@ class _Main_State extends State<Main_> {
                     }
                     return Container(
                       width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                       child: show_data.Main_(
                         title: e.value["title"], //
                         value: value,
@@ -83,7 +82,7 @@ class _Main_State extends State<Main_> {
                     }
                     return Container(
                       width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
                       child: show_data.Main_(
                         title: e.value["title"], //
                         value: value,

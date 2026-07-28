@@ -3,48 +3,63 @@ Map<String, Map<String, dynamic>> data = {
     "type": "id",
     "title": "ID",
     "hide": true,
+    "lock": false,
     "value": null
   },
   "text_1": {
     "type": "string",
     "title": "Text 1",
     "hide": false,
+    "lock": false,
     "value": null
   },
   "number_1": {
     "type": "number",
     "title": "Number 1",
     "hide": false,
+    "lock": false,
     "value": null
   },
   "datetime_1": {
     "type": "date-time",
     "title": "Datetime 1",
     "hide": false,
+    "lock": false,
     "value": null
   },
   "logic_1": {
     "type": "boolean",
     "title": "Logic 1",
     "hide": false,
+    "lock": false,
     "value": null
   },
   "note": {
     "type": "string",
     "title": "Note",
     "hide": false,
+    "lock": false,
     "value": null
   },
   "nationality_id": {
     "type": "id",
     "title": "Nationality ID",
     "hide": true,
+    "lock": false,
     "value": null
   },
   "nationality_name": {
     "type": "string",
     "title": "Nationality",
     "hide": false,
+    "lock": true,
+    "value": null
+  },
+  "nationality_note": {
+    "type": "string",
+    "title": "Nationality Note",
+    "hide": false,
+    "lock": true,
     "value": null
   }
 };
@@ -57,6 +72,7 @@ final LOGIC_1 = "logic_1";
 final NOTE = "note";
 final NATIONALITY_ID = "nationality_id";
 final NATIONALITY_NAME = "nationality_name";
+final NATIONALITY_NOTE = "nationality_note";
 
 
 void clear() { for (var k in data.keys) data[k]!["value"] = null; }

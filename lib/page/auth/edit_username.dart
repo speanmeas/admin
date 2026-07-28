@@ -1,3 +1,8 @@
+///
+///
+///
+///
+
 import "dart:io";
 
 import "package:flutter/material.dart";
@@ -9,10 +14,10 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "schema.w.dart" as user_w;
+import "schema.g.dart" as u_schema;
 
 class _Main_State extends State<Main_> {
-  String username = user_w.data[user_w.USERNAME]!["value"] ?? "";
+  String username = u_schema.data[u_schema.USERNAME]!["value"] ?? "";
 
   @override
   Widget build(BuildContext context) {
@@ -78,10 +83,10 @@ class _Main_State extends State<Main_> {
       // if (username.trim().isEmpty) throw "Username cannot be empty.";
 
       //
-      final r = await dio.post("/user/data_update", data: FormData.fromMap({"_id": user_w.data[user_w.ID]!["value"], user_w.USERNAME: username}));
+      final r = await dio.post("/user/update", data: FormData.fromMap({"_id": u_schema.data[u_schema.ID]!["value"], u_schema.USERNAME: username}));
 
       //
-      user_w.data[user_w.USERNAME]!["value"] = r.data[user_w.USERNAME];
+      u_schema.data[u_schema.USERNAME]!["value"] = r.data[u_schema.USERNAME];
 
       //
       snackbar_show(context: context, message: "Update successful", color: Colors.green);

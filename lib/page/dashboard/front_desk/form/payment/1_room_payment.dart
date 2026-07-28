@@ -9,14 +9,12 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
-import "package:speanmeas/page/auth/schema.r.dart" as user_r;
+import "package:speanmeas/page/auth/schema.g.dart" as u_schema;
 
 import "../../__config__.dart";
-import "../../schema.w.dart" as fd_schema_w;
-import "../../schema.r.dart" as fd_schema_r;
+import "../../schema.g.dart" as schema;
 
 import "2_summary.dart" as step_2;
-
 import "widget/input_number.dart" as input_number;
 
 class _Main_State extends State<Main_> {
@@ -36,14 +34,14 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    c_room_price_total_usd.text = fd_schema_w.data[fd_schema_w.ROOM_PRICE_TOTAL_USD]?["value"]?.toString() ?? "";
-    c_paid_bank_usd.text = fd_schema_w.data[fd_schema_w.ROOM_PAID_BANK_USD]?["value"]?.toString() ?? "";
-    c_paid_cash_usd.text = fd_schema_w.data[fd_schema_w.ROOM_PAID_CASH_USD]?["value"]?.toString() ?? "";
-    c_paid_bank_khr.text = fd_schema_w.data[fd_schema_w.ROOM_PAID_BANK_KHR]?["value"]?.toString() ?? "";
-    c_paid_cash_khr.text = fd_schema_w.data[fd_schema_w.ROOM_PAID_CASH_KHR]?["value"]?.toString() ?? "";
-    c_return_usd.text = fd_schema_w.data[fd_schema_w.ROOM_RETURN_USD]?["value"]?.toString() ?? "";
-    c_return_khr.text = fd_schema_w.data[fd_schema_w.ROOM_RETURN_KHR]?["value"]?.toString() ?? "";
-    c_note.text = fd_schema_w.data[fd_schema_w.ROOM_PAID_NOTE]?["value"]?.toString() ?? "";
+    c_room_price_total_usd.text = schema.data[schema.ROOM_PRICE_TOTAL_USD]?["value"]?.toString() ?? "";
+    c_paid_bank_usd.text = schema.data[schema.ROOM_PAID_BANK_USD]?["value"]?.toString() ?? "";
+    c_paid_cash_usd.text = schema.data[schema.ROOM_PAID_CASH_USD]?["value"]?.toString() ?? "";
+    c_paid_bank_khr.text = schema.data[schema.ROOM_PAID_BANK_KHR]?["value"]?.toString() ?? "";
+    c_paid_cash_khr.text = schema.data[schema.ROOM_PAID_CASH_KHR]?["value"]?.toString() ?? "";
+    c_return_usd.text = schema.data[schema.ROOM_RETURN_USD]?["value"]?.toString() ?? "";
+    c_return_khr.text = schema.data[schema.ROOM_RETURN_KHR]?["value"]?.toString() ?? "";
+    c_note.text = schema.data[schema.ROOM_PAID_NOTE]?["value"]?.toString() ?? "";
 
     setState(() {});
   }
@@ -314,20 +312,20 @@ class _Main_State extends State<Main_> {
       if (DateTime.tryParse(n.data.toString()) == null) throw Exception("Invalid date time from server.");
       DateTime now = DateTime.tryParse(n.data.toString())!;
 
-      fd_schema_w.data[fd_schema_w.ROOM_PRICE_TOTAL_USD]?["value"] = get_price_total_usd();
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_BANK_USD]?["value"] = double.tryParse(c_paid_bank_usd.text);
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_CASH_USD]?["value"] = double.tryParse(c_paid_cash_usd.text);
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_BANK_KHR]?["value"] = double.tryParse(c_paid_bank_khr.text);
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_CASH_KHR]?["value"] = double.tryParse(c_paid_cash_khr.text);
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
-      fd_schema_w.data[fd_schema_w.ROOM_RETURN_USD]?["value"] = double.tryParse(c_return_usd.text);
-      fd_schema_w.data[fd_schema_w.ROOM_RETURN_KHR]?["value"] = double.tryParse(c_return_khr.text);
-      fd_schema_w.data[fd_schema_w.ROOM_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
-      fd_schema_w.data[fd_schema_w.ROOM_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_NOTE]?["value"] = c_note.text;
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_BY_ID]?["value"] = user_r.data[user_r.ID]!["value"];
-      fd_schema_r.data[fd_schema_r.ROOM_PAID_BY]?["value"] = user_r.data[user_r.FULL_NAME]!["value"];
-      fd_schema_w.data[fd_schema_w.ROOM_PAID_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
+      schema.data[schema.ROOM_PRICE_TOTAL_USD]?["value"] = get_price_total_usd();
+      schema.data[schema.ROOM_PAID_BANK_USD]?["value"] = double.tryParse(c_paid_bank_usd.text);
+      schema.data[schema.ROOM_PAID_CASH_USD]?["value"] = double.tryParse(c_paid_cash_usd.text);
+      schema.data[schema.ROOM_PAID_BANK_KHR]?["value"] = double.tryParse(c_paid_bank_khr.text);
+      schema.data[schema.ROOM_PAID_CASH_KHR]?["value"] = double.tryParse(c_paid_cash_khr.text);
+      schema.data[schema.ROOM_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
+      schema.data[schema.ROOM_RETURN_USD]?["value"] = double.tryParse(c_return_usd.text);
+      schema.data[schema.ROOM_RETURN_KHR]?["value"] = double.tryParse(c_return_khr.text);
+      schema.data[schema.ROOM_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
+      schema.data[schema.ROOM_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
+      schema.data[schema.ROOM_PAID_NOTE]?["value"] = c_note.text;
+      schema.data[schema.ROOM_PAID_BY_ID]?["value"] = u_schema.data[u_schema.ID]!["value"];
+      schema.data[schema.ROOM_PAID_BY]?["value"] = u_schema.data[u_schema.FULL_NAME]!["value"];
+      schema.data[schema.ROOM_PAID_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 
       await Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
 

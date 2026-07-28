@@ -12,18 +12,16 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
 import "__config__.dart";
-import "schema.w.dart" as fd_schema_w;
-import "schema.r.dart" as fd_schema_r;
-
-import "package:speanmeas/page/room/schema.r.dart" as r_schema_r;
-import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
+import "schema.g.dart" as schema;
+import "package:speanmeas/page/room/schema.g.dart" as r_schema;
+import "package:speanmeas/page/guest/schema.g.dart" as g_schema;
 
 import "form/check_in/1_guest.dart" as check_in;
 import "form/payment/1_room_payment.dart" as payment;
 import "form/check_out/1_revenue_payment.dart" as check_out;
 import "form/clean/1_note.dart" as clean;
 
-import "widget/button_icon_menu.dart" as button_icon_menu;
+import "widget/button_menu.dart" as button_menu;
 
 class _Main_State extends State<Main_> {
   //
@@ -40,9 +38,9 @@ class _Main_State extends State<Main_> {
     try {
       //
       final r = await dio.post(
-        "/room/read_all", //
+        "/room/read", //
         data: FormData.fromMap({
-          "key": r_schema_r.NUMBER, //
+          "key": r_schema.NUMBER, //
           "order": 1, //
           "limit": 1000,
         }),
@@ -60,7 +58,7 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
-    final is_mobile = MediaQuery.of(context).size.width < 600;
+    final is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
 
     return Scaffold(
       body: LayoutBuilder(
@@ -91,14 +89,14 @@ class _Main_State extends State<Main_> {
                           children: [
                             for (var r in rooms)
                               (() {
-                                if (r[r_schema_r.STATUS] == "Available")
+                                if (r[r_schema.STATUS] == "Available")
                                   return Container(
                                     width: 120,
                                     margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
-                                    child: button_icon_menu.Main_(
+                                    child: button_menu.Main_(
                                       color: Colors.green,
                                       icon: Icons.hotel_outlined,
-                                      text: r[r_schema_r.NUMBER],
+                                      text: r[r_schema.NUMBER],
                                       menuChildren: [
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.info_outline),
@@ -145,14 +143,14 @@ class _Main_State extends State<Main_> {
                           children: [
                             for (var r in rooms)
                               (() {
-                                if (r[r_schema_r.STATUS] == "Pending Pay")
+                                if (r[r_schema.STATUS] == "Pending Pay")
                                   return Container(
                                     width: 120,
                                     margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
-                                    child: button_icon_menu.Main_(
+                                    child: button_menu.Main_(
                                       color: Colors.orange,
                                       icon: Icons.hotel_outlined,
-                                      text: r[r_schema_r.NUMBER],
+                                      text: r[r_schema.NUMBER],
                                       menuChildren: [
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.info_outline),
@@ -213,14 +211,14 @@ class _Main_State extends State<Main_> {
                           children: [
                             for (var r in rooms)
                               (() {
-                                if (r[r_schema_r.STATUS] == "Pending Leave")
+                                if (r[r_schema.STATUS] == "Pending Leave")
                                   return Container(
                                     width: 120,
                                     margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
-                                    child: button_icon_menu.Main_(
+                                    child: button_menu.Main_(
                                       color: Colors.blue,
                                       icon: Icons.hotel_outlined,
-                                      text: r[r_schema_r.NUMBER],
+                                      text: r[r_schema.NUMBER],
                                       menuChildren: [
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.info_outline),
@@ -288,14 +286,14 @@ class _Main_State extends State<Main_> {
                           children: [
                             for (var r in rooms)
                               (() {
-                                if (r[r_schema_r.STATUS] == "Pending Clean")
+                                if (r[r_schema.STATUS] == "Pending Clean")
                                   return Container(
                                     width: 120,
                                     margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
-                                    child: button_icon_menu.Main_(
+                                    child: button_menu.Main_(
                                       color: Colors.black,
                                       icon: Icons.hotel_outlined,
-                                      text: r[r_schema_r.NUMBER],
+                                      text: r[r_schema.NUMBER],
                                       menuChildren: [
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.info_outline),
@@ -333,21 +331,19 @@ class _Main_State extends State<Main_> {
   void on_check_in(r) async {
     try {
       //
-      fd_schema_w.clear();
-      fd_schema_r.clear();
-      g_schema_r.clear();
-      r_schema_r.clear();
+      schema.clear();
+      g_schema.clear();
+      r_schema.clear();
 
       //
-      fd_schema_w.data[fd_schema_w.ROOM_ID]?["value"] = r["_id"];
-
-      //
-      for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
+      schema.data[schema.ROOM_ID]?["value"] = r[r_schema.ID];
+      schema.data[schema.ROOM_NUMBER]?["value"] = r[r_schema.NUMBER];
+      schema.data[schema.ROOM_KIND]?["value"] = r[r_schema.KIND];
+      schema.data[schema.ROOM_USD_PER_3H]?["value"] = r[r_schema.USD_PER_3H];
+      schema.data[schema.ROOM_USD_PER_DAY]?["value"] = r[r_schema.USD_PER_DAY];
 
       //
       final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_in.Main_()));
-
-      //
       if (v == null) return;
 
       //
@@ -357,46 +353,24 @@ class _Main_State extends State<Main_> {
     } catch (e) {
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }
-
-    //
   }
 
   void on_payment(r) async {
     try {
       //
-      fd_schema_w.clear();
-      fd_schema_r.clear();
-      g_schema_r.clear();
-      r_schema_r.clear();
-
-      // print(r[r_schema_r.FRONT_DESK_ID]);
-      for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
+      schema.clear();
+      g_schema.clear();
+      r_schema.clear();
 
       //
       var f = await dio.post(
         "/front_desk/read_id", //
-        data: FormData.fromMap({"_id": r[r_schema_r.FRONT_DESK_ID]}),
+        data: FormData.fromMap({"_id": r[r_schema.FRONT_DESK_ID]}),
       );
-
-      //
-      fd_schema_w.data[fd_schema_w.ID]?["value"] = r[r_schema_r.FRONT_DESK_ID];
-      fd_schema_w.data[fd_schema_w.ROOM_PRICE_TOTAL_USD]?["value"] = f.data[0][fd_schema_w.ROOM_PRICE_TOTAL_USD];
-      for (var e in fd_schema_r.data.entries) e.value["value"] = f.data[0][e.key];
-
-      //
-      if (fd_schema_r.data[fd_schema_r.GUEST_ID]?["value"] != null) {
-        var g = await dio.post(
-          "/guest/read_id", //
-          data: FormData.fromMap({"_id": f.data[0][fd_schema_r.GUEST_ID]}),
-        );
-
-        for (var e in g_schema_r.data.entries) e.value["value"] = g.data[0][e.key];
-      }
+      for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
 
       //
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => payment.Main_()));
-
-      //
       if (value == null) return;
 
       //
@@ -412,38 +386,19 @@ class _Main_State extends State<Main_> {
     //
     try {
       //
-      fd_schema_w.clear();
-      fd_schema_r.clear();
-      g_schema_r.clear();
-      r_schema_r.clear();
-
-      //
-      for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
+      schema.clear();
+      g_schema.clear();
+      r_schema.clear();
 
       //
       var f = await dio.post(
         "/front_desk/read_id", //
-        data: FormData.fromMap({"_id": r[r_schema_r.FRONT_DESK_ID]}),
+        data: FormData.fromMap({"_id": r[r_schema.FRONT_DESK_ID]}),
       );
-
-      //
-      fd_schema_w.data[fd_schema_w.ID]?["value"] = r[r_schema_r.FRONT_DESK_ID];
-      for (var e in fd_schema_r.data.entries) e.value["value"] = f.data[0][e.key];
-
-      //
-      if (fd_schema_r.data[fd_schema_r.GUEST_ID]?["value"] != null) {
-        var g = await dio.post(
-          "/guest/read_id", //
-          data: FormData.fromMap({"_id": f.data[0][fd_schema_r.GUEST_ID]}),
-        );
-
-        for (var e in g_schema_r.data.entries) e.value["value"] = g.data[0][e.key];
-      }
+      for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
 
       //
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_out.Main_()));
-
-      //
       if (value == null) return;
 
       //
@@ -458,38 +413,20 @@ class _Main_State extends State<Main_> {
   void on_clean(r) async {
     try {
       //
-      fd_schema_w.clear();
-      fd_schema_r.clear();
-      g_schema_r.clear();
-      r_schema_r.clear();
-
-      //
-      for (var e in r_schema_r.data.entries) e.value["value"] = r[e.key];
+      // fd_schema_w.clear();
+      schema.clear();
+      g_schema.clear();
+      r_schema.clear();
 
       //
       var f = await dio.post(
         "/front_desk/read_id", //
-        data: FormData.fromMap({"_id": r[r_schema_r.FRONT_DESK_ID]}),
+        data: FormData.fromMap({"_id": r[r_schema.FRONT_DESK_ID]}),
       );
-
-      //
-      fd_schema_w.data[fd_schema_w.ID]?["value"] = r[r_schema_r.FRONT_DESK_ID];
-      for (var e in fd_schema_r.data.entries) e.value["value"] = f.data[0][e.key];
-
-      //
-      if (fd_schema_r.data[fd_schema_r.GUEST_ID]?["value"] != null) {
-        var g = await dio.post(
-          "/guest/read_id", //
-          data: FormData.fromMap({"_id": f.data[0][fd_schema_r.GUEST_ID]}),
-        );
-
-        for (var e in g_schema_r.data.entries) e.value["value"] = g.data[0][e.key];
-      }
+      for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
 
       //
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => clean.Main_()));
-
-      //
       if (value == null) return;
 
       //
@@ -505,7 +442,7 @@ class _Main_State extends State<Main_> {
 }
 
 class Main_ extends StatefulWidget {
-  const Main_({super.key});
+  Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
@@ -515,7 +452,7 @@ void main() {
     MaterialApp(
       title: HEADER, //
       theme: Theme_Data(), //
-      home: const Main_(),
+      home: Main_(),
       debugShowCheckedModeBanner: false,
     ),
   );

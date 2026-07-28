@@ -58,7 +58,7 @@ class _Main_State extends State<Main_> {
       setState(() {});
 
       //
-      final r = await dio.post("$PATH/read_all", data: FormData.fromMap({"key": KEY, "order": ORDER, "offset": (p - 1) * LIMIT, "limit": LIMIT}));
+      final r = await dio.post("$PATH/read", data: FormData.fromMap({"key": KEY, "order": ORDER, "offset": (p - 1) * LIMIT, "limit": LIMIT}));
       final data = List<Map<String, dynamic>>.from(r.data);
 
       // keep sort + filter

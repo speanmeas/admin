@@ -2,16 +2,22 @@ Map<String, Map<String, dynamic>> data = {
   "_id": {
     "type": "id",
     "title": "ID",
+    "hide": true,
+    "lock": false,
     "value": null
   },
   "name": {
     "type": "string",
     "title": "Name",
+    "hide": false,
+    "lock": false,
     "value": null
   },
   "note": {
     "type": "string",
     "title": "Note",
+    "hide": false,
+    "lock": false,
     "value": null
   }
 };

@@ -1,18 +1,41 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:intl/intl.dart";
 import "package:dio/dio.dart";
 
-import "package:speanmeas/__config__.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
+import "package:speanmeas/widget/show_data.dart" as show_data;
 
 import "../__config__.dart";
-import "../schema.w.dart" as schema_w;
+import "../schema.g.dart" as schema;
+
+import "../widget/status_select.dart" as s_select;
+import "../widget/kind_select.dart" as k_select;
 
 class _Main_State extends State<Main_> {
+  final c_status = TextEditingController();
+  final c_kind = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    schema.data[schema.STATUS]!["value"] = "Available";
+    schema.data[schema.KIND]!["value"] = "Single";
+
+    if (schema.data[schema.STATUS]!["value"] != null) //
+      c_status.text = schema.data[schema.STATUS]!["value"];
+    if (schema.data[schema.KIND]!["value"] != null) //
+      c_kind.text = schema.data[schema.KIND]!["value"];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,6 +47,7 @@ class _Main_State extends State<Main_> {
             fontWeight: FontWeight.bold,
           ),
         ),
+
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -32,14 +56,64 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              for (var e in schema_w.data.entries)
+              for (var e in schema.data.entries)
                 (() {
+                  // * select status
+                  if (e.key == schema.STATUS) {
+                    return Container(
+                      width: 600,
+                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      child: s_select.Main_(
+                        controller: c_status,
+                        onChanged: (v) {
+                          e.value["value"] = v;
+                          setState(() {});
+                        },
+                        onCleared: () {
+                          e.value["value"] = null;
+                          setState(() {});
+                        },
+                      ),
+                    );
+                  }
+
+                  // * select kind
+                  if (e.key == schema.KIND) {
+                    return Container(
+                      width: 600,
+                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      child: k_select.Main_(
+                        controller: c_kind,
+                        onChanged: (v) {
+                          e.value["value"] = v;
+                          setState(() {});
+                        },
+                        onCleared: () {
+                          e.value["value"] = null;
+                          setState(() {});
+                        },
+                      ),
+                    );
+                  }
+
+                  // * lock
+                  if (e.value["lock"] == true) {
+                    String value = "";
+                    if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
+                    return Container(
+                      width: 600,
+                      margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                      child: show_data.Main_(
+                        title: e.value["title"], //
+                        value: value,
+                      ),
+                    );
+                  }
+
                   // * អក្សរ
                   if (e.value["type"] == "string") {
                     String value = "";
-                    if (e.value["value"] != null) {
-                      value = e.value["value"]?.toString() ?? "";
-                    }
+                    if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -47,16 +121,16 @@ class _Main_State extends State<Main_> {
                         controller: TextEditingController(text: value.trim()),
                         maxLines: e.key.contains("note") ? 4 : 1,
                         decoration: InputDecoration(
-                          hintText: e.key.contains("password") ? "New Password" : null, //
                           labelText: e.value["title"] + ":", //
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
+                          prefixIcon: Icon(Icons.text_fields), //
                           suffixIcon: Padding(
                             padding: EdgeInsets.only(right: 4),
                             child: IconButton(
                               icon: Icon(Icons.clear, color: Colors.red),
-                              onPressed: () {
-                                e.value["value"] = " ";
+                              onPressed: () async {
+                                e.value["value"] = "";
                                 setState(() {});
                               },
                             ), //
@@ -87,12 +161,13 @@ class _Main_State extends State<Main_> {
                           labelText: e.value["title"] + ":", //
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
+                          prefixIcon: Icon(Icons.numbers), //
                           suffixIcon: Padding(
                             padding: EdgeInsets.only(right: 4),
                             child: IconButton(
                               icon: Icon(Icons.clear, color: Colors.red),
-                              onPressed: () {
-                                e.value["value"] = 0;
+                              onPressed: () async {
+                                e.value["value"] = "";
                                 setState(() {});
                               },
                             ), //
@@ -101,16 +176,14 @@ class _Main_State extends State<Main_> {
                         keyboardType: TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
                         onChanged: (v) {
-                          if (v.isEmpty)
-                            e.value["value"] = 0;
-                          else
-                            e.value["value"] = double.tryParse(v) ?? 0;
+                          if (v.isEmpty) e.value["value"] = 0;
+                          if (v.isNotEmpty) e.value["value"] = double.tryParse(v) ?? 0;
                         },
                       ),
                     );
                   }
 
-                  // * ថ្ងៃខែឆ្នាំ និង ​ម៉ោង
+                  // * ថ្ងៃខែឆ្នាំ និង ម៉ោង
                   // todo: clear date-time?
                   if (e.value["type"] == "date-time") {
                     String value = "";
@@ -135,10 +208,17 @@ class _Main_State extends State<Main_> {
                           labelText: e.value["title"] + ":", //
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
+                          prefixIcon: Icon(Icons.calendar_month_outlined), //
                           suffixIcon: Padding(
-                            padding: EdgeInsets.only(right: 8),
-                            child: Icon(Icons.calendar_today), //,
-                          ), //
+                            padding: EdgeInsets.only(right: 4),
+                            child: IconButton(
+                              icon: Icon(Icons.clear, color: Colors.red),
+                              onPressed: () async {
+                                e.value["value"] = "";
+                                setState(() {});
+                              },
+                            ), //
+                          ),
                         ),
                         onTap: () async {
                           DateTime? datetime = await datetime_picker(context, initial_datetime: init);
@@ -151,35 +231,53 @@ class _Main_State extends State<Main_> {
                   }
 
                   // * តក្កវិទ្យា
-                  // todo: clear boolean?
                   if (e.value["type"] == "boolean") {
                     String? value;
                     if (e.value["value"] != null) {
                       if (e.value["value"] == true) value = "Yes";
                       if (e.value["value"] == false) value = "No";
                     }
+                    final controller_search = TextEditingController(text: value);
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: DropdownButtonFormField<String>(
-                        initialValue: value,
-                        decoration: InputDecoration(
-                          labelText: e.value["title"] + ":",
-                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                        ),
-                        icon: Icon(Icons.arrow_drop_down, color: Colors.blue), //
-                        items: ["Yes", "No"].map((i) {
-                          return DropdownMenuItem<String>(value: i, child: Text(i));
-                        }).toList(),
-                        onChanged: (v) {
+                      child: TypeAheadField<String>(
+                        controller: controller_search,
+                        suggestionsCallback: (query) => ["Yes", "No"],
+                        builder: (context, controller, focusNode) {
+                          return TextField(
+                            controller: controller,
+                            focusNode: focusNode,
+                            decoration: InputDecoration(
+                              labelText: e.value["title"] + ":", //
+                              labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                              prefixIcon: Icon(Icons.toggle_on_outlined), //
+                              suffixIcon: Padding(
+                                padding: EdgeInsets.only(right: 4),
+                                child: IconButton(
+                                  icon: Icon(Icons.clear, color: Colors.red),
+                                  onPressed: () async {
+                                    e.value["value"] = "";
+                                    setState(() {});
+                                  },
+                                ), //
+                              ),
+                            ),
+                          );
+                        },
+                        itemBuilder: (context, item) => ListTile(title: Text(item)),
+                        onSelected: (v) {
+                          controller_search.text = v;
                           if (v == "Yes") e.value["value"] = true;
                           if (v == "No") e.value["value"] = false;
+                          setState(() {});
                         },
                       ),
                     );
                   }
 
+                  //
                   return SizedBox();
                 })(),
 
@@ -203,19 +301,14 @@ class _Main_State extends State<Main_> {
   void on_create() async {
     try {
       //
-      Map<String, dynamic> payload = {};
-      for (var e in schema_w.data.entries) {
-        payload[e.key] = e.value["value"];
-      }
+      Map<String, dynamic> output = {};
+      for (var e in schema.data.entries) output[e.key] = e.value["value"];
 
       // request
-      final r = await dio.post("$PATH/create", data: FormData.fromMap({...payload}));
+      final r = await dio.post("$PATH/create", data: FormData.fromMap({...output}));
 
       //
-      payload["_id"] = r.data["_id"];
-
-      //
-      Navigator.pop(context, payload);
+      Navigator.pop(context, true);
 
       //
       snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);

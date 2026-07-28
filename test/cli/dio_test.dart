@@ -9,7 +9,7 @@ void main() async {
 
   await dio
       .post(
-        "/template/data_read",
+        "/template/read",
         data: FormData.fromMap({
           //
         }),

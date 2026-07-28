@@ -9,8 +9,7 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
 import "__config__.dart";
-import "schema.r.dart" as schema_r;
-import "schema.w.dart" as schema_w;
+import "schema.g.dart" as schema;
 
 import "form/create.dart" as create;
 import "form/read.dart" as read;
@@ -58,7 +57,7 @@ class _Main_State extends State<Main_> {
       setState(() {});
 
       //
-      final r = await dio.post("$PATH/read_all", data: FormData.fromMap({"key": KEY, "order": ORDER, "offset": (p - 1) * LIMIT, "limit": LIMIT}));
+      final r = await dio.post("$PATH/read", data: FormData.fromMap({"key": KEY, "order": ORDER, "offset": (p - 1) * LIMIT, "limit": LIMIT}));
       final data = List<Map<String, dynamic>>.from(r.data);
 
       // keep sort + filter
@@ -71,7 +70,7 @@ class _Main_State extends State<Main_> {
         for (var d in data)
           PlutoRow(
             cells: {
-              for (var e in schema_r.data.entries) //
+              for (var e in schema.data.entries) //
                 e.key: PlutoCell(
                   value: e.key.contains("password")
                       ? "**********" //
@@ -179,7 +178,7 @@ class _Main_State extends State<Main_> {
             child: PlutoGrid(
               rows: [],
               columns: [
-                for (var e in schema_r.data.entries)
+                for (var e in schema.data.entries)
                   PlutoColumn(
                     field: e.key, //
                     title: e.value["title"]!,
@@ -336,7 +335,7 @@ class _Main_State extends State<Main_> {
   void on_create() async {
     try {
       //
-      schema_w.clear();
+      schema.clear();
 
       //
       final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
@@ -363,7 +362,7 @@ class _Main_State extends State<Main_> {
   void on_read() async {
     try {
       //
-      schema_r.clear();
+      schema.clear();
 
       //
       final row = state_manager?.currentRow;
@@ -373,7 +372,7 @@ class _Main_State extends State<Main_> {
       }
 
       //
-      for (var e in schema_r.data.entries) {
+      for (var e in schema.data.entries) {
         e.value["value"] = cell_to_data(data: row.cells[e.key]?.value, type: e.value["type"]);
       }
 
@@ -389,7 +388,7 @@ class _Main_State extends State<Main_> {
   void on_update() async {
     try {
       //
-      schema_w.clear();
+      schema.clear();
 
       //
       final row = state_manager?.currentRow;
@@ -399,7 +398,7 @@ class _Main_State extends State<Main_> {
       }
 
       //
-      for (var e in schema_w.data.entries) {
+      for (var e in schema.data.entries) {
         e.value["value"] = cell_to_data(data: row.cells[e.key]?.value, type: e.value["type"]);
       }
 
@@ -419,7 +418,7 @@ class _Main_State extends State<Main_> {
   void on_delete() async {
     try {
       //
-      schema_w.clear();
+      schema.clear();
 
       //
       final row = state_manager?.currentRow;
@@ -429,7 +428,7 @@ class _Main_State extends State<Main_> {
       }
 
       //
-      schema_w.data[schema_w.ID]?["value"] = row.cells[schema_w.ID]!.value;
+      schema.data[schema.ID]?["value"] = row.cells[schema.ID]!.value;
 
       //
       final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_()));

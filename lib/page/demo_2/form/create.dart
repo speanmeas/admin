@@ -4,16 +4,34 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:intl/intl.dart";
 import "package:dio/dio.dart";
 
-import "package:speanmeas/__config__.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
+import "package:speanmeas/widget/show_data.dart" as show_data;
 
 import "../__config__.dart";
-import "../schema.w.dart" as schema_w;
+import "../schema.g.dart" as schema;
+
+import "package:speanmeas/page/nationality/schema.g.dart" as n_schema_r;
+import "../widget/nationality_search.dart" as n_search;
 
 class _Main_State extends State<Main_> {
+  final c_nationality = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    schema.data[schema.NATIONALITY_NAME]!["value"] = "Cambodian";
+
+    if (schema.data[schema.NATIONALITY_NAME]!["value"] != null) //
+      c_nationality.text = schema.data[schema.NATIONALITY_NAME]!["value"];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,8 +52,45 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Column(
             children: [
-              for (var e in schema_w.data.entries)
+              for (var e in schema.data.entries)
                 (() {
+                  // * search nationality
+                  if (e.key == schema.NATIONALITY_ID) {
+                    return Container(
+                      width: 600,
+                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      child: n_search.Main_(
+                        controller: c_nationality,
+                        onChanged: (v) {
+                          e.value["value"] = v[n_schema_r.ID];
+                          schema.data[schema.NATIONALITY_NAME]!["value"] = v[n_schema_r.NAME];
+                          schema.data[schema.NATIONALITY_NOTE]!["value"] = v[n_schema_r.NOTE];
+                          setState(() {});
+                        },
+                        onCleared: () {
+                          e.value["value"] = null;
+                          schema.data[schema.NATIONALITY_NAME]!["value"] = null;
+                          schema.data[schema.NATIONALITY_NOTE]!["value"] = null;
+                          setState(() {});
+                        },
+                      ),
+                    );
+                  }
+
+                  // * lock
+                  if (e.value["lock"] == true) {
+                    String value = "";
+                    if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
+                    return Container(
+                      width: 600,
+                      margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                      child: show_data.Main_(
+                        title: e.value["title"], //
+                        value: value,
+                      ),
+                    );
+                  }
+
                   // * អក្សរ
                   if (e.value["type"] == "string") {
                     String value = "";
@@ -102,10 +157,8 @@ class _Main_State extends State<Main_> {
                         keyboardType: TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
                         onChanged: (v) {
-                          if (v.isEmpty)
-                            e.value["value"] = 0;
-                          else
-                            e.value["value"] = double.tryParse(v) ?? 0;
+                          if (v.isEmpty) e.value["value"] = 0;
+                          if (v.isNotEmpty) e.value["value"] = double.tryParse(v) ?? 0;
                         },
                       ),
                     );
@@ -229,14 +282,14 @@ class _Main_State extends State<Main_> {
   void on_create() async {
     try {
       //
-      Map<String, dynamic> payload = {};
-      for (var e in schema_w.data.entries) payload[e.key] = e.value["value"];
+      Map<String, dynamic> output = {};
+      for (var e in schema.data.entries) output[e.key] = e.value["value"];
 
       // request
-      final r = await dio.post("$PATH/create", data: FormData.fromMap({...payload}));
+      final r = await dio.post("$PATH/create", data: FormData.fromMap({...output}));
 
       //
-      Navigator.pop(context, r.data);
+      Navigator.pop(context, true);
 
       //
       snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);

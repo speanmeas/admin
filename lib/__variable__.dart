@@ -23,22 +23,3 @@ class Global extends ChangeNotifier {
 }
 
 Global global = Global.instance;
-
-//
-
-class Type extends ChangeNotifier {
-  // singleton
-  static final Type instance = Type._();
-  Type._();
-
-  // constants
-  final ID = "id";
-  final STRING = "string";
-  final NUMBER = "number";
-  final BOOLEAN = "boolean";
-  final DATETIME = "date-time";
-
-  //
-}
-
-Type type = Type.instance;

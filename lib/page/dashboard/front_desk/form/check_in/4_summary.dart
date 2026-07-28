@@ -14,14 +14,14 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/widget/show_data.dart" as show_data;
 
-import "package:speanmeas/page/auth/schema.r.dart" as user_r;
+import "package:speanmeas/page/auth/schema.g.dart" as u_schema;
 
-import "package:speanmeas/page/room/schema.r.dart" as r_schema_r;
-import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
+import "package:speanmeas/page/room/schema.g.dart" as r_schema;
+import "package:speanmeas/page/guest/schema.g.dart" as g_schema;
 
 import "../../__config__.dart";
-import "../../schema.w.dart" as fd_schema_w;
-import "../../schema.r.dart" as fd_schema_r;
+// import "../../schema.w.dart" as fd_schema_w;
+import "../../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
   @override
@@ -81,227 +81,57 @@ class _Main_State extends State<Main_> {
             margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
             child: Column(
               children: [
-                // room number
-                show_data.Main_(
-                  title: "Room Number", //
-                  value: r_schema_r.data[r_schema_r.NUMBER]?["value"]?.toString() ?? "",
-                ),
+                for (var e in schema.data.entries) //
+                  (() {
+                    //
+                    if (e.value["type"]?.toString() == "string") {
+                      var value = "";
+                      if (e.value["value"] != null) value = e.value["value"].toString();
+                      return show_data.Main_(
+                        title: e.value["title"]?.toString() ?? "", //
+                        value: value,
+                      );
+                    }
 
-                // room kind
-                show_data.Main_(
-                  title: "Room Type", //
-                  value: r_schema_r.data[r_schema_r.KIND]?["value"]?.toString() ?? "",
-                ),
+                    //
+                    if (e.value["type"]?.toString() == "number") {
+                      var value = "";
+                      if (e.value["value"] != null) value = e.value["value"].toString();
+                      return show_data.Main_(
+                        title: e.value["title"]?.toString() ?? "", //
+                        value: value,
+                      );
+                    }
 
-                // room price per day
-                show_data.Main_(
-                  title: "Room Price/Day (USD)", //
-                  value: r_schema_r.data[r_schema_r.USD_PER_DAY]?["value"]?.toString() ?? "",
-                ),
+                    //
+                    if (e.value["type"]?.toString() == "date-time") {
+                      var value = "";
+                      if (e.value["value"] != null) {
+                        final dt = DateTime.tryParse(e.value["value"].toString());
+                        if (dt != null) value = DateFormat(DATE_FORMAT).format(dt);
+                      }
+                      return show_data.Main_(
+                        title: e.value["title"]?.toString() ?? "", //
+                        value: value,
+                      );
+                    }
 
-                // room price per 3h
-                show_data.Main_(
-                  title: "Room Price/3H (USD)", //
-                  value: r_schema_r.data[r_schema_r.USD_PER_3H]?["value"]?.toString() ?? "",
-                ),
+                    //
+                    if (e.value["type"]?.toString() == "boolean") {
+                      var value = "";
+                      if (e.value["value"] != null) {
+                        if (e.value["value"] == true) value = "Yes";
+                        if (e.value["value"] == false) value = "No";
+                      }
+                      return show_data.Main_(
+                        title: e.value["title"]?.toString() ?? "", //
+                        value: value,
+                      );
+                    }
 
-                Divider(height: 8, color: Colors.grey),
-
-                //
-                show_data.Main_(
-                  title: "Guest Name", //
-                  value: g_schema_r.data[g_schema_r.FULL_NAME]?["value"]?.toString() ?? "",
-                ),
-
-                //
-                show_data.Main_(
-                  title: "Guest Gender", //
-                  value: g_schema_r.data[g_schema_r.GENDER]?["value"]?.toString() ?? "",
-                ),
-
-                //
-                show_data.Main_(
-                  title: "Guest Phone", //
-                  value: g_schema_r.data[g_schema_r.PHONE_NUMBER]?["value"]?.toString() ?? "",
-                ),
-
-                // guest nationality
-                show_data.Main_(
-                  title: "Guest Nationality", //
-                  value: g_schema_r.data[g_schema_r.NATIONALITY]?["value"]?.toString() ?? "",
-                ),
-
-                Divider(height: 8, color: Colors.grey),
-
-                // stay duration (days)
-                show_data.Main_(
-                  title: "Stay Duration (Days)", //
-                  value: fd_schema_w.data[fd_schema_w.STAY_DAY]?["value"]?.toString() ?? "",
-                ),
-
-                // stay duration (hours)
-                show_data.Main_(
-                  title: "Stay Duration (Hours)", //
-                  value: fd_schema_w.data[fd_schema_w.STAY_HOUR]?["value"]?.toString() ?? "",
-                ),
-
-                // stay guest total
-                show_data.Main_(
-                  title: "Stay Guest Total", //
-                  value: fd_schema_w.data[fd_schema_w.NUMBER_OF_GUESTS]?["value"]?.toString() ?? "",
-                ),
-
-                // check in note
-                show_data.Main_(
-                  title: "Check-In Note", //
-                  value: fd_schema_w.data[fd_schema_w.CHECK_IN_NOTE]?["value"]?.toString() ?? "",
-                ),
-
-                // check in by
-                show_data.Main_(
-                  title: "Checked-In By", //
-                  value: fd_schema_r.data[fd_schema_r.CHECK_IN_BY]?["value"]?.toString() ?? "",
-                ),
-
-                // check-in at
-                show_data.Main_(
-                  title: "Checked-In At", //
-                  value: _dateValue(fd_schema_w.data[fd_schema_w.CHECK_IN_AT]?["value"]),
-                ),
-
-                // scheduled check-out date
-                show_data.Main_(
-                  title: "Scheduled to Check-Out", //
-                  value: _dateValue(fd_schema_w.data[fd_schema_w.CHECK_OUT_DATE]?["value"]),
-                ),
-
-                Divider(height: 8, color: Colors.grey),
-
-                // room price total
-                show_data.Main_(
-                  title: "Room Price Total (USD)", //
-                  value: fd_schema_w.data[fd_schema_w.ROOM_PRICE_TOTAL_USD]?["value"]?.toString() ?? "",
-                ),
-
-                // room paid total
-                show_data.Main_(
-                  title: "Room Paid Total (USD)", //
-                  value: fd_schema_w.data[fd_schema_w.ROOM_PAID_TOTAL_USD]?["value"]?.toString() ?? "",
-                ),
-
-                // room return total
-                show_data.Main_(
-                  title: "Room Returned Total (USD)", //
-                  value: fd_schema_w.data[fd_schema_w.ROOM_RETURN_TOTAL_USD]?["value"]?.toString() ?? "",
-                ),
-
-                // room balance total
-                show_data.Main_(
-                  title: "Room Balanced Total (USD)", //
-                  value: fd_schema_w.data[fd_schema_w.ROOM_BALANCE_TOTAL_USD]?["value"]?.toString() ?? "",
-                ),
-
-                // room paid note
-                show_data.Main_(
-                  title: "Room Paid Note", //
-                  value: fd_schema_w.data[fd_schema_w.ROOM_PAID_NOTE]?["value"]?.toString() ?? "",
-                ),
-
-                // room paid by
-                show_data.Main_(
-                  title: "Received Room Payment By", //
-                  value: fd_schema_r.data[fd_schema_r.ROOM_PAID_BY]?["value"]?.toString() ?? "",
-                ),
-
-                // check in note
-                show_data.Main_(
-                  title: "Received Room Payment At", //
-                  value: _dateValue(fd_schema_w.data[fd_schema_w.ROOM_PAID_AT]?["value"]),
-                ),
-
-                Divider(height: 8, color: Colors.grey),
-
-                // revenue price total
-                show_data.Main_(
-                  title: "Revenue Price Total (USD)", //
-                  value: fd_schema_w.data[fd_schema_w.REVENUE_PRICE_TOTAL_USD]?["value"]?.toString() ?? "",
-                ),
-
-                // revenue paid total
-                show_data.Main_(
-                  title: "Revenue Paid Total (USD)", //
-                  value: fd_schema_w.data[fd_schema_w.REVENUE_PAID_TOTAL_USD]?["value"]?.toString() ?? "",
-                ),
-
-                // revenue return total
-                show_data.Main_(
-                  title: "Revenue Returned Total (USD)", //
-                  value: fd_schema_w.data[fd_schema_w.REVENUE_RETURN_TOTAL_USD]?["value"]?.toString() ?? "",
-                ),
-
-                // revenue balance total
-                show_data.Main_(
-                  title: "Revenue Balanced Total (USD)", //
-                  value: fd_schema_w.data[fd_schema_w.REVENUE_BALANCE_TOTAL_USD]?["value"]?.toString() ?? "",
-                ),
-
-                // revenue note
-                show_data.Main_(
-                  title: "Revenue Note", //
-                  value: fd_schema_w.data[fd_schema_w.REVENUE_PAID_NOTE]?["value"]?.toString() ?? "",
-                ),
-
-                // revenue paid by
-                show_data.Main_(
-                  title: "Received Revenue Payment By", //
-                  value: fd_schema_r.data[fd_schema_r.REVENUE_PAID_BY]?["value"]?.toString() ?? "",
-                ),
-
-                // received revenue payment at
-                show_data.Main_(
-                  title: "Received Revenue Payment At", //
-                  value: _dateValue(fd_schema_w.data[fd_schema_w.REVENUE_PAID_AT]?["value"]),
-                ),
-
-                Divider(height: 8, color: Colors.grey),
-
-                // check-out note
-                show_data.Main_(
-                  title: "Checked-Out Note", //
-                  value: fd_schema_w.data[fd_schema_w.CHECK_OUT_NOTE]?["value"]?.toString() ?? "",
-                ),
-
-                // check-out by
-                show_data.Main_(
-                  title: "Checked-Out By", //
-                  value: fd_schema_r.data[fd_schema_r.CHECK_OUT_BY]?["value"]?.toString() ?? "",
-                ),
-
-                // check-out at
-                show_data.Main_(
-                  title: "Checked-Out At", //
-                  value: _dateValue(fd_schema_w.data[fd_schema_w.CHECK_OUT_AT]?["value"]),
-                ),
-
-                Divider(height: 8, color: Colors.grey),
-
-                // cleaned note
-                show_data.Main_(
-                  title: "Cleaned Note", //
-                  value: fd_schema_w.data[fd_schema_w.CLEAN_NOTE]?["value"]?.toString() ?? "",
-                ),
-
-                // cleaned by
-                show_data.Main_(
-                  title: "Cleaned By", //
-                  value: fd_schema_r.data[fd_schema_r.CLEAN_BY]?["value"]?.toString() ?? "",
-                ),
-
-                // cleaned at
-                show_data.Main_(
-                  title: "Cleaned At", //
-                  value: _dateValue(fd_schema_w.data[fd_schema_w.CLEAN_AT]?["value"]),
-                ),
+                    //
+                    return SizedBox();
+                  })(),
               ],
             ),
           ),
@@ -313,22 +143,22 @@ class _Main_State extends State<Main_> {
   void on_check_in() async {
     try {
       //
-      final output = {for (var e in fd_schema_w.data.entries) e.key: e.value["value"]};
+      final output = {for (var e in schema.data.entries) e.key: e.value["value"]};
 
       //
       final response = await dio.post("/front_desk/create", data: FormData.fromMap(output));
 
       //
       var status = "Pending Pay";
-      if (output[fd_schema_w.ROOM_PAID_AT]?.isNotEmpty ?? false) status = "Pending Leave";
+      if (output[schema.ROOM_PAID_AT]?.isNotEmpty ?? false) status = "Pending Leave";
 
       //
       await dio.post(
         "/room/update", //
         data: FormData.fromMap({
-          "_id": output[fd_schema_w.ROOM_ID], //
-          r_schema_r.STATUS: status, //
-          r_schema_r.FRONT_DESK_ID: response.data["_id"],
+          "_id": output[schema.ROOM_ID], //
+          r_schema.STATUS: status, //
+          r_schema.FRONT_DESK_ID: response.data["_id"],
         }),
       );
 
@@ -339,7 +169,7 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, true);
 
       //
-      snackbar_show(context: context, message: "Create successfully.", color: Colors.green);
+      snackbar_show(context: context, message: "Success", color: Colors.green);
     } catch (e) {
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }

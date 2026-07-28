@@ -13,6 +13,7 @@ analyzer:
     camel_case_types: ignore
     constant_identifier_names: ignore
     curly_braces_in_flow_control_structures: ignore
+    dangling_library_doc_comments: ignore
     dead_code: ignore
     depend_on_referenced_packages: ignore
     file_names: ignore

@@ -5,13 +5,13 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
-import "package:speanmeas/page/room/schema.r.dart" as r_schema_r;
-import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
-import "package:speanmeas/page/auth/schema.r.dart" as user_r;
+import "package:speanmeas/page/room/schema.g.dart" as r_schema;
+import "package:speanmeas/page/guest/schema.g.dart" as g_schema;
+import "package:speanmeas/page/auth/schema.g.dart" as u_schema;
 
 import "../../__config__.dart";
-import "../../schema.w.dart" as fd_schema_w;
-import "../../schema.r.dart" as fd_schema_r;
+// import "../../schema.w.dart" as fd_schema_w;
+import "../../schema.g.dart" as schema;
 
 import "3_payment.dart" as step_3;
 
@@ -30,10 +30,10 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    c_number_of_guests.text = fd_schema_w.data[fd_schema_w.NUMBER_OF_GUESTS]?["value"]?.toString() ?? "1";
-    c_stay_duration_days.text = fd_schema_w.data[fd_schema_w.STAY_DAY]?["value"]?.toString() ?? "";
-    c_stay_duration_hours.text = fd_schema_w.data[fd_schema_w.STAY_HOUR]?["value"]?.toString() ?? "";
-    c_note.text = fd_schema_w.data[fd_schema_w.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
+    c_number_of_guests.text = schema.data[schema.NUMBER_OF_GUESTS]?["value"]?.toString() ?? "1";
+    c_stay_duration_days.text = schema.data[schema.STAY_DAY]?["value"]?.toString() ?? "";
+    c_stay_duration_hours.text = schema.data[schema.STAY_HOUR]?["value"]?.toString() ?? "";
+    c_note.text = schema.data[schema.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
 
     setState(() {});
   }
@@ -137,8 +137,8 @@ class _Main_State extends State<Main_> {
       //
       int stay_duration_days = int.tryParse(c_stay_duration_days.text.trim()) ?? 0;
       int stay_duration_hours = int.tryParse(c_stay_duration_hours.text.trim()) ?? 0;
-      double room_price_per_day_usd = r_schema_r.data[r_schema_r.USD_PER_DAY]?["value"]?.toDouble() ?? 0;
-      double room_price_per_3h_usd = r_schema_r.data[r_schema_r.USD_PER_3H]?["value"]?.toDouble() ?? 0;
+      double room_price_per_day_usd = schema.data[schema.ROOM_USD_PER_DAY]?["value"]?.toDouble() ?? 0;
+      double room_price_per_3h_usd = schema.data[schema.ROOM_USD_PER_3H]?["value"]?.toDouble() ?? 0;
 
       // calculate total price
       double room_price_total_usd = (stay_duration_days * room_price_per_day_usd) + ((stay_duration_hours / 3) * room_price_per_3h_usd);
@@ -147,15 +147,18 @@ class _Main_State extends State<Main_> {
       if (DateTime.tryParse(r.data.toString()) == null) throw Exception("Invalid date time from server.");
       DateTime now = DateTime.tryParse(r.data.toString())!;
 
-      fd_schema_w.data[fd_schema_w.STAY_DAY]?["value"] = stay_duration_days;
-      fd_schema_w.data[fd_schema_w.STAY_HOUR]?["value"] = stay_duration_hours;
-      fd_schema_w.data[fd_schema_w.NUMBER_OF_GUESTS]?["value"] = double.tryParse(c_number_of_guests.text.trim());
-      fd_schema_w.data[fd_schema_w.CHECK_IN_BY_ID]?["value"] = user_r.data[user_r.ID]?["value"]?.toString();
-      fd_schema_r.data[fd_schema_r.CHECK_IN_BY]?["value"] = user_r.data[user_r.FULL_NAME]?["value"]?.toString();
-      fd_schema_w.data[fd_schema_w.CHECK_IN_AT]?["value"] = now.toLocal();
-      fd_schema_w.data[fd_schema_w.CHECK_OUT_DATE]?["value"] = now.add(Duration(days: stay_duration_days, hours: stay_duration_hours));
+      // Set the values in the working schema
+      schema.data[schema.STAY_DAY]?["value"] = stay_duration_days;
+      schema.data[schema.STAY_HOUR]?["value"] = stay_duration_hours;
+      schema.data[schema.NUMBER_OF_GUESTS]?["value"] = double.tryParse(c_number_of_guests.text.trim());
+      schema.data[schema.CHECK_IN_BY_ID]?["value"] = u_schema.data[u_schema.ID]?["value"]?.toString();
+      schema.data[schema.CHECK_IN_BY]?["value"] = u_schema.data[u_schema.FULL_NAME]?["value"]?.toString();
+      schema.data[schema.CHECK_IN_AT]?["value"] = now.toLocal();
+      schema.data[schema.CHECK_OUT_DATE]?["value"] = now.add(Duration(days: stay_duration_days, hours: stay_duration_hours));
 
-      fd_schema_w.data[fd_schema_w.ROOM_PRICE_TOTAL_USD]?["value"] = room_price_total_usd;
+      schema.data[schema.ROOM_PRICE_TOTAL_USD]?["value"] = room_price_total_usd;
+
+      // for (var e in fd_schema_r.data.entries) print(e);
 
       //
       await Navigator.push(context, MaterialPageRoute(builder: (context) => step_3.Main_()));

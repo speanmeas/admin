@@ -14,9 +14,9 @@ import "package:speanmeas/widget/snackbar_show.dart";
 import "../../__config__.dart";
 import "widget/search_guest.dart" as search_guest;
 
-import "../../schema.w.dart" as fd_schema_w;
-import "../../schema.r.dart" as fd_schema_r;
-import "package:speanmeas/page/guest/schema.r.dart" as g_schema_r;
+// import "../../schema.w.dart" as fd_schema_w;
+import "../../schema.g.dart" as schema;
+import "package:speanmeas/page/guest/schema.g.dart" as g_schema;
 
 import "package:speanmeas/widget/show_data.dart" as show_data;
 
@@ -32,7 +32,7 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    c_search_guest.text = g_schema_r.data[g_schema_r.PHONE_NUMBER]?["value"]?.toString() ?? "";
+    c_search_guest.text = g_schema.data[g_schema.PHONE_NUMBER]?["value"]?.toString() ?? "";
 
     setState(() {});
   }
@@ -77,13 +77,13 @@ class _Main_State extends State<Main_> {
                 search_guest.Main_(
                   controller: c_search_guest,
                   onChanged: (v) {
-                    for (var e in g_schema_r.data.entries) //
-                      g_schema_r.data[e.key]?["value"] = v[e.key];
+                    for (var e in g_schema.data.entries) //
+                      g_schema.data[e.key]?["value"] = v[e.key];
                     setState(() {});
                   },
                 ),
 
-                for (var e in g_schema_r.data.entries)
+                for (var e in g_schema.data.entries)
                   (() {
                     if (e.value["type"] == "string") {
                       String value = "";
@@ -144,7 +144,17 @@ class _Main_State extends State<Main_> {
   void on_next() async {
     try {
       //
-      fd_schema_w.data[fd_schema_w.GUEST_ID]?["value"] = g_schema_r.data[g_schema_r.ID]?["value"];
+      // fd_schema_w.data[fd_schema_w.GUEST_ID]?["value"] = g_schema_r.data[g_schema_r.ID]?["value"];
+
+      // for (var e in fd_schema_w.data.entries) print(e);
+
+      schema.data[schema.GUEST_ID]?["value"] = g_schema.data[g_schema.ID]?["value"];
+      schema.data[schema.GUEST_FULL_NAME]?["value"] = g_schema.data[g_schema.FULL_NAME]?["value"];
+      schema.data[schema.GUEST_PHONE_NUMBER]?["value"] = g_schema.data[g_schema.PHONE_NUMBER]?["value"];
+      schema.data[schema.GUEST_GENDER]?["value"] = g_schema.data[g_schema.GENDER]?["value"];
+      schema.data[schema.GUEST_NATIONALITY]?["value"] = g_schema.data[g_schema.NATIONALITY]?["value"];
+
+      // for (var e in fd_schema_r.data.entries) print(e);
 
       //
       Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));

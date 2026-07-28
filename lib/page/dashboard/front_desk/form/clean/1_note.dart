@@ -9,11 +9,11 @@ import 'package:speanmeas/theme/theme_data.dart';
 import 'package:speanmeas/utility/dio.dart';
 import 'package:speanmeas/widget/datetime_picker.dart';
 import 'package:speanmeas/widget/snackbar_show.dart';
-import 'package:speanmeas/page/auth/schema.r.dart' as user_r;
+import 'package:speanmeas/page/auth/schema.g.dart' as u_schema;
 
 import '../../__config__.dart';
-import '../../schema.w.dart' as fd_schema_w;
-import '../../schema.r.dart' as fd_schema_r;
+// import '../../schema.w.dart' as fd_schema_w;
+import '../../schema.g.dart' as schema;
 import '2_summary.dart' as step_2;
 
 class _Main_State extends State<Main_> {
@@ -26,7 +26,7 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    c_note.text = fd_schema_w.data[fd_schema_w.CLEAN_NOTE]?["value"]?.toString() ?? "";
+    c_note.text = schema.data[schema.CLEAN_NOTE]?["value"]?.toString() ?? "";
     setState(() {});
   }
 
@@ -92,10 +92,10 @@ class _Main_State extends State<Main_> {
       DateTime now = DateTime.tryParse(response.data.toString())!;
 
       //
-      fd_schema_w.data[fd_schema_w.CLEAN_NOTE]?["value"] = c_note.text.trim();
-      fd_schema_w.data[fd_schema_w.CLEAN_BY_ID]?["value"] = user_r.data[user_r.ID]?["value"];
-      fd_schema_r.data[fd_schema_r.CLEAN_BY]?["value"] = user_r.data[user_r.FULL_NAME]?["value"];
-      fd_schema_w.data[fd_schema_w.CLEAN_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
+      schema.data[schema.CLEAN_NOTE]?["value"] = c_note.text.trim();
+      schema.data[schema.CLEAN_BY_ID]?["value"] = u_schema.data[u_schema.ID]?["value"];
+      schema.data[schema.CLEAN_BY]?["value"] = u_schema.data[u_schema.FULL_NAME]?["value"];
+      schema.data[schema.CLEAN_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 
       // navigate to next screen
       await Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
