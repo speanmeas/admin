@@ -33833,7 +33833,7 @@ s=r+1}r=B.c.e0(a,b)
 while(r!==-1){q=r===0?0:B.c.GO(a,"\n",r-1)+1
 if(c===r-q)return q
 r=B.c.lP(a,b,r+1)}return null},
-bqP(){return"https://adev.speanmeas.com"},
+bqP(){return"https://muysengly.1riel.com"},
 aaP(){var s,r
 for(s=$.c3(),s=new A.ch(s,s.r,s.e,A.f(s).i("ch<1>"));s.p();){r=s.d
 $.c3().h(0,r).m(0,"value",null)}},

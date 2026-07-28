@@ -19,7 +19,7 @@ String get_api_host() {
   }
 
   if (is_github) {
-    return "https://adev.speanmeas.com";
+    return "https://muysengly.1riel.com";
   }
 
   return "https://api.speanmeas.com";
@@ -40,7 +40,7 @@ String get_minio_public() {
 
   // todo: need to config router
   if (is_github) {
-    return "https://sdev.speanmeas.com/public";
+    return "https://muysengly.1riel.com/public";
   }
 
   return "https://sss.speanmeas.com/public";
