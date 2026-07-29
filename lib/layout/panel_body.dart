@@ -26,6 +26,7 @@ import "package:speanmeas/page/report/monthly/main.dart" as report_monthly;
 import "package:speanmeas/page/report/yearly/main.dart" as report_yearly;
 
 import "package:speanmeas/page/demo_1/main.dart" as demo_1;
+import "package:speanmeas/page/demo_2/main.dart" as demo_2;
 
 // setting
 import "package:speanmeas/page/setting/main.dart" as setting;
@@ -49,6 +50,7 @@ class _Main_State extends State<Main_> {
     {"name": "Report - Yearly", "panel": report_yearly.Main_()}, //
     //
     {"name": "Demo - Demo 1", "panel": demo_1.Main_()},
+    {"name": "Demo - Demo 2", "panel": demo_2.Main_()},
 
     //
     {"name": "Setting", "panel": setting.Main_()},

@@ -1,12 +1,11 @@
 ///
-/// TODO: add clear suffix button
+///
 ///
 ///
 
 import "dart:io";
 
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
 import "package:dio/dio.dart";
 
 import "package:speanmeas/__config__.dart";
@@ -15,17 +14,32 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "schema.g.dart" as u_schema;
+import "../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
-  String phone_number = u_schema.data[u_schema.PHONE_NUMBER]!["value"] ?? "";
+  String username = schema.data[schema.USERNAME]!["value"] ?? "";
+  final c_username = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    if (schema.data[schema.USERNAME]!["value"] != null) //
+      c_username.text = schema.data[schema.USERNAME]!["value"];
+
+    setState(() {});
+    //
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Update - Phone Number", //
+          "Update - Username", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -44,19 +58,26 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: phone_number),
+                  controller: c_username,
                   autofocus: true,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: false),
-                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9]"))],
+                  keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: "Phone Number:", //
+                    labelText: "Username:", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    prefixIcon: Icon(Icons.account_circle_outlined, color: Colors.blue),
+                    suffixIcon: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: IconButton(
+                        icon: Icon(Icons.clear, color: Colors.red),
+                        onPressed: () {
+                          c_username.text = "";
+                          setState(() {});
+                        },
+                      ), //
+                    ),
                   ),
-                  onChanged: (v) {
-                    phone_number = v;
-                  },
                   onSubmitted: (v) => on_update(),
                 ),
               ),
@@ -79,27 +100,29 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update() async {
+    // todo: validation
     try {
       //
-      // if (phone_number.trim().isEmpty) throw "Phone number cannot be empty.";
+      String? username;
+      if (c_username.text.isNotEmpty) //
+        username = c_username.text;
 
       //
       final r = await dio.post(
-        "/user/update",
+        "/user/update_field", //
         data: FormData.fromMap({
-          "_id": u_schema.data[u_schema.ID]!["value"], //
-          u_schema.PHONE_NUMBER: phone_number,
+          "_id": schema.data[schema.ID]!["value"], //
+          "key": schema.USERNAME, //
+          "value": username, //
         }),
       );
 
       //
-      u_schema.data[u_schema.PHONE_NUMBER]!["value"] = r.data[u_schema.PHONE_NUMBER];
-
-      //
-      snackbar_show(context: context, message: "Update successful.", color: Colors.green);
-
-      //
+      schema.data[schema.USERNAME]!["value"] = r.data[schema.USERNAME];
       Navigator.pop(context, true);
+
+      //
+      snackbar_show(context: context, message: "Update successful", color: Colors.green);
 
       //
     } catch (e) {

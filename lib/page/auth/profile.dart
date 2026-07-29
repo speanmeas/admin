@@ -16,17 +16,27 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/utility/secure_storage.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "edit_full_name.dart" as update_full_name;
-import "edit_phone_number.dart" as update_phone_number;
-import "edit_username.dart" as update_username;
-import "edit_password.dart" as update_password;
+import "form/full_name.dart" as f_full_name;
+import "form/phone_number.dart" as f_phone_number;
+import "form/username.dart" as f_username;
+import "form/password.dart" as f_password;
 
-import "schema.g.dart" as u_schema;
-// import "schema.w.dart" as user_w;
+import "schema.g.dart" as schema;
 
 import "sign_in.dart" as sign_in;
 
 class _Main_State extends State<Main_> {
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    setState(() {});
+    //
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,148 +72,128 @@ class _Main_State extends State<Main_> {
                     (() {
                       var style = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue);
 
-                      if (u_schema.data[u_schema.IS_ADMIN]!["value"] == true) return Text("Administrator", style: style);
-                      if (u_schema.data[u_schema.IS_MANAGER]!["value"] == true) return Text("Manager", style: style);
-                      if (u_schema.data[u_schema.IS_RECEPTIONIST]!["value"] == true) return Text("Receptionist", style: style);
-                      if (u_schema.data[u_schema.IS_HOUSEKEEPER]!["value"] == true) return Text("Housekeeper", style: style);
+                      if (schema.data[schema.IS_ADMIN]!["value"] == true) return Text("Administrator", style: style);
+                      if (schema.data[schema.IS_MANAGER]!["value"] == true) return Text("Manager", style: style);
+                      if (schema.data[schema.IS_RECEPTIONIST]!["value"] == true) return Text("Receptionist", style: style);
+                      if (schema.data[schema.IS_HOUSEKEEPER]!["value"] == true) return Text("Housekeeper", style: style);
 
-                      return const SizedBox.shrink();
+                      return SizedBox();
                     })(),
                   ],
                 ),
               ),
-
-              // textfield full name
               (() {
                 String value = "";
-                if (u_schema.data[u_schema.FULL_NAME]!["value"] != null) {
-                  value = u_schema.data[u_schema.FULL_NAME]!["value"].toString().trim();
-                }
+                if (schema.data[schema.FULL_NAME]!["value"] != null) //
+                  value = schema.data[schema.FULL_NAME]!["value"].toString();
                 return Container(
                   width: 600,
-                  margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                  child: TextField(
-                    controller: TextEditingController(text: value),
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      labelText: "Name:", //
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      border: OutlineInputBorder(),
-                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                      suffixIcon: Padding(
-                        padding: EdgeInsets.only(right: 4),
-                        child: IconButton(
-                          onPressed: () async {
-                            u_schema.clear();
-                            u_schema.data[u_schema.FULL_NAME]!["value"] = u_schema.data[u_schema.FULL_NAME]!["value"];
-                            await Navigator.push(context, MaterialPageRoute(builder: (_) => update_full_name.Main_()));
-                            setState(() {});
-                          },
-                          icon: Icon(Icons.edit),
-                        ),
+                  margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Name: ", //
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                    ),
+                      Text(
+                        value, //
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+                      ),
+                      SizedBox(width: 8),
+                      InkWell(
+                        child: Icon(Icons.edit, color: Colors.blue),
+                        onTap: () async {
+                          final v = await Navigator.push(context, MaterialPageRoute(builder: (_) => f_full_name.Main_()));
+                          if (v != null) init();
+                        },
+                      ),
+                    ],
                   ),
                 );
               })(),
 
-              // textfield phone
+              // phone number
               (() {
                 String value = "";
-                if (u_schema.data[u_schema.PHONE_NUMBER]!["value"] != null) {
-                  value = u_schema.data[u_schema.PHONE_NUMBER]!["value"].toString().trim();
-                }
+                if (schema.data[schema.PHONE_NUMBER]!["value"] != null) //
+                  value = schema.data[schema.PHONE_NUMBER]!["value"].toString();
                 return Container(
                   width: 600,
-                  margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                  child: TextField(
-                    controller: TextEditingController(text: value),
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      labelText: "Phone Number:", //
-                      border: OutlineInputBorder(),
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                      suffixIcon: Padding(
-                        padding: EdgeInsets.only(right: 4),
-                        child: IconButton(
-                          onPressed: () async {
-                            u_schema.clear();
-                            u_schema.data[u_schema.PHONE_NUMBER]!["value"] = u_schema.data[u_schema.PHONE_NUMBER]!["value"];
-                            await Navigator.push(context, MaterialPageRoute(builder: (_) => update_phone_number.Main_()));
-                            setState(() {});
-                          },
-                          icon: Icon(Icons.edit),
-                        ),
+                  margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Phone Number: ", //
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                    ),
+                      Text(
+                        value, //
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+                      ),
+                      SizedBox(width: 8),
+                      InkWell(
+                        child: Icon(Icons.edit, color: Colors.blue),
+                        onTap: () async {
+                          final v = await Navigator.push(context, MaterialPageRoute(builder: (_) => f_phone_number.Main_()));
+                          if (v != null) init();
+                        },
+                      ),
+                    ],
                   ),
                 );
               })(),
 
-              // textfield username
-              (() {
-                String value = "";
-                if (u_schema.data[u_schema.USERNAME]!["value"] != null) {
-                  value = u_schema.data[u_schema.USERNAME]!["value"].toString().trim();
-                }
-                return Container(
-                  width: 600,
-                  margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                  child: TextField(
-                    controller: TextEditingController(text: value),
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      labelText: "Username:", //
-                      border: OutlineInputBorder(),
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                      suffixIcon: Padding(
-                        padding: EdgeInsets.only(right: 4),
-                        child: IconButton(
-                          onPressed: () async {
-                            u_schema.clear();
-                            u_schema.data[u_schema.USERNAME]!["value"] = u_schema.data[u_schema.USERNAME]!["value"];
-                            await Navigator.push(context, MaterialPageRoute(builder: (_) => update_username.Main_()));
-                            setState(() {});
-                          },
-                          icon: Icon(Icons.edit),
-                        ),
-                      ),
+              // username
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: Row(
+                  children: [
+                    Text(
+                      "Username: ", //
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                );
-              })(),
+                    Text(
+                      schema.data[schema.USERNAME]!["value"].toString(), //
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+                    ),
+                    SizedBox(width: 8),
+                    InkWell(
+                      child: Icon(Icons.edit, color: Colors.blue),
+                      onTap: () async {
+                        final v = await Navigator.push(context, MaterialPageRoute(builder: (_) => f_username.Main_()));
+                        if (v != null) init();
+                      },
+                    ),
+                  ],
+                ),
+              ),
 
-              // textfield password
-              (() {
-                return Container(
-                  width: 600,
-                  margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                  child: TextField(
-                    controller: TextEditingController(text: "**********"),
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      labelText: "Password:", //
-                      border: OutlineInputBorder(),
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                      suffixIcon: Padding(
-                        padding: EdgeInsets.only(right: 4),
-                        child: IconButton(
-                          onPressed: () async {
-                            u_schema.clear();
-                            u_schema.data[u_schema.PASSWORD]!["value"] = u_schema.data[u_schema.PASSWORD]!["value"];
-                            await Navigator.push(context, MaterialPageRoute(builder: (_) => update_password.Main_()));
-                            setState(() {});
-                          },
-                          icon: Icon(Icons.edit),
-                        ),
-                      ),
+              // password
+              Container(
+                width: 600,
+                margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: Row(
+                  children: [
+                    Text(
+                      "Password: ", //
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                );
-              })(),
+                    Text(
+                      "**********", //
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+                    ),
+                    SizedBox(width: 8),
+                    InkWell(
+                      child: Icon(Icons.edit, color: Colors.blue),
+                      onTap: () async {
+                        final v = await Navigator.push(context, MaterialPageRoute(builder: (_) => f_password.Main_()));
+                        if (v != null) init();
+                      },
+                    ),
+                  ],
+                ),
+              ),
 
               SizedBox(height: 8),
 
@@ -229,7 +219,7 @@ class _Main_State extends State<Main_> {
       await secure_storage.delete(key: "access_token");
 
       //
-      u_schema.clear();
+      schema.clear();
 
       // goto to sign in
       Navigator.pop(context);
@@ -244,27 +234,19 @@ class _Main_State extends State<Main_> {
   }
 }
 
-void main() {
-  runApp(User_Profile());
-}
-
-class User_Profile extends StatelessWidget {
-  const User_Profile({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: TITLE, //
-      theme: Theme_Data(),
-      debugShowCheckedModeBanner: false,
-      home: const Main_(),
-    );
-  }
-}
-
 class Main_ extends StatefulWidget {
   const Main_({super.key});
-
   @override
   State<Main_> createState() => _Main_State();
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      title: "Development", //
+      theme: Theme_Data(), //
+      home: const Main_(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }

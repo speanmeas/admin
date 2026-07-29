@@ -6,6 +6,7 @@
 import "dart:io";
 
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:dio/dio.dart";
 
 import "package:speanmeas/__config__.dart";
@@ -14,17 +15,31 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "schema.g.dart" as u_schema;
+import "../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
-  String username = u_schema.data[u_schema.USERNAME]!["value"] ?? "";
+  final c_phone_number = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    if (schema.data[schema.PHONE_NUMBER]!["value"] != null) //
+      c_phone_number.text = schema.data[schema.PHONE_NUMBER]!["value"];
+
+    setState(() {});
+    //
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Update - Username", //
+          "Update - Phone Number", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -43,18 +58,27 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: username),
+                  controller: c_phone_number,
                   autofocus: true,
-                  keyboardType: TextInputType.text,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: false),
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9]"))],
                   decoration: InputDecoration(
-                    labelText: "Username:", //
+                    labelText: "Phone Number:", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    prefixIcon: Icon(Icons.phone, color: Colors.blue),
+                    suffixIcon: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: IconButton(
+                        icon: Icon(Icons.clear, color: Colors.red),
+                        onPressed: () {
+                          c_phone_number.text = "";
+                          setState(() {});
+                        },
+                      ), //
+                    ),
                   ),
-                  onChanged: (v) {
-                    username = v;
-                  },
                   onSubmitted: (v) => on_update(),
                 ),
               ),
@@ -77,22 +101,27 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update() async {
-    // todo: validation
     try {
       //
-      // if (username.trim().isEmpty) throw "Username cannot be empty.";
+      String? phone_number;
+      if (c_phone_number.text.isNotEmpty) phone_number = c_phone_number.text;
 
       //
-      final r = await dio.post("/user/update", data: FormData.fromMap({"_id": u_schema.data[u_schema.ID]!["value"], u_schema.USERNAME: username}));
+      final r = await dio.post(
+        "/user/update_field",
+        data: FormData.fromMap({
+          "_id": schema.data[schema.ID]!["value"], //
+          "key": schema.PHONE_NUMBER,
+          "value": phone_number,
+        }),
+      );
 
       //
-      u_schema.data[u_schema.USERNAME]!["value"] = r.data[u_schema.USERNAME];
-
-      //
-      snackbar_show(context: context, message: "Update successful", color: Colors.green);
-
-      //
+      schema.data[schema.PHONE_NUMBER]!["value"] = r.data[schema.PHONE_NUMBER];
       Navigator.pop(context, true);
+
+      //
+      snackbar_show(context: context, message: "Update successful.", color: Colors.green);
 
       //
     } catch (e) {

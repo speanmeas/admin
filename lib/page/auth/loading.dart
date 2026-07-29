@@ -18,7 +18,7 @@ import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/layout/layout.dart" as layout;
 
 import "sign_in.dart" as sign_in;
-import "schema.g.dart" as u_schema;
+import "schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
   @override
@@ -57,7 +57,7 @@ class _Main_State extends State<Main_> {
       final r = await dio.post("/auth/access_token", data: FormData.fromMap({"access_token": access_token}));
 
       //
-      for (var e in u_schema.data.entries) u_schema.data[e.key]!["value"] = r.data[e.key];
+      for (var e in schema.data.entries) schema.data[e.key]!["value"] = r.data[e.key];
 
       //
       dio.options.headers["Authorization"] = "Bearer $access_token";

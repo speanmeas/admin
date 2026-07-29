@@ -14,21 +14,24 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "schema.g.dart" as u_schema;
+import "../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
   bool is_password_visible = false;
   bool is_confirm_password_visible = false;
 
-  String password = "";
-  String confirm_password = "";
-
-  // TextEditingController controller_password = TextEditingController();
-  // TextEditingController controller_confirm_password = TextEditingController();
+  final c_password = TextEditingController();
+  final c_confirm_password = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    init();
+  }
+
+  void init() async {
+    setState(() {});
+    //
   }
 
   @override
@@ -56,7 +59,7 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: password),
+                  controller: c_password,
                   autofocus: true,
                   obscureText: !is_password_visible,
                   keyboardType: TextInputType.text,
@@ -76,9 +79,6 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
                   ),
-                  onChanged: (v) {
-                    password = v;
-                  },
                   onSubmitted: (v) => on_update(),
                 ),
               ),
@@ -88,7 +88,7 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: confirm_password),
+                  controller: c_confirm_password,
                   obscureText: !is_confirm_password_visible,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
@@ -107,9 +107,6 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
                   ),
-                  onChanged: (v) {
-                    confirm_password = v;
-                  },
                   onSubmitted: (v) => on_update(),
                 ),
               ),
@@ -133,20 +130,26 @@ class _Main_State extends State<Main_> {
 
   void on_update() async {
     try {
-      // if (password.length < 6) throw "Password must be at least 6 characters.";
-      // if (password != confirm_password) throw "Passwords do not match.";
+      String? password;
+      String? confirm_password;
+      if (c_password.text != c_confirm_password.text) throw "Passwords do not match.";
 
       //
-      final r = await dio.post("/user/update", data: FormData.fromMap({"_id": u_schema.data[u_schema.ID]!["value"], u_schema.PASSWORD: password}));
+      final r = await dio.post(
+        "/user/update_field", //
+        data: FormData.fromMap({
+          "_id": schema.data[schema.ID]!["value"], //
+          "key": schema.PASSWORD, //
+          "value": c_password.text, //
+        }),
+      );
 
       //
-      u_schema.data[u_schema.PASSWORD]!["value"] = r.data[u_schema.PASSWORD];
+      schema.data[schema.PASSWORD]!["value"] = r.data[schema.PASSWORD];
+      Navigator.pop(context, true);
 
       //
       snackbar_show(context: context, message: "Update successful.", color: Colors.green);
-
-      //
-      Navigator.pop(context, true);
 
       //
     } catch (e) {

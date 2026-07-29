@@ -1,3 +1,8 @@
+///
+///
+///
+///
+
 import "dart:convert";
 
 import "package:dio/dio.dart";
@@ -27,12 +32,6 @@ class _Main_State extends State<Main_> {
   //
 
   List<Map<String, dynamic>> rooms = [];
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
 
   void init() async {
     try {
@@ -100,14 +99,20 @@ class _Main_State extends State<Main_> {
                                       menuChildren: [
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.info_outline),
-                                          child: Text("Status"),
-                                          onPressed: () {}, //
+                                          child: Text("Status"), //
+                                          onPressed: () {
+                                            // TODO:
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
-                                        Divider(height: 1),
+                                        // Divider(height: 1),
                                         MenuItemButton(
-                                          leadingIcon: Icon(Icons.edit_outlined),
-                                          child: Text("Update Status"),
-                                          onPressed: () {}, //
+                                          leadingIcon: Icon(Icons.build_outlined),
+                                          child: Text("Broken"), //
+                                          onPressed: () {
+                                            // TODO:
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
                                       ],
                                       onPressed: () => on_check_in(r), //
@@ -155,27 +160,45 @@ class _Main_State extends State<Main_> {
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.info_outline),
                                           child: Text("Status"),
-                                          onPressed: () {}, //
+                                          onPressed: () {
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.change_circle_outlined),
                                           child: Text("Change Room"),
-                                          onPressed: () {}, //
+                                          onPressed: () {
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
                                         MenuItemButton(
-                                          leadingIcon: Icon(Icons.add_outlined),
-                                          child: Text("Add Revenue Payment"),
-                                          onPressed: () {}, //
+                                          leadingIcon: Icon(Icons.edit_outlined),
+                                          child: Text("Update Staying"),
+                                          onPressed: () {
+                                            // TODO:
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.edit_outlined),
                                           child: Text("Update Guest"),
-                                          onPressed: () {}, //
+                                          onPressed: () {
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
+                                        ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.add_outlined),
+                                          child: Text("Add Revenue Payment"),
+                                          onPressed: () {
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
                                           child: Text("Cancel", style: TextStyle(color: Colors.red)),
-                                          onPressed: () {}, //
+                                          onPressed: () {
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
                                       ],
                                       onPressed: () => on_payment(r), //
@@ -223,34 +246,58 @@ class _Main_State extends State<Main_> {
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.info_outline),
                                           child: Text("Status"),
-                                          onPressed: () {}, //
+                                          onPressed: () {
+                                            // TODO:
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.change_circle_outlined),
                                           child: Text("Change Room"),
-                                          onPressed: () {}, //
+                                          onPressed: () {
+                                            // TODO:
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
+                                        ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.edit_outlined),
+                                          child: Text("Update Staying"),
+                                          onPressed: () {
+                                            // TODO:
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.add_outlined),
-                                          child: Text("Revenue Payment"),
-                                          onPressed: () {}, //
+                                          child: Text("Add Revenue Payment"),
+                                          onPressed: () {
+                                            // TODO:
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.edit_outlined),
-                                          child: Text("Room Payment"),
-                                          onPressed: () {}, //
+                                          child: Text("Update Room Payment"),
+                                          onPressed: () {
+                                            // TODO:
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
-                                        Divider(height: 1),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.edit_outlined),
                                           child: Text("Update Guest"),
-                                          onPressed: () {}, //
+                                          onPressed: () {
+                                            // TODO:
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
-                                        Divider(height: 1),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
                                           child: Text("Cancel", style: TextStyle(color: Colors.red)),
-                                          onPressed: () {}, //
+                                          onPressed: () {
+                                            // TODO:
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
                                       ],
                                       onPressed: () => on_check_out(r), //
@@ -298,13 +345,19 @@ class _Main_State extends State<Main_> {
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.info_outline),
                                           child: Text("Status"),
-                                          onPressed: () {}, //
+                                          onPressed: () {
+                                            // TODO:
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
                                         Divider(height: 1),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.edit_outlined),
                                           child: Text("Update Guest"),
-                                          onPressed: () {}, //
+                                          onPressed: () {
+                                            // TODO:
+                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
                                         ),
                                       ],
                                       onPressed: () => on_clean(r), //
@@ -312,7 +365,7 @@ class _Main_State extends State<Main_> {
                                   );
 
                                 //
-                                return SizedBox.shrink();
+                                return SizedBox();
                               })(),
                           ],
                         ),
@@ -439,6 +492,11 @@ class _Main_State extends State<Main_> {
   }
 
   //
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
 }
 
 class Main_ extends StatefulWidget {

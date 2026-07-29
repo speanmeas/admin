@@ -1,5 +1,5 @@
 ///
-/// TODO: add clear suffix button
+///
 ///
 ///
 
@@ -14,10 +14,24 @@ import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
-import "schema.g.dart" as u_schema;
+import "../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
-  String full_name = u_schema.data[u_schema.FULL_NAME]!["value"] ?? "";
+  final c_full_name = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    if (schema.data[schema.FULL_NAME]!["value"] != null) //
+      c_full_name.text = schema.data[schema.FULL_NAME]!["value"];
+
+    setState(() {});
+    //
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,18 +57,25 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: TextEditingController(text: full_name),
+                  controller: c_full_name,
                   autofocus: true,
                   decoration: InputDecoration(
                     labelText: "Name:", //
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    prefixIcon: Icon(Icons.person_outline, color: Colors.blue),
+                    suffixIcon: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: IconButton(
+                        icon: Icon(Icons.clear, color: Colors.red),
+                        onPressed: () {
+                          c_full_name.text = "";
+                          setState(() {});
+                        },
+                      ), //
+                    ),
                   ),
-                  onChanged: (v) {
-                    //
-                    full_name = v;
-                  },
                   onSubmitted: (v) => on_update(),
                 ),
               ),
@@ -79,19 +100,27 @@ class _Main_State extends State<Main_> {
   void on_update() async {
     try {
       //
-      if (full_name.trim().isEmpty) throw "Full name cannot be empty.";
+
+      String? full_name;
+      if (c_full_name.text.trim().isNotEmpty) //
+        full_name = c_full_name.text.trim();
 
       //
-      final r = await dio.post("/user/update", data: FormData.fromMap({"_id": u_schema.data[u_schema.ID]!["value"], u_schema.FULL_NAME: full_name}));
+      final r = await dio.post(
+        "/user/update_field", //
+        data: FormData.fromMap({
+          "_id": schema.data[schema.ID]!["value"], //
+          "key": schema.FULL_NAME, //
+          "value": full_name, //
+        }),
+      );
 
       //
-      u_schema.data[u_schema.FULL_NAME]!["value"] = r.data[u_schema.FULL_NAME];
+      schema.data[schema.FULL_NAME]!["value"] = r.data[schema.FULL_NAME];
+      Navigator.pop(context, true);
 
       //
       snackbar_show(context: context, message: "Update successful.", color: Colors.green);
-
-      //
-      Navigator.pop(context, true);
 
       //
     } catch (e) {

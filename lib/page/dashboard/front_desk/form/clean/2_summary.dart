@@ -144,10 +144,6 @@ class _Main_State extends State<Main_> {
       //
       final output = {for (var e in schema.data.entries) e.key: e.value["value"]};
 
-      for (var o in output.entries) {
-        if (o.value != null) print(o);
-      }
-
       //
       final response = await dio.post(
         "/front_desk/update", //
