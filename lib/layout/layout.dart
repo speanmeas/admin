@@ -23,7 +23,6 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: top.Main_(), //
-        // backgroundColor: Colors.blue[50],
         titleSpacing: 0,
         toolbarHeight: 48,
         centerTitle: false,
@@ -36,17 +35,15 @@ class _Main_State extends State<Main_> {
                 // panel left
                 if (!is_mobile)
                   Container(
-                    // margin: const EdgeInsets.fromLTRB(4, 0, 0, 0),
                     width: 250,
+                    // decoration: BoxDecoration(border: Border.all()),
                     decoration: BoxDecoration(border: Border(right: BorderSide())), //
                     child: left.Main_(), //
-                    // color: Colors.grey[50],
                   ),
 
                 // panel body
                 Expanded(
                   child: Container(
-                    // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                     width: double.infinity,
                     height: double.infinity,
                     // decoration: BoxDecoration(border: Border.all()),
@@ -59,6 +56,8 @@ class _Main_State extends State<Main_> {
           ),
         ],
       ),
+
+      // drawer
       drawer: is_mobile ? Drawer(child: left.Main_()) : null,
     );
   }

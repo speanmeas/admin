@@ -35,6 +35,7 @@ class _Main_State extends State<Main_> {
               ExpansionTile(
                 leading: Icon(Icons.storage_outlined), //
                 title: Text("Database"),
+                initiallyExpanded: true,
                 children: [
                   list_tile_l2(prefix: "Database", name: "Front Desk", icon: Icons.table_bar_outlined), //
                   // Guest
@@ -57,6 +58,7 @@ class _Main_State extends State<Main_> {
               ExpansionTile(
                 leading: Icon(Icons.assessment_outlined), //
                 title: Text("Report"),
+                initiallyExpanded: true,
                 children: [
                   list_tile_l2(prefix: "Report", name: "Daily", icon: Icons.today_outlined),
                   list_tile_l2(prefix: "Report", name: "Weekly", icon: Icons.date_range_outlined),

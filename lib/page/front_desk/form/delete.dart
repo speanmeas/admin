@@ -1,14 +1,13 @@
-import "package:flutter/material.dart";
 import "package:dio/dio.dart";
+import "package:flutter/material.dart";
 
 import "package:speanmeas/utility/dio.dart";
-import "package:speanmeas/__config__.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 
 import "../__config__.dart";
-import "../schema.w.dart" as schema_w;
+import "../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
   @override
@@ -60,7 +59,7 @@ class _Main_State extends State<Main_> {
   void on_delete() async {
     try {
       // * ធ្វើការស្នើសុំទៅកាន់ Server ដើម្បីលុបទិន្នន័យ
-      final r = await dio.post("$PATH/delete", data: FormData.fromMap({"_id": schema_w.data[schema_w.ID]?["value"]}));
+      final r = await dio.post("$PATH/delete", data: FormData.fromMap({"_id": schema.data[schema.ID]?["value"]}));
 
       // * បង្ហាញសារថា លុបទិន្នន័យដោយជោគជ័យ
       snackbar_show(context: context, message: "Delete successfully", color: Colors.green);
