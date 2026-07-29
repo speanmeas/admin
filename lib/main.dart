@@ -51,6 +51,7 @@ class _Main_State extends State<Main_> {
     final info = await PackageInfo.fromPlatform();
     global.VERSION = "${info.version}+${info.buildNumber}";
     global.notifyListeners();
+    print("VERSION: ${global.VERSION}");
   }
 
   @override
