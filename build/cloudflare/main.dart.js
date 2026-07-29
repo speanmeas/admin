@@ -33705,7 +33705,7 @@ s=r+1}r=B.c.dS(a,b)
 while(r!==-1){q=r===0?0:B.c.GG(a,"\n",r-1)+1
 if(c===r-q)return q
 r=B.c.lP(a,b,r+1)}return null},
-brJ(){return"https://muysengly.1riel.com"},
+brJ(){return"https://api.speanmeas.com"},
 bqJ(){var s,r
 for(s=$.ch(),s=new A.cj(s,s.r,s.e,A.f(s).i("cj<1>"));s.p();){r=s.d
 $.ch().h(0,r).l(0,"value",null)}},
