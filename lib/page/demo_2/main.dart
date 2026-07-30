@@ -3,7 +3,6 @@ import "package:dio/dio.dart";
 import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
-import "package:speanmeas/__config__.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
@@ -566,12 +565,6 @@ class _Main_State extends State<Main_> {
                       ],
                     ), //
                   ), //
-                  onTap: () => Navigator.pop(context, p),
-                );
-
-                ListTile(
-                  title: Text("Page $p"), //
-                  trailing: p == page ? Icon(Icons.check) : null,
                   onTap: () => Navigator.pop(context, p),
                 );
               },

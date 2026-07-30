@@ -1,15 +1,6 @@
-///
-///
-///
-///
-
-import "dart:io";
-
 import "package:flutter/material.dart";
 import "package:dio/dio.dart";
 
-import "package:speanmeas/__config__.dart";
-import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
@@ -130,8 +121,6 @@ class _Main_State extends State<Main_> {
 
   void on_update() async {
     try {
-      String? password;
-      String? confirm_password;
       if (c_password.text != c_confirm_password.text) throw "Passwords do not match.";
 
       //

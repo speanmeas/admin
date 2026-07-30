@@ -5,7 +5,6 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 //
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
-import "package:speanmeas/widget/snackbar_show.dart";
 
 //
 import "package:speanmeas/page/room/form/create.dart" as r_create;

@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:speanmeas/theme/theme_data.dart";
 
 class _Main_State extends State<Main_> {

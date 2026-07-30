@@ -1,14 +1,7 @@
-import "dart:convert";
-
 import "package:dio/dio.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
-import "package:provider/provider.dart";
-
-import "package:speanmeas/__config__.dart";
-import "package:speanmeas/__variable__.dart";
-import "package:speanmeas/layout/layout.dart";
 
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";

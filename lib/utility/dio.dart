@@ -1,5 +1,4 @@
 import "package:dio/dio.dart";
-import "package:flutter/material.dart";
 import "package:speanmeas/__config__.dart";
 
 Dio dio = Dio(

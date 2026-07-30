@@ -61,7 +61,7 @@ class _Datetime_Picker_State extends State<Datetime_Picker_> {
           children: [
             OutlinedButton.icon(
               onPressed: () async {
-                final datetime = await datetime_picker(context);
+                await datetime_picker(context);
                 // print(datetime);
               }, //
               label: const Text("Select Date & Time"),

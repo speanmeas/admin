@@ -1,24 +1,14 @@
-import "dart:convert";
-
 import "package:dio/dio.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
-import "package:provider/provider.dart";
-
-import "package:speanmeas/__config__.dart";
-import "package:speanmeas/__variable__.dart";
-import "package:speanmeas/layout/layout.dart";
 
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/widget/show_data.dart" as show_data;
 
-import "package:speanmeas/page/auth/schema.g.dart" as u_schema;
-
 import "package:speanmeas/page/room/schema.g.dart" as r_schema;
-import "package:speanmeas/page/guest/schema.g.dart" as g_schema;
 
 import "../../__config__.dart";
 // import "../../schema.w.dart" as fd_schema_w;
@@ -154,7 +144,7 @@ class _Main_State extends State<Main_> {
       //
       final output = {for (var e in schema.data.entries) e.key: e.value["value"]};
 
-      final response = await dio.post(
+      await dio.post(
         "/front_desk/update", //
         data: FormData.fromMap(output),
       );

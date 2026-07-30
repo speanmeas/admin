@@ -1,4 +1,3 @@
-import "dart:io";
 import "package:dio/dio.dart";
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
@@ -299,7 +298,7 @@ class _Main_State extends State<Main_> {
 
   void clear_field(String key) async {
     try {
-      final r = await dio.post(
+      await dio.post(
         "$PATH/update_field",
         data: FormData.fromMap({
           "_id": schema.data["_id"]!["value"], //

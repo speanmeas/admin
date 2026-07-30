@@ -1,4 +1,3 @@
-import "dart:io";
 import "package:dio/dio.dart";
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
@@ -13,9 +12,6 @@ import "package:speanmeas/widget/show_data.dart" as show_data;
 
 import "../__config__.dart";
 import "../schema.g.dart" as schema;
-
-import "package:speanmeas/page/nationality/schema.g.dart" as n_schema_r;
-import "../widget/nationality_search.dart" as n_search;
 
 class _Main_State extends State<Main_> {
   // final c_nationality = TextEditingController();
@@ -278,7 +274,7 @@ class _Main_State extends State<Main_> {
 
   void clear_field(String key) async {
     try {
-      final r = await dio.post(
+      await dio.post(
         "$PATH/update_field",
         data: FormData.fromMap({
           "_id": schema.data["_id"]!["value"], //

@@ -70,7 +70,6 @@ class _Main_State extends State<Main_> {
     ]);
 
     final random = Random();
-    const colorOptions = ['red', 'blue', 'green'];
     rows.addAll(
       List.generate(10, (index) {
         return PlutoRow(

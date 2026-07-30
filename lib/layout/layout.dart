@@ -4,10 +4,8 @@
 ///
 
 import "package:flutter/material.dart";
-import "package:provider/provider.dart";
 
 import "package:speanmeas/__config__.dart";
-import "package:speanmeas/__variable__.dart";
 import "package:speanmeas/theme/theme_data.dart";
 
 import "panel_body.dart" as body;

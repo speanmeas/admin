@@ -1,5 +1,4 @@
 import "package:flutter/foundation.dart";
-import "package:speanmeas/__config__.dart";
 
 class Singleton extends ChangeNotifier {
   // singleton

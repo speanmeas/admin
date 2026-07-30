@@ -1,13 +1,10 @@
-import "package:dio/dio.dart";
 import "package:flutter/material.dart";
-import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/page/auth/schema.g.dart" as u_schema;
 
-import "../../__config__.dart";
 import "../../schema.g.dart" as schema;
 
 import "3_payment.dart" as step_3;

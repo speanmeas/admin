@@ -1,8 +1,6 @@
-import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 
-import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 
 class _Main_State extends State<Main_> {

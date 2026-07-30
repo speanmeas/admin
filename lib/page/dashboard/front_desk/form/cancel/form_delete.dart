@@ -43,7 +43,6 @@ class Main_ extends StatefulWidget {
 class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
-    final screen_height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: Text(

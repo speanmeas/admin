@@ -1,18 +1,9 @@
-import "package:dio/dio.dart";
-import "package:intl/intl.dart";
-import "package:provider/provider.dart";
 import "package:flutter/material.dart";
-import "package:flutter_typeahead/flutter_typeahead.dart";
 
-import "package:speanmeas/__config__.dart";
-import "package:speanmeas/__variable__.dart";
-import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
-import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/widget/show_data.dart" as show_data;
 
-import "../../__config__.dart";
 import "../../schema.g.dart" as schema;
 
 import "package:speanmeas/page/guest/schema.g.dart" as g_schema;

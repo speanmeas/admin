@@ -5,10 +5,8 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 //
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
-import "package:speanmeas/widget/snackbar_show.dart";
 
 //
-import "package:speanmeas/page/user/form/create.dart" as n_f_create;
 import "package:speanmeas/page/user/schema.g.dart" as n_schema_r;
 
 class _Main_State extends State<Main_> {
