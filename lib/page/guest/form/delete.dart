@@ -65,7 +65,7 @@ class _Main_State extends State<Main_> {
       snackbar_show(context: context, message: "Delete successfully", color: Colors.green);
 
       // * បិទ Form និងបញ្ជូនតម្លៃ true ទៅកាន់ទំព័រមុន
-      Navigator.pop(context, true);
+      Navigator.pop(context, r.data);
 
       //
     } catch (e) {

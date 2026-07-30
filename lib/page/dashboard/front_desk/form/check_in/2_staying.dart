@@ -15,7 +15,7 @@ import "../../schema.g.dart" as schema;
 
 import "3_payment.dart" as step_3;
 
-import "widget/select_number.dart" as select_number;
+import "widget/number_select.dart" as select_number;
 
 class _Main_State extends State<Main_> {
   final c_number_of_guests = TextEditingController();

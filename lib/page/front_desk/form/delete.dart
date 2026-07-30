@@ -58,14 +58,14 @@ class _Main_State extends State<Main_> {
 
   void on_delete() async {
     try {
-      // * ធ្វើការស្នើសុំទៅកាន់ Server ដើម្បីលុបទិន្នន័យ
+      //
       final r = await dio.post("$PATH/delete", data: FormData.fromMap({"_id": schema.data[schema.ID]?["value"]}));
 
-      // * បង្ហាញសារថា លុបទិន្នន័យដោយជោគជ័យ
+      //
       snackbar_show(context: context, message: "Delete successfully", color: Colors.green);
 
-      // * បិទ Form និងបញ្ជូនតម្លៃ true ទៅកាន់ទំព័រមុន
-      Navigator.pop(context, true);
+      //
+      Navigator.pop(context, r.data);
 
       //
     } catch (e) {

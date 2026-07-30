@@ -15,7 +15,7 @@ import "../../__config__.dart";
 // import "../../schema.w.dart" as fd_schema_w;
 import "../../schema.g.dart" as schema;
 
-import "widget/input_number.dart" as input_number;
+import "widget/number_input.dart" as input_number;
 
 import "package:speanmeas/page/auth/schema.g.dart" as u_schema;
 

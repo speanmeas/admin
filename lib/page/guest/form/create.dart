@@ -312,7 +312,7 @@ class _Main_State extends State<Main_> {
       final r = await dio.post("$PATH/create", data: FormData.fromMap({...output}));
 
       //
-      Navigator.pop(context, true);
+      Navigator.pop(context, r.data);
 
       //
       snackbar_show(context: context, message: "$HEADER create successfully.", color: Colors.green);

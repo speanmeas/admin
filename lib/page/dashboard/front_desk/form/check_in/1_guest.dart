@@ -10,17 +10,15 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
-
-import "../../__config__.dart";
-import "widget/search_guest.dart" as search_guest;
-
-// import "../../schema.w.dart" as fd_schema_w;
-import "../../schema.g.dart" as schema;
-import "package:speanmeas/page/guest/schema.g.dart" as g_schema;
-
 import "package:speanmeas/widget/show_data.dart" as show_data;
 
+import "../../__config__.dart";
+import "../../schema.g.dart" as schema;
+
+import "package:speanmeas/page/guest/schema.g.dart" as g_schema;
+
 import "2_staying.dart" as step_2;
+import "widget/guest_search.dart" as g_search;
 
 class _Main_State extends State<Main_> {
   final c_search_guest = TextEditingController();
@@ -74,65 +72,69 @@ class _Main_State extends State<Main_> {
               children: [
                 // search
                 SizedBox(height: 8),
-                search_guest.Main_(
+                g_search.Main_(
                   controller: c_search_guest,
                   onChanged: (v) {
-                    for (var e in g_schema.data.entries) //
-                      g_schema.data[e.key]?["value"] = v[e.key];
+                    schema.data[schema.GUEST_ID]?["value"] = v[g_schema.ID];
+                    schema.data[schema.GUEST_FULL_NAME]?["value"] = v[g_schema.FULL_NAME];
+                    schema.data[schema.GUEST_PHONE_NUMBER]?["value"] = v[g_schema.PHONE_NUMBER];
+                    schema.data[schema.GUEST_GENDER]?["value"] = v[g_schema.GENDER];
+                    schema.data[schema.GUEST_NATIONALITY]?["value"] = v[g_schema.NATIONALITY];
+                    setState(() {});
+                  },
+                  onCleared: () {
+                    schema.data[schema.GUEST_ID]?["value"] = null;
+                    schema.data[schema.GUEST_FULL_NAME]?["value"] = null;
+                    schema.data[schema.GUEST_PHONE_NUMBER]?["value"] = null;
+                    schema.data[schema.GUEST_GENDER]?["value"] = null;
+                    schema.data[schema.GUEST_NATIONALITY]?["value"] = null;
                     setState(() {});
                   },
                 ),
 
-                for (var e in g_schema.data.entries)
-                  (() {
-                    if (e.value["type"] == "string") {
-                      String value = "";
-                      if (e.value["value"] != null) value = e.value["value"].toString();
-                      return show_data.Main_(
-                        title: e.value["title"], //
-                        value: value,
-                        max_lines: e.key.contains("note") ? 4 : 1,
-                      );
-                    }
+                (() {
+                  String value = "";
+                  if (schema.data[schema.GUEST_FULL_NAME]?["value"] != null) {
+                    value = schema.data[schema.GUEST_FULL_NAME]?["value"].toString() ?? "";
+                  }
+                  return show_data.Main_(
+                    title: schema.data[schema.GUEST_FULL_NAME]?["title"] ?? "", //
+                    value: value,
+                  );
+                })(),
 
-                    //
-                    if (e.value["type"] == "number") {
-                      String value = "";
-                      if (e.value["value"] != null) value = e.value["value"].toString();
-                      return show_data.Main_(
-                        title: e.value["title"], //
-                        value: value,
-                      );
-                    }
+                (() {
+                  String value = "";
+                  if (schema.data[schema.GUEST_PHONE_NUMBER]?["value"] != null) {
+                    value = schema.data[schema.GUEST_PHONE_NUMBER]?["value"].toString() ?? "";
+                  }
+                  return show_data.Main_(
+                    title: schema.data[schema.GUEST_PHONE_NUMBER]?["title"] ?? "", //
+                    value: value,
+                  );
+                })(),
 
-                    //
-                    if (e.value["type"] == "date-time") {
-                      String value = "";
-                      if (e.value["value"] != null) {
-                        final dt = e.value["value"];
-                        value = DateFormat(DATE_FORMAT).format(dt);
-                      }
-                      return show_data.Main_(
-                        title: e.value["title"], //
-                        value: value,
-                      );
-                    }
+                (() {
+                  String value = "";
+                  if (schema.data[schema.GUEST_GENDER]?["value"] != null) {
+                    value = schema.data[schema.GUEST_GENDER]?["value"].toString() ?? "";
+                  }
+                  return show_data.Main_(
+                    title: schema.data[schema.GUEST_GENDER]?["title"] ?? "", //
+                    value: value,
+                  );
+                })(),
 
-                    //
-                    if (e.value["type"] == "boolean") {
-                      String value = "";
-                      if (e.value["value"] != null) {
-                        if (e.value["value"] == true) value = "Yes";
-                        if (e.value["value"] == false) value = "No";
-                      }
-                      return show_data.Main_(
-                        title: e.value["title"], //
-                        value: value,
-                      );
-                    }
-                    //
-                    return SizedBox();
-                  })(),
+                (() {
+                  String value = "";
+                  if (schema.data[schema.GUEST_NATIONALITY]?["value"] != null) {
+                    value = schema.data[schema.GUEST_NATIONALITY]?["value"].toString() ?? "";
+                  }
+                  return show_data.Main_(
+                    title: schema.data[schema.GUEST_NATIONALITY]?["title"] ?? "", //
+                    value: value,
+                  );
+                })(),
               ],
             ),
           ),
