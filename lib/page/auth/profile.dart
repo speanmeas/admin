@@ -227,7 +227,7 @@ class _Main_State extends State<Main_> {
       Navigator.push(context, MaterialPageRoute(builder: (_) => sign_in.Main_()));
 
       //
-      snackbar_show(context: context, message: "Signed out successfully", color: Colors.green);
+      snackbar_show(context: context, message: "Success Sign-Out", color: Colors.green);
     } catch (e) {
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }

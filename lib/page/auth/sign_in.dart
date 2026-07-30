@@ -128,7 +128,7 @@ class _Main_State extends State<Main_> {
       for (var e in u_schema.data.entries) u_schema.data[e.key]!["value"] = r.data[e.key];
 
       //
-      snackbar_show(context: context, message: "Sign in successful", color: Colors.green);
+      snackbar_show(context: context, message: "Success Sign-In", color: Colors.green);
 
       //
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));

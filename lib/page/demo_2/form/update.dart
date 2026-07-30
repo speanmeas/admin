@@ -36,7 +36,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Update $HEADER", //
+          "Update", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -305,7 +305,7 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, r.data);
 
       //
-      snackbar_show(context: context, message: "$HEADER update successfully", color: Colors.green);
+      snackbar_show(context: context, message: "Success", color: Colors.green);
 
       //
     } catch (e) {

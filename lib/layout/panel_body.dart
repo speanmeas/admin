@@ -36,21 +36,21 @@ class _Main_State extends State<Main_> {
   List<Map<String, dynamic>> panels = [
     {"name": "", "panel": Text("This page is under development..")},
     //
-    {"name": "Dashboard - Front Desk", "panel": d_front_desk.Main_()}, //
+    {"name": "Front Desk", "panel": d_front_desk.Main_()}, //
     //
-    {"name": "Database - Front Desk", "panel": front_desk.Main_()}, //
-    {"name": "Database - Room", "panel": room.Main_()}, //
-    {"name": "Database - Guest", "panel": guest.Main_()},
-    {"name": "Database - User", "panel": user.Main_()},
-    {"name": "Database - Nationality", "panel": nationality.Main_()},
+    {"name": "Data Front Desk", "panel": front_desk.Main_()}, //
+    {"name": "Data Room", "panel": room.Main_()}, //
+    {"name": "Data Guest", "panel": guest.Main_()},
+    {"name": "Data User", "panel": user.Main_()},
+    {"name": "Data Nationality", "panel": nationality.Main_()},
     //
-    {"name": "Report - Daily", "panel": report_daily.Main_()}, //
-    {"name": "Report - Weekly", "panel": report_weekly.Main_()}, //
-    {"name": "Report - Monthly", "panel": report_monthly.Main_()}, //
-    {"name": "Report - Yearly", "panel": report_yearly.Main_()}, //
+    {"name": "Report Daily", "panel": report_daily.Main_()}, //
+    {"name": "Report Weekly", "panel": report_weekly.Main_()}, //
+    {"name": "Report Monthly", "panel": report_monthly.Main_()}, //
+    {"name": "Report Yearly", "panel": report_yearly.Main_()}, //
     //
-    {"name": "Demo - Demo 1", "panel": demo_1.Main_()},
-    {"name": "Demo - Demo 2", "panel": demo_2.Main_()},
+    {"name": "Demo 001", "panel": demo_1.Main_()},
+    {"name": "Demo 002", "panel": demo_2.Main_()},
 
     //
     {"name": "Setting", "panel": setting.Main_()},

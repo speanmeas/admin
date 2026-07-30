@@ -28,7 +28,8 @@ import "form/clean/1_note.dart" as clean;
 
 import "widget/button_menu.dart" as button_menu;
 
-import "widget/summary.dart" as summary;
+import "menu/summary.dart" as summary;
+import "menu/update_guest.dart" as update_guest;
 
 class _Main_State extends State<Main_> {
   //
@@ -186,7 +187,7 @@ class _Main_State extends State<Main_> {
                                           leadingIcon: Icon(Icons.edit_outlined),
                                           child: Text("Update Guest"),
                                           onPressed: () {
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                            on_guest_update(r);
                                           }, //
                                         ),
                                         // MenuItemButton(
@@ -380,6 +381,31 @@ class _Main_State extends State<Main_> {
         },
       ),
     );
+  }
+
+  //
+  void on_guest_update(r) async {
+    try {
+      //
+      schema.clear();
+      g_schema.clear();
+      r_schema.clear();
+
+      //
+      var f = await dio.post(
+        "/front_desk/read_id", //
+        data: FormData.fromMap({"_id": r[r_schema.FRONT_DESK_ID]}),
+      );
+      for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
+
+      //
+      var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => update_guest.Main_()));
+      if (value == null) return;
+
+      //
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 
   //

@@ -47,7 +47,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Delete - $HEADER", //
+          "Delete", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -94,7 +94,7 @@ class _Main_State extends State<Main_> {
         .post("$PATH/data_delete", data: FormData.fromMap({"_id": widget.id}))
         .then((value) {
           Navigator.pop(context, true);
-          snackbar_show(context: context, message: "Room deleted successfully", color: Colors.green);
+          snackbar_show(context: context, message: "Success", color: Colors.green);
         })
         .catchError((e) {
           snackbar_show(context: context, message: "Failed to delete room", color: Colors.red);

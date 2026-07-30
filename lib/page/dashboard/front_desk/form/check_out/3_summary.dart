@@ -173,7 +173,7 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, true);
 
       //
-      snackbar_show(context: context, message: "Create successfully.", color: Colors.green);
+      snackbar_show(context: context, message: "Success", color: Colors.green);
     } catch (e) {
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }

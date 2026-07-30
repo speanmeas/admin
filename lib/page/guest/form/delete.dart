@@ -15,7 +15,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Delete - $HEADER", //
+          "Delete", //
           style: TextStyle(
             fontSize: 20, //
             fontWeight: FontWeight.bold,
@@ -62,7 +62,7 @@ class _Main_State extends State<Main_> {
       final r = await dio.post("$PATH/delete", data: FormData.fromMap({"_id": schema.data[schema.ID]?["value"]}));
 
       // * បង្ហាញសារថា លុបទិន្នន័យដោយជោគជ័យ
-      snackbar_show(context: context, message: "Delete successfully", color: Colors.green);
+      snackbar_show(context: context, message: "Success", color: Colors.green);
 
       // * បិទ Form និងបញ្ជូនតម្លៃ true ទៅកាន់ទំព័រមុន
       Navigator.pop(context, r.data);

@@ -22,14 +22,15 @@ class _Main_State extends State<Main_> {
           child: ListView(
             children: [
               // dashboard
-              ExpansionTile(
-                leading: Icon(Icons.dashboard_outlined), //
-                title: Text("Dashboard"),
-                initiallyExpanded: true,
-                children: [
-                  list_tile_l2(prefix: "Dashboard", name: "Front Desk", icon: Icons.table_bar_outlined), //
-                ],
-              ),
+              // ExpansionTile(
+              //   leading: Icon(Icons.dashboard_outlined), //
+              //   title: Text("Dashboard"),
+              //   initiallyExpanded: true,
+              //   children: [
+              //     list_tile_l2(prefix: "Dashboard", name: "Front Desk", icon: Icons.table_bar_outlined), //
+              //   ],
+              // ),
+              list_tile_l1(name: "Front Desk", icon: Icons.table_bar_outlined),
 
               // data
               ExpansionTile(
@@ -37,20 +38,25 @@ class _Main_State extends State<Main_> {
                 title: Text("Database"),
                 initiallyExpanded: true,
                 children: [
-                  list_tile_l2(prefix: "Database", name: "Front Desk", icon: Icons.table_bar_outlined), //
-                  // Guest
+                  // front desk
                   if (u_schema.data[u_schema.IS_ADMIN]!["value"] == true || u_schema.data[u_schema.IS_MANAGER]!["value"] == true || u_schema.data[u_schema.IS_RECEPTIONIST]!["value"] == true) //
-                    list_tile_l2(prefix: "Database", name: "Guest", icon: Icons.people_outline),
+                    list_tile_l2(prefix: "Data", name: "Front Desk", icon: Icons.table_bar_outlined),
 
-                  // Room
+                  // guest
+                  if (u_schema.data[u_schema.IS_ADMIN]!["value"] == true || u_schema.data[u_schema.IS_MANAGER]!["value"] == true || u_schema.data[u_schema.IS_RECEPTIONIST]!["value"] == true) //
+                    list_tile_l2(prefix: "Data", name: "Guest", icon: Icons.people_outline),
+
+                  // nationality
+                  if (u_schema.data[u_schema.IS_ADMIN]!["value"] == true || u_schema.data[u_schema.IS_MANAGER]!["value"] == true || u_schema.data[u_schema.IS_RECEPTIONIST]!["value"] == true) //
+                    list_tile_l2(prefix: "Data", name: "Nationality", icon: Icons.flag_outlined),
+
+                  // room
                   if (u_schema.data[u_schema.IS_ADMIN]!["value"] == true || u_schema.data[u_schema.IS_MANAGER]!["value"] == true) //
-                    list_tile_l2(prefix: "Database", name: "Room", icon: Icons.hotel_outlined),
+                    list_tile_l2(prefix: "Data", name: "Room", icon: Icons.hotel_outlined),
 
-                  // User
+                  // user
                   if (u_schema.data[u_schema.IS_ADMIN]!["value"] == true || u_schema.data[u_schema.IS_MANAGER]!["value"] == true) //
-                    list_tile_l2(prefix: "Database", name: "User", icon: Icons.person_outline),
-
-                  list_tile_l2(prefix: "Database", name: "Nationality", icon: Icons.flag_outlined),
+                    list_tile_l2(prefix: "Data", name: "User", icon: Icons.person_outline),
                 ],
               ),
 
@@ -74,8 +80,8 @@ class _Main_State extends State<Main_> {
                   title: Text("Demo"),
                   initiallyExpanded: true,
                   children: [
-                    list_tile_l2(prefix: "Demo", name: "Demo 1", icon: Icons.model_training_outlined), //
-                    list_tile_l2(prefix: "Demo", name: "Demo 2", icon: Icons.model_training_outlined), //
+                    list_tile_l2(prefix: "Demo", name: "001", icon: Icons.model_training_outlined), //
+                    list_tile_l2(prefix: "Demo", name: "002", icon: Icons.model_training_outlined), //
                   ],
                 ),
 
@@ -131,11 +137,11 @@ class _Main_State extends State<Main_> {
     return ListTile(
       leading: Icon(icon),
       title: Text(name),
-      selected: global.body == "$prefix - $name",
+      selected: global.body == "$prefix $name",
       selectedColor: Colors.blue,
       contentPadding: EdgeInsets.only(left: 40),
       onTap: () {
-        global.body = "$prefix - $name";
+        global.body = "$prefix $name";
         global.notifyListeners();
         if (is_mobile) Navigator.pop(context);
         setState(() {});

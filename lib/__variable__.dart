@@ -11,7 +11,7 @@ class Global extends ChangeNotifier {
   double RATE = 4000; // 1 USD = 4000 KHR
 
   // pages
-  String body = "Dashboard - Front Desk"; //
+  String body = "Front Desk"; //
   // String body = "Database - Nationality"; //
 
   //

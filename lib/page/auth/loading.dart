@@ -63,7 +63,7 @@ class _Main_State extends State<Main_> {
       dio.options.headers["Authorization"] = "Bearer $access_token";
 
       //
-      snackbar_show(context: context, message: "Login successful", color: Colors.green);
+      snackbar_show(context: context, message: "Success Sign-In", color: Colors.green);
 
       //
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));

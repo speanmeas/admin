@@ -33,9 +33,7 @@ class _Main_State extends State<Main_> {
     return Container(
       height: 48,
       decoration: isMobile ? null : BoxDecoration(border: Border(bottom: BorderSide())), //
-
       child: Row(
-        // mainAxisSize: MainAxisSize.min,
         children: [
           //
           if (!isMobile) SizedBox(width: 4),
