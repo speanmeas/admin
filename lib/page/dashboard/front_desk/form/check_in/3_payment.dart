@@ -9,15 +9,12 @@ import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/widget/datetime_picker.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
+import "package:speanmeas/page/auth/schema.g.dart" as u_schema;
 
 import "../../__config__.dart";
-
-// import "../../schema.w.dart" as fd_schema_w;
 import "../../schema.g.dart" as schema;
 
-import "widget/number_input.dart" as input_number;
-
-import "package:speanmeas/page/auth/schema.g.dart" as u_schema;
+import "widget/number_input.dart" as n_input;
 
 import "4_summary.dart" as step_4;
 
@@ -87,7 +84,7 @@ class _Main_State extends State<Main_> {
             child: Column(
               children: [
                 // room price
-                input_number.Main_(
+                n_input.Main_(
                   controller: c_room_price_total_usd,
                   title: "Room Price (USD)", //
                   prefixIcon: Icons.attach_money_outlined,
@@ -113,7 +110,7 @@ class _Main_State extends State<Main_> {
                 Row(
                   children: [
                     Expanded(
-                      child: input_number.Main_(
+                      child: n_input.Main_(
                         controller: c_paid_bank_usd,
                         title: "Paid Bank (USD)", //
                         prefixIcon: Icons.account_balance,
@@ -126,7 +123,7 @@ class _Main_State extends State<Main_> {
 
                     // paid bank khr
                     Expanded(
-                      child: input_number.Main_(
+                      child: n_input.Main_(
                         controller: c_paid_bank_khr,
                         title: "Paid Bank (KHR)", //
                         prefixIcon: Icons.account_balance,
@@ -143,7 +140,7 @@ class _Main_State extends State<Main_> {
                 Row(
                   children: [
                     Expanded(
-                      child: input_number.Main_(
+                      child: n_input.Main_(
                         controller: c_paid_cash_usd,
                         title: "Paid Cash (USD)", //
                         prefixIcon: Icons.payments_outlined,
@@ -155,7 +152,7 @@ class _Main_State extends State<Main_> {
                     SizedBox(width: 4),
 
                     Expanded(
-                      child: input_number.Main_(
+                      child: n_input.Main_(
                         controller: c_paid_cash_khr,
                         title: "Paid Cash (KHR)", //
                         prefixIcon: Icons.payments_outlined,
@@ -185,7 +182,7 @@ class _Main_State extends State<Main_> {
                 Row(
                   children: [
                     Expanded(
-                      child: input_number.Main_(
+                      child: n_input.Main_(
                         controller: c_return_usd,
                         title: "Return Cash (USD)", //
                         prefixIcon: Icons.payments_outlined,
@@ -198,7 +195,7 @@ class _Main_State extends State<Main_> {
 
                     // return khr
                     Expanded(
-                      child: input_number.Main_(
+                      child: n_input.Main_(
                         controller: c_return_khr,
                         title: "Return Cash (KHR)", //
                         prefixIcon: Icons.payments_outlined,

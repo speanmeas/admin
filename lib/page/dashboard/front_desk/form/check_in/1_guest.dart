@@ -21,7 +21,7 @@ import "2_staying.dart" as step_2;
 import "widget/guest_search.dart" as g_search;
 
 class _Main_State extends State<Main_> {
-  final c_search_guest = TextEditingController();
+  final c_g_search = TextEditingController();
 
   @override
   void initState() {
@@ -30,7 +30,7 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    c_search_guest.text = g_schema.data[g_schema.PHONE_NUMBER]?["value"]?.toString() ?? "";
+    c_g_search.text = g_schema.data[g_schema.PHONE_NUMBER]?["value"]?.toString() ?? "";
 
     setState(() {});
   }
@@ -70,10 +70,10 @@ class _Main_State extends State<Main_> {
 
             child: Column(
               children: [
-                // search
+                // guest search
                 SizedBox(height: 8),
                 g_search.Main_(
-                  controller: c_search_guest,
+                  controller: c_g_search,
                   onChanged: (v) {
                     schema.data[schema.GUEST_ID]?["value"] = v[g_schema.ID];
                     schema.data[schema.GUEST_FULL_NAME]?["value"] = v[g_schema.FULL_NAME];
@@ -145,19 +145,6 @@ class _Main_State extends State<Main_> {
 
   void on_next() async {
     try {
-      //
-      // fd_schema_w.data[fd_schema_w.GUEST_ID]?["value"] = g_schema_r.data[g_schema_r.ID]?["value"];
-
-      // for (var e in fd_schema_w.data.entries) print(e);
-
-      schema.data[schema.GUEST_ID]?["value"] = g_schema.data[g_schema.ID]?["value"];
-      schema.data[schema.GUEST_FULL_NAME]?["value"] = g_schema.data[g_schema.FULL_NAME]?["value"];
-      schema.data[schema.GUEST_PHONE_NUMBER]?["value"] = g_schema.data[g_schema.PHONE_NUMBER]?["value"];
-      schema.data[schema.GUEST_GENDER]?["value"] = g_schema.data[g_schema.GENDER]?["value"];
-      schema.data[schema.GUEST_NATIONALITY]?["value"] = g_schema.data[g_schema.NATIONALITY]?["value"];
-
-      // for (var e in fd_schema_r.data.entries) print(e);
-
       //
       Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
 

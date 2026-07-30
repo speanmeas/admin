@@ -1,6 +1,7 @@
 import "dart:convert";
 
 import "package:dio/dio.dart";
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:provider/provider.dart";
@@ -32,15 +33,6 @@ class _Main_State extends State<Main_> {
     //
   }
 
-  String _dateValue(dynamic value) {
-    if (value == null) return "";
-
-    final dt = DateTime.tryParse(value.toString());
-    if (dt == null) return value.toString();
-
-    return DateFormat(DATE_FORMAT).format(dt);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +46,6 @@ class _Main_State extends State<Main_> {
         ),
 
         actions: [
-          // if (can_next())
           OutlinedButton.icon(
             icon: Icon(Icons.payment_outlined),
             label: Text("Paid"),
@@ -82,6 +73,14 @@ class _Main_State extends State<Main_> {
               children: [
                 for (var e in schema.data.entries) //
                   (() {
+                    //
+                    if (kDebugMode && e.value["type"]?.toString() == "id") {
+                      return show_data.Main_(
+                        title: e.value["title"]?.toString() ?? "", //
+                        value: e.value["value"]?.toString() ?? "",
+                      );
+                    }
+
                     //
                     if (e.value["type"]?.toString() == "string") {
                       var value = "";
@@ -172,6 +171,17 @@ class _Main_State extends State<Main_> {
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }
   }
+
+  String _dateValue(dynamic value) {
+    if (value == null) return "";
+
+    final dt = DateTime.tryParse(value.toString());
+    if (dt == null) return value.toString();
+
+    return DateFormat(DATE_FORMAT).format(dt);
+  }
+
+  //
 }
 
 class Main_ extends StatefulWidget {

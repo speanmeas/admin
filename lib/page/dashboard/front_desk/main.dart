@@ -28,6 +28,8 @@ import "form/clean/1_note.dart" as clean;
 
 import "widget/button_menu.dart" as button_menu;
 
+import "widget/summary.dart" as summary;
+
 class _Main_State extends State<Main_> {
   //
 
@@ -71,6 +73,7 @@ class _Main_State extends State<Main_> {
               mainAxisExtent: constraints.maxHeight / row_count,
             ),
             children: [
+              // check-in
               Container(
                 decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
                 child: Column(
@@ -97,23 +100,23 @@ class _Main_State extends State<Main_> {
                                       icon: Icons.hotel_outlined,
                                       text: r[r_schema.NUMBER],
                                       menuChildren: [
-                                        MenuItemButton(
-                                          leadingIcon: Icon(Icons.info_outline),
-                                          child: Text("Status"), //
-                                          onPressed: () {
-                                            // TODO:
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
-                                          }, //
-                                        ),
-                                        // Divider(height: 1),
-                                        MenuItemButton(
-                                          leadingIcon: Icon(Icons.build_outlined),
-                                          child: Text("Broken"), //
-                                          onPressed: () {
-                                            // TODO:
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
-                                          }, //
-                                        ),
+                                        // MenuItemButton(
+                                        //   leadingIcon: Icon(Icons.info_outline),
+                                        //   child: Text("Status"), //
+                                        //   onPressed: () {
+                                        //     // TODO:
+                                        //     snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                        //   }, //
+                                        // ),
+                                        // // Divider(height: 1),
+                                        // MenuItemButton(
+                                        //   leadingIcon: Icon(Icons.build_outlined),
+                                        //   child: Text("Broken"), //
+                                        //   onPressed: () {
+                                        //     // TODO:
+                                        //     snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                        //   }, //
+                                        // ),
                                       ],
                                       onPressed: () => on_check_in(r), //
                                     ),
@@ -130,7 +133,7 @@ class _Main_State extends State<Main_> {
                 ),
               ),
 
-              //
+              // payment
               Container(
                 decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
                 child: Column(
@@ -159,26 +162,26 @@ class _Main_State extends State<Main_> {
                                       menuChildren: [
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.info_outline),
-                                          child: Text("Status"),
+                                          child: Text("Summary"),
                                           onPressed: () {
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                            on_summary(r);
                                           }, //
                                         ),
-                                        MenuItemButton(
-                                          leadingIcon: Icon(Icons.change_circle_outlined),
-                                          child: Text("Change Room"),
-                                          onPressed: () {
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
-                                          }, //
-                                        ),
-                                        MenuItemButton(
-                                          leadingIcon: Icon(Icons.edit_outlined),
-                                          child: Text("Update Staying"),
-                                          onPressed: () {
-                                            // TODO:
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
-                                          }, //
-                                        ),
+                                        // MenuItemButton(
+                                        //   leadingIcon: Icon(Icons.change_circle_outlined),
+                                        //   child: Text("Change Room"),
+                                        //   onPressed: () {
+                                        //     snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                        //   }, //
+                                        // ),
+                                        // MenuItemButton(
+                                        //   leadingIcon: Icon(Icons.edit_outlined),
+                                        //   child: Text("Update Staying"),
+                                        //   onPressed: () {
+                                        //     // TODO:
+                                        //     snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                        //   }, //
+                                        // ),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.edit_outlined),
                                           child: Text("Update Guest"),
@@ -186,20 +189,20 @@ class _Main_State extends State<Main_> {
                                             snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
                                           }, //
                                         ),
-                                        MenuItemButton(
-                                          leadingIcon: Icon(Icons.add_outlined),
-                                          child: Text("Add Revenue Payment"),
-                                          onPressed: () {
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
-                                          }, //
-                                        ),
-                                        MenuItemButton(
-                                          leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
-                                          child: Text("Cancel", style: TextStyle(color: Colors.red)),
-                                          onPressed: () {
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
-                                          }, //
-                                        ),
+                                        // MenuItemButton(
+                                        //   leadingIcon: Icon(Icons.add_outlined),
+                                        //   child: Text("Add Revenue Payment"),
+                                        //   onPressed: () {
+                                        //     snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                        //   }, //
+                                        // ),
+                                        // MenuItemButton(
+                                        //   leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
+                                        //   child: Text("Cancel", style: TextStyle(color: Colors.red)),
+                                        //   onPressed: () {
+                                        //     snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                        //   }, //
+                                        // ),
                                       ],
                                       onPressed: () => on_payment(r), //
                                     ),
@@ -216,7 +219,7 @@ class _Main_State extends State<Main_> {
                 ),
               ),
 
-              //
+              // check-out
               Container(
                 decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
                 child: Column(
@@ -245,60 +248,59 @@ class _Main_State extends State<Main_> {
                                       menuChildren: [
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.info_outline),
-                                          child: Text("Status"),
+                                          child: Text("Summary"),
                                           onPressed: () {
-                                            // TODO:
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                            on_summary(r);
                                           }, //
                                         ),
-                                        MenuItemButton(
-                                          leadingIcon: Icon(Icons.change_circle_outlined),
-                                          child: Text("Change Room"),
-                                          onPressed: () {
-                                            // TODO:
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
-                                          }, //
-                                        ),
-                                        MenuItemButton(
-                                          leadingIcon: Icon(Icons.edit_outlined),
-                                          child: Text("Update Staying"),
-                                          onPressed: () {
-                                            // TODO:
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
-                                          }, //
-                                        ),
-                                        MenuItemButton(
-                                          leadingIcon: Icon(Icons.add_outlined),
-                                          child: Text("Add Revenue Payment"),
-                                          onPressed: () {
-                                            // TODO:
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
-                                          }, //
-                                        ),
-                                        MenuItemButton(
-                                          leadingIcon: Icon(Icons.edit_outlined),
-                                          child: Text("Update Room Payment"),
-                                          onPressed: () {
-                                            // TODO:
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
-                                          }, //
-                                        ),
-                                        MenuItemButton(
-                                          leadingIcon: Icon(Icons.edit_outlined),
-                                          child: Text("Update Guest"),
-                                          onPressed: () {
-                                            // TODO:
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
-                                          }, //
-                                        ),
-                                        MenuItemButton(
-                                          leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
-                                          child: Text("Cancel", style: TextStyle(color: Colors.red)),
-                                          onPressed: () {
-                                            // TODO:
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
-                                          }, //
-                                        ),
+                                        // MenuItemButton(
+                                        //   leadingIcon: Icon(Icons.change_circle_outlined),
+                                        //   child: Text("Change Room"),
+                                        //   onPressed: () {
+                                        //     // TODO:
+                                        //     snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                        //   }, //
+                                        // ),
+                                        // MenuItemButton(
+                                        //   leadingIcon: Icon(Icons.edit_outlined),
+                                        //   child: Text("Update Staying"),
+                                        //   onPressed: () {
+                                        //     // TODO:
+                                        //     snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                        //   }, //
+                                        // ),
+                                        // MenuItemButton(
+                                        //   leadingIcon: Icon(Icons.add_outlined),
+                                        //   child: Text("Add Revenue Payment"),
+                                        //   onPressed: () {
+                                        //     // TODO:
+                                        //     snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                        //   }, //
+                                        // ),
+                                        // MenuItemButton(
+                                        //   leadingIcon: Icon(Icons.edit_outlined),
+                                        //   child: Text("Update Room Payment"),
+                                        //   onPressed: () {
+                                        //     // TODO:
+                                        //     snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                        //   }, //
+                                        // ),
+                                        // MenuItemButton(
+                                        //   leadingIcon: Icon(Icons.edit_outlined),
+                                        //   child: Text("Update Guest"),
+                                        //   onPressed: () {
+                                        //     // TODO:
+                                        //     snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                        //   }, //
+                                        // ),
+                                        // MenuItemButton(
+                                        //   leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
+                                        //   child: Text("Cancel", style: TextStyle(color: Colors.red)),
+                                        //   onPressed: () {
+                                        //     // TODO:
+                                        //     snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                        //   }, //
+                                        // ),
                                       ],
                                       onPressed: () => on_check_out(r), //
                                     ),
@@ -315,7 +317,7 @@ class _Main_State extends State<Main_> {
                 ),
               ),
 
-              //
+              // clean
               Container(
                 decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
                 child: Column(
@@ -344,21 +346,20 @@ class _Main_State extends State<Main_> {
                                       menuChildren: [
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.info_outline),
-                                          child: Text("Status"),
+                                          child: Text("Summary"),
                                           onPressed: () {
-                                            // TODO:
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                            on_summary(r);
                                           }, //
                                         ),
-                                        Divider(height: 1),
-                                        MenuItemButton(
-                                          leadingIcon: Icon(Icons.edit_outlined),
-                                          child: Text("Update Guest"),
-                                          onPressed: () {
-                                            // TODO:
-                                            snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
-                                          }, //
-                                        ),
+                                        // Divider(height: 1),
+                                        // MenuItemButton(
+                                        //   leadingIcon: Icon(Icons.edit_outlined),
+                                        //   child: Text("Update Guest"),
+                                        //   onPressed: () {
+                                        //     // TODO:
+                                        //     snackbar_show(context: context, message: "Under Development.", color: Colors.blue);
+                                        //   }, //
+                                        // ),
                                       ],
                                       onPressed: () => on_clean(r), //
                                     ),
@@ -381,6 +382,32 @@ class _Main_State extends State<Main_> {
     );
   }
 
+  //
+  void on_summary(r) async {
+    try {
+      //
+      schema.clear();
+      g_schema.clear();
+      r_schema.clear();
+
+      //
+      var f = await dio.post(
+        "/front_desk/read_id", //
+        data: FormData.fromMap({"_id": r[r_schema.FRONT_DESK_ID]}),
+      );
+      for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
+
+      //
+      var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => summary.Main_()));
+      if (value == null) return;
+
+      //
+    } catch (e) {
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
+  //
   void on_check_in(r) async {
     try {
       //
@@ -408,6 +435,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_payment(r) async {
     try {
       //
@@ -435,6 +463,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_check_out(r) async {
     //
     try {
@@ -463,6 +492,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_clean(r) async {
     try {
       //

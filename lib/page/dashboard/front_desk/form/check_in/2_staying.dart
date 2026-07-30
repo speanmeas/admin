@@ -5,17 +5,14 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:speanmeas/theme/theme_data.dart";
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/widget/snackbar_show.dart";
-import "package:speanmeas/page/room/schema.g.dart" as r_schema;
-import "package:speanmeas/page/guest/schema.g.dart" as g_schema;
 import "package:speanmeas/page/auth/schema.g.dart" as u_schema;
 
 import "../../__config__.dart";
-// import "../../schema.w.dart" as fd_schema_w;
 import "../../schema.g.dart" as schema;
 
 import "3_payment.dart" as step_3;
 
-import "widget/number_select.dart" as select_number;
+import "widget/number_select.dart" as n_select;
 
 class _Main_State extends State<Main_> {
   final c_number_of_guests = TextEditingController();
@@ -76,7 +73,7 @@ class _Main_State extends State<Main_> {
               children: [
                 // number of guests
                 SizedBox(height: 8),
-                select_number.Main_(
+                n_select.Main_(
                   controller: c_number_of_guests,
                   title: "Number of Guests:",
                   options: List.generate(10, (index) => index + 1),
@@ -85,7 +82,7 @@ class _Main_State extends State<Main_> {
 
                 // stay duration days
                 SizedBox(height: 8),
-                select_number.Main_(
+                n_select.Main_(
                   controller: c_stay_duration_days,
                   title: "Stay Duration (Days):",
                   options: List.generate(365, (index) => index),
@@ -94,7 +91,7 @@ class _Main_State extends State<Main_> {
 
                 // stay duration hours
                 SizedBox(height: 8),
-                select_number.Main_(
+                n_select.Main_(
                   controller: c_stay_duration_hours,
                   title: "Stay Duration (Hours):",
                   options: [0, 3, 6, 9, 12, 15, 18, 21],

@@ -12,15 +12,14 @@ import "package:speanmeas/widget/snackbar_show.dart";
 import "package:speanmeas/page/auth/schema.g.dart" as u_schema;
 
 import "../../__config__.dart";
-// import "../../schema.w.dart" as fd_schema_w;
 import "../../schema.g.dart" as schema;
 
 import "2_note.dart" as step_2;
 
-import "widget/input_number.dart" as input_number;
+import "widget/number_input.dart" as n_input;
 
 class _Main_State extends State<Main_> {
-  final c_room_price_total_usd = TextEditingController();
+  final c_price_total_usd = TextEditingController();
   final c_paid_bank_usd = TextEditingController();
   final c_paid_cash_usd = TextEditingController();
   final c_paid_bank_khr = TextEditingController();
@@ -36,7 +35,7 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    c_room_price_total_usd.text = schema.data[schema.REVENUE_PRICE_TOTAL_USD]?["value"]?.toString() ?? "";
+    c_price_total_usd.text = schema.data[schema.REVENUE_PRICE_TOTAL_USD]?["value"]?.toString() ?? "";
     c_paid_bank_usd.text = schema.data[schema.REVENUE_PAID_BANK_USD]?["value"]?.toString() ?? "";
     c_paid_cash_usd.text = schema.data[schema.REVENUE_PAID_CASH_USD]?["value"]?.toString() ?? "";
     c_paid_bank_khr.text = schema.data[schema.REVENUE_PAID_BANK_KHR]?["value"]?.toString() ?? "";
@@ -86,9 +85,9 @@ class _Main_State extends State<Main_> {
               children: [
                 //
 
-                // room price
-                input_number.Main_(
-                  controller: c_room_price_total_usd,
+                // revenue price
+                n_input.Main_(
+                  controller: c_price_total_usd,
                   title: "Revenue Price (USD)", //
                   prefixIcon: Icons.attach_money_outlined,
                   suffixText: "\$",
@@ -113,7 +112,7 @@ class _Main_State extends State<Main_> {
                 Row(
                   children: [
                     Expanded(
-                      child: input_number.Main_(
+                      child: n_input.Main_(
                         controller: c_paid_bank_usd,
                         title: "Paid Bank (USD)", //
                         prefixIcon: Icons.account_balance,
@@ -126,7 +125,7 @@ class _Main_State extends State<Main_> {
 
                     // paid bank khr
                     Expanded(
-                      child: input_number.Main_(
+                      child: n_input.Main_(
                         controller: c_paid_bank_khr,
                         title: "Paid Bank (KHR)", //
                         prefixIcon: Icons.account_balance,
@@ -145,7 +144,7 @@ class _Main_State extends State<Main_> {
                   children: [
                     // paid cash usd
                     Expanded(
-                      child: input_number.Main_(
+                      child: n_input.Main_(
                         controller: c_paid_cash_usd,
                         title: "Paid Cash (USD)", //
                         prefixIcon: Icons.payments_outlined,
@@ -158,7 +157,7 @@ class _Main_State extends State<Main_> {
 
                     // paid cash khr
                     Expanded(
-                      child: input_number.Main_(
+                      child: n_input.Main_(
                         controller: c_paid_cash_khr,
                         title: "Paid Cash (KHR)", //
                         prefixIcon: Icons.payments_outlined,
@@ -190,7 +189,7 @@ class _Main_State extends State<Main_> {
                   children: [
                     // return usd
                     Expanded(
-                      child: input_number.Main_(
+                      child: n_input.Main_(
                         controller: c_return_usd,
                         title: "Return Cash (USD)", //
                         prefixIcon: Icons.payments_outlined,
@@ -203,7 +202,7 @@ class _Main_State extends State<Main_> {
 
                     // return khr
                     Expanded(
-                      child: input_number.Main_(
+                      child: n_input.Main_(
                         controller: c_return_khr,
                         title: "Return Cash (KHR)", //
                         prefixIcon: Icons.payments_outlined,
@@ -269,7 +268,7 @@ class _Main_State extends State<Main_> {
   }
 
   double get_price_total_usd() {
-    double price_total_usd = double.tryParse(c_room_price_total_usd.text) ?? 0;
+    double price_total_usd = double.tryParse(c_price_total_usd.text) ?? 0;
     return price_total_usd;
   }
 
@@ -309,21 +308,23 @@ class _Main_State extends State<Main_> {
       if (DateTime.tryParse(n.data.toString()) == null) throw Exception("Invalid date time from server.");
       DateTime now = DateTime.tryParse(n.data.toString())!;
 
-      schema.data[schema.REVENUE_PRICE_TOTAL_USD]?["value"] = get_price_total_usd();
-      schema.data[schema.REVENUE_PAID_BANK_USD]?["value"] = double.tryParse(c_paid_bank_usd.text);
-      schema.data[schema.REVENUE_PAID_CASH_USD]?["value"] = double.tryParse(c_paid_cash_usd.text);
-      schema.data[schema.REVENUE_PAID_BANK_KHR]?["value"] = double.tryParse(c_paid_bank_khr.text);
-      schema.data[schema.REVENUE_PAID_CASH_KHR]?["value"] = double.tryParse(c_paid_cash_khr.text);
-      schema.data[schema.REVENUE_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
-      schema.data[schema.REVENUE_RETURN_USD]?["value"] = double.tryParse(c_return_usd.text);
-      schema.data[schema.REVENUE_RETURN_KHR]?["value"] = double.tryParse(c_return_khr.text);
-      schema.data[schema.REVENUE_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
-      schema.data[schema.REVENUE_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
+      if (get_price_total_usd() > 0 && get_balance_usd() != 0) {
+        schema.data[schema.REVENUE_PRICE_TOTAL_USD]?["value"] = get_price_total_usd();
+        schema.data[schema.REVENUE_PAID_BANK_USD]?["value"] = double.tryParse(c_paid_bank_usd.text);
+        schema.data[schema.REVENUE_PAID_CASH_USD]?["value"] = double.tryParse(c_paid_cash_usd.text);
+        schema.data[schema.REVENUE_PAID_BANK_KHR]?["value"] = double.tryParse(c_paid_bank_khr.text);
+        schema.data[schema.REVENUE_PAID_CASH_KHR]?["value"] = double.tryParse(c_paid_cash_khr.text);
+        schema.data[schema.REVENUE_PAID_TOTAL_USD]?["value"] = get_paid_total_usd();
+        schema.data[schema.REVENUE_RETURN_USD]?["value"] = double.tryParse(c_return_usd.text);
+        schema.data[schema.REVENUE_RETURN_KHR]?["value"] = double.tryParse(c_return_khr.text);
+        schema.data[schema.REVENUE_RETURN_TOTAL_USD]?["value"] = get_return_total_usd();
+        schema.data[schema.REVENUE_BALANCE_TOTAL_USD]?["value"] = get_balance_usd();
 
-      schema.data[schema.REVENUE_PAID_NOTE]?["value"] = c_note.text;
-      schema.data[schema.REVENUE_PAID_BY_ID]?["value"] = u_schema.data[u_schema.ID]!["value"];
-      schema.data[schema.REVENUE_PAID_BY]?["value"] = u_schema.data[u_schema.FULL_NAME]!["value"];
-      schema.data[schema.REVENUE_PAID_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
+        schema.data[schema.REVENUE_PAID_NOTE]?["value"] = c_note.text;
+        schema.data[schema.REVENUE_PAID_BY_ID]?["value"] = u_schema.data[u_schema.ID]!["value"];
+        schema.data[schema.REVENUE_PAID_BY]?["value"] = u_schema.data[u_schema.FULL_NAME]!["value"];
+        schema.data[schema.REVENUE_PAID_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
+      }
 
       await Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
 

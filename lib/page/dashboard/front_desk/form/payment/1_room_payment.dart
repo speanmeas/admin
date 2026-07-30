@@ -15,7 +15,7 @@ import "../../__config__.dart";
 import "../../schema.g.dart" as schema;
 
 import "2_summary.dart" as step_2;
-import "widget/input_number.dart" as input_number;
+import "widget/number_input.dart" as n_input;
 
 class _Main_State extends State<Main_> {
   final c_room_price_total_usd = TextEditingController();
@@ -76,189 +76,191 @@ class _Main_State extends State<Main_> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Container(
-          width: 600,
-          margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-          alignment: Alignment.center,
-          child: Column(
-            children: [
-              //
+        child: Center(
+          child: Container(
+            width: 600,
+            margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
+            alignment: Alignment.center,
+            child: Column(
+              children: [
+                //
 
-              // room price
-              input_number.Main_(
-                controller: c_room_price_total_usd,
-                title: "Room Price (USD)", //
-                prefixIcon: Icons.attach_money_outlined,
-                suffixText: "\$",
-                onChanged: (v) => setState(() {}),
-              ),
-
-              // total price
-              Divider(height: 8, thickness: 1, color: Colors.black),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text("Total Price: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  Text(
-                    "${get_price_total_usd().toString()}\$",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 16),
-                  ),
-                ],
-              ),
-              SizedBox(height: 32),
-
-              // paid bank
-              Row(
-                children: [
-                  Expanded(
-                    child: input_number.Main_(
-                      controller: c_paid_bank_usd,
-                      title: "Paid Bank (USD)", //
-                      prefixIcon: Icons.account_balance,
-                      suffixText: "\$",
-                      onChanged: (v) => setState(() {}),
-                    ),
-                  ),
-
-                  SizedBox(width: 4),
-
-                  // paid bank khr
-                  Expanded(
-                    child: input_number.Main_(
-                      controller: c_paid_bank_khr,
-                      title: "Paid Bank (KHR)", //
-                      prefixIcon: Icons.account_balance,
-                      suffixText: "៛",
-                      onChanged: (v) => setState(() {}),
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 8),
-
-              // paid cash
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // paid cash usd
-                  Expanded(
-                    child: input_number.Main_(
-                      controller: c_paid_cash_usd,
-                      title: "Paid Cash (USD)", //
-                      prefixIcon: Icons.payments_outlined,
-                      suffixText: "\$",
-                      onChanged: (v) => setState(() {}),
-                    ),
-                  ),
-
-                  SizedBox(width: 4),
-
-                  // paid cash khr
-                  Expanded(
-                    child: input_number.Main_(
-                      controller: c_paid_cash_khr,
-                      title: "Paid Cash (KHR)", //
-                      prefixIcon: Icons.payments_outlined,
-                      suffixText: "៛",
-                      onChanged: (v) => setState(() {}),
-                    ),
-                  ),
-                ],
-              ),
-
-              // total paid
-              Divider(height: 8, thickness: 1, color: Colors.black),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text("Total Paid: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  Text(
-                    "${get_paid_total_usd().toString()}\$",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 16),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 32),
-
-              // return
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // return usd
-                  Expanded(
-                    child: input_number.Main_(
-                      controller: c_return_usd,
-                      title: "Return Cash (USD)", //
-                      prefixIcon: Icons.payments_outlined,
-                      suffixText: "\$",
-                      onChanged: (v) => setState(() {}),
-                    ),
-                  ),
-
-                  SizedBox(width: 4),
-
-                  // return khr
-                  Expanded(
-                    child: input_number.Main_(
-                      controller: c_return_khr,
-                      title: "Return Cash (KHR)", //
-                      prefixIcon: Icons.payments_outlined,
-                      suffixText: "៛",
-                      onChanged: (v) => setState(() {}),
-                    ),
-                  ),
-                ],
-              ),
-
-              // total return
-              Divider(height: 8, thickness: 1, color: Colors.black),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text("Total Return: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  Text(
-                    "${get_return_total_usd().toString()}\$",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 16),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 32),
-
-              // note
-              TextField(
-                controller: c_note,
-                decoration: InputDecoration(
-                  labelText: "Note:",
-                  labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                // room price
+                n_input.Main_(
+                  controller: c_room_price_total_usd,
+                  title: "Room Price (USD)", //
+                  prefixIcon: Icons.attach_money_outlined,
+                  suffixText: "\$",
+                  onChanged: (v) => setState(() {}),
                 ),
-                maxLines: 4,
-                onChanged: (v) => setState(() {}),
-              ),
 
-              // balance
-              Divider(height: 8, thickness: 1, color: Colors.black),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text("Balance : ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                // total price
+                Divider(height: 8, thickness: 1, color: Colors.black),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text("Total Price: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(
+                      "${get_price_total_usd().toString()}\$",
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 16),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 32),
 
-                  if (get_balance_usd() == 0)
-                    Text(
-                      "0\$",
-                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green, fontSize: 16),
+                // paid bank
+                Row(
+                  children: [
+                    Expanded(
+                      child: n_input.Main_(
+                        controller: c_paid_bank_usd,
+                        title: "Paid Bank (USD)", //
+                        prefixIcon: Icons.account_balance,
+                        suffixText: "\$",
+                        onChanged: (v) => setState(() {}),
+                      ),
                     ),
-                  if (get_balance_usd() != 0)
-                    Text(
-                      "${get_balance_usd().toString()}\$",
-                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontSize: 16),
+
+                    SizedBox(width: 4),
+
+                    // paid bank khr
+                    Expanded(
+                      child: n_input.Main_(
+                        controller: c_paid_bank_khr,
+                        title: "Paid Bank (KHR)", //
+                        prefixIcon: Icons.account_balance,
+                        suffixText: "៛",
+                        onChanged: (v) => setState(() {}),
+                      ),
                     ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+
+                SizedBox(height: 8),
+
+                // paid cash
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // paid cash usd
+                    Expanded(
+                      child: n_input.Main_(
+                        controller: c_paid_cash_usd,
+                        title: "Paid Cash (USD)", //
+                        prefixIcon: Icons.payments_outlined,
+                        suffixText: "\$",
+                        onChanged: (v) => setState(() {}),
+                      ),
+                    ),
+
+                    SizedBox(width: 4),
+
+                    // paid cash khr
+                    Expanded(
+                      child: n_input.Main_(
+                        controller: c_paid_cash_khr,
+                        title: "Paid Cash (KHR)", //
+                        prefixIcon: Icons.payments_outlined,
+                        suffixText: "៛",
+                        onChanged: (v) => setState(() {}),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // total paid
+                Divider(height: 8, thickness: 1, color: Colors.black),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text("Total Paid: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(
+                      "${get_paid_total_usd().toString()}\$",
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 16),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 32),
+
+                // return
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // return usd
+                    Expanded(
+                      child: n_input.Main_(
+                        controller: c_return_usd,
+                        title: "Return Cash (USD)", //
+                        prefixIcon: Icons.payments_outlined,
+                        suffixText: "\$",
+                        onChanged: (v) => setState(() {}),
+                      ),
+                    ),
+
+                    SizedBox(width: 4),
+
+                    // return khr
+                    Expanded(
+                      child: n_input.Main_(
+                        controller: c_return_khr,
+                        title: "Return Cash (KHR)", //
+                        prefixIcon: Icons.payments_outlined,
+                        suffixText: "៛",
+                        onChanged: (v) => setState(() {}),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // total return
+                Divider(height: 8, thickness: 1, color: Colors.black),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text("Total Return: ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(
+                      "${get_return_total_usd().toString()}\$",
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontSize: 16),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 32),
+
+                // note
+                TextField(
+                  controller: c_note,
+                  decoration: InputDecoration(
+                    labelText: "Note:",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  maxLines: 4,
+                  onChanged: (v) => setState(() {}),
+                ),
+
+                // balance
+                Divider(height: 8, thickness: 1, color: Colors.black),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text("Balance : ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+
+                    if (get_balance_usd() == 0)
+                      Text(
+                        "0\$",
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green, fontSize: 16),
+                      ),
+                    if (get_balance_usd() != 0)
+                      Text(
+                        "${get_balance_usd().toString()}\$",
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontSize: 16),
+                      ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -1,6 +1,7 @@
 import "dart:convert";
 
 import "package:dio/dio.dart";
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:provider/provider.dart";
@@ -83,6 +84,14 @@ class _Main_State extends State<Main_> {
               children: [
                 for (var e in schema.data.entries) //
                   (() {
+                    //
+                    if (kDebugMode && e.value["type"]?.toString() == "id") {
+                      return show_data.Main_(
+                        title: e.value["title"]?.toString() ?? "", //
+                        value: e.value["value"]?.toString() ?? "",
+                      );
+                    }
+
                     //
                     if (e.value["type"]?.toString() == "string") {
                       var value = "";
