@@ -83,27 +83,26 @@ class _Main_State extends State<Main_> {
           SizedBox(width: 4),
 
           // User Avatar
-          if (u_schema.data[u_schema.FULL_NAME]!["value"] != null) //
-            InkWell(
-              customBorder: const CircleBorder(),
-              child: Container(
-                width: 32,
-                height: 32,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.blue, width: 2),
-                ),
-                child: Text(
-                  u_schema.data[u_schema.FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "", //
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
-                ),
+          InkWell(
+            customBorder: const CircleBorder(),
+            child: Container(
+              width: 32,
+              height: 32,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.blue, width: 2),
               ),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => profile.Main_()));
-                init();
-              },
+              child: Text(
+                u_schema.data[u_schema.FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "X", //
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+              ),
             ),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => profile.Main_()));
+              init();
+            },
+          ),
 
           SizedBox(width: 8), //
         ],
