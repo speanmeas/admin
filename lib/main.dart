@@ -2,10 +2,10 @@ import "package:flutter/material.dart";
 import "package:package_info_plus/package_info_plus.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/theme/theme_data.dart";
-import "package:speanmeas/__variable__.dart";
-import "package:speanmeas/layout/layout.dart";
 import "package:speanmeas/__config__.dart";
+import "package:speanmeas/__variable__.dart";
+import "package:speanmeas/theme/theme_data.dart";
+import "package:speanmeas/layout/layout.dart";
 
 import "page/auth/loading.dart" as loading;
 
