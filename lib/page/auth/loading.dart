@@ -70,6 +70,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => sign_in.Main_()));
       snackbar_show(context: context, message: e.toString(), color: Colors.red);
     }
   }
