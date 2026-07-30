@@ -94,7 +94,12 @@ class _Main_State extends State<Main_> {
                 border: Border.all(color: Colors.blue, width: 2),
               ),
               child: Text(
-                u_schema.data[u_schema.FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "X", //
+                (() {
+                  if (u_schema.data[u_schema.FULL_NAME]!["value"] != null) //
+                    return u_schema.data[u_schema.FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "X";
+                  else
+                    return "X";
+                })(),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
               ),
             ),
