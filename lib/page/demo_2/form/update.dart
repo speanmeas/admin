@@ -67,7 +67,6 @@ class _Main_State extends State<Main_> {
                           e.value["value"] = null;
                           schema.data[schema.NATIONALITY_NAME]!["value"] = null;
                           schema.data[schema.NATIONALITY_NOTE]!["value"] = null;
-                          clear_field(e.key);
                           setState(() {});
                         },
                       ),
@@ -245,21 +244,6 @@ class _Main_State extends State<Main_> {
         ),
       ),
     );
-  }
-
-  void clear_field(String key) async {
-    try {
-      await dio.post(
-        "$PATH/update_field",
-        data: {
-          "_id": schema.data["_id"]!["value"], //
-          "key": key, //
-          "value": null, //
-        },
-      );
-    } catch (e) {
-      snackbar_show(context: context, message: e.toString(), color: Colors.red);
-    }
   }
 
   void on_update() async {

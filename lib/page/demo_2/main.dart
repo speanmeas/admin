@@ -51,6 +51,30 @@ class _Main_State extends State<Main_> {
   }
 
   //
+  //
+  void on_refresh() async {
+    try {
+      //
+      final r = await dio.post(
+        "$PATH/read_count", //
+        data: {"count": true},
+      );
+      row_total = int.parse(r.data.toString());
+
+      //
+      if (page > (row_total / LIMIT).floor() + 1) page = (row_total / LIMIT).floor() + 1;
+      if (page < 1) page = 1;
+
+      //
+      load_page(page);
+
+      //
+    } catch (e) {
+      print(e.toString());
+      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
   void load_page(int p) async {
     try {
       //
@@ -158,26 +182,6 @@ class _Main_State extends State<Main_> {
                     ),
                   ],
                 ),
-              ),
-
-              // refresh
-              InkWell(
-                child: Container(
-                  height: 32,
-                  width: 32,
-                  alignment: Alignment.center,
-                  margin: EdgeInsets.fromLTRB(0, 2, 2, 2),
-                  child: Icon(
-                    is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
-                    size: 24,
-                    color: Colors.blue,
-                  ), //
-                ),
-                onTap: () {
-                  is_filter = !is_filter;
-                  state_manager?.setShowColumnFilter(is_filter);
-                  setState(() {});
-                },
               ),
             ],
           ),
@@ -330,6 +334,42 @@ class _Main_State extends State<Main_> {
                       if (page == (row_total / LIMIT).floor() + 1) return;
                       page = (row_total / LIMIT).floor() + 1;
                       load_page(page);
+                    },
+                  ),
+
+                  SizedBox(width: 8),
+
+                  // refresh
+                  InkWell(
+                    child: Container(
+                      width: 32,
+                      height: HEIGHT,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.refresh, //
+                        size: 24,
+                        color: Colors.blue,
+                      ), //
+                    ), //
+                    onTap: on_refresh,
+                  ),
+
+                  // filter
+                  InkWell(
+                    child: Container(
+                      width: 32,
+                      height: HEIGHT,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
+                        size: 24,
+                        color: Colors.blue,
+                      ), //
+                    ), //
+                    onTap: () {
+                      is_filter = !is_filter;
+                      state_manager?.setShowColumnFilter(is_filter);
+                      setState(() {});
                     },
                   ),
                 ],
