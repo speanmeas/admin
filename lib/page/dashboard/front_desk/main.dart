@@ -25,7 +25,7 @@ import "widget/button_menu.dart" as button_menu;
 
 import "menu/summary.dart" as summary;
 import "menu/update_guest.dart" as update_guest;
-import "menu/revenue_payment.dart" as revenue_payment;
+import "menu/revenue_payment_ai.dart" as revenue_payment;
 
 class _Main_State extends State<Main_> {
   //
@@ -268,7 +268,7 @@ class _Main_State extends State<Main_> {
                                         // ),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.add_outlined),
-                                          child: Text("Add Revenue Payment"),
+                                          child: Text("Revenue Payment"),
                                           onPressed: () {
                                             on_revenue_payment(r);
                                           }, //

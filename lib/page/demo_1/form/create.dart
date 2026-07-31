@@ -103,16 +103,6 @@ class _Main_State extends State<Main_> {
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           prefixIcon: Icon(Icons.text_fields), //
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child: IconButton(
-                              icon: Icon(Icons.clear, color: Colors.red),
-                              onPressed: () async {
-                                e.value["value"] = "";
-                                setState(() {});
-                              },
-                            ), //
-                          ),
                         ),
                         onChanged: (v) {
                           if (v.isEmpty)
@@ -140,16 +130,6 @@ class _Main_State extends State<Main_> {
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           prefixIcon: Icon(Icons.numbers), //
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child: IconButton(
-                              icon: Icon(Icons.clear, color: Colors.red),
-                              onPressed: () async {
-                                e.value["value"] = "";
-                                setState(() {});
-                              },
-                            ), //
-                          ),
                         ),
                         keyboardType: TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
@@ -187,16 +167,6 @@ class _Main_State extends State<Main_> {
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           prefixIcon: Icon(Icons.calendar_month_outlined), //
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child: IconButton(
-                              icon: Icon(Icons.clear, color: Colors.red),
-                              onPressed: () async {
-                                e.value["value"] = "";
-                                setState(() {});
-                              },
-                            ), //
-                          ),
                         ),
                         onTap: () async {
                           DateTime? datetime = await datetime_picker(context, initial_datetime: init);
@@ -231,16 +201,6 @@ class _Main_State extends State<Main_> {
                               labelStyle: TextStyle(fontWeight: FontWeight.bold),
                               floatingLabelBehavior: FloatingLabelBehavior.always,
                               prefixIcon: Icon(Icons.toggle_on_outlined), //
-                              suffixIcon: Padding(
-                                padding: EdgeInsets.only(right: 4),
-                                child: IconButton(
-                                  icon: Icon(Icons.clear, color: Colors.red),
-                                  onPressed: () async {
-                                    e.value["value"] = "";
-                                    setState(() {});
-                                  },
-                                ), //
-                              ),
                             ),
                           );
                         },
@@ -279,11 +239,14 @@ class _Main_State extends State<Main_> {
   void on_create() async {
     try {
       //
-      Map<String, dynamic> output = {};
-      for (var e in schema.data.entries) output[e.key] = e.value["value"];
+      Map<String, dynamic> payload = {};
+      for (var e in schema.data.entries) payload[e.key] = e.value["value"];
 
       // request
-      final r = await dio.post("$PATH/create", data: FormData.fromMap({...output}));
+      final r = await dio.post(
+        "$PATH/create", //
+        data: {...payload},
+      );
 
       //
       Navigator.pop(context, r.data);

@@ -49,9 +49,9 @@ Map<String, Map<String, dynamic>> data = {
     "value": null
   },
   "front_desk_id": {
-    "type": "id",
+    "type": "string",
     "title": "Front Desk ID",
-    "hide": true,
+    "hide": false,
     "lock": false,
     "value": null
   }

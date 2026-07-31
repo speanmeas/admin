@@ -35,7 +35,10 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       //
-      final r = await dio.post("$PATH/read_count", data: FormData.fromMap({"count": true}));
+      final r = await dio.post(
+        "$PATH/read_count", //
+        data: {"count": true},
+      );
       row_total = int.parse(r.data.toString());
 
       //
@@ -56,7 +59,15 @@ class _Main_State extends State<Main_> {
       setState(() {});
 
       //
-      final r = await dio.post("$PATH/read", data: FormData.fromMap({"key": KEY, "order": ORDER, "offset": (p - 1) * LIMIT, "limit": LIMIT}));
+      final r = await dio.post(
+        "$PATH/read", //
+        data: {
+          "key": KEY, //
+          "order": ORDER, //
+          "offset": (p - 1) * LIMIT, //
+          "limit": LIMIT,
+        },
+      );
       final data = List<Map<String, dynamic>>.from(r.data);
 
       // keep sort + filter

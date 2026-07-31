@@ -58,7 +58,10 @@ class _Main_State extends State<Main_> {
   void on_delete() async {
     try {
       //
-      final r = await dio.post("$PATH/delete", data: FormData.fromMap({"_id": schema.data[schema.ID]?["value"]}));
+      final r = await dio.post(
+        "$PATH/delete", //
+        data: {"_id": schema.data[schema.ID]?["value"]},
+      );
 
       //
       snackbar_show(context: context, message: "Success", color: Colors.green);
