@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:intl/intl.dart";
-import "package:dio/dio.dart";
 
 import "package:speanmeas/utility/dio.dart";
 import "package:speanmeas/theme/theme_data.dart";
@@ -13,12 +12,7 @@ import "package:speanmeas/widget/show_data.dart" as show_data;
 import "../__config__.dart";
 import "../schema.g.dart" as schema;
 
-// import "package:speanmeas/page/nationality/schema.g.dart" as n_schema_r;
-// import "../widget/nationality_search.dart" as n_search;
-
 class _Main_State extends State<Main_> {
-  // final c_nationality = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -26,7 +20,7 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    // c_nationality.text = schema.data[schema.NATIONALITY_NAME]!["value"]?.toString() ?? "";
+    //
   }
 
   @override
@@ -262,7 +256,7 @@ class _Main_State extends State<Main_> {
 }
 
 class Main_ extends StatefulWidget {
-  const Main_({super.key});
+  Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
@@ -270,9 +264,9 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      title: HEADER, //
+      title: "Development", //
       theme: Theme_Data(), //
-      home: const Main_(),
+      home: Main_(),
       debugShowCheckedModeBanner: false,
     ),
   );

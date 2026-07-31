@@ -1,6 +1,5 @@
-import "package:flutter/material.dart";
-import "package:dio/dio.dart";
 import "package:intl/intl.dart";
+import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/utility/dio.dart";
@@ -35,7 +34,10 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       //
-      final r = await dio.post("$PATH/read_count", data: FormData.fromMap({"count": true}));
+      final r = await dio.post(
+        "$PATH/read_count", //
+        data: {"count": true},
+      );
       row_total = int.parse(r.data.toString());
 
       //
@@ -56,7 +58,15 @@ class _Main_State extends State<Main_> {
       setState(() {});
 
       //
-      final r = await dio.post("$PATH/read", data: FormData.fromMap({"key": KEY, "order": ORDER, "offset": (p - 1) * LIMIT, "limit": LIMIT}));
+      final r = await dio.post(
+        "$PATH/read", //
+        data: {
+          "key": KEY, //
+          "order": ORDER, //
+          "offset": (p - 1) * LIMIT, //
+          "limit": LIMIT,
+        },
+      );
       final data = List<Map<String, dynamic>>.from(r.data);
 
       // keep sort + filter
@@ -461,14 +471,14 @@ class _Main_State extends State<Main_> {
 
     //
     if (type == "number") {
-      if (data == 0) return null;
-      if (data != 0) return double.tryParse(data.toString());
+      if (data == "") return null;
+      if (data != "") return double.tryParse(data.toString());
     }
 
     //
     if (type == "date-time") {
       if (data == "") return null;
-      if (data != "") return DateTime.parse(data.toString());
+      if (data != "") return DateTime.tryParse(data.toString())?.toIso8601String();
     }
 
     if (type == "boolean") {
@@ -486,30 +496,24 @@ class _Main_State extends State<Main_> {
   }) {
     //
     if (type == "id") {
-      if (data != null) {
-        return data.toString();
-      }
+      if (data != null) return data.toString();
     }
 
     //
     if (type == "string") {
-      if (data != null) {
-        return data.toString();
-      }
+      if (data != null) return data.toString();
     }
 
     //
     if (type == "number") {
-      if (data != null) {
-        return data.toString();
-      }
+      if (data != null) return data.toString();
     }
 
     //
     if (type == "date-time") {
       if (data != null) {
-        final dt = DateTime.tryParse(data.toString());
-        if (dt != null) return DateFormat(DATE_FORMAT).format(dt.toLocal());
+        final tmp = DateTime.tryParse(data.toString());
+        if (tmp != null) return DateFormat(DATE_FORMAT).format(tmp);
       }
     }
 

@@ -1,4 +1,3 @@
-import "package:dio/dio.dart";
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
@@ -65,7 +64,7 @@ class _Main_State extends State<Main_> {
                     String value = "";
                     if (e.value["value"] != null) //
                       value = e.value["value"].toString();
-                    if (e.key.contains("password")) //
+                    if (e.key == "password") //
                       value = "";
                     return Container(
                       width: 600,
@@ -74,7 +73,7 @@ class _Main_State extends State<Main_> {
                         controller: TextEditingController(text: value.trim()),
                         maxLines: e.key == "note" ? 4 : 1,
                         decoration: InputDecoration(
-                          hintText: e.key.contains("password") ? "New Password" : null, //
+                          hintText: e.key == "password" ? "New Password" : null, //
                           labelText: e.value["title"] + ":", //
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -224,6 +223,7 @@ class _Main_State extends State<Main_> {
       // * រៀបចំ payload
       Map<String, dynamic> payload = {};
       for (var e in schema.data.entries) payload[e.key] = e.value["value"];
+      print(payload);
 
       //
       final r = await dio.post(
@@ -254,7 +254,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      title: HEADER, //
+      title: "Development", //
       theme: Theme_Data(), //
       home: Main_(),
       debugShowCheckedModeBanner: false,
