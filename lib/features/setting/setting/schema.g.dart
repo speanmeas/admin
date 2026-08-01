@@ -6,16 +6,16 @@ Map<String, Map<String, dynamic>> data = {
     "lock": false,
     "value": null
   },
-  "name": {
+  "key": {
     "type": "string",
-    "title": "Name",
+    "title": "Key",
     "hide": false,
     "lock": false,
     "value": null
   },
   "note": {
     "type": "string",
-    "title": "Note",
+    "title": "Value",
     "hide": false,
     "lock": false,
     "value": null
@@ -23,7 +23,7 @@ Map<String, Map<String, dynamic>> data = {
 };
 
 final ID = "_id";
-final NAME = "name";
+final KEY = "key";
 final NOTE = "note";
 
 void clear() { for (var k in data.keys) data[k]!["value"] = null; }

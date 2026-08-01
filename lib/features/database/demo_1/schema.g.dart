@@ -82,5 +82,4 @@ final LOGIC_1 = "logic_1";
 final LOGIC_2 = "logic_2";
 final NOTE = "note";
 
-
 void clear() { for (var k in data.keys) data[k]!["value"] = null; }

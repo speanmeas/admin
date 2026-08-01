@@ -442,5 +442,4 @@ final CLEAN_BY_ID = "clean_by_id";
 final CLEAN_BY = "clean_by";
 final CLEAN_AT = "clean_at";
 
-
 void clear() { for (var k in data.keys) data[k]!["value"] = null; }

@@ -49,9 +49,9 @@ Map<String, Map<String, dynamic>> data = {
     "value": null
   },
   "front_desk_id": {
-    "type": "string",
+    "type": "id",
     "title": "Front Desk ID",
-    "hide": false,
+    "hide": true,
     "lock": false,
     "value": null
   }
@@ -65,6 +65,5 @@ final KIND = "kind";
 final STATUS = "status";
 final NOTE = "note";
 final FRONT_DESK_ID = "front_desk_id";
-
 
 void clear() { for (var k in data.keys) data[k]!["value"] = null; }

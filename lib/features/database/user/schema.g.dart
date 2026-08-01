@@ -90,5 +90,4 @@ final IS_HOUSEKEEPER = "is_housekeeper";
 final IS_CLIENT = "is_client";
 final NOTE = "note";
 
-
 void clear() { for (var k in data.keys) data[k]!["value"] = null; }

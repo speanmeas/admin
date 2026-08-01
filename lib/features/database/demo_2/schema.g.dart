@@ -74,5 +74,4 @@ final NATIONALITY_ID = "nationality_id";
 final NATIONALITY_NAME = "nationality_name";
 final NATIONALITY_NOTE = "nationality_note";
 
-
 void clear() { for (var k in data.keys) data[k]!["value"] = null; }
