@@ -1,5 +1,6 @@
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
@@ -573,52 +574,159 @@ class _Main_State extends State<Main_> {
   }
 
   Future<int?> select_page() async {
-    const ITEM_HEIGHT = 32.0;
-    final controller = ScrollController(initialScrollOffset: (page - 1) * ITEM_HEIGHT);
+    const ITEM_HEIGHT = 38.0;
+    final total_pages = (row_total / LIMIT).floor() + 1;
+    final controller = ScrollController(
+      initialScrollOffset: ((page - 1) * ITEM_HEIGHT).clamp(0.0, double.infinity),
+    );
+    final input_controller = TextEditingController();
 
     final result = await showDialog<int>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          // title: Center(child: Text("Select Page")),
-          titlePadding: EdgeInsets.fromLTRB(4, 4, 4, 4),
-          contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          titlePadding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
+          contentPadding: EdgeInsets.zero,
+          title: Row(
+            children: [
+              const Text(
+                "Select Page", //
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withValues(alpha: 0.1),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+                ),
+                child: Text(
+                  "$total_pages Pages ($row_total rows)", //
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.blue),
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.close, size: 20),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
           content: SizedBox(
-            width: 300,
-            height: 600,
-            child: ListView.builder(
-              controller: controller,
-              itemExtent: ITEM_HEIGHT,
-              itemCount: (row_total / LIMIT).floor() + 1,
-              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-              itemBuilder: (context, index) {
-                final p = index + 1;
-                return InkWell(
-                  child: Container(
-                    height: ITEM_HEIGHT,
-                    decoration: BoxDecoration(
-                      border: Border(top: BorderSide(color: Colors.black12)),
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 8),
+            width: 360,
+            height: 520,
+            child: Column(
+              children: [
+                // Quick jump input
+                Container(
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 34,
+                          child: TextField(
+                            controller: input_controller,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+                              hintText: "Enter page...",
+                              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.zero),
+                              isDense: true,
+                            ),
+                            onSubmitted: (v) {
+                              final p = int.tryParse(v);
+                              if (p != null && p >= 1 && p <= total_pages) {
+                                Navigator.pop(context, p);
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      SizedBox(
+                        height: 34,
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            foregroundColor: Colors.blue,
+                          ),
+                          onPressed: () {
+                            final p = int.tryParse(input_controller.text);
+                            if (p != null && p >= 1 && p <= total_pages) {
+                              Navigator.pop(context, p);
+                            }
+                          },
+                          child: const Text("Go"),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
 
-                        Text("Page $p", style: TextStyle(fontWeight: FontWeight.bold)), //
+                // Page list
+                Expanded(
+                  child: ListView.builder(
+                    controller: controller,
+                    itemExtent: ITEM_HEIGHT,
+                    itemCount: total_pages,
+                    padding: EdgeInsets.zero,
+                    itemBuilder: (context, index) {
+                      final p = index + 1;
+                      final is_current = p == page;
+                      final start_item = (p - 1) * LIMIT + 1;
+                      final end_item = p * LIMIT > row_total ? row_total : p * LIMIT;
 
-                        Spacer(),
-
-                        if (p == page) Icon(Icons.check, color: Colors.blue),
-
-                        SizedBox(width: 16),
-                      ],
-                    ), //
-                  ), //
-                  onTap: () => Navigator.pop(context, p),
-                );
-              },
+                      return InkWell(
+                        hoverColor: Colors.blue.withValues(alpha: 0.05),
+                        onTap: () => Navigator.pop(context, p),
+                        child: Container(
+                          height: ITEM_HEIGHT,
+                          decoration: BoxDecoration(
+                            color: is_current ? Colors.blue.withValues(alpha: 0.08) : null,
+                            border: Border(
+                              top: const BorderSide(color: Colors.black12),
+                              left: is_current ? const BorderSide(color: Colors.blue, width: 3) : BorderSide.none,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              const SizedBox(width: 12),
+                              Text(
+                                "Page $p",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: is_current ? FontWeight.bold : FontWeight.normal,
+                                  color: is_current ? Colors.blue : Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "(#$start_item - #$end_item)",
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: is_current ? Colors.blue.shade700 : Colors.grey.shade600,
+                                ),
+                              ),
+                              const Spacer(),
+                              if (is_current) const Icon(Icons.check, size: 18, color: Colors.blue),
+                              const SizedBox(width: 12),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
-          // actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel"))],
         );
       },
     );

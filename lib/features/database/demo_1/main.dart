@@ -1,5 +1,6 @@
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
@@ -237,142 +238,183 @@ class _Main_State extends State<Main_> {
                   SizedBox(width: 8),
 
                   // refresh
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.refresh, //
-                        size: 24,
-                        color: Colors.blue,
+                  Tooltip(
+                    message: "Refresh",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: HEIGHT,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.refresh, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
                       ), //
-                    ), //
-                    onTap: on_refresh,
+                      onTap: on_refresh,
+                    ),
                   ),
 
                   // filter
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
-                        size: 24,
-                        color: Colors.blue,
+                  Tooltip(
+                    message: is_filter ? "Hide Filter" : "Show Filter",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: HEIGHT,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
                       ), //
-                    ), //
-                    onTap: () {
-                      is_filter = !is_filter;
-                      state_manager?.setShowColumnFilter(is_filter);
-                      setState(() {});
-                    },
+                      onTap: () {
+                        is_filter = !is_filter;
+                        state_manager?.setShowColumnFilter(is_filter);
+                        setState(() {});
+                      },
+                    ),
+                  ),
+
+                  // search
+                  Tooltip(
+                    message: "Search",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: HEIGHT,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.search, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: () {
+                        print("Search is not implemented yet.");
+                      },
+                    ),
                   ),
 
                   Spacer(),
 
                   // * ត្រលប់ទៅទំព័រដំបូង
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.first_page, //
-                        size: 24,
-                        color: Colors.blue,
+                  Tooltip(
+                    message: "First Page",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: HEIGHT,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.first_page, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
                       ), //
-                    ), //
-                    onTap: () {
-                      if (page == 1) return;
-                      page = 1;
-                      load_page(page);
-                    },
+                      onTap: () {
+                        if (page == 1) return;
+                        page = 1;
+                        load_page(page);
+                      },
+                    ),
                   ),
 
                   SizedBox(width: 4),
 
-                  //
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.navigate_before, //
-                        size: 24,
-                        color: Colors.blue,
+                  // previous page
+                  Tooltip(
+                    message: "Previous Page",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: HEIGHT,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.navigate_before, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
                       ), //
-                    ), //
-                    onTap: () {
-                      if (page == 1) return;
-                      page = page - 1;
-                      load_page(page);
-                    },
+                      onTap: () {
+                        if (page == 1) return;
+                        page = page - 1;
+                        load_page(page);
+                      },
+                    ),
                   ),
 
                   SizedBox(width: 4),
 
-                  //
-                  InkWell(
-                    child: Container(
-                      height: HEIGHT,
-                      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "$page / ${(row_total / LIMIT).floor() + 1} Pages", //
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
+                  // select page
+                  Tooltip(
+                    message: "Select Page",
+                    child: InkWell(
+                      child: Container(
+                        height: HEIGHT,
+                        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "$page / ${(row_total / LIMIT).floor() + 1} Pages", //
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
+                        ), //
                       ), //
-                    ), //
-                    onTap: () async {
-                      final v = await select_page();
-                      if (v == null) return;
-                      page = v;
-                      load_page(page);
-                    }, //
+                      onTap: () async {
+                        final v = await select_page();
+                        if (v == null) return;
+                        page = v;
+                        load_page(page);
+                      }, //
+                    ),
                   ),
 
                   SizedBox(width: 4),
 
-                  //
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.navigate_next, //
-                        size: 24,
-                        color: Colors.blue,
+                  // next page
+                  Tooltip(
+                    message: "Next Page",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: HEIGHT,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.navigate_next, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
                       ), //
-                    ), //
-                    onTap: () {
-                      if (page == (row_total / LIMIT).floor() + 1) return;
-                      page = page + 1;
-                      load_page(page);
-                    },
+                      onTap: () {
+                        if (page == (row_total / LIMIT).floor() + 1) return;
+                        page = page + 1;
+                        load_page(page);
+                      },
+                    ),
                   ),
 
                   SizedBox(width: 4),
 
-                  //
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.last_page, //
-                        size: 24,
-                        color: Colors.blue,
+                  // last page
+                  Tooltip(
+                    message: "Last Page",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: HEIGHT,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.last_page, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
                       ), //
-                    ), //
-                    onTap: () {
-                      if (page == (row_total / LIMIT).floor() + 1) return;
-                      page = (row_total / LIMIT).floor() + 1;
-                      load_page(page);
-                    },
+                      onTap: () {
+                        if (page == (row_total / LIMIT).floor() + 1) return;
+                        page = (row_total / LIMIT).floor() + 1;
+                        load_page(page);
+                      },
+                    ),
                   ),
 
                   SizedBox(width: 8),
