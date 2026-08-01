@@ -25,6 +25,7 @@ class _Main_State extends State<Main_> {
   bool is_loading = true;
   bool is_filter = false;
   PlutoGridStateManager? state_manager;
+  int load_request_id = 0;
 
   @override
   void initState() {
@@ -78,6 +79,8 @@ class _Main_State extends State<Main_> {
   }
 
   void load_page(int p) async {
+    final request_id = ++load_request_id;
+
     try {
       //
       is_loading = true;
@@ -94,6 +97,9 @@ class _Main_State extends State<Main_> {
         },
       );
       final data = List<Map<String, dynamic>>.from(r.data);
+
+      // Ignore a response from an earlier page request.
+      if (request_id != load_request_id) return;
 
       // keep sort + filter
       final sorted_column = state_manager?.getSortedColumn;
@@ -123,6 +129,10 @@ class _Main_State extends State<Main_> {
       is_loading = false;
       setState(() {});
     } catch (e) {
+      if (request_id == load_request_id) {
+        is_loading = false;
+        setState(() {});
+      }
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
