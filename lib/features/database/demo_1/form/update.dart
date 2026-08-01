@@ -112,7 +112,6 @@ class _Main_State extends State<Main_> {
                   }
 
                   // * ថ្ងៃខែឆ្នាំ និង ម៉ោង
-                  // todo: clear date-time?
                   if (e.value["type"] == "date-time") {
                     final tmp = DateTime.tryParse(e.value["value"]?.toString() ?? "");
                     final value = tmp != null ? DateFormat(DATE_FORMAT).format(tmp.toLocal()) : "";

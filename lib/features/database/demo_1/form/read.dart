@@ -61,7 +61,7 @@ class _Main_State extends State<Main_> {
                     String value = "";
                     if (e.value["value"] != null) {
                       final tmp = DateTime.tryParse(e.value["value"].toString());
-                      if (tmp != null) value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
+                      if (tmp != null) value = DateFormat(DATE_FORMAT).format(tmp);
                     }
                     return Container(
                       width: 600,

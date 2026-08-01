@@ -11,6 +11,7 @@ import "package:speanmeas/features/database/nationality/schema.g.dart" as n_sche
 
 class _Main_State extends State<Main_> {
   FocusNode focusNode = FocusNode();
+  FocusNode clear_focus = FocusNode();
   bool is_selected = false;
   int selection_request_id = 0;
 
@@ -20,9 +21,8 @@ class _Main_State extends State<Main_> {
 
     //
     focusNode.addListener(() {
-      if (!focusNode.hasFocus && !is_selected) {
-        widget.controller.clear();
-        widget.onChanged?.call({});
+      if (!focusNode.hasFocus && !clear_focus.hasFocus && !is_selected && widget.controller.text.isNotEmpty) {
+        clear_field();
       }
     });
 
@@ -33,7 +33,15 @@ class _Main_State extends State<Main_> {
   @override
   void dispose() {
     focusNode.dispose();
+    clear_focus.dispose();
     super.dispose();
+  }
+
+  void clear_field() {
+    selection_request_id++;
+    is_selected = false;
+    widget.controller.clear();
+    widget.onCleared?.call();
   }
 
   void select(q) async {
@@ -104,13 +112,11 @@ class _Main_State extends State<Main_> {
                   suffixIcon: Padding(
                     padding: EdgeInsets.only(right: 4),
                     child: IconButton(
+                      focusNode: clear_focus,
                       icon: Icon(Icons.clear, color: Colors.red),
                       onPressed: () {
                         //
-                        selection_request_id++;
-                        widget.controller.clear();
-                        widget.onCleared?.call();
-                        widget.onChanged?.call({});
+                        clear_field();
                       },
                     ), //
                   ),

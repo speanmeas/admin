@@ -45,29 +45,6 @@ class _Main_State extends State<Main_> {
             children: [
               for (var e in schema.data.entries)
                 (() {
-                  // * search nationality
-                  // if (e.key == schema.NATIONALITY_ID) {
-                  //   return Container(
-                  //     width: 600,
-                  //     margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                  //     child: n_search.Main_(
-                  //       controller: c_nationality,
-                  //       onChanged: (v) {
-                  //         e.value["value"] = v[n_schema_r.ID];
-                  //         schema.data[schema.NATIONALITY_NAME]!["value"] = v[n_schema_r.NAME];
-                  //         schema.data[schema.NATIONALITY_NOTE]!["value"] = v[n_schema_r.NOTE];
-                  //         setState(() {});
-                  //       },
-                  //       onCleared: () {
-                  //         e.value["value"] = null;
-                  //         schema.data[schema.NATIONALITY_NAME]!["value"] = null;
-                  //         schema.data[schema.NATIONALITY_NOTE]!["value"] = null;
-                  //         setState(() {});
-                  //       },
-                  //     ),
-                  //   );
-                  // }
-
                   // * lock
                   if (e.value["lock"] == true) {
                     String value = "";
@@ -99,10 +76,8 @@ class _Main_State extends State<Main_> {
                           prefixIcon: Icon(Icons.text_fields), //
                         ),
                         onChanged: (v) {
-                          if (v.isEmpty)
-                            e.value["value"] = " "; //
-                          else
-                            e.value["value"] = v.trim(); //
+                          if (v.isEmpty) e.value["value"] = " "; //
+                          if (v.isNotEmpty) e.value["value"] = v.trim(); //
                         },
                       ),
                     );
