@@ -2,11 +2,11 @@ import "package:flutter/material.dart";
 import "package:package_info_plus/package_info_plus.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/__config__.dart";
-import "package:speanmeas/__variable__.dart";
-import "package:speanmeas/theme/theme_data.dart";
+import "package:speanmeas/core/config.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/theme/theme_data.dart";
 
-import "page/auth/loading.dart" as loading;
+import "features/auth/loading.dart" as loading;
 
 void main() {
   runApp(

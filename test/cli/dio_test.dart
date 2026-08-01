@@ -1,6 +1,6 @@
 import "package:dio/dio.dart";
-import "package:speanmeas/__config__.dart";
-import "package:speanmeas/utility/dio.dart";
+import "package:speanmeas/core/config.dart";
+import "package:speanmeas/core/utility/dio.dart";
 
 void main() async {
   print("Testing Dio...");

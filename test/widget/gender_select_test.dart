@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:speanmeas/page/guest/widget/gender_select.dart';
+import 'package:speanmeas/features/database/guest/widget/gender_select.dart';
 
 void main() {
   testWidgets('gender selector can initialize without calling onChanged during build', (tester) async {
