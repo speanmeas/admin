@@ -14,7 +14,7 @@ import "package:speanmeas/core/theme/theme_data.dart";
 //   load_page(page);
 //
 
-Future<int?> page_select_show(
+Future<int?> show(
   BuildContext context, {
   required int page, //
   required int row_total,
@@ -187,7 +187,7 @@ class _Main_State extends State<Main_> {
             OutlinedButton(
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
               onPressed: () async {
-                final v = await page_select_show(context, page: page, row_total: row_total, limit: limit);
+                final v = await show(context, page: page, row_total: row_total, limit: limit);
                 if (v == null) return;
                 page = v;
                 setState(() {});

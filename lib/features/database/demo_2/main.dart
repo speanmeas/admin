@@ -15,6 +15,8 @@ import "form/read.dart" as read;
 import "form/update.dart" as update;
 import "form/delete.dart" as delete;
 
+import "widget/page_select.dart" as p_select;
+
 class _Main_State extends State<Main_> {
   //
 
@@ -132,60 +134,92 @@ class _Main_State extends State<Main_> {
       body: Column(
         children: [
           // menu
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Wrap(
-                  children: [
-                    // create
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.add), //
-                        label: Text("Create"),
-                        onPressed: on_create,
-                      ),
+          (() {
+            return Container(
+              height: 32, //
+              alignment: Alignment.topCenter,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Create
+                  Tooltip(
+                    message: "Create",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.add, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: on_create,
                     ),
+                  ),
 
-                    // read
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.visibility_outlined), //
-                        label: Text("Read"),
-                        onPressed: on_read,
-                      ),
+                  // Read
+                  Tooltip(
+                    message: "Read",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.visibility_outlined, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: on_read,
                     ),
+                  ),
 
-                    // update
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.edit_outlined), //
-                        label: Text("Update"),
-                        onPressed: on_update,
-                      ),
+                  // Update
+                  Tooltip(
+                    message: "Update",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.edit_outlined, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: on_update,
                     ),
+                  ),
 
-                    // delete
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.delete_outline, color: Colors.red), //
-                        label: Text("Delete", style: TextStyle(color: Colors.red)),
-                        onPressed: on_delete,
-                      ),
+                  Spacer(),
+                  // Delete
+                  Tooltip(
+                    message: "Delete",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.delete_outline, //
+                          size: 24,
+                          color: Colors.red,
+                        ), //
+                      ), //
+                      onTap: on_delete,
                     ),
-                  ],
-                ),
+                  ),
+
+                  SizedBox(width: 4),
+                ],
               ),
-            ],
-          ),
+            );
+          })(),
 
           // pluto table
           Expanded(
@@ -227,9 +261,8 @@ class _Main_State extends State<Main_> {
 
           // pagination
           (() {
-            double HEIGHT = 32;
             return Container(
-              height: HEIGHT, //
+              height: 32, //
               alignment: Alignment.topCenter,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -237,143 +270,183 @@ class _Main_State extends State<Main_> {
                 children: [
                   SizedBox(width: 8),
 
-                  // refresh
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.refresh, //
-                        size: 24,
-                        color: Colors.blue,
+                  // filter
+                  Tooltip(
+                    message: is_filter ? "Hide Filter" : "Show Filter",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
                       ), //
-                    ), //
-                    onTap: on_refresh,
+                      onTap: () {
+                        is_filter = !is_filter;
+                        state_manager?.setShowColumnFilter(is_filter);
+                        setState(() {});
+                      },
+                    ),
                   ),
 
-                  // filter
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
-                        size: 24,
-                        color: Colors.blue,
+                  // search
+                  Tooltip(
+                    message: "Search",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.search, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
                       ), //
-                    ), //
-                    onTap: () {
-                      is_filter = !is_filter;
-                      state_manager?.setShowColumnFilter(is_filter);
-                      setState(() {});
-                    },
+                      onTap: () {
+                        snackbar_show(context: context, message: "Development", color: Colors.black);
+                      },
+                    ),
                   ),
 
                   Spacer(),
 
                   // * ត្រលប់ទៅទំព័រដំបូង
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.first_page, //
-                        size: 24,
-                        color: Colors.blue,
+                  Tooltip(
+                    message: "First Page",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.first_page, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
                       ), //
-                    ), //
-                    onTap: () {
-                      if (page == 1) return;
-                      page = 1;
-                      load_page(page);
-                    },
+                      onTap: () {
+                        if (page == 1) return;
+                        page = 1;
+                        load_page(page);
+                      },
+                    ),
                   ),
 
-                  SizedBox(width: 4),
-
-                  //
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.navigate_before, //
-                        size: 24,
-                        color: Colors.blue,
+                  // previous page
+                  Tooltip(
+                    message: "Previous Page",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.navigate_before, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
                       ), //
-                    ), //
-                    onTap: () {
-                      if (page == 1) return;
-                      page = page - 1;
-                      load_page(page);
-                    },
+                      onTap: () {
+                        if (page == 1) return;
+                        page = page - 1;
+                        load_page(page);
+                      },
+                    ),
                   ),
 
-                  SizedBox(width: 4),
-
-                  //
-                  InkWell(
-                    child: Container(
-                      height: HEIGHT,
-                      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "$page / ${(row_total / LIMIT).floor() + 1} Pages", //
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
+                  // select page
+                  Tooltip(
+                    message: "Select Page",
+                    child: InkWell(
+                      child: Container(
+                        height: 32,
+                        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "$page / ${(row_total / LIMIT).floor() + 1}", //
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
+                        ), //
                       ), //
-                    ), //
-                    onTap: () async {
-                      final v = await select_page();
-                      if (v == null) return;
-                      page = v;
-                      load_page(page);
-                    }, //
+                      onTap: () async {
+                        final v = await p_select.show(
+                          context, //
+                          page: page,
+                          row_total: row_total,
+                          limit: LIMIT,
+                        );
+                        if (v == null) return;
+                        page = v;
+                        load_page(page);
+                      }, //
+                    ),
                   ),
 
-                  SizedBox(width: 4),
-
-                  //
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.navigate_next, //
-                        size: 24,
-                        color: Colors.blue,
+                  // next page
+                  Tooltip(
+                    message: "Next Page",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.navigate_next, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
                       ), //
-                    ), //
-                    onTap: () {
-                      if (page == (row_total / LIMIT).floor() + 1) return;
-                      page = page + 1;
-                      load_page(page);
-                    },
+                      onTap: () {
+                        if (page == (row_total / LIMIT).floor() + 1) return;
+                        page = page + 1;
+                        load_page(page);
+                      },
+                    ),
                   ),
 
-                  SizedBox(width: 4),
-
-                  //
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.last_page, //
-                        size: 24,
-                        color: Colors.blue,
+                  // last page
+                  Tooltip(
+                    message: "Last Page",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.last_page, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
                       ), //
-                    ), //
-                    onTap: () {
-                      if (page == (row_total / LIMIT).floor() + 1) return;
-                      page = (row_total / LIMIT).floor() + 1;
-                      load_page(page);
-                    },
+                      onTap: () {
+                        if (page == (row_total / LIMIT).floor() + 1) return;
+                        page = (row_total / LIMIT).floor() + 1;
+                        load_page(page);
+                      },
+                    ),
+                  ),
+
+                  Spacer(),
+
+                  // refresh
+                  Tooltip(
+                    message: "Refresh",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.refresh, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: on_refresh,
+                    ),
                   ),
 
                   SizedBox(width: 8),
@@ -571,166 +644,6 @@ class _Main_State extends State<Main_> {
     }
 
     return "";
-  }
-
-  Future<int?> select_page() async {
-    const ITEM_HEIGHT = 38.0;
-    final total_pages = (row_total / LIMIT).floor() + 1;
-    final controller = ScrollController(
-      initialScrollOffset: ((page - 1) * ITEM_HEIGHT).clamp(0.0, double.infinity),
-    );
-    final input_controller = TextEditingController();
-
-    final result = await showDialog<int>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-          titlePadding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
-          contentPadding: EdgeInsets.zero,
-          title: Row(
-            children: [
-              const Text(
-                "Select Page", //
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
-                  border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
-                ),
-                child: Text(
-                  "$total_pages Pages ($row_total rows)", //
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.blue),
-                ),
-              ),
-              const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.close, size: 20),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-          content: SizedBox(
-            width: 360,
-            height: 520,
-            child: Column(
-              children: [
-                // Quick jump input
-                Container(
-                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: SizedBox(
-                          height: 34,
-                          child: TextField(
-                            controller: input_controller,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                            decoration: const InputDecoration(
-                              hintText: "Enter page...",
-                              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.zero),
-                              isDense: true,
-                            ),
-                            onSubmitted: (v) {
-                              final p = int.tryParse(v);
-                              if (p != null && p >= 1 && p <= total_pages) {
-                                Navigator.pop(context, p);
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      SizedBox(
-                        height: 34,
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            foregroundColor: Colors.blue,
-                          ),
-                          onPressed: () {
-                            final p = int.tryParse(input_controller.text);
-                            if (p != null && p >= 1 && p <= total_pages) {
-                              Navigator.pop(context, p);
-                            }
-                          },
-                          child: const Text("Go"),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(height: 1),
-
-                // Page list
-                Expanded(
-                  child: ListView.builder(
-                    controller: controller,
-                    itemExtent: ITEM_HEIGHT,
-                    itemCount: total_pages,
-                    padding: EdgeInsets.zero,
-                    itemBuilder: (context, index) {
-                      final p = index + 1;
-                      final is_current = p == page;
-                      final start_item = (p - 1) * LIMIT + 1;
-                      final end_item = p * LIMIT > row_total ? row_total : p * LIMIT;
-
-                      return InkWell(
-                        hoverColor: Colors.blue.withValues(alpha: 0.05),
-                        onTap: () => Navigator.pop(context, p),
-                        child: Container(
-                          height: ITEM_HEIGHT,
-                          decoration: BoxDecoration(
-                            color: is_current ? Colors.blue.withValues(alpha: 0.08) : null,
-                            border: Border(
-                              top: const BorderSide(color: Colors.black12),
-                              left: is_current ? const BorderSide(color: Colors.blue, width: 3) : BorderSide.none,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              const SizedBox(width: 12),
-                              Text(
-                                "Page $p",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: is_current ? FontWeight.bold : FontWeight.normal,
-                                  color: is_current ? Colors.blue : Colors.black87,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                "(#$start_item - #$end_item)",
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: is_current ? Colors.blue.shade700 : Colors.grey.shade600,
-                                ),
-                              ),
-                              const Spacer(),
-                              if (is_current) const Icon(Icons.check, size: 18, color: Colors.blue),
-                              const SizedBox(width: 12),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-    return result;
   }
 }
 

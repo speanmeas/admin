@@ -15,7 +15,7 @@ import "form/read.dart" as read;
 import "form/update.dart" as update;
 import "form/delete.dart" as delete;
 
-import "widget/page_select.dart";
+import "widget/page_select.dart" as p_select;
 
 class _Main_State extends State<Main_> {
   //
@@ -307,7 +307,7 @@ class _Main_State extends State<Main_> {
                         ), //
                       ), //
                       onTap: () {
-                        print("Search is not implemented yet.");
+                        snackbar_show(context: context, message: "Development", color: Colors.black);
                       },
                     ),
                   ),
@@ -372,7 +372,12 @@ class _Main_State extends State<Main_> {
                         ), //
                       ), //
                       onTap: () async {
-                        final v = await page_select_show(context, page: page, row_total: row_total, limit: LIMIT);
+                        final v = await p_select.show(
+                          context, //
+                          page: page,
+                          row_total: row_total,
+                          limit: LIMIT,
+                        );
                         if (v == null) return;
                         page = v;
                         load_page(page);
