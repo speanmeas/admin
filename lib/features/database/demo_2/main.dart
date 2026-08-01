@@ -53,7 +53,6 @@ class _Main_State extends State<Main_> {
   }
 
   //
-  //
   void on_refresh() async {
     try {
       //
@@ -69,6 +68,8 @@ class _Main_State extends State<Main_> {
 
       //
       load_page(page);
+
+      snackbar.view(context: context, message: "Refresh completed.", color: Colors.green);
 
       //
     } catch (e) {
@@ -195,7 +196,6 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  Spacer(),
                   // Delete
                   Tooltip(
                     message: "Delete",
@@ -214,11 +214,79 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  SizedBox(width: 4),
+                  Spacer(),
+
+                  // filter
+                  Tooltip(
+                    message: is_filter ? "Hide Filter" : "Show Filter",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: () {
+                        is_filter = !is_filter;
+                        state_manager?.setShowColumnFilter(is_filter);
+
+                        // * លុប filter ពេលលាក់
+                        if (!is_filter) {
+                          state_manager?.setFilterWithFilterRows([]);
+                        }
+
+                        setState(() {});
+                      },
+                    ),
+                  ),
+
+                  // search
+                  Tooltip(
+                    message: "Search",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.search, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: () {
+                        snackbar.view(context: context, message: "Development", color: Colors.black);
+                      },
+                    ),
+                  ),
+
+                  // refresh
+                  Tooltip(
+                    message: "Refresh",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.refresh, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: on_refresh,
+                    ),
+                  ),
                 ],
               ),
             );
           })(),
+
+          if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
           // pluto table
           Expanded(
@@ -252,13 +320,12 @@ class _Main_State extends State<Main_> {
               ),
               onLoaded: (event) {
                 state_manager = event.stateManager;
+                state_manager?.addListener(() => setState(() {}));
               },
             ),
           ),
 
-          if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
-
-          // pagination
+          // footer
           (() {
             return Container(
               height: 32, //
@@ -267,48 +334,15 @@ class _Main_State extends State<Main_> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(width: 8),
-
-                  // filter
-                  Tooltip(
-                    message: is_filter ? "Hide Filter" : "Show Filter",
-                    child: InkWell(
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        alignment: Alignment.center,
-                        child: Icon(
-                          is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
-                          size: 24,
-                          color: Colors.blue,
-                        ), //
-                      ), //
-                      onTap: () {
-                        is_filter = !is_filter;
-                        state_manager?.setShowColumnFilter(is_filter);
-                        setState(() {});
-                      },
-                    ),
-                  ),
-
-                  // search
-                  Tooltip(
-                    message: "Search",
-                    child: InkWell(
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        alignment: Alignment.center,
-                        child: Icon(
-                          Icons.search, //
-                          size: 24,
-                          color: Colors.blue,
-                        ), //
-                      ), //
-                      onTap: () {
-                        snackbar.view(context: context, message: "Development", color: Colors.black);
-                      },
-                    ),
+                  // total row
+                  Container(
+                    height: 32,
+                    padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Total: ${state_manager?.rows.length}", //
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+                    ), //
                   ),
 
                   Spacer(),
@@ -427,28 +461,6 @@ class _Main_State extends State<Main_> {
                       },
                     ),
                   ),
-
-                  Spacer(),
-
-                  // refresh
-                  Tooltip(
-                    message: "Refresh",
-                    child: InkWell(
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        alignment: Alignment.center,
-                        child: Icon(
-                          Icons.refresh, //
-                          size: 24,
-                          color: Colors.blue,
-                        ), //
-                      ), //
-                      onTap: on_refresh,
-                    ),
-                  ),
-
-                  SizedBox(width: 8),
                 ],
               ),
             );

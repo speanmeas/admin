@@ -1,4 +1,3 @@
-import "package:dio/dio.dart";
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
@@ -300,11 +299,11 @@ class _Main_State extends State<Main_> {
     try {
       await dio.post(
         "$PATH/update_field",
-        data: FormData.fromMap({
+        data: {
           "_id": schema.data["_id"]!["value"], //
           "key": key, //
           "value": null, //
-        }),
+        },
       );
     } catch (e) {
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
@@ -318,7 +317,10 @@ class _Main_State extends State<Main_> {
       for (var e in schema.data.entries) payload[e.key] = e.value["value"];
 
       //
-      final r = await dio.post("$PATH/update", data: FormData.fromMap({...payload}));
+      final r = await dio.post(
+        "$PATH/update", //
+        data: {...payload},
+      );
 
       //
       Navigator.pop(context, r.data);
