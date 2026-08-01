@@ -28,6 +28,8 @@ class _Main_State extends State<Main_> {
   PlutoGridStateManager? state_manager;
   int load_request_id = 0;
 
+  int get total_pages => row_total == 0 ? 1 : (row_total + LIMIT - 1) ~/ LIMIT;
+
   @override
   void initState() {
     super.initState();
@@ -65,7 +67,7 @@ class _Main_State extends State<Main_> {
       row_total = int.parse(r.data.toString());
 
       //
-      if (page > (row_total / LIMIT).floor() + 1) page = (row_total / LIMIT).floor() + 1;
+      if (page > total_pages) page = total_pages;
       if (page < 1) page = 1;
 
       //
@@ -404,7 +406,7 @@ class _Main_State extends State<Main_> {
                         padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                         alignment: Alignment.center,
                         child: Text(
-                          "$page / ${(row_total / LIMIT).floor() + 1}", //
+                          "$page / $total_pages", //
                           style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
                         ), //
                       ), //
@@ -437,7 +439,7 @@ class _Main_State extends State<Main_> {
                         ), //
                       ), //
                       onTap: () {
-                        if (page == (row_total / LIMIT).floor() + 1) return;
+                        if (page == total_pages) return;
                         page = page + 1;
                         load_page(page);
                       },
@@ -459,8 +461,8 @@ class _Main_State extends State<Main_> {
                         ), //
                       ), //
                       onTap: () {
-                        if (page == (row_total / LIMIT).floor() + 1) return;
-                        page = (row_total / LIMIT).floor() + 1;
+                        if (page == total_pages) return;
+                        page = total_pages;
                         load_page(page);
                       },
                     ),
