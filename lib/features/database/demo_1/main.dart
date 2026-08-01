@@ -15,7 +15,7 @@ import "form/read.dart" as read;
 import "form/update.dart" as update;
 import "form/delete.dart" as delete;
 
-import "widget/select_page.dart";
+import "widget/page_select.dart";
 
 class _Main_State extends State<Main_> {
   //
@@ -363,7 +363,7 @@ class _Main_State extends State<Main_> {
                         ), //
                       ), //
                       onTap: () async {
-                        final v = await select_page_show(context, page: page, row_total: row_total, limit: LIMIT);
+                        final v = await page_select_show(context, page: page, row_total: row_total, limit: LIMIT);
                         if (v == null) return;
                         page = v;
                         load_page(page);
