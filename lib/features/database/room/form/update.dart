@@ -16,7 +16,6 @@ import "../widget/status_select.dart" as s_select;
 import "../widget/kind_select.dart" as k_select;
 
 class _Main_State extends State<Main_> {
-  // final c_nationality = TextEditingController();
   final c_status = TextEditingController();
   final c_kind = TextEditingController();
 
@@ -67,7 +66,6 @@ class _Main_State extends State<Main_> {
                         },
                         onCleared: () {
                           e.value["value"] = null;
-                          clear_field(e.key);
                           setState(() {});
                         },
                       ),
@@ -87,7 +85,6 @@ class _Main_State extends State<Main_> {
                         },
                         onCleared: () {
                           e.value["value"] = null;
-                          clear_field(e.key);
                           setState(() {});
                         },
                       ),
@@ -97,7 +94,8 @@ class _Main_State extends State<Main_> {
                   // * lock
                   if (e.value["lock"] == true) {
                     String value = "";
-                    if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
+                    if (e.value["value"] != null) //
+                      value = e.value["value"].toString();
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -111,35 +109,25 @@ class _Main_State extends State<Main_> {
                   // * អក្សរ
                   if (e.value["type"] == "string") {
                     String value = "";
-                    if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
-                    if (e.key.contains("password")) value = "";
+                    if (e.value["value"] != null) //
+                      value = e.value["value"].toString();
+                    if (e.key == "password") //
+                      value = "";
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                       child: TextField(
                         controller: TextEditingController(text: value.trim()),
-                        maxLines: e.key.contains("note") ? 4 : 1,
+                        maxLines: e.key == "note" ? 4 : 1,
                         decoration: InputDecoration(
-                          hintText: e.key.contains("password") ? "New Password" : null, //
+                          hintText: e.key == "password" ? "New Password" : null, //
                           labelText: e.value["title"] + ":", //
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           prefixIcon: Icon(Icons.text_fields), //
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child: IconButton(
-                              icon: Icon(Icons.clear, color: Colors.red),
-                              onPressed: () async {
-                                if (!e.key.contains("password")) clear_field(e.key);
-                                e.value["value"] = "";
-                                setState(() {});
-                              },
-                            ), //
-                          ),
                         ),
                         onChanged: (v) {
-                          if (v.isEmpty) e.value["value"] = " ";
-                          if (v.isNotEmpty) e.value["value"] = v.trim();
+                          e.value["value"] = v.trim();
                         },
                       ),
                     );
@@ -148,7 +136,8 @@ class _Main_State extends State<Main_> {
                   // * លេខ
                   if (e.value["type"] == "number") {
                     String value = "";
-                    if (e.value["value"] != null && e.value["value"] != 0) value = e.value["value"].toString();
+                    if (e.value["value"] != null && e.value["value"] != 0) //
+                      value = e.value["value"].toString();
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -159,39 +148,21 @@ class _Main_State extends State<Main_> {
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           prefixIcon: Icon(Icons.numbers), //
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child: IconButton(
-                              icon: Icon(Icons.clear, color: Colors.red),
-                              onPressed: () async {
-                                clear_field(e.key);
-                                e.value["value"] = "";
-                                setState(() {});
-                              },
-                            ), //
-                          ),
                         ),
                         keyboardType: TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
                         onChanged: (v) {
-                          if (v.isEmpty) e.value["value"] = 0;
-                          if (v.isNotEmpty) e.value["value"] = double.tryParse(v) ?? 0;
+                          e.value["value"] = double.tryParse(v) ?? 0;
                         },
                       ),
                     );
                   }
 
                   // * ថ្ងៃខែឆ្នាំ និង ម៉ោង
-                  // todo: clear date-time?
                   if (e.value["type"] == "date-time") {
-                    String value = "";
-                    if (e.value["value"] != null) {
-                      DateTime? tmp = DateTime.tryParse(e.value["value"].toString());
-                      if (tmp != null) value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
-                    }
-                    DateTime init = DateTime.now();
-                    if (DateTime.tryParse(value) != null) init = DateTime.tryParse(value)!;
-
+                    final tmp = DateTime.tryParse(e.value["value"]?.toString() ?? "");
+                    final value = tmp != null ? DateFormat(DATE_FORMAT).format(tmp.toLocal()) : "";
+                    final init = tmp ?? DateTime.now();
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -209,8 +180,7 @@ class _Main_State extends State<Main_> {
                             child: IconButton(
                               icon: Icon(Icons.clear, color: Colors.red),
                               onPressed: () async {
-                                clear_field(e.key);
-                                e.value["value"] = "";
+                                e.value["value"] = null;
                                 setState(() {});
                               },
                             ), //
@@ -233,7 +203,7 @@ class _Main_State extends State<Main_> {
                       if (e.value["value"] == true) value = "Yes";
                       if (e.value["value"] == false) value = "No";
                     }
-                    final controller_search = TextEditingController(text: value);
+                    final controller_search = TextEditingController(text: value ?? "");
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -254,8 +224,7 @@ class _Main_State extends State<Main_> {
                                 child: IconButton(
                                   icon: Icon(Icons.clear, color: Colors.red),
                                   onPressed: () async {
-                                    clear_field(e.key);
-                                    e.value["value"] = "";
+                                    e.value["value"] = null;
                                     setState(() {});
                                   },
                                 ), //
@@ -295,26 +264,12 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  void clear_field(String key) async {
-    try {
-      await dio.post(
-        "$PATH/update_field",
-        data: {
-          "_id": schema.data["_id"]!["value"], //
-          "key": key, //
-          "value": null, //
-        },
-      );
-    } catch (e) {
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
-    }
-  }
-
   void on_update() async {
     try {
       // * រៀបចំ payload
       Map<String, dynamic> payload = {};
       for (var e in schema.data.entries) payload[e.key] = e.value["value"];
+      print(payload);
 
       //
       final r = await dio.post(
@@ -345,7 +300,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      title: HEADER, //
+      title: "Development", //
       theme: Theme_Data(), //
       home: Main_(),
       debugShowCheckedModeBanner: false,

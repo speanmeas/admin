@@ -1,5 +1,6 @@
-import "package:flutter/material.dart";
+import "package:flutter/foundation.dart";
 import "package:intl/intl.dart";
+import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
@@ -18,7 +19,6 @@ import "widget/page_select.dart" as p_select;
 
 class _Main_State extends State<Main_> {
   //
-
   int page = 1;
   int row_total = 0;
 
@@ -26,6 +26,19 @@ class _Main_State extends State<Main_> {
   bool is_filter = false;
   PlutoGridStateManager? state_manager;
   int load_request_id = 0;
+
+  int get total_pages => row_total == 0 ? 1 : (row_total + LIMIT - 1) ~/ LIMIT;
+
+  void on_grid_changed() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    state_manager?.removeListener(on_grid_changed);
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -64,11 +77,13 @@ class _Main_State extends State<Main_> {
       row_total = int.parse(r.data.toString());
 
       //
-      if (page > (row_total / LIMIT).floor() + 1) page = (row_total / LIMIT).floor() + 1;
+      if (page > total_pages) page = total_pages;
       if (page < 1) page = 1;
 
       //
       load_page(page);
+
+      snackbar.view(context: context, message: "Refresh completed.", color: Colors.green);
 
       //
     } catch (e) {
@@ -84,6 +99,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       is_loading = true;
+      if (!mounted) return;
       setState(() {});
 
       //
@@ -99,7 +115,7 @@ class _Main_State extends State<Main_> {
       final data = List<Map<String, dynamic>>.from(r.data);
 
       // Ignore a response from an earlier page request.
-      if (request_id != load_request_id) return;
+      if (!mounted || request_id != load_request_id) return;
 
       // keep sort + filter
       final sorted_column = state_manager?.getSortedColumn;
@@ -127,13 +143,14 @@ class _Main_State extends State<Main_> {
 
       //
       is_loading = false;
+      if (!mounted) return;
       setState(() {});
     } catch (e) {
-      if (request_id == load_request_id) {
+      if (request_id == load_request_id && mounted) {
         is_loading = false;
         setState(() {});
       }
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      if (mounted) snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -205,7 +222,6 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  Spacer(),
                   // Delete
                   Tooltip(
                     message: "Delete",
@@ -224,11 +240,80 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  SizedBox(width: 4),
+                  Spacer(),
+
+                  // filter
+                  Tooltip(
+                    message: is_filter ? "Hide Filter" : "Show Filter",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: () {
+                        is_filter = !is_filter;
+                        state_manager?.setShowColumnFilter(is_filter);
+
+                        // * លុប filter ពេលលាក់
+                        if (!is_filter) {
+                          state_manager?.setFilterWithFilterRows([]);
+                        }
+
+                        setState(() {});
+                      },
+                    ),
+                  ),
+
+                  // search
+                  if (kDebugMode)
+                    Tooltip(
+                      message: "Search",
+                      child: InkWell(
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          alignment: Alignment.center,
+                          child: Icon(
+                            Icons.search, //
+                            size: 24,
+                            color: Colors.blue,
+                          ), //
+                        ), //
+                        onTap: () {
+                          snackbar.view(context: context, message: "Development", color: Colors.black);
+                        },
+                      ),
+                    ),
+
+                  // refresh
+                  Tooltip(
+                    message: "Refresh",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.refresh, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: on_refresh,
+                    ),
+                  ),
                 ],
               ),
             );
           })(),
+
+          if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
           // pluto table
           Expanded(
@@ -262,13 +347,12 @@ class _Main_State extends State<Main_> {
               ),
               onLoaded: (event) {
                 state_manager = event.stateManager;
+                state_manager?.addListener(on_grid_changed);
               },
             ),
           ),
 
-          if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
-
-          // pagination
+          // footer
           (() {
             return Container(
               height: 32, //
@@ -277,49 +361,7 @@ class _Main_State extends State<Main_> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(width: 8),
-
-                  // filter
-                  Tooltip(
-                    message: is_filter ? "Hide Filter" : "Show Filter",
-                    child: InkWell(
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        alignment: Alignment.center,
-                        child: Icon(
-                          is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
-                          size: 24,
-                          color: Colors.blue,
-                        ), //
-                      ), //
-                      onTap: () {
-                        is_filter = !is_filter;
-                        state_manager?.setShowColumnFilter(is_filter);
-                        setState(() {});
-                      },
-                    ),
-                  ),
-
-                  // search
-                  Tooltip(
-                    message: "Search",
-                    child: InkWell(
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        alignment: Alignment.center,
-                        child: Icon(
-                          Icons.search, //
-                          size: 24,
-                          color: Colors.blue,
-                        ), //
-                      ), //
-                      onTap: () {
-                        snackbar.view(context: context, message: "Development", color: Colors.black);
-                      },
-                    ),
-                  ),
+                  SizedBox(width: 80),
 
                   Spacer(),
 
@@ -376,7 +418,7 @@ class _Main_State extends State<Main_> {
                         padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                         alignment: Alignment.center,
                         child: Text(
-                          "$page / ${(row_total / LIMIT).floor() + 1}", //
+                          "$page / $total_pages", //
                           style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
                         ), //
                       ), //
@@ -409,7 +451,7 @@ class _Main_State extends State<Main_> {
                         ), //
                       ), //
                       onTap: () {
-                        if (page == (row_total / LIMIT).floor() + 1) return;
+                        if (page == total_pages) return;
                         page = page + 1;
                         load_page(page);
                       },
@@ -431,8 +473,8 @@ class _Main_State extends State<Main_> {
                         ), //
                       ), //
                       onTap: () {
-                        if (page == (row_total / LIMIT).floor() + 1) return;
-                        page = (row_total / LIMIT).floor() + 1;
+                        if (page == total_pages) return;
+                        page = total_pages;
                         load_page(page);
                       },
                     ),
@@ -440,25 +482,18 @@ class _Main_State extends State<Main_> {
 
                   Spacer(),
 
-                  // refresh
-                  Tooltip(
-                    message: "Refresh",
-                    child: InkWell(
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        alignment: Alignment.center,
-                        child: Icon(
-                          Icons.refresh, //
-                          size: 24,
-                          color: Colors.blue,
-                        ), //
-                      ), //
-                      onTap: on_refresh,
-                    ),
+                  // total row
+                  Container(
+                    height: 32,
+                    padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "${state_manager?.rows.length} Rows", //
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+                    ), //
                   ),
 
-                  SizedBox(width: 8),
+                  SizedBox(width: 4),
                 ],
               ),
             );
@@ -468,6 +503,7 @@ class _Main_State extends State<Main_> {
     );
   }
 
+  //
   void on_create() async {
     try {
       //
@@ -495,6 +531,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_read() async {
     try {
       //
@@ -521,6 +558,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_update() async {
     try {
       //
@@ -551,6 +589,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_delete() async {
     try {
       //
@@ -580,6 +619,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   dynamic cell_to_data({
     dynamic data, //
     String? type, //
@@ -598,14 +638,14 @@ class _Main_State extends State<Main_> {
 
     //
     if (type == "number") {
-      if (data == 0) return null;
-      if (data != 0) return double.tryParse(data.toString());
+      if (data == "") return null;
+      if (data != "") return double.tryParse(data.toString());
     }
 
     //
     if (type == "date-time") {
       if (data == "") return null;
-      if (data != "") return DateTime.parse(data.toString());
+      if (data != "") return DateTime.tryParse(data.toString())?.toIso8601String();
     }
 
     if (type == "boolean") {
@@ -617,36 +657,31 @@ class _Main_State extends State<Main_> {
     return null;
   }
 
+  //
   String data_to_cell({
     dynamic data, //
     String? type, //
   }) {
     //
     if (type == "id") {
-      if (data != null) {
-        return data.toString();
-      }
+      if (data != null) return data.toString();
     }
 
     //
     if (type == "string") {
-      if (data != null) {
-        return data.toString();
-      }
+      if (data != null) return data.toString();
     }
 
     //
     if (type == "number") {
-      if (data != null) {
-        return data.toString();
-      }
+      if (data != null) return data.toString();
     }
 
     //
     if (type == "date-time") {
       if (data != null) {
-        final dt = DateTime.tryParse(data.toString());
-        if (dt != null) return DateFormat(DATE_FORMAT).format(dt.toLocal());
+        final tmp = DateTime.tryParse(data.toString());
+        if (tmp != null) return DateFormat(DATE_FORMAT).format(tmp);
       }
     }
 
