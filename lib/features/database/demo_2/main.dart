@@ -19,7 +19,6 @@ import "widget/page_select.dart" as p_select;
 
 class _Main_State extends State<Main_> {
   //
-
   int page = 1;
   int row_total = 0;
 
@@ -29,6 +28,17 @@ class _Main_State extends State<Main_> {
   int load_request_id = 0;
 
   int get total_pages => row_total == 0 ? 1 : (row_total + LIMIT - 1) ~/ LIMIT;
+
+  void on_grid_changed() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    state_manager?.removeListener(on_grid_changed);
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -89,6 +99,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       is_loading = true;
+      if (!mounted) return;
       setState(() {});
 
       //
@@ -104,7 +115,7 @@ class _Main_State extends State<Main_> {
       final data = List<Map<String, dynamic>>.from(r.data);
 
       // Ignore a response from an earlier page request.
-      if (request_id != load_request_id) return;
+      if (!mounted || request_id != load_request_id) return;
 
       // keep sort + filter
       final sorted_column = state_manager?.getSortedColumn;
@@ -132,13 +143,14 @@ class _Main_State extends State<Main_> {
 
       //
       is_loading = false;
+      if (!mounted) return;
       setState(() {});
     } catch (e) {
-      if (request_id == load_request_id) {
+      if (request_id == load_request_id && mounted) {
         is_loading = false;
         setState(() {});
       }
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      if (mounted) snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -335,7 +347,7 @@ class _Main_State extends State<Main_> {
               ),
               onLoaded: (event) {
                 state_manager = event.stateManager;
-                state_manager?.addListener(() => setState(() {}));
+                state_manager?.addListener(on_grid_changed);
               },
             ),
           ),
