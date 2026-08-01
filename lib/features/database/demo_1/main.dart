@@ -15,6 +15,8 @@ import "form/read.dart" as read;
 import "form/update.dart" as update;
 import "form/delete.dart" as delete;
 
+import "widget/select_page.dart";
+
 class _Main_State extends State<Main_> {
   //
 
@@ -361,7 +363,7 @@ class _Main_State extends State<Main_> {
                         ), //
                       ), //
                       onTap: () async {
-                        final v = await select_page();
+                        final v = await select_page_show(context, page: page, row_total: row_total, limit: LIMIT);
                         if (v == null) return;
                         page = v;
                         load_page(page);
@@ -612,59 +614,6 @@ class _Main_State extends State<Main_> {
     }
 
     return "";
-  }
-
-  Future<int?> select_page() async {
-    const ITEM_HEIGHT = 32.0;
-    final controller = ScrollController(initialScrollOffset: (page - 1) * ITEM_HEIGHT);
-
-    final result = await showDialog<int>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          // title: Center(child: Text("Select Page")),
-          titlePadding: EdgeInsets.fromLTRB(4, 4, 4, 4),
-          contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-          content: SizedBox(
-            width: 300,
-            height: 600,
-            child: ListView.builder(
-              controller: controller,
-              itemExtent: ITEM_HEIGHT,
-              itemCount: (row_total / LIMIT).floor() + 1,
-              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-              itemBuilder: (context, index) {
-                final p = index + 1;
-                return InkWell(
-                  child: Container(
-                    height: ITEM_HEIGHT,
-                    decoration: BoxDecoration(
-                      border: Border(top: BorderSide(color: Colors.black12)),
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 8),
-
-                        Text("Page $p", style: TextStyle(fontWeight: FontWeight.bold)), //
-
-                        Spacer(),
-
-                        if (p == page) Icon(Icons.check, color: Colors.blue),
-
-                        SizedBox(width: 16),
-                      ],
-                    ), //
-                  ), //
-                  onTap: () => Navigator.pop(context, p),
-                );
-              },
-            ),
-          ),
-          // actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel"))],
-        );
-      },
-    );
-    return result;
   }
 }
 
