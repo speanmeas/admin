@@ -161,6 +161,16 @@ class _Main_State extends State<Main_> {
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           prefixIcon: Icon(Icons.calendar_month_outlined), //
+                          suffixIcon: Padding(
+                            padding: EdgeInsets.only(right: 4),
+                            child: IconButton(
+                              icon: Icon(Icons.clear, color: Colors.red),
+                              onPressed: () async {
+                                e.value["value"] = null;
+                                setState(() {});
+                              },
+                            ), //
+                          ),
                         ),
                         onTap: () async {
                           DateTime? datetime = await datetime_picker(context, initial_datetime: init);
@@ -179,7 +189,7 @@ class _Main_State extends State<Main_> {
                       if (e.value["value"] == true) value = "Yes";
                       if (e.value["value"] == false) value = "No";
                     }
-                    final controller_search = TextEditingController(text: value);
+                    final controller_search = TextEditingController(text: value ?? "");
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -195,6 +205,16 @@ class _Main_State extends State<Main_> {
                               labelStyle: TextStyle(fontWeight: FontWeight.bold),
                               floatingLabelBehavior: FloatingLabelBehavior.always,
                               prefixIcon: Icon(Icons.toggle_on_outlined), //
+                              suffixIcon: Padding(
+                                padding: EdgeInsets.only(right: 4),
+                                child: IconButton(
+                                  icon: Icon(Icons.clear, color: Colors.red),
+                                  onPressed: () async {
+                                    e.value["value"] = null;
+                                    setState(() {});
+                                  },
+                                ), //
+                              ),
                             ),
                           );
                         },

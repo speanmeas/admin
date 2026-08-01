@@ -234,6 +234,44 @@ class _Main_State extends State<Main_> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  SizedBox(width: 8),
+
+                  // refresh
+                  InkWell(
+                    child: Container(
+                      width: 32,
+                      height: HEIGHT,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.refresh, //
+                        size: 24,
+                        color: Colors.blue,
+                      ), //
+                    ), //
+                    onTap: on_refresh,
+                  ),
+
+                  // filter
+                  InkWell(
+                    child: Container(
+                      width: 32,
+                      height: HEIGHT,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
+                        size: 24,
+                        color: Colors.blue,
+                      ), //
+                    ), //
+                    onTap: () {
+                      is_filter = !is_filter;
+                      state_manager?.setShowColumnFilter(is_filter);
+                      setState(() {});
+                    },
+                  ),
+
+                  Spacer(),
+
                   // * ត្រលប់ទៅទំព័រដំបូង
                   InkWell(
                     child: Container(
@@ -338,40 +376,6 @@ class _Main_State extends State<Main_> {
                   ),
 
                   SizedBox(width: 8),
-
-                  // refresh
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.refresh, //
-                        size: 24,
-                        color: Colors.blue,
-                      ), //
-                    ), //
-                    onTap: on_refresh,
-                  ),
-
-                  // filter
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
-                        size: 24,
-                        color: Colors.blue,
-                      ), //
-                    ), //
-                    onTap: () {
-                      is_filter = !is_filter;
-                      state_manager?.setShowColumnFilter(is_filter);
-                      setState(() {});
-                    },
-                  ),
                 ],
               ),
             );
