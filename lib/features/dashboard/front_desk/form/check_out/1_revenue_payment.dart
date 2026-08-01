@@ -4,7 +4,7 @@ import "package:intl/intl.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/widget/snackbar_show.dart";
+import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/features/auth/schema.g.dart" as u_schema;
 
 import "../../__config__.dart";
@@ -327,7 +327,7 @@ class _Main_State extends State<Main_> {
       init();
       //
     } catch (e) {
-      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 

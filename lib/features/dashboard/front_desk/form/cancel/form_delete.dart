@@ -5,7 +5,7 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/widget/snackbar_show.dart";
+import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 
 import "../../__config__.dart";
 
@@ -93,10 +93,10 @@ class _Main_State extends State<Main_> {
         .post("$PATH/data_delete", data: FormData.fromMap({"_id": widget.id}))
         .then((value) {
           Navigator.pop(context, true);
-          snackbar_show(context: context, message: "Success", color: Colors.green);
+          snackbar.view(context: context, message: "Success", color: Colors.green);
         })
         .catchError((e) {
-          snackbar_show(context: context, message: "Failed to delete room", color: Colors.red);
+          snackbar.view(context: context, message: "Failed to delete room", color: Colors.red);
         });
   }
 }

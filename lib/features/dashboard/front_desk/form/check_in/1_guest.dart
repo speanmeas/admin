@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/widget/snackbar_show.dart";
+import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
 
 import "../../schema.g.dart" as schema;
@@ -141,7 +141,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
-      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 }

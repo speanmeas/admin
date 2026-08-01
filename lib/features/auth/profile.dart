@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/utility/secure_storage.dart";
-import "package:speanmeas/core/widget/snackbar_show.dart";
+import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 
 import "form/full_name.dart" as f_full_name;
 import "form/phone_number.dart" as f_phone_number;
@@ -216,9 +216,9 @@ class _Main_State extends State<Main_> {
       Navigator.push(context, MaterialPageRoute(builder: (_) => sign_in.Main_()));
 
       //
-      snackbar_show(context: context, message: "Success Sign-Out", color: Colors.green);
+      snackbar.view(context: context, message: "Success Sign-Out", color: Colors.green);
     } catch (e) {
-      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 }

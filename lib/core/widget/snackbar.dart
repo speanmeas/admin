@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-void snackbar_show({
+void view({
   required BuildContext context, //
   required String message, //
   required Color color, //

@@ -4,7 +4,7 @@ import "package:dio/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/utility/secure_storage.dart";
-import "package:speanmeas/core/widget/snackbar_show.dart";
+import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/core/layout/layout.dart" as layout;
 
 import "sign_in.dart" as sign_in;
@@ -56,7 +56,7 @@ class _Main_State extends State<Main_> {
       dio.options.headers["Authorization"] = "Bearer $access_token";
 
       //
-      snackbar_show(context: context, message: "Success Sign-In", color: Colors.green);
+      snackbar.view(context: context, message: "Success Sign-In", color: Colors.green);
 
       //
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
@@ -64,7 +64,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e) {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => sign_in.Main_()));
-      snackbar_show(context: context, message: e.toString(), color: Colors.red);
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 }
