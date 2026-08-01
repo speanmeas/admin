@@ -134,60 +134,92 @@ class _Main_State extends State<Main_> {
       body: Column(
         children: [
           // menu
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Wrap(
-                  children: [
-                    // create
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.add), //
-                        label: Text("Create"),
-                        onPressed: on_create,
-                      ),
+          (() {
+            return Container(
+              height: 32, //
+              alignment: Alignment.topCenter,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Create
+                  Tooltip(
+                    message: "Create",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.add, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: on_create,
                     ),
+                  ),
 
-                    // read
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.visibility_outlined), //
-                        label: Text("Read"),
-                        onPressed: on_read,
-                      ),
+                  // Read
+                  Tooltip(
+                    message: "Read",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.visibility_outlined, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: on_read,
                     ),
+                  ),
 
-                    // update
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.edit_outlined), //
-                        label: Text("Update"),
-                        onPressed: on_update,
-                      ),
+                  // Update
+                  Tooltip(
+                    message: "Update",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.edit_outlined, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: on_update,
                     ),
+                  ),
 
-                    // delete
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.delete_outline, color: Colors.red), //
-                        label: Text("Delete", style: TextStyle(color: Colors.red)),
-                        onPressed: on_delete,
-                      ),
+                  Spacer(),
+                  // Delete
+                  Tooltip(
+                    message: "Delete",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.delete_outline, //
+                          size: 24,
+                          color: Colors.red,
+                        ), //
+                      ), //
+                      onTap: on_delete,
                     ),
-                  ],
-                ),
+                  ),
+
+                  SizedBox(width: 4),
+                ],
               ),
-            ],
-          ),
+            );
+          })(),
 
           // pluto table
           Expanded(
@@ -229,9 +261,8 @@ class _Main_State extends State<Main_> {
 
           // pagination
           (() {
-            double HEIGHT = 32;
             return Container(
-              height: HEIGHT, //
+              height: 32, //
               alignment: Alignment.topCenter,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -239,31 +270,13 @@ class _Main_State extends State<Main_> {
                 children: [
                   SizedBox(width: 8),
 
-                  // refresh
-                  Tooltip(
-                    message: "Refresh",
-                    child: InkWell(
-                      child: Container(
-                        width: 32,
-                        height: HEIGHT,
-                        alignment: Alignment.center,
-                        child: Icon(
-                          Icons.refresh, //
-                          size: 24,
-                          color: Colors.blue,
-                        ), //
-                      ), //
-                      onTap: on_refresh,
-                    ),
-                  ),
-
                   // filter
                   Tooltip(
                     message: is_filter ? "Hide Filter" : "Show Filter",
                     child: InkWell(
                       child: Container(
                         width: 32,
-                        height: HEIGHT,
+                        height: 32,
                         alignment: Alignment.center,
                         child: Icon(
                           is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
@@ -285,7 +298,7 @@ class _Main_State extends State<Main_> {
                     child: InkWell(
                       child: Container(
                         width: 32,
-                        height: HEIGHT,
+                        height: 32,
                         alignment: Alignment.center,
                         child: Icon(
                           Icons.search, //
@@ -307,7 +320,7 @@ class _Main_State extends State<Main_> {
                     child: InkWell(
                       child: Container(
                         width: 32,
-                        height: HEIGHT,
+                        height: 32,
                         alignment: Alignment.center,
                         child: Icon(
                           Icons.first_page, //
@@ -323,15 +336,13 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  SizedBox(width: 4),
-
                   // previous page
                   Tooltip(
                     message: "Previous Page",
                     child: InkWell(
                       child: Container(
                         width: 32,
-                        height: HEIGHT,
+                        height: 32,
                         alignment: Alignment.center,
                         child: Icon(
                           Icons.navigate_before, //
@@ -347,18 +358,16 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  SizedBox(width: 4),
-
                   // select page
                   Tooltip(
                     message: "Select Page",
                     child: InkWell(
                       child: Container(
-                        height: HEIGHT,
+                        height: 32,
                         padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                         alignment: Alignment.center,
                         child: Text(
-                          "$page / ${(row_total / LIMIT).floor() + 1} Pages", //
+                          "$page / ${(row_total / LIMIT).floor() + 1}", //
                           style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
                         ), //
                       ), //
@@ -371,15 +380,13 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  SizedBox(width: 4),
-
                   // next page
                   Tooltip(
                     message: "Next Page",
                     child: InkWell(
                       child: Container(
                         width: 32,
-                        height: HEIGHT,
+                        height: 32,
                         alignment: Alignment.center,
                         child: Icon(
                           Icons.navigate_next, //
@@ -395,15 +402,13 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  SizedBox(width: 4),
-
                   // last page
                   Tooltip(
                     message: "Last Page",
                     child: InkWell(
                       child: Container(
                         width: 32,
-                        height: HEIGHT,
+                        height: 32,
                         alignment: Alignment.center,
                         child: Icon(
                           Icons.last_page, //
@@ -416,6 +421,26 @@ class _Main_State extends State<Main_> {
                         page = (row_total / LIMIT).floor() + 1;
                         load_page(page);
                       },
+                    ),
+                  ),
+
+                  Spacer(),
+
+                  // refresh
+                  Tooltip(
+                    message: "Refresh",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.refresh, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: on_refresh,
                     ),
                   ),
 
