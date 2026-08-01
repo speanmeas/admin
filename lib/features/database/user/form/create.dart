@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:intl/intl.dart";
-import "package:dio/dio.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
@@ -50,7 +49,7 @@ class _Main_State extends State<Main_> {
             children: [
               for (var e in schema.data.entries)
                 (() {
-                  // * search nationality
+                  // * password input
                   if (e.key == schema.PASSWORD) {
                     return Container(
                       width: 600,
@@ -59,9 +58,11 @@ class _Main_State extends State<Main_> {
                         controller: c_password,
                         onChanged: (v) {
                           e.value["value"] = v;
+                          setState(() {});
                         },
                         onCleared: () {
                           e.value["value"] = null;
+                          setState(() {});
                         },
                       ),
                     );
@@ -96,22 +97,10 @@ class _Main_State extends State<Main_> {
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           prefixIcon: Icon(Icons.text_fields), //
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child: IconButton(
-                              icon: Icon(Icons.clear, color: Colors.red),
-                              onPressed: () async {
-                                e.value["value"] = "";
-                                setState(() {});
-                              },
-                            ), //
-                          ),
                         ),
                         onChanged: (v) {
-                          if (v.isEmpty)
-                            e.value["value"] = " "; //
-                          else
-                            e.value["value"] = v.trim(); //
+                          if (v.isEmpty) e.value["value"] = " "; //
+                          if (v.isNotEmpty) e.value["value"] = v.trim(); //
                         },
                       ),
                     );
@@ -133,16 +122,6 @@ class _Main_State extends State<Main_> {
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           prefixIcon: Icon(Icons.numbers), //
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child: IconButton(
-                              icon: Icon(Icons.clear, color: Colors.red),
-                              onPressed: () async {
-                                e.value["value"] = "";
-                                setState(() {});
-                              },
-                            ), //
-                          ),
                         ),
                         keyboardType: TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
@@ -185,7 +164,7 @@ class _Main_State extends State<Main_> {
                             child: IconButton(
                               icon: Icon(Icons.clear, color: Colors.red),
                               onPressed: () async {
-                                e.value["value"] = "";
+                                e.value["value"] = null;
                                 setState(() {});
                               },
                             ), //
@@ -208,7 +187,7 @@ class _Main_State extends State<Main_> {
                       if (e.value["value"] == true) value = "Yes";
                       if (e.value["value"] == false) value = "No";
                     }
-                    final controller_search = TextEditingController(text: value);
+                    final controller_search = TextEditingController(text: value ?? "");
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -229,7 +208,7 @@ class _Main_State extends State<Main_> {
                                 child: IconButton(
                                   icon: Icon(Icons.clear, color: Colors.red),
                                   onPressed: () async {
-                                    e.value["value"] = "";
+                                    e.value["value"] = null;
                                     setState(() {});
                                   },
                                 ), //
@@ -272,11 +251,14 @@ class _Main_State extends State<Main_> {
   void on_create() async {
     try {
       //
-      Map<String, dynamic> output = {};
-      for (var e in schema.data.entries) output[e.key] = e.value["value"];
+      Map<String, dynamic> payload = {};
+      for (var e in schema.data.entries) payload[e.key] = e.value["value"];
 
       // request
-      final r = await dio.post("$PATH/create", data: FormData.fromMap({...output}));
+      final r = await dio.post(
+        "$PATH/create", //
+        data: {...payload},
+      );
 
       //
       Navigator.pop(context, r.data);
@@ -292,7 +274,7 @@ class _Main_State extends State<Main_> {
 }
 
 class Main_ extends StatefulWidget {
-  const Main_({super.key});
+  Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
@@ -300,9 +282,9 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      title: HEADER, //
+      title: "Development", //
       theme: Theme_Data(), //
-      home: const Main_(),
+      home: Main_(),
       debugShowCheckedModeBanner: false,
     ),
   );

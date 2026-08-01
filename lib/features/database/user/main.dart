@@ -1,6 +1,6 @@
-import "package:flutter/material.dart";
-import "package:dio/dio.dart";
+import "package:flutter/foundation.dart";
 import "package:intl/intl.dart";
+import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
@@ -15,9 +15,10 @@ import "form/read.dart" as read;
 import "form/update.dart" as update;
 import "form/delete.dart" as delete;
 
+import "widget/page_select.dart" as p_select;
+
 class _Main_State extends State<Main_> {
   //
-
   int page = 1;
   int row_total = 0;
 
@@ -25,6 +26,19 @@ class _Main_State extends State<Main_> {
   bool is_filter = false;
   PlutoGridStateManager? state_manager;
   int load_request_id = 0;
+
+  int get total_pages => row_total == 0 ? 1 : (row_total + LIMIT - 1) ~/ LIMIT;
+
+  void on_grid_changed() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    state_manager?.removeListener(on_grid_changed);
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -36,11 +50,40 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       //
-      final r = await dio.post("$PATH/read_count", data: FormData.fromMap({"count": true}));
+      final r = await dio.post(
+        "$PATH/read_count", //
+        data: {"count": true},
+      );
       row_total = int.parse(r.data.toString());
 
       //
       load_page(page);
+
+      //
+    } catch (e) {
+      print(e.toString());
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
+  //
+  void on_refresh() async {
+    try {
+      //
+      final r = await dio.post(
+        "$PATH/read_count", //
+        data: {"count": true},
+      );
+      row_total = int.parse(r.data.toString());
+
+      //
+      if (page > total_pages) page = total_pages;
+      if (page < 1) page = 1;
+
+      //
+      load_page(page);
+
+      snackbar.view(context: context, message: "Refresh completed.", color: Colors.green);
 
       //
     } catch (e) {
@@ -56,14 +99,23 @@ class _Main_State extends State<Main_> {
     try {
       //
       is_loading = true;
+      if (!mounted) return;
       setState(() {});
 
       //
-      final r = await dio.post("$PATH/read", data: FormData.fromMap({"key": KEY, "order": ORDER, "offset": (p - 1) * LIMIT, "limit": LIMIT}));
+      final r = await dio.post(
+        "$PATH/read", //
+        data: {
+          "key": KEY, //
+          "order": ORDER, //
+          "offset": (p - 1) * LIMIT, //
+          "limit": LIMIT,
+        },
+      );
       final data = List<Map<String, dynamic>>.from(r.data);
 
       // Ignore a response from an earlier page request.
-      if (request_id != load_request_id) return;
+      if (!mounted || request_id != load_request_id) return;
 
       // keep sort + filter
       final sorted_column = state_manager?.getSortedColumn;
@@ -91,13 +143,14 @@ class _Main_State extends State<Main_> {
 
       //
       is_loading = false;
+      if (!mounted) return;
       setState(() {});
     } catch (e) {
-      if (request_id == load_request_id) {
+      if (request_id == load_request_id && mounted) {
         is_loading = false;
         setState(() {});
       }
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      if (mounted) snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -107,80 +160,160 @@ class _Main_State extends State<Main_> {
       body: Column(
         children: [
           // menu
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Wrap(
-                  children: [
-                    // create
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.add), //
-                        label: Text("Create"),
-                        onPressed: on_create,
+          (() {
+            return Container(
+              height: 32, //
+              alignment: Alignment.topCenter,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Create
+                  Tooltip(
+                    message: "Create",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.add, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: on_create,
+                    ),
+                  ),
+
+                  // Read
+                  Tooltip(
+                    message: "Read",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.visibility_outlined, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: on_read,
+                    ),
+                  ),
+
+                  // Update
+                  Tooltip(
+                    message: "Update",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.edit_outlined, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: on_update,
+                    ),
+                  ),
+
+                  // Delete
+                  Tooltip(
+                    message: "Delete",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.delete_outline, //
+                          size: 24,
+                          color: Colors.red,
+                        ), //
+                      ), //
+                      onTap: on_delete,
+                    ),
+                  ),
+
+                  Spacer(),
+
+                  // filter
+                  Tooltip(
+                    message: is_filter ? "Hide Filter" : "Show Filter",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: () {
+                        is_filter = !is_filter;
+                        state_manager?.setShowColumnFilter(is_filter);
+
+                        // * លុប filter ពេលលាក់
+                        if (!is_filter) {
+                          state_manager?.setFilterWithFilterRows([]);
+                        }
+
+                        setState(() {});
+                      },
+                    ),
+                  ),
+
+                  // search
+                  if (kDebugMode)
+                    Tooltip(
+                      message: "Search",
+                      child: InkWell(
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          alignment: Alignment.center,
+                          child: Icon(
+                            Icons.search, //
+                            size: 24,
+                            color: Colors.blue,
+                          ), //
+                        ), //
+                        onTap: () {
+                          snackbar.view(context: context, message: "Development", color: Colors.black);
+                        },
                       ),
                     ),
 
-                    // read
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.visibility_outlined), //
-                        label: Text("Read"),
-                        onPressed: on_read,
-                      ),
+                  // refresh
+                  Tooltip(
+                    message: "Refresh",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.refresh, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: on_refresh,
                     ),
-
-                    // update
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.edit_outlined), //
-                        label: Text("Update"),
-                        onPressed: on_update,
-                      ),
-                    ),
-
-                    // delete
-                    Container(
-                      height: 32,
-                      margin: EdgeInsets.fromLTRB(2, 2, 0, 2),
-                      child: OutlinedButton.icon(
-                        icon: Icon(Icons.delete_outline, color: Colors.red), //
-                        label: Text("Delete", style: TextStyle(color: Colors.red)),
-                        onPressed: on_delete,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            );
+          })(),
 
-              // refresh
-              InkWell(
-                child: Container(
-                  height: 32,
-                  width: 32,
-                  alignment: Alignment.center,
-                  margin: EdgeInsets.fromLTRB(0, 2, 2, 2),
-                  child: Icon(
-                    is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
-                    size: 24,
-                    color: Colors.blue,
-                  ), //
-                ),
-                onTap: () {
-                  is_filter = !is_filter;
-                  state_manager?.setShowColumnFilter(is_filter);
-                  setState(() {});
-                },
-              ),
-            ],
-          ),
+          if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
           // pluto table
           Expanded(
@@ -214,124 +347,153 @@ class _Main_State extends State<Main_> {
               ),
               onLoaded: (event) {
                 state_manager = event.stateManager;
+                state_manager?.addListener(on_grid_changed);
               },
             ),
           ),
 
-          if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
-
-          // pagination
+          // footer
           (() {
-            double HEIGHT = 32;
             return Container(
-              height: HEIGHT, //
+              height: 32, //
               alignment: Alignment.topCenter,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  SizedBox(width: 80),
+
+                  Spacer(),
+
                   // * ត្រលប់ទៅទំព័រដំបូង
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.first_page, //
-                        size: 24,
-                        color: Colors.blue,
+                  Tooltip(
+                    message: "First Page",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.first_page, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
                       ), //
+                      onTap: () {
+                        if (page == 1) return;
+                        page = 1;
+                        load_page(page);
+                      },
+                    ),
+                  ),
+
+                  // previous page
+                  Tooltip(
+                    message: "Previous Page",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.navigate_before, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: () {
+                        if (page == 1) return;
+                        page = page - 1;
+                        load_page(page);
+                      },
+                    ),
+                  ),
+
+                  // select page
+                  Tooltip(
+                    message: "Select Page",
+                    child: InkWell(
+                      child: Container(
+                        height: 32,
+                        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "$page / $total_pages", //
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
+                        ), //
+                      ), //
+                      onTap: () async {
+                        final v = await p_select.show(
+                          context, //
+                          page: page,
+                          row_total: row_total,
+                          limit: LIMIT,
+                        );
+                        if (v == null) return;
+                        page = v;
+                        load_page(page);
+                      }, //
+                    ),
+                  ),
+
+                  // next page
+                  Tooltip(
+                    message: "Next Page",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.navigate_next, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: () {
+                        if (page == total_pages) return;
+                        page = page + 1;
+                        load_page(page);
+                      },
+                    ),
+                  ),
+
+                  // last page
+                  Tooltip(
+                    message: "Last Page",
+                    child: InkWell(
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.last_page, //
+                          size: 24,
+                          color: Colors.blue,
+                        ), //
+                      ), //
+                      onTap: () {
+                        if (page == total_pages) return;
+                        page = total_pages;
+                        load_page(page);
+                      },
+                    ),
+                  ),
+
+                  Spacer(),
+
+                  // total row
+                  Container(
+                    height: 32,
+                    padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "${state_manager?.rows.length} Rows", //
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
                     ), //
-                    onTap: () {
-                      if (page == 1) return;
-                      page = 1;
-                      load_page(page);
-                    },
                   ),
 
                   SizedBox(width: 4),
-
-                  //
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.navigate_before, //
-                        size: 24,
-                        color: Colors.blue,
-                      ), //
-                    ), //
-                    onTap: () {
-                      if (page == 1) return;
-                      page = page - 1;
-                      load_page(page);
-                    },
-                  ),
-
-                  SizedBox(width: 4),
-
-                  //
-                  InkWell(
-                    child: Container(
-                      height: HEIGHT,
-                      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "$page / ${(row_total / LIMIT).floor() + 1} Pages", //
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
-                      ), //
-                    ), //
-                    onTap: () async {
-                      final v = await select_page();
-                      if (v == null) return;
-                      page = v;
-                      load_page(page);
-                    }, //
-                  ),
-
-                  SizedBox(width: 4),
-
-                  //
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.navigate_next, //
-                        size: 24,
-                        color: Colors.blue,
-                      ), //
-                    ), //
-                    onTap: () {
-                      if (page == (row_total / LIMIT).floor() + 1) return;
-                      page = page + 1;
-                      load_page(page);
-                    },
-                  ),
-
-                  SizedBox(width: 4),
-
-                  //
-                  InkWell(
-                    child: Container(
-                      width: 32,
-                      height: HEIGHT,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.last_page, //
-                        size: 24,
-                        color: Colors.blue,
-                      ), //
-                    ), //
-                    onTap: () {
-                      if (page == (row_total / LIMIT).floor() + 1) return;
-                      page = (row_total / LIMIT).floor() + 1;
-                      load_page(page);
-                    },
-                  ),
                 ],
               ),
             );
@@ -341,6 +503,7 @@ class _Main_State extends State<Main_> {
     );
   }
 
+  //
   void on_create() async {
     try {
       //
@@ -368,6 +531,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_read() async {
     try {
       //
@@ -394,6 +558,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_update() async {
     try {
       //
@@ -424,6 +589,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_delete() async {
     try {
       //
@@ -453,6 +619,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   dynamic cell_to_data({
     dynamic data, //
     String? type, //
@@ -471,14 +638,14 @@ class _Main_State extends State<Main_> {
 
     //
     if (type == "number") {
-      if (data == 0) return null;
-      if (data != 0) return double.tryParse(data.toString());
+      if (data == "") return null;
+      if (data != "") return double.tryParse(data.toString());
     }
 
     //
     if (type == "date-time") {
       if (data == "") return null;
-      if (data != "") return DateTime.parse(data.toString());
+      if (data != "") return DateTime.tryParse(data.toString())?.toIso8601String();
     }
 
     if (type == "boolean") {
@@ -490,36 +657,31 @@ class _Main_State extends State<Main_> {
     return null;
   }
 
+  //
   String data_to_cell({
     dynamic data, //
     String? type, //
   }) {
     //
     if (type == "id") {
-      if (data != null) {
-        return data.toString();
-      }
+      if (data != null) return data.toString();
     }
 
     //
     if (type == "string") {
-      if (data != null) {
-        return data.toString();
-      }
+      if (data != null) return data.toString();
     }
 
     //
     if (type == "number") {
-      if (data != null) {
-        return data.toString();
-      }
+      if (data != null) return data.toString();
     }
 
     //
     if (type == "date-time") {
       if (data != null) {
-        final dt = DateTime.tryParse(data.toString());
-        if (dt != null) return DateFormat(DATE_FORMAT).format(dt.toLocal());
+        final tmp = DateTime.tryParse(data.toString());
+        if (tmp != null) return DateFormat(DATE_FORMAT).format(tmp);
       }
     }
 
@@ -532,59 +694,6 @@ class _Main_State extends State<Main_> {
     }
 
     return "";
-  }
-
-  Future<int?> select_page() async {
-    const ITEM_HEIGHT = 32.0;
-    final controller = ScrollController(initialScrollOffset: (page - 1) * ITEM_HEIGHT);
-
-    final result = await showDialog<int>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          // title: Center(child: Text("Select Page")),
-          titlePadding: EdgeInsets.fromLTRB(4, 4, 4, 4),
-          contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-          content: SizedBox(
-            width: 300,
-            height: 600,
-            child: ListView.builder(
-              controller: controller,
-              itemExtent: ITEM_HEIGHT,
-              itemCount: (row_total / LIMIT).floor() + 1,
-              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-              itemBuilder: (context, index) {
-                final p = index + 1;
-                return InkWell(
-                  child: Container(
-                    height: ITEM_HEIGHT,
-                    decoration: BoxDecoration(
-                      border: Border(top: BorderSide(color: Colors.black12)),
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 8),
-
-                        Text("Page $p", style: TextStyle(fontWeight: FontWeight.bold)), //
-
-                        Spacer(),
-
-                        if (p == page) Icon(Icons.check, color: Colors.blue),
-
-                        SizedBox(width: 16),
-                      ],
-                    ), //
-                  ), //
-                  onTap: () => Navigator.pop(context, p),
-                );
-              },
-            ),
-          ),
-          // actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel"))],
-        );
-      },
-    );
-    return result;
   }
 }
 
