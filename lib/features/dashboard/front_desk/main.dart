@@ -37,19 +37,21 @@ class _Main_State extends State<Main_> {
       //
       final r = await dio.post(
         "/room/read", //
-        data: FormData.fromMap({
+        data: {
           "key": r_schema.NUMBER, //
           "order": 1, //
           "limit": 1000,
-        }),
+        },
+        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       //
       rooms = List<Map<String, dynamic>>.from(r.data);
 
       //
-      setState(() {});
+      if (mounted) setState(() {});
     } catch (e) {
+      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -386,11 +388,13 @@ class _Main_State extends State<Main_> {
       //
       var f = await dio.post(
         "/front_desk/read_id", //
-        data: FormData.fromMap({"_id": r[r_schema.FRONT_DESK_ID]}),
+        data: {"_id": r[r_schema.FRONT_DESK_ID]},
+        options: Options(headers: {"Content-Type": "application/json"}),
       );
       for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
 
       //
+      if (!mounted) return;
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => revenue_payment.Main_()));
       if (value == null) return;
 
@@ -398,6 +402,7 @@ class _Main_State extends State<Main_> {
       init();
       //
     } catch (e) {
+      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -413,16 +418,19 @@ class _Main_State extends State<Main_> {
       //
       var f = await dio.post(
         "/front_desk/read_id", //
-        data: FormData.fromMap({"_id": r[r_schema.FRONT_DESK_ID]}),
+        data: {"_id": r[r_schema.FRONT_DESK_ID]},
+        options: Options(headers: {"Content-Type": "application/json"}),
       );
       for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
 
       //
+      if (!mounted) return;
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => update_guest.Main_()));
       if (value == null) return;
 
       //
     } catch (e) {
+      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -438,16 +446,19 @@ class _Main_State extends State<Main_> {
       //
       var f = await dio.post(
         "/front_desk/read_id", //
-        data: FormData.fromMap({"_id": r[r_schema.FRONT_DESK_ID]}),
+        data: {"_id": r[r_schema.FRONT_DESK_ID]},
+        options: Options(headers: {"Content-Type": "application/json"}),
       );
       for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
 
       //
+      if (!mounted) return;
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => summary.Main_()));
       if (value == null) return;
 
       //
     } catch (e) {
+      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -468,6 +479,7 @@ class _Main_State extends State<Main_> {
       schema.data[schema.ROOM_USD_PER_DAY]?["value"] = r[r_schema.USD_PER_DAY];
 
       //
+      if (!mounted) return;
       final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_in.Main_()));
       if (v == null) return;
 
@@ -476,6 +488,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
+      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -491,11 +504,13 @@ class _Main_State extends State<Main_> {
       //
       var f = await dio.post(
         "/front_desk/read_id", //
-        data: FormData.fromMap({"_id": r[r_schema.FRONT_DESK_ID]}),
+        data: {"_id": r[r_schema.FRONT_DESK_ID]},
+        options: Options(headers: {"Content-Type": "application/json"}),
       );
       for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
 
       //
+      if (!mounted) return;
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => payment.Main_()));
       if (value == null) return;
 
@@ -504,6 +519,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
+      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -520,11 +536,13 @@ class _Main_State extends State<Main_> {
       //
       var f = await dio.post(
         "/front_desk/read_id", //
-        data: FormData.fromMap({"_id": r[r_schema.FRONT_DESK_ID]}),
+        data: {"_id": r[r_schema.FRONT_DESK_ID]},
+        options: Options(headers: {"Content-Type": "application/json"}),
       );
       for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
 
       //
+      if (!mounted) return;
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_out.Main_()));
       if (value == null) return;
 
@@ -533,6 +551,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
+      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -541,7 +560,6 @@ class _Main_State extends State<Main_> {
   void on_clean(r) async {
     try {
       //
-      // fd_schema_w.clear();
       schema.clear();
       g_schema.clear();
       r_schema.clear();
@@ -549,11 +567,13 @@ class _Main_State extends State<Main_> {
       //
       var f = await dio.post(
         "/front_desk/read_id", //
-        data: FormData.fromMap({"_id": r[r_schema.FRONT_DESK_ID]}),
+        data: {"_id": r[r_schema.FRONT_DESK_ID]},
+        options: Options(headers: {"Content-Type": "application/json"}),
       );
       for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
 
       //
+      if (!mounted) return;
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => clean.Main_()));
       if (value == null) return;
 
@@ -562,6 +582,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
+      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }

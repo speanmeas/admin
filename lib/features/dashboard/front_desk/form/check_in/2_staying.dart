@@ -1,10 +1,13 @@
+import "package:dio/dio.dart";
 import "package:flutter/material.dart";
+import "package:intl/intl.dart";
 
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/features/auth/schema.g.dart" as u_schema;
 
+import "../../__config__.dart";
 import "../../schema.g.dart" as schema;
 
 import "3_payment.dart" as step_3;
@@ -116,11 +119,11 @@ class _Main_State extends State<Main_> {
   }
 
   bool can_next() {
-    double number_of_guests = double.tryParse(c_number_of_guests.text.trim()) ?? 0;
+    int number_of_guests = int.tryParse(c_number_of_guests.text.trim()) ?? 0;
     if (number_of_guests == 0) return false;
 
-    double stay_duration_days = double.tryParse(c_stay_duration_days.text.trim()) ?? 0;
-    double stay_duration_hours = double.tryParse(c_stay_duration_hours.text.trim()) ?? 0;
+    int stay_duration_days = int.tryParse(c_stay_duration_days.text.trim()) ?? 0;
+    int stay_duration_hours = int.tryParse(c_stay_duration_hours.text.trim()) ?? 0;
     if (stay_duration_days == 0 && stay_duration_hours == 0) return false;
 
     return true;
@@ -137,24 +140,28 @@ class _Main_State extends State<Main_> {
       // calculate total price
       double room_price_total_usd = (stay_duration_days * room_price_per_day_usd) + ((stay_duration_hours / 3) * room_price_per_3h_usd);
 
-      var r = await dio.post("/setting/now");
+      var r = await dio.post(
+        "/setting/now", //
+        options: Options(headers: {"Content-Type": "application/json"}),
+      );
       if (DateTime.tryParse(r.data.toString()) == null) throw Exception("Invalid date time from server.");
       DateTime now = DateTime.tryParse(r.data.toString())!;
 
       // Set the values in the working schema
       schema.data[schema.STAY_DAY]?["value"] = stay_duration_days;
       schema.data[schema.STAY_HOUR]?["value"] = stay_duration_hours;
-      schema.data[schema.NUMBER_OF_GUESTS]?["value"] = double.tryParse(c_number_of_guests.text.trim());
+      schema.data[schema.NUMBER_OF_GUESTS]?["value"] = int.tryParse(c_number_of_guests.text.trim());
       schema.data[schema.CHECK_IN_BY_ID]?["value"] = u_schema.data[u_schema.ID]?["value"]?.toString();
       schema.data[schema.CHECK_IN_BY]?["value"] = u_schema.data[u_schema.FULL_NAME]?["value"]?.toString();
-      schema.data[schema.CHECK_IN_AT]?["value"] = now.toLocal();
-      schema.data[schema.CHECK_OUT_DATE]?["value"] = now.add(Duration(days: stay_duration_days, hours: stay_duration_hours));
+      schema.data[schema.CHECK_IN_AT]?["value"] = DateFormat(DATE_FORMAT).format(now.toLocal());
+      schema.data[schema.CHECK_OUT_DATE]?["value"] = DateFormat(DATE_FORMAT).format(now.add(Duration(days: stay_duration_days, hours: stay_duration_hours)));
 
       schema.data[schema.ROOM_PRICE_TOTAL_USD]?["value"] = room_price_total_usd;
 
       // for (var e in fd_schema_r.data.entries) print(e);
 
       //
+      if (!mounted) return;
       await Navigator.push(context, MaterialPageRoute(builder: (context) => step_3.Main_()));
 
       //
@@ -162,6 +169,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
+      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }

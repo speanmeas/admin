@@ -1,3 +1,4 @@
+import "package:dio/dio.dart";
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 
@@ -305,7 +306,10 @@ class _Main_State extends State<Main_> {
 
       //
       if (get_balance_usd() == 0) {
-        final r = await dio.post("/setting/now");
+        final r = await dio.post(
+          "/setting/now", //
+          options: Options(headers: {"Content-Type": "application/json"}),
+        );
         if (DateTime.tryParse(r.data.toString()) == null) throw Exception("Invalid date time from server.");
         DateTime now = DateTime.tryParse(r.data.toString())!;
 
@@ -337,11 +341,13 @@ class _Main_State extends State<Main_> {
       // for (var e in fd_schema_r.data.entries) print(e);
 
       // move to next page
+      if (!mounted) return;
       await Navigator.push(context, MaterialPageRoute(builder: (context) => step_4.Main_()));
 
       //
       init();
     } catch (e) {
+      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }

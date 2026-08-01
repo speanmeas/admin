@@ -29,24 +29,25 @@ class _Main_State extends State<Main_> {
           ),
 
           //
-          MenuAnchor(
-            style: MenuStyle(
-              padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 0)),
-              shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(0)))),
+          if (widget.menuChildren.isNotEmpty)
+            MenuAnchor(
+              style: MenuStyle(
+                padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 0)),
+                shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(0)))),
+              ),
+              builder: (context, controller, child) {
+                return IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  icon: Icon(Icons.more_vert, color: widget.color, size: 24), //
+                  hoverColor: widget.color.withAlpha(30),
+                  onPressed: () {
+                    controller.isOpen ? controller.close() : controller.open();
+                  },
+                );
+              },
+              menuChildren: widget.menuChildren,
             ),
-            builder: (context, controller, child) {
-              return IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                icon: Icon(Icons.more_vert, color: widget.color, size: 24), //
-                hoverColor: widget.color.withAlpha(30),
-                onPressed: () {
-                  controller.isOpen ? controller.close() : controller.open();
-                },
-              );
-            },
-            menuChildren: widget.menuChildren,
-          ),
         ],
       ),
     );

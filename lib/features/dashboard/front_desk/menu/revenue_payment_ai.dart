@@ -288,12 +288,6 @@ class _Main_State extends State<Main_> {
     return get_price_total_usd() - get_paid_total_usd() + get_return_total_usd();
   }
 
-  double _parseAmount(String text) {
-    final v = double.tryParse(text);
-    if (v == null) return 0;
-    return v;
-  }
-
   Future<void> on_save() async {
     try {
       //
@@ -302,14 +296,14 @@ class _Main_State extends State<Main_> {
       DateTime now = DateTime.tryParse(now_response.data.toString())!;
 
       //
-      double price = _parseAmount(c_price_total_usd.text);
-      double paid_bank_usd = _parseAmount(c_paid_bank_usd.text);
-      double paid_cash_usd = _parseAmount(c_paid_cash_usd.text);
-      double paid_bank_khr = _parseAmount(c_paid_bank_khr.text);
-      double paid_cash_khr = _parseAmount(c_paid_cash_khr.text);
+      double price = _parse_amount(c_price_total_usd.text);
+      double paid_bank_usd = _parse_amount(c_paid_bank_usd.text);
+      double paid_cash_usd = _parse_amount(c_paid_cash_usd.text);
+      double paid_bank_khr = _parse_amount(c_paid_bank_khr.text);
+      double paid_cash_khr = _parse_amount(c_paid_cash_khr.text);
       double paid_total = paid_bank_usd + paid_cash_usd + (paid_bank_khr + paid_cash_khr) / global.RATE;
-      double return_usd = _parseAmount(c_return_usd.text);
-      double return_khr = _parseAmount(c_return_khr.text);
+      double return_usd = _parse_amount(c_return_usd.text);
+      double return_khr = _parse_amount(c_return_khr.text);
       double return_total = return_usd + return_khr / global.RATE;
       double balance = price - paid_total + return_total;
 
@@ -332,11 +326,10 @@ class _Main_State extends State<Main_> {
       //
       final output = {for (var e in schema.data.entries) e.key: e.value["value"]};
 
-      for (var e in output.entries) print(e);
-
       await dio.post(
         "/front_desk/update", //
-        data: FormData.fromMap(output),
+        data: output,
+        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       //
@@ -350,6 +343,11 @@ class _Main_State extends State<Main_> {
       if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
+  }
+
+  double _parse_amount(String text) {
+    final v = double.tryParse(text);
+    return v ?? 0;
   }
 
   Future<void> on_clear() async {

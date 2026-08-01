@@ -7,8 +7,6 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 
-import "../../__config__.dart";
-
 void main() {
   runApp(
     ChangeNotifierProvider(
@@ -88,15 +86,18 @@ class _Main_State extends State<Main_> {
   }
 
   void on_delete() async {
-    //
-    await dio
-        .post("$PATH/data_delete", data: FormData.fromMap({"_id": widget.id}))
-        .then((value) {
-          Navigator.pop(context, true);
-          snackbar.view(context: context, message: "Success", color: Colors.green);
-        })
-        .catchError((e) {
-          snackbar.view(context: context, message: "Failed to delete room", color: Colors.red);
-        });
+    try {
+      await dio.post(
+        "/front_desk/delete", //
+        data: {"_id": widget.id},
+        options: Options(headers: {"Content-Type": "application/json"}),
+      );
+      if (!mounted) return;
+      Navigator.pop(context, true);
+      snackbar.view(context: context, message: "Success", color: Colors.green);
+    } catch (e) {
+      if (!mounted) return;
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 }

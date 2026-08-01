@@ -65,67 +65,14 @@ class _Main_State extends State<Main_> {
                 SizedBox(height: 8),
                 g_search.Main_(
                   controller: c_g_search,
-                  onChanged: (v) {
-                    schema.data[schema.GUEST_ID]?["value"] = v[g_schema.ID];
-                    schema.data[schema.GUEST_FULL_NAME]?["value"] = v[g_schema.FULL_NAME];
-                    schema.data[schema.GUEST_PHONE_NUMBER]?["value"] = v[g_schema.PHONE_NUMBER];
-                    schema.data[schema.GUEST_GENDER]?["value"] = v[g_schema.GENDER];
-                    schema.data[schema.GUEST_NATIONALITY]?["value"] = v[g_schema.NATIONALITY];
-                    setState(() {});
-                  },
-                  onCleared: () {
-                    schema.data[schema.GUEST_ID]?["value"] = null;
-                    schema.data[schema.GUEST_FULL_NAME]?["value"] = null;
-                    schema.data[schema.GUEST_PHONE_NUMBER]?["value"] = null;
-                    schema.data[schema.GUEST_GENDER]?["value"] = null;
-                    schema.data[schema.GUEST_NATIONALITY]?["value"] = null;
-                    setState(() {});
-                  },
+                  onChanged: (v) => _set_guest(v),
+                  onCleared: () => _set_guest({}),
                 ),
 
-                (() {
-                  String value = "";
-                  if (schema.data[schema.GUEST_FULL_NAME]?["value"] != null) {
-                    value = schema.data[schema.GUEST_FULL_NAME]?["value"].toString() ?? "";
-                  }
-                  return show_data.Main_(
-                    title: schema.data[schema.GUEST_FULL_NAME]?["title"] ?? "", //
-                    value: value,
-                  );
-                })(),
-
-                (() {
-                  String value = "";
-                  if (schema.data[schema.GUEST_PHONE_NUMBER]?["value"] != null) {
-                    value = schema.data[schema.GUEST_PHONE_NUMBER]?["value"].toString() ?? "";
-                  }
-                  return show_data.Main_(
-                    title: schema.data[schema.GUEST_PHONE_NUMBER]?["title"] ?? "", //
-                    value: value,
-                  );
-                })(),
-
-                (() {
-                  String value = "";
-                  if (schema.data[schema.GUEST_GENDER]?["value"] != null) {
-                    value = schema.data[schema.GUEST_GENDER]?["value"].toString() ?? "";
-                  }
-                  return show_data.Main_(
-                    title: schema.data[schema.GUEST_GENDER]?["title"] ?? "", //
-                    value: value,
-                  );
-                })(),
-
-                (() {
-                  String value = "";
-                  if (schema.data[schema.GUEST_NATIONALITY]?["value"] != null) {
-                    value = schema.data[schema.GUEST_NATIONALITY]?["value"].toString() ?? "";
-                  }
-                  return show_data.Main_(
-                    title: schema.data[schema.GUEST_NATIONALITY]?["title"] ?? "", //
-                    value: value,
-                  );
-                })(),
+                _guest_field(schema.GUEST_FULL_NAME),
+                _guest_field(schema.GUEST_PHONE_NUMBER),
+                _guest_field(schema.GUEST_GENDER),
+                _guest_field(schema.GUEST_NATIONALITY),
               ],
             ),
           ),
@@ -134,13 +81,32 @@ class _Main_State extends State<Main_> {
     );
   }
 
+  void _set_guest(Map<String, dynamic> v) {
+    schema.data[schema.GUEST_ID]?["value"] = v[g_schema.ID];
+    schema.data[schema.GUEST_FULL_NAME]?["value"] = v[g_schema.FULL_NAME];
+    schema.data[schema.GUEST_PHONE_NUMBER]?["value"] = v[g_schema.PHONE_NUMBER];
+    schema.data[schema.GUEST_GENDER]?["value"] = v[g_schema.GENDER];
+    schema.data[schema.GUEST_NATIONALITY]?["value"] = v[g_schema.NATIONALITY];
+    setState(() {});
+  }
+
+  Widget _guest_field(String key) {
+    final value = schema.data[key]?["value"]?.toString() ?? "";
+    return show_data.Main_(
+      title: schema.data[key]?["title"] ?? "", //
+      value: value,
+    );
+  }
+
   void on_next() async {
     try {
       //
+      if (!mounted) return;
       Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
 
       //
     } catch (e) {
+      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }

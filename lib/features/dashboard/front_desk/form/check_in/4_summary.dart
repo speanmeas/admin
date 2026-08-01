@@ -15,16 +15,6 @@ import "../../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
   @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  void init() async {
-    //
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -62,65 +52,8 @@ class _Main_State extends State<Main_> {
             margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
             child: Column(
               children: [
-                for (var e in schema.data.entries) //
-                  (() {
-                    //
-                    if (kDebugMode && e.value["type"]?.toString() == "id") {
-                      return show_data.Main_(
-                        title: e.value["title"]?.toString() ?? "", //
-                        value: e.value["value"]?.toString() ?? "",
-                      );
-                    }
-
-                    //
-                    if (e.value["type"]?.toString() == "string") {
-                      var value = "";
-                      if (e.value["value"] != null) value = e.value["value"].toString();
-                      return show_data.Main_(
-                        title: e.value["title"]?.toString() ?? "", //
-                        value: value,
-                      );
-                    }
-
-                    //
-                    if (e.value["type"]?.toString() == "number") {
-                      var value = "";
-                      if (e.value["value"] != null) value = e.value["value"].toString();
-                      return show_data.Main_(
-                        title: e.value["title"]?.toString() ?? "", //
-                        value: value,
-                      );
-                    }
-
-                    //
-                    if (e.value["type"]?.toString() == "date-time") {
-                      var value = "";
-                      if (e.value["value"] != null) {
-                        final dt = DateTime.tryParse(e.value["value"].toString());
-                        if (dt != null) value = DateFormat(DATE_FORMAT).format(dt);
-                      }
-                      return show_data.Main_(
-                        title: e.value["title"]?.toString() ?? "", //
-                        value: value,
-                      );
-                    }
-
-                    //
-                    if (e.value["type"]?.toString() == "boolean") {
-                      var value = "";
-                      if (e.value["value"] != null) {
-                        if (e.value["value"] == true) value = "Yes";
-                        if (e.value["value"] == false) value = "No";
-                      }
-                      return show_data.Main_(
-                        title: e.value["title"]?.toString() ?? "", //
-                        value: value,
-                      );
-                    }
-
-                    //
-                    return SizedBox();
-                  })(),
+                for (var e in schema.data.entries)
+                  if (!e.value["hide"] || kDebugMode) _field(e.value),
               ],
             ),
           ),
@@ -129,37 +62,59 @@ class _Main_State extends State<Main_> {
     );
   }
 
+  Widget _field(Map<String, dynamic> field) {
+    return show_data.Main_(
+      title: field["title"]?.toString() ?? "", //
+      value: _dateValue(field["value"]),
+    );
+  }
+
   void on_check_in() async {
     try {
       //
-      final output = {for (var e in schema.data.entries) e.key: e.value["value"]};
+      final output = {};
+
+      for (var e in schema.data.entries) //
+        if (e.key != schema.ID) //
+          output[e.key] = e.value["value"];
 
       //
-      final response = await dio.post("/front_desk/create", data: FormData.fromMap(output));
+      final r = await dio.post(
+        "/front_desk/create", //
+        data: output,
+        options: Options(headers: {"Content-Type": "application/json"}),
+      );
 
       //
       var status = "Pending Pay";
-      if (output[schema.ROOM_PAID_AT]?.isNotEmpty ?? false) status = "Pending Leave";
+      if (output[schema.ROOM_PAID_AT] != null && output[schema.ROOM_PAID_AT].toString().isNotEmpty) status = "Pending Leave";
 
       //
       await dio.post(
         "/room/update", //
-        data: FormData.fromMap({
-          "_id": output[schema.ROOM_ID], //
+        data: {
+          "_id": output[schema.ROOM_ID].toString(), //
           r_schema.STATUS: status, //
-          r_schema.FRONT_DESK_ID: response.data["_id"],
-        }),
+          r_schema.FRONT_DESK_ID: r.data[0]["_id"],
+        },
+        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       //
+      if (!mounted) return;
       Navigator.pop(context);
+      if (!mounted) return;
       Navigator.pop(context);
+      if (!mounted) return;
       Navigator.pop(context);
+      if (!mounted) return;
       Navigator.pop(context, true);
 
       //
+      if (!mounted) return;
       snackbar.view(context: context, message: "Success", color: Colors.green);
     } catch (e) {
+      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }

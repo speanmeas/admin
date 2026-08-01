@@ -325,11 +325,13 @@ class _Main_State extends State<Main_> {
       schema.data[schema.ROOM_PAID_BY]?["value"] = u_schema.data[u_schema.FULL_NAME]!["value"];
       schema.data[schema.ROOM_PAID_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 
+      if (!mounted) return;
       await Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
 
       init();
       //
     } catch (e) {
+      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }

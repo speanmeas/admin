@@ -53,91 +53,16 @@ class _Main_State extends State<Main_> {
                 SizedBox(height: 8),
                 g_search.Main_(
                   controller: c_g_search,
-                  onChanged: (v) {
-                    schema.data[schema.GUEST_ID]?["value"] = v[g_schema.ID];
-                    schema.data[schema.GUEST_FULL_NAME]?["value"] = v[g_schema.FULL_NAME];
-                    schema.data[schema.GUEST_PHONE_NUMBER]?["value"] = v[g_schema.PHONE_NUMBER];
-                    schema.data[schema.GUEST_GENDER]?["value"] = v[g_schema.GENDER];
-                    schema.data[schema.GUEST_NATIONALITY]?["value"] = v[g_schema.NATIONALITY];
-                    setState(() {});
-                  },
-                  onCleared: () {
-                    schema.data[schema.GUEST_ID]?["value"] = null;
-                    schema.data[schema.GUEST_FULL_NAME]?["value"] = null;
-                    schema.data[schema.GUEST_PHONE_NUMBER]?["value"] = null;
-                    schema.data[schema.GUEST_GENDER]?["value"] = null;
-                    schema.data[schema.GUEST_NATIONALITY]?["value"] = null;
-                    setState(() {});
-                  },
+                  onChanged: (v) => _set_guest(v),
+                  onCleared: () => _set_guest({}),
                 ),
 
-                if (kDebugMode)
-                  (() {
-                    String value = "";
-                    if (schema.data[schema.ID]?["value"] != null) {
-                      value = schema.data[schema.ID]?["value"].toString() ?? "";
-                    }
-                    return show_data.Main_(
-                      title: schema.data[schema.ID]?["title"] ?? "", //
-                      value: value,
-                    );
-                  })(),
-
-                if (kDebugMode)
-                  (() {
-                    String value = "";
-                    if (schema.data[schema.GUEST_ID]?["value"] != null) {
-                      value = schema.data[schema.GUEST_ID]?["value"].toString() ?? "";
-                    }
-                    return show_data.Main_(
-                      title: schema.data[schema.GUEST_ID]?["title"] ?? "", //
-                      value: value,
-                    );
-                  })(),
-
-                (() {
-                  String value = "";
-                  if (schema.data[schema.GUEST_FULL_NAME]?["value"] != null) {
-                    value = schema.data[schema.GUEST_FULL_NAME]?["value"].toString() ?? "";
-                  }
-                  return show_data.Main_(
-                    title: schema.data[schema.GUEST_FULL_NAME]?["title"] ?? "", //
-                    value: value,
-                  );
-                })(),
-
-                (() {
-                  String value = "";
-                  if (schema.data[schema.GUEST_PHONE_NUMBER]?["value"] != null) {
-                    value = schema.data[schema.GUEST_PHONE_NUMBER]?["value"].toString() ?? "";
-                  }
-                  return show_data.Main_(
-                    title: schema.data[schema.GUEST_PHONE_NUMBER]?["title"] ?? "", //
-                    value: value,
-                  );
-                })(),
-
-                (() {
-                  String value = "";
-                  if (schema.data[schema.GUEST_GENDER]?["value"] != null) {
-                    value = schema.data[schema.GUEST_GENDER]?["value"].toString() ?? "";
-                  }
-                  return show_data.Main_(
-                    title: schema.data[schema.GUEST_GENDER]?["title"] ?? "", //
-                    value: value,
-                  );
-                })(),
-
-                (() {
-                  String value = "";
-                  if (schema.data[schema.GUEST_NATIONALITY]?["value"] != null) {
-                    value = schema.data[schema.GUEST_NATIONALITY]?["value"].toString() ?? "";
-                  }
-                  return show_data.Main_(
-                    title: schema.data[schema.GUEST_NATIONALITY]?["title"] ?? "", //
-                    value: value,
-                  );
-                })(),
+                if (kDebugMode) _info_field(schema.ID),
+                if (kDebugMode) _info_field(schema.GUEST_ID),
+                _info_field(schema.GUEST_FULL_NAME),
+                _info_field(schema.GUEST_PHONE_NUMBER),
+                _info_field(schema.GUEST_GENDER),
+                _info_field(schema.GUEST_NATIONALITY),
 
                 // button update
                 Container(
@@ -157,23 +82,42 @@ class _Main_State extends State<Main_> {
     );
   }
 
+  void _set_guest(Map<String, dynamic> v) {
+    schema.data[schema.GUEST_ID]?["value"] = v[g_schema.ID];
+    schema.data[schema.GUEST_FULL_NAME]?["value"] = v[g_schema.FULL_NAME];
+    schema.data[schema.GUEST_PHONE_NUMBER]?["value"] = v[g_schema.PHONE_NUMBER];
+    schema.data[schema.GUEST_GENDER]?["value"] = v[g_schema.GENDER];
+    schema.data[schema.GUEST_NATIONALITY]?["value"] = v[g_schema.NATIONALITY];
+    setState(() {});
+  }
+
+  Widget _info_field(String key) {
+    return show_data.Main_(
+      title: schema.data[key]?["title"] ?? "", //
+      value: schema.data[key]?["value"]?.toString() ?? "",
+    );
+  }
+
   void on_update() async {
     try {
       //
       await dio.post(
         "/front_desk/update_field", //
-        data: FormData.fromMap({
+        data: {
           "_id": schema.data[schema.ID]!["value"], //
           "key": schema.GUEST_ID, //
           "value": schema.data[schema.GUEST_ID]!["value"], //
-        }),
+        },
+        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
+      if (!mounted) return;
       Navigator.pop(context, true);
 
       snackbar.view(context: context, message: "Success", color: Colors.green);
       //
     } catch (e) {
+      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }

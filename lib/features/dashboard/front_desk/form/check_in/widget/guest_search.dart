@@ -32,14 +32,15 @@ class _Main_State extends State<Main_> {
 
   void select(q) async {
     try {
-      //
-      final r = await dio.post(
-        "/guest/read_string", //
-        data: FormData.fromMap({
-          "key": g_schema.PHONE_NUMBER, //
-          "query": q, //
-        }),
-      );
+    //
+    final r = await dio.post(
+      "/guest/read_string", //
+      data: {
+        "key": g_schema.PHONE_NUMBER, //
+        "query": q, //
+      },
+      options: Options(headers: {"Content-Type": "application/json"}),
+    );
 
       widget.onChanged?.call(List<Map<String, dynamic>>.from(r.data).first);
     } catch (e) {
@@ -61,12 +62,13 @@ class _Main_State extends State<Main_> {
                 //
                 final r = await dio.post(
                   "/guest/read_string", //
-                  data: FormData.fromMap({
+                  data: {
                     "key": g_schema.PHONE_NUMBER, //
                     "query": q, //
                     "order": 1, //
                     "limit": 100, //
-                  }),
+                  },
+                  options: Options(headers: {"Content-Type": "application/json"}),
                 );
 
                 //

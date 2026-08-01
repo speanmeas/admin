@@ -10,16 +10,6 @@ import "../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
   @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  void init() async {
-    //
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -42,71 +32,37 @@ class _Main_State extends State<Main_> {
             margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
             child: Column(
               children: [
-                for (var e in schema.data.entries) //
-                  (() {
-                    //
-                    if (kDebugMode && e.value["type"]?.toString() == "id") {
-                      return show_data.Main_(
-                        title: e.value["title"]?.toString() ?? "", //
-                        value: e.value["value"]?.toString() ?? "",
-                      );
-                    }
-
-                    //
-                    if (e.value["type"]?.toString() == "string") {
-                      var value = "";
-                      if (e.value["value"] != null) value = e.value["value"].toString();
-                      return show_data.Main_(
-                        title: e.value["title"]?.toString() ?? "", //
-                        value: value,
-                      );
-                    }
-
-                    //
-                    if (e.value["type"]?.toString() == "number") {
-                      var value = "";
-                      if (e.value["value"] != null) value = e.value["value"].toString();
-                      return show_data.Main_(
-                        title: e.value["title"]?.toString() ?? "", //
-                        value: value,
-                      );
-                    }
-
-                    //
-                    if (e.value["type"]?.toString() == "date-time") {
-                      var value = "";
-                      if (e.value["value"] != null) {
-                        final dt = DateTime.tryParse(e.value["value"].toString());
-                        if (dt != null) value = DateFormat(DATE_FORMAT).format(dt);
-                      }
-                      return show_data.Main_(
-                        title: e.value["title"]?.toString() ?? "", //
-                        value: value,
-                      );
-                    }
-
-                    //
-                    if (e.value["type"]?.toString() == "boolean") {
-                      var value = "";
-                      if (e.value["value"] != null) {
-                        if (e.value["value"] == true) value = "Yes";
-                        if (e.value["value"] == false) value = "No";
-                      }
-                      return show_data.Main_(
-                        title: e.value["title"]?.toString() ?? "", //
-                        value: value,
-                      );
-                    }
-
-                    //
-                    return SizedBox();
-                  })(),
+                for (var e in schema.data.entries)
+                  if (!e.value["hide"] || kDebugMode) _field(e.value),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Widget _field(Map<String, dynamic> field) {
+    return show_data.Main_(
+      title: field["title"]?.toString() ?? "", //
+      value: _format_value(field),
+    );
+  }
+
+  String _format_value(Map<String, dynamic> field) {
+    final value = field["value"];
+    if (value == null) return "";
+
+    if (field["type"]?.toString() == "date-time") {
+      final dt = DateTime.tryParse(value.toString());
+      return dt == null ? value.toString() : DateFormat(DATE_FORMAT).format(dt);
+    }
+
+    if (field["type"]?.toString() == "boolean") {
+      return value == true ? "Yes" : "No";
+    }
+
+    return value.toString();
   }
 
   String date_to_string(dynamic value) {
