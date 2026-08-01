@@ -12,6 +12,7 @@ import "package:speanmeas/features/database/nationality/schema.g.dart" as n_sche
 class _Main_State extends State<Main_> {
   FocusNode focusNode = FocusNode();
   bool is_selected = false;
+  int selection_request_id = 0;
 
   @override
   void initState() {
@@ -29,7 +30,15 @@ class _Main_State extends State<Main_> {
     if (widget.controller.text.isNotEmpty) select(widget.controller.text);
   }
 
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
+
   void select(q) async {
+    final request_id = ++selection_request_id;
+
     try {
       //
       final r = await dio.post(
@@ -40,6 +49,7 @@ class _Main_State extends State<Main_> {
         },
       );
 
+      if (request_id != selection_request_id || !mounted) return;
       widget.onChanged?.call(List<Map<String, dynamic>>.from(r.data).first);
     } catch (e) {
       print(e.toString());
@@ -97,6 +107,7 @@ class _Main_State extends State<Main_> {
                       icon: Icon(Icons.clear, color: Colors.red),
                       onPressed: () {
                         //
+                        selection_request_id++;
                         widget.controller.clear();
                         widget.onCleared?.call();
                         widget.onChanged?.call({});
@@ -104,7 +115,10 @@ class _Main_State extends State<Main_> {
                     ), //
                   ),
                 ),
-                onChanged: (v) => is_selected = false,
+                onChanged: (v) {
+                  selection_request_id++;
+                  is_selected = false;
+                },
               );
             },
             onSelected: (v) {
