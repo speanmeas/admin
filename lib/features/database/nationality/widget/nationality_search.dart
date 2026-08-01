@@ -61,6 +61,7 @@ class _Main_State extends State<Main_> {
       widget.onChanged?.call(List<Map<String, dynamic>>.from(r.data).first);
     } catch (e) {
       print(e.toString());
+      clear_field();
     }
   }
 

@@ -1,4 +1,3 @@
-import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
@@ -57,13 +56,18 @@ class _Main_State extends State<Main_> {
 
   void on_delete() async {
     try {
-      // * ធ្វើការស្នើសុំទៅកាន់ Server ដើម្បីលុបទិន្នន័យ
-      final r = await dio.post("$PATH/delete", data: FormData.fromMap({"_id": schema.data[schema.ID]?["value"]}));
+      //
+      final r = await dio.post(
+        "$PATH/delete", //
+        data: {
+          "_id": schema.data[schema.ID]?["value"], //
+        },
+      );
 
-      // * បង្ហាញសារថា លុបទិន្នន័យដោយជោគជ័យ
+      //
       snackbar.view(context: context, message: "Success", color: Colors.green);
 
-      // * បិទ Form និងបញ្ជូនតម្លៃ true ទៅកាន់ទំព័រមុន
+      //
       Navigator.pop(context, r.data);
 
       //
@@ -74,7 +78,7 @@ class _Main_State extends State<Main_> {
 }
 
 class Main_ extends StatefulWidget {
-  const Main_({super.key});
+  Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
@@ -82,9 +86,9 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      title: HEADER, //
+      title: "Development", //
       theme: Theme_Data(), //
-      home: const Main_(),
+      home: Main_(),
       debugShowCheckedModeBanner: false,
     ),
   );
