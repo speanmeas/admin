@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
@@ -78,6 +79,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void load_page(int p) async {
     try {
       //
@@ -245,24 +247,25 @@ class _Main_State extends State<Main_> {
                   ),
 
                   // search
-                  Tooltip(
-                    message: "Search",
-                    child: InkWell(
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        alignment: Alignment.center,
-                        child: Icon(
-                          Icons.search, //
-                          size: 24,
-                          color: Colors.blue,
+                  if (kDebugMode)
+                    Tooltip(
+                      message: "Search",
+                      child: InkWell(
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          alignment: Alignment.center,
+                          child: Icon(
+                            Icons.search, //
+                            size: 24,
+                            color: Colors.blue,
+                          ), //
                         ), //
-                      ), //
-                      onTap: () {
-                        snackbar.view(context: context, message: "Development", color: Colors.black);
-                      },
+                        onTap: () {
+                          snackbar.view(context: context, message: "Development", color: Colors.black);
+                        },
+                      ),
                     ),
-                  ),
 
                   // refresh
                   Tooltip(
@@ -334,16 +337,7 @@ class _Main_State extends State<Main_> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // total row
-                  Container(
-                    height: 32,
-                    padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    alignment: Alignment.center,
-                    child: Text(
-                      "Total: ${state_manager?.rows.length}", //
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
-                    ), //
-                  ),
+                  SizedBox(width: 80),
 
                   Spacer(),
 
@@ -461,6 +455,21 @@ class _Main_State extends State<Main_> {
                       },
                     ),
                   ),
+
+                  Spacer(),
+
+                  // total row
+                  Container(
+                    height: 32,
+                    padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "${state_manager?.rows.length} Rows", //
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+                    ), //
+                  ),
+
+                  SizedBox(width: 4),
                 ],
               ),
             );
@@ -470,6 +479,7 @@ class _Main_State extends State<Main_> {
     );
   }
 
+  //
   void on_create() async {
     try {
       //
@@ -497,6 +507,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_read() async {
     try {
       //
@@ -523,6 +534,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_update() async {
     try {
       //
@@ -553,6 +565,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_delete() async {
     try {
       //
@@ -582,6 +595,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   dynamic cell_to_data({
     dynamic data, //
     String? type, //
@@ -619,6 +633,7 @@ class _Main_State extends State<Main_> {
     return null;
   }
 
+  //
   String data_to_cell({
     dynamic data, //
     String? type, //
