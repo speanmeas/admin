@@ -1,4 +1,3 @@
-import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
@@ -12,7 +11,9 @@ import "package:speanmeas/features/database/nationality/schema.g.dart" as n_sche
 
 class _Main_State extends State<Main_> {
   FocusNode focusNode = FocusNode();
+  FocusNode clear_focus = FocusNode();
   bool is_selected = false;
+  int selection_request_id = 0;
 
   @override
   void initState() {
@@ -20,9 +21,8 @@ class _Main_State extends State<Main_> {
 
     //
     focusNode.addListener(() {
-      if (!focusNode.hasFocus && !is_selected) {
-        widget.controller.clear();
-        widget.onChanged?.call({});
+      if (!focusNode.hasFocus && !clear_focus.hasFocus && !is_selected && widget.controller.text.isNotEmpty) {
+        clear_field();
       }
     });
 
@@ -30,17 +30,34 @@ class _Main_State extends State<Main_> {
     if (widget.controller.text.isNotEmpty) select(widget.controller.text);
   }
 
+  @override
+  void dispose() {
+    focusNode.dispose();
+    clear_focus.dispose();
+    super.dispose();
+  }
+
+  void clear_field() {
+    selection_request_id++;
+    is_selected = false;
+    widget.controller.clear();
+    widget.onCleared?.call();
+  }
+
   void select(q) async {
+    final request_id = ++selection_request_id;
+
     try {
       //
       final r = await dio.post(
         "/nationality/read_string", //
-        data: FormData.fromMap({
+        data: {
           "key": n_schema_r.NAME, //
           "query": q, //
-        }),
+        },
       );
 
+      if (request_id != selection_request_id || !mounted) return;
       widget.onChanged?.call(List<Map<String, dynamic>>.from(r.data).first);
     } catch (e) {
       print(e.toString());
@@ -61,12 +78,12 @@ class _Main_State extends State<Main_> {
                 //
                 final r = await dio.post(
                   "/nationality/read_string", //
-                  data: FormData.fromMap({
+                  data: {
                     "key": n_schema_r.NAME, //
                     "query": q, //
                     "order": 1, //
                     "limit": 100, //
-                  }),
+                  },
                 );
 
                 //
@@ -95,17 +112,19 @@ class _Main_State extends State<Main_> {
                   suffixIcon: Padding(
                     padding: EdgeInsets.only(right: 4),
                     child: IconButton(
+                      focusNode: clear_focus,
                       icon: Icon(Icons.clear, color: Colors.red),
                       onPressed: () {
                         //
-                        widget.controller.clear();
-                        widget.onCleared?.call();
-                        widget.onChanged?.call({});
+                        clear_field();
                       },
                     ), //
                   ),
                 ),
-                onChanged: (v) => is_selected = false,
+                onChanged: (v) {
+                  selection_request_id++;
+                  is_selected = false;
+                },
               );
             },
             onSelected: (v) {
