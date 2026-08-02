@@ -333,7 +333,6 @@ class _Main_State extends State<Main_> {
       );
 
       //
-      if (!mounted) return;
       Navigator.pop(context, true);
 
       snackbar.view(context: context, message: "Success", color: Colors.green);

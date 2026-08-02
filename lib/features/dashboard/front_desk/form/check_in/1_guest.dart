@@ -3,13 +3,12 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
-
-import "../../schema.g.dart" as schema;
-
 import "package:speanmeas/features/database/guest/schema.g.dart" as g_schema;
 
-import "2_staying.dart" as step_2;
+import "../../schema.g.dart" as schema;
 import "widget/guest_search.dart" as g_search;
+
+import "2_staying.dart" as step_2;
 
 class _Main_State extends State<Main_> {
   final c_g_search = TextEditingController();
@@ -97,7 +96,6 @@ class _Main_State extends State<Main_> {
   void on_next() async {
     try {
       //
-      if (!mounted) return;
       Navigator.push(context, MaterialPageRoute(builder: (context) => step_2.Main_()));
 
       //

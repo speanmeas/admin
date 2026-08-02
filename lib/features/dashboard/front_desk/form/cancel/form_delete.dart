@@ -92,7 +92,6 @@ class _Main_State extends State<Main_> {
         data: {"_id": widget.id},
         options: Options(headers: {"Content-Type": "application/json"}),
       );
-      if (!mounted) return;
       Navigator.pop(context, true);
       snackbar.view(context: context, message: "Success", color: Colors.green);
     } catch (e) {

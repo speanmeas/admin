@@ -94,9 +94,7 @@ class _Main_State extends State<Main_> {
       );
 
       // //
-      if (!mounted) return;
       Navigator.pop(context);
-      if (!mounted) return;
       Navigator.pop(context, true);
 
       //
