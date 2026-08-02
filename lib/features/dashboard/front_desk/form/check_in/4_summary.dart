@@ -79,22 +79,20 @@ class _Main_State extends State<Main_> {
           output[e.key] = e.value["value"];
 
       //
-      final r = await dio.post(
-        "/front_desk/create", //
-        data: output,
-      );
+      final r = await dio.post("/front_desk/create", data: output);
 
       //
       var status = "Pending Pay";
       if (output[schema.ROOM_PAID_AT] != null && output[schema.ROOM_PAID_AT].toString().isNotEmpty) status = "Pending Leave";
 
       //
+
       await dio.post(
-        "/room/update", //
+        "/room/update",
         data: {
-          "_id": output[schema.ROOM_ID], //
+          r_schema.ID: output[schema.ROOM_ID], //
           r_schema.STATUS: status, //
-          r_schema.FRONT_DESK_ID: r.data[0]["_id"],
+          r_schema.FRONT_DESK_ID: r.data[0][schema.ID], //
         },
       );
 

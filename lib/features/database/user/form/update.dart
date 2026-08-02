@@ -243,9 +243,8 @@ class _Main_State extends State<Main_> {
   void on_update() async {
     try {
       // * រៀបចំ payload
-      Map<String, dynamic> payload = {};
+      var payload = {};
       for (var e in schema.data.entries) payload[e.key] = e.value["value"];
-      print(payload);
 
       //
       final r = await dio.post(
