@@ -90,7 +90,6 @@ class _Main_State extends State<Main_> {
       await dio.post(
         "/front_desk/delete", //
         data: {"_id": widget.id},
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
       Navigator.pop(context, true);
       snackbar.view(context: context, message: "Success", color: Colors.green);

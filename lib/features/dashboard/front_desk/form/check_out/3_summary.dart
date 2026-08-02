@@ -87,7 +87,6 @@ class _Main_State extends State<Main_> {
       await dio.post(
         "/front_desk/update", //
         data: output,
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       await dio.post(
@@ -96,7 +95,6 @@ class _Main_State extends State<Main_> {
           "_id": schema.data[schema.ROOM_ID]?["value"], //
           r_schema.STATUS: "Pending Clean", //
         },
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       //

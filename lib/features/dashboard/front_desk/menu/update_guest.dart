@@ -104,7 +104,6 @@ class _Main_State extends State<Main_> {
           "key": schema.GUEST_ID, //
           "value": schema.data[schema.GUEST_ID]!["value"], //
         },
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       Navigator.pop(context, true);

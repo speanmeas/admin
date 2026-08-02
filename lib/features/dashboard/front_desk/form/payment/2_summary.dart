@@ -79,7 +79,6 @@ class _Main_State extends State<Main_> {
       await dio.post(
         "/front_desk/update", //
         data: output,
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       // //
@@ -90,7 +89,6 @@ class _Main_State extends State<Main_> {
           r_schema.STATUS: "Pending Leave", //
           // r_schema_r.FRONT_DESK_ID: response.data["_id"],
         },
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       // //

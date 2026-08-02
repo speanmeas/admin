@@ -308,7 +308,6 @@ class _Main_State extends State<Main_> {
       if (get_balance_usd() == 0) {
         final r = await dio.post(
           "/setting/now", //
-          options: Options(headers: {"Content-Type": "application/json"}),
         );
         if (DateTime.tryParse(r.data.toString()) == null) throw Exception("Invalid date time from server.");
         DateTime now = DateTime.tryParse(r.data.toString())!;

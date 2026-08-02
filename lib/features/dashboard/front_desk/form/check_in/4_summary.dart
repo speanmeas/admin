@@ -82,7 +82,6 @@ class _Main_State extends State<Main_> {
       final r = await dio.post(
         "/front_desk/create", //
         data: output,
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       //
@@ -93,11 +92,10 @@ class _Main_State extends State<Main_> {
       await dio.post(
         "/room/update", //
         data: {
-          "_id": output[schema.ROOM_ID].toString(), //
+          "_id": output[schema.ROOM_ID], //
           r_schema.STATUS: status, //
-          r_schema.FRONT_DESK_ID: (r.data is List ? r.data[0]["_id"] : r.data["_id"]),
+          r_schema.FRONT_DESK_ID: r.data[0]["_id"],
         },
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       //

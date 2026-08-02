@@ -42,7 +42,6 @@ class _Main_State extends State<Main_> {
           "order": 1, //
           "limit": 1000,
         },
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       //
@@ -404,7 +403,6 @@ class _Main_State extends State<Main_> {
       var f = await dio.post(
         "/front_desk/read_id", //
         data: {"_id": r[r_schema.FRONT_DESK_ID]},
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
       final fd = (f.data is List) ? f.data[0] : f.data;
       for (var e in schema.data.entries) e.value["value"] = fd[e.key];
@@ -435,8 +433,7 @@ class _Main_State extends State<Main_> {
         "/front_desk/read_id", //
         data: {"_id": r[r_schema.FRONT_DESK_ID]},
       );
-      final fd = (f.data is List) ? f.data[0] : f.data;
-      for (var e in schema.data.entries) e.value["value"] = fd[e.key];
+      for (var e in schema.data.entries) e.value["value"] = f.data[0][e.key];
 
       //
 
@@ -520,7 +517,6 @@ class _Main_State extends State<Main_> {
       var f = await dio.post(
         "/front_desk/read_id", //
         data: {"_id": r[r_schema.FRONT_DESK_ID]},
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
       final fd = (f.data is List) ? f.data[0] : f.data;
       for (var e in schema.data.entries) e.value["value"] = fd[e.key];
@@ -552,7 +548,6 @@ class _Main_State extends State<Main_> {
       var f = await dio.post(
         "/front_desk/read_id", //
         data: {"_id": r[r_schema.FRONT_DESK_ID]},
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
       final fd = (f.data is List) ? f.data[0] : f.data;
       for (var e in schema.data.entries) e.value["value"] = fd[e.key];
@@ -583,7 +578,6 @@ class _Main_State extends State<Main_> {
       var f = await dio.post(
         "/front_desk/read_id", //
         data: {"_id": r[r_schema.FRONT_DESK_ID]},
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
       final fd = (f.data is List) ? f.data[0] : f.data;
       for (var e in schema.data.entries) e.value["value"] = fd[e.key];
@@ -631,7 +625,6 @@ class _Main_State extends State<Main_> {
           "_id": r[r_schema.ID], //
           r_schema.STATUS: "Available", //
         },
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       await dio.post(
@@ -641,13 +634,11 @@ class _Main_State extends State<Main_> {
           "key": r_schema.FRONT_DESK_ID, //
           "value": null, //
         },
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       await dio.post(
         "/front_desk/delete", //
         data: {"_id": r[r_schema.FRONT_DESK_ID]},
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       //

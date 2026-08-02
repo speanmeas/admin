@@ -329,7 +329,6 @@ class _Main_State extends State<Main_> {
       await dio.post(
         "/front_desk/update", //
         data: output,
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
 
       //
