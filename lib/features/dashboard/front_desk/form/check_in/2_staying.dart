@@ -160,7 +160,7 @@ class _Main_State extends State<Main_> {
       // for (var e in fd_schema_r.data.entries) print(e);
 
       //
-      if (!mounted) return;
+
       await Navigator.push(context, MaterialPageRoute(builder: (context) => step_3.Main_()));
 
       //

@@ -30,7 +30,6 @@ class _Main_State extends State<Main_> {
   int get total_pages => row_total == 0 ? 1 : (row_total + LIMIT - 1) ~/ LIMIT;
 
   void on_grid_changed() {
-    if (!mounted) return;
     setState(() {});
   }
 
@@ -99,7 +98,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       is_loading = true;
-      if (!mounted) return;
+
       setState(() {});
 
       //
@@ -143,7 +142,7 @@ class _Main_State extends State<Main_> {
 
       //
       is_loading = false;
-      if (!mounted) return;
+
       setState(() {});
     } catch (e) {
       if (request_id == load_request_id && mounted) {

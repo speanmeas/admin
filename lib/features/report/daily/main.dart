@@ -84,7 +84,7 @@ class _Main_State extends State<Main_> {
     } catch (e) {
       is_loading = false;
       setState(() {});
-      if (!mounted) return;
+
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }

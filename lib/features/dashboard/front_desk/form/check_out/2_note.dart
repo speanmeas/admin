@@ -94,7 +94,7 @@ class _Main_State extends State<Main_> {
       schema.data[schema.CHECK_OUT_AT]?["value"] = DateFormat(DATE_FORMAT).format(now);
 
       // navigate to next screen
-      if (!mounted) return;
+
       await Navigator.push(context, MaterialPageRoute(builder: (context) => step_3.Main_()));
 
       //

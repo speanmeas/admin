@@ -514,12 +514,8 @@ class _Main_State extends State<Main_> {
       r_schema.clear();
 
       //
-      var f = await dio.post(
-        "/front_desk/read_id", //
-        data: {"_id": r[r_schema.FRONT_DESK_ID]},
-      );
-      final fd = (f.data is List) ? f.data[0] : f.data;
-      for (var e in schema.data.entries) e.value["value"] = fd[e.key];
+      var f = await dio.post("/front_desk/read_id", data: {"_id": r[r_schema.FRONT_DESK_ID]});
+      for (var e in schema.data.entries) e.value["value"] = f.data[0][e.key];
 
       //
 
