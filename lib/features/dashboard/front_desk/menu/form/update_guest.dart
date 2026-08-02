@@ -7,9 +7,9 @@ import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
 import "package:speanmeas/features/database/guest/schema.g.dart" as g_schema;
 
-import "../schema.g.dart" as schema;
+import "../../schema.g.dart" as schema;
 
-import "widget/guest_search.dart" as g_search;
+import "../widget/guest_search.dart" as g_search;
 
 class _Main_State extends State<Main_> {
   final c_g_search = TextEditingController();
@@ -97,11 +97,10 @@ class _Main_State extends State<Main_> {
     try {
       //
       await dio.post(
-        "/front_desk/update_field", //
+        "/front_desk/update", //
         data: {
-          "_id": schema.data[schema.ID]!["value"], //
-          "key": schema.GUEST_ID, //
-          "value": schema.data[schema.GUEST_ID]!["value"], //
+          schema.ID: schema.data[schema.ID]!["value"], //
+          schema.GUEST_ID: schema.data[schema.GUEST_ID]!["value"], //
         },
       );
 

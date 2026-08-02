@@ -22,8 +22,8 @@ import "form/clean/1_note.dart" as clean;
 
 import "widget/button_menu.dart" as button_menu;
 
-import "menu/summary.dart" as summary;
-import "menu/update_guest.dart" as update_guest;
+import "menu/form/summary.dart" as summary;
+import "menu/form/update_guest.dart" as update_guest;
 import "menu/revenue_payment_ai.dart" as revenue_payment;
 
 class _Main_State extends State<Main_> {
@@ -184,6 +184,13 @@ class _Main_State extends State<Main_> {
                                           }, //
                                         ),
                                         MenuItemButton(
+                                          leadingIcon: Icon(Icons.attach_money_outlined),
+                                          child: Text("Update Revenue"),
+                                          onPressed: () {
+                                            on_revenue_payment(r);
+                                          }, //
+                                        ),
+                                        MenuItemButton(
                                           leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
                                           child: Text("Cancel", style: TextStyle(color: Colors.red)),
                                           onPressed: () {
@@ -257,17 +264,17 @@ class _Main_State extends State<Main_> {
                                         //   }, //
                                         // ),
                                         MenuItemButton(
-                                          leadingIcon: Icon(Icons.add_outlined),
-                                          child: Text("Revenue Payment"),
-                                          onPressed: () {
-                                            on_revenue_payment(r);
-                                          }, //
-                                        ),
-                                        MenuItemButton(
                                           leadingIcon: Icon(Icons.change_circle_outlined),
                                           child: Text("Change Room"),
                                           onPressed: () {
                                             on_change_room(r);
+                                          }, //
+                                        ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.attach_money_outlined),
+                                          child: Text("Update Revenue"),
+                                          onPressed: () {
+                                            on_revenue_payment(r);
                                           }, //
                                         ),
                                         MenuItemButton(
@@ -453,8 +460,6 @@ class _Main_State extends State<Main_> {
       g_schema.clear();
       r_schema.clear();
 
-      for (var e in r.entries) print(e);
-
       //
       var f = await dio.post(
         "/front_desk/read_id", //
@@ -594,7 +599,7 @@ class _Main_State extends State<Main_> {
   //
   void on_cancel(r) async {
     try {
-      //
+      // TODO: convert to form. 1. reason, 2. who responsible for cancel. 3. who return money.
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (context) {
@@ -617,14 +622,10 @@ class _Main_State extends State<Main_> {
       await dio.post(
         "/room/update", //
         data: {
-          "_id": r[r_schema.ID], //
+          r_schema.ID: r[r_schema.ID], //
           r_schema.STATUS: "Available", //
+          r_schema.FRONT_DESK_ID: null, //
         },
-      );
-
-      await dio.post(
-        "/front_desk/delete", //
-        data: {"_id": r[r_schema.FRONT_DESK_ID]},
       );
 
       //
@@ -642,6 +643,15 @@ class _Main_State extends State<Main_> {
 
   //
   void on_change_room(r) async {
+    /// TODO:
+    /// 1. pick target room: only status == "Available", exclude current room
+    /// 2. load front_desk by r[FRONT_DESK_ID]; keep stay/payment data
+    /// 3. update old room:  status -> "Pending Clean", front_desk_id -> null
+    /// 4. update new room:  status -> current booking stage ("Pending Pay"/"Pending Leave"), front_desk_id -> fd id
+    /// 5. update front_desk: room_id, room_number, room_kind, room_usd_per_3h, room_usd_per_day
+    /// 6. if rate differs, recalc room_price_total_usd & room_balance_total_usd (charge/refund diff)
+    /// 7. log change (by/at/note) - append to check_in_note or add change_room_* fields
+    /// 8. init() to refresh grid
     snackbar.view(context: context, message: "Under Development", color: Colors.blue);
   }
 

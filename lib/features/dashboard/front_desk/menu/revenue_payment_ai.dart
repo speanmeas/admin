@@ -234,26 +234,11 @@ class _Main_State extends State<Main_> {
                 SizedBox(height: 16),
 
                 //
-                SizedBox(
-                  width: 600,
-                  child: OutlinedButton.icon(
-                    icon: Icon(Icons.save_outlined), //
-                    label: Text("Save Revenue Payment"),
-                    style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                    onPressed: on_save, //
-                  ),
-                ),
-
-                SizedBox(height: 8),
-
-                SizedBox(
-                  width: 600,
-                  child: OutlinedButton.icon(
-                    icon: Icon(Icons.clear_all_outlined), //
-                    label: Text("Clear All Fields"),
-                    style: OutlinedButton.styleFrom(foregroundColor: Colors.orange),
-                    onPressed: on_clear, //
-                  ),
+                OutlinedButton.icon(
+                  icon: Icon(Icons.check), //
+                  label: Text("Update"),
+                  style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+                  onPressed: get_balance_usd() == 0 ? on_save : null,
                 ),
               ],
             ),
