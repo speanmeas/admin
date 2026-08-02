@@ -14,15 +14,6 @@ import "../../__config__.dart";
 import "../../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
-  String _dateValue(dynamic value) {
-    if (value == null) return "";
-
-    final dt = DateTime.tryParse(value.toString());
-    if (dt == null) return value.toString();
-
-    return DateFormat(DATE_FORMAT).format(dt);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,28 +72,19 @@ class _Main_State extends State<Main_> {
   void on_check_in() async {
     try {
       //
-      final output = {for (var e in schema.data.entries) e.key: e.value["value"]};
+      final payload = {};
+      for (var e in schema.data.entries) //
+        payload[e.key] = e.value["value"];
 
       //
-      await dio.post(
-        "/front_desk/update", //
-        data: output,
-      );
+      await dio.post("/front_desk/update", data: payload);
 
       await dio.post(
         "/room/update", //
         data: {
-          "_id": schema.data[schema.ROOM_ID]?["value"], //
+          r_schema.ID: schema.data[schema.ROOM_ID]?["value"], //
           r_schema.STATUS: "Available", //
-        },
-      );
-
-      await dio.post(
-        "/room/update_field", //
-        data: {
-          "_id": schema.data[schema.ROOM_ID]?["value"], //
-          "key": r_schema.FRONT_DESK_ID, //
-          "value": null, //
+          r_schema.FRONT_DESK_ID: null, //
         },
       );
 
@@ -111,12 +93,21 @@ class _Main_State extends State<Main_> {
 
       //
       snackbar.view(context: context, message: "Success", color: Colors.green);
-
-      //
     } catch (e) {
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
+
+  String _dateValue(dynamic value) {
+    if (value == null) return "";
+
+    final dt = DateTime.tryParse(value.toString());
+    if (dt == null) return value.toString();
+
+    return DateFormat(DATE_FORMAT).format(dt);
+  }
+
+  //
 }
 
 class Main_ extends StatefulWidget {

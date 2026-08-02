@@ -11,19 +11,9 @@ import "package:speanmeas/core/widget/show_data.dart" as show_data;
 import "package:speanmeas/features/database/room/schema.g.dart" as r_schema;
 
 import "../../__config__.dart";
-// import "../../schema.w.dart" as fd_schema_w;
 import "../../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
-  String _dateValue(dynamic value) {
-    if (value == null) return "";
-
-    final dt = DateTime.tryParse(value.toString());
-    if (dt == null) return value.toString();
-
-    return DateFormat(DATE_FORMAT).format(dt);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,6 +107,16 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
+String _dateValue(dynamic value) {
+  if (value == null) return "";
+
+  final dt = DateTime.tryParse(value.toString());
+  if (dt == null) return value.toString();
+
+  return DateFormat(DATE_FORMAT).format(dt);
+}
+
+//
 void main() {
   runApp(
     MaterialApp(

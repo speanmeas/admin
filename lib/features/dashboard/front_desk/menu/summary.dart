@@ -45,27 +45,11 @@ class _Main_State extends State<Main_> {
   Widget _field(Map<String, dynamic> field) {
     return show_data.Main_(
       title: field["title"]?.toString() ?? "", //
-      value: _format_value(field),
+      value: _dateValue(field["value"]),
     );
   }
 
-  String _format_value(Map<String, dynamic> field) {
-    final value = field["value"];
-    if (value == null) return "";
-
-    if (field["type"]?.toString() == "date-time") {
-      final dt = DateTime.tryParse(value.toString());
-      return dt == null ? value.toString() : DateFormat(DATE_FORMAT).format(dt);
-    }
-
-    if (field["type"]?.toString() == "boolean") {
-      return value == true ? "Yes" : "No";
-    }
-
-    return value.toString();
-  }
-
-  String date_to_string(dynamic value) {
+  String _dateValue(dynamic value) {
     if (value == null) return "";
 
     final dt = DateTime.tryParse(value.toString());
