@@ -228,17 +228,14 @@ class _Main_State extends State<Main_> {
   void on_create() async {
     try {
       //
-      Map<String, dynamic> payload = {};
+      var payload = {};
       for (var e in schema.data.entries) payload[e.key] = e.value["value"];
 
       // request
-      final r = await dio.post(
-        "$PATH/create", //
-        data: {...payload},
-      );
+      final r = await dio.post("$PATH/create", data: payload);
 
       //
-      Navigator.pop(context, r.data);
+      Navigator.pop(context, r.data[0]);
 
       //
       snackbar.view(context: context, message: "Success", color: Colors.green);

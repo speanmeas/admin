@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:intl/intl.dart";
-import "package:dio/dio.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
@@ -318,14 +317,14 @@ class _Main_State extends State<Main_> {
   void on_create() async {
     try {
       //
-      Map<String, dynamic> output = {};
-      for (var e in schema.data.entries) output[e.key] = e.value["value"];
+      var payload = {};
+      for (var e in schema.data.entries) payload[e.key] = e.value["value"];
 
       // request
-      final r = await dio.post("$PATH/create", data: FormData.fromMap({...output}));
+      final r = await dio.post("$PATH/create", data: payload);
 
       //
-      Navigator.pop(context, r.data);
+      Navigator.pop(context, r.data[0]);
 
       //
       snackbar.view(context: context, message: "Success", color: Colors.green);
