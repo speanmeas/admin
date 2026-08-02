@@ -47,7 +47,7 @@ class _Main_State extends State<Main_> {
       rooms = List<Map<String, dynamic>>.from(r.data);
 
       //
-      if (mounted) setState(() {});
+      setState(() {});
     } catch (e) {
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
