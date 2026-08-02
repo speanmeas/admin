@@ -623,15 +623,6 @@ class _Main_State extends State<Main_> {
       );
 
       await dio.post(
-        "/room/update_field", //
-        data: {
-          "_id": r[r_schema.ID], //
-          "key": r_schema.FRONT_DESK_ID, //
-          "value": null, //
-        },
-      );
-
-      await dio.post(
         "/front_desk/delete", //
         data: {"_id": r[r_schema.FRONT_DESK_ID]},
       );
