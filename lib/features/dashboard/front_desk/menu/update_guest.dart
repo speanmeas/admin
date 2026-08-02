@@ -51,11 +51,7 @@ class _Main_State extends State<Main_> {
               children: [
                 // guest search
                 SizedBox(height: 8),
-                g_search.Main_(
-                  controller: c_g_search,
-                  onChanged: (v) => _set_guest(v),
-                  onCleared: () => _set_guest({}),
-                ),
+                g_search.Main_(controller: c_g_search, onChanged: (v) => _set_guest(v), onCleared: () => _set_guest({})),
 
                 if (kDebugMode) _info_field(schema.ID),
                 if (kDebugMode) _info_field(schema.GUEST_ID),
@@ -117,7 +113,6 @@ class _Main_State extends State<Main_> {
       snackbar.view(context: context, message: "Success", color: Colors.green);
       //
     } catch (e) {
-      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }

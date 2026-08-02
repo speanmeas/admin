@@ -115,12 +115,10 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, true);
 
       //
-      if (!mounted) return;
       snackbar.view(context: context, message: "Success", color: Colors.green);
 
       //
     } catch (e) {
-      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }

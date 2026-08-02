@@ -51,7 +51,6 @@ class _Main_State extends State<Main_> {
       //
       if (mounted) setState(() {});
     } catch (e) {
-      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -99,14 +98,13 @@ class _Main_State extends State<Main_> {
                                       icon: Icons.hotel_outlined,
                                       text: r[r_schema.NUMBER],
                                       menuChildren: [
-                                        // MenuItemButton(
-                                        //   leadingIcon: Icon(Icons.info_outline),
-                                        //   child: Text("Status"), //
-                                        //   onPressed: () {
-                                        //     // TODO:
-                                        //     snackbar.show(context: context, message: "Under Development.", color: Colors.blue);
-                                        //   }, //
-                                        // ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.info_outline),
+                                          child: Text("Status"), //
+                                          onPressed: () {
+                                            snackbar.view(context: context, message: "Under Development.", color: Colors.blue);
+                                          }, //
+                                        ),
                                         // // Divider(height: 1),
                                         // MenuItemButton(
                                         //   leadingIcon: Icon(Icons.build_outlined),
@@ -166,21 +164,20 @@ class _Main_State extends State<Main_> {
                                             on_summary(r);
                                           }, //
                                         ),
-                                        // MenuItemButton(
-                                        //   leadingIcon: Icon(Icons.change_circle_outlined),
-                                        //   child: Text("Change Room"),
-                                        //   onPressed: () {
-                                        //     snackbar.show(context: context, message: "Under Development.", color: Colors.blue);
-                                        //   }, //
-                                        // ),
-                                        // MenuItemButton(
-                                        //   leadingIcon: Icon(Icons.edit_outlined),
-                                        //   child: Text("Update Staying"),
-                                        //   onPressed: () {
-                                        //     // TODO:
-                                        //     snackbar.show(context: context, message: "Under Development.", color: Colors.blue);
-                                        //   }, //
-                                        // ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.change_circle_outlined),
+                                          child: Text("Change Room"),
+                                          onPressed: () {
+                                            on_change_room(r);
+                                          }, //
+                                        ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.edit_outlined),
+                                          child: Text("Update Stay"),
+                                          onPressed: () {
+                                            on_update_stay(r);
+                                          }, //
+                                        ),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.edit_outlined),
                                           child: Text("Update Guest"),
@@ -188,20 +185,13 @@ class _Main_State extends State<Main_> {
                                             on_guest_update(r);
                                           }, //
                                         ),
-                                        // MenuItemButton(
-                                        //   leadingIcon: Icon(Icons.add_outlined),
-                                        //   child: Text("Add Revenue Payment"),
-                                        //   onPressed: () {
-                                        //     snackbar.show(context: context, message: "Under Development.", color: Colors.blue);
-                                        //   }, //
-                                        // ),
-                                        // MenuItemButton(
-                                        //   leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
-                                        //   child: Text("Cancel", style: TextStyle(color: Colors.red)),
-                                        //   onPressed: () {
-                                        //     snackbar.show(context: context, message: "Under Development.", color: Colors.blue);
-                                        //   }, //
-                                        // ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
+                                          child: Text("Cancel", style: TextStyle(color: Colors.red)),
+                                          onPressed: () {
+                                            on_cancel(r);
+                                          }, //
+                                        ),
                                       ],
                                       onPressed: () => on_payment(r), //
                                     ),
@@ -275,14 +265,20 @@ class _Main_State extends State<Main_> {
                                             on_revenue_payment(r);
                                           }, //
                                         ),
-                                        // MenuItemButton(
-                                        //   leadingIcon: Icon(Icons.edit_outlined),
-                                        //   child: Text("Update Room Payment"),
-                                        //   onPressed: () {
-                                        //     // TODO:
-                                        //     snackbar.show(context: context, message: "Under Development.", color: Colors.blue);
-                                        //   }, //
-                                        // ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.change_circle_outlined),
+                                          child: Text("Change Room"),
+                                          onPressed: () {
+                                            on_change_room(r);
+                                          }, //
+                                        ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.edit_outlined),
+                                          child: Text("Update Stay"),
+                                          onPressed: () {
+                                            on_update_stay(r);
+                                          }, //
+                                        ),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.edit_outlined),
                                           child: Text("Update Guest"),
@@ -290,14 +286,13 @@ class _Main_State extends State<Main_> {
                                             on_guest_update(r);
                                           }, //
                                         ),
-                                        // MenuItemButton(
-                                        //   leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
-                                        //   child: Text("Cancel", style: TextStyle(color: Colors.red)),
-                                        //   onPressed: () {
-                                        //     // TODO:
-                                        //     snackbar.show(context: context, message: "Under Development.", color: Colors.blue);
-                                        //   }, //
-                                        // ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
+                                          child: Text("Cancel", style: TextStyle(color: Colors.red)),
+                                          onPressed: () {
+                                            on_cancel(r);
+                                          }, //
+                                        ),
                                       ],
                                       onPressed: () => on_check_out(r), //
                                     ),
@@ -348,12 +343,32 @@ class _Main_State extends State<Main_> {
                                             on_summary(r);
                                           }, //
                                         ),
-                                        // Divider(height: 1),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.change_circle_outlined),
+                                          child: Text("Change Room"),
+                                          onPressed: () {
+                                            on_change_room(r);
+                                          }, //
+                                        ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.edit_outlined),
+                                          child: Text("Update Stay"),
+                                          onPressed: () {
+                                            on_update_stay(r);
+                                          }, //
+                                        ),
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.edit_outlined),
                                           child: Text("Update Guest"),
                                           onPressed: () {
                                             on_guest_update(r);
+                                          }, //
+                                        ),
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
+                                          child: Text("Cancel", style: TextStyle(color: Colors.red)),
+                                          onPressed: () {
+                                            on_cancel(r);
                                           }, //
                                         ),
                                       ],
@@ -391,10 +406,11 @@ class _Main_State extends State<Main_> {
         data: {"_id": r[r_schema.FRONT_DESK_ID]},
         options: Options(headers: {"Content-Type": "application/json"}),
       );
-      for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
+      final fd = (f.data is List) ? f.data[0] : f.data;
+      for (var e in schema.data.entries) e.value["value"] = fd[e.key];
 
       //
-      if (!mounted) return;
+
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => revenue_payment.Main_()));
       if (value == null) return;
 
@@ -402,7 +418,6 @@ class _Main_State extends State<Main_> {
       init();
       //
     } catch (e) {
-      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -419,18 +434,17 @@ class _Main_State extends State<Main_> {
       var f = await dio.post(
         "/front_desk/read_id", //
         data: {"_id": r[r_schema.FRONT_DESK_ID]},
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
-      for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
+      final fd = (f.data is List) ? f.data[0] : f.data;
+      for (var e in schema.data.entries) e.value["value"] = fd[e.key];
 
       //
-      if (!mounted) return;
+
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => update_guest.Main_()));
       if (value == null) return;
 
       //
     } catch (e) {
-      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -443,22 +457,24 @@ class _Main_State extends State<Main_> {
       g_schema.clear();
       r_schema.clear();
 
+      for (var e in r.entries) print(e);
+
       //
       var f = await dio.post(
         "/front_desk/read_id", //
         data: {"_id": r[r_schema.FRONT_DESK_ID]},
-        options: Options(headers: {"Content-Type": "application/json"}),
       );
-      for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
+
+      final fd = (f.data is List) ? f.data[0] : f.data;
+      for (var e in schema.data.entries) e.value["value"] = fd[e.key];
 
       //
-      if (!mounted) return;
+
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => summary.Main_()));
       if (value == null) return;
 
       //
     } catch (e) {
-      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -479,7 +495,7 @@ class _Main_State extends State<Main_> {
       schema.data[schema.ROOM_USD_PER_DAY]?["value"] = r[r_schema.USD_PER_DAY];
 
       //
-      if (!mounted) return;
+
       final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_in.Main_()));
       if (v == null) return;
 
@@ -488,7 +504,6 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
-      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -507,10 +522,11 @@ class _Main_State extends State<Main_> {
         data: {"_id": r[r_schema.FRONT_DESK_ID]},
         options: Options(headers: {"Content-Type": "application/json"}),
       );
-      for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
+      final fd = (f.data is List) ? f.data[0] : f.data;
+      for (var e in schema.data.entries) e.value["value"] = fd[e.key];
 
       //
-      if (!mounted) return;
+
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => payment.Main_()));
       if (value == null) return;
 
@@ -519,7 +535,6 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
-      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -539,10 +554,11 @@ class _Main_State extends State<Main_> {
         data: {"_id": r[r_schema.FRONT_DESK_ID]},
         options: Options(headers: {"Content-Type": "application/json"}),
       );
-      for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
+      final fd = (f.data is List) ? f.data[0] : f.data;
+      for (var e in schema.data.entries) e.value["value"] = fd[e.key];
 
       //
-      if (!mounted) return;
+
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_out.Main_()));
       if (value == null) return;
 
@@ -551,7 +567,6 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
-      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -570,10 +585,11 @@ class _Main_State extends State<Main_> {
         data: {"_id": r[r_schema.FRONT_DESK_ID]},
         options: Options(headers: {"Content-Type": "application/json"}),
       );
-      for (var e in schema.data.entries) e.value["value"] = f.data[e.key];
+      final fd = (f.data is List) ? f.data[0] : f.data;
+      for (var e in schema.data.entries) e.value["value"] = fd[e.key];
 
       //
-      if (!mounted) return;
+
       var value = await Navigator.push(context, MaterialPageRoute(builder: (context) => clean.Main_()));
       if (value == null) return;
 
@@ -582,9 +598,79 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
-      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
+  }
+
+  //
+  void on_cancel(r) async {
+    try {
+      //
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Cancel Booking"),
+            content: Text("Are you sure you want to cancel this booking?"),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(context, false), child: Text("No")),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text("Yes", style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          );
+        },
+      );
+      if (confirmed != true) return;
+
+      //
+      await dio.post(
+        "/room/update", //
+        data: {
+          "_id": r[r_schema.ID], //
+          r_schema.STATUS: "Available", //
+        },
+        options: Options(headers: {"Content-Type": "application/json"}),
+      );
+
+      await dio.post(
+        "/room/update_field", //
+        data: {
+          "_id": r[r_schema.ID], //
+          "key": r_schema.FRONT_DESK_ID, //
+          "value": null, //
+        },
+        options: Options(headers: {"Content-Type": "application/json"}),
+      );
+
+      await dio.post(
+        "/front_desk/delete", //
+        data: {"_id": r[r_schema.FRONT_DESK_ID]},
+        options: Options(headers: {"Content-Type": "application/json"}),
+      );
+
+      //
+      init();
+
+      //
+
+      snackbar.view(context: context, message: "Cancelled", color: Colors.green);
+
+      //
+    } catch (e) {
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
+  //
+  void on_change_room(r) async {
+    snackbar.view(context: context, message: "Under Development", color: Colors.blue);
+  }
+
+  //
+  void on_update_stay(r) async {
+    snackbar.view(context: context, message: "Under Development", color: Colors.blue);
   }
 
   //

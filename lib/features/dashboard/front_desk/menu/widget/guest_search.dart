@@ -42,7 +42,9 @@ class _Main_State extends State<Main_> {
       options: Options(headers: {"Content-Type": "application/json"}),
     );
 
-      widget.onChanged?.call(List<Map<String, dynamic>>.from(r.data).first);
+      final items = List<Map<String, dynamic>>.from(r.data is List ? r.data : [r.data]);
+      if (items.isEmpty) return;
+      widget.onChanged?.call(items.first);
     } catch (e) {
       print(e.toString());
     }
@@ -73,7 +75,8 @@ class _Main_State extends State<Main_> {
 
                 //
                 List<String> options = [];
-                for (var d in r.data) {
+                final data_list = r.data is List ? r.data : [r.data];
+                for (var d in data_list) {
                   if (d[g_schema.PHONE_NUMBER] == null) continue;
                   options.add(d[g_schema.PHONE_NUMBER] ?? "");
                 }

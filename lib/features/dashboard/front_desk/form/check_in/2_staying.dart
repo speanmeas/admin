@@ -169,7 +169,6 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
-      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }

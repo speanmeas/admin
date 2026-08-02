@@ -95,7 +95,7 @@ class _Main_State extends State<Main_> {
         data: {
           "_id": output[schema.ROOM_ID].toString(), //
           r_schema.STATUS: status, //
-          r_schema.FRONT_DESK_ID: r.data[0]["_id"],
+          r_schema.FRONT_DESK_ID: (r.data is List ? r.data[0]["_id"] : r.data["_id"]),
         },
         options: Options(headers: {"Content-Type": "application/json"}),
       );
@@ -111,10 +111,8 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, true);
 
       //
-      if (!mounted) return;
       snackbar.view(context: context, message: "Success", color: Colors.green);
     } catch (e) {
-      if (!mounted) return;
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
