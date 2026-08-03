@@ -263,14 +263,14 @@ class _Main_State extends State<Main_> {
     double paid_bank_khr = double.tryParse(c_paid_bank_khr.text) ?? 0;
     double paid_cash_khr = double.tryParse(c_paid_cash_khr.text) ?? 0;
 
-    return paid_bank_usd + paid_cash_usd + (paid_bank_khr + paid_cash_khr) / global.RATE;
+    return paid_bank_usd + paid_cash_usd + (paid_bank_khr + paid_cash_khr) / glob.RATE;
   }
 
   double get_return_total_usd() {
     double return_usd = double.tryParse(c_return_usd.text) ?? 0;
     double return_khr = double.tryParse(c_return_khr.text) ?? 0;
 
-    return return_usd + (return_khr / global.RATE);
+    return return_usd + (return_khr / glob.RATE);
   }
 
   double get_balance_usd() {
@@ -290,10 +290,10 @@ class _Main_State extends State<Main_> {
       double paid_cash_usd = _parse_amount(c_paid_cash_usd.text);
       double paid_bank_khr = _parse_amount(c_paid_bank_khr.text);
       double paid_cash_khr = _parse_amount(c_paid_cash_khr.text);
-      double paid_total = paid_bank_usd + paid_cash_usd + (paid_bank_khr + paid_cash_khr) / global.RATE;
+      double paid_total = paid_bank_usd + paid_cash_usd + (paid_bank_khr + paid_cash_khr) / glob.RATE;
       double return_usd = _parse_amount(c_return_usd.text);
       double return_khr = _parse_amount(c_return_khr.text);
-      double return_total = return_usd + return_khr / global.RATE;
+      double return_total = return_usd + return_khr / glob.RATE;
       double balance = price - paid_total + return_total;
 
       //

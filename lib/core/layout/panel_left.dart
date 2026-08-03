@@ -118,11 +118,11 @@ class _Main_State extends State<Main_> {
     return ListTile(
       leading: Icon(icon),
       title: Text(name),
-      selected: global.body == name,
+      selected: glob.body == name,
       selectedColor: Colors.blue,
       onTap: () {
-        global.body = name;
-        global.notifyListeners();
+        glob.body = name;
+        glob.notifyListeners();
         if (is_mobile) Navigator.pop(context);
         setState(() {});
       },
@@ -137,12 +137,12 @@ class _Main_State extends State<Main_> {
     return ListTile(
       leading: Icon(icon),
       title: Text(name),
-      selected: global.body == "$prefix $name",
+      selected: glob.body == "$prefix $name",
       selectedColor: Colors.blue,
       contentPadding: EdgeInsets.only(left: 40),
       onTap: () {
-        global.body = "$prefix $name";
-        global.notifyListeners();
+        glob.body = "$prefix $name";
+        glob.notifyListeners();
         if (is_mobile) Navigator.pop(context);
         setState(() {});
       },

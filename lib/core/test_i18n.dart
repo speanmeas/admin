@@ -3,6 +3,7 @@ import "dart:convert";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/theme/theme_data.dart" as theme;
 
@@ -19,16 +20,7 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     // await i18n.set_locale("km_KH");
-    print("init");
-
-    try {
-      final json = await rootBundle.loadString("assets/i18n/km_KH.json");
-      final map = jsonDecode(json) as Map<String, dynamic>;
-      print(map);
-    } catch (e) {
-      print("Error occurred: $e");
-      // data = {};
-    }
+    print(glob.VERSION);
   }
 
   @override
@@ -62,6 +54,22 @@ class _Main_State extends State<Main_> {
                     //
                   }, //
                 ),
+                OutlinedButton.icon(
+                  icon: Icon(Icons.check), //
+                  label: Text(i18n.tr("English")), //
+                  onPressed: () {
+                    //
+                    i18n.set_locale("en_EN");
+                  }, //
+                ),
+                OutlinedButton.icon(
+                  icon: Icon(Icons.check), //
+                  label: Text(i18n.tr("Khmer")), //
+                  onPressed: () {
+                    //
+                    i18n.set_locale("km_KH");
+                  }, //
+                ),
               ],
             ),
           ),
@@ -79,11 +87,16 @@ class Main_ extends StatefulWidget {
 }
 
 void main() async {
-  // await i18n.set_locale("en_EN");
-  // await i18n.set_locale("km_KH");
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => i18n, //
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
       child: MaterialApp(
         title: "Development", //
         theme: theme.data(), //

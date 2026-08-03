@@ -9,7 +9,7 @@ import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => global, //
+      create: (_) => glob, //
       child: Main(),
     ),
   );

@@ -80,7 +80,7 @@ flutter:
   assets:
     - assets/
     - assets/i18n/en_EN.json
-    - assets/i18n/kh_KH.json
+    - assets/i18n/km_KH.json
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

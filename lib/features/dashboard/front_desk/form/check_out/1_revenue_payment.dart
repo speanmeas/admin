@@ -273,7 +273,7 @@ class _Main_State extends State<Main_> {
     double paid_cash_usd = double.tryParse(c_paid_cash_usd.text) ?? 0;
     double paid_bank_khr = double.tryParse(c_paid_bank_khr.text) ?? 0;
     double paid_cash_khr = double.tryParse(c_paid_cash_khr.text) ?? 0;
-    double paid_total_usd = paid_bank_usd + paid_cash_usd + (paid_bank_khr + paid_cash_khr) / global.RATE;
+    double paid_total_usd = paid_bank_usd + paid_cash_usd + (paid_bank_khr + paid_cash_khr) / glob.RATE;
 
     return paid_total_usd;
   }
@@ -282,7 +282,7 @@ class _Main_State extends State<Main_> {
     double return_usd = double.tryParse(c_return_usd.text) ?? 0;
     double return_khr = double.tryParse(c_return_khr.text) ?? 0;
 
-    double return_total_usd = return_usd + (return_khr / global.RATE);
+    double return_total_usd = return_usd + (return_khr / glob.RATE);
 
     return return_total_usd;
   }

@@ -8,6 +8,10 @@ class Global extends ChangeNotifier {
   static final Global instance = Global._();
   Global._();
 
+  init() {
+    print("Global initialized.");
+  }
+
   // constants
   String VERSION = "0.0.0+0";
   double RATE = 4000; // 1 USD = 4000 KHR
@@ -16,4 +20,4 @@ class Global extends ChangeNotifier {
   //
 }
 
-Global global = Global.instance;
+Global glob = Global.instance;

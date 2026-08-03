@@ -4,14 +4,20 @@ import "package:provider/provider.dart";
 
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/theme/theme_data.dart" as theme;
 
 import "features/auth/loading.dart" as loading;
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await lang.set_locale("en_EN");
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => global, //
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
       child: const Main(),
     ),
   );
@@ -48,9 +54,9 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     final info = await PackageInfo.fromPlatform();
-    global.VERSION = "${info.version}+${info.buildNumber}";
-    global.notifyListeners();
-    print("VERSION: ${global.VERSION}");
+    glob.VERSION = "${info.version}+${info.buildNumber}";
+    glob.notifyListeners();
+    print("VERSION: ${glob.VERSION}");
   }
 
   @override
