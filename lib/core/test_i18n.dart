@@ -1,4 +1,7 @@
+import "dart:convert";
+
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/theme/theme_data.dart" as theme;
@@ -8,6 +11,26 @@ import "package:speanmeas/core/theme/theme_data.dart" as theme;
 ///   form.Main_(context);
 
 class _Main_State extends State<Main_> {
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    // await i18n.set_locale("km_KH");
+    print("init");
+
+    try {
+      final json = await rootBundle.loadString("assets/i18n/km_KH.json");
+      final map = jsonDecode(json) as Map<String, dynamic>;
+      print(map);
+    } catch (e) {
+      print("Error occurred: $e");
+      // data = {};
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final I18N i18n = context.watch<I18N>();
@@ -57,7 +80,7 @@ class Main_ extends StatefulWidget {
 
 void main() async {
   // await i18n.set_locale("en_EN");
-  await i18n.set_locale("km_KH");
+  // await i18n.set_locale("km_KH");
   runApp(
     ChangeNotifierProvider(
       create: (_) => i18n, //

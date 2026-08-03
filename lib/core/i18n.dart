@@ -11,7 +11,7 @@ class I18N extends ChangeNotifier {
   Map<String, String> data = {};
 
   Future<void> set_locale(String locale) async {
-    final String path = "asset/i18n/$locale.json";
+    final String path = "assets/i18n/$locale.json";
 
     try {
       final json = await rootBundle.loadString(path);
