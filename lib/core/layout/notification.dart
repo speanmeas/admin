@@ -1,8 +1,3 @@
-///
-/// TODO: develop notification page
-///
-///
-
 import "package:flutter/material.dart";
 import "package:speanmeas/core/theme/theme_data.dart" as theme;
 
