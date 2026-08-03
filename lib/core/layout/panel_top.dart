@@ -37,7 +37,7 @@ class _Main_State extends State<Main_> {
             width: 56,
             height: 32, //
             child: Image.asset(
-              "asset/logo.png", //
+              "assets/logo.png", //
               fit: BoxFit.contain,
             ),
           ),

@@ -30,7 +30,7 @@ class _Main_State extends State<Main_> {
               Container(
                 height: 160, //
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: Image.asset("asset/logo.png"),
+                child: Image.asset("assets/logo.png"),
               ),
 
               Container(
