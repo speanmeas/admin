@@ -1,4 +1,7 @@
+import "dart:convert";
+
 import "package:flutter/foundation.dart";
+import "package:flutter/services.dart";
 
 class Global extends ChangeNotifier {
   // singleton
@@ -8,17 +11,9 @@ class Global extends ChangeNotifier {
   // constants
   String VERSION = "0.0.0+0";
   double RATE = 4000; // 1 USD = 4000 KHR
-
-  // pages
   String body = "Front Desk"; //
-  // String body = "Database - Nationality"; //
 
   //
-
-  void clear() {
-    body = "Database - Nationality"; //
-    notifyListeners();
-  }
 }
 
 Global global = Global.instance;
