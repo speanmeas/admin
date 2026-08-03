@@ -4,7 +4,7 @@ ThemeData data() {
   return ThemeData(
     //
     //
-    fontFamily: "NotoSansKhmer",
+    fontFamily: "Nokora", //
     //
     //
     colorScheme: ColorScheme.fromSeed(
