@@ -11,20 +11,22 @@ import "features/auth/loading.dart" as loading;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await lang.set_locale("en_EN");
+  glob.init();
+  lang.init();
+  //
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: glob),
         ChangeNotifierProvider.value(value: lang),
       ],
-      child: const Main(),
+      child: Main(),
     ),
   );
 }
 
 class Main extends StatelessWidget {
-  const Main({super.key});
+  Main({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,7 @@ class Main extends StatelessWidget {
 }
 
 class Main_ extends StatefulWidget {
-  const Main_({super.key});
+  Main_({super.key});
 
   @override
   State<Main_> createState() => _Main_State();

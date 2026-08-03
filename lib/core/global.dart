@@ -1,7 +1,4 @@
-import "dart:convert";
-
 import "package:flutter/foundation.dart";
-import "package:flutter/services.dart";
 
 class Global extends ChangeNotifier {
   // singleton

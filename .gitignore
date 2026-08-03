@@ -61,6 +61,7 @@ app.*.map.json
 # ignore copy files and folders
 * copy*
 * copy/
+test_*
 
 update_cloudflare.py
 update_github.py

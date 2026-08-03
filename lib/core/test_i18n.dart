@@ -49,14 +49,14 @@ class _Main_State extends State<Main_> {
 
                 OutlinedButton.icon(
                   icon: Icon(Icons.check), //
-                  label: Text(i18n.tr("Hello")), //
+                  label: Text(t("Hello")), //
                   onPressed: () {
                     //
                   }, //
                 ),
                 OutlinedButton.icon(
                   icon: Icon(Icons.check), //
-                  label: Text(i18n.tr("English")), //
+                  label: Text(t("English")), //
                   onPressed: () {
                     //
                     i18n.set_locale("en_EN");
@@ -64,7 +64,7 @@ class _Main_State extends State<Main_> {
                 ),
                 OutlinedButton.icon(
                   icon: Icon(Icons.check), //
-                  label: Text(i18n.tr("Khmer")), //
+                  label: Text(t("Khmer")), //
                   onPressed: () {
                     //
                     i18n.set_locale("km_KH");

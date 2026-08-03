@@ -29,11 +29,17 @@ class I18N extends ChangeNotifier {
     notifyListeners();
   }
 
-  String tr(String input) {
+  String translate(String input) {
     return data[input] ?? input;
   }
 
   //
 }
 
+//
 I18N lang = I18N.instance;
+
+// make it short to use
+String t(String input) {
+  return lang.translate(input);
+}
