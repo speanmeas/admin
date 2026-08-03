@@ -240,7 +240,7 @@ void main() {
   runApp(
     MaterialApp(
       home: Main_(),
-      theme: Theme_Data(), //
+      theme: data(), //
       debugShowCheckedModeBanner: false,
     ),
   );

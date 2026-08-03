@@ -24,7 +24,7 @@ class Main extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "$TITLE Admin", //
-      theme: Theme_Data(),
+      theme: data(),
       debugShowCheckedModeBanner: false,
       // home: Layout_Dashboard_(),
       home: Main_(),

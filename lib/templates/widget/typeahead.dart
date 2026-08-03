@@ -57,7 +57,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "TypeAhead", //
-      theme: Theme_Data(), //
+      theme: data(), //
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(

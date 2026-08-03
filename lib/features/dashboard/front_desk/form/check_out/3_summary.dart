@@ -119,7 +119,7 @@ String _dateValue(dynamic value) {
 void main() {
   runApp(
     MaterialApp(
-      theme: Theme_Data(), //
+      theme: data(), //
       home: Main_(),
       debugShowCheckedModeBanner: false,
     ),

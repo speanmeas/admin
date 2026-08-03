@@ -26,7 +26,7 @@ class Main_ extends StatelessWidget {
 void main() {
   runApp(
     MaterialApp(
-      theme: Theme_Data(), //
+      theme: data(), //
       home: const Scaffold(
         body: Center(
           child: Main_(

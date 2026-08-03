@@ -51,7 +51,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      theme: Theme_Data(), //
+      theme: data(), //
       home: Scaffold(
         body: Center(
           child: Main_(

@@ -67,7 +67,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "Template Form", //
-      theme: Theme_Data(), //
+      theme: data(), //
       debugShowCheckedModeBanner: false,
       home: Main_(),
     ),

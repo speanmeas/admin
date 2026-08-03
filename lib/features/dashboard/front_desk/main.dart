@@ -14,7 +14,7 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     try {
-      //
+      // * ទាញយកទិន្នន័យបន្ទប់ទាំងអស់ពីម៉ាស៊ីនមេ
       final r = await dio.post(
         "/room/read", //
         data: {
@@ -24,10 +24,10 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      //
+      // * រក្សាទុកទិន្នន័យបន្ទប់ទៅក្នុងបញ្ជី
       rooms = List<Map<String, dynamic>>.from(r.data);
 
-      //
+      // * ធ្វើបច្ចុប្បន្នភាពចំណុចប្រទាក់អ្នកប្រើប្រាស់
       setState(() {});
     } catch (e) {
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
@@ -41,7 +41,7 @@ class _Main_State extends State<Main_> {
         child: Center(
           child: Wrap(
             children: [
-              //
+              // * បង្ហាញបញ្ជីបន្ទប់ទាំងអស់
               for (var r in rooms)
                 Container(
                   width: 500,
@@ -315,7 +315,7 @@ void main() {
   runApp(
     MaterialApp(
       title: HEADER, //
-      theme: Theme_Data(), //
+      theme: data(), //
       home: Main_(),
       debugShowCheckedModeBanner: false,
     ),

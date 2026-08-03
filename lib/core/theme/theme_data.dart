@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-ThemeData Theme_Data() {
+ThemeData data() {
   return ThemeData(
     //
     //

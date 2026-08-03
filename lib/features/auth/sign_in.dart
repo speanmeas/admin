@@ -145,7 +145,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "Development", //
-      theme: Theme_Data(), //
+      theme: data(), //
       home: Main_(),
       debugShowCheckedModeBanner: false,
     ),
