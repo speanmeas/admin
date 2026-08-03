@@ -54,7 +54,14 @@ class _Datetime_Picker_State extends State<Datetime_Picker_> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Date Time Picker")),
+      appBar: AppBar(
+        title: const Text("Date Time Picker"),
+
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1), //
+          child: Divider(height: 1, color: Colors.black),
+        ),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

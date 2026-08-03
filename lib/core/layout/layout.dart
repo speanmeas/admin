@@ -24,6 +24,11 @@ class _Main_State extends State<Main_> {
         titleSpacing: 0,
         toolbarHeight: 48,
         centerTitle: false,
+
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1), //
+          child: Divider(height: 1, color: Colors.black),
+        ),
       ),
       body: Column(
         children: [

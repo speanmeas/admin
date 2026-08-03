@@ -12,7 +12,6 @@ import "package:speanmeas/features/database/guest/schema.g.dart" as g_schema;
 import "widget/guest_search.dart" as g_search;
 
 import "widget/number_select.dart" as n_select;
-import "widget/number_input.dart" as n_input;
 
 class _Main_State extends State<Main_> {
   final c_g_search = TextEditingController();
@@ -41,15 +40,7 @@ class _Main_State extends State<Main_> {
           "Check In", //
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        // actions: [
-        //   OutlinedButton.icon(
-        //     icon: Icon(Icons.arrow_right_alt_outlined),
-        //     label: Text("Next"),
-        //     style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-        //     onPressed: on_next,
-        //   ),
-        //   SizedBox(width: 8),
-        // ],
+
         centerTitle: false,
         toolbarHeight: 40,
         titleSpacing: 0,
@@ -58,7 +49,6 @@ class _Main_State extends State<Main_> {
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1), //
           child: Divider(height: 1, color: Colors.black),
-          // child: LinearProgressIndicator(value: 1 / 4),
         ),
       ),
       body: SingleChildScrollView(
