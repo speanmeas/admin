@@ -3,7 +3,7 @@ import "package:intl/intl.dart";
 
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/features/auth/schema.g.dart" as u_schema;
 
@@ -347,7 +347,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      theme: data(), //
+      theme: theme.data(), //
       home: Main_(),
       debugShowCheckedModeBanner: false,
     ),

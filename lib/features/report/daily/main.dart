@@ -4,7 +4,7 @@ import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 
 import "__config__.dart";
@@ -583,5 +583,5 @@ class Main_ extends StatefulWidget {
 }
 
 void main() {
-  runApp(MaterialApp(title: HEADER, theme: data(), home: const Main_(), debugShowCheckedModeBanner: false));
+  runApp(MaterialApp(title: HEADER, theme: theme.data(), home: const Main_(), debugShowCheckedModeBanner: false));
 }

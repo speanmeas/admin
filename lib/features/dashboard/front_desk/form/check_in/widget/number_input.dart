@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/theme/theme_data.dart" as theme;
 
 class _Main_State extends State<Main_> {
   bool is_valid = true;
@@ -73,7 +73,7 @@ void main() {
 
   runApp(
     MaterialApp(
-      theme: data(), //
+      theme: theme.data(), //
       home: Scaffold(
         body: Center(
           child: Main_(

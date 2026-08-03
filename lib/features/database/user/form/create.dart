@@ -4,7 +4,7 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:intl/intl.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/dialog/datetime_picker.dart" as datetime_picker;
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
@@ -285,7 +285,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "Development", //
-      theme: data(), //
+      theme: theme.data(), //
       home: Main_(),
       debugShowCheckedModeBanner: false,
     ),

@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/features/auth/schema.g.dart" as u_schema;
@@ -183,7 +183,7 @@ void main() {
   runApp(
     MaterialApp(
       home: Main_(),
-      theme: data(), //
+      theme: theme.data(), //
       debugShowCheckedModeBanner: false,
     ),
   );

@@ -1,7 +1,7 @@
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
 
 import "../__config__.dart";
@@ -115,7 +115,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "Development", //
-      theme: data(), //
+      theme: theme.data(), //
       home: Main_(),
       debugShowCheckedModeBanner: false,
     ),

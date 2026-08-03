@@ -4,7 +4,7 @@ import "package:provider/provider.dart";
 
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/theme/theme_data.dart" as theme;
 
 import "features/auth/loading.dart" as loading;
 
@@ -24,7 +24,7 @@ class Main extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "$TITLE Admin", //
-      theme: data(),
+      theme: theme.data(),
       debugShowCheckedModeBanner: false,
       // home: Layout_Dashboard_(),
       home: Main_(),

@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
 
@@ -240,7 +240,7 @@ void main() {
   runApp(
     MaterialApp(
       home: Main_(),
-      theme: data(), //
+      theme: theme.data(), //
       debugShowCheckedModeBanner: false,
     ),
   );

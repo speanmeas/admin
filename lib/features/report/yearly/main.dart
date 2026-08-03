@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/theme/theme_data.dart" as theme;
 
 class _Main_State extends State<Main_> {
   @override
@@ -38,7 +38,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      theme: data(), //
+      theme: theme.data(), //
       debugShowCheckedModeBanner: false,
       home: Main_(),
     ),

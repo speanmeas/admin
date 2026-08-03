@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/theme/theme_data.dart" as theme;
 
 class Main_ extends StatelessWidget {
   const Main_({
@@ -26,7 +26,7 @@ class Main_ extends StatelessWidget {
 void main() {
   runApp(
     MaterialApp(
-      theme: data(), //
+      theme: theme.data(), //
       home: const Scaffold(
         body: Center(
           child: Main_(

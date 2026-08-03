@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
 
@@ -119,7 +119,7 @@ String _dateValue(dynamic value) {
 void main() {
   runApp(
     MaterialApp(
-      theme: data(), //
+      theme: theme.data(), //
       home: Main_(),
       debugShowCheckedModeBanner: false,
     ),
