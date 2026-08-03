@@ -5,7 +5,7 @@ import "package:intl/intl.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/dialog/datetime_picker.dart";
+import "package:speanmeas/core/dialog/datetime_picker.dart" as datetime_picker;
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
 
@@ -176,7 +176,7 @@ class _Main_State extends State<Main_> {
                           ),
                         ),
                         onTap: () async {
-                          DateTime? datetime = await view(context, initial_datetime: init);
+                          DateTime? datetime = await datetime_picker.view(context, initial_datetime: init);
                           if (datetime == null) return;
                           e.value["value"] = datetime.toIso8601String();
                           setState(() {});
