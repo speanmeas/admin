@@ -7,14 +7,17 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
+import "package:speanmeas/core/endpoint.g.dart" as ep;
 import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 
 import "__config__.dart";
-import "package:speanmeas/features/database/room/schema.g.dart" as r_schema;
-import "package:speanmeas/features/database/front_desk/schema.g.dart" as fd_schema;
+
+import "package:speanmeas/features/dashboard/front_desk/schema.g.dart" as sm_fd;
+import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
 import "check_in.dart" as check_in;
+// import "check_out.dart" as check_out;
 
 class _Main_State extends State<Main_> {
   //
@@ -28,9 +31,9 @@ class _Main_State extends State<Main_> {
     try {
       // * ទាញយកទិន្នន័យបន្ទប់ទាំងអស់ពីម៉ាស៊ីនមេ
       tmp = await dio.post(
-        "/room/read", //
+        ep.ROOM_READ, //
         data: {
-          "key": r_schema.NUMBER, //
+          "key": sm_r.NUMBER, //
           "order": 1, //
           "limit": 1000,
         },
@@ -44,12 +47,12 @@ class _Main_State extends State<Main_> {
       for (var r in rooms) {
         if (r["front_desk_id"] != null) {
           tmp = await dio.post(
-            "/front_desk/read_id", //
+            ep.FRONT_DESK_READ_ID, //
             data: {
-              fd_schema.ID: r[r_schema.FRONT_DESK_ID], //
+              sm_fd.ID: r[sm_r.FRONT_DESK_ID], //
             },
           );
-          front_desks[r[r_schema.FRONT_DESK_ID]] = tmp.data[0];
+          front_desks[r[sm_r.FRONT_DESK_ID]] = tmp.data[0];
         }
       }
 
@@ -86,7 +89,7 @@ class _Main_State extends State<Main_> {
                         // * លេខបន្ទប់នៅកណ្តាលជានិច្ច
                         Center(
                           child: Text(
-                            "${r[r_schema.NUMBER]}",
+                            "${r[sm_r.NUMBER]}",
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -98,10 +101,10 @@ class _Main_State extends State<Main_> {
                         // * ស្ថានភាពបន្ទប់នៅខាងស្តាំ
                         (() {
                           var color = Colors.black; // Default color
-                          if (r[r_schema.STATUS] == "Available") color = Colors.green;
-                          if (r[r_schema.STATUS] == "Pending Pay") color = Colors.orange;
-                          if (r[r_schema.STATUS] == "Pending Leave") color = Colors.red;
-                          if (r[r_schema.STATUS] == "Pending Clean") color = Colors.black;
+                          if (r[sm_r.STATUS] == "Available") color = Colors.green;
+                          if (r[sm_r.STATUS] == "Pending Pay") color = Colors.orange;
+                          if (r[sm_r.STATUS] == "Pending Leave") color = Colors.red;
+                          if (r[sm_r.STATUS] == "Pending Clean") color = Colors.black;
 
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -109,7 +112,7 @@ class _Main_State extends State<Main_> {
                               Icon(Icons.circle, size: 10, color: color),
                               SizedBox(width: 4),
                               Text(
-                                "${r[r_schema.STATUS]}",
+                                "${r[sm_r.STATUS]}",
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
@@ -135,7 +138,7 @@ class _Main_State extends State<Main_> {
                                 },
                                 menuChildren: [
                                   //
-                                  if (r[r_schema.STATUS] != "Available") ...[
+                                  if (r[sm_r.STATUS] != "Available") ...[
                                     //
                                     MenuItemButton(
                                       leadingIcon: Icon(Icons.receipt_outlined, color: Colors.blue),
@@ -173,7 +176,7 @@ class _Main_State extends State<Main_> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "${r[r_schema.KIND]}",
+                          "${r[sm_r.KIND]}",
                           style: TextStyle(
                             fontSize: 14, //
                             fontWeight: FontWeight.bold, //
@@ -183,7 +186,7 @@ class _Main_State extends State<Main_> {
                         Text("-"), //
 
                         Text(
-                          "${r[r_schema.USD_PER_3H]}\$/3Hours",
+                          "${r[sm_r.USD_PER_3H]}\$/3Hours",
                           style: TextStyle(
                             fontSize: 14, //
                             fontWeight: FontWeight.bold, //
@@ -193,7 +196,7 @@ class _Main_State extends State<Main_> {
                         Text("-"), //
 
                         Text(
-                          "${r[r_schema.USD_PER_DAY]}\$/Day",
+                          "${r[sm_r.USD_PER_DAY]}\$/Day",
                           style: TextStyle(
                             fontSize: 14, //
                             fontWeight: FontWeight.bold, //
@@ -203,11 +206,11 @@ class _Main_State extends State<Main_> {
                     ),
 
                     //
-                    if (r[r_schema.FRONT_DESK_ID] != null) ...[
+                    if (r[sm_r.FRONT_DESK_ID] != null) ...[
                       //
                       (() {
-                        final guest_name = front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.GUEST_FULL_NAME] ?? "";
-                        final guest_phone = front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.GUEST_PHONE_NUMBER] ?? "";
+                        final guest_name = front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.GUEST_FULL_NAME] ?? "";
+                        final guest_phone = front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.GUEST_PHONE_NUMBER] ?? "";
                         return Row(
                           spacing: 4,
                           children: [
@@ -226,9 +229,9 @@ class _Main_State extends State<Main_> {
 
                       //
                       (() {
-                        final stay_n_guest = front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.STAY_N_GUEST] ?? "";
-                        final stay_day = front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.STAY_DAY] ?? "";
-                        final stay_hour = front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.STAY_HOUR] ?? "";
+                        final stay_n_guest = front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.STAY_N_GUEST] ?? "";
+                        final stay_day = front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.STAY_DAY] ?? "";
+                        final stay_hour = front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.STAY_HOUR] ?? "";
                         return Row(
                           spacing: 4,
                           children: [
@@ -249,8 +252,8 @@ class _Main_State extends State<Main_> {
 
                       //
                       (() {
-                        final room_pay = front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.ROOM_PAY] ?? "0";
-                        final revenue_pay = front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.REVENUE_PAY] ?? "0";
+                        final room_pay = front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.ROOM_PAY] ?? "0";
+                        final revenue_pay = front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.REVENUE_PAY] ?? "0";
                         return Row(
                           spacing: 4,
                           children: [
@@ -276,8 +279,8 @@ class _Main_State extends State<Main_> {
                       //
                       (() {
                         String check_in = "";
-                        if (front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.CHECK_IN_AT] != null) {
-                          final due = DateTime.parse(front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.CHECK_IN_AT]);
+                        if (front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.CHECK_IN_AT] != null) {
+                          final due = DateTime.parse(front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.CHECK_IN_AT]);
                           check_in = DateFormat("EEEE dd-MM-yyyy h:mm a").format(due);
                         }
                         return Row(
@@ -293,8 +296,8 @@ class _Main_State extends State<Main_> {
                       //
                       (() {
                         String due = "";
-                        if (front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.STAY_DUE] != null) {
-                          tmp = DateTime.parse(front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.STAY_DUE]);
+                        if (front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.STAY_DUE] != null) {
+                          tmp = DateTime.parse(front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.STAY_DUE]);
                           due = DateFormat("EEEE dd-MM-yyyy h:mm a").format(tmp);
                         }
                         return Row(
@@ -310,8 +313,8 @@ class _Main_State extends State<Main_> {
                       //
                       (() {
                         String check_out = "";
-                        if (front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.CHECK_OUT_AT] != null) {
-                          tmp = DateTime.parse(front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.CHECK_OUT_AT]);
+                        if (front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.CHECK_OUT_AT] != null) {
+                          tmp = DateTime.parse(front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.CHECK_OUT_AT]);
                           check_out = DateFormat("EEEE dd-MM-yyyy h:mm a").format(tmp);
                         }
                         return Row(
@@ -330,7 +333,7 @@ class _Main_State extends State<Main_> {
                       spacing: 4,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (r[r_schema.STATUS] == "Available") //
+                        if (r[sm_r.STATUS] == "Available") //
                           OutlinedButton.icon(
                             onPressed: () => on_check_in(r), //
                             icon: Icon(Icons.login),
@@ -338,7 +341,7 @@ class _Main_State extends State<Main_> {
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.green)),
                           ), //
 
-                        if (r[r_schema.STATUS] == "Pending Pay") //
+                        if (r[sm_r.STATUS] == "Pending Pay") //
                           OutlinedButton.icon(
                             onPressed: () {},
                             icon: Icon(Icons.payment),
@@ -346,7 +349,7 @@ class _Main_State extends State<Main_> {
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.orange)),
                           ), //
 
-                        if (r[r_schema.STATUS] == "Pending Leave") //
+                        if (r[sm_r.STATUS] == "Pending Leave") //
                           OutlinedButton.icon(
                             onPressed: () {},
                             icon: Icon(Icons.logout),
@@ -354,7 +357,7 @@ class _Main_State extends State<Main_> {
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.red)),
                           ), //
 
-                        if (r[r_schema.STATUS] == "Pending Clean") //
+                        if (r[sm_r.STATUS] == "Pending Clean") //
                           OutlinedButton.icon(
                             onPressed: () {},
                             icon: Icon(Icons.cleaning_services),
@@ -378,9 +381,9 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => check_in.Main_(
-            room_id: r[r_schema.ID], //
-            price_day: r[r_schema.USD_PER_DAY] ?? 0, //
-            price_hour: r[r_schema.USD_PER_3H] ?? 0, //
+            room_id: r[sm_r.ID], //
+            price_day: r[sm_r.USD_PER_DAY] ?? 0, //
+            price_hour: r[sm_r.USD_PER_3H] ?? 0, //
           ), //
         ),
       );
