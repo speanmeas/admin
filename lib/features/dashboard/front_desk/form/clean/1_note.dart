@@ -12,6 +12,7 @@ import '../../schema.g.dart' as schema;
 import '2_summary.dart' as step_2;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   final c_note = TextEditingController();
 
   @override

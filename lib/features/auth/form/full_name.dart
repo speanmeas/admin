@@ -8,6 +8,7 @@ import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   final c_full_name = TextEditingController();
 
   @override

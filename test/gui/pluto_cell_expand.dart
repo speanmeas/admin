@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   final List<PlutoColumn> columnsA = [];
 
   final List<PlutoRow> rowsA = [];
@@ -17,21 +18,7 @@ class _Main_State extends State<Main_> {
     super.initState();
 
     columnsA.addAll([
-      PlutoColumn(
-        title: 'Planets',
-        field: 'planets',
-        type: PlutoColumnType.select([
-          'Mercury',
-          'Venus',
-          'Earth',
-          'Mars',
-          'Jupiter',
-          'Saturn',
-          'Uranus',
-          'Neptune',
-          'Pluto',
-        ]),
-      ),
+      PlutoColumn(title: 'Planets', field: 'planets', type: PlutoColumnType.select(['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'])),
       PlutoColumn(title: 'Users', field: 'users', type: PlutoColumnType.text()),
       PlutoColumn(title: 'Date', field: 'date', type: PlutoColumnType.date()),
       PlutoColumn(title: 'Time', field: 'time', type: PlutoColumnType.time()),
@@ -41,27 +28,10 @@ class _Main_State extends State<Main_> {
       List.generate(100, (index) {
         return PlutoRow(
           cells: {
-            'planets': PlutoCell(
-              value: [
-                'Mercury',
-                'Venus',
-                'Earth',
-                'Mars',
-                'Jupiter',
-                'Saturn',
-                'Uranus',
-                'Neptune',
-                'Pluto',
-              ][index % 9],
-            ),
+            'planets': PlutoCell(value: ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'][index % 9]),
             'users': PlutoCell(value: 'User ${index + 1}'),
-            'date': PlutoCell(
-              value:
-                  '${2020 + (index % 5)}-${(index % 12 + 1).toString().padLeft(2, '0')}-${(index % 28 + 1).toString().padLeft(2, '0')}',
-            ),
-            'time': PlutoCell(
-              value: '${(index % 24).toString().padLeft(2, '0')}:${(index % 60).toString().padLeft(2, '0')}',
-            ),
+            'date': PlutoCell(value: '${2020 + (index % 5)}-${(index % 12 + 1).toString().padLeft(2, '0')}-${(index % 28 + 1).toString().padLeft(2, '0')}'),
+            'time': PlutoCell(value: '${(index % 24).toString().padLeft(2, '0')}:${(index % 60).toString().padLeft(2, '0')}'),
           },
         );
       }),
@@ -145,12 +115,8 @@ class _Main_State extends State<Main_> {
         gridPropsA: PlutoDualGridProps(
           columns: columnsA,
           rows: rowsA,
-          configuration: const PlutoGridConfiguration(
-            style: PlutoGridStyleConfig(cellColorGroupedRow: Color(0x80F6F6F6)),
-          ),
-          onLoaded: (e) => e.stateManager.setRowGroup(
-            PlutoRowGroupByColumnDelegate(columns: [columnsA[0], columnsA[1]], showFirstExpandableIcon: false),
-          ),
+          configuration: const PlutoGridConfiguration(style: PlutoGridStyleConfig(cellColorGroupedRow: Color(0x80F6F6F6))),
+          onLoaded: (e) => e.stateManager.setRowGroup(PlutoRowGroupByColumnDelegate(columns: [columnsA[0], columnsA[1]], showFirstExpandableIcon: false)),
         ),
         gridPropsB: PlutoDualGridProps(
           columns: columnsB,
@@ -160,13 +126,7 @@ class _Main_State extends State<Main_> {
             columnSize: PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.equal),
           ),
           onLoaded: (e) {
-            e.stateManager.setRowGroup(
-              PlutoRowGroupTreeDelegate(
-                resolveColumnDepth: (column) => e.stateManager.columnIndex(column),
-                showText: (cell) => true,
-                showFirstExpandableIcon: true,
-              ),
-            );
+            e.stateManager.setRowGroup(PlutoRowGroupTreeDelegate(resolveColumnDepth: (column) => e.stateManager.columnIndex(column), showText: (cell) => true, showFirstExpandableIcon: true));
           },
         ),
       ),

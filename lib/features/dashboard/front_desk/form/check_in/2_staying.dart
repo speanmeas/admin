@@ -14,6 +14,7 @@ import "3_payment.dart" as step_3;
 import "widget/number_select.dart" as n_select;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   final c_number_of_guests = TextEditingController();
   final c_stay_duration_days = TextEditingController();
   final c_stay_duration_hours = TextEditingController();

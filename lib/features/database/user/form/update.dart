@@ -15,6 +15,7 @@ import "../schema.g.dart" as schema;
 import "../widget/password_input.dart" as p_input;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   final c_password = TextEditingController();
 
   @override

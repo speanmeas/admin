@@ -15,6 +15,7 @@ import "schema.g.dart" as schema;
 import "sign_in.dart" as sign_in;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   @override
   void initState() {
     super.initState();

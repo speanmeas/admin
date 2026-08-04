@@ -17,6 +17,7 @@ import "../widget/nationality_search.dart" as n_search;
 import "../widget/gender_select.dart" as g_select;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   final c_nationality = TextEditingController();
   final c_gender = TextEditingController();
 

@@ -13,6 +13,7 @@ import "package:speanmeas/core/layout/layout.dart" as layout;
 import "schema.g.dart" as u_schema;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   bool is_password_visible = false;
 
   String username = "";

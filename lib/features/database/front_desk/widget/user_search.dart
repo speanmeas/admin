@@ -10,6 +10,7 @@ import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/features/database/user/schema.g.dart" as n_schema_r;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   FocusNode focusNode = FocusNode();
   bool is_selected = false;
 

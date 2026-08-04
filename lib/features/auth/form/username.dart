@@ -8,6 +8,7 @@ import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   String username = schema.data[schema.USERNAME]!["value"] ?? "";
   final c_username = TextEditingController();
 

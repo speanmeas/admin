@@ -19,6 +19,7 @@ import "package:speanmeas/features/database/guest/schema.g.dart" as g_schema;
 import "../widget/guest_search.dart" as g_search;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   final c_room = TextEditingController();
   final c_guest = TextEditingController();
 

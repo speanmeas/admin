@@ -15,6 +15,7 @@ import "2_note.dart" as step_2;
 import "widget/number_input.dart" as n_input;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   final c_price_total_usd = TextEditingController();
   final c_paid_bank_usd = TextEditingController();
   final c_paid_cash_usd = TextEditingController();

@@ -18,6 +18,7 @@ import "form/delete.dart" as delete;
 import "widget/page_select.dart" as p_select;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   //
 
   int page = 1;

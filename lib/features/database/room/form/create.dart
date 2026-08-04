@@ -16,6 +16,7 @@ import "../widget/status_select.dart" as s_select;
 import "../widget/kind_select.dart" as k_select;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   final c_status = TextEditingController();
   final c_kind = TextEditingController();
 

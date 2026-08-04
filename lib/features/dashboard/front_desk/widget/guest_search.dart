@@ -10,6 +10,7 @@ import "package:speanmeas/features/database/guest/form/create.dart" as g_create;
 import "package:speanmeas/features/database/guest/schema.g.dart" as g_schema;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   FocusNode focusNode = FocusNode();
   bool is_selected = false;
 

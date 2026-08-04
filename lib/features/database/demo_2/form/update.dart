@@ -16,6 +16,7 @@ import "package:speanmeas/features/database/nationality/schema.g.dart" as n_sche
 import "../widget/nationality_search.dart" as n_search;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   final c_nationality = TextEditingController();
 
   @override

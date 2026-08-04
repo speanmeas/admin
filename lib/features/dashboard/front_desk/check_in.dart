@@ -16,6 +16,7 @@ import "widget/guest_search.dart" as g_search;
 import "widget/number_select.dart" as n_select;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   final c_g_search = TextEditingController();
 
   final c_number_of_guests = TextEditingController();

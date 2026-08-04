@@ -8,6 +8,7 @@ import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   bool is_password_visible = false;
   bool is_confirm_password_visible = false;
 

@@ -12,6 +12,7 @@ import "2_staying.dart" as step_2;
 import "widget/guest_search.dart" as g_search;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   final c_g_search = TextEditingController();
 
   @override

@@ -11,6 +11,7 @@ import "package:speanmeas/features/database/room/form/create.dart" as r_create;
 import "package:speanmeas/features/database/room/schema.g.dart" as r_schema;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   FocusNode focusNode = FocusNode();
   bool is_selected = false;
 

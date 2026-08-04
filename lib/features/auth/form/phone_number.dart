@@ -9,6 +9,7 @@ import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   final c_phone_number = TextEditingController();
 
   @override

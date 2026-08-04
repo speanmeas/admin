@@ -16,6 +16,7 @@ import "form/update.dart" as update;
 import "form/delete.dart" as delete;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   //
 
   int page = 1;

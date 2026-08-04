@@ -12,6 +12,7 @@ import "../../schema.g.dart" as schema;
 import "../widget/guest_search.dart" as g_search;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   final c_g_search = TextEditingController();
 
   @override

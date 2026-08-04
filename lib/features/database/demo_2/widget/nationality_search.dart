@@ -10,6 +10,7 @@ import "package:speanmeas/features/database/nationality/form/create.dart" as n_f
 import "package:speanmeas/features/database/nationality/schema.g.dart" as n_schema_r;
 
 class _Main_State extends State<Main_> {
+  dynamic tmp;
   FocusNode focusNode = FocusNode();
   FocusNode clear_focus = FocusNode();
   bool is_selected = false;
