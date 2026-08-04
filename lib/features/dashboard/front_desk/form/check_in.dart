@@ -1,37 +1,39 @@
-import "package:speanmeas/core/endpoint.g.dart" as ep;
 import "package:flutter/material.dart";
 
-import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/utility/dio.dart";
+import "package:speanmeas/core/endpoint.g.dart" as ep;
+import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
 
-import "../schema.g.dart" as schema;
+import "../schema.g.dart" as sm;
+import "package:speanmeas/features/database/guest/schema.g.dart" as sm_g;
+import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
-import "package:speanmeas/features/database/guest/schema.g.dart" as g_schema;
-import "package:speanmeas/features/database/room/schema.g.dart" as r_schema;
-
-// import "2_staying.dart" as step_2;
 import "../widget/guest_search.dart" as g_search;
-
 import "../widget/number_select.dart" as n_select;
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  final c_g_search = TextEditingController();
 
-  final c_number_of_guests = TextEditingController();
-  final c_stay_duration_days = TextEditingController();
-  final c_stay_duration_hours = TextEditingController();
+  final c_g_search = TextEditingController();
+  final c_n_o_guest = TextEditingController();
+  final c_d_day = TextEditingController();
+  final c_d_hour = TextEditingController();
   final c_note = TextEditingController();
 
   void init() async {
-    c_g_search.text = g_schema.data[g_schema.PHONE_NUMBER]?["value"]?.toString() ?? "";
+    sm.clear();
+    sm_g.clear();
+    sm_r.clear();
 
-    c_number_of_guests.text = schema.data[schema.STAY_N_GUEST]?["value"]?.toString() ?? "1";
-    c_stay_duration_days.text = schema.data[schema.STAY_DAY]?["value"]?.toString() ?? "";
-    c_stay_duration_hours.text = schema.data[schema.STAY_HOUR]?["value"]?.toString() ?? "";
-    c_note.text = schema.data[schema.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
+    sm.data[sm.STAY_N_GUEST]?["value"] = 1;
+
+    c_g_search.text = sm_g.data[sm_g.PHONE_NUMBER]?["value"]?.toString() ?? "";
+    c_n_o_guest.text = sm.data[sm.STAY_N_GUEST]?["value"]?.toString() ?? "";
+    c_d_day.text = sm.data[sm.STAY_DAY]?["value"]?.toString() ?? "";
+    c_d_hour.text = sm.data[sm.STAY_HOUR]?["value"]?.toString() ?? "";
+    c_note.text = sm.data[sm.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
 
     setState(() {});
   }
@@ -58,60 +60,60 @@ class _Main_State extends State<Main_> {
       g_search.Main_(
         controller: c_g_search,
         onChanged: (v) {
-          schema.data[schema.GUEST_ID]?["value"] = v[g_schema.ID];
-          schema.data[schema.GUEST_FULL_NAME]?["value"] = v[g_schema.FULL_NAME];
-          schema.data[schema.GUEST_PHONE_NUMBER]?["value"] = v[g_schema.PHONE_NUMBER];
-          schema.data[schema.GUEST_GENDER]?["value"] = v[g_schema.GENDER];
-          schema.data[schema.GUEST_NATIONALITY]?["value"] = v[g_schema.NATIONALITY];
+          sm.data[sm.GUEST_ID]?["value"] = v[sm_g.ID];
+          sm.data[sm.GUEST_FULL_NAME]?["value"] = v[sm_g.FULL_NAME];
+          sm.data[sm.GUEST_PHONE_NUMBER]?["value"] = v[sm_g.PHONE_NUMBER];
+          sm.data[sm.GUEST_GENDER]?["value"] = v[sm_g.GENDER];
+          sm.data[sm.GUEST_NATIONALITY]?["value"] = v[sm_g.NATIONALITY];
           setState(() {});
         },
         onCleared: () {
-          schema.data[schema.GUEST_ID]?["value"] = null;
-          schema.data[schema.GUEST_FULL_NAME]?["value"] = null;
-          schema.data[schema.GUEST_PHONE_NUMBER]?["value"] = null;
-          schema.data[schema.GUEST_GENDER]?["value"] = null;
-          schema.data[schema.GUEST_NATIONALITY]?["value"] = null;
+          sm.data[sm.GUEST_ID]?["value"] = null;
+          sm.data[sm.GUEST_FULL_NAME]?["value"] = null;
+          sm.data[sm.GUEST_PHONE_NUMBER]?["value"] = null;
+          sm.data[sm.GUEST_GENDER]?["value"] = null;
+          sm.data[sm.GUEST_NATIONALITY]?["value"] = null;
           setState(() {});
         },
       ),
 
       (() {
         String value = "";
-        if (schema.data[schema.GUEST_FULL_NAME]?["value"] != null) //
-          value = schema.data[schema.GUEST_FULL_NAME]?["value"].toString() ?? "";
+        if (sm.data[sm.GUEST_FULL_NAME]?["value"] != null) //
+          value = sm.data[sm.GUEST_FULL_NAME]?["value"].toString() ?? "";
 
         return show_data.Main_(
-          title: schema.data[schema.GUEST_FULL_NAME]?["title"] ?? "", //
+          title: sm.data[sm.GUEST_FULL_NAME]?["title"] ?? "", //
           value: value,
         );
       })(),
 
       (() {
         String value = "";
-        if (schema.data[schema.GUEST_PHONE_NUMBER]?["value"] != null) //
-          value = schema.data[schema.GUEST_PHONE_NUMBER]?["value"].toString() ?? "";
+        if (sm.data[sm.GUEST_PHONE_NUMBER]?["value"] != null) //
+          value = sm.data[sm.GUEST_PHONE_NUMBER]?["value"].toString() ?? "";
         return show_data.Main_(
-          title: schema.data[schema.GUEST_PHONE_NUMBER]?["title"] ?? "", //
+          title: sm.data[sm.GUEST_PHONE_NUMBER]?["title"] ?? "", //
           value: value,
         );
       })(),
 
       (() {
         String value = "";
-        if (schema.data[schema.GUEST_GENDER]?["value"] != null) //
-          value = schema.data[schema.GUEST_GENDER]?["value"].toString() ?? "";
+        if (sm.data[sm.GUEST_GENDER]?["value"] != null) //
+          value = sm.data[sm.GUEST_GENDER]?["value"].toString() ?? "";
         return show_data.Main_(
-          title: schema.data[schema.GUEST_GENDER]?["title"] ?? "", //
+          title: sm.data[sm.GUEST_GENDER]?["title"] ?? "", //
           value: value,
         );
       })(),
 
       (() {
         String value = "";
-        if (schema.data[schema.GUEST_NATIONALITY]?["value"] != null) //
-          value = schema.data[schema.GUEST_NATIONALITY]?["value"].toString() ?? "";
+        if (sm.data[sm.GUEST_NATIONALITY]?["value"] != null) //
+          value = sm.data[sm.GUEST_NATIONALITY]?["value"].toString() ?? "";
         return show_data.Main_(
-          title: schema.data[schema.GUEST_NATIONALITY]?["title"] ?? "", //
+          title: sm.data[sm.GUEST_NATIONALITY]?["title"] ?? "", //
           value: value,
         );
       })(),
@@ -134,7 +136,7 @@ class _Main_State extends State<Main_> {
       SizedBox(height: 8),
       // number of guests
       n_select.Main_(
-        controller: c_number_of_guests,
+        controller: c_n_o_guest,
         title: "Number of Guests:",
         options: List.generate(10, (index) => index + 1),
         onChanged: (v) => setState(() {}), //
@@ -144,7 +146,7 @@ class _Main_State extends State<Main_> {
 
       // stay duration days
       n_select.Main_(
-        controller: c_stay_duration_days,
+        controller: c_d_day,
         title: "Stay Duration (Days):",
         options: List.generate(365, (index) => index),
         onChanged: (v) => setState(() {}), //
@@ -154,7 +156,7 @@ class _Main_State extends State<Main_> {
 
       // stay duration hours
       n_select.Main_(
-        controller: c_stay_duration_hours,
+        controller: c_d_hour,
         title: "Stay Duration (Hours):",
         options: [0, 3, 6, 9, 12, 15, 18, 21],
         onChanged: (v) => setState(() {}), //
@@ -183,39 +185,53 @@ class _Main_State extends State<Main_> {
           OutlinedButton.icon(
             icon: Icon(Icons.login_outlined), //
             label: Text("Check In"), //
-            onPressed: on_check_in, //
+            onPressed: can_check_in ? on_check_in : null, //
           ),
         ],
       ),
     ]);
   }
 
+  bool get can_check_in {
+    int n_guest = int.tryParse(c_n_o_guest.text) ?? 0;
+    int n_day = int.tryParse(c_d_day.text) ?? 0;
+    int n_hour = int.tryParse(c_d_hour.text) ?? 0;
+
+    if (n_guest <= 0) //
+      return false;
+
+    if (n_day <= 0 && n_hour <= 0) //
+      return false;
+
+    return true;
+  }
+
   void on_check_in() async {
-    int stay_days = int.tryParse(c_stay_duration_days.text) ?? 0;
-    int stay_hours = int.tryParse(c_stay_duration_hours.text) ?? 0;
-    double? room_price = (widget.price_day! * stay_days) + (widget.price_hour! * stay_hours);
+    int stay_days = int.tryParse(c_d_day.text) ?? 0;
+    int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
+    double? room_price = (widget.price_day! * stay_days) + (widget.price_hour! * stay_hours / 3);
 
     try {
       //
       final r = await dio.post(
-        "/front_desk/form/check_in",
+        ep.FRONT_DESK_FORM_CHECK_IN,
         data: {
-          schema.ROOM_ID: widget.room_id,
-          schema.GUEST_ID: schema.data[schema.GUEST_ID]?["value"],
-          schema.STAY_N_GUEST: int.tryParse(c_number_of_guests.text),
-          schema.STAY_DAY: int.tryParse(c_stay_duration_days.text),
-          schema.STAY_HOUR: int.tryParse(c_stay_duration_hours.text),
-          schema.CHECK_IN_NOTE: c_note.text,
-          schema.ROOM_PRICE: room_price,
+          sm.ROOM_ID: widget.room_id,
+          sm.GUEST_ID: sm.data[sm.GUEST_ID]?["value"],
+          sm.STAY_N_GUEST: int.tryParse(c_n_o_guest.text),
+          sm.STAY_DAY: int.tryParse(c_d_day.text),
+          sm.STAY_HOUR: int.tryParse(c_d_hour.text),
+          sm.CHECK_IN_NOTE: c_note.text,
+          sm.ROOM_PRICE: room_price,
         },
       );
 
       await dio.post(
-        "/room/update", //
+        ep.ROOM_UPDATE, //
         data: {
-          r_schema.ID: widget.room_id, //
-          r_schema.STATUS: "Pending Pay", //
-          r_schema.FRONT_DESK_ID: r.data[0][g_schema.ID], //
+          sm_r.ID: widget.room_id, //
+          sm_r.STATUS: "Pending Pay", //
+          sm_r.FRONT_DESK_ID: r.data[0][sm_g.ID], //
         },
       );
 
@@ -242,7 +258,7 @@ Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Check In", //
+        "Room Payment", //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -279,9 +295,9 @@ class Main_ extends StatefulWidget {
     this.price_hour, //
   });
 
-  String? room_id;
-  double? price_day;
-  double? price_hour;
+  final String? room_id;
+  final double? price_day;
+  final double? price_hour;
 
   @override
   State<Main_> createState() => _Main_State();

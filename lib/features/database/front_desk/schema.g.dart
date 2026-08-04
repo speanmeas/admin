@@ -132,13 +132,6 @@ Map<String, Map<String, dynamic>> data = {
     "lock": false,
     "value": null
   },
-  "room_balance": {
-    "type": "number",
-    "title": "Room Balance [USD]",
-    "hide": false,
-    "lock": false,
-    "value": null
-  },
   "room_pay_note": {
     "type": "string",
     "title": "Room Pay Note",
@@ -307,7 +300,6 @@ final CHECK_IN_NOTE = "check_in_note";
 final ROOM_PRICE = "room_price";
 final ROOM_PAY = "room_pay";
 final ROOM_RETURN = "room_return";
-final ROOM_BALANCE = "room_balance";
 final ROOM_PAY_NOTE = "room_pay_note";
 final REVENUE_PRICE = "revenue_price";
 final REVENUE_PAY = "revenue_pay";

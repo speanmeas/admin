@@ -16,8 +16,11 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     //
-    print(widget.front_desk_id);
+
     try {
+      sm.clear();
+
+      //
       tmp = await dio.post(
         ep.FRONT_DESK_READ_ID, //
         data: {
@@ -25,9 +28,6 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      // print(tmp.data[0]);
-
-      sm.clear();
       for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       setState(() {});
@@ -44,6 +44,16 @@ class _Main_State extends State<Main_> {
     return _layout([
       for (var e in sm.data.entries.where((e) => (!e.value["hide"] || kDebugMode))) //
         (() {
+          //
+          if (e.value["type"] == "id") {
+            String value = "";
+            if (e.value["value"] != null) value = e.value["value"].toString();
+            return sd.Main_(
+              title: e.value["title"]?.toString() ?? "", //
+              value: value, //
+            );
+          }
+
           //
           if (e.value["type"] == "string") {
             String value = "";

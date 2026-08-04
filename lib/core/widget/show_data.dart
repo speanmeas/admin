@@ -18,7 +18,7 @@ class _Main_State extends State<Main_> {
         Expanded(
           child: Text(
             "${widget.value ?? ""}${widget.suffix ?? ""}", //
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+            style: TextStyle(color: Colors.blue),
             overflow: TextOverflow.ellipsis,
             softWrap: true,
             maxLines: widget.max_lines ?? 1,
