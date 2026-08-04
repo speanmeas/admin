@@ -24,6 +24,7 @@ analyzer:
     sort_child_properties_last: ignore
     strict_top_level_inference: ignore
     unused_element: ignore
+    use_build_context_synchronously: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

@@ -6,6 +6,9 @@ import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 
 import "__config__.dart";
 import "package:speanmeas/features/database/room/schema.g.dart" as r_schema;
+import "package:speanmeas/features/database/front_desk/schema.g.dart" as fd_schema;
+
+import "check_in.dart" as check_in;
 
 class _Main_State extends State<Main_> {
   //
@@ -26,6 +29,7 @@ class _Main_State extends State<Main_> {
 
       // * រក្សាទុកទិន្នន័យបន្ទប់ទៅក្នុងបញ្ជី
       rooms = List<Map<String, dynamic>>.from(r.data);
+      print(rooms[0]);
 
       // * ធ្វើបច្ចុប្បន្នភាពចំណុចប្រទាក់អ្នកប្រើប្រាស់
       setState(() {});
@@ -36,261 +40,313 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: Wrap(
+    return _layout([
+      // * បង្ហាញបញ្ជីបន្ទប់ទាំងអស់
+      for (var r in rooms)
+        Container(
+          width: 500,
+          margin: EdgeInsets.all(2),
+          padding: EdgeInsets.all(4),
+          decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1)),
+          child: Row(
             children: [
-              // * បង្ហាញបញ្ជីបន្ទប់ទាំងអស់
-              for (var r in rooms)
-                Container(
-                  width: 500,
-                  margin: EdgeInsets.all(2),
-                  padding: EdgeInsets.all(4),
-                  decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1)),
-                  child: Row(
-                    children: [
-                      // info.
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            //
-                            Row(
-                              spacing: 8,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // Text("Room", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)), //
-                                Text(
-                                  "${r[r_schema.NUMBER]}",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blue, //
-                                  ),
-                                ), //
-                              ],
+              // info.
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // * លេខបន្ទប់ (កណ្តាល) + ស្ថានភាព (ស្តាំ)
+                    Stack(
+                      children: [
+                        // * លេខបន្ទប់នៅកណ្តាលជានិច្ច
+                        Center(
+                          child: Text(
+                            "${r[r_schema.NUMBER]}",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black, //
                             ),
+                          ),
+                        ),
 
-                            //
-                            Row(
-                              spacing: 8,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "${r[r_schema.STATUS]}",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold, //
-                                    color: Colors.green, //
-                                  ),
-                                ), //
-                              ],
-                            ),
+                        // * ស្ថានភាពបន្ទប់នៅខាងស្តាំ
+                        (() {
+                          var color = Colors.black; // Default color
+                          if (r[r_schema.STATUS] == "Available") color = Colors.green;
+                          if (r[r_schema.STATUS] == "Pending Pay") color = Colors.orange;
+                          if (r[r_schema.STATUS] == "Pending Leave") color = Colors.red;
+                          if (r[r_schema.STATUS] == "Pending Clean") color = Colors.black;
 
-                            //
-                            Row(
-                              spacing: 8,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "${r[r_schema.USD_PER_3H]}\$/3Hours",
-                                  style: TextStyle(
-                                    fontSize: 14, //
-                                    fontWeight: FontWeight.bold, //
-                                  ),
-                                ), //
-                                Text(
-                                  "${r[r_schema.USD_PER_DAY]}\$/Day",
-                                  style: TextStyle(
-                                    fontSize: 14, //
-                                    fontWeight: FontWeight.bold, //
-                                  ),
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Icon(Icons.circle, size: 10, color: color),
+                              SizedBox(width: 4),
+                              Text(
+                                "${r[r_schema.STATUS]}",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: color, //
                                 ),
-                              ],
-                            ),
+                              ),
 
-                            //
-                            Row(
-                              spacing: 8,
-                              children: [
-                                Text("Guest:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                                Text("NAME"), //
-                                Text("GENDER"), //
-                                Text("PHONE_NUMBER"), //
-                                Text("NATIONALITY"), //
-                                Text("NOTE", overflow: TextOverflow.ellipsis), //
-                              ],
-                            ),
-
-                            //
-                            Row(
-                              spacing: 8,
-                              children: [
-                                Text("Stay:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                                Text("xxxxDays"), //
-                                Text("xxxxHours"), //
-                                Text("xxxxPersons"), //
-                                Text("DUE"), //
-                                Text("NOTE", overflow: TextOverflow.ellipsis), //
-                              ],
-                            ),
-
-                            //
-                            Row(
-                              spacing: 8,
-                              children: [
-                                Text("Check In:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                                Text("CHECK_IN_DATE"), //
-                                Text("CHECK_IN_BY"), //
-                                Text("NOTE", overflow: TextOverflow.ellipsis), //
-                              ],
-                            ),
-
-                            //
-                            Row(
-                              spacing: 8,
-                              children: [
-                                Text("Payment Room:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                                Text("PRICE"), //
-                                Text("PAYMENT"), //
-                                Text("GOT_DATE"), //
-                                Text("GOT_BY"), //
-                                Text("NOTE", overflow: TextOverflow.ellipsis), //
-                              ],
-                            ),
-
-                            //
-                            Row(
-                              spacing: 8,
-                              children: [
-                                Text("Payment Revenue:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                                Text("PRICE"), //
-                                Text("PAYMENT"), //
-                                Text("GOT_DATE"), //
-                                Text("GOT_BY"), //
-                                Text("NOTE", overflow: TextOverflow.ellipsis), //
-                              ],
-                            ),
-
-                            //
-                            Row(
-                              spacing: 8,
-                              children: [
-                                Text("Check Out:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                                Text("CHECK_OUT_DATE"), //
-                                Text("CHECK_OUT_BY"), //
-                                Text("NOTE", overflow: TextOverflow.ellipsis), //
-                              ],
-                            ),
-
-                            //
-                            Row(
-                              spacing: 8,
-                              children: [
-                                Text("Clean:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                                Text("CLEAN_DATE"), //
-                                Text("CLEAN_BY"), //
-                                Text("NOTE", overflow: TextOverflow.ellipsis), //
-                              ],
-                            ),
-
-                            //
-                            Row(
-                              spacing: 2,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                OutlinedButton.icon(
-                                  onPressed: () {}, //
-                                  icon: Icon(Icons.login),
-                                  label: Text("Check In"),
-                                  style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.green)),
-                                ), //
-                                OutlinedButton.icon(
-                                  onPressed: () {},
-                                  icon: Icon(Icons.payment),
-                                  label: Text("Payment"),
-                                  style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.orange)),
-                                ), //
-                                OutlinedButton.icon(
-                                  onPressed: () {},
-                                  icon: Icon(Icons.logout),
-                                  label: Text("Check Out"),
-                                  style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.red)),
-                                ), //
-                                OutlinedButton.icon(
-                                  onPressed: () {},
-                                  icon: Icon(Icons.cleaning_services),
-                                  label: Text("Clean"),
-                                  style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.black)),
-                                ), //
-                                Spacer(), //
-                                MenuAnchor(
-                                  style: MenuStyle(padding: WidgetStatePropertyAll(EdgeInsets.all(0))),
-                                  builder: (context, controller, child) {
-                                    return InkWell(
-                                      child: Container(
-                                        width: 32,
-                                        height: 32,
-                                        alignment: Alignment.center,
-                                        child: Icon(Icons.more_vert, color: Colors.blue), //
-                                      ), //
-                                      onTap: () {
-                                        controller.isOpen ? controller.close() : controller.open();
-                                      },
-                                    );
-                                  },
-                                  menuChildren: [
-                                    //
+                              // menu
+                              MenuAnchor(
+                                style: MenuStyle(padding: WidgetStatePropertyAll(EdgeInsets.all(0))),
+                                builder: (context, controller, child) {
+                                  return InkWell(
+                                    child: Container(
+                                      // width: 32,
+                                      height: 32,
+                                      alignment: Alignment.center,
+                                      child: Icon(Icons.more_vert, color: color), //
+                                    ), //
+                                    onTap: () {
+                                      controller.isOpen ? controller.close() : controller.open();
+                                    },
+                                  );
+                                },
+                                menuChildren: [
+                                  //
+                                  if (r[r_schema.STATUS] != "Available")
                                     MenuItemButton(
-                                      leadingIcon: Icon(Icons.receipt_outlined),
-                                      child: Text("Summary"),
+                                      leadingIcon: Icon(Icons.receipt_outlined, color: Colors.blue),
+                                      child: Text("Detail", style: TextStyle(color: Colors.blue)), //
                                       onPressed: () {
                                         // on_summary(r);
                                       }, //
                                     ),
+
+                                  if (r[r_schema.STATUS] != "Available")
                                     MenuItemButton(
-                                      leadingIcon: Icon(Icons.swap_horiz),
-                                      child: Text("Change Room"),
+                                      leadingIcon: Icon(Icons.swap_horiz_outlined, color: Colors.blue),
+                                      child: Text("Change Room", style: TextStyle(color: Colors.blue)),
                                       onPressed: () {}, //
                                     ),
-                                    MenuItemButton(
-                                      leadingIcon: Icon(Icons.edit_outlined),
-                                      child: Text("Edit Guest"),
-                                      onPressed: () {}, //
-                                    ),
-                                    MenuItemButton(
-                                      leadingIcon: Icon(Icons.edit_outlined),
-                                      child: Text("Edit Staying"),
-                                      onPressed: () {}, //
-                                    ),
-                                    MenuItemButton(
-                                      leadingIcon: Icon(Icons.edit_outlined),
-                                      child: Text("Edit Room Payment"),
-                                      onPressed: () {}, //
-                                    ),
-                                    MenuItemButton(
-                                      leadingIcon: Icon(Icons.edit_outlined),
-                                      child: Text("Edit Revenue Payment"),
-                                      onPressed: () {}, //
-                                    ),
+
+                                  if (r[r_schema.STATUS] != "Available")
                                     MenuItemButton(
                                       leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
-                                      child: Text("Cancel"),
+                                      child: Text("Cancel", style: TextStyle(color: Colors.red)),
                                       onPressed: () {}, //
                                     ),
-                                  ],
-                                ), //
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          );
+                        })(),
+                      ],
+                    ),
+
+                    //
+                    Row(
+                      spacing: 4,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "${r[r_schema.KIND]}",
+                          style: TextStyle(
+                            fontSize: 14, //
+                            fontWeight: FontWeight.bold, //
+                          ),
                         ),
+
+                        Text("-"), //
+
+                        Text(
+                          "${r[r_schema.USD_PER_3H]}\$/3Hours",
+                          style: TextStyle(
+                            fontSize: 14, //
+                            fontWeight: FontWeight.bold, //
+                          ),
+                        ), //
+
+                        Text("-"), //
+
+                        Text(
+                          "${r[r_schema.USD_PER_DAY]}\$/Day",
+                          style: TextStyle(
+                            fontSize: 14, //
+                            fontWeight: FontWeight.bold, //
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    //
+                    if (r["front_desk_id"] != null)
+                      Row(
+                        spacing: 4,
+                        children: [
+                          Icon(Icons.person, size: 16), //
+                          Text("Guest:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                          Text("${r["front_desk_id"][fd_schema.GUEST_FULL_NAME]}", style: TextStyle(color: Colors.blue)), //
+                          Text("-"), //
+                          Text("${r["front_desk_id"][fd_schema.GUEST_PHONE_NUMBER]}", style: TextStyle(color: Colors.blue)), //
+
+                          InkWell(
+                            child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                            onTap: () {}, //
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+
+                    //
+                    if (r["front_desk"] != null)
+                      Row(
+                        spacing: 4,
+                        children: [
+                          Icon(Icons.calendar_month, size: 16), //
+                          Text("Stay:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                          Text("2 Persons", style: TextStyle(color: Colors.blue)), //
+                          Text("-"), //
+                          Text("1 Days", style: TextStyle(color: Colors.blue)), //
+                          Text("-"), //
+                          Text("0 Hours", style: TextStyle(color: Colors.blue)), //
+
+                          InkWell(
+                            child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                            onTap: () {}, //
+                          ),
+                        ],
+                      ),
+
+                    //
+                    if (r["front_desk"] != null)
+                      Row(
+                        spacing: 4,
+                        children: [
+                          Icon(Icons.time_to_leave_outlined, size: 16), //
+                          Text("Due:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                          Text("Monday 2026-08-04 03:00 AM", style: TextStyle(color: Colors.blue)), //
+                          // InkWell(
+                          //   child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                          //   onTap: () {}, //
+                          // ),
+                        ],
+                      ),
+                    //
+                    if (r["front_desk"] != null)
+                      Row(
+                        spacing: 4,
+                        children: [
+                          Icon(Icons.login, size: 16), //
+                          Text("Check In:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                          Text("Monday 2026-08-04 03:00 AM", style: TextStyle(color: Colors.blue)), //
+                          // InkWell(
+                          //   child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                          //   onTap: () {}, //
+                          // ),
+                        ],
+                      ),
+
+                    //
+                    if (r["front_desk"] != null)
+                      Row(
+                        spacing: 4,
+                        children: [
+                          Icon(Icons.payment, size: 16), //
+                          Text("Room Payment:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                          Text("50\$", style: TextStyle(color: Colors.blue)), //
+                          InkWell(
+                            child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                            onTap: () {}, //
+                          ),
+                          Text("  -  "), //
+                          Icon(Icons.payment, size: 16), //
+                          Text("Revenue Payment:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                          Text("0\$", style: TextStyle(color: Colors.blue)), //
+                          InkWell(
+                            child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                            onTap: () {}, //
+                          ),
+                        ],
+                      ),
+
+                    //
+                    if (r["front_desk"] != null)
+                      Row(
+                        spacing: 4,
+                        children: [
+                          Icon(Icons.logout, size: 16), //
+                          Text("Check Out:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                          Text("Monday 2026-08-04 03:00 AM", style: TextStyle(color: Colors.blue)), //
+                        ],
+                      ),
+
+                    //
+                    Row(
+                      spacing: 4,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (r[r_schema.STATUS] == "Available") //
+                          OutlinedButton.icon(
+                            onPressed: () => on_check_in(r[r_schema.ID]), //
+                            icon: Icon(Icons.login),
+                            label: Text("Check In"),
+                            style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.green)),
+                          ), //
+
+                        if (r[r_schema.STATUS] == "Pending Pay") //
+                          OutlinedButton.icon(
+                            onPressed: () {},
+                            icon: Icon(Icons.payment),
+                            label: Text("Payment"),
+                            style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.orange)),
+                          ), //
+
+                        if (r[r_schema.STATUS] == "Pending Leave") //
+                          OutlinedButton.icon(
+                            onPressed: () {},
+                            icon: Icon(Icons.logout),
+                            label: Text("Check Out"),
+                            style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.red)),
+                          ), //
+
+                        if (r[r_schema.STATUS] == "Pending Clean") //
+                          OutlinedButton.icon(
+                            onPressed: () {},
+                            icon: Icon(Icons.cleaning_services),
+                            label: Text("Clean"),
+                            style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.black)),
+                          ), //
+                      ],
+                    ),
+                  ],
                 ),
+              ),
             ],
+          ),
+        ),
+    ]);
+  }
+
+  void on_check_in(String id) async {
+    try {
+      print("Check In Room ID: $id");
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => check_in.Main_(room_id: id), //
+        ),
+      );
+
+      //
+    } catch (e) {
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
+  Widget _layout(List<Widget> children) {
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Center(
+          child: Wrap(
+            children: children, //
           ),
         ),
       ),
@@ -305,12 +361,14 @@ class _Main_State extends State<Main_> {
   }
 }
 
+//
 class Main_ extends StatefulWidget {
   Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
 
+//
 void main() {
   runApp(
     MaterialApp(
