@@ -101,14 +101,7 @@ Map<String, Map<String, dynamic>> data = {
     "type": "date-time",
     "title": "Due Date",
     "hide": false,
-    "lock": false,
-    "value": null
-  },
-  "stay_note": {
-    "type": "string",
-    "title": "Stay Note",
-    "hide": false,
-    "lock": false,
+    "lock": true,
     "value": null
   },
   "check_in_note": {
@@ -310,7 +303,6 @@ final STAY_DAY = "stay_day";
 final STAY_HOUR = "stay_hour";
 final STAY_N_GUEST = "stay_n_guest";
 final STAY_DUE = "stay_due";
-final STAY_NOTE = "stay_note";
 final CHECK_IN_NOTE = "check_in_note";
 final ROOM_PRICE = "room_price";
 final ROOM_PAY = "room_pay";

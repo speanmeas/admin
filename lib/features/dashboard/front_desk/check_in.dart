@@ -31,9 +31,6 @@ class _Main_State extends State<Main_> {
     c_stay_duration_hours.text = schema.data[schema.STAY_HOUR]?["value"]?.toString() ?? "";
     c_note.text = schema.data[schema.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
 
-    // show room_id
-    print("room_id: ${widget.room_id}");
-
     setState(() {});
   }
 
@@ -192,6 +189,10 @@ class _Main_State extends State<Main_> {
   }
 
   void on_check_in() async {
+    int stay_days = int.tryParse(c_stay_duration_days.text) ?? 0;
+    int stay_hours = int.tryParse(c_stay_duration_hours.text) ?? 0;
+    double? room_price = (widget.price_day! * stay_days) + (widget.price_hour! * stay_hours);
+
     try {
       //
       final r = await dio.post(
@@ -203,6 +204,7 @@ class _Main_State extends State<Main_> {
           schema.STAY_DAY: int.tryParse(c_stay_duration_days.text),
           schema.STAY_HOUR: int.tryParse(c_stay_duration_hours.text),
           schema.CHECK_IN_NOTE: c_note.text,
+          schema.ROOM_PRICE: room_price,
         },
       );
 
@@ -215,44 +217,14 @@ class _Main_State extends State<Main_> {
         },
       );
 
+      Navigator.pop(context, true);
+
       snackbar.view(context: context, message: "Check In Successful", color: Colors.green);
 
       //
     } catch (e) {
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
-  }
-
-  Widget _layout(List<Widget> children) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Check In", //
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-
-        centerTitle: false,
-        toolbarHeight: 40,
-        titleSpacing: 0,
-
-        // Add a divider at the bottom of the app bar
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1), //
-          child: Divider(height: 1, color: Colors.black),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Container(
-            width: 600,
-            padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
-            child: Column(
-              children: children, //
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -264,14 +236,50 @@ class _Main_State extends State<Main_> {
   //
 }
 
+Widget _layout(List<Widget> children) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(
+        "Check In", //
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+
+      centerTitle: false,
+      toolbarHeight: 40,
+      titleSpacing: 0,
+
+      // Add a divider at the bottom of the app bar
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(1), //
+        child: Divider(height: 1, color: Colors.black),
+      ),
+    ),
+    body: SingleChildScrollView(
+      child: Center(
+        child: Container(
+          width: 600,
+          padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
+          child: Column(
+            children: children, //
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
 //
 class Main_ extends StatefulWidget {
   Main_({
     super.key,
-    required this.room_id, //
+    this.room_id, //
+    this.price_day, //
+    this.price_hour, //
   });
 
-  final String room_id;
+  String? room_id;
+  double? price_day;
+  double? price_hour;
 
   @override
   State<Main_> createState() => _Main_State();
@@ -283,7 +291,7 @@ void main() {
     MaterialApp(
       title: "Check In", //
       theme: theme.data(), //
-      home: Main_(room_id: "6a6ec9d7599d64fa5d293fb9"), //
+      home: Main_(), //
       debugShowCheckedModeBanner: false,
     ),
   );

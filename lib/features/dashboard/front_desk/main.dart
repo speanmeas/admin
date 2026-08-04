@@ -1,4 +1,10 @@
+/// TODO: Add notification for overtime checkout.
+///
+///
+///
+
 import "package:flutter/material.dart";
+import "package:intl/intl.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart" as theme;
@@ -13,12 +19,15 @@ import "check_in.dart" as check_in;
 class _Main_State extends State<Main_> {
   //
 
+  dynamic tmp;
+
   List<Map<String, dynamic>> rooms = [];
+  Map<String, dynamic> front_desks = {};
 
   void init() async {
     try {
       // * ទាញយកទិន្នន័យបន្ទប់ទាំងអស់ពីម៉ាស៊ីនមេ
-      final r = await dio.post(
+      tmp = await dio.post(
         "/room/read", //
         data: {
           "key": r_schema.NUMBER, //
@@ -28,8 +37,23 @@ class _Main_State extends State<Main_> {
       );
 
       // * រក្សាទុកទិន្នន័យបន្ទប់ទៅក្នុងបញ្ជី
-      rooms = List<Map<String, dynamic>>.from(r.data);
-      print(rooms[0]);
+      rooms = List<Map<String, dynamic>>.from(tmp.data);
+
+      // print(rooms[0]);
+
+      for (var r in rooms) {
+        if (r["front_desk_id"] != null) {
+          tmp = await dio.post(
+            "/front_desk/read_id", //
+            data: {
+              fd_schema.ID: r[r_schema.FRONT_DESK_ID], //
+            },
+          );
+          front_desks[r[r_schema.FRONT_DESK_ID]] = tmp.data[0];
+        }
+      }
+
+      print(front_desks);
 
       // * ធ្វើបច្ចុប្បន្នភាពចំណុចប្រទាក់អ្នកប្រើប្រាស់
       setState(() {});
@@ -111,7 +135,8 @@ class _Main_State extends State<Main_> {
                                 },
                                 menuChildren: [
                                   //
-                                  if (r[r_schema.STATUS] != "Available")
+                                  if (r[r_schema.STATUS] != "Available") ...[
+                                    //
                                     MenuItemButton(
                                       leadingIcon: Icon(Icons.receipt_outlined, color: Colors.blue),
                                       child: Text("Detail", style: TextStyle(color: Colors.blue)), //
@@ -120,19 +145,20 @@ class _Main_State extends State<Main_> {
                                       }, //
                                     ),
 
-                                  if (r[r_schema.STATUS] != "Available")
+                                    //
                                     MenuItemButton(
                                       leadingIcon: Icon(Icons.swap_horiz_outlined, color: Colors.blue),
                                       child: Text("Change Room", style: TextStyle(color: Colors.blue)),
                                       onPressed: () {}, //
                                     ),
 
-                                  if (r[r_schema.STATUS] != "Available")
+                                    //
                                     MenuItemButton(
                                       leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
                                       child: Text("Cancel", style: TextStyle(color: Colors.red)),
                                       onPressed: () {}, //
                                     ),
+                                  ],
                                 ],
                               ),
                             ],
@@ -177,105 +203,127 @@ class _Main_State extends State<Main_> {
                     ),
 
                     //
-                    if (r["front_desk_id"] != null)
-                      Row(
-                        spacing: 4,
-                        children: [
-                          Icon(Icons.person, size: 16), //
-                          Text("Guest:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                          Text("${r["front_desk_id"][fd_schema.GUEST_FULL_NAME]}", style: TextStyle(color: Colors.blue)), //
-                          Text("-"), //
-                          Text("${r["front_desk_id"][fd_schema.GUEST_PHONE_NUMBER]}", style: TextStyle(color: Colors.blue)), //
+                    if (r[r_schema.FRONT_DESK_ID] != null) ...[
+                      //
+                      (() {
+                        final guest_name = front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.GUEST_FULL_NAME] ?? "";
+                        final guest_phone = front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.GUEST_PHONE_NUMBER] ?? "";
+                        return Row(
+                          spacing: 4,
+                          children: [
+                            Icon(Icons.person, size: 16), //
+                            Text("Guest:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                            Text(guest_name, style: TextStyle(color: Colors.blue)), //
+                            Text("-"), //
+                            Text(guest_phone, style: TextStyle(color: Colors.blue)), //
+                            InkWell(
+                              child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                              onTap: () {}, //
+                            ),
+                          ],
+                        );
+                      })(),
 
-                          InkWell(
-                            child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
-                            onTap: () {}, //
-                          ),
-                        ],
-                      ),
+                      //
+                      (() {
+                        final stay_n_guest = front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.STAY_N_GUEST] ?? "";
+                        final stay_day = front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.STAY_DAY] ?? "";
+                        final stay_hour = front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.STAY_HOUR] ?? "";
+                        return Row(
+                          spacing: 4,
+                          children: [
+                            Icon(Icons.calendar_month, size: 16), //
+                            Text("Stay:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                            Text("$stay_n_guest Persons", style: TextStyle(color: Colors.blue)), //
+                            Text("-"), //
+                            Text("$stay_day Days", style: TextStyle(color: Colors.blue)), //
+                            Text("-"), //
+                            Text("$stay_hour Hours", style: TextStyle(color: Colors.blue)), //
+                            InkWell(
+                              child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                              onTap: () {}, //
+                            ),
+                          ],
+                        );
+                      })(),
 
-                    //
-                    if (r["front_desk"] != null)
-                      Row(
-                        spacing: 4,
-                        children: [
-                          Icon(Icons.calendar_month, size: 16), //
-                          Text("Stay:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                          Text("2 Persons", style: TextStyle(color: Colors.blue)), //
-                          Text("-"), //
-                          Text("1 Days", style: TextStyle(color: Colors.blue)), //
-                          Text("-"), //
-                          Text("0 Hours", style: TextStyle(color: Colors.blue)), //
+                      //
+                      (() {
+                        final room_pay = front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.ROOM_PAY] ?? "0";
+                        final revenue_pay = front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.REVENUE_PAY] ?? "0";
+                        return Row(
+                          spacing: 4,
+                          children: [
+                            Icon(Icons.payment, size: 16), //
+                            Text("Room Payment:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                            Text("$room_pay\$", style: TextStyle(color: Colors.blue)), //
+                            InkWell(
+                              child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                              onTap: () {}, //
+                            ),
+                            Text("  -  "), //
+                            Icon(Icons.payment, size: 16), //
+                            Text("Revenue Payment:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                            Text("$revenue_pay\$", style: TextStyle(color: Colors.blue)), //
+                            InkWell(
+                              child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                              onTap: () {}, //
+                            ),
+                          ],
+                        );
+                      })(),
 
-                          InkWell(
-                            child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
-                            onTap: () {}, //
-                          ),
-                        ],
-                      ),
+                      //
+                      (() {
+                        String check_in = "";
+                        if (front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.CHECK_IN_AT] != null) {
+                          final due = DateTime.parse(front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.CHECK_IN_AT]);
+                          check_in = DateFormat("EEEE dd-MM-yyyy h:mm a").format(due);
+                        }
+                        return Row(
+                          spacing: 4,
+                          children: [
+                            Icon(Icons.login, size: 16), //
+                            Text("Check In:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                            Text(check_in, style: TextStyle(color: Colors.blue)), //
+                          ],
+                        );
+                      })(),
 
-                    //
-                    if (r["front_desk"] != null)
-                      Row(
-                        spacing: 4,
-                        children: [
-                          Icon(Icons.time_to_leave_outlined, size: 16), //
-                          Text("Due:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                          Text("Monday 2026-08-04 03:00 AM", style: TextStyle(color: Colors.blue)), //
-                          // InkWell(
-                          //   child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
-                          //   onTap: () {}, //
-                          // ),
-                        ],
-                      ),
-                    //
-                    if (r["front_desk"] != null)
-                      Row(
-                        spacing: 4,
-                        children: [
-                          Icon(Icons.login, size: 16), //
-                          Text("Check In:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                          Text("Monday 2026-08-04 03:00 AM", style: TextStyle(color: Colors.blue)), //
-                          // InkWell(
-                          //   child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
-                          //   onTap: () {}, //
-                          // ),
-                        ],
-                      ),
+                      //
+                      (() {
+                        String due = "";
+                        if (front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.STAY_DUE] != null) {
+                          tmp = DateTime.parse(front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.STAY_DUE]);
+                          due = DateFormat("EEEE dd-MM-yyyy h:mm a").format(tmp);
+                        }
+                        return Row(
+                          spacing: 4,
+                          children: [
+                            Icon(Icons.time_to_leave_outlined, size: 16), //
+                            Text("Due:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                            Text(due, style: TextStyle(color: Colors.blue)), //
+                          ],
+                        );
+                      })(),
 
-                    //
-                    if (r["front_desk"] != null)
-                      Row(
-                        spacing: 4,
-                        children: [
-                          Icon(Icons.payment, size: 16), //
-                          Text("Room Payment:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                          Text("50\$", style: TextStyle(color: Colors.blue)), //
-                          InkWell(
-                            child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
-                            onTap: () {}, //
-                          ),
-                          Text("  -  "), //
-                          Icon(Icons.payment, size: 16), //
-                          Text("Revenue Payment:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                          Text("0\$", style: TextStyle(color: Colors.blue)), //
-                          InkWell(
-                            child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
-                            onTap: () {}, //
-                          ),
-                        ],
-                      ),
-
-                    //
-                    if (r["front_desk"] != null)
-                      Row(
-                        spacing: 4,
-                        children: [
-                          Icon(Icons.logout, size: 16), //
-                          Text("Check Out:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                          Text("Monday 2026-08-04 03:00 AM", style: TextStyle(color: Colors.blue)), //
-                        ],
-                      ),
+                      //
+                      (() {
+                        String check_out = "";
+                        if (front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.CHECK_OUT_AT] != null) {
+                          tmp = DateTime.parse(front_desks[r[r_schema.FRONT_DESK_ID]][fd_schema.CHECK_OUT_AT]);
+                          check_out = DateFormat("EEEE dd-MM-yyyy h:mm a").format(tmp);
+                        }
+                        return Row(
+                          spacing: 4,
+                          children: [
+                            Icon(Icons.logout, size: 16), //
+                            Text("Check Out:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                            Text(check_out, style: TextStyle(color: Colors.blue)), //
+                          ],
+                        );
+                      })(),
+                    ],
 
                     //
                     Row(
@@ -284,7 +332,7 @@ class _Main_State extends State<Main_> {
                       children: [
                         if (r[r_schema.STATUS] == "Available") //
                           OutlinedButton.icon(
-                            onPressed: () => on_check_in(r[r_schema.ID]), //
+                            onPressed: () => on_check_in(r), //
                             icon: Icon(Icons.login),
                             label: Text("Check In"),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.green)),
@@ -324,16 +372,21 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
-  void on_check_in(String id) async {
+  void on_check_in(Map<String, dynamic> r) async {
     try {
-      print("Check In Room ID: $id");
-
-      Navigator.push(
+      tmp = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => check_in.Main_(room_id: id), //
+          builder: (context) => check_in.Main_(
+            room_id: r[r_schema.ID], //
+            price_day: r[r_schema.USD_PER_DAY] ?? 0, //
+            price_hour: r[r_schema.USD_PER_3H] ?? 0, //
+          ), //
         ),
       );
+
+      //
+      if (tmp != null) init();
 
       //
     } catch (e) {
