@@ -6,15 +6,15 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
 
-import "schema.g.dart" as schema;
+import "../schema.g.dart" as schema;
 
 import "package:speanmeas/features/database/guest/schema.g.dart" as g_schema;
 import "package:speanmeas/features/database/room/schema.g.dart" as r_schema;
 
 // import "2_staying.dart" as step_2;
-import "widget/guest_search.dart" as g_search;
+import "../widget/guest_search.dart" as g_search;
 
-import "widget/number_select.dart" as n_select;
+import "../widget/number_select.dart" as n_select;
 
 class _Main_State extends State<Main_> {
   dynamic tmp;

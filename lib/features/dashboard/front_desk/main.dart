@@ -16,7 +16,8 @@ import "__config__.dart";
 import "package:speanmeas/features/dashboard/front_desk/schema.g.dart" as sm_fd;
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
-import "check_in.dart" as check_in;
+import "form/check_in.dart" as check_in;
+import "form/detail.dart" as detail;
 // import "check_out.dart" as check_out;
 
 class _Main_State extends State<Main_> {
@@ -143,9 +144,7 @@ class _Main_State extends State<Main_> {
                                     MenuItemButton(
                                       leadingIcon: Icon(Icons.receipt_outlined, color: Colors.blue),
                                       child: Text("Detail", style: TextStyle(color: Colors.blue)), //
-                                      onPressed: () {
-                                        // on_summary(r);
-                                      }, //
+                                      onPressed: () => on_detail(r), //
                                     ),
 
                                     //
@@ -281,7 +280,7 @@ class _Main_State extends State<Main_> {
                         String check_in = "";
                         if (front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.CHECK_IN_AT] != null) {
                           final due = DateTime.parse(front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.CHECK_IN_AT]);
-                          check_in = DateFormat("EEEE dd-MM-yyyy h:mm a").format(due);
+                          check_in = DateFormat(DATE_FORMAT).format(due);
                         }
                         return Row(
                           spacing: 4,
@@ -298,7 +297,7 @@ class _Main_State extends State<Main_> {
                         String due = "";
                         if (front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.STAY_DUE] != null) {
                           tmp = DateTime.parse(front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.STAY_DUE]);
-                          due = DateFormat("EEEE dd-MM-yyyy h:mm a").format(tmp);
+                          due = DateFormat(DATE_FORMAT).format(tmp);
                         }
                         return Row(
                           spacing: 4,
@@ -315,7 +314,7 @@ class _Main_State extends State<Main_> {
                         String check_out = "";
                         if (front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.CHECK_OUT_AT] != null) {
                           tmp = DateTime.parse(front_desks[r[sm_r.FRONT_DESK_ID]][sm_fd.CHECK_OUT_AT]);
-                          check_out = DateFormat("EEEE dd-MM-yyyy h:mm a").format(tmp);
+                          check_out = DateFormat(DATE_FORMAT).format(tmp);
                         }
                         return Row(
                           spacing: 4,
@@ -328,7 +327,7 @@ class _Main_State extends State<Main_> {
                       })(),
                     ],
 
-                    //
+                    // buttons
                     Row(
                       spacing: 4,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -373,6 +372,27 @@ class _Main_State extends State<Main_> {
           ),
         ),
     ]);
+  }
+
+  void on_detail(Map<String, dynamic> r) async {
+    try {
+      print(r);
+      tmp = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => detail.Main_(
+            front_desk_id: r[sm_r.FRONT_DESK_ID], //
+          ), //
+        ),
+      );
+
+      //
+      if (tmp != null) init();
+
+      //
+    } catch (e) {
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 
   void on_check_in(Map<String, dynamic> r) async {
