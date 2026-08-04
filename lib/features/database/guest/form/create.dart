@@ -1,3 +1,4 @@
+import "package:speanmeas/core/endpoint.g.dart" as ep;
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";

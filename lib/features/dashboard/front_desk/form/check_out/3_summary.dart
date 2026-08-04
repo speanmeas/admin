@@ -1,3 +1,4 @@
+import "package:speanmeas/core/endpoint.g.dart" as ep;
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";

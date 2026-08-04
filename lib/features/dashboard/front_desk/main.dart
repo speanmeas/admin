@@ -45,7 +45,7 @@ class _Main_State extends State<Main_> {
       // print(rooms[0]);
 
       for (var r in rooms) {
-        if (r["front_desk_id"] != null) {
+        if (r[sm_r.FRONT_DESK_ID] != null) {
           tmp = await dio.post(
             ep.FRONT_DESK_READ_ID, //
             data: {
@@ -56,7 +56,7 @@ class _Main_State extends State<Main_> {
         }
       }
 
-      print(front_desks);
+      //   print(front_desks);
 
       // * ធ្វើបច្ចុប្បន្នភាពចំណុចប្រទាក់អ្នកប្រើប្រាស់
       setState(() {});
