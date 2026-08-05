@@ -10,7 +10,7 @@ import "package:speanmeas/core/dialog/datetime_picker.dart" as datetime_picker;
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
 
-import "../__config__.dart";
+import "../config.dart";
 import "../schema.g.dart" as schema;
 
 import "../widget/password_input.dart" as p_input;

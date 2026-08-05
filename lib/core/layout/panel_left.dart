@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-import "package:speanmeas/core/__config__.dart";
+import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/features/auth/schema.g.dart" as u_schema;

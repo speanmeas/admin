@@ -6,7 +6,7 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 
-import "../__config__.dart";
+import "../config.dart";
 import "../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {

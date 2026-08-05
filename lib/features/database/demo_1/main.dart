@@ -8,7 +8,7 @@ import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 
-import "__config__.dart";
+import "config.dart";
 import "schema.g.dart" as schema;
 
 import "form/create.dart" as create;

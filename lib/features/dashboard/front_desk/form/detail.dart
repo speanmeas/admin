@@ -8,7 +8,7 @@ import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
 import "package:speanmeas/core/widget/show_data.dart" as sd;
 
-import "../__config__.dart";
+import "../config.dart";
 import "../schema.g.dart" as sm;
 
 class _Main_State extends State<Main_> {

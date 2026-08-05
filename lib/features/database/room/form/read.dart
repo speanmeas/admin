@@ -4,7 +4,7 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
 
-import "../__config__.dart";
+import "../config.dart";
 import "../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {

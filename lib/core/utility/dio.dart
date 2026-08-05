@@ -1,5 +1,5 @@
 import "package:dio/dio.dart";
-import "package:speanmeas/core/__config__.dart";
+import "package:speanmeas/core/config.dart";
 
 Dio dio = Dio(
   BaseOptions(
