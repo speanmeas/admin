@@ -3,6 +3,9 @@ import "dart:convert";
 import "package:flutter/foundation.dart";
 import "package:flutter/services.dart";
 
+final ENGLISH = "en_EN";
+final KHMER = "km_KH";
+
 class I18N extends ChangeNotifier {
   // singleton
   static final I18N instance = I18N._();
@@ -10,8 +13,7 @@ class I18N extends ChangeNotifier {
 
   void init() async {
     print("I18N initialized.");
-    await set_locale("en_EN");
-    // await set_locale("km_KH");
+    await set_locale(ENGLISH);
   }
 
   Map<String, String> data = {};
