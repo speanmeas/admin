@@ -1,4 +1,4 @@
-import "package:speanmeas/core/endpoint.g.dart" as ep;
+import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:dio/dio.dart";
 import "package:speanmeas/core/__config__.dart";
 import "package:speanmeas/core/utility/dio.dart";

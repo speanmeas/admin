@@ -7,7 +7,7 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/endpoint.g.dart" as ep;
+import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
@@ -221,7 +221,6 @@ class _Main_State extends State<Main_> {
                         final stay_n_guest = front_desks[r[sm_r.FRONT_DESK_ID]][sm.STAY_N_GUEST] ?? "0";
                         final stay_day = front_desks[r[sm_r.FRONT_DESK_ID]][sm.STAY_DAY] ?? "0";
                         final stay_hour = front_desks[r[sm_r.FRONT_DESK_ID]][sm.STAY_HOUR] ?? "0";
-                        final price = front_desks[r[sm_r.FRONT_DESK_ID]][sm.ROOM_PRICE] ?? "0";
                         return Row(
                           spacing: 4,
                           children: [
@@ -239,9 +238,6 @@ class _Main_State extends State<Main_> {
                             SizedBox(width: 2), //
                             Icon(Icons.circle, size: 6), //
                             Text("$stay_hour Hours", style: TextStyle(color: Colors.blue)),
-                            // //
-                            // Icon(Icons.payments_outlined, size: 20), //
-                            // Text("$price \$", style: TextStyle(color: Colors.blue)), //
                             if (r[sm_r.STATUS] != "Pending Clean")
                               InkWell(
                                 child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
