@@ -27,7 +27,7 @@ class _Main_State extends State<Main_> {
     bool isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
     String body = context.watch<Global>().body;
     String version = context.watch<Global>().VERSION;
-    return Container(
+    return SizedBox(
       height: 48,
       child: Row(
         children: [
@@ -113,7 +113,7 @@ class _Main_State extends State<Main_> {
 }
 
 class Main_ extends StatefulWidget {
-  Main_({super.key});
+  const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }

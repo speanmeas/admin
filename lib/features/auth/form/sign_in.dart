@@ -80,8 +80,8 @@ class _Main_State extends State<Main_> {
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     suffixIcon: InkWell(
-                      child: Icon(!is_password_visible ? Icons.visibility : Icons.visibility_off),
-                      onTap: password_visibility_toggle, //
+                      onTap: password_visibility_toggle,
+                      child: Icon(!is_password_visible ? Icons.visibility : Icons.visibility_off), //
                     ),
                   ),
                   obscureText: !is_password_visible,
@@ -146,7 +146,7 @@ class _Main_State extends State<Main_> {
 }
 
 class Main_ extends StatefulWidget {
-  Main_({super.key});
+  const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }

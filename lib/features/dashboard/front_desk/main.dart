@@ -401,7 +401,7 @@ class _Main_State extends State<Main_> {
   }
 
   //
-  void on_detail(r) async {
+  void on_detail(dynamic r) async {
     try {
       //
       tmp = await Navigator.push(
@@ -424,7 +424,7 @@ class _Main_State extends State<Main_> {
   }
 
   //
-  void on_update_guest(r) async {
+  void on_update_guest(dynamic r) async {
     try {
       //
       tmp = await Navigator.push(
@@ -447,7 +447,7 @@ class _Main_State extends State<Main_> {
   }
 
   //
-  void on_update_revenue(r) async {
+  void on_update_revenue(dynamic r) async {
     try {
       //
       tmp = await Navigator.push(
@@ -470,7 +470,7 @@ class _Main_State extends State<Main_> {
   }
 
   //
-  void on_cancel(r) async {
+  void on_cancel(dynamic r) async {
     try {
       //
       tmp = await Navigator.push(
@@ -493,7 +493,7 @@ class _Main_State extends State<Main_> {
   }
 
   //
-  void on_clean(r) async {
+  void on_clean(dynamic r) async {
     try {
       //
       tmp = await Navigator.push(
@@ -516,7 +516,7 @@ class _Main_State extends State<Main_> {
   }
 
   //
-  void on_check_out(r) async {
+  void on_check_out(dynamic r) async {
     try {
       //
       tmp = await Navigator.push(
@@ -539,7 +539,7 @@ class _Main_State extends State<Main_> {
   }
 
   //
-  void on_payment(r) async {
+  void on_payment(dynamic r) async {
     try {
       // print(r[sm_r.FRONT_DESK_ID]);
       // return;
@@ -564,7 +564,7 @@ class _Main_State extends State<Main_> {
   }
 
   //
-  void on_check_in(r) async {
+  void on_check_in(dynamic r) async {
     try {
       tmp = await Navigator.push(
         context,
@@ -599,7 +599,7 @@ class _Main_State extends State<Main_> {
 
 //
 class Main_ extends StatefulWidget {
-  Main_({super.key});
+  const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }

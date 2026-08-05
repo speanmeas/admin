@@ -115,15 +115,6 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
-  String _dateValue(dynamic value) {
-    if (value == null) return "";
-
-    final dt = DateTime.tryParse(value.toString());
-    if (dt == null) return value.toString();
-
-    return DateFormat(DATE_FORMAT).format(dt);
-  }
-
   // layout
   Widget _layout(List<Widget> children) {
     return Scaffold(
@@ -169,7 +160,7 @@ class _Main_State extends State<Main_> {
 }
 
 class Main_ extends StatefulWidget {
-  Main_({
+  const Main_({
     super.key, //
     this.front_desk_id,
   });

@@ -5,7 +5,7 @@ class Global extends ChangeNotifier {
   static final Global instance = Global._();
   Global._();
 
-  init() {
+  void init() {
     print("Global initialized.");
   }
 

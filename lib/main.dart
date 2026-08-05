@@ -26,7 +26,7 @@ void main() async {
 }
 
 class Main extends StatelessWidget {
-  Main({super.key});
+  const Main({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class Main extends StatelessWidget {
 }
 
 class Main_ extends StatefulWidget {
-  Main_({super.key});
+  const Main_({super.key});
 
   @override
   State<Main_> createState() => _Main_State();

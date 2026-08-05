@@ -176,6 +176,7 @@ class _Main_State extends State<Main_> {
                   Tooltip(
                     message: "Create",
                     child: InkWell(
+                      onTap: on_create,
                       child: Container(
                         width: 32,
                         height: 32,
@@ -185,8 +186,7 @@ class _Main_State extends State<Main_> {
                           size: 24,
                           color: Colors.blue,
                         ), //
-                      ), //
-                      onTap: on_create,
+                      ),
                     ),
                   ),
 
@@ -194,6 +194,7 @@ class _Main_State extends State<Main_> {
                   Tooltip(
                     message: "Read",
                     child: InkWell(
+                      onTap: on_read,
                       child: Container(
                         width: 32,
                         height: 32,
@@ -203,8 +204,7 @@ class _Main_State extends State<Main_> {
                           size: 24,
                           color: Colors.blue,
                         ), //
-                      ), //
-                      onTap: on_read,
+                      ),
                     ),
                   ),
 
@@ -212,6 +212,7 @@ class _Main_State extends State<Main_> {
                   Tooltip(
                     message: "Update",
                     child: InkWell(
+                      onTap: on_update,
                       child: Container(
                         width: 32,
                         height: 32,
@@ -221,8 +222,7 @@ class _Main_State extends State<Main_> {
                           size: 24,
                           color: Colors.blue,
                         ), //
-                      ), //
-                      onTap: on_update,
+                      ),
                     ),
                   ),
 
@@ -230,6 +230,7 @@ class _Main_State extends State<Main_> {
                   Tooltip(
                     message: "Delete",
                     child: InkWell(
+                      onTap: on_delete,
                       child: Container(
                         width: 32,
                         height: 32,
@@ -239,8 +240,7 @@ class _Main_State extends State<Main_> {
                           size: 24,
                           color: Colors.red,
                         ), //
-                      ), //
-                      onTap: on_delete,
+                      ),
                     ),
                   ),
 
@@ -299,6 +299,7 @@ class _Main_State extends State<Main_> {
                   Tooltip(
                     message: "Refresh",
                     child: InkWell(
+                      onTap: on_refresh,
                       child: Container(
                         width: 32,
                         height: 32,
@@ -308,8 +309,7 @@ class _Main_State extends State<Main_> {
                           size: 24,
                           color: Colors.blue,
                         ), //
-                      ), //
-                      onTap: on_refresh,
+                      ),
                     ),
                   ),
                 ],

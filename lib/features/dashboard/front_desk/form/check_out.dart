@@ -145,7 +145,7 @@ Widget _layout(List<Widget> children) {
 
 //
 class Main_ extends StatefulWidget {
-  Main_({
+  const Main_({
     super.key,
     this.front_desk_id, //
   });

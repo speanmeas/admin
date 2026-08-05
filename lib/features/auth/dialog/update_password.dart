@@ -96,11 +96,11 @@ class _Dialog_State extends State<Dialog_> {
       ),
       actions: [
         OutlinedButton(
-          child: Text("Cancel"), //
           style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
           onPressed: () {
             Navigator.pop(context); //
-          }, //
+          },
+          child: Text("Cancel"), //
         ),
         OutlinedButton(
           onPressed: can_okay() ? on_okay : null,
@@ -145,7 +145,7 @@ class _Dialog_State extends State<Dialog_> {
 }
 
 class Dialog_ extends StatefulWidget {
-  Dialog_({super.key});
+  const Dialog_({super.key});
 
   @override
   State<Dialog_> createState() => _Dialog_State();
@@ -181,7 +181,7 @@ class _Main_State extends State<Main_> {
 }
 
 class Main_ extends StatefulWidget {
-  Main_({super.key});
+  const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }

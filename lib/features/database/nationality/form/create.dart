@@ -258,7 +258,7 @@ class _Main_State extends State<Main_> {
 }
 
 class Main_ extends StatefulWidget {
-  Main_({super.key});
+  const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }

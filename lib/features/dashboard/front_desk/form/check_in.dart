@@ -290,7 +290,7 @@ Widget _layout(List<Widget> children) {
 
 //
 class Main_ extends StatefulWidget {
-  Main_({
+  const Main_({
     super.key,
     this.room_id, //
     this.price_day, //
