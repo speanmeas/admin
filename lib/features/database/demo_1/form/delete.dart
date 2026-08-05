@@ -66,10 +66,11 @@ class _Main_State extends State<Main_> {
   void on_delete() async {
     try {
       //
-      final r = await dio.post(
+      print(schema.data[schema.ID]?["value"]);
+      tmp = await dio.post(
         "$PATH/delete", //
         data: {
-          "_id": schema.data[schema.ID]?["value"], //
+          schema.ID: schema.data[schema.ID]?["value"], //
         },
       );
 
@@ -77,7 +78,7 @@ class _Main_State extends State<Main_> {
       snackbar.view(context: context, message: "Success", color: Colors.green);
 
       //
-      Navigator.pop(context, r.data);
+      Navigator.pop(context, tmp.data);
 
       //
     } catch (e, st) {
