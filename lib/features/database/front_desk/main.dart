@@ -557,7 +557,7 @@ class _Main_State extends State<Main_> {
   }
 
   Future<int?> select_page() async {
-    const ITEM_HEIGHT = 32.0;
+    final ITEM_HEIGHT = 32.0;
     final controller = ScrollController(initialScrollOffset: (page - 1) * ITEM_HEIGHT);
 
     final result = await showDialog<int>(

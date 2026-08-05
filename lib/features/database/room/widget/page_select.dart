@@ -20,7 +20,7 @@ Future<int?> show(
   required int row_total,
   required int limit,
 }) async {
-  const ITEM_HEIGHT = 38.0;
+  final ITEM_HEIGHT = 38.0;
   final total_pages = row_total == 0 ? 1 : (row_total + limit - 1) ~/ limit;
   final controller = ScrollController(initialScrollOffset: ((page - 1) * ITEM_HEIGHT).clamp(0.0, double.infinity));
   final input_controller = TextEditingController();

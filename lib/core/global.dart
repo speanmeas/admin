@@ -14,6 +14,10 @@ class Global extends ChangeNotifier {
   double RATE = 4000; // 1 USD = 4000 KHR
   String body = "Front Desk"; //
 
+  void notify() {
+    notifyListeners();
+  }
+
   //
 }
 

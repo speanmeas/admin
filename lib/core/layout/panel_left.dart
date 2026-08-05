@@ -120,7 +120,7 @@ class _Main_State extends State<Main_> {
       selectedColor: Colors.blue,
       onTap: () {
         glob.body = name;
-        glob.notifyListeners();
+        glob.notify();
         if (is_mobile) Navigator.pop(context);
         setState(() {});
       },
@@ -140,7 +140,7 @@ class _Main_State extends State<Main_> {
       contentPadding: EdgeInsets.only(left: 40),
       onTap: () {
         glob.body = "$prefix $name";
-        glob.notifyListeners();
+        glob.notify();
         if (is_mobile) Navigator.pop(context);
         setState(() {});
       },

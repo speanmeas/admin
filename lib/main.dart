@@ -60,7 +60,7 @@ class _Main_State extends State<Main_> {
   void init() async {
     final info = await PackageInfo.fromPlatform();
     glob.VERSION = "${info.version}+${info.buildNumber}";
-    glob.notifyListeners();
+    glob.notify();
     print("VERSION: ${glob.VERSION}");
   }
 

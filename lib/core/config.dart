@@ -1,11 +1,11 @@
 import "package:flutter/foundation.dart";
 
-String TITLE = "Spean Meas";
+final TITLE = "Spean Meas";
 
-int MOBILE_SCREEN_WIDTH = 1000;
+final MOBILE_SCREEN_WIDTH = 1000;
 
-bool is_local = false;
-bool is_github = false;
+final is_local = false;
+final is_github = false;
 String get_api_host() {
   if (kDebugMode) {
     return "http://localhost:8000";
@@ -23,7 +23,7 @@ String get_api_host() {
   return "https://api.speanmeas.com";
 }
 
-String API_HOST = get_api_host();
+final API_HOST = get_api_host();
 
 // todo: later
 String get_minio_public() {
@@ -44,4 +44,4 @@ String get_minio_public() {
   return "https://sss.speanmeas.com/public";
 }
 
-String MINIO_PUBLIC = get_minio_public();
+final MINIO_PUBLIC = get_minio_public();
