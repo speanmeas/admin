@@ -2,7 +2,7 @@ String HEADER = "Demo 2";
 
 String get PATH => "/${HEADER.toLowerCase().replaceAll(" ", "_")}";
 
-String DATE_FORMAT = "yyyy-MM-dd HH:mm";
+final DATE_FORMAT = "EEEE dd-MM-yyyy h:mm a";
 
 int LIMIT = 10000;
 
