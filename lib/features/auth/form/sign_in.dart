@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:dio/dio.dart";
 
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/utility/dio.dart";

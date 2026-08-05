@@ -1,13 +1,10 @@
-import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
 //
 import "package:speanmeas/core/utility/dio.dart";
+import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_light.dart" as theme;
-
-//
 import "package:speanmeas/features/database/user/schema.g.dart" as n_schema_r;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
