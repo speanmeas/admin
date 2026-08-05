@@ -44,12 +44,12 @@ class _Main_State extends State<Main_> {
       // note
       TextField(
         controller: c_note,
+        maxLines: 4,
         decoration: InputDecoration(
           labelText: "Note:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
         ),
-        maxLines: 4,
         onChanged: (v) => setState(() {}), //
       ),
 
@@ -61,23 +61,24 @@ class _Main_State extends State<Main_> {
         children: [
           OutlinedButton.icon(
             autofocus: true,
-            icon: Icon(Icons.logout), //
-            label: Text("Check Out"), //
-            onPressed: on_check_out, //
+            icon: Icon(Icons.cleaning_services), //
+            label: Text("Clean"), //
+            onPressed: on_clean, //
           ),
         ],
       ),
     ]);
   }
 
-  void on_check_out() async {
+  void on_clean() async {
     try {
       //
+
       await dio.post(
-        ep.FRONT_DESK_FORM_CHECK_OUT,
+        ep.FRONT_DESK_FORM_CLEAN,
         data: {
           sm.ID: widget.front_desk_id, //
-          sm.CHECK_OUT_NOTE: c_note.text, //
+          sm.CLEAN_NOTE: c_note.text, //
         },
       );
 
@@ -85,13 +86,14 @@ class _Main_State extends State<Main_> {
         ep.ROOM_UPDATE, //
         data: {
           sm_r.ID: sm.data[sm.ROOM_ID]!["value"], //
-          sm_r.STATUS: "Pending Clean", //
+          sm_r.STATUS: "Available", //
+          sm_r.FRONT_DESK_ID: null, //
         },
       );
 
       Navigator.pop(context, true);
 
-      sb.view(context: context, message: "Check Out Successful", color: Colors.green);
+      sb.view(context: context, message: "Clean Successful", color: Colors.green);
 
       //
     } catch (e) {
@@ -112,7 +114,7 @@ Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Check Out", //
+        "Clean", //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 

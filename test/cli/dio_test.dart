@@ -1,6 +1,6 @@
 import "package:speanmeas/core/endpoint.g.dart" as ep;
 import "package:dio/dio.dart";
-import "package:speanmeas/core/config.dart";
+import "package:speanmeas/core/__config__.dart";
 import "package:speanmeas/core/utility/dio.dart";
 
 void main() async {

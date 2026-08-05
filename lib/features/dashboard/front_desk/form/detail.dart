@@ -103,6 +103,13 @@ class _Main_State extends State<Main_> {
           //
           return SizedBox();
         })(),
+
+      OutlinedButton.icon(
+        autofocus: true,
+        label: Text("OK"),
+        icon: Icon(Icons.check), //
+        onPressed: () => Navigator.pop(context), //
+      ),
     ]);
   }
 

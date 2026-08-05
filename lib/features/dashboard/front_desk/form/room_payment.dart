@@ -56,18 +56,21 @@ class _Main_State extends State<Main_> {
           floatingLabelBehavior: FloatingLabelBehavior.always,
         ),
         onChanged: (v) => setState(() {}), //
+        onSubmitted: (v) => can_pay ? on_pay() : null, //
       ),
       SizedBox(height: 8),
 
       //
       TextField(
         controller: c_pay,
+        autofocus: true,
         decoration: InputDecoration(
           labelText: "Payment:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
         ),
         onChanged: (v) => setState(() {}), //
+        onSubmitted: (v) => can_pay ? on_pay() : null, //
       ),
       SizedBox(height: 8),
 
@@ -80,6 +83,7 @@ class _Main_State extends State<Main_> {
           floatingLabelBehavior: FloatingLabelBehavior.always,
         ),
         onChanged: (v) => setState(() {}), //
+        onSubmitted: (v) => can_pay ? on_pay() : null, //
       ),
       SizedBox(height: 8),
 
@@ -93,6 +97,7 @@ class _Main_State extends State<Main_> {
           floatingLabelBehavior: FloatingLabelBehavior.always,
         ),
         onChanged: (v) => setState(() {}), //
+        onSubmitted: (v) => can_pay ? on_pay() : null, //
       ),
 
       // balanced
@@ -127,11 +132,19 @@ class _Main_State extends State<Main_> {
           OutlinedButton.icon(
             icon: Icon(Icons.payment), //
             label: Text("Payment"), //
-            onPressed: balanced == 0 ? on_pay : null, //
+            onPressed: can_pay ? on_pay : null, //
           ),
         ],
       ),
     ]);
+  }
+
+  bool get can_pay {
+    if (double.tryParse(c_price.text) == null) return false;
+    if (double.tryParse(c_pay.text) == null) return false;
+    if (double.tryParse(c_price.text)! <= 0) return false;
+    if (balanced != 0) return false;
+    return true;
   }
 
   double get balanced {

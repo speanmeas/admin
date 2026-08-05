@@ -17,10 +17,6 @@ class _Main_State extends State<Main_> {
   dynamic tmp;
 
   final c_g_search = TextEditingController();
-  final c_n_o_guest = TextEditingController();
-  final c_d_day = TextEditingController();
-  final c_d_hour = TextEditingController();
-  final c_note = TextEditingController();
 
   void init() async {
     sm.clear();
@@ -30,10 +26,6 @@ class _Main_State extends State<Main_> {
     sm.data[sm.STAY_N_GUEST]?["value"] = 1;
 
     c_g_search.text = sm_g.data[sm_g.PHONE_NUMBER]?["value"]?.toString() ?? "";
-    c_n_o_guest.text = sm.data[sm.STAY_N_GUEST]?["value"]?.toString() ?? "";
-    c_d_day.text = sm.data[sm.STAY_DAY]?["value"]?.toString() ?? "";
-    c_d_hour.text = sm.data[sm.STAY_HOUR]?["value"]?.toString() ?? "";
-    c_note.text = sm.data[sm.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
 
     setState(() {});
   }
@@ -41,80 +33,6 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     return _layout([
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Stay",
-            style: TextStyle(
-              fontSize: 20, //
-              fontWeight: FontWeight.bold, //
-            ),
-          ), //
-        ],
-      ),
-
-      SizedBox(height: 8),
-      // number of guests
-      n_select.Main_(
-        controller: c_n_o_guest,
-        title: "Number of Guests:",
-        options: List.generate(10, (index) => index + 1),
-        onChanged: (v) => setState(() {}), //
-      ),
-
-      SizedBox(height: 8),
-
-      // stay duration days
-      n_select.Main_(
-        controller: c_d_day,
-        title: "Stay Duration (Days):",
-        options: List.generate(365, (index) => index),
-        onChanged: (v) => setState(() {}), //
-      ),
-
-      SizedBox(height: 8),
-
-      // stay duration hours
-      n_select.Main_(
-        controller: c_d_hour,
-        title: "Stay Duration (Hours):",
-        options: [0, 3, 6, 9, 12, 15, 18, 21],
-        onChanged: (v) => setState(() {}), //
-      ),
-
-      SizedBox(height: 8),
-
-      // note
-      TextField(
-        controller: c_note,
-        maxLines: 4,
-        decoration: InputDecoration(
-          labelText: "Note:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-        ),
-        onChanged: (v) => setState(() {}), //
-      ),
-
-      Divider(color: Colors.black),
-
-      // guest search
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Guest",
-            style: TextStyle(
-              fontSize: 20, //
-              fontWeight: FontWeight.bold, //
-            ),
-          ), //
-        ],
-      ),
-
-      SizedBox(height: 8),
-
       g_search.Main_(
         controller: c_g_search,
         onChanged: (v) {
@@ -183,61 +101,29 @@ class _Main_State extends State<Main_> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           OutlinedButton.icon(
-            icon: Icon(Icons.login_outlined), //
-            label: Text("Check In"), //
-            onPressed: can_check_in ? on_check_in : null, //
+            icon: Icon(Icons.check), //
+            label: Text("Update"), //
+            onPressed: on_update, //
           ),
         ],
       ),
     ]);
   }
 
-  bool get can_check_in {
-    int n_guest = int.tryParse(c_n_o_guest.text) ?? 0;
-    int n_day = int.tryParse(c_d_day.text) ?? 0;
-    int n_hour = int.tryParse(c_d_hour.text) ?? 0;
-
-    if (n_guest <= 0) //
-      return false;
-
-    if (n_day <= 0 && n_hour <= 0) //
-      return false;
-
-    return true;
-  }
-
-  void on_check_in() async {
-    int stay_days = int.tryParse(c_d_day.text) ?? 0;
-    int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
-    double? room_price = (widget.price_day! * stay_days) + (widget.price_hour! * stay_hours / 3);
-
+  void on_update() async {
     try {
       //
-      final r = await dio.post(
-        ep.FRONT_DESK_FORM_CHECK_IN, // create
+      tmp = await dio.post(
+        ep.FRONT_DESK_UPDATE, //
         data: {
-          sm.ROOM_ID: widget.room_id,
+          sm.ID: widget.front_desk_id, //
           sm.GUEST_ID: sm.data[sm.GUEST_ID]?["value"],
-          sm.STAY_N_GUEST: int.tryParse(c_n_o_guest.text),
-          sm.STAY_DAY: int.tryParse(c_d_day.text),
-          sm.STAY_HOUR: int.tryParse(c_d_hour.text),
-          sm.CHECK_IN_NOTE: c_note.text,
-          sm.ROOM_PRICE: room_price,
-        },
-      );
-
-      await dio.post(
-        ep.ROOM_UPDATE, //
-        data: {
-          sm_r.ID: widget.room_id, //
-          sm_r.STATUS: "Pending Pay", //
-          sm_r.FRONT_DESK_ID: r.data[0][sm_g.ID], //
         },
       );
 
       Navigator.pop(context, true);
 
-      snackbar.view(context: context, message: "Check In Successful", color: Colors.green);
+      snackbar.view(context: context, message: "Update Successful", color: Colors.green);
 
       //
     } catch (e) {
@@ -258,7 +144,7 @@ Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Room Payment", //
+        "Update Guest", //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -290,14 +176,10 @@ Widget _layout(List<Widget> children) {
 class Main_ extends StatefulWidget {
   Main_({
     super.key,
-    this.room_id, //
-    this.price_day, //
-    this.price_hour, //
+    this.front_desk_id, //
   });
 
-  final String? room_id;
-  final double? price_day;
-  final double? price_hour;
+  final String? front_desk_id;
 
   @override
   State<Main_> createState() => _Main_State();
@@ -307,7 +189,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      title: "Check In", //
+      title: "Development", //
       theme: theme.data(), //
       home: Main_(), //
       debugShowCheckedModeBanner: false,

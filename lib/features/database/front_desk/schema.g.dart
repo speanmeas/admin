@@ -111,6 +111,41 @@ Map<String, Map<String, dynamic>> data = {
     "lock": false,
     "value": null
   },
+  "check_in_by": {
+    "type": "string",
+    "title": "Check-in By",
+    "hide": false,
+    "lock": true,
+    "value": null
+  },
+  "check_in_at": {
+    "type": "date-time",
+    "title": "Check-in At",
+    "hide": false,
+    "lock": true,
+    "value": null
+  },
+  "cancel_note": {
+    "type": "string",
+    "title": "Cancel Note",
+    "hide": false,
+    "lock": false,
+    "value": null
+  },
+  "cancel_by": {
+    "type": "string",
+    "title": "Cancel By",
+    "hide": false,
+    "lock": true,
+    "value": null
+  },
+  "cancel_at": {
+    "type": "date-time",
+    "title": "Cancel At",
+    "hide": false,
+    "lock": true,
+    "value": null
+  },
   "room_price": {
     "type": "number",
     "title": "Room Price [USD]",
@@ -134,9 +169,23 @@ Map<String, Map<String, dynamic>> data = {
   },
   "room_pay_note": {
     "type": "string",
-    "title": "Room Pay Note",
+    "title": "Room Payment Note",
     "hide": false,
     "lock": false,
+    "value": null
+  },
+  "room_pay_by": {
+    "type": "string",
+    "title": "Room Payment By",
+    "hide": false,
+    "lock": true,
+    "value": null
+  },
+  "room_pay_at": {
+    "type": "date-time",
+    "title": "Room Payment At",
+    "hide": false,
+    "lock": true,
     "value": null
   },
   "revenue_price": {
@@ -164,77 +213,14 @@ Map<String, Map<String, dynamic>> data = {
     "type": "number",
     "title": "Revenue Balance [USD]",
     "hide": false,
-    "lock": false,
+    "lock": true,
     "value": null
   },
   "revenue_pay_note": {
     "type": "string",
-    "title": "Revenue Pay Note",
+    "title": "Revenue Payment Note",
     "hide": false,
     "lock": false,
-    "value": null
-  },
-  "cancel_note": {
-    "type": "string",
-    "title": "Cancel Note",
-    "hide": false,
-    "lock": false,
-    "value": null
-  },
-  "check_out_note": {
-    "type": "string",
-    "title": "Check-out Note",
-    "hide": false,
-    "lock": false,
-    "value": null
-  },
-  "clean_note": {
-    "type": "string",
-    "title": "Clean Note",
-    "hide": false,
-    "lock": false,
-    "value": null
-  },
-  "check_in_by": {
-    "type": "string",
-    "title": "Check-in By",
-    "hide": false,
-    "lock": true,
-    "value": null
-  },
-  "check_in_at": {
-    "type": "date-time",
-    "title": "Check-in At",
-    "hide": false,
-    "lock": true,
-    "value": null
-  },
-  "cancel_by": {
-    "type": "string",
-    "title": "Cancel By",
-    "hide": false,
-    "lock": true,
-    "value": null
-  },
-  "cancel_at": {
-    "type": "date-time",
-    "title": "Cancel At",
-    "hide": false,
-    "lock": true,
-    "value": null
-  },
-  "room_pay_by": {
-    "type": "string",
-    "title": "Room Payment By",
-    "hide": false,
-    "lock": true,
-    "value": null
-  },
-  "room_pay_at": {
-    "type": "date-time",
-    "title": "Room Payment At",
-    "hide": false,
-    "lock": true,
     "value": null
   },
   "revenue_pay_by": {
@@ -251,6 +237,13 @@ Map<String, Map<String, dynamic>> data = {
     "lock": true,
     "value": null
   },
+  "check_out_note": {
+    "type": "string",
+    "title": "Check-out Note",
+    "hide": false,
+    "lock": false,
+    "value": null
+  },
   "check_out_by": {
     "type": "string",
     "title": "Check-out By",
@@ -263,6 +256,13 @@ Map<String, Map<String, dynamic>> data = {
     "title": "Check-out At",
     "hide": false,
     "lock": true,
+    "value": null
+  },
+  "clean_note": {
+    "type": "string",
+    "title": "Clean Note",
+    "hide": false,
+    "lock": false,
     "value": null
   },
   "clean_by": {
@@ -297,28 +297,28 @@ final STAY_HOUR = "stay_hour";
 final STAY_N_GUEST = "stay_n_guest";
 final STAY_DUE = "stay_due";
 final CHECK_IN_NOTE = "check_in_note";
+final CHECK_IN_BY = "check_in_by";
+final CHECK_IN_AT = "check_in_at";
+final CANCEL_NOTE = "cancel_note";
+final CANCEL_BY = "cancel_by";
+final CANCEL_AT = "cancel_at";
 final ROOM_PRICE = "room_price";
 final ROOM_PAY = "room_pay";
 final ROOM_RETURN = "room_return";
 final ROOM_PAY_NOTE = "room_pay_note";
+final ROOM_PAY_BY = "room_pay_by";
+final ROOM_PAY_AT = "room_pay_at";
 final REVENUE_PRICE = "revenue_price";
 final REVENUE_PAY = "revenue_pay";
 final REVENUE_RETURN = "revenue_return";
 final REVENUE_BALANCE = "revenue_balance";
 final REVENUE_PAY_NOTE = "revenue_pay_note";
-final CANCEL_NOTE = "cancel_note";
-final CHECK_OUT_NOTE = "check_out_note";
-final CLEAN_NOTE = "clean_note";
-final CHECK_IN_BY = "check_in_by";
-final CHECK_IN_AT = "check_in_at";
-final CANCEL_BY = "cancel_by";
-final CANCEL_AT = "cancel_at";
-final ROOM_PAY_BY = "room_pay_by";
-final ROOM_PAY_AT = "room_pay_at";
 final REVENUE_PAY_BY = "revenue_pay_by";
 final REVENUE_PAY_AT = "revenue_pay_at";
+final CHECK_OUT_NOTE = "check_out_note";
 final CHECK_OUT_BY = "check_out_by";
 final CHECK_OUT_AT = "check_out_at";
+final CLEAN_NOTE = "clean_note";
 final CLEAN_BY = "clean_by";
 final CLEAN_AT = "clean_at";
 

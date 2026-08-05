@@ -1,4 +1,4 @@
-/// TODO: Add notification for overtime checkout.
+/// TODO: Add notification when overtime.
 ///
 ///
 ///
@@ -18,14 +18,29 @@ import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
 import "form/detail.dart" as detail;
 import "form/check_in.dart" as check_in;
-import "form/pay_room.dart" as pay_room;
+import "form/room_payment.dart" as room_payment;
 import "form/check_out.dart" as check_out;
+import "form/clean.dart" as clean;
+import "form/cancel.dart" as cancel;
+import "form/update_guest.dart" as update_guest;
+import "form/update_revenue_payment.dart" as update_revenue_payment;
+
+Widget _layout(List<Widget> children) {
+  return Scaffold(
+    body: SingleChildScrollView(
+      child: Center(
+        child: Wrap(
+          children: children, //
+        ),
+      ),
+    ),
+  );
+}
 
 class _Main_State extends State<Main_> {
   //
 
   dynamic tmp;
-
   List<Map<String, dynamic>> rooms = [];
   Map<String, dynamic> front_desks = {};
 
@@ -85,38 +100,31 @@ class _Main_State extends State<Main_> {
                     Stack(
                       children: [
                         // * លេខបន្ទប់នៅកណ្តាលជានិច្ច
-                        Center(
-                          child: Text(
-                            "${r[sm_r.NUMBER]}",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black, //
+                        Row(
+                          spacing: 4,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              " ${r[sm_r.NUMBER]}",
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                             ),
-                          ),
+                          ],
                         ),
 
                         // * ស្ថានភាពបន្ទប់នៅខាងស្តាំ
                         (() {
                           var color = Colors.black; // Default color
                           if (r[sm_r.STATUS] == "Available") color = Colors.green;
-                          if (r[sm_r.STATUS] == "Pending Pay") color = Colors.orange;
-                          if (r[sm_r.STATUS] == "Pending Leave") color = Colors.red;
-                          if (r[sm_r.STATUS] == "Pending Clean") color = Colors.black;
+                          if (r[sm_r.STATUS] == "Pending Pay") color = Colors.red;
+                          if (r[sm_r.STATUS] == "Pending Leave") color = Colors.orange;
+                          if (r[sm_r.STATUS] == "Pending Clean") color = Colors.grey;
 
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Icon(Icons.circle, size: 10, color: color),
                               SizedBox(width: 4),
-                              Text(
-                                "${r[sm_r.STATUS]}",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: color, //
-                                ),
-                              ),
+                              Text("${r[sm_r.STATUS]}", style: TextStyle(fontSize: 14, color: color)),
 
                               // menu
                               MenuAnchor(
@@ -152,11 +160,13 @@ class _Main_State extends State<Main_> {
                                     ),
 
                                     //
-                                    MenuItemButton(
-                                      leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
-                                      child: Text("Cancel", style: TextStyle(color: Colors.red)),
-                                      onPressed: () {}, //
-                                    ),
+                                    if (r[sm_r.STATUS] != "Pending Clean")
+                                      if (r[sm_r.STATUS] != "Pending Leave")
+                                        MenuItemButton(
+                                          leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
+                                          child: Text("Cancel", style: TextStyle(color: Colors.red)),
+                                          onPressed: () => on_cancel(r), //
+                                        ),
                                   ],
                                 ],
                               ),
@@ -171,33 +181,11 @@ class _Main_State extends State<Main_> {
                       spacing: 4,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          "${r[sm_r.KIND]}",
-                          style: TextStyle(
-                            fontSize: 14, //
-                            fontWeight: FontWeight.bold, //
-                          ),
-                        ),
-
+                        Text("${r[sm_r.KIND]}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                         Text("-"), //
-
-                        Text(
-                          "${r[sm_r.USD_PER_3H]} \$/3Hours",
-                          style: TextStyle(
-                            fontSize: 14, //
-                            fontWeight: FontWeight.bold, //
-                          ),
-                        ), //
-
+                        Text("${r[sm_r.USD_PER_3H]} \$ / 3 Hours", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)), //
                         Text("-"), //
-
-                        Text(
-                          "${r[sm_r.USD_PER_DAY]} \$/Day",
-                          style: TextStyle(
-                            fontSize: 14, //
-                            fontWeight: FontWeight.bold, //
-                          ),
-                        ),
+                        Text("${r[sm_r.USD_PER_DAY]} \$ / Day", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                       ],
                     ),
 
@@ -205,19 +193,24 @@ class _Main_State extends State<Main_> {
                     if (r[sm_r.FRONT_DESK_ID] != null) ...[
                       //
                       (() {
-                        final guest_name = front_desks[r[sm_r.FRONT_DESK_ID]][sm.GUEST_FULL_NAME] ?? "";
-                        final guest_phone = front_desks[r[sm_r.FRONT_DESK_ID]][sm.GUEST_PHONE_NUMBER] ?? "";
+                        final guest_name = front_desks[r[sm_r.FRONT_DESK_ID]][sm.GUEST_FULL_NAME] ?? "N/A";
+                        final guest_phone = front_desks[r[sm_r.FRONT_DESK_ID]][sm.GUEST_PHONE_NUMBER] ?? "N/A";
                         return Row(
                           spacing: 4,
                           children: [
-                            Icon(Icons.person, size: 16), //
-                            Text("Guest:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                            Icon(Icons.person, size: 20), //
+                            Text("Guest:", style: TextStyle(fontWeight: FontWeight.bold)),
+                            //
+                            SizedBox(width: 2), //
+                            Icon(Icons.circle, size: 6), //
                             Text(guest_name, style: TextStyle(color: Colors.blue)), //
-                            Text("-"), //
+                            //
+                            SizedBox(width: 2), //
+                            Icon(Icons.circle, size: 6), //
                             Text(guest_phone, style: TextStyle(color: Colors.blue)), //
                             InkWell(
                               child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
-                              onTap: () {}, //
+                              onTap: () => on_update_guest(r),
                             ),
                           ],
                         );
@@ -228,20 +221,32 @@ class _Main_State extends State<Main_> {
                         final stay_n_guest = front_desks[r[sm_r.FRONT_DESK_ID]][sm.STAY_N_GUEST] ?? "0";
                         final stay_day = front_desks[r[sm_r.FRONT_DESK_ID]][sm.STAY_DAY] ?? "0";
                         final stay_hour = front_desks[r[sm_r.FRONT_DESK_ID]][sm.STAY_HOUR] ?? "0";
+                        final price = front_desks[r[sm_r.FRONT_DESK_ID]][sm.ROOM_PRICE] ?? "0";
                         return Row(
                           spacing: 4,
                           children: [
-                            Icon(Icons.calendar_month, size: 16), //
-                            Text("Stay:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                            Text("$stay_n_guest Persons", style: TextStyle(color: Colors.blue)), //
-                            Text("-"), //
-                            Text("$stay_day Days", style: TextStyle(color: Colors.blue)), //
-                            Text("-"), //
-                            Text("$stay_hour Hours", style: TextStyle(color: Colors.blue)), //
-                            InkWell(
-                              child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
-                              onTap: () {}, //
-                            ),
+                            Icon(Icons.calendar_month, size: 20), //
+                            Text("Stay:", style: TextStyle(fontWeight: FontWeight.bold)),
+                            //
+                            SizedBox(width: 2), //
+                            Icon(Icons.circle, size: 6), //
+                            Text("$stay_n_guest Persons", style: TextStyle(color: Colors.blue)),
+                            //
+                            SizedBox(width: 2), //
+                            Icon(Icons.circle, size: 6), //
+                            Text("$stay_day Days", style: TextStyle(color: Colors.blue)),
+                            //
+                            SizedBox(width: 2), //
+                            Icon(Icons.circle, size: 6), //
+                            Text("$stay_hour Hours", style: TextStyle(color: Colors.blue)),
+                            // //
+                            // Icon(Icons.payments_outlined, size: 20), //
+                            // Text("$price \$", style: TextStyle(color: Colors.blue)), //
+                            if (r[sm_r.STATUS] != "Pending Clean")
+                              InkWell(
+                                child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                                onTap: () {}, //
+                              ),
                           ],
                         );
                       })(),
@@ -249,25 +254,50 @@ class _Main_State extends State<Main_> {
                       //
                       (() {
                         final room_pay = front_desks[r[sm_r.FRONT_DESK_ID]][sm.ROOM_PAY] ?? "0";
+                        final room_price = front_desks[r[sm_r.FRONT_DESK_ID]][sm.ROOM_PRICE] ?? "0";
+                        return Row(
+                          spacing: 4,
+                          children: [
+                            Icon(Icons.receipt_outlined, size: 20), //
+                            Text("Room:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                            //
+                            SizedBox(width: 4), //
+                            Icon(Icons.circle, size: 6), //
+                            Text("Price", style: TextStyle(fontWeight: FontWeight.bold)), //
+                            Text("$room_price \$", style: TextStyle(color: Colors.blue)), //
+                            //
+                            SizedBox(width: 4), //
+                            Icon(Icons.circle, size: 6), //
+                            Text("Payment", style: TextStyle(fontWeight: FontWeight.bold)), //
+                            Text("$room_pay \$", style: TextStyle(color: Colors.blue)), //
+                          ],
+                        );
+                      })(),
+
+                      //
+                      (() {
+                        final revenue_price = front_desks[r[sm_r.FRONT_DESK_ID]][sm.REVENUE_PRICE] ?? "0";
                         final revenue_pay = front_desks[r[sm_r.FRONT_DESK_ID]][sm.REVENUE_PAY] ?? "0";
                         return Row(
                           spacing: 4,
                           children: [
-                            Icon(Icons.payment, size: 16), //
-                            Text("Room Payment:", style: TextStyle(fontWeight: FontWeight.bold)), //
-                            Text("$room_pay \$", style: TextStyle(color: Colors.blue)), //
-                            InkWell(
-                              child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
-                              onTap: () {}, //
-                            ),
-                            Text("  -  "), //
-                            Icon(Icons.payment, size: 16), //
-                            Text("Revenue Payment:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                            Icon(Icons.receipt_outlined, size: 20), //
+                            Text("Revenue:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                            //
+                            SizedBox(width: 4), //
+                            Icon(Icons.circle, size: 6), //
+                            Text("Price", style: TextStyle(fontWeight: FontWeight.bold)), //
+                            Text("$revenue_price \$", style: TextStyle(color: Colors.blue)), //
+                            //
+                            SizedBox(width: 4), //
+                            Icon(Icons.circle, size: 6), //
+                            Text("Payment", style: TextStyle(fontWeight: FontWeight.bold)), //
                             Text("$revenue_pay \$", style: TextStyle(color: Colors.blue)), //
-                            InkWell(
-                              child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
-                              onTap: () {}, //
-                            ),
+                            if (r[sm_r.STATUS] != "Pending Clean")
+                              InkWell(
+                                child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                                onTap: () => on_update_revenue(r), //
+                              ),
                           ],
                         );
                       })(),
@@ -282,7 +312,7 @@ class _Main_State extends State<Main_> {
                         return Row(
                           spacing: 4,
                           children: [
-                            Icon(Icons.login, size: 16), //
+                            Icon(Icons.login, size: 20), //
                             Text("Check In:", style: TextStyle(fontWeight: FontWeight.bold)), //
                             Text(check_in, style: TextStyle(color: Colors.blue)), //
                           ],
@@ -299,7 +329,7 @@ class _Main_State extends State<Main_> {
                         return Row(
                           spacing: 4,
                           children: [
-                            Icon(Icons.time_to_leave_outlined, size: 16), //
+                            Icon(Icons.time_to_leave_outlined, size: 20), //
                             Text("Due:", style: TextStyle(fontWeight: FontWeight.bold)), //
                             Text(due, style: TextStyle(color: Colors.blue)), //
                           ],
@@ -316,7 +346,7 @@ class _Main_State extends State<Main_> {
                         return Row(
                           spacing: 4,
                           children: [
-                            Icon(Icons.logout, size: 16), //
+                            Icon(Icons.logout, size: 20), //
                             Text("Check Out:", style: TextStyle(fontWeight: FontWeight.bold)), //
                             Text(check_out, style: TextStyle(color: Colors.blue)), //
                           ],
@@ -342,7 +372,7 @@ class _Main_State extends State<Main_> {
                             onPressed: () => on_payment(r), //
                             icon: Icon(Icons.payment),
                             label: Text("Payment"),
-                            style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.orange)),
+                            style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.red)),
                           ), //
 
                         if (r[sm_r.STATUS] == "Pending Leave") //
@@ -350,15 +380,15 @@ class _Main_State extends State<Main_> {
                             onPressed: () => on_check_out(r), //
                             icon: Icon(Icons.logout),
                             label: Text("Check Out"),
-                            style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.red)),
+                            style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.orange)),
                           ), //
 
                         if (r[sm_r.STATUS] == "Pending Clean") //
                           OutlinedButton.icon(
-                            onPressed: () {},
+                            onPressed: () => on_clean(r), //
                             icon: Icon(Icons.cleaning_services),
                             label: Text("Clean"),
-                            style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.black)),
+                            style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.grey)),
                           ), //
                       ],
                     ),
@@ -371,9 +401,10 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
-  void on_detail(Map<String, dynamic> r) async {
+  //
+  void on_detail(r) async {
     try {
-      print(r);
+      //
       tmp = await Navigator.push(
         context,
         MaterialPageRoute(
@@ -392,6 +423,95 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
+  void on_update_guest(r) async {
+    try {
+      //
+      tmp = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => update_guest.Main_(
+            front_desk_id: r[sm_r.FRONT_DESK_ID], //
+          ), //
+        ),
+      );
+
+      //
+      if (tmp != null) init();
+
+      //
+    } catch (e) {
+      sb.view(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
+  //
+  void on_update_revenue(r) async {
+    try {
+      //
+      tmp = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => update_revenue_payment.Main_(
+            front_desk_id: r[sm_r.FRONT_DESK_ID], //
+          ), //
+        ),
+      );
+
+      //
+      if (tmp != null) init();
+
+      //
+    } catch (e) {
+      sb.view(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
+  //
+  void on_cancel(r) async {
+    try {
+      //
+      tmp = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => cancel.Main_(
+            front_desk_id: r[sm_r.FRONT_DESK_ID], //
+          ), //
+        ),
+      );
+
+      //
+      if (tmp != null) init();
+
+      //
+    } catch (e) {
+      sb.view(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
+  //
+  void on_clean(r) async {
+    try {
+      //
+      tmp = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => clean.Main_(
+            front_desk_id: r[sm_r.FRONT_DESK_ID], //
+          ), //
+        ),
+      );
+
+      //
+      if (tmp != null) init();
+
+      //
+    } catch (e) {
+      sb.view(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
+  //
   void on_check_out(r) async {
     try {
       //
@@ -413,6 +533,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_payment(r) async {
     try {
       // print(r[sm_r.FRONT_DESK_ID]);
@@ -421,7 +542,7 @@ class _Main_State extends State<Main_> {
       tmp = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => pay_room.Main_(
+          builder: (context) => room_payment.Main_(
             front_desk_id: r[sm_r.FRONT_DESK_ID], //
           ), //
         ),
@@ -436,6 +557,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_check_in(r) async {
     try {
       tmp = await Navigator.push(
@@ -458,24 +580,14 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  Widget _layout(List<Widget> children) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: Wrap(
-            children: children, //
-          ),
-        ),
-      ),
-    );
-  }
-
   //
   @override
   void initState() {
     super.initState();
     init();
   }
+
+  //
 }
 
 //
