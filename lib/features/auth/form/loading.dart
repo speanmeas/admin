@@ -1,15 +1,15 @@
-import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:flutter/material.dart";
 import "package:dio/dio.dart";
 
-import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/utility/secure_storage.dart";
-import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
+import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart" as theme;
+import "package:speanmeas/core/widget/snackbar.dart" as sb;
 import "package:speanmeas/core/layout/layout.dart" as layout;
 
-import "sign_in.dart" as sign_in;
-import "schema.g.dart" as schema;
+import "sign_in.dart" as form_si;
+import "../schema.g.dart" as sm;
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
@@ -41,32 +41,37 @@ class _Main_State extends State<Main_> {
 
       //
       if (access_token == null) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => sign_in.Main_()));
+        Navigator.pushReplacement(
+          context, //
+          MaterialPageRoute(builder: (context) => form_si.Main_()),
+        );
         return;
       }
 
       //
       final r = await dio.post(
-        "/auth/access_token", //
-        data: FormData.fromMap({"access_token": access_token}),
+        ep.AUTH_ACCESS_TOKEN, //
+        data: {
+          "access_token": access_token, //
+        },
       );
 
       //
-      for (var e in schema.data.entries) schema.data[e.key]!["value"] = r.data[e.key];
+      for (var e in sm.data.entries) sm.data[e.key]!["value"] = r.data[e.key];
 
       //
       dio.options.headers["Authorization"] = "Bearer $access_token";
 
       //
-      snackbar.view(context: context, message: "Success Sign-In", color: Colors.green);
+      sb.view(context: context, message: "Success Sign-In", color: Colors.green);
 
       //
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
 
       //
     } catch (e) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => sign_in.Main_()));
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => form_si.Main_()));
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 }

@@ -8,7 +8,7 @@ import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/features/auth/schema.g.dart" as u_schema;
 import "package:speanmeas/features/auth/profile.dart" as profile;
 
-import "notification.dart" as notification;
+import "../../notification.dart" as notification;
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
@@ -27,7 +27,6 @@ class _Main_State extends State<Main_> {
     String version = context.watch<Global>().VERSION;
     return Container(
       height: 48,
-      decoration: isMobile ? null : BoxDecoration(border: Border(bottom: BorderSide())), //
       child: Row(
         children: [
           //

@@ -107,12 +107,11 @@ class _Main_State extends State<Main_> {
 
       //
       final r = await dio.post(
-        "/user/update_field", //
-        data: FormData.fromMap({
-          "_id": schema.data[schema.ID]!["value"], //
-          "key": schema.USERNAME, //
-          "value": username, //
-        }),
+        ep.USER_UPDATE, //
+        data: {
+          schema.ID: schema.data[schema.ID]!["value"], //
+          schema.USERNAME: username, //
+        },
       );
 
       //

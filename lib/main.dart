@@ -7,7 +7,7 @@ import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/theme/theme_data.dart" as theme;
 
-import "features/auth/loading.dart" as loading;
+import "features/auth/form/loading.dart" as loading;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,17 +1,16 @@
-import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:dio/dio.dart";
 
 import "package:speanmeas/core/global.dart";
-
-import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/utility/secure_storage.dart";
-import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
+import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/layout/layout.dart" as layout;
 
-import "schema.g.dart" as u_schema;
+import "../schema.g.dart" as u_schema;
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
@@ -110,7 +109,13 @@ class _Main_State extends State<Main_> {
       //
 
       //
-      final r = await dio.post("/auth/sign_in", data: FormData.fromMap({"username": username, "password": password}));
+      final r = await dio.post(
+        ep.AUTH_SIGN_IN, //
+        data: {
+          "username": username, //
+          "password": password,
+        },
+      );
 
       //
       await secure_storage.write(key: "access_token", value: r.data["access_token"]);
@@ -120,14 +125,14 @@ class _Main_State extends State<Main_> {
       for (var e in u_schema.data.entries) u_schema.data[e.key]!["value"] = r.data[e.key];
 
       //
-      snackbar.view(context: context, message: "Success Sign-In", color: Colors.green);
+      sb.view(context: context, message: "Success Sign-In", color: Colors.green);
 
       //
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
 
       //
     } catch (e) {
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 

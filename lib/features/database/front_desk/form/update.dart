@@ -339,14 +339,15 @@ class _Main_State extends State<Main_> {
 
   void clear_field(String key) async {
     try {
-      await dio.post(
-        "$PATH/update_field",
-        data: FormData.fromMap({
-          "_id": schema.data["_id"]!["value"], //
-          "key": key, //
-          "value": null, //
-        }),
-      );
+      // await dio.post(
+      //   "$PATH/update",
+      //   data: {
+      //     "_id": schema.data["_id"]!["value"], //
+      //     "key": key, //
+      //     "value": null, //
+      //   },
+      // );
+      snackbar.view(context: context, message: "Development", color: Colors.red);
     } catch (e) {
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }

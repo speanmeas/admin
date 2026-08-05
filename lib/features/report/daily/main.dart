@@ -69,7 +69,12 @@ class _Main_State extends State<Main_> {
       final date_str = DateFormat(DATE_FORMAT).format(selected_date);
 
       try {
-        final r = await dio.post(PATH, data: FormData.fromMap({"date": date_str}));
+        final r = await dio.post(
+          PATH, //
+          data: {
+            "date": date_str, //
+          },
+        );
 
         if (r.data != null && r.data is Map<String, dynamic>) {
           _parse(Map<String, dynamic>.from(r.data), date_str);

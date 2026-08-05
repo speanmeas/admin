@@ -7,7 +7,7 @@ import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 
-import "../schema.g.dart" as schema;
+import "../schema.g.dart" as sm;
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
@@ -20,8 +20,8 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    if (schema.data[schema.PHONE_NUMBER]!["value"] != null) //
-      c_phone_number.text = schema.data[schema.PHONE_NUMBER]!["value"];
+    if (sm.data[sm.PHONE_NUMBER]!["value"] != null) //
+      c_phone_number.text = sm.data[sm.PHONE_NUMBER]!["value"];
 
     setState(() {});
     //
@@ -106,16 +106,15 @@ class _Main_State extends State<Main_> {
 
       //
       final r = await dio.post(
-        "/user/update_field",
-        data: FormData.fromMap({
-          "_id": schema.data[schema.ID]!["value"], //
-          "key": schema.PHONE_NUMBER,
-          "value": phone_number,
-        }),
+        ep.USER_UPDATE,
+        data: {
+          sm.ID: sm.data[sm.ID]!["value"], //
+          sm.PHONE_NUMBER: phone_number,
+        },
       );
 
       //
-      schema.data[schema.PHONE_NUMBER]!["value"] = r.data[schema.PHONE_NUMBER];
+      sm.data[sm.PHONE_NUMBER]!["value"] = r.data[sm.PHONE_NUMBER];
       Navigator.pop(context, true);
 
       //

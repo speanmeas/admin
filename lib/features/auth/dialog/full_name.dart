@@ -24,20 +24,35 @@ Future<String?> input(
         contentPadding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
         actionsPadding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
         title: Text(
-          title, //
+          "Update Name", //
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         content: TextField(
           controller: controller,
-          keyboardType: keyboardType,
-          inputFormatters: inputFormatters,
-          decoration: InputDecoration(hintText: hint, border: const OutlineInputBorder(), isDense: true),
+          // keyboardType: keyboardType,
+          // inputFormatters: inputFormatters,
+          decoration: InputDecoration(
+            // hintText: hint, //
+            border: const OutlineInputBorder(),
+            // isDense: true,
+          ),
           autofocus: true,
           onSubmitted: (v) => Navigator.pop(context, v),
         ),
         actions: [
-          OutlinedButton(onPressed: () => Navigator.pop(context), child: Text(cancelText)),
-          OutlinedButton(onPressed: () => Navigator.pop(context, controller.text), child: Text(confirmText)),
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+            child: Text("Cancel"), //
+            onPressed: () {
+              Navigator.pop(context); //
+            }, //
+          ),
+          OutlinedButton(
+            onPressed: () {
+              Navigator.pop(context, controller.text); //
+            }, //
+            child: Text(confirmText),
+          ),
         ],
       );
     },
@@ -48,10 +63,6 @@ Future<String?> input(
   return result;
 }
 
-// ---------------------------------------------------------------------------
-// Standalone dev
-// ---------------------------------------------------------------------------
-
 class _Main_State extends State<Main_> {
   dynamic tmp;
   @override
@@ -60,10 +71,14 @@ class _Main_State extends State<Main_> {
       body: Center(
         child: OutlinedButton(
           onPressed: () async {
-            final v = await input(context, title: "Enter Name", hint: "Your name...");
+            final v = await input(
+              context,
+              title: "Enter Name", //
+              hint: "Your name...",
+            );
             print(v);
           },
-          child: const Text("Input Dialog"),
+          child: const Text("Show Dialog"),
         ),
       ),
     );

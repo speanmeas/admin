@@ -35,11 +35,11 @@ class _Main_State extends State<Main_> {
     try {
       //
       final r = await dio.post(
-        "/user/read_string", //
-        data: FormData.fromMap({
+        ep.USER_READ_STRING, //
+        data: {
           "key": n_schema_r.FULL_NAME, //
           "query": q, //
-        }),
+        },
       );
 
       widget.onChanged?.call(List<Map<String, dynamic>>.from(r.data).first);
@@ -62,13 +62,13 @@ class _Main_State extends State<Main_> {
               try {
                 //
                 final r = await dio.post(
-                  "/user/read_string", //
-                  data: FormData.fromMap({
+                  ep.USER_READ_STRING, //
+                  data: {
                     "key": n_schema_r.FULL_NAME, //
                     "query": q, //
                     "order": 1, //
                     "limit": 100, //
-                  }),
+                  },
                 );
 
                 //

@@ -19,7 +19,6 @@ class _Main_State extends State<Main_> {
         titleSpacing: 0,
         toolbarHeight: 48,
         centerTitle: false,
-
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1), //
           child: Divider(height: 1, color: Colors.black),
@@ -34,20 +33,13 @@ class _Main_State extends State<Main_> {
                 if (!is_mobile)
                   Container(
                     width: 250,
-                    // decoration: BoxDecoration(border: Border.all()),
                     decoration: BoxDecoration(border: Border(right: BorderSide())), //
                     child: left.Main_(), //
                   ),
 
                 // panel body
                 Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    // decoration: BoxDecoration(border: Border.all()),
-                    color: Colors.white,
-                    child: body.Main_(), //
-                  ),
+                  child: body.Main_(), //
                 ),
               ],
             ),

@@ -6,7 +6,7 @@ import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 
-import "../schema.g.dart" as schema;
+import "../schema.g.dart" as sm;
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
@@ -132,16 +132,15 @@ class _Main_State extends State<Main_> {
 
       //
       final r = await dio.post(
-        "/user/update_field", //
-        data: FormData.fromMap({
-          "_id": schema.data[schema.ID]!["value"], //
-          "key": schema.PASSWORD, //
-          "value": c_password.text, //
-        }),
+        ep.USER_UPDATE,
+        data: {
+          sm.ID: sm.data[sm.ID]!["value"], //
+          sm.PASSWORD: c_password.text, //
+        },
       );
 
       //
-      schema.data[schema.PASSWORD]!["value"] = r.data[schema.PASSWORD];
+      sm.data[sm.PASSWORD]!["value"] = r.data[sm.PASSWORD];
       Navigator.pop(context, true);
 
       //
