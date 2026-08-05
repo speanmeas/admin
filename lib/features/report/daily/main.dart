@@ -85,7 +85,7 @@ class _Main_State extends State<Main_> {
       //   }
       // } catch (e, st) {
       //   print(st);
-      //   snackbar.view(context: context, message: "Failed", color: Colors.red);
+      //   snackbar.view(context: context, message: e.toString(), color: Colors.red);
       //   _fallback(date_str);
       // }
 
@@ -94,7 +94,7 @@ class _Main_State extends State<Main_> {
       // setState(() {});
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: "Failed", color: Colors.red);
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
       is_loading = false;
       setState(() {});
     }

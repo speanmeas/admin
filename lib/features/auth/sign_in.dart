@@ -9,7 +9,7 @@ import "package:speanmeas/core/widget/snackbar.dart" as sb;
 import "package:speanmeas/core/theme/theme_light.dart" as theme;
 import "package:speanmeas/core/layout/layout.dart" as layout;
 
-import "../schema.g.dart" as u_schema;
+import "schema.g.dart" as u_schema;
 
 class _Main_State extends State<Main_> {
   //
@@ -110,7 +110,7 @@ class _Main_State extends State<Main_> {
       //
 
       //
-      final r = await dio.post(
+      tmp = await dio.post(
         ep.AUTH_SIGN_IN, //
         data: {
           "username": username, //
@@ -118,16 +118,18 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      //
-      await ss.write(key: "access_token", value: r.data["access_token"]);
-      await ss.write(key: "_id", value: r.data["_id"]);
-      dio.options.headers["Authorization"] = "Bearer ${r.data["access_token"]}";
+      if (tmp == null) throw Exception("Invalid Username or Password");
 
       //
-      for (var e in u_schema.data.entries) u_schema.data[e.key]!["value"] = r.data[e.key];
+      await ss.write(key: "access_token", value: tmp.data["access_token"]);
+      await ss.write(key: "_id", value: tmp.data["_id"]);
+      dio.options.headers["Authorization"] = "Bearer ${tmp.data["access_token"]}";
 
       //
-      sb.view(context: context, message: "Success Sign-In", color: Colors.green);
+      for (var e in u_schema.data.entries) u_schema.data[e.key]!["value"] = tmp.data[e.key];
+
+      //
+      sb.view(context: context, message: "Success", color: Colors.green);
 
       //
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
@@ -135,7 +137,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: "Failed", color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 

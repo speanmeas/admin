@@ -66,7 +66,7 @@ class _Main_State extends State<Main_> {
       widget.onChanged?.call(List<Map<String, dynamic>>.from(r.data).first);
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: "Failed", color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
       clear_field();
     }
   }
@@ -105,7 +105,7 @@ class _Main_State extends State<Main_> {
                 //
               } catch (e, st) {
                 print(st);
-                sb.view(context: context, message: "Failed", color: Colors.red);
+                sb.view(context: context, message: e.toString(), color: Colors.red);
                 return [];
               }
             },

@@ -66,7 +66,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: "Failed", color: Colors.red);
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -93,7 +93,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: "Failed", color: Colors.red);
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -151,7 +151,7 @@ class _Main_State extends State<Main_> {
       setState(() {});
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: "Failed", color: Colors.red);
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
       if (request_id == load_request_id && mounted) {
         is_loading = false;
         setState(() {});
@@ -532,7 +532,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: "Failed", color: Colors.red);
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -559,7 +559,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: "Failed", color: Colors.red);
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -590,7 +590,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: "Failed", color: Colors.red);
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -620,7 +620,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: "Failed", color: Colors.red);
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 

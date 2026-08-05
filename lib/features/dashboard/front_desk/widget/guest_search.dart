@@ -50,7 +50,7 @@ class _Main_State extends State<Main_> {
       widget.onChanged?.call(items.first);
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: "Failed", color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -89,7 +89,7 @@ class _Main_State extends State<Main_> {
                 //
               } catch (e, st) {
                 print(st);
-                sb.view(context: context, message: "Failed", color: Colors.red);
+                sb.view(context: context, message: e.toString(), color: Colors.red);
                 return [];
               }
             },

@@ -250,7 +250,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: "Failed", color: Colors.red);
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 }

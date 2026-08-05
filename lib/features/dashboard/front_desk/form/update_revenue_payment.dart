@@ -35,7 +35,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: "Failed", color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
 
     c_price.text = sm.data[sm.REVENUE_PRICE]?["value"]?.toString() ?? "";
@@ -169,7 +169,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: "Failed", color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 

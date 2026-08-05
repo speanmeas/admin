@@ -15,7 +15,7 @@ import "dialog/update_phone_number.dart" as dialog_pn;
 import "dialog/update_username.dart" as dialog_un;
 import "dialog/update_password.dart" as dialog_pw;
 
-import "form/sign_in.dart" as form_si;
+import "sign_in.dart" as form_si;
 
 // import secure_storage from "package:speanmeas/core/utility/secure_storage.dart";
 
@@ -72,7 +72,7 @@ class _Main_State extends State<Main_> {
       }
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: "Failed", color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
 
     setState(() {});
@@ -204,6 +204,7 @@ class _Main_State extends State<Main_> {
       sm.clear();
       await dio.options.headers.remove("Authorization");
       await ss.delete(key: "access_token");
+      await ss.delete(key: "_id");
 
       // goto to sign in
       Navigator.pop(context);
@@ -214,7 +215,7 @@ class _Main_State extends State<Main_> {
       sb.view(context: context, message: "Success", color: Colors.green);
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: "Failed", color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 

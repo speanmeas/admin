@@ -94,7 +94,7 @@ class _Dialog_State extends State<Dialog_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: "Failed", color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
