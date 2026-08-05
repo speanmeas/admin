@@ -118,7 +118,8 @@ class _Main_State extends State<Main_> {
       );
 
       //
-      await secure_storage.write(key: "access_token", value: r.data["access_token"]);
+      await ss.write(key: "access_token", value: r.data["access_token"]);
+      await ss.write(key: "_id", value: r.data["_id"]);
       dio.options.headers["Authorization"] = "Bearer ${r.data["access_token"]}";
 
       //

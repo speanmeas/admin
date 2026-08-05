@@ -1,18 +1,23 @@
 import "package:flutter/material.dart";
 
-import "package:speanmeas/core/utility/dio.dart";
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/theme/theme_data.dart" as theme;
-import "package:speanmeas/core/utility/secure_storage.dart";
-import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
+import "package:speanmeas/core/widget/snackbar.dart" as sb; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart" as theme; // ignore: unused_import
 
 import "schema.g.dart" as sm;
 
-import "form/full_name.dart" as form_fn;
-import "form/phone_number.dart" as form_pn;
-import "form/username.dart" as form_un;
-import "form/password.dart" as form_pw;
+// import "form/full_name.dart" as form_fn;
+// import "form/phone_number.dart" as form_pn;
+import "dialog/update_full_name.dart" as dialog_fn;
+import "dialog/update_phone_number.dart" as dialog_pn;
+import "dialog/update_username.dart" as dialog_un;
+import "dialog/update_password.dart" as dialog_pw;
+
 import "form/sign_in.dart" as form_si;
+
+// import secure_storage from "package:speanmeas/core/utility/secure_storage.dart";
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -35,9 +40,12 @@ Widget _layout(List<Widget> children) {
       ),
     ),
     body: SingleChildScrollView(
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: Column(children: children),
+      child: Center(
+        child: Container(
+          width: 600,
+          margin: EdgeInsets.all(4),
+          child: Column(children: children),
+        ),
       ),
     ),
   );
@@ -48,6 +56,22 @@ class _Main_State extends State<Main_> {
   dynamic tmp;
 
   void init() async {
+    //
+    try {
+      //
+
+      tmp = await dio.post(
+        ep.AUTH_ACCESS_TOKEN, //
+        data: {"access_token": await ss.read(key: "access_token")},
+      );
+      if (tmp != null) {
+        // print("tmp: $tmp");
+        for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
+      }
+    } catch (e) {
+      sb.view(context: context, message: e.toString(), color: Colors.red);
+    }
+
     setState(() {});
     //
   }
@@ -55,142 +79,111 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     return _layout([
-      //
-
       // Position
-      Container(
-        width: 600,
-        margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Position: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Position: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
 
-            (() {
-              var style = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue);
+          (() {
+            var style = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue);
 
-              if (sm.data[sm.IS_ADMIN]!["value"] == true) return Text("Administrator", style: style);
-              if (sm.data[sm.IS_MANAGER]!["value"] == true) return Text("Manager", style: style);
-              if (sm.data[sm.IS_RECEPTIONIST]!["value"] == true) return Text("Receptionist", style: style);
-              if (sm.data[sm.IS_HOUSEKEEPER]!["value"] == true) return Text("Housekeeper", style: style);
+            if (sm.data[sm.IS_ADMIN]!["value"] == true) return Text("Administrator", style: style);
+            if (sm.data[sm.IS_MANAGER]!["value"] == true) return Text("Manager", style: style);
+            if (sm.data[sm.IS_RECEPTIONIST]!["value"] == true) return Text("Receptionist", style: style);
+            if (sm.data[sm.IS_HOUSEKEEPER]!["value"] == true) return Text("Housekeeper", style: style);
 
-              return SizedBox();
-            })(),
-          ],
-        ),
+            return SizedBox();
+          })(),
+        ],
       ),
+
+      SizedBox(height: 8),
+
       (() {
-        String value = "";
+        String value = "N/A";
         if (sm.data[sm.FULL_NAME]!["value"] != null) //
           value = sm.data[sm.FULL_NAME]!["value"].toString();
-        return Container(
-          width: 600,
-          margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-          child: Row(
-            children: [
-              Text(
-                "Name: ", //
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                value, //
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
-              ),
-              SizedBox(width: 8),
-              InkWell(
-                child: Icon(Icons.edit, color: Colors.blue),
-                onTap: () async {
-                  final v = await Navigator.push(context, MaterialPageRoute(builder: (_) => form_fn.Main_()));
-                  if (v != null) init();
-                },
-              ),
-            ],
-          ),
+        return Row(
+          spacing: 4,
+          children: [
+            Icon(Icons.person_pin_outlined),
+            Text("Full Name: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(value, style: TextStyle(fontSize: 16, color: Colors.blue)),
+            InkWell(
+              child: Icon(Icons.edit_outlined, color: Colors.blue),
+              onTap: () async {
+                tmp = await dialog_fn.view(context: context, input: value);
+                if (tmp != null) init();
+              },
+            ),
+          ],
         );
       })(),
 
       // phone number
       (() {
-        String value = "";
+        String value = "N/A";
         if (sm.data[sm.PHONE_NUMBER]!["value"] != null) //
           value = sm.data[sm.PHONE_NUMBER]!["value"].toString();
-        return Container(
-          width: 600,
-          margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-          child: Row(
-            children: [
-              Text(
-                "Phone Number: ", //
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                value, //
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
-              ),
-              SizedBox(width: 8),
-              InkWell(
-                child: Icon(Icons.edit, color: Colors.blue),
-                onTap: () async {
-                  final v = await Navigator.push(context, MaterialPageRoute(builder: (_) => form_pn.Main_()));
-                  if (v != null) init();
-                },
-              ),
-            ],
-          ),
+        return Row(
+          spacing: 4,
+          children: [
+            Icon(Icons.phone_outlined),
+            Text("Phone Number: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(value, style: TextStyle(fontSize: 16, color: Colors.blue)),
+            InkWell(
+              child: Icon(Icons.edit_outlined, color: Colors.blue),
+              onTap: () async {
+                tmp = await dialog_pn.view(context: context, input: value);
+                if (tmp != null) init();
+              },
+            ),
+          ],
         );
       })(),
 
       // username
-      Container(
-        width: 600,
-        margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-        child: Row(
+      (() {
+        String value = "N/A";
+        if (sm.data[sm.USERNAME]!["value"] != null) //
+          value = sm.data[sm.USERNAME]!["value"].toString();
+        return Row(
+          spacing: 4,
           children: [
-            Text(
-              "Username: ", //
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              sm.data[sm.USERNAME]!["value"].toString(), //
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
-            ),
-            SizedBox(width: 8),
+            Icon(Icons.person_outline),
+            Text("Username: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(value, style: TextStyle(fontSize: 16, color: Colors.blue)),
             InkWell(
-              child: Icon(Icons.edit, color: Colors.blue),
+              child: Icon(Icons.edit_outlined, color: Colors.blue),
               onTap: () async {
-                final v = await Navigator.push(context, MaterialPageRoute(builder: (_) => form_un.Main_()));
-                if (v != null) init();
+                tmp = await dialog_un.view(context: context, input: value);
+                if (tmp != null) init();
               },
             ),
           ],
-        ),
-      ),
+        );
+      })(),
 
       // password
-      Container(
-        width: 600,
-        margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-        child: Row(
+      (() {
+        String value = "**********";
+        return Row(
+          spacing: 4,
           children: [
-            Text(
-              "Password: ", //
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              "**********", //
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
-            ),
-            SizedBox(width: 8),
+            Icon(Icons.lock_outline),
+            Text("Password: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(value, style: TextStyle(fontSize: 16, color: Colors.blue)),
             InkWell(
-              child: Icon(Icons.edit, color: Colors.blue),
+              child: Icon(Icons.edit_outlined, color: Colors.blue),
               onTap: () async {
-                final v = await Navigator.push(context, MaterialPageRoute(builder: (_) => form_pw.Main_()));
-                if (v != null) init();
+                tmp = await dialog_pw.view(context: context);
+                if (tmp != null) init();
               },
             ),
           ],
-        ),
-      ),
+        );
+      })(),
 
       SizedBox(height: 8),
 
@@ -206,13 +199,9 @@ class _Main_State extends State<Main_> {
   void on_sign_out() async {
     try {
       //
-      dio.options.headers.remove("Authorization");
-
-      //
-      await secure_storage.delete(key: "access_token");
-
-      //
       sm.clear();
+      await dio.options.headers.remove("Authorization");
+      await ss.delete(key: "access_token");
 
       // goto to sign in
       Navigator.pop(context);
@@ -220,9 +209,9 @@ class _Main_State extends State<Main_> {
       Navigator.push(context, MaterialPageRoute(builder: (_) => form_si.Main_()));
 
       //
-      snackbar.view(context: context, message: "Success Sign-Out", color: Colors.green);
+      sb.view(context: context, message: "Success", color: Colors.green);
     } catch (e) {
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
