@@ -64,6 +64,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e) {
       print(e.toString());
+      print("Error: $e");
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -91,6 +92,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e) {
       print(e.toString());
+      print("Error: $e");
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -152,6 +154,7 @@ class _Main_State extends State<Main_> {
         is_loading = false;
         setState(() {});
       }
+      print("Error: $e");
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -528,6 +531,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
+      print("Error: $e");
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -554,6 +558,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
+      print("Error: $e");
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -584,6 +589,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
+      print("Error: $e");
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -613,6 +619,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
+      print("Error: $e");
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }

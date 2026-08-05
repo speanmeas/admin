@@ -349,6 +349,7 @@ class _Main_State extends State<Main_> {
       // );
       snackbar.view(context: context, message: "Development", color: Colors.red);
     } catch (e) {
+      print("Error: $e");
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
@@ -373,6 +374,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
+      print("Error: $e");
       snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }

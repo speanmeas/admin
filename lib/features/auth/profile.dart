@@ -69,6 +69,7 @@ class _Main_State extends State<Main_> {
         for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
       }
     } catch (e) {
+      print("Error: $e");
       sb.view(context: context, message: e.toString(), color: Colors.red);
     }
 
@@ -211,6 +212,7 @@ class _Main_State extends State<Main_> {
       //
       sb.view(context: context, message: "Success", color: Colors.green);
     } catch (e) {
+      print("Error: $e");
       sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }

@@ -33,6 +33,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
+      print("Error: $e");
       sb.view(context: context, message: e.toString(), color: Colors.red);
     }
 
@@ -187,6 +188,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e) {
+      print("Error: $e");
       sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
