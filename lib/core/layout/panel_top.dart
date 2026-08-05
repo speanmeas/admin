@@ -11,7 +11,9 @@ import "package:speanmeas/features/auth/profile.dart" as profile;
 import "../../notification.dart" as notification;
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
+
   @override
   void initState() {
     super.initState();

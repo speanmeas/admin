@@ -4,15 +4,15 @@ import "package:flutter/services.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"
-    as sb; // ignore: unused_import
-import "package:speanmeas/core/theme/theme_data.dart"
-    as theme; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart" as sb; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart" as theme; // ignore: unused_import
 
 import "../schema.g.dart" as sm;
 
 class _Dialog_State extends State<Dialog_> {
+  //
   dynamic tmp;
+
   final title = "Update Username"; //
   final label = "Username:";
 
@@ -32,10 +32,7 @@ class _Dialog_State extends State<Dialog_> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            title,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ), //
+          Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
         ],
       ),
 
@@ -133,7 +130,9 @@ Future<dynamic> view({
 }
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

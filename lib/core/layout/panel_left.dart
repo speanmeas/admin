@@ -6,7 +6,9 @@ import "package:speanmeas/core/theme/theme_data.dart" as theme;
 import "package:speanmeas/features/auth/schema.g.dart" as u_schema;
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
+
   bool is_mobile = false;
 
   @override

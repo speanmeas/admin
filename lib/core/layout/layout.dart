@@ -7,7 +7,9 @@ import "panel_left.dart" as left;
 import "panel_top.dart" as top;
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
+
   bool is_mobile = false;
 
   @override

@@ -13,7 +13,9 @@ import "package:speanmeas/core/layout/layout.dart" as layout;
 import "../schema.g.dart" as u_schema;
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
+
   bool is_password_visible = false;
 
   String username = "";
@@ -50,11 +52,7 @@ class _Main_State extends State<Main_> {
                 alignment: Alignment.center,
                 child: Text(
                   VERSION,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
-                  ),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blue),
                 ), //
               ), //
 
@@ -83,11 +81,7 @@ class _Main_State extends State<Main_> {
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     suffixIcon: InkWell(
-                      child: Icon(
-                        !is_password_visible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
+                      child: Icon(!is_password_visible ? Icons.visibility : Icons.visibility_off),
                       onTap: password_visibility_toggle, //
                     ),
                   ),
@@ -131,21 +125,13 @@ class _Main_State extends State<Main_> {
       dio.options.headers["Authorization"] = "Bearer ${r.data["access_token"]}";
 
       //
-      for (var e in u_schema.data.entries)
-        u_schema.data[e.key]!["value"] = r.data[e.key];
+      for (var e in u_schema.data.entries) u_schema.data[e.key]!["value"] = r.data[e.key];
 
       //
-      sb.view(
-        context: context,
-        message: "Success Sign-In",
-        color: Colors.green,
-      );
+      sb.view(context: context, message: "Success Sign-In", color: Colors.green);
 
       //
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => layout.Main_()),
-      );
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
 
       //
     } catch (e, st) {

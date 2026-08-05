@@ -12,6 +12,7 @@ import "../__config__.dart";
 import "../schema.g.dart" as sm;
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
 
   void init() async {
@@ -43,9 +44,7 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     return _layout([
-      for (var e in sm.data.entries.where(
-        (e) => (!e.value["hide"] || kDebugMode),
-      )) //
+      for (var e in sm.data.entries.where((e) => (!e.value["hide"] || kDebugMode))) //
         (() {
           //
           if (e.value["type"] == "id") {

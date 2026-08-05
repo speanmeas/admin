@@ -9,7 +9,9 @@ import "../__config__.dart";
 import "../schema.g.dart" as schema;
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,10 +41,7 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 alignment: Alignment.center,
-                child: Text(
-                  "Confirm to delete?",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
+                child: Text("Confirm to delete?", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ),
 
               // * ប៊ូតុង Delete

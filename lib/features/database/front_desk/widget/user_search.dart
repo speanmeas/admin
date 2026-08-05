@@ -12,7 +12,9 @@ import "package:speanmeas/features/database/user/schema.g.dart" as n_schema_r;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
+
   FocusNode focusNode = FocusNode();
   bool is_selected = false;
 

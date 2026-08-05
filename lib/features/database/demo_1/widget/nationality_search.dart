@@ -7,14 +7,14 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart" as theme;
 
 //
-import "package:speanmeas/features/database/nationality/form/create.dart"
-    as n_f_create;
-import "package:speanmeas/features/database/nationality/schema.g.dart"
-    as n_schema_r;
+import "package:speanmeas/features/database/nationality/form/create.dart" as n_f_create;
+import "package:speanmeas/features/database/nationality/schema.g.dart" as n_schema_r;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
+
   FocusNode focusNode = FocusNode();
   FocusNode clear_focus = FocusNode();
   bool is_selected = false;
@@ -26,10 +26,7 @@ class _Main_State extends State<Main_> {
 
     //
     focusNode.addListener(() {
-      if (!focusNode.hasFocus &&
-          !clear_focus.hasFocus &&
-          !is_selected &&
-          widget.controller.text.isNotEmpty) {
+      if (!focusNode.hasFocus && !clear_focus.hasFocus && !is_selected && widget.controller.text.isNotEmpty) {
         clear_field();
       }
     });
@@ -159,10 +156,7 @@ class _Main_State extends State<Main_> {
             n_schema_r.clear();
 
             //
-            final v = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => n_f_create.Main_()),
-            );
+            final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => n_f_create.Main_()));
             if (v == null) return;
 
             //

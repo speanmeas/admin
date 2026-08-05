@@ -14,6 +14,7 @@ import "../widget/guest_search.dart" as g_search;
 import "../widget/number_select.dart" as n_select;
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
 
   final c_g_search = TextEditingController();
@@ -209,8 +210,7 @@ class _Main_State extends State<Main_> {
   void on_check_in() async {
     int stay_days = int.tryParse(c_d_day.text) ?? 0;
     int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
-    double? room_price =
-        (widget.price_day! * stay_days) + (widget.price_hour! * stay_hours / 3);
+    double? room_price = (widget.price_day! * stay_days) + (widget.price_hour! * stay_hours / 3);
 
     try {
       //
@@ -238,11 +238,7 @@ class _Main_State extends State<Main_> {
 
       Navigator.pop(context, true);
 
-      snackbar.view(
-        context: context,
-        message: "Check In Successful",
-        color: Colors.green,
-      );
+      snackbar.view(context: context, message: "Check In Successful", color: Colors.green);
 
       //
     } catch (e, st) {

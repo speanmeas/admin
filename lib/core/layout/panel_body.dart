@@ -27,7 +27,9 @@ import "package:speanmeas/features/database/demo_2/main.dart" as demo_2;
 import "package:speanmeas/features/setting/main.dart" as setting;
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
+
   //
   List<Map<String, dynamic>> panels = [
     {"name": "", "panel": Text("This page is under development..")},

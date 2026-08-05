@@ -3,14 +3,13 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"
-    as sb; // ignore: unused_import
-import "package:speanmeas/core/theme/theme_data.dart"
-    as theme; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart" as sb; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart" as theme; // ignore: unused_import
 
 import "../schema.g.dart" as sm;
 
 class _Dialog_State extends State<Dialog_> {
+  //
   dynamic tmp;
 
   final title = "Update Password"; //
@@ -37,10 +36,7 @@ class _Dialog_State extends State<Dialog_> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            title,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ), //
+          Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
         ],
       ),
 
@@ -58,9 +54,7 @@ class _Dialog_State extends State<Dialog_> {
                 child: Padding(
                   padding: EdgeInsets.only(right: 4),
                   child: IconButton(
-                    icon: Icon(
-                      is_obscure_pw ? Icons.visibility_off : Icons.visibility,
-                    ),
+                    icon: Icon(is_obscure_pw ? Icons.visibility_off : Icons.visibility),
                     onPressed: () {
                       is_obscure_pw = !is_obscure_pw;
                       setState(() {});
@@ -85,11 +79,7 @@ class _Dialog_State extends State<Dialog_> {
                 child: Padding(
                   padding: EdgeInsets.only(right: 4),
                   child: IconButton(
-                    icon: Icon(
-                      is_obscure_cf_pw
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    ),
+                    icon: Icon(is_obscure_cf_pw ? Icons.visibility_off : Icons.visibility),
                     onPressed: () {
                       is_obscure_cf_pw = !is_obscure_cf_pw;
                       setState(() {});
@@ -171,7 +161,9 @@ Future<dynamic> view({required BuildContext context}) {
 }
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

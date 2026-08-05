@@ -9,6 +9,7 @@ import "../schema.g.dart" as sm;
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
 
   final c_note = TextEditingController();
@@ -94,11 +95,7 @@ class _Main_State extends State<Main_> {
 
       Navigator.pop(context, true);
 
-      sb.view(
-        context: context,
-        message: "Cancel Successful",
-        color: Colors.green,
-      );
+      sb.view(context: context, message: "Cancel Successful", color: Colors.green);
 
       //
     } catch (e, st) {

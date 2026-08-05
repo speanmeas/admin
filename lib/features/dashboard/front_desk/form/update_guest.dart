@@ -13,6 +13,7 @@ import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 import "../widget/guest_search.dart" as g_search;
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
 
   final c_g_search = TextEditingController();
@@ -122,11 +123,7 @@ class _Main_State extends State<Main_> {
 
       Navigator.pop(context, true);
 
-      snackbar.view(
-        context: context,
-        message: "Update Successful",
-        color: Colors.green,
-      );
+      snackbar.view(context: context, message: "Update Successful", color: Colors.green);
 
       //
     } catch (e, st) {

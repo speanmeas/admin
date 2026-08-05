@@ -12,7 +12,9 @@ import "package:speanmeas/features/database/guest/schema.g.dart" as g_schema;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
+
   FocusNode focusNode = FocusNode();
   bool is_selected = false;
 
@@ -43,9 +45,7 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      final items = List<Map<String, dynamic>>.from(
-        r.data is List ? r.data : [r.data],
-      );
+      final items = List<Map<String, dynamic>>.from(r.data is List ? r.data : [r.data]);
       if (items.isEmpty) return;
       widget.onChanged?.call(items.first);
     } catch (e, st) {
@@ -139,10 +139,7 @@ class _Main_State extends State<Main_> {
             g_schema.clear();
 
             //
-            final v = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => g_create.Main_()),
-            );
+            final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => g_create.Main_()));
             if (v == null) return;
 
             //

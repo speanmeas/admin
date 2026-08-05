@@ -3,10 +3,8 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"
-    as sb; // ignore: unused_import
-import "package:speanmeas/core/theme/theme_data.dart"
-    as theme; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart" as sb; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart" as theme; // ignore: unused_import
 
 import "schema.g.dart" as sm;
 
@@ -55,6 +53,8 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   //
+
+  //
   dynamic tmp;
 
   void init() async {
@@ -83,36 +83,24 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     return _layout([
       // Position
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Position: ",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
+      (() {
+        String value = "N/A";
+        if (sm.data[sm.IS_ADMIN]!["value"] == true) value = "Administrator";
+        if (sm.data[sm.IS_MANAGER]!["value"] == true) value = "Manager";
+        if (sm.data[sm.IS_RECEPTIONIST]!["value"] == true) value = "Receptionist";
+        if (sm.data[sm.IS_HOUSEKEEPER]!["value"] == true) value = "Housekeeper";
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              value,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+            ),
+          ],
+        );
+      })(),
 
-          (() {
-            var style = TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue,
-            );
-
-            if (sm.data[sm.IS_ADMIN]!["value"] == true)
-              return Text("Administrator", style: style);
-            if (sm.data[sm.IS_MANAGER]!["value"] == true)
-              return Text("Manager", style: style);
-            if (sm.data[sm.IS_RECEPTIONIST]!["value"] == true)
-              return Text("Receptionist", style: style);
-            if (sm.data[sm.IS_HOUSEKEEPER]!["value"] == true)
-              return Text("Housekeeper", style: style);
-
-            return SizedBox();
-          })(),
-        ],
-      ),
-
-      SizedBox(height: 8),
+      SizedBox(height: 4),
 
       (() {
         String value = "N/A";
@@ -122,10 +110,7 @@ class _Main_State extends State<Main_> {
           spacing: 4,
           children: [
             Icon(Icons.person_pin_outlined),
-            Text(
-              "Full Name: ",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+            Text("Full Name: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             Text(value, style: TextStyle(fontSize: 16, color: Colors.blue)),
             InkWell(
               child: Icon(Icons.edit_outlined, color: Colors.blue),
@@ -147,10 +132,7 @@ class _Main_State extends State<Main_> {
           spacing: 4,
           children: [
             Icon(Icons.phone_outlined),
-            Text(
-              "Phone Number: ",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+            Text("Phone Number: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             Text(value, style: TextStyle(fontSize: 16, color: Colors.blue)),
             InkWell(
               child: Icon(Icons.edit_outlined, color: Colors.blue),
@@ -172,10 +154,7 @@ class _Main_State extends State<Main_> {
           spacing: 4,
           children: [
             Icon(Icons.person_outline),
-            Text(
-              "Username: ",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+            Text("Username: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             Text(value, style: TextStyle(fontSize: 16, color: Colors.blue)),
             InkWell(
               child: Icon(Icons.edit_outlined, color: Colors.blue),
@@ -195,10 +174,7 @@ class _Main_State extends State<Main_> {
           spacing: 4,
           children: [
             Icon(Icons.lock_outline),
-            Text(
-              "Password: ",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+            Text("Password: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             Text(value, style: TextStyle(fontSize: 16, color: Colors.blue)),
             InkWell(
               child: Icon(Icons.edit_outlined, color: Colors.blue),
@@ -232,10 +208,7 @@ class _Main_State extends State<Main_> {
       // goto to sign in
       Navigator.pop(context);
       Navigator.pop(context);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => form_si.Main_()),
-      );
+      Navigator.push(context, MaterialPageRoute(builder: (_) => form_si.Main_()));
 
       //
       sb.view(context: context, message: "Success", color: Colors.green);

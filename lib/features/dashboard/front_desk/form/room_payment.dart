@@ -9,6 +9,7 @@ import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 import "../schema.g.dart" as sm;
 
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
 
   final c_price = TextEditingController();
@@ -184,11 +185,7 @@ class _Main_State extends State<Main_> {
 
       Navigator.pop(context, true);
 
-      sb.view(
-        context: context,
-        message: "Payment Successful",
-        color: Colors.green,
-      );
+      sb.view(context: context, message: "Payment Successful", color: Colors.green);
 
       //
     } catch (e, st) {
