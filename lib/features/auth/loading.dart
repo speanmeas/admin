@@ -37,27 +37,26 @@ class _Main_State extends State<Main_> {
     try {
       //
       final at = await ss.read(key: "access_token");
-      print(at);
 
       if (at == null) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => form_si.Main_()));
       if (at == null) return;
 
-      // //
-      // tmp = await dio.post(
-      //   ep.AUTH_ACCESS_TOKEN, //
-      //   data: {"access_token": at},
-      // );
-      // if (tmp == null) throw Exception("Invalid Access Token");
-      // for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
+      //
+      tmp = await dio.post(
+        ep.AUTH_ACCESS_TOKEN, //
+        data: {"access_token": at},
+      );
+      if (tmp == null) throw Exception("Invalid Access Token");
+      for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      // //
-      // dio.options.headers["Authorization"] = "Bearer ${await ss.read(key: "access_token")}";
+      //
+      dio.options.headers["Authorization"] = "Bearer ${await ss.read(key: "access_token")}";
 
-      // //
-      // sb.view(context: context, message: "Success", color: Colors.green);
+      //
+      sb.view(context: context, message: "Success", color: Colors.green);
 
-      // //
-      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
+      //
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
 
       //
     } catch (e, st) {
