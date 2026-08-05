@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 
-import "package:speanmeas/core/theme/theme_data.dart" as theme;
+import "package:speanmeas/core/theme/theme_light.dart" as theme;
 
 class _Main_State extends State<Main_> {
   //

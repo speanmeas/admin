@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:speanmeas/core/config.dart";
-import "package:speanmeas/core/theme/theme_data.dart" as theme;
+import "package:speanmeas/core/theme/theme_light.dart" as theme;
 
 import "panel_body.dart" as body;
 import "panel_left.dart" as left;

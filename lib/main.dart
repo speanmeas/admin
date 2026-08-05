@@ -5,7 +5,7 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n.dart";
-import "package:speanmeas/core/theme/theme_data.dart" as theme;
+import "package:speanmeas/core/theme/theme_light.dart" as theme;
 
 import "features/auth/form/loading.dart" as loading;
 

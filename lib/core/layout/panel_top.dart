@@ -3,7 +3,7 @@ import "package:provider/provider.dart";
 
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/theme/theme_data.dart" as theme;
+import "package:speanmeas/core/theme/theme_light.dart" as theme;
 
 import "package:speanmeas/features/auth/schema.g.dart" as u_schema;
 import "package:speanmeas/features/auth/profile.dart" as profile;

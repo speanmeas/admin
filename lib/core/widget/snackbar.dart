@@ -10,7 +10,7 @@ void view({
     ..showSnackBar(
       SnackBar(
         margin: EdgeInsets.fromLTRB(8, 0, 8, 8),
-        duration: const Duration(seconds: 2),
+        duration: Duration(seconds: 2),
         content: Row(
           children: [
             Icon(Icons.info_outline, color: Colors.white),

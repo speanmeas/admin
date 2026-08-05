@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-import "package:speanmeas/core/theme/theme_data.dart" as theme;
+import "package:speanmeas/core/theme/theme_light.dart" as theme;
 
 class Main_ extends StatelessWidget {
   const Main_({

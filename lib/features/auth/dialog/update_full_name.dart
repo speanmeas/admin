@@ -4,7 +4,7 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart" as sb; // ignore: unused_import
-import "package:speanmeas/core/theme/theme_data.dart" as theme; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_light.dart" as theme; // ignore: unused_import
 
 import "../schema.g.dart" as sm;
 
