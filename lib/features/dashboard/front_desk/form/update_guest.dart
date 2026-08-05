@@ -122,12 +122,16 @@ class _Main_State extends State<Main_> {
 
       Navigator.pop(context, true);
 
-      snackbar.view(context: context, message: "Update Successful", color: Colors.green);
+      snackbar.view(
+        context: context,
+        message: "Update Successful",
+        color: Colors.green,
+      );
 
       //
-    } catch (e) {
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 

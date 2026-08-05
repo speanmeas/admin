@@ -103,7 +103,9 @@ class _Main_State extends State<Main_> {
                         controller: TextEditingController(text: value.trim()),
                         maxLines: e.key == "note" ? 4 : 1,
                         decoration: InputDecoration(
-                          hintText: e.key == "password" ? "New Password" : null, //
+                          hintText: e.key == "password"
+                              ? "New Password"
+                              : null, //
                           labelText: e.value["title"] + ":", //
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -132,8 +134,12 @@ class _Main_State extends State<Main_> {
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           prefixIcon: Icon(Icons.numbers), //
                         ),
-                        keyboardType: TextInputType.numberWithOptions(decimal: true),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
+                        keyboardType: TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp("[0-9.]")),
+                        ],
                         onChanged: (v) {
                           e.value["value"] = double.tryParse(v) ?? 0;
                         },
@@ -143,8 +149,12 @@ class _Main_State extends State<Main_> {
 
                   // * ថ្ងៃខែឆ្នាំ និង ម៉ោង
                   if (e.value["type"] == "date-time") {
-                    final tmp = DateTime.tryParse(e.value["value"]?.toString() ?? "");
-                    final value = tmp != null ? DateFormat(DATE_FORMAT).format(tmp.toLocal()) : "";
+                    final tmp = DateTime.tryParse(
+                      e.value["value"]?.toString() ?? "",
+                    );
+                    final value = tmp != null
+                        ? DateFormat(DATE_FORMAT).format(tmp.toLocal())
+                        : "";
                     final init = tmp ?? DateTime.now();
                     return Container(
                       width: 600,
@@ -170,7 +180,10 @@ class _Main_State extends State<Main_> {
                           ),
                         ),
                         onTap: () async {
-                          DateTime? datetime = await datetime_picker.view(context, initial_datetime: init);
+                          DateTime? datetime = await datetime_picker.view(
+                            context,
+                            initial_datetime: init,
+                          );
                           if (datetime == null) return;
                           e.value["value"] = datetime.toIso8601String();
                           setState(() {});
@@ -186,7 +199,9 @@ class _Main_State extends State<Main_> {
                       if (e.value["value"] == true) value = "Yes";
                       if (e.value["value"] == false) value = "No";
                     }
-                    final controller_search = TextEditingController(text: value ?? "");
+                    final controller_search = TextEditingController(
+                      text: value ?? "",
+                    );
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -199,8 +214,11 @@ class _Main_State extends State<Main_> {
                             focusNode: focusNode,
                             decoration: InputDecoration(
                               labelText: e.value["title"] + ":", //
-                              labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                              labelStyle: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
                               prefixIcon: Icon(Icons.toggle_on_outlined), //
                               suffixIcon: Padding(
                                 padding: EdgeInsets.only(right: 4),
@@ -215,7 +233,8 @@ class _Main_State extends State<Main_> {
                             ),
                           );
                         },
-                        itemBuilder: (context, item) => ListTile(title: Text(item)),
+                        itemBuilder: (context, item) =>
+                            ListTile(title: Text(item)),
                         onSelected: (v) {
                           controller_search.text = v;
                           if (v == "Yes") e.value["value"] = true;
@@ -266,9 +285,9 @@ class _Main_State extends State<Main_> {
       snackbar.view(context: context, message: "Success", color: Colors.green);
 
       //
-    } catch (e) {
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 }

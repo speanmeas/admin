@@ -50,10 +50,9 @@ class _Main_State extends State<Main_> {
       load_page(page);
 
       //
-    } catch (e) {
-      print(e.toString());
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 
@@ -71,9 +70,12 @@ class _Main_State extends State<Main_> {
         "$PATH/read",
         data: {
           "key": KEY, //
-          "order": ORDER, "offset": (p - 1) * LIMIT, "limit": LIMIT,
+          "order": ORDER, //
+          "offset": (p - 1) * LIMIT, //
+          "limit": LIMIT, //
         },
       );
+
       final data = List<Map<String, dynamic>>.from(r.data);
 
       // Ignore a response from an earlier page request.
@@ -106,13 +108,13 @@ class _Main_State extends State<Main_> {
       //
       is_loading = false;
       setState(() {});
-    } catch (e) {
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
       if (request_id == load_request_id) {
         is_loading = false;
         setState(() {});
       }
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -378,9 +380,9 @@ class _Main_State extends State<Main_> {
       state_manager?.scroll.vertical?.jumpTo(0);
 
       //
-    } catch (e) {
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 
@@ -405,9 +407,9 @@ class _Main_State extends State<Main_> {
       Navigator.push(context, MaterialPageRoute(builder: (context) => read.Main_()));
 
       //
-    } catch (e) {
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 
@@ -436,9 +438,9 @@ class _Main_State extends State<Main_> {
       load_page(page);
 
       //
-    } catch (e) {
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 
@@ -466,9 +468,9 @@ class _Main_State extends State<Main_> {
       state_manager?.removeCurrentRow();
 
       //
-    } catch (e) {
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 

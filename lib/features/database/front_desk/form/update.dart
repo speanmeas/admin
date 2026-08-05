@@ -74,10 +74,14 @@ class _Main_State extends State<Main_> {
                         controller: c_room,
                         onChanged: (v) {
                           e.value["value"] = v[r_schema.ID];
-                          schema.data[schema.ROOM_NUMBER]!["value"] = v[r_schema.NUMBER];
-                          schema.data[schema.ROOM_KIND]!["value"] = v[r_schema.KIND];
-                          schema.data[schema.ROOM_USD_PER_3H]!["value"] = v[r_schema.USD_PER_3H];
-                          schema.data[schema.ROOM_USD_PER_DAY]!["value"] = v[r_schema.USD_PER_DAY];
+                          schema.data[schema.ROOM_NUMBER]!["value"] =
+                              v[r_schema.NUMBER];
+                          schema.data[schema.ROOM_KIND]!["value"] =
+                              v[r_schema.KIND];
+                          schema.data[schema.ROOM_USD_PER_3H]!["value"] =
+                              v[r_schema.USD_PER_3H];
+                          schema.data[schema.ROOM_USD_PER_DAY]!["value"] =
+                              v[r_schema.USD_PER_DAY];
                           setState(() {});
                         },
                         onCleared: () {
@@ -101,18 +105,24 @@ class _Main_State extends State<Main_> {
                         controller: c_guest,
                         onChanged: (v) {
                           e.value["value"] = v[g_schema.ID];
-                          schema.data[schema.GUEST_FULL_NAME]!["value"] = v[g_schema.FULL_NAME];
-                          schema.data[schema.GUEST_GENDER]!["value"] = v[g_schema.GENDER];
-                          schema.data[schema.GUEST_PHONE_NUMBER]!["value"] = v[g_schema.PHONE_NUMBER];
-                          schema.data[schema.GUEST_NATIONALITY]!["value"] = v[g_schema.NATIONALITY];
+                          schema.data[schema.GUEST_FULL_NAME]!["value"] =
+                              v[g_schema.FULL_NAME];
+                          schema.data[schema.GUEST_GENDER]!["value"] =
+                              v[g_schema.GENDER];
+                          schema.data[schema.GUEST_PHONE_NUMBER]!["value"] =
+                              v[g_schema.PHONE_NUMBER];
+                          schema.data[schema.GUEST_NATIONALITY]!["value"] =
+                              v[g_schema.NATIONALITY];
                           setState(() {});
                         },
                         onCleared: () {
                           e.value["value"] = null;
                           schema.data[schema.GUEST_FULL_NAME]!["value"] = null;
                           schema.data[schema.GUEST_GENDER]!["value"] = null;
-                          schema.data[schema.GUEST_PHONE_NUMBER]!["value"] = null;
-                          schema.data[schema.GUEST_NATIONALITY]!["value"] = null;
+                          schema.data[schema.GUEST_PHONE_NUMBER]!["value"] =
+                              null;
+                          schema.data[schema.GUEST_NATIONALITY]!["value"] =
+                              null;
                           setState(() {});
                         },
                       ),
@@ -139,7 +149,8 @@ class _Main_State extends State<Main_> {
                   // * lock link
                   if (e.value["lock"] == true) {
                     String value = "";
-                    if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
+                    if (e.value["value"] != null)
+                      value = e.value["value"]?.toString() ?? "";
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -153,7 +164,8 @@ class _Main_State extends State<Main_> {
                   // * អក្សរ
                   if (e.value["type"] == "string") {
                     String value = "";
-                    if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
+                    if (e.value["value"] != null)
+                      value = e.value["value"]?.toString() ?? "";
                     if (e.key.contains("password")) value = "";
                     return Container(
                       width: 600,
@@ -162,7 +174,9 @@ class _Main_State extends State<Main_> {
                         controller: TextEditingController(text: value.trim()),
                         maxLines: e.key.contains("note") ? 4 : 1,
                         decoration: InputDecoration(
-                          hintText: e.key.contains("password") ? "New Password" : null, //
+                          hintText: e.key.contains("password")
+                              ? "New Password"
+                              : null, //
                           labelText: e.value["title"] + ":", //
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -172,7 +186,8 @@ class _Main_State extends State<Main_> {
                             child: IconButton(
                               icon: Icon(Icons.clear, color: Colors.red),
                               onPressed: () async {
-                                if (!e.key.contains("password")) clear_field(e.key);
+                                if (!e.key.contains("password"))
+                                  clear_field(e.key);
                                 e.value["value"] = "";
                                 setState(() {});
                               },
@@ -190,7 +205,8 @@ class _Main_State extends State<Main_> {
                   // * លេខ
                   if (e.value["type"] == "number") {
                     String value = "";
-                    if (e.value["value"] != null && e.value["value"] != 0) value = e.value["value"].toString();
+                    if (e.value["value"] != null && e.value["value"] != 0)
+                      value = e.value["value"].toString();
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -213,11 +229,16 @@ class _Main_State extends State<Main_> {
                             ), //
                           ),
                         ),
-                        keyboardType: TextInputType.numberWithOptions(decimal: true),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
+                        keyboardType: TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp("[0-9.]")),
+                        ],
                         onChanged: (v) {
                           if (v.isEmpty) e.value["value"] = 0;
-                          if (v.isNotEmpty) e.value["value"] = double.tryParse(v) ?? 0;
+                          if (v.isNotEmpty)
+                            e.value["value"] = double.tryParse(v) ?? 0;
                         },
                       ),
                     );
@@ -228,11 +249,15 @@ class _Main_State extends State<Main_> {
                   if (e.value["type"] == "date-time") {
                     String value = "";
                     if (e.value["value"] != null) {
-                      DateTime? tmp = DateTime.tryParse(e.value["value"].toString());
-                      if (tmp != null) value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
+                      DateTime? tmp = DateTime.tryParse(
+                        e.value["value"].toString(),
+                      );
+                      if (tmp != null)
+                        value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
                     }
                     DateTime init = DateTime.now();
-                    if (DateTime.tryParse(value) != null) init = DateTime.tryParse(value)!;
+                    if (DateTime.tryParse(value) != null)
+                      init = DateTime.tryParse(value)!;
 
                     return Container(
                       width: 600,
@@ -259,7 +284,10 @@ class _Main_State extends State<Main_> {
                           ),
                         ),
                         onTap: () async {
-                          DateTime? datetime = await datetime_picker.view(context, initial_datetime: init);
+                          DateTime? datetime = await datetime_picker.view(
+                            context,
+                            initial_datetime: init,
+                          );
                           if (datetime == null) return;
                           e.value["value"] = datetime.toIso8601String();
                           setState(() {});
@@ -275,7 +303,9 @@ class _Main_State extends State<Main_> {
                       if (e.value["value"] == true) value = "Yes";
                       if (e.value["value"] == false) value = "No";
                     }
-                    final controller_search = TextEditingController(text: value);
+                    final controller_search = TextEditingController(
+                      text: value,
+                    );
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -288,8 +318,11 @@ class _Main_State extends State<Main_> {
                             focusNode: focusNode,
                             decoration: InputDecoration(
                               labelText: e.value["title"] + ":", //
-                              labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                              labelStyle: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
                               prefixIcon: Icon(Icons.toggle_on_outlined), //
                               suffixIcon: Padding(
                                 padding: EdgeInsets.only(right: 4),
@@ -305,7 +338,8 @@ class _Main_State extends State<Main_> {
                             ),
                           );
                         },
-                        itemBuilder: (context, item) => ListTile(title: Text(item)),
+                        itemBuilder: (context, item) =>
+                            ListTile(title: Text(item)),
                         onSelected: (v) {
                           controller_search.text = v;
                           if (v == "Yes") e.value["value"] = true;
@@ -347,10 +381,14 @@ class _Main_State extends State<Main_> {
       //     "value": null, //
       //   },
       // );
-      snackbar.view(context: context, message: "Development", color: Colors.red);
-    } catch (e) {
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      snackbar.view(
+        context: context,
+        message: "Development",
+        color: Colors.red,
+      );
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 
@@ -373,9 +411,9 @@ class _Main_State extends State<Main_> {
       snackbar.view(context: context, message: "Success", color: Colors.green);
 
       //
-    } catch (e) {
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 }

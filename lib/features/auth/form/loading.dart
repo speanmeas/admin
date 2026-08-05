@@ -3,8 +3,10 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart" as sb; // ignore: unused_import
-import "package:speanmeas/core/theme/theme_data.dart" as theme; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart"
+    as sb; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart"
+    as theme; // ignore: unused_import
 import "package:speanmeas/core/layout/layout.dart" as layout;
 
 import "sign_in.dart" as form_si;
@@ -35,8 +37,13 @@ class _Main_State extends State<Main_> {
   void try_access_token() async {
     try {
       //
-      if (await ss.read(key: "access_token") == null) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => form_si.Main_()));
-      if (await ss.read(key: "access_token") == null) throw Exception("Access Token Not Found");
+      if (await ss.read(key: "access_token") == null)
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => form_si.Main_()),
+        );
+      if (await ss.read(key: "access_token") == null)
+        throw Exception("Access Token Not Found");
 
       //
       tmp = await dio.post(
@@ -47,19 +54,26 @@ class _Main_State extends State<Main_> {
       for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       //
-      dio.options.headers["Authorization"] = "Bearer ${await ss.read(key: "access_token")}";
+      dio.options.headers["Authorization"] =
+          "Bearer ${await ss.read(key: "access_token")}";
 
       //
       sb.view(context: context, message: "Success", color: Colors.green);
 
       //
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => layout.Main_()),
+      );
 
       //
-    } catch (e) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => form_si.Main_()));
-      print("Error: $e");
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: "Failed", color: Colors.red);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => form_si.Main_()),
+      );
     }
   }
 }

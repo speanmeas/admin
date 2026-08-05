@@ -40,7 +40,10 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 alignment: Alignment.center,
-                child: Text("Confirm to delete?", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                child: Text(
+                  "Confirm to delete?",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
 
               // * ប៊ូតុង Delete
@@ -79,9 +82,9 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, r.data);
 
       //
-    } catch (e) {
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 }

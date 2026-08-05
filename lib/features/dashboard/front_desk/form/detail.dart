@@ -33,9 +33,9 @@ class _Main_State extends State<Main_> {
       setState(() {});
 
       //
-    } catch (e) {
-      print("Error: $e");
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 
@@ -43,7 +43,9 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     return _layout([
-      for (var e in sm.data.entries.where((e) => (!e.value["hide"] || kDebugMode))) //
+      for (var e in sm.data.entries.where(
+        (e) => (!e.value["hide"] || kDebugMode),
+      )) //
         (() {
           //
           if (e.value["type"] == "id") {

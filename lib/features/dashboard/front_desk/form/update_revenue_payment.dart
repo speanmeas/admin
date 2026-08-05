@@ -32,9 +32,9 @@ class _Main_State extends State<Main_> {
       for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       //
-    } catch (e) {
-      print("Error: $e");
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: "Failed", color: Colors.red);
     }
 
     c_price.text = sm.data[sm.REVENUE_PRICE]?["value"]?.toString() ?? "";
@@ -163,12 +163,16 @@ class _Main_State extends State<Main_> {
 
       Navigator.pop(context, true);
 
-      sb.view(context: context, message: "Payment Successful", color: Colors.green);
+      sb.view(
+        context: context,
+        message: "Payment Successful",
+        color: Colors.green,
+      );
 
       //
-    } catch (e) {
-      print("Error: $e");
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 

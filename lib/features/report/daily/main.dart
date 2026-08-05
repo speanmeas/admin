@@ -63,37 +63,38 @@ class _Main_State extends State<Main_> {
   //
   Future<void> load_report_data() async {
     try {
-      is_loading = true;
-      setState(() {});
+      // is_loading = true;
+      // setState(() {});
 
-      final date_str = DateFormat(DATE_FORMAT).format(selected_date);
+      // final date_str = DateFormat(DATE_FORMAT).format(selected_date);
 
-      try {
-        final r = await dio.post(
-          PATH, //
-          data: {
-            "date": date_str, //
-          },
-        );
+      // try {
+      //   final r = await dio.post(
+      //     PATH, //
+      //     data: {
+      //       "date": date_str, //
+      //     },
+      //   );
 
-        if (r.data != null && r.data is Map<String, dynamic>) {
-          _parse(Map<String, dynamic>.from(r.data), date_str);
-        } else {
-          _fallback(date_str);
-        }
-      } catch (_) {
-        _fallback(date_str);
-      }
+      //   if (r.data != null && r.data is Map<String, dynamic>) {
+      //     _parse(Map<String, dynamic>.from(r.data), date_str);
+      //   } else {
+      //     _fallback(date_str);
+      //   }
+      // } catch (e, st) {
+      //   print(st);
+      //   snackbar.view(context: context, message: "Failed", color: Colors.red);
+      //   _fallback(date_str);
+      // }
 
-      populate_grid();
+      // populate_grid();
+      // is_loading = false;
+      // setState(() {});
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
       is_loading = false;
       setState(() {});
-    } catch (e) {
-      is_loading = false;
-      setState(() {});
-
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 

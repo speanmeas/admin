@@ -25,7 +25,8 @@ class I18N extends ChangeNotifier {
       final json = await rootBundle.loadString(path);
       final map = jsonDecode(json) as Map<String, dynamic>;
       data = map.map((k, v) => MapEntry(k, v.toString()));
-    } catch (_) {
+    } catch (e, st) {
+      print(st);
       data = {};
     }
     notifyListeners();

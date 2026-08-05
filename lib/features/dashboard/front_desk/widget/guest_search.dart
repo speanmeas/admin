@@ -9,6 +9,7 @@ import "package:speanmeas/core/theme/theme_data.dart" as theme;
 //
 import "package:speanmeas/features/database/guest/form/create.dart" as g_create;
 import "package:speanmeas/features/database/guest/schema.g.dart" as g_schema;
+import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
@@ -42,11 +43,14 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      final items = List<Map<String, dynamic>>.from(r.data is List ? r.data : [r.data]);
+      final items = List<Map<String, dynamic>>.from(
+        r.data is List ? r.data : [r.data],
+      );
       if (items.isEmpty) return;
       widget.onChanged?.call(items.first);
-    } catch (e) {
-      print(e.toString());
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 
@@ -83,7 +87,9 @@ class _Main_State extends State<Main_> {
                 //
                 return options;
                 //
-              } catch (e) {
+              } catch (e, st) {
+                print(st);
+                sb.view(context: context, message: "Failed", color: Colors.red);
                 return [];
               }
             },
@@ -133,7 +139,10 @@ class _Main_State extends State<Main_> {
             g_schema.clear();
 
             //
-            final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => g_create.Main_()));
+            final v = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => g_create.Main_()),
+            );
             if (v == null) return;
 
             //

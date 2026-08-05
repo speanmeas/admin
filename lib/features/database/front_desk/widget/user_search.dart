@@ -9,6 +9,7 @@ import "package:speanmeas/core/theme/theme_data.dart" as theme;
 
 //
 import "package:speanmeas/features/database/user/schema.g.dart" as n_schema_r;
+import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
@@ -43,7 +44,9 @@ class _Main_State extends State<Main_> {
       );
 
       widget.onChanged?.call(List<Map<String, dynamic>>.from(r.data).first);
-    } catch (e) {
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: "Failed", color: Colors.red);
       widget.controller.clear();
       widget.onChanged?.call({});
     }
@@ -81,7 +84,9 @@ class _Main_State extends State<Main_> {
                 //
                 return options;
                 //
-              } catch (e) {
+              } catch (e, st) {
+                print(st);
+                sb.view(context: context, message: "Failed", color: Colors.red);
                 return [];
               }
             },

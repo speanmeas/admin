@@ -7,8 +7,11 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart" as theme;
 
 //
-import "package:speanmeas/features/database/nationality/form/create.dart" as n_f_create;
-import "package:speanmeas/features/database/nationality/schema.g.dart" as n_schema_r;
+import "package:speanmeas/features/database/nationality/form/create.dart"
+    as n_f_create;
+import "package:speanmeas/features/database/nationality/schema.g.dart"
+    as n_schema_r;
+import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
@@ -23,7 +26,10 @@ class _Main_State extends State<Main_> {
 
     //
     focusNode.addListener(() {
-      if (!focusNode.hasFocus && !clear_focus.hasFocus && !is_selected && widget.controller.text.isNotEmpty) {
+      if (!focusNode.hasFocus &&
+          !clear_focus.hasFocus &&
+          !is_selected &&
+          widget.controller.text.isNotEmpty) {
         clear_field();
       }
     });
@@ -61,8 +67,9 @@ class _Main_State extends State<Main_> {
 
       if (request_id != selection_request_id || !mounted) return;
       widget.onChanged?.call(List<Map<String, dynamic>>.from(r.data).first);
-    } catch (e) {
-      print(e.toString());
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: "Failed", color: Colors.red);
       clear_field();
     }
   }
@@ -99,7 +106,9 @@ class _Main_State extends State<Main_> {
                 //
                 return options;
                 //
-              } catch (e) {
+              } catch (e, st) {
+                print(st);
+                sb.view(context: context, message: "Failed", color: Colors.red);
                 return [];
               }
             },
@@ -151,7 +160,10 @@ class _Main_State extends State<Main_> {
             n_schema_r.clear();
 
             //
-            final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => n_f_create.Main_()));
+            final v = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => n_f_create.Main_()),
+            );
             if (v == null) return;
 
             //

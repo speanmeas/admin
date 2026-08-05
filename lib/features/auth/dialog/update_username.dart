@@ -4,8 +4,10 @@ import "package:flutter/services.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart" as sb; // ignore: unused_import
-import "package:speanmeas/core/theme/theme_data.dart" as theme; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart"
+    as sb; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart"
+    as theme; // ignore: unused_import
 
 import "../schema.g.dart" as sm;
 
@@ -30,7 +32,10 @@ class _Dialog_State extends State<Dialog_> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
+          Text(
+            title,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ), //
         ],
       ),
 
@@ -90,9 +95,9 @@ class _Dialog_State extends State<Dialog_> {
       //
       Navigator.pop(context, true);
       sb.view(context: context, message: "Success", color: Colors.green);
-    } catch (e) {
-      print("Error: $e");
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 

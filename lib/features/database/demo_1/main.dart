@@ -62,10 +62,9 @@ class _Main_State extends State<Main_> {
       load_page(page);
 
       //
-    } catch (e) {
-      print(e.toString());
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 
@@ -87,13 +86,16 @@ class _Main_State extends State<Main_> {
       //
       load_page(page);
 
-      snackbar.view(context: context, message: "Refresh completed.", color: Colors.green);
+      snackbar.view(
+        context: context,
+        message: "Refresh completed.",
+        color: Colors.green,
+      );
 
       //
-    } catch (e) {
-      print(e.toString());
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 
@@ -123,7 +125,9 @@ class _Main_State extends State<Main_> {
 
       // keep sort + filter
       final sorted_column = state_manager?.getSortedColumn;
-      final filter_rows = List<PlutoRow>.from(state_manager?.filterRows ?? const <PlutoRow>[]);
+      final filter_rows = List<PlutoRow>.from(
+        state_manager?.filterRows ?? const <PlutoRow>[],
+      );
 
       // add data to row
       state_manager?.removeAllRows();
@@ -149,13 +153,13 @@ class _Main_State extends State<Main_> {
       is_loading = false;
 
       setState(() {});
-    } catch (e) {
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
       if (request_id == load_request_id && mounted) {
         is_loading = false;
         setState(() {});
       }
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -256,7 +260,9 @@ class _Main_State extends State<Main_> {
                         height: 32,
                         alignment: Alignment.center,
                         child: Icon(
-                          is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
+                          is_filter
+                              ? Icons.filter_alt_off_outlined
+                              : Icons.filter_alt_outlined, //
                           size: 24,
                           color: Colors.blue,
                         ), //
@@ -291,7 +297,11 @@ class _Main_State extends State<Main_> {
                           ), //
                         ), //
                         onTap: () {
-                          snackbar.view(context: context, message: "Development", color: Colors.black);
+                          snackbar.view(
+                            context: context,
+                            message: "Development",
+                            color: Colors.black,
+                          );
                         },
                       ),
                     ),
@@ -318,7 +328,8 @@ class _Main_State extends State<Main_> {
             );
           })(),
 
-          if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
+          if (is_loading)
+            LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
           // pluto table
           Expanded(
@@ -424,7 +435,11 @@ class _Main_State extends State<Main_> {
                         alignment: Alignment.center,
                         child: Text(
                           "$page / $total_pages", //
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
                         ), //
                       ), //
                       onTap: () async {
@@ -494,7 +509,11 @@ class _Main_State extends State<Main_> {
                     alignment: Alignment.center,
                     child: Text(
                       "${state_manager?.rows.length} Rows", //
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ), //
                   ),
 
@@ -514,7 +533,10 @@ class _Main_State extends State<Main_> {
       schema.clear();
 
       //
-      final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
+      final v = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => create.Main_()),
+      );
       if (v == null) return;
 
       // * លុប sort + filter
@@ -530,9 +552,9 @@ class _Main_State extends State<Main_> {
       state_manager?.scroll.vertical?.jumpTo(0);
 
       //
-    } catch (e) {
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 
@@ -544,22 +566,32 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        snackbar.view(context: context, message: "Please select a row.", color: Colors.red);
+        snackbar.view(
+          context: context,
+          message: "Please select a row.",
+          color: Colors.red,
+        );
         return;
       }
 
       //
       for (var e in schema.data.entries) {
-        e.value["value"] = cell_to_data(data: row.cells[e.key]?.value, type: e.value["type"]);
+        e.value["value"] = cell_to_data(
+          data: row.cells[e.key]?.value,
+          type: e.value["type"],
+        );
       }
 
       //
-      Navigator.push(context, MaterialPageRoute(builder: (context) => read.Main_()));
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => read.Main_()),
+      );
 
       //
-    } catch (e) {
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 
@@ -571,26 +603,36 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        snackbar.view(context: context, message: "Please select a row.", color: Colors.red);
+        snackbar.view(
+          context: context,
+          message: "Please select a row.",
+          color: Colors.red,
+        );
         return;
       }
 
       //
       for (var e in schema.data.entries) {
-        e.value["value"] = cell_to_data(data: row.cells[e.key]?.value, type: e.value["type"]);
+        e.value["value"] = cell_to_data(
+          data: row.cells[e.key]?.value,
+          type: e.value["type"],
+        );
       }
 
       //
-      final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_()));
+      final v = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => update.Main_()),
+      );
       if (v == null) return;
 
       //
       load_page(page);
 
       //
-    } catch (e) {
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 
@@ -602,7 +644,11 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        snackbar.view(context: context, message: "Please select a row.", color: Colors.red);
+        snackbar.view(
+          context: context,
+          message: "Please select a row.",
+          color: Colors.red,
+        );
         return;
       }
 
@@ -610,7 +656,10 @@ class _Main_State extends State<Main_> {
       schema.data[schema.ID]?["value"] = row.cells[schema.ID]!.value;
 
       //
-      final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_()));
+      final value = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => delete.Main_()),
+      );
       if (value == null) return;
 
       //
@@ -618,9 +667,9 @@ class _Main_State extends State<Main_> {
       state_manager?.removeCurrentRow();
 
       //
-    } catch (e) {
-      print("Error: $e");
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: "Failed", color: Colors.red);
     }
   }
 
@@ -649,7 +698,8 @@ class _Main_State extends State<Main_> {
     //
     if (type == "date-time") {
       if (data == "") return null;
-      if (data != "") return DateTime.tryParse(data.toString())?.toIso8601String();
+      if (data != "")
+        return DateTime.tryParse(data.toString())?.toIso8601String();
     }
 
     if (type == "boolean") {
