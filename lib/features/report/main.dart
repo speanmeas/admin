@@ -1,4 +1,4 @@
-// TODO: make weekly report
+// TODO: make report
 
 import "package:flutter/material.dart";
 import "package:speanmeas/core/theme/theme_light.dart" as theme;
@@ -23,7 +23,7 @@ class _Main_State extends State<Main_> {
             margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
             child: Column(
               children: [
-                Text("Report weekly is under development."), //
+                Text("Report yearly is under development."), //
               ],
             ),
           ),
