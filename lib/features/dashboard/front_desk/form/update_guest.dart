@@ -5,11 +5,9 @@ import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_light.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
+import "package:speanmeas/features/database/guest/schema.g.dart" as sm_g;
 
 import "../schema.g.dart" as sm;
-import "package:speanmeas/features/database/guest/schema.g.dart" as sm_g;
-import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
-
 import "../widget/guest_search.dart" as g_search;
 
 class _Main_State extends State<Main_> {
@@ -19,15 +17,27 @@ class _Main_State extends State<Main_> {
   final c_g_search = TextEditingController();
 
   void init() async {
-    sm.clear();
-    sm_g.clear();
-    sm_r.clear();
+    try {
+      sm.clear();
+      sm_g.clear();
 
-    sm.data[sm.STAY_N_GUEST]?["value"] = 1;
+      tmp = await dio.post(
+        ep.FRONT_DESK_READ_ID,
+        data: {
+          sm.ID: widget.front_desk_id, //
+        },
+      );
 
-    c_g_search.text = sm_g.data[sm_g.PHONE_NUMBER]?["value"]?.toString() ?? "";
+      for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-    setState(() {});
+      c_g_search.text = sm.data[sm.GUEST_PHONE_NUMBER]?["value"]?.toString() ?? "";
+
+      setState(() {});
+      //
+    } catch (e, st) {
+      print(st);
+      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 
   @override

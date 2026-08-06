@@ -4,15 +4,16 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_light.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/core/widget/select_dynamic.dart" as select_dnm;
+import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
 import "../schema.g.dart" as sm;
-import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Clean", //
+        "Change Room", //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -46,36 +47,66 @@ class _Main_State extends State<Main_> {
   dynamic tmp;
 
   final c_note = TextEditingController();
+  final c_from_room_status = TextEditingController();
+  final c_to_room = TextEditingController();
+
+  List<Map<String, dynamic>> rooms = [];
+
+  String? from_room_id;
 
   void init() async {
     try {
       sm.clear();
       sm_r.clear();
 
-      tmp = await dio.post(
-        ep.FRONT_DESK_READ_ID,
-        data: {
-          sm.ID: widget.front_desk_id, //
-        },
-      );
-
-      sm.clear();
+      tmp = await dio.post(ep.FRONT_DESK_READ_ID, data: {sm.ID: widget.front_desk_id});
       for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
+      from_room_id = sm.data[sm.ROOM_ID]!["value"]?.toString();
 
+      tmp = await dio.post(ep.ROOM_READ);
+      rooms = List<Map<String, dynamic>>.from(tmp.data);
+
+      c_note.text = sm.data[sm.CHANGE_ROOM_NOTE]?["value"]?.toString() ?? "";
+
+      setState(() {});
       //
     } catch (e, st) {
       print(st);
       sb.view(context: context, message: e.toString(), color: Colors.red);
     }
-
-    c_note.text = sm.data[sm.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
-
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return _layout([
+      //
+      select_dnm.Main_(
+        controller: c_to_room,
+        title: "New Room Number:", //
+        options: (() {
+          var options = [];
+          for (var r in rooms) {
+            if (r[sm_r.STATUS] == "Available") {
+              options.add(r[sm_r.NUMBER]?.toString() ?? "");
+            }
+          }
+          return options;
+        })(),
+        onChanged: (value) {
+          setState(() {});
+        },
+      ),
+
+      //
+      select_dnm.Main_(
+        controller: c_from_room_status,
+        title: "Old Room Status:", //
+        options: ["Available", "Pending Clean"],
+        onChanged: (value) {
+          setState(() {});
+        },
+      ),
+
       // note
       TextField(
         controller: c_note,
@@ -94,37 +125,67 @@ class _Main_State extends State<Main_> {
         children: [
           OutlinedButton.icon(
             autofocus: true,
-            icon: Icon(Icons.cleaning_services), //
-            label: Text("Clean"), //
-            onPressed: on_clean, //
+            icon: Icon(Icons.swap_horiz_outlined), //
+            label: Text("Change"), //
+            onPressed: can_change ? on_change_room : null, //
           ),
         ],
       ),
     ]);
   }
 
-  void on_clean() async {
+  bool get can_change {
+    if (c_from_room_status.text.isEmpty) return false;
+    if (c_to_room.text.isEmpty) return false;
+    return true;
+  }
+
+  void on_change_room() async {
     try {
       //
 
-      await dio.post(
-        ep.FRONT_DESK_FORM_CLEAN,
-        data: {
-          sm.ID: widget.front_desk_id, //
-          sm.CLEAN_NOTE: c_note.text, //
-        },
-      );
+      String? to_room_id;
+      for (var r in rooms) {
+        if (r[sm_r.NUMBER]?.toString() == c_to_room.text) {
+          to_room_id = r[sm_r.ID]!.toString();
+          break;
+        }
+      }
 
+      // THINK
+      if (from_room_id == null) throw "From Room ID is null";
+      if (to_room_id == null) throw "To Room ID is null";
+
+      // TODO: update old room
       await dio.post(
         ep.ROOM_UPDATE, //
         data: {
-          sm_r.ID: sm.data[sm.ROOM_ID]!["value"], //
+          sm_r.ID: from_room_id, //
+          sm_r.STATUS: c_from_room_status.text, //
+          sm_r.FRONT_DESK_ID: null, //
+        },
+      );
+
+      // TODO: update new room
+      await dio.post(
+        ep.ROOM_UPDATE, //
+        data: {
+          sm_r.ID: to_room_id, //
           sm_r.STATUS: "Available", //
           sm_r.FRONT_DESK_ID: null, //
         },
       );
 
-      Navigator.pop(context, true);
+      // TODO: update front desk
+      tmp = await dio.post(
+        ep.FRONT_DESK_FORM_CHANGE_ROOM,
+        data: {
+          sm.ID: widget.front_desk_id, //
+          sm.ROOM_ID: to_room_id, //
+          sm.CHANGE_ROOM_NOTE: c_note.text, //
+        },
+      );
+      // Navigator.pop(context, true);
 
       sb.view(context: context, message: "Clean Successful", color: Colors.green);
 

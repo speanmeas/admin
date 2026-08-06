@@ -8,14 +8,45 @@ import "package:speanmeas/core/widget/snackbar.dart" as sb;
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 import "../schema.g.dart" as sm;
 
+Widget _layout(List<Widget> children) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(
+        "Room Payment", //
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+
+      centerTitle: false,
+      toolbarHeight: 40,
+      titleSpacing: 0,
+
+      // Add a divider at the bottom of the app bar
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(1), //
+        child: Divider(height: 1, color: Colors.black),
+      ),
+    ),
+    body: SingleChildScrollView(
+      child: Center(
+        child: Container(
+          width: 600,
+          padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
+          child: Column(
+            spacing: 8,
+            children: children, //
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-
   final c_price = TextEditingController();
   final c_pay = TextEditingController();
   final c_change = TextEditingController();
-
   final c_note = TextEditingController();
 
   void init() async {
@@ -32,62 +63,61 @@ class _Main_State extends State<Main_> {
 
       for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
 
+      c_price.text = sm.data[sm.ROOM_PRICE]?["value"]?.toString() ?? "";
+      c_pay.text = sm.data[sm.ROOM_PAY]?["value"]?.toString() ?? "";
+      c_change.text = sm.data[sm.ROOM_RETURN]?["value"]?.toString() ?? "";
+      c_note.text = sm.data[sm.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
+
+      setState(() {});
       //
     } catch (e, st) {
       print(st);
       sb.view(context: context, message: e.toString(), color: Colors.red);
     }
-
-    c_price.text = sm.data[sm.ROOM_PRICE]?["value"]?.toString() ?? "";
-    c_pay.text = sm.data[sm.ROOM_PAY]?["value"]?.toString() ?? "";
-    c_change.text = sm.data[sm.ROOM_RETURN]?["value"]?.toString() ?? "";
-    c_note.text = sm.data[sm.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
-
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return _layout([
-      //
+      // room price
       TextField(
         controller: c_price,
         decoration: InputDecoration(
           labelText: "Room Price:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixText: "\$ ",
         ),
         onChanged: (v) => setState(() {}), //
         onSubmitted: (v) => can_pay ? on_pay() : null, //
       ),
-      SizedBox(height: 8),
 
-      //
+      // payment
       TextField(
-        controller: c_pay,
         autofocus: true,
+        controller: c_pay,
         decoration: InputDecoration(
           labelText: "Payment:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixText: "\$ ",
         ),
         onChanged: (v) => setState(() {}), //
         onSubmitted: (v) => can_pay ? on_pay() : null, //
       ),
-      SizedBox(height: 8),
 
-      //
+      // return
       TextField(
         controller: c_change,
         decoration: InputDecoration(
           labelText: "Return:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixText: "\$ ",
         ),
         onChanged: (v) => setState(() {}), //
         onSubmitted: (v) => can_pay ? on_pay() : null, //
       ),
-      SizedBox(height: 8),
 
       // note
       TextField(
@@ -102,8 +132,9 @@ class _Main_State extends State<Main_> {
         onSubmitted: (v) => can_pay ? on_pay() : null, //
       ),
 
+      Divider(color: Colors.black),
+
       // balanced
-      Divider(height: 8, thickness: 1, color: Colors.black),
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -125,9 +156,8 @@ class _Main_State extends State<Main_> {
           ),
         ],
       ),
-      SizedBox(height: 8),
 
-      // additional information
+      //
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -201,38 +231,6 @@ class _Main_State extends State<Main_> {
   }
 
   //
-}
-
-Widget _layout(List<Widget> children) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(
-        "Room Payment", //
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      ),
-
-      centerTitle: false,
-      toolbarHeight: 40,
-      titleSpacing: 0,
-
-      // Add a divider at the bottom of the app bar
-      bottom: PreferredSize(
-        preferredSize: Size.fromHeight(1), //
-        child: Divider(height: 1, color: Colors.black),
-      ),
-    ),
-    body: SingleChildScrollView(
-      child: Center(
-        child: Container(
-          width: 600,
-          padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
-          child: Column(
-            children: children, //
-          ),
-        ),
-      ),
-    ),
-  );
 }
 
 //

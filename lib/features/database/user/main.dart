@@ -6,7 +6,7 @@ import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_light.dart" as theme;
-import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
+import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
 import "config.dart";
 import "schema.g.dart" as schema;
@@ -65,7 +65,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -86,12 +86,12 @@ class _Main_State extends State<Main_> {
       //
       load_page(page);
 
-      snackbar.view(context: context, message: "Refresh completed.", color: Colors.green);
+      sb.view(context: context, message: "Refresh completed.", color: Colors.green);
 
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -150,7 +150,7 @@ class _Main_State extends State<Main_> {
       setState(() {});
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
       if (request_id == load_request_id && mounted) {
         is_loading = false;
         setState(() {});
@@ -290,7 +290,7 @@ class _Main_State extends State<Main_> {
                           ), //
                         ), //
                         onTap: () {
-                          snackbar.view(context: context, message: "Development", color: Colors.black);
+                          sb.view(context: context, message: "Development", color: Colors.black);
                         },
                       ),
                     ),
@@ -532,7 +532,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -545,7 +545,7 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        snackbar.view(context: context, message: "Please select a row.", color: Colors.red);
+        sb.view(context: context, message: "Please select a row.", color: Colors.red);
         return;
       }
 
@@ -560,7 +560,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -573,7 +573,7 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        snackbar.view(context: context, message: "Please select a row.", color: Colors.red);
+        sb.view(context: context, message: "Please select a row.", color: Colors.red);
         return;
       }
 
@@ -592,7 +592,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -605,7 +605,7 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        snackbar.view(context: context, message: "Please select a row.", color: Colors.red);
+        sb.view(context: context, message: "Please select a row.", color: Colors.red);
         return;
       }
 
@@ -623,7 +623,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 

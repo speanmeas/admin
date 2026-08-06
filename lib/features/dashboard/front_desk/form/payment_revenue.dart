@@ -5,8 +5,40 @@ import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_light.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
-import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 import "../schema.g.dart" as sm;
+
+Widget _layout(List<Widget> children) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(
+        "Revenue Payment", //
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+
+      centerTitle: false,
+      toolbarHeight: 40,
+      titleSpacing: 0,
+
+      // Add a divider at the bottom of the app bar
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(1), //
+        child: Divider(height: 1, color: Colors.black),
+      ),
+    ),
+    body: SingleChildScrollView(
+      child: Center(
+        child: Container(
+          width: 600,
+          padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
+          child: Column(
+            spacing: 8,
+            children: children, //
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
 class _Main_State extends State<Main_> {
   //
@@ -21,7 +53,6 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       sm.clear();
-      sm_r.clear();
 
       tmp = await dio.post(
         ep.FRONT_DESK_READ_ID,
@@ -32,18 +63,17 @@ class _Main_State extends State<Main_> {
 
       for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
 
+      c_price.text = sm.data[sm.REVENUE_PRICE]?["value"]?.toString() ?? "";
+      c_pay.text = sm.data[sm.REVENUE_PAY]?["value"]?.toString() ?? "";
+      c_change.text = sm.data[sm.REVENUE_RETURN]?["value"]?.toString() ?? "";
+      c_note.text = sm.data[sm.REVENUE_PAY_NOTE]?["value"]?.toString() ?? "";
+
+      setState(() {});
       //
     } catch (e, st) {
       print(st);
       sb.view(context: context, message: e.toString(), color: Colors.red);
     }
-
-    c_price.text = sm.data[sm.REVENUE_PRICE]?["value"]?.toString() ?? "";
-    c_pay.text = sm.data[sm.REVENUE_PAY]?["value"]?.toString() ?? "";
-    c_change.text = sm.data[sm.REVENUE_RETURN]?["value"]?.toString() ?? "";
-    c_note.text = sm.data[sm.REVENUE_PAY_NOTE]?["value"]?.toString() ?? "";
-
-    setState(() {});
   }
 
   @override
@@ -59,7 +89,6 @@ class _Main_State extends State<Main_> {
         ),
         onChanged: (v) => setState(() {}), //
       ),
-      SizedBox(height: 8),
 
       //
       TextField(
@@ -71,7 +100,6 @@ class _Main_State extends State<Main_> {
         ),
         onChanged: (v) => setState(() {}), //
       ),
-      SizedBox(height: 8),
 
       //
       TextField(
@@ -83,7 +111,6 @@ class _Main_State extends State<Main_> {
         ),
         onChanged: (v) => setState(() {}), //
       ),
-      SizedBox(height: 8),
 
       // note
       TextField(
@@ -97,8 +124,9 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => setState(() {}), //
       ),
 
+      Divider(color: Colors.black),
+
       // balanced
-      Divider(height: 8, thickness: 1, color: Colors.black),
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -127,8 +155,8 @@ class _Main_State extends State<Main_> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           OutlinedButton.icon(
-            icon: Icon(Icons.check), //
-            label: Text("Update"), //
+            icon: Icon(Icons.add), //
+            label: Text("Add"), //
             onPressed: balanced == 0 ? on_pay : null, //
           ),
         ],
@@ -180,38 +208,6 @@ class _Main_State extends State<Main_> {
   }
 
   //
-}
-
-Widget _layout(List<Widget> children) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(
-        "Revenue Payment", //
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      ),
-
-      centerTitle: false,
-      toolbarHeight: 40,
-      titleSpacing: 0,
-
-      // Add a divider at the bottom of the app bar
-      bottom: PreferredSize(
-        preferredSize: Size.fromHeight(1), //
-        child: Divider(height: 1, color: Colors.black),
-      ),
-    ),
-    body: SingleChildScrollView(
-      child: Center(
-        child: Container(
-          width: 600,
-          padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
-          child: Column(
-            children: children, //
-          ),
-        ),
-      ),
-    ),
-  );
 }
 
 //

@@ -15,16 +15,18 @@ import "schema.g.dart" as sm;
 
 import "form/detail.dart" as detail;
 import "form/check_in.dart" as check_in;
-import "form/payment_room.dart" as room_payment;
+import "form/payment_room.dart" as payment_room;
+import "form/payment_revenue.dart" as payment_revenue;
 import "form/check_out.dart" as check_out;
 import "form/clean.dart" as clean;
 import "form/cancel.dart" as cancel;
 import "form/broke.dart" as broke;
 import "form/fix.dart" as fix;
+import "form/change_room.dart" as change_room;
 
 import "form/update_guest.dart" as update_guest;
-import "form/payment_revenue.dart" as update_revenue_payment;
-import "form/update_stay_and_pay.dart" as update_stay_and_pay;
+import "form/update_payment_revenue.dart" as update_revenue_payment;
+import "form/update_stay.dart" as update_stay_and_pay;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -47,16 +49,8 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       // * ទាញយកទិន្នន័យបន្ទប់ទាំងអស់ពីម៉ាស៊ីនមេ
-      tmp = await dio.post(
-        ep.ROOM_READ, //
-        data: {
-          "key": sm_r.NUMBER, //
-          "order": 1, //
-          "limit": 1000,
-        },
-      );
-
       // * រក្សាទុកទិន្នន័យបន្ទប់ទៅក្នុងបញ្ជី
+      tmp = await dio.post(ep.ROOM_READ, data: {"key": sm_r.NUMBER, "order": 1});
       list_r = List<Map<String, dynamic>>.from(tmp.data);
 
       // * ទាញយកទិន្នន័យ front desk ដែលទាក់ទងនឹងបន្ទប់នីមួយៗ
@@ -115,11 +109,11 @@ class _Main_State extends State<Main_> {
                         // * ស្ថានភាពបន្ទប់នៅខាងស្តាំ
                         (() {
                           var color = Colors.black; // Default color
-                          if (r[sm_r.STATUS] == "Available") color = Colors.green;
-                          if (r[sm_r.STATUS] == "Pending Pay") color = Colors.orange;
-                          if (r[sm_r.STATUS] == "Pending Leave") color = Colors.blue;
-                          if (r[sm_r.STATUS] == "Pending Clean") color = Colors.grey;
-                          if (r[sm_r.STATUS] == "Pending Fix") color = Colors.red;
+                          if (["Available"].contains(r[sm_r.STATUS])) color = Colors.green;
+                          if (["Pending Pay"].contains(r[sm_r.STATUS])) color = Colors.orange;
+                          if (["Pending Leave"].contains(r[sm_r.STATUS])) color = Colors.blue;
+                          if (["Pending Clean"].contains(r[sm_r.STATUS])) color = Colors.grey;
+                          if (["Pending Fix"].contains(r[sm_r.STATUS])) color = Colors.red;
 
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -129,61 +123,64 @@ class _Main_State extends State<Main_> {
                               Text("${r[sm_r.STATUS]}", style: TextStyle(fontSize: 14, color: color)),
 
                               // menu
-                              MenuAnchor(
-                                style: MenuStyle(padding: WidgetStatePropertyAll(EdgeInsets.all(0))),
-                                builder: (context, controller, child) {
-                                  return InkWell(
-                                    child: Container(
-                                      // width: 32,
-                                      height: 32,
-                                      alignment: Alignment.center,
-                                      child: Icon(Icons.more_vert, color: color), //
-                                    ), //
-                                    onTap: () {
-                                      controller.isOpen ? controller.close() : controller.open();
-                                    },
-                                  );
-                                },
-                                menuChildren: [
-                                  //
-                                  if (r[sm_r.STATUS] != "Available")
+                              Tooltip(
+                                message: "Menu",
+                                child: MenuAnchor(
+                                  style: MenuStyle(padding: WidgetStatePropertyAll(EdgeInsets.all(0))),
+                                  builder: (context, controller, child) {
+                                    return InkWell(
+                                      child: Container(
+                                        // width: 32,
+                                        height: 32,
+                                        alignment: Alignment.center,
+                                        child: Icon(Icons.more_vert, color: color), //
+                                      ), //
+                                      onTap: () {
+                                        controller.isOpen ? controller.close() : controller.open();
+                                      },
+                                    );
+                                  },
+                                  menuChildren: [
                                     //
-                                    MenuItemButton(
-                                      leadingIcon: Icon(Icons.receipt_outlined, color: Colors.blue),
-                                      child: Text("Detail", style: TextStyle(color: Colors.blue)), //
-                                      onPressed: () => on_detail(r), //
-                                    ),
+                                    if (["Available"].contains(r[sm_r.STATUS]))
+                                      //
+                                      MenuItemButton(
+                                        leadingIcon: Icon(Icons.receipt_outlined, color: Colors.blue),
+                                        child: Text("Detail", style: TextStyle(color: Colors.blue)), //
+                                        onPressed: () => on_detail(r), //
+                                      ),
 
-                                  if (r[sm_r.STATUS] == "Available")
-                                    MenuItemButton(
-                                      leadingIcon: Icon(Icons.bug_report_outlined, color: Colors.blue),
-                                      child: Text("Broke", style: TextStyle(color: Colors.blue)), //
-                                      onPressed: () => on_broke(r), //
-                                    ),
+                                    if (["Available"].contains(r[sm_r.STATUS]))
+                                      MenuItemButton(
+                                        leadingIcon: Icon(Icons.bug_report_outlined, color: Colors.blue),
+                                        child: Text("Broke", style: TextStyle(color: Colors.blue)), //
+                                        onPressed: () => on_broke(r), //
+                                      ),
 
-                                  if (r[sm_r.STATUS] == "Pending Fix")
-                                    MenuItemButton(
-                                      leadingIcon: Icon(Icons.build_outlined, color: Colors.blue),
-                                      child: Text("Fixed", style: TextStyle(color: Colors.blue)), //
-                                      onPressed: () => on_fix(r), //
-                                    ),
+                                    if (["Pending Fix"].contains(r[sm_r.STATUS]))
+                                      MenuItemButton(
+                                        leadingIcon: Icon(Icons.build_outlined, color: Colors.blue),
+                                        child: Text("Fixed", style: TextStyle(color: Colors.blue)), //
+                                        onPressed: () => on_fix(r), //
+                                      ),
 
-                                  //
-                                  if (r[sm_r.STATUS] == "Pending Pay")
-                                    MenuItemButton(
-                                      leadingIcon: Icon(Icons.swap_horiz_outlined, color: Colors.blue),
-                                      child: Text("Change Room", style: TextStyle(color: Colors.blue)),
-                                      onPressed: () {}, //
-                                    ),
+                                    //
+                                    if (["Pending Pay", "Pending Leave"].contains(r[sm_r.STATUS]))
+                                      MenuItemButton(
+                                        leadingIcon: Icon(Icons.swap_horiz_outlined, color: Colors.blue),
+                                        child: Text("Change Room", style: TextStyle(color: Colors.blue)),
+                                        onPressed: () => on_change_room(r), //
+                                      ),
 
-                                  //
-                                  if (r[sm_r.STATUS] == "Pending Pay")
-                                    MenuItemButton(
-                                      leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
-                                      child: Text("Cancel", style: TextStyle(color: Colors.red)),
-                                      onPressed: () => on_cancel(r), //
-                                    ),
-                                ],
+                                    //
+                                    if (["Pending Pay", "Pending Leave"].contains(r[sm_r.STATUS]))
+                                      MenuItemButton(
+                                        leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
+                                        child: Text("Cancel", style: TextStyle(color: Colors.red)),
+                                        onPressed: () => on_cancel(r), //
+                                      ),
+                                  ],
+                                ),
                               ),
                             ],
                           );
@@ -207,7 +204,7 @@ class _Main_State extends State<Main_> {
                     //
                     if (r[sm_r.FRONT_DESK_ID] != null) ...[
                       // guest info
-                      if (r[sm_r.STATUS] != "Pending Fix")
+                      if (!"${r[sm_r.STATUS]}".contains("Pending Fix"))
                         (() {
                           final guest_name = map_fd[r[sm_r.FRONT_DESK_ID]][sm.GUEST_FULL_NAME] ?? "N/A";
                           final guest_phone = map_fd[r[sm_r.FRONT_DESK_ID]][sm.GUEST_PHONE_NUMBER] ?? "N/A";
@@ -225,9 +222,12 @@ class _Main_State extends State<Main_> {
                               Icon(Icons.circle, size: 6), //
                               Text(guest_phone, style: TextStyle(color: Colors.blue)), //
                               // always show
-                              InkWell(
-                                child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
-                                onTap: () => on_update_guest(r),
+                              Tooltip(
+                                message: "Edit guest",
+                                child: InkWell(
+                                  child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                                  onTap: () => on_update_guest(r),
+                                ),
                               ),
                             ],
                           );
@@ -257,9 +257,12 @@ class _Main_State extends State<Main_> {
                               Icon(Icons.circle, size: 6), //
                               Text("$stay_hour Hours", style: TextStyle(color: Colors.blue)),
                               if (r[sm_r.STATUS] != "Pending Clean")
-                                InkWell(
-                                  child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
-                                  onTap: () => on_update_snp(r),
+                                Tooltip(
+                                  message: "Edit stay info",
+                                  child: InkWell(
+                                    child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                                    onTap: () => on_update_snp(r),
+                                  ),
                                 ),
                             ],
                           );
@@ -268,8 +271,9 @@ class _Main_State extends State<Main_> {
                       // payment room info
                       if (r[sm_r.STATUS] != "Pending Fix")
                         (() {
-                          final room_pay = map_fd[r[sm_r.FRONT_DESK_ID]][sm.ROOM_PAY] ?? "0";
-                          final room_price = map_fd[r[sm_r.FRONT_DESK_ID]][sm.ROOM_PRICE] ?? "0";
+                          final price_ro = map_fd[r[sm_r.FRONT_DESK_ID]][sm.ROOM_PRICE] ?? "0";
+                          final pay_ro = map_fd[r[sm_r.FRONT_DESK_ID]][sm.ROOM_PAY] ?? "0";
+                          final return_ro = map_fd[r[sm_r.FRONT_DESK_ID]][sm.ROOM_RETURN] ?? "0";
                           return Row(
                             spacing: 4,
                             children: [
@@ -279,12 +283,17 @@ class _Main_State extends State<Main_> {
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
                               Text("Price", style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("$room_price \$", style: TextStyle(color: Colors.blue)), //
+                              Text("$price_ro \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
                               Text("Payment", style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("$room_pay \$", style: TextStyle(color: Colors.blue)), //
+                              Text("$pay_ro \$", style: TextStyle(color: Colors.blue)), //
+                              //
+                              SizedBox(width: 4), //
+                              Icon(Icons.circle, size: 6), //
+                              Text("Return", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("$return_ro \$", style: TextStyle(color: Colors.blue)), //
                             ],
                           );
                         })(),
@@ -292,8 +301,12 @@ class _Main_State extends State<Main_> {
                       // payment revenue info
                       if (r[sm_r.STATUS] != "Pending Fix")
                         (() {
-                          final revenue_price = map_fd[r[sm_r.FRONT_DESK_ID]][sm.REVENUE_PRICE] ?? "0";
-                          final revenue_pay = map_fd[r[sm_r.FRONT_DESK_ID]][sm.REVENUE_PAY] ?? "0";
+                          final price_re = map_fd[r[sm_r.FRONT_DESK_ID]][sm.REVENUE_PRICE] ?? "0";
+                          final pay_re = map_fd[r[sm_r.FRONT_DESK_ID]][sm.REVENUE_PAY] ?? "0";
+                          final return_re = map_fd[r[sm_r.FRONT_DESK_ID]][sm.REVENUE_RETURN] ?? "0";
+                          bool is_update = false;
+                          tmp = double.tryParse(pay_re.toString());
+                          if (tmp != null && tmp > 0) is_update = true;
                           return Row(
                             spacing: 4,
                             children: [
@@ -303,16 +316,25 @@ class _Main_State extends State<Main_> {
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
                               Text("Price", style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("$revenue_price \$", style: TextStyle(color: Colors.blue)), //
+                              Text("$price_re \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
                               Text("Payment", style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("$revenue_pay \$", style: TextStyle(color: Colors.blue)), //
+                              Text("$pay_re \$", style: TextStyle(color: Colors.blue)), //
+                              //
+                              SizedBox(width: 4), //
+                              Icon(Icons.circle, size: 6), //
+                              Text("Return", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("$return_re \$", style: TextStyle(color: Colors.blue)), //
+                              //
                               if (r[sm_r.STATUS] != "Pending Clean")
-                                InkWell(
-                                  child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
-                                  onTap: () => on_update_revenue(r), //
+                                Tooltip(
+                                  message: is_update ? "Edit Revenue" : "Add Revenue",
+                                  child: InkWell(
+                                    onTap: is_update ? () => on_update_rvn(r) : () => on_create_rvn(r),
+                                    child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                                  ),
                                 ),
                             ],
                           );
@@ -585,7 +607,7 @@ class _Main_State extends State<Main_> {
       tmp = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => room_payment.Main_(
+          builder: (context) => payment_room.Main_(
             front_desk_id: r[sm_r.FRONT_DESK_ID], //
           ), //
         ),
@@ -626,6 +648,29 @@ class _Main_State extends State<Main_> {
   }
 
   //
+  void on_change_room(dynamic r) async {
+    try {
+      //
+      tmp = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => change_room.Main_(
+            front_desk_id: r[sm_r.FRONT_DESK_ID], //
+          ), //
+        ),
+      );
+
+      //
+      if (tmp != null) init();
+
+      //
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
+  //
   void on_update_snp(dynamic r) async {
     try {
       //
@@ -633,7 +678,9 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => update_stay_and_pay.Main_(
-            front_desk_id: r[sm_r.FRONT_DESK_ID], //
+            fd_id: r[sm_r.FRONT_DESK_ID], //
+            price_day: r[sm_r.USD_PER_DAY] ?? 0, //
+            price_hour: r[sm_r.USD_PER_3H] ?? 0,
           ), //
         ),
       );
@@ -672,7 +719,30 @@ class _Main_State extends State<Main_> {
   }
 
   //
-  void on_update_revenue(dynamic r) async {
+  void on_create_rvn(dynamic r) async {
+    try {
+      //
+      tmp = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => payment_revenue.Main_(
+            front_desk_id: r[sm_r.FRONT_DESK_ID], //
+          ), //
+        ),
+      );
+
+      //
+      if (tmp != null) init();
+
+      //
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
+  //
+  void on_update_rvn(dynamic r) async {
     try {
       //
       tmp = await Navigator.push(

@@ -7,7 +7,7 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_light.dart" as theme;
 import "package:speanmeas/core/dialog/datetime.dart" as datetime_picker;
-import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
+import "package:speanmeas/core/widget/snackbar.dart" as sb;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
 
 import "../config.dart";
@@ -348,10 +348,10 @@ class _Main_State extends State<Main_> {
       //     "value": null, //
       //   },
       // );
-      snackbar.view(context: context, message: "Development", color: Colors.red);
+      sb.view(context: context, message: "Development", color: Colors.red);
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -371,12 +371,12 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, r.data);
 
       //
-      snackbar.view(context: context, message: "Success", color: Colors.green);
+      sb.view(context: context, message: "Success", color: Colors.green);
 
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 }
