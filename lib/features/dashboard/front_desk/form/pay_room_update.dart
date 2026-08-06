@@ -196,6 +196,16 @@ class _Main_State extends State<Main_> {
         },
       );
 
+      // * ប្រសិនបើលុយមិនទាន់បង់គ្រប់
+      if (pay < price + change)
+        await dio.post(
+          ep.ROOM_UPDATE, //
+          data: {
+            sm_r.ID: sm_r.data[sm_r.ID]!["value"], //
+            sm_r.STATUS: "Pending Pay", // * ត្រឡប់ទៅ Pending Pay វិញ
+          },
+        );
+
       Navigator.pop(context, true);
       sb.view(context: context, message: "Success", color: Colors.green);
       //

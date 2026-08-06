@@ -10,14 +10,13 @@ import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 import "package:speanmeas/core/widget/select_dynamic.dart" as select_dnm;
 
 import "../schema.g.dart" as sm_fd;
-
 import "../widget/guest_search.dart" as g_search;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Room Payment", //
+        "Check In", //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -76,57 +75,6 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     return _layout([
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Stay",
-            style: TextStyle(
-              fontSize: 20, //
-              fontWeight: FontWeight.bold, //
-            ),
-          ), //
-        ],
-      ),
-
-      // number of guests
-      select_dnm.Main_(
-        controller: c_n_o_guest,
-        title: "Number of Guests:",
-        options: List.generate(10, (index) => index + 1),
-        onChanged: (v) => setState(() {}), //
-      ),
-
-      // stay duration days
-      select_dnm.Main_(
-        controller: c_d_day,
-        title: "Stay Duration (Days):",
-        options: List.generate(365, (index) => index),
-        onChanged: (v) => setState(() {}), //
-      ),
-
-      // stay duration hours
-      select_dnm.Main_(
-        controller: c_d_hour,
-        title: "Stay Duration (Hours):",
-        options: [0, 3, 6, 9, 12, 15, 18, 21],
-        onChanged: (v) => setState(() {}), //
-      ),
-
-      // note
-      TextField(
-        controller: c_note,
-        maxLines: 4,
-        decoration: InputDecoration(
-          labelText: "Note:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-        ),
-        onChanged: (v) => setState(() {}), //
-      ),
-
-      Divider(color: Colors.black),
-
       // guest search
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -141,7 +89,7 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
-      // TODO: update to search with phone and name
+      // [x] update to search with phone and name
       g_search.Main_(
         controller: c_g_search,
         onChanged: (v) {
@@ -201,6 +149,57 @@ class _Main_State extends State<Main_> {
           value: value,
         );
       })(),
+
+      Divider(color: Colors.black),
+
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "Stay",
+            style: TextStyle(
+              fontSize: 20, //
+              fontWeight: FontWeight.bold, //
+            ),
+          ), //
+        ],
+      ),
+
+      // number of guests
+      select_dnm.Main_(
+        controller: c_n_o_guest,
+        title: "Number of Guests:",
+        options: List.generate(10, (index) => index + 1),
+        onChanged: (v) => setState(() {}), //
+      ),
+
+      // stay duration days
+      select_dnm.Main_(
+        controller: c_d_day,
+        title: "Stay Duration (Days):",
+        options: List.generate(365, (index) => index),
+        onChanged: (v) => setState(() {}), //
+      ),
+
+      // stay duration hours
+      select_dnm.Main_(
+        controller: c_d_hour,
+        title: "Stay Duration (Hours):",
+        options: [0, 3, 6, 9, 12, 15, 18, 21],
+        onChanged: (v) => setState(() {}), //
+      ),
+
+      // note
+      TextField(
+        controller: c_note,
+        maxLines: 4,
+        decoration: InputDecoration(
+          labelText: "Note:", //
+          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+        ),
+        onChanged: (v) => setState(() {}), //
+      ),
 
       // additional information
       Row(

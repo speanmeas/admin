@@ -170,9 +170,9 @@ class _Main_State extends State<Main_> {
   }
 
   bool get can_pay {
-    if (double.tryParse(c_price.text) == null) return false;
-    if (double.tryParse(c_pay.text) == null) return false;
-    if (double.tryParse(c_price.text)! <= 0) return false;
+    double price = double.tryParse(c_price.text) ?? 0;
+
+    if (price <= 0) return false;
     if (balanced != 0) return false;
     return true;
   }

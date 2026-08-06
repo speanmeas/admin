@@ -1,23 +1,20 @@
-import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:flutter/material.dart";
+import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
 //
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
+import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
-//
 import "package:speanmeas/features/database/guest/form/create.dart" as g_create;
 import "package:speanmeas/features/database/guest/schema.g.dart" as g_schema;
-import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-
   FocusNode focusNode = FocusNode();
   bool is_selected = false;
-
   List<Map<String, dynamic>> data = [];
 
   @override
@@ -33,10 +30,10 @@ class _Main_State extends State<Main_> {
     });
 
     //
-    if (widget.controller.text.isNotEmpty) select(widget.controller.text);
+    if (widget.controller.text.isNotEmpty) init(widget.controller.text);
   }
 
-  void select(dynamic q) async {
+  void init(dynamic q) async {
     try {
       tmp = await dio.post(
         ep.GUEST_FORM_SEARCH, //
@@ -44,41 +41,19 @@ class _Main_State extends State<Main_> {
       );
 
       final items = List<Map<String, dynamic>>.from(tmp.data);
-      if (items.isEmpty) widget.onChanged?.call({});
-      if (items.isEmpty) return;
+      if (items.isEmpty) {
+        is_selected = false;
+        widget.onChanged?.call({});
+        return;
+      }
 
+      is_selected = true;
       widget.controller.text = items[0][g_schema.FULL_NAME];
 
       widget.onChanged?.call(items[0]);
     } catch (e, st) {
       print(st);
       sb.view(context: context, message: e.toString(), color: Colors.red);
-    }
-  }
-
-  Future<List<String>> search(dynamic q) async {
-    try {
-      //
-      tmp = await dio.post(
-        ep.GUEST_FORM_SEARCH, //
-        data: {"query": q},
-      );
-      data = List<Map<String, dynamic>>.from(tmp.data);
-
-      //
-      List<String> options = [];
-      for (var d in data) {
-        final text = "${d[g_schema.FULL_NAME] ?? ""} - ${d[g_schema.PHONE_NUMBER] ?? "N/A"}";
-        options.add(text);
-      }
-
-      //
-      return options;
-      //
-    } catch (e, st) {
-      print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
-      return [];
     }
   }
 
@@ -119,13 +94,18 @@ class _Main_State extends State<Main_> {
             onSelected: (v) {
               is_selected = true;
 
-              final full_name = v.split(" - ").first;
-              final phone_number = v.split(" - ").last;
+              // select from data list
+              Map<String, dynamic> d = {};
+              for (var e in data) {
+                if ("${e[g_schema.FULL_NAME] ?? ""} (${e[g_schema.PHONE_NUMBER] ?? "N/A"})" == v) {
+                  d = e;
+                  break;
+                }
+              }
 
-              widget.controller.text = full_name;
+              widget.controller.text = d[g_schema.FULL_NAME] ?? "";
 
-              if (phone_number != "N/A") select(phone_number);
-              if (phone_number == "N/A") select(full_name);
+              widget.onChanged?.call(d);
             },
           ),
         ),
@@ -147,14 +127,56 @@ class _Main_State extends State<Main_> {
             if (v == null) return;
 
             //
-            widget.controller.text = v[g_schema.PHONE_NUMBER];
+            select_by_id(v[g_schema.ID]);
 
             //
-            select(v[g_schema.PHONE_NUMBER]);
           },
         ),
       ],
     );
+  }
+
+  void select_by_id(dynamic id) async {
+    try {
+      tmp = await dio.post(
+        ep.GUEST_READ_ID, //
+        data: {"_id": id},
+      );
+
+      is_selected = true;
+      widget.controller.text = tmp.data[0][g_schema.FULL_NAME];
+
+      widget.onChanged?.call(tmp.data[0]);
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
+  Future<List<String>> search(dynamic q) async {
+    try {
+      //
+      tmp = await dio.post(
+        ep.GUEST_FORM_SEARCH, //
+        data: {"query": q},
+      );
+      data = List<Map<String, dynamic>>.from(tmp.data);
+
+      //
+      List<String> options = [];
+      for (var d in data) {
+        final text = "${d[g_schema.FULL_NAME] ?? ""} (${d[g_schema.PHONE_NUMBER] ?? "N/A"})";
+        options.add(text);
+      }
+
+      //
+      return options;
+      //
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
+      return [];
+    }
   }
 }
 
