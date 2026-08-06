@@ -1,21 +1,22 @@
-import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
+import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
-import "package:intl/intl.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
+import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/light.dart" as theme;
-import "package:speanmeas/core/dialog/datetime.dart" as datetime_picker;
+import "package:speanmeas/core/dialog/datetime.dart" as dt_picker;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
-import "package:speanmeas/core/widget/show_data.dart" as show_data;
-import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
-import "package:speanmeas/features/database/guest/schema.g.dart" as sm_g;
+import "package:speanmeas/core/widget/show_data.dart" as sd;
 
 import "../config.dart";
 import "../schema.g.dart" as sm;
 
+import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 import "../widget/room_search.dart" as r_search;
+
+import "package:speanmeas/features/database/guest/schema.g.dart" as sm_g;
 import "../widget/guest_search.dart" as g_search;
 
 Widget _layout(List<Widget> children) {
@@ -42,7 +43,7 @@ Widget _layout(List<Widget> children) {
       child: Center(
         child: Container(
           width: 600,
-          padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
+          padding: EdgeInsets.all(8),
           child: Column(
             spacing: 8,
             children: children, //
@@ -67,6 +68,8 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
+    sm.clear();
+
     if (sm.data[sm.ROOM_NUMBER]!["value"] != null) //
       c_room.text = sm.data[sm.ROOM_NUMBER]!["value"];
 
@@ -130,7 +133,7 @@ class _Main_State extends State<Main_> {
           if (e.value["lock"] == true) {
             String value = "";
             if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
-            return show_data.Main_(
+            return sd.Main_(
               title: e.value["title"], //
               value: value,
             );
@@ -147,16 +150,6 @@ class _Main_State extends State<Main_> {
                 labelText: e.value["title"] + ":", //
                 labelStyle: TextStyle(fontWeight: FontWeight.bold),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                suffixIcon: Padding(
-                  padding: EdgeInsets.only(right: 4),
-                  child: IconButton(
-                    icon: Icon(Icons.clear, color: Colors.red),
-                    onPressed: () async {
-                      e.value["value"] = "";
-                      setState(() {});
-                    },
-                  ), //
-                ),
               ),
               onChanged: (v) {
                 if (v.isEmpty)
@@ -179,16 +172,6 @@ class _Main_State extends State<Main_> {
                 labelText: e.value["title"] + ":", //
                 labelStyle: TextStyle(fontWeight: FontWeight.bold),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                suffixIcon: Padding(
-                  padding: EdgeInsets.only(right: 4),
-                  child: IconButton(
-                    icon: Icon(Icons.clear, color: Colors.red),
-                    onPressed: () async {
-                      e.value["value"] = "";
-                      setState(() {});
-                    },
-                  ), //
-                ),
               ),
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
@@ -233,7 +216,7 @@ class _Main_State extends State<Main_> {
                 ),
               ),
               onTap: () async {
-                DateTime? datetime = await datetime_picker.view(context, initial_datetime: init);
+                DateTime? datetime = await dt_picker.view(context, initial_datetime: init);
                 if (datetime == null) return;
                 e.value["value"] = datetime.toIso8601String();
                 setState(() {});
@@ -248,7 +231,7 @@ class _Main_State extends State<Main_> {
               if (e.value["value"] == true) value = "Yes";
               if (e.value["value"] == false) value = "No";
             }
-            final controller_search = TextEditingController(text: value);
+            final controller_search = TextEditingController(text: value ?? "");
             return TypeAheadField<String>(
               controller: controller_search,
               suggestionsCallback: (query) => ["Yes", "No"],
@@ -305,11 +288,11 @@ class _Main_State extends State<Main_> {
       var payload = {};
       for (var e in sm.data.entries) payload[e.key] = e.value["value"];
 
-      // request
-      final r = await dio.post("$PATH/create", data: payload);
+      //
+      tmp = await dio.post("$PATH/create", data: payload);
 
       //
-      Navigator.pop(context, r.data[0]);
+      Navigator.pop(context, tmp.data[0]);
 
       //
       sb.view(context: context, message: "Success", color: Colors.green);
