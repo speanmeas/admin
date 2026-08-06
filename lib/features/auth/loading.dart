@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:speanmeas/core/global.dart";
 
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
@@ -54,6 +55,9 @@ class _Main_State extends State<Main_> {
 
       //
       sb.view(ct: context, ms: "Success", cl: Colors.green);
+
+      //
+      await glob.init();
 
       //
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));

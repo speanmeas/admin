@@ -108,16 +108,10 @@ class _Main_State extends State<Main_> {
   void on_sign_in() async {
     try {
       //
-
-      //
       tmp = await dio.post(
         ep.AUTH_SIGN_IN, //
-        data: {
-          "username": username, //
-          "password": password,
-        },
+        data: {"username": username, "password": password},
       );
-
       if (tmp == null) throw Exception("Invalid Username or Password");
 
       //
@@ -130,6 +124,9 @@ class _Main_State extends State<Main_> {
 
       //
       sb.view(ct: context, ms: "Success", cl: Colors.green);
+
+      //
+      await glob.init();
 
       //
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
