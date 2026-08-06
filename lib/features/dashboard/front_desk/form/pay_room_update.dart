@@ -5,14 +5,13 @@ import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/light.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
-
 import "../schema.g.dart" as sm_fd;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Update Revenue Payment", //
+        "Update Room Payment", //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -20,6 +19,7 @@ Widget _layout(List<Widget> children) {
       toolbarHeight: 40,
       titleSpacing: 0,
 
+      // Add a divider at the bottom of the app bar
       bottom: PreferredSize(
         preferredSize: Size.fromHeight(1), //
         child: Divider(height: 1, color: Colors.black),
@@ -61,10 +61,11 @@ class _Main_State extends State<Main_> {
       tmp = await dio.post(ep.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_r.data[sm_r.FRONT_DESK_ID]!["value"]});
       for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      c_price.text = sm_fd.data[sm_fd.REVENUE_PRICE]?["value"]?.toString() ?? "";
-      c_pay.text = sm_fd.data[sm_fd.REVENUE_PAY]?["value"]?.toString() ?? "";
-      c_change.text = sm_fd.data[sm_fd.REVENUE_RETURN]?["value"]?.toString() ?? "";
-      c_note.text = sm_fd.data[sm_fd.REVENUE_PAY_NOTE]?["value"]?.toString() ?? "";
+      //
+      c_price.text = sm_fd.data[sm_fd.ROOM_PRICE]?["value"]?.toString() ?? "";
+      c_pay.text = sm_fd.data[sm_fd.ROOM_PAY]?["value"]?.toString() ?? "";
+      c_change.text = sm_fd.data[sm_fd.ROOM_RETURN]?["value"]?.toString() ?? "";
+      c_note.text = sm_fd.data[sm_fd.ROOM_PAY_NOTE]?["value"]?.toString() ?? "";
 
       setState(() {});
       //
@@ -77,37 +78,44 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     return _layout([
-      //
+      // room price
       TextField(
         controller: c_price,
         decoration: InputDecoration(
-          labelText: "Revenue Price:", //
+          labelText: "Room Price:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixText: "\$ ",
         ),
         onChanged: (v) => setState(() {}), //
+        onSubmitted: (v) => on_pay(), //
       ),
 
-      //
+      // payment
       TextField(
+        autofocus: true,
         controller: c_pay,
         decoration: InputDecoration(
           labelText: "Payment:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixText: "\$ ",
         ),
         onChanged: (v) => setState(() {}), //
+        onSubmitted: (v) => on_pay(), //
       ),
 
-      //
+      // return
       TextField(
         controller: c_change,
         decoration: InputDecoration(
           labelText: "Return:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixText: "\$ ",
         ),
         onChanged: (v) => setState(() {}), //
+        onSubmitted: (v) => on_pay(), //
       ),
 
       // note
@@ -120,11 +128,12 @@ class _Main_State extends State<Main_> {
           floatingLabelBehavior: FloatingLabelBehavior.always,
         ),
         onChanged: (v) => setState(() {}), //
+        onSubmitted: (v) => on_pay(), //
       ),
 
-      // balanced
-      Divider(height: 8, thickness: 1, color: Colors.black),
+      Divider(color: Colors.black),
 
+      // balanced
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -147,14 +156,14 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
-      // additional information
+      //
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           OutlinedButton.icon(
             icon: Icon(Icons.check), //
             label: Text("Update"), //
-            onPressed: balanced == 0 ? on_pay : null, //
+            onPressed: on_pay, //
           ),
         ],
       ),
@@ -170,18 +179,20 @@ class _Main_State extends State<Main_> {
 
   void on_pay() async {
     try {
+      //
+
       double price = double.tryParse(c_price.text) ?? 0;
       double pay = double.tryParse(c_pay.text) ?? 0;
       double change = double.tryParse(c_change.text) ?? 0;
 
       await dio.post(
-        ep.FRONT_DESK_FORM_UPDATE_PAY_REVENUE,
+        ep.FRONT_DESK_FORM_PAY_ROOM,
         data: {
           sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //
-          sm_fd.REVENUE_PRICE: price, //
-          sm_fd.REVENUE_PAY: pay, //
-          sm_fd.REVENUE_RETURN: change, //
-          sm_fd.REVENUE_PAY_NOTE: c_note.text, //
+          sm_fd.ROOM_PRICE: price, //
+          sm_fd.ROOM_PAY: pay, //
+          sm_fd.ROOM_RETURN: change, //
+          sm_fd.ROOM_PAY_NOTE: c_note.text, //
         },
       );
 

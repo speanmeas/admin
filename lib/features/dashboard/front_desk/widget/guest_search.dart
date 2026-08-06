@@ -18,6 +18,8 @@ class _Main_State extends State<Main_> {
   FocusNode focusNode = FocusNode();
   bool is_selected = false;
 
+  List<Map<String, dynamic>> data = [];
+
   @override
   void initState() {
     super.initState();
@@ -36,21 +38,47 @@ class _Main_State extends State<Main_> {
 
   void select(dynamic q) async {
     try {
-      //
-      final r = await dio.post(
-        "/guest/read_string", //
-        data: {
-          "key": g_schema.PHONE_NUMBER, //
-          "query": q, //
-        },
+      tmp = await dio.post(
+        ep.GUEST_FORM_SEARCH, //
+        data: {"query": q},
       );
 
-      final items = List<Map<String, dynamic>>.from(r.data is List ? r.data : [r.data]);
+      final items = List<Map<String, dynamic>>.from(tmp.data);
+      if (items.isEmpty) widget.onChanged?.call({});
       if (items.isEmpty) return;
-      widget.onChanged?.call(items.first);
+
+      widget.controller.text = items[0][g_schema.FULL_NAME];
+
+      widget.onChanged?.call(items[0]);
     } catch (e, st) {
       print(st);
       sb.view(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
+  Future<List<String>> search(dynamic q) async {
+    try {
+      //
+      tmp = await dio.post(
+        ep.GUEST_FORM_SEARCH, //
+        data: {"query": q},
+      );
+      data = List<Map<String, dynamic>>.from(tmp.data);
+
+      //
+      List<String> options = [];
+      for (var d in data) {
+        final text = "${d[g_schema.FULL_NAME] ?? ""} - ${d[g_schema.PHONE_NUMBER] ?? "N/A"}";
+        options.add(text);
+      }
+
+      //
+      return options;
+      //
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
+      return [];
     }
   }
 
@@ -63,36 +91,7 @@ class _Main_State extends State<Main_> {
             controller: widget.controller,
             focusNode: focusNode,
             itemBuilder: (context, item) => ListTile(title: Text(item)),
-            suggestionsCallback: (q) async {
-              try {
-                //
-                final r = await dio.post(
-                  "/guest/read_string", //
-                  data: {
-                    "key": g_schema.PHONE_NUMBER, //
-                    "query": q, //
-                    "order": 1, //
-                    "limit": 100, //
-                  },
-                );
-
-                //
-                List<String> options = [];
-                final data_list = r.data is List ? r.data : [r.data];
-                for (var d in data_list) {
-                  if (d[g_schema.PHONE_NUMBER] == null) continue;
-                  options.add(d[g_schema.PHONE_NUMBER] ?? "");
-                }
-
-                //
-                return options;
-                //
-              } catch (e, st) {
-                print(st);
-                sb.view(context: context, message: e.toString(), color: Colors.red);
-                return [];
-              }
-            },
+            suggestionsCallback: (q) async => await search(q),
             builder: (context, controller, focusNode) {
               return TextField(
                 controller: controller,
@@ -107,7 +106,6 @@ class _Main_State extends State<Main_> {
                     child: IconButton(
                       icon: Icon(Icons.clear, color: Colors.red),
                       onPressed: () {
-                        //
                         widget.controller.clear();
                         widget.onCleared?.call();
                         widget.onChanged?.call({});
@@ -120,8 +118,14 @@ class _Main_State extends State<Main_> {
             },
             onSelected: (v) {
               is_selected = true;
-              widget.controller.text = v;
-              select(v);
+
+              final full_name = v.split(" - ").first;
+              final phone_number = v.split(" - ").last;
+
+              widget.controller.text = full_name;
+
+              if (phone_number != "N/A") select(phone_number);
+              if (phone_number == "N/A") select(full_name);
             },
           ),
         ),
@@ -177,7 +181,7 @@ void main() {
       home: Scaffold(
         body: Center(
           child: Main_(
-            controller: TextEditingController(text: "011358858"),
+            controller: TextEditingController(text: "Sengly"),
             onChanged: (data) {
               print("Selected Data: $data");
             },
