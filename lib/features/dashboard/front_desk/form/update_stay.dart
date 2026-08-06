@@ -144,10 +144,10 @@ class _Main_State extends State<Main_> {
     try {
       int stay_days = int.tryParse(c_d_day.text) ?? 0;
       int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
-      double price_day = double.tryParse(sm_r.data[sm_r.USD_PER_DAY]?["value"]) ?? 0;
-      double price_hour = double.tryParse(sm_r.data[sm_r.USD_PER_3H]?["value"]) ?? 0;
+      double price_day = double.tryParse(sm_r.data[sm_r.USD_PER_DAY]?["value"].toString() ?? "") ?? 0;
+      double price_hour = double.tryParse(sm_r.data[sm_r.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
+      double room_paid = double.tryParse(sm_fd.data[sm_fd.ROOM_PAY]?["value"].toString() ?? "") ?? 0;
       double room_price = (price_day * stay_days) + (price_hour * stay_hours / 3);
-      double room_paid = double.tryParse(sm_fd.data[sm_fd.ROOM_PAY]?["value"]) ?? 0;
 
       //
       await dio.post(

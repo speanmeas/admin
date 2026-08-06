@@ -89,7 +89,6 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
-      SizedBox(height: 8),
       // number of guests
       select_dnm.Main_(
         controller: c_n_o_guest,
@@ -97,8 +96,6 @@ class _Main_State extends State<Main_> {
         options: List.generate(10, (index) => index + 1),
         onChanged: (v) => setState(() {}), //
       ),
-
-      SizedBox(height: 8),
 
       // stay duration days
       select_dnm.Main_(
@@ -108,8 +105,6 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => setState(() {}), //
       ),
 
-      SizedBox(height: 8),
-
       // stay duration hours
       select_dnm.Main_(
         controller: c_d_hour,
@@ -117,8 +112,6 @@ class _Main_State extends State<Main_> {
         options: [0, 3, 6, 9, 12, 15, 18, 21],
         onChanged: (v) => setState(() {}), //
       ),
-
-      SizedBox(height: 8),
 
       // note
       TextField(
@@ -148,8 +141,6 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
-      SizedBox(height: 8),
-
       g_search.Main_(
         controller: c_g_search,
         onChanged: (v) {
@@ -174,7 +165,6 @@ class _Main_State extends State<Main_> {
         String value = "";
         if (sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"] != null) //
           value = sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"].toString() ?? "";
-
         return sd.Main_(
           title: sm_fd.data[sm_fd.GUEST_FULL_NAME]?["title"] ?? "", //
           value: value,
@@ -211,8 +201,6 @@ class _Main_State extends State<Main_> {
         );
       })(),
 
-      SizedBox(height: 8),
-
       // additional information
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -242,13 +230,13 @@ class _Main_State extends State<Main_> {
   }
 
   void on_check_in() async {
-    int stay_days = int.tryParse(c_d_day.text) ?? 0;
-    int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
-    double price_day = double.tryParse(sm_r.data[sm_r.USD_PER_DAY]?["value"]) ?? 0;
-    double price_hour = double.tryParse(sm_r.data[sm_r.USD_PER_3H]?["value"]) ?? 0;
-    double? room_price = (price_day * stay_days) + (price_hour * stay_hours / 3);
-
     try {
+      int stay_days = int.tryParse(c_d_day.text) ?? 0;
+      int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
+      double price_day = double.tryParse(sm_r.data[sm_r.USD_PER_DAY]?["value"].toString() ?? "") ?? 0;
+      double price_hour = double.tryParse(sm_r.data[sm_r.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
+      double room_price = (price_day * stay_days) + (price_hour * stay_hours / 3);
+
       //
       tmp = await dio.post(
         ep.FRONT_DESK_FORM_CHECK_IN, // create
@@ -273,9 +261,7 @@ class _Main_State extends State<Main_> {
       );
 
       Navigator.pop(context, true);
-
-      sb.view(context: context, message: "Check In Successful", color: Colors.green);
-
+      sb.view(context: context, message: "Success", color: Colors.green);
       //
     } catch (e, st) {
       print(st);

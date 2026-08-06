@@ -54,8 +54,8 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     try {
-      sm_fd.clear();
       sm_r.clear();
+      sm_fd.clear();
 
       //
       tmp = await dio.post(ep.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
@@ -165,12 +165,12 @@ class _Main_State extends State<Main_> {
         data: {
           sm_r.ID: to_room_id, //
           sm_r.STATUS: "Pending Pay", // * ចំណាំ៖ ត្រឡប់ទៅ Pending Pay ដើម្បីបង្ហាញថាអតិថិជនត្រូវបង់ប្រាក់សម្រាប់បន្ទប់ថ្មី
-          sm_r.FRONT_DESK_ID: widget.room_id, //
+          sm_r.FRONT_DESK_ID: sm_fd.data[sm_fd.ID]!["value"], //
         },
       );
 
       //
-      tmp = await dio.post(
+      await dio.post(
         ep.FRONT_DESK_FORM_CHANGE_ROOM,
         data: {
           sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //

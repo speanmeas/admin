@@ -106,7 +106,7 @@ class _Main_State extends State<Main_> {
       await dio.post(
         ep.ROOM_UPDATE, //
         data: {
-          sm_r.ID: sm_fd.data[sm_fd.ROOM_ID]!["value"], //
+          sm_r.ID: sm_r.data[sm_r.ID]!["value"], //
           sm_r.STATUS: "Available", //
           sm_r.FRONT_DESK_ID: null, //
         },

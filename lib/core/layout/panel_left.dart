@@ -3,32 +3,32 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/theme/theme_light.dart" as theme;
-import "package:speanmeas/features/auth/schema.g.dart" as u_schema;
+import "package:speanmeas/features/auth/schema.g.dart" as sm_u;
 
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
 
   bool is_mobile = false;
+  bool is_admin = false;
+  bool is_manager = false;
+  bool is_recept = false;
+  bool is_cleaner = false;
 
   @override
   Widget build(BuildContext context) {
     is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
+    is_admin = sm_u.data[sm_u.IS_ADMIN]?["value"] == true;
+    is_manager = sm_u.data[sm_u.IS_MANAGER]?["value"] == true;
+    is_recept = sm_u.data[sm_u.IS_RECEPTIONIST]?["value"] == true;
+    is_cleaner = sm_u.data[sm_u.IS_HOUSEKEEPER]?["value"] == true;
     return Column(
       children: [
         Expanded(
           child: ListView(
             children: [
-              // dashboard
-              // ExpansionTile(
-              //   leading: Icon(Icons.dashboard_outlined), //
-              //   title: Text("Dashboard"),
-              //   initiallyExpanded: true,
-              //   children: [
-              //     list_tile_l2(prefix: "Dashboard", name: "Front Desk", icon: Icons.table_bar_outlined), //
-              //   ],
-              // ),
-              list_tile_l1(name: "Front Desk", icon: Icons.table_bar_outlined),
+              if (is_admin || is_manager || is_recept || is_cleaner) //
+                list_tile_l1(name: "Front Desk", icon: Icons.table_bar_outlined),
 
               // data
               ExpansionTile(
@@ -37,42 +37,43 @@ class _Main_State extends State<Main_> {
                 initiallyExpanded: true,
                 children: [
                   // front desk
-                  if (u_schema.data[u_schema.IS_ADMIN]!["value"] == true || u_schema.data[u_schema.IS_MANAGER]!["value"] == true || u_schema.data[u_schema.IS_RECEPTIONIST]!["value"] == true) //
+                  if (is_admin || is_manager || is_recept || is_cleaner) //
                     list_tile_l2(prefix: "Data", name: "Front Desk", icon: Icons.table_bar_outlined),
 
                   // guest
-                  if (u_schema.data[u_schema.IS_ADMIN]!["value"] == true || u_schema.data[u_schema.IS_MANAGER]!["value"] == true || u_schema.data[u_schema.IS_RECEPTIONIST]!["value"] == true) //
+                  if (is_admin || is_manager || is_recept) //
                     list_tile_l2(prefix: "Data", name: "Guest", icon: Icons.people_outline),
 
-                  // nationality
-                  if (u_schema.data[u_schema.IS_ADMIN]!["value"] == true || u_schema.data[u_schema.IS_MANAGER]!["value"] == true || u_schema.data[u_schema.IS_RECEPTIONIST]!["value"] == true) //
-                    list_tile_l2(prefix: "Data", name: "Nationality", icon: Icons.flag_outlined),
-
                   // room
-                  if (u_schema.data[u_schema.IS_ADMIN]!["value"] == true || u_schema.data[u_schema.IS_MANAGER]!["value"] == true) //
+                  if (is_admin || is_manager || is_recept) //
                     list_tile_l2(prefix: "Data", name: "Room", icon: Icons.hotel_outlined),
 
+                  // nationality
+                  if (is_admin || is_manager || is_recept) //
+                    list_tile_l2(prefix: "Data", name: "Nationality", icon: Icons.flag_outlined),
+
                   // user
-                  if (u_schema.data[u_schema.IS_ADMIN]!["value"] == true || u_schema.data[u_schema.IS_MANAGER]!["value"] == true) //
+                  if (is_admin || is_manager) //
                     list_tile_l2(prefix: "Data", name: "User", icon: Icons.person_outline),
                 ],
               ),
 
               // Reports
-              ExpansionTile(
-                leading: Icon(Icons.assessment_outlined), //
-                title: Text("Report"),
-                initiallyExpanded: true,
-                children: [
-                  list_tile_l2(prefix: "Report", name: "Daily", icon: Icons.today_outlined),
-                  list_tile_l2(prefix: "Report", name: "Weekly", icon: Icons.date_range_outlined),
-                  list_tile_l2(prefix: "Report", name: "Monthly", icon: Icons.calendar_month_outlined),
-                  list_tile_l2(prefix: "Report", name: "Yearly", icon: Icons.event_note_outlined),
-                ],
-              ),
+              if (is_admin)
+                ExpansionTile(
+                  leading: Icon(Icons.assessment_outlined), //
+                  title: Text("Report"),
+                  initiallyExpanded: true,
+                  children: [
+                    list_tile_l2(prefix: "Report", name: "Daily", icon: Icons.today_outlined),
+                    list_tile_l2(prefix: "Report", name: "Weekly", icon: Icons.date_range_outlined),
+                    list_tile_l2(prefix: "Report", name: "Monthly", icon: Icons.calendar_month_outlined),
+                    list_tile_l2(prefix: "Report", name: "Yearly", icon: Icons.event_note_outlined),
+                  ],
+                ),
 
               // Demos
-              if (u_schema.data[u_schema.IS_ADMIN]!["value"] == true)
+              if (is_admin)
                 ExpansionTile(
                   leading: Icon(Icons.model_training_outlined), //
                   title: Text("Demo"),
@@ -82,8 +83,6 @@ class _Main_State extends State<Main_> {
                     list_tile_l2(prefix: "Demo", name: "002", icon: Icons.model_training_outlined), //
                   ],
                 ),
-
-              //
             ],
           ),
         ),
