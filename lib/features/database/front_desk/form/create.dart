@@ -176,8 +176,7 @@ class _Main_State extends State<Main_> {
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
               onChanged: (v) {
-                if (v.isEmpty) e.value["value"] = 0;
-                if (v.isNotEmpty) e.value["value"] = double.tryParse(v) ?? 0;
+                e.value["value"] = double.tryParse(v);
               },
             );
           }

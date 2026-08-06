@@ -138,8 +138,7 @@ class _Main_State extends State<Main_> {
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
               onChanged: (v) {
-                if (v.isEmpty) e.value["value"] = " "; //
-                if (v.isNotEmpty) e.value["value"] = v.trim(); //
+                e.value["value"] = v.isEmpty ? null : v.trim(); //
               },
             );
           }
@@ -160,8 +159,7 @@ class _Main_State extends State<Main_> {
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
               onChanged: (v) {
-                if (v.isEmpty) e.value["value"] = 0;
-                if (v.isNotEmpty) e.value["value"] = double.tryParse(v) ?? 0;
+                e.value["value"] = double.tryParse(v);
               },
             );
           }

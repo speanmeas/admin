@@ -110,7 +110,7 @@ class _Main_State extends State<Main_> {
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
               onChanged: (v) {
-                e.value["value"] = v.trim();
+                e.value["value"] = v.isEmpty ? null : v.trim();
               },
             );
           }
@@ -130,7 +130,7 @@ class _Main_State extends State<Main_> {
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
               onChanged: (v) {
-                e.value["value"] = double.tryParse(v) ?? 0;
+                e.value["value"] = double.tryParse(v);
               },
             );
           }
