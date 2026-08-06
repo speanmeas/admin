@@ -174,13 +174,6 @@ Map<String, Map<String, dynamic>> data = {
     "lock": false,
     "value": null
   },
-  "room_pay_update_note": {
-    "type": "string",
-    "title": "Room Payment Update Note",
-    "hide": false,
-    "lock": false,
-    "value": null
-  },
   "room_pay_by": {
     "type": "string",
     "title": "Room Payment By",
@@ -226,13 +219,6 @@ Map<String, Map<String, dynamic>> data = {
   "revenue_pay_note": {
     "type": "string",
     "title": "Revenue Payment Note",
-    "hide": false,
-    "lock": false,
-    "value": null
-  },
-  "revenue_pay_update_note": {
-    "type": "string",
-    "title": "Revenue Payment Update Note",
     "hide": false,
     "lock": false,
     "value": null
@@ -383,7 +369,6 @@ final ROOM_PRICE = "room_price";
 final ROOM_PAY = "room_pay";
 final ROOM_RETURN = "room_return";
 final ROOM_PAY_NOTE = "room_pay_note";
-final ROOM_PAY_UPDATE_NOTE = "room_pay_update_note";
 final ROOM_PAY_BY = "room_pay_by";
 final ROOM_PAY_AT = "room_pay_at";
 final REVENUE_PRICE = "revenue_price";
@@ -391,7 +376,6 @@ final REVENUE_PAY = "revenue_pay";
 final REVENUE_RETURN = "revenue_return";
 final REVENUE_BALANCE = "revenue_balance";
 final REVENUE_PAY_NOTE = "revenue_pay_note";
-final REVENUE_PAY_UPDATE_NOTE = "revenue_pay_update_note";
 final REVENUE_PAY_BY = "revenue_pay_by";
 final REVENUE_PAY_AT = "revenue_pay_at";
 final CHECK_OUT_NOTE = "check_out_note";

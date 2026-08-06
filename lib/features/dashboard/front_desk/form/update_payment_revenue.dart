@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/theme/theme_light.dart" as theme;
+import "package:speanmeas/core/theme/light.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
@@ -64,7 +64,7 @@ class _Main_State extends State<Main_> {
       c_price.text = sm_fd.data[sm_fd.REVENUE_PRICE]?["value"]?.toString() ?? "";
       c_pay.text = sm_fd.data[sm_fd.REVENUE_PAY]?["value"]?.toString() ?? "";
       c_change.text = sm_fd.data[sm_fd.REVENUE_RETURN]?["value"]?.toString() ?? "";
-      c_note.text = sm_fd.data[sm_fd.REVENUE_PAY_UPDATE_NOTE]?["value"]?.toString() ?? "";
+      c_note.text = sm_fd.data[sm_fd.REVENUE_PAY_NOTE]?["value"]?.toString() ?? "";
 
       setState(() {});
       //
@@ -181,7 +181,7 @@ class _Main_State extends State<Main_> {
           sm_fd.REVENUE_PRICE: price, //
           sm_fd.REVENUE_PAY: pay, //
           sm_fd.REVENUE_RETURN: change, //
-          sm_fd.REVENUE_PAY_UPDATE_NOTE: c_note.text, //
+          sm_fd.REVENUE_PAY_NOTE: c_note.text, //
         },
       );
 

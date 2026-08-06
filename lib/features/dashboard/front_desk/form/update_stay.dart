@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/theme/theme_light.dart" as theme;
+import "package:speanmeas/core/theme/light.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 import "package:speanmeas/core/widget/select_dynamic.dart" as select_dnm;

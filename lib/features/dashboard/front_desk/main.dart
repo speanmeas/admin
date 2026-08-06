@@ -5,8 +5,8 @@ import "package:intl/intl.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/theme/theme_light.dart" as theme;
-import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/core/widget/snackbar.dart" as sb; // ignore: unused_import
+import "package:speanmeas/core/theme/light.dart" as theme; // ignore: unused_import
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
 import "config.dart";
@@ -233,7 +233,7 @@ class _Main_State extends State<Main_> {
                         })(),
 
                       // stay info
-                      if (r[sm_r.STATUS] != "Pending Fix")
+                      if (["Pending Fix"].contains(r[sm_r.STATUS]))
                         (() {
                           final stay_n_guest = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.STAY_N_GUEST] ?? "0";
                           final stay_day = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.STAY_DAY] ?? "0";
@@ -293,12 +293,21 @@ class _Main_State extends State<Main_> {
                               Icon(Icons.circle, size: 6), //
                               Text("Return", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("$return_ro \$", style: TextStyle(color: Colors.blue)), //
+
+                              if (r[sm_r.STATUS] != "Pending Clean")
+                                Tooltip(
+                                  message: "Update Room Payment",
+                                  child: InkWell(
+                                    onTap: () => on_update_rp(r),
+                                    child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                                  ),
+                                ),
                             ],
                           );
                         })(),
 
                       // payment revenue info
-                      if (r[sm_r.STATUS] != "Pending Fix")
+                      if (!["Pending Fix"].contains(r[sm_r.STATUS]))
                         (() {
                           final price_re = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.REVENUE_PRICE] ?? "0";
                           final pay_re = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.REVENUE_PAY] ?? "0";
@@ -611,6 +620,28 @@ class _Main_State extends State<Main_> {
 
       //
       if (tmp != null) init();
+
+      //
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
+  //
+  void on_update_rp(dynamic r) async {
+    try {
+      // tmp = await Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => check_in.Main_(
+      //       room_id: r[sm_r.ID], //
+      //     ), //
+      //   ),
+      // );
+
+      // //
+      // if (tmp != null) init();
 
       //
     } catch (e, st) {
