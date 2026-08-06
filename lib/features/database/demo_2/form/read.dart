@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
-import "package:speanmeas/core/widget/show_data.dart" as show_data;
+import "package:speanmeas/core/widget/show_data.dart" as sd;
 import 'package:speanmeas/core/widget/snackbar.dart' as sb;
 
 import "../config.dart";
@@ -63,7 +63,7 @@ class _Main_State extends State<Main_> {
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      child: show_data.Main_(
+                      child: sd.Main_(
                         title: e.value["title"], //
                         value: value,
                         max_lines: e.key.contains("note") ? 4 : 1,
@@ -78,7 +78,7 @@ class _Main_State extends State<Main_> {
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      child: show_data.Main_(
+                      child: sd.Main_(
                         title: e.value["title"], //
                         value: value,
                       ),
@@ -95,7 +95,7 @@ class _Main_State extends State<Main_> {
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      child: show_data.Main_(
+                      child: sd.Main_(
                         title: e.value["title"], //
                         value: value,
                       ),
@@ -112,7 +112,7 @@ class _Main_State extends State<Main_> {
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      child: show_data.Main_(
+                      child: sd.Main_(
                         title: e.value["title"], //
                         value: value,
                       ),

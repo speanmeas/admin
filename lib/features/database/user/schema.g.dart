@@ -62,13 +62,6 @@ Map<String, Map<String, dynamic>> data = {
     "lock": false,
     "value": null
   },
-  "is_client": {
-    "type": "boolean",
-    "title": "Is Client",
-    "hide": false,
-    "lock": false,
-    "value": null
-  },
   "note": {
     "type": "string",
     "title": "Note",
@@ -87,7 +80,6 @@ final IS_ADMIN = "is_admin";
 final IS_MANAGER = "is_manager";
 final IS_RECEPTIONIST = "is_receptionist";
 final IS_HOUSEKEEPER = "is_housekeeper";
-final IS_CLIENT = "is_client";
 final NOTE = "note";
 
 void clear() { for (var k in data.keys) data[k]!["value"] = null; }

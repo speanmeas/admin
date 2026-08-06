@@ -3,10 +3,44 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
-import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
+import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
 import "../config.dart";
-import "../schema.g.dart" as schema;
+
+Widget _layout(List<Widget> children) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(
+        "Delete", //
+        style: TextStyle(
+          fontSize: 20, //
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+
+      centerTitle: false,
+      toolbarHeight: 40,
+      titleSpacing: 0,
+
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(1), //
+        child: Divider(height: 1, color: Colors.black),
+      ),
+    ),
+    body: SingleChildScrollView(
+      child: Center(
+        child: Container(
+          width: 600,
+          padding: EdgeInsets.all(8),
+          child: Column(
+            spacing: 8,
+            children: children, //
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
 class _Main_State extends State<Main_> {
   //
@@ -14,68 +48,35 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Delete", //
-          style: TextStyle(
-            fontSize: 20, //
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: false,
-        toolbarHeight: 40,
-        titleSpacing: 0,
-
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1), //
-          child: Divider(height: 1, color: Colors.black),
-        ),
+    final height = MediaQuery.of(context).size.height;
+    return _layout([
+      // * បញ្ជាក់
+      Text(
+        "Confirm to delete?", //
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              // * បញ្ជាក់
-              Container(
-                width: 600,
-                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                alignment: Alignment.center,
-                child: Text("Confirm to delete?", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              ),
 
-              // * ប៊ូតុង Delete
-              Container(
-                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: OutlinedButton.icon(
-                  autofocus: true,
-                  icon: Icon(Icons.delete_outlined),
-                  label: Text("Delete"),
-                  style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-                  onPressed: on_delete,
-                  // style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                ),
-              ),
-            ],
-          ),
-        ),
+      // * ប៊ូតុង Delete
+      OutlinedButton.icon(
+        autofocus: true,
+        icon: Icon(Icons.delete_outlined),
+        label: Text("Delete"),
+        style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+        onPressed: on_delete,
+        // style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
       ),
-    );
+
+      SizedBox(height: height - 100),
+    ]);
   }
 
   void on_delete() async {
     try {
       //
-      print(schema.data[schema.ID]?["value"]);
-      tmp = await dio.post(
-        "$PATH/delete", //
-        data: {
-          schema.ID: schema.data[schema.ID]?["value"], //
-        },
-      );
+      tmp = await dio.post("$PATH/delete", data: {"_id": widget.id});
 
       //
-      snackbar.view(context: context, message: "Success", color: Colors.green);
+      sb.view(context: context, message: "Success", color: Colors.green);
 
       //
       Navigator.pop(context, tmp.data);
@@ -83,13 +84,19 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 }
 
 class Main_ extends StatefulWidget {
-  const Main_({super.key});
+  const Main_({
+    super.key, //
+    required this.id, //
+  });
+
+  final String id;
+
   @override
   State<Main_> createState() => _Main_State();
 }
@@ -99,7 +106,7 @@ void main() {
     MaterialApp(
       title: "Development", //
       theme: theme.data(), //
-      home: Main_(),
+      home: Main_(id: "1"),
       debugShowCheckedModeBanner: false,
     ),
   );

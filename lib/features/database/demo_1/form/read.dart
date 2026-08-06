@@ -1,18 +1,39 @@
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 
+import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
+import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
 import "../config.dart";
-import "../schema.g.dart" as schema;
+import "../schema.g.dart" as sm;
 
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
 
+  void init() async {
+    try {
+      sm.clear();
+
+      tmp = await dio.post(
+        "$PATH/read_id", //
+        data: {sm.ID: widget.id},
+      );
+      for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
+
+      setState(() {});
+      //
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -33,7 +54,7 @@ class _Main_State extends State<Main_> {
           child: Column(
             children: [
               SizedBox(height: 8),
-              for (var e in schema.data.entries)
+              for (var e in sm.data.entries)
                 (() {
                   if (e.value["type"] == "string") {
                     String value = "";
@@ -65,11 +86,12 @@ class _Main_State extends State<Main_> {
                   }
 
                   //
+                  // * ថ្ងៃខែឆ្នាំ និង ម៉ោង
                   if (e.value["type"] == "date-time") {
                     String value = "";
                     if (e.value["value"] != null) {
                       final tmp = DateTime.tryParse(e.value["value"].toString());
-                      if (tmp != null) value = DateFormat(DATE_FORMAT).format(tmp);
+                      if (tmp != null) value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
                     }
                     return Container(
                       width: 600,
@@ -100,16 +122,30 @@ class _Main_State extends State<Main_> {
                   //
                   return SizedBox();
                 })(),
+
+              SizedBox(height: height - 100),
             ],
           ),
         ),
       ),
     );
   }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
 }
 
 class Main_ extends StatefulWidget {
-  const Main_({super.key});
+  const Main_({
+    super.key, //
+    required this.id,
+  });
+
+  final String id;
+
   @override
   State<Main_> createState() => _Main_State();
 }
@@ -119,7 +155,7 @@ void main() {
     MaterialApp(
       title: "Development", //
       theme: theme.data(), //
-      home: Main_(),
+      home: Main_(id: "1"),
       debugShowCheckedModeBanner: false,
     ),
   );

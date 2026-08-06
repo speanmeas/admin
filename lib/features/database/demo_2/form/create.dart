@@ -1,19 +1,19 @@
-import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
+import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
-import "package:intl/intl.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
+import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/light.dart" as theme;
-import "package:speanmeas/core/dialog/datetime.dart" as datetime_picker;
-import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
-import "package:speanmeas/core/widget/show_data.dart" as show_data;
+import "package:speanmeas/core/dialog/datetime.dart" as dt_picker;
+import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/core/widget/show_data.dart" as sd;
 
 import "../config.dart";
 import "../schema.g.dart" as sm;
 
-import "package:speanmeas/features/database/nationality/schema.g.dart" as n_schema_r;
+import "package:speanmeas/features/database/nationality/schema.g.dart" as sm_nt;
 import "../widget/nationality_search.dart" as n_search;
 
 Widget _layout(List<Widget> children) {
@@ -83,9 +83,9 @@ class _Main_State extends State<Main_> {
             return n_search.Main_(
               controller: c_nationality,
               onChanged: (v) {
-                e.value["value"] = v[n_schema_r.ID];
-                sm.data[sm.NATIONALITY_NAME]!["value"] = v[n_schema_r.NAME];
-                sm.data[sm.NATIONALITY_NOTE]!["value"] = v[n_schema_r.NOTE];
+                e.value["value"] = v[sm_nt.ID];
+                sm.data[sm.NATIONALITY_NAME]!["value"] = v[sm_nt.NAME];
+                sm.data[sm.NATIONALITY_NOTE]!["value"] = v[sm_nt.NOTE];
                 setState(() {});
               },
               onCleared: () {
@@ -101,7 +101,7 @@ class _Main_State extends State<Main_> {
           if (e.value["lock"] == true) {
             String value = "";
             if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
-            return show_data.Main_(
+            return sd.Main_(
               title: e.value["title"], //
               value: value,
             );
@@ -182,7 +182,7 @@ class _Main_State extends State<Main_> {
                 ),
               ),
               onTap: () async {
-                DateTime? datetime = await datetime_picker.view(context, initial_datetime: init);
+                DateTime? datetime = await dt_picker.view(context, initial_datetime: init);
                 if (datetime == null) return;
                 e.value["value"] = datetime.toIso8601String();
                 setState(() {});
@@ -261,12 +261,12 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, tmp.data[0]);
 
       //
-      snackbar.view(context: context, message: "Success", color: Colors.green);
+      sb.view(context: context, message: "Success", color: Colors.green);
 
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 }

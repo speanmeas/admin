@@ -9,7 +9,7 @@ import "package:speanmeas/core/theme/light.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
 
 import "config.dart";
-import "schema.g.dart" as schema;
+import "schema.g.dart" as sm;
 
 import "form/create.dart" as create;
 import "form/read.dart" as read;
@@ -32,16 +32,6 @@ class _Main_State extends State<Main_> {
   int load_request_id = 0;
 
   int get total_pages => row_total == 0 ? 1 : (row_total + LIMIT - 1) ~/ LIMIT;
-
-  void on_grid_changed() {
-    setState(() {});
-  }
-
-  @override
-  void dispose() {
-    state_manager?.removeListener(on_grid_changed);
-    super.dispose();
-  }
 
   @override
   void initState() {
@@ -130,7 +120,7 @@ class _Main_State extends State<Main_> {
         for (var d in data)
           PlutoRow(
             cells: {
-              for (var e in schema.data.entries) //
+              for (var e in sm.data.entries) //
                 e.key: PlutoCell(
                   value: e.key.contains("password")
                       ? "**********" //
@@ -324,7 +314,7 @@ class _Main_State extends State<Main_> {
             child: PlutoGrid(
               rows: [],
               columns: [
-                for (var e in schema.data.entries)
+                for (var e in sm.data.entries)
                   PlutoColumn(
                     field: e.key, //
                     title: e.value["title"]!,
@@ -351,7 +341,7 @@ class _Main_State extends State<Main_> {
               ),
               onLoaded: (event) {
                 state_manager = event.stateManager;
-                state_manager?.addListener(on_grid_changed);
+                state_manager?.addListener(() => setState(() {}));
               },
             ),
           ),
@@ -511,11 +501,8 @@ class _Main_State extends State<Main_> {
   void on_create() async {
     try {
       //
-      schema.clear();
-
-      //
-      final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
-      if (v == null) return;
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
+      if (tmp == null) return;
 
       // * លុប sort + filter
       final sorted_column = state_manager?.getSortedColumn;
@@ -540,9 +527,6 @@ class _Main_State extends State<Main_> {
   void on_read() async {
     try {
       //
-      schema.clear();
-
-      //
       final row = state_manager?.currentRow;
       if (row == null) {
         sb.view(context: context, message: "Please select a row.", color: Colors.red);
@@ -550,12 +534,8 @@ class _Main_State extends State<Main_> {
       }
 
       //
-      for (var e in schema.data.entries) {
-        e.value["value"] = cell_to_data(data: row.cells[e.key]?.value, type: e.value["type"]);
-      }
-
-      //
-      Navigator.push(context, MaterialPageRoute(builder: (context) => read.Main_()));
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => read.Main_(id: row.cells[sm.ID]!.value.toString())));
+      if (tmp == null) return;
 
       //
     } catch (e, st) {
@@ -568,9 +548,6 @@ class _Main_State extends State<Main_> {
   void on_update() async {
     try {
       //
-      schema.clear();
-
-      //
       final row = state_manager?.currentRow;
       if (row == null) {
         sb.view(context: context, message: "Please select a row.", color: Colors.red);
@@ -578,13 +555,8 @@ class _Main_State extends State<Main_> {
       }
 
       //
-      for (var e in schema.data.entries) {
-        e.value["value"] = cell_to_data(data: row.cells[e.key]?.value, type: e.value["type"]);
-      }
-
-      //
-      final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_()));
-      if (v == null) return;
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_(id: row.cells[sm.ID]!.value.toString())));
+      if (tmp == null) return;
 
       //
       load_page(page);
@@ -600,9 +572,6 @@ class _Main_State extends State<Main_> {
   void on_delete() async {
     try {
       //
-      schema.clear();
-
-      //
       final row = state_manager?.currentRow;
       if (row == null) {
         sb.view(context: context, message: "Please select a row.", color: Colors.red);
@@ -610,11 +579,8 @@ class _Main_State extends State<Main_> {
       }
 
       //
-      schema.data[schema.ID]?["value"] = row.cells[schema.ID]!.value;
-
-      //
-      final value = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_()));
-      if (value == null) return;
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_(id: row.cells[sm.ID]!.value.toString())));
+      if (tmp == null) return;
 
       //
       row_total = row_total - 1;
