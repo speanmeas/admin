@@ -13,6 +13,38 @@ import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 import "../widget/guest_search.dart" as g_search;
 import "../widget/number_select.dart" as n_select;
 
+Widget _layout(List<Widget> children) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(
+        "Room Payment", //
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+
+      centerTitle: false,
+      toolbarHeight: 40,
+      titleSpacing: 0,
+
+      // Add a divider at the bottom of the app bar
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(1), //
+        child: Divider(height: 1, color: Colors.black),
+      ),
+    ),
+    body: SingleChildScrollView(
+      child: Center(
+        child: Container(
+          width: 600,
+          padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
+          child: Column(
+            children: children, //
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
@@ -254,38 +286,6 @@ class _Main_State extends State<Main_> {
   }
 
   //
-}
-
-Widget _layout(List<Widget> children) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(
-        "Room Payment", //
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      ),
-
-      centerTitle: false,
-      toolbarHeight: 40,
-      titleSpacing: 0,
-
-      // Add a divider at the bottom of the app bar
-      bottom: PreferredSize(
-        preferredSize: Size.fromHeight(1), //
-        child: Divider(height: 1, color: Colors.black),
-      ),
-    ),
-    body: SingleChildScrollView(
-      child: Center(
-        child: Container(
-          width: 600,
-          padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
-          child: Column(
-            children: children, //
-          ),
-        ),
-      ),
-    ),
-  );
 }
 
 //

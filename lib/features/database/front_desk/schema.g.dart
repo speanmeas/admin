@@ -278,6 +278,48 @@ Map<String, Map<String, dynamic>> data = {
     "hide": false,
     "lock": true,
     "value": null
+  },
+  "broke_note": {
+    "type": "string",
+    "title": "Broke Note",
+    "hide": false,
+    "lock": false,
+    "value": null
+  },
+  "broke_by": {
+    "type": "string",
+    "title": "Broke By",
+    "hide": false,
+    "lock": true,
+    "value": null
+  },
+  "broke_at": {
+    "type": "date-time",
+    "title": "Broke At",
+    "hide": false,
+    "lock": true,
+    "value": null
+  },
+  "fix_note": {
+    "type": "string",
+    "title": "Fix Note",
+    "hide": false,
+    "lock": false,
+    "value": null
+  },
+  "fix_by": {
+    "type": "string",
+    "title": "Fix By",
+    "hide": false,
+    "lock": true,
+    "value": null
+  },
+  "fix_at": {
+    "type": "date-time",
+    "title": "Fix At",
+    "hide": false,
+    "lock": true,
+    "value": null
   }
 };
 
@@ -321,5 +363,11 @@ final CHECK_OUT_AT = "check_out_at";
 final CLEAN_NOTE = "clean_note";
 final CLEAN_BY = "clean_by";
 final CLEAN_AT = "clean_at";
+final BROKE_NOTE = "broke_note";
+final BROKE_BY = "broke_by";
+final BROKE_AT = "broke_at";
+final FIX_NOTE = "fix_note";
+final FIX_BY = "fix_by";
+final FIX_AT = "fix_at";
 
 void clear() { for (var k in data.keys) data[k]!["value"] = null; }
