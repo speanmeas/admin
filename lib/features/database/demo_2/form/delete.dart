@@ -14,6 +14,7 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -56,6 +57,8 @@ class _Main_State extends State<Main_> {
                   // style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 ),
               ),
+
+              SizedBox(height: height - 100),
             ],
           ),
         ),

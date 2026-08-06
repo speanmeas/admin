@@ -34,38 +34,7 @@ class Main extends StatelessWidget {
       title: "$TITLE Admin", //
       theme: theme.data(),
       debugShowCheckedModeBanner: false,
-      // home: Layout_Dashboard_(),
-      home: Main_(),
+      home: loading.Main_(),
     );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  const Main_({super.key});
-
-  @override
-  State<Main_> createState() => _Main_State();
-}
-
-class _Main_State extends State<Main_> {
-  //
-  dynamic tmp;
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  void init() async {
-    final info = await PackageInfo.fromPlatform();
-    glob.VERSION = "${info.version}+${info.buildNumber}";
-    glob.notify();
-    print("VERSION: ${glob.VERSION}");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return loading.Main_();
   }
 }
