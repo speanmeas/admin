@@ -4,14 +4,15 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_light.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
-import "../schema.g.dart" as sm;
+import "../schema.g.dart" as sm_fd;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Revenue Payment", //
+        "Add Revenue Payment", //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -19,7 +20,6 @@ Widget _layout(List<Widget> children) {
       toolbarHeight: 40,
       titleSpacing: 0,
 
-      // Add a divider at the bottom of the app bar
       bottom: PreferredSize(
         preferredSize: Size.fromHeight(1), //
         child: Divider(height: 1, color: Colors.black),
@@ -52,21 +52,22 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     try {
-      sm.clear();
+      sm_fd.clear();
+      sm_r.clear();
 
-      tmp = await dio.post(
-        ep.FRONT_DESK_READ_ID,
-        data: {
-          sm.ID: widget.front_desk_id, //
-        },
-      );
+      //
+      tmp = await dio.post(ep.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
+      for (var e in sm_r.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
+      //
+      tmp = await dio.post(ep.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_r.data[sm_r.FRONT_DESK_ID]!["value"]});
+      for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      c_price.text = sm.data[sm.REVENUE_PRICE]?["value"]?.toString() ?? "";
-      c_pay.text = sm.data[sm.REVENUE_PAY]?["value"]?.toString() ?? "";
-      c_change.text = sm.data[sm.REVENUE_RETURN]?["value"]?.toString() ?? "";
-      c_note.text = sm.data[sm.REVENUE_PAY_NOTE]?["value"]?.toString() ?? "";
+      //
+      c_price.text = sm_fd.data[sm_fd.REVENUE_PRICE]?["value"]?.toString() ?? "";
+      c_pay.text = sm_fd.data[sm_fd.REVENUE_PAY]?["value"]?.toString() ?? "";
+      c_change.text = sm_fd.data[sm_fd.REVENUE_RETURN]?["value"]?.toString() ?? "";
+      c_note.text = sm_fd.data[sm_fd.REVENUE_PAY_NOTE]?["value"]?.toString() ?? "";
 
       setState(() {});
       //
@@ -148,9 +149,8 @@ class _Main_State extends State<Main_> {
           ),
         ],
       ),
-      SizedBox(height: 8),
 
-      // additional information
+      //
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -173,8 +173,6 @@ class _Main_State extends State<Main_> {
 
   void on_pay() async {
     try {
-      //
-
       double price = double.tryParse(c_price.text) ?? 0;
       double pay = double.tryParse(c_pay.text) ?? 0;
       double change = double.tryParse(c_change.text) ?? 0;
@@ -182,18 +180,16 @@ class _Main_State extends State<Main_> {
       await dio.post(
         ep.FRONT_DESK_FORM_PAY_REVENUE,
         data: {
-          sm.ID: widget.front_desk_id, //
-          sm.REVENUE_PRICE: price, //
-          sm.REVENUE_PAY: pay, //
-          sm.REVENUE_RETURN: change, //
-          sm.REVENUE_PAY_NOTE: c_note.text, //
+          sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //
+          sm_fd.REVENUE_PRICE: price, //
+          sm_fd.REVENUE_PAY: pay, //
+          sm_fd.REVENUE_RETURN: change, //
+          sm_fd.REVENUE_PAY_NOTE: c_note.text, //
         },
       );
 
       Navigator.pop(context, true);
-
       sb.view(context: context, message: "Payment Successful", color: Colors.green);
-
       //
     } catch (e, st) {
       print(st);
@@ -214,10 +210,10 @@ class _Main_State extends State<Main_> {
 class Main_ extends StatefulWidget {
   const Main_({
     super.key,
-    this.front_desk_id, //
+    this.room_id, //
   });
 
-  final String? front_desk_id;
+  final String? room_id;
 
   @override
   State<Main_> createState() => _Main_State();

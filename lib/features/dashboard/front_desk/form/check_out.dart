@@ -4,9 +4,41 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_light.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
-
-import "../schema.g.dart" as sm;
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
+
+import "../schema.g.dart" as sm_fd;
+
+Widget _layout(List<Widget> children) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(
+        "Check Out", //
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+
+      centerTitle: false,
+      toolbarHeight: 40,
+      titleSpacing: 0,
+
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(1), //
+        child: Divider(height: 1, color: Colors.black),
+      ),
+    ),
+    body: SingleChildScrollView(
+      child: Center(
+        child: Container(
+          width: 600,
+          padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
+          child: Column(
+            spacing: 8,
+            children: children, //
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
 class _Main_State extends State<Main_> {
   //
@@ -16,28 +48,24 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     try {
-      sm.clear();
+      sm_fd.clear();
       sm_r.clear();
 
-      tmp = await dio.post(
-        ep.FRONT_DESK_READ_ID,
-        data: {
-          sm.ID: widget.front_desk_id, //
-        },
-      );
+      tmp = await dio.post(ep.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
+      for (var e in sm_r.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      sm.clear();
-      for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
+      if (sm_r.data[sm_r.FRONT_DESK_ID]!["value"] != null) {
+        tmp = await dio.post(ep.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_r.data[sm_r.FRONT_DESK_ID]!["value"]});
+        for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
+      }
 
+      c_note.text = sm_fd.data[sm_fd.CHECK_OUT_NOTE]?["value"]?.toString() ?? "";
+      setState(() {});
       //
     } catch (e, st) {
       print(st);
       sb.view(context: context, message: e.toString(), color: Colors.red);
     }
-
-    c_note.text = sm.data[sm.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
-
-    setState(() {});
   }
 
   @override
@@ -54,8 +82,6 @@ class _Main_State extends State<Main_> {
         maxLines: 4,
         onChanged: (v) => setState(() {}), //
       ),
-
-      SizedBox(height: 8),
 
       // additional information
       Row(
@@ -76,24 +102,23 @@ class _Main_State extends State<Main_> {
     try {
       //
       await dio.post(
-        ep.FRONT_DESK_FORM_CHECK_OUT,
-        data: {
-          sm.ID: widget.front_desk_id, //
-          sm.CHECK_OUT_NOTE: c_note.text, //
-        },
-      );
-
-      await dio.post(
         ep.ROOM_UPDATE, //
         data: {
-          sm_r.ID: sm.data[sm.ROOM_ID]!["value"], //
+          sm_r.ID: sm_r.data[sm_r.ID]!["value"], //
           sm_r.STATUS: "Pending Clean", //
         },
       );
 
-      Navigator.pop(context, true);
+      await dio.post(
+        ep.FRONT_DESK_FORM_CHECK_OUT,
+        data: {
+          sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //
+          sm_fd.CHECK_OUT_NOTE: c_note.text, //
+        },
+      );
 
-      sb.view(context: context, message: "Check Out Successful", color: Colors.green);
+      Navigator.pop(context, true);
+      sb.view(context: context, message: "Success", color: Colors.green);
 
       //
     } catch (e, st) {
@@ -111,46 +136,14 @@ class _Main_State extends State<Main_> {
   //
 }
 
-Widget _layout(List<Widget> children) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(
-        "Check Out", //
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      ),
-
-      centerTitle: false,
-      toolbarHeight: 40,
-      titleSpacing: 0,
-
-      // Add a divider at the bottom of the app bar
-      bottom: PreferredSize(
-        preferredSize: Size.fromHeight(1), //
-        child: Divider(height: 1, color: Colors.black),
-      ),
-    ),
-    body: SingleChildScrollView(
-      child: Center(
-        child: Container(
-          width: 600,
-          padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
-          child: Column(
-            children: children, //
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
 //
 class Main_ extends StatefulWidget {
   const Main_({
     super.key,
-    this.front_desk_id, //
+    this.room_id, //
   });
 
-  final String? front_desk_id;
+  final String? room_id;
 
   @override
   State<Main_> createState() => _Main_State();

@@ -4,9 +4,9 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_light.dart" as theme;
 import "package:speanmeas/core/widget/snackbar.dart" as sb;
-
-import "../schema.g.dart" as sm;
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
+
+import "../schema.g.dart" as sm_fd;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -15,12 +15,9 @@ Widget _layout(List<Widget> children) {
         "Broke", //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
-
       centerTitle: false,
       toolbarHeight: 40,
       titleSpacing: 0,
-
-      // Add a divider at the bottom of the app bar
       bottom: PreferredSize(
         preferredSize: Size.fromHeight(1), //
         child: Divider(height: 1, color: Colors.black),
@@ -32,6 +29,7 @@ Widget _layout(List<Widget> children) {
           width: 600,
           padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
           child: Column(
+            spacing: 8,
             children: children, //
           ),
         ),
@@ -47,10 +45,18 @@ class _Main_State extends State<Main_> {
   final c_note = TextEditingController();
 
   void init() async {
-    sm.clear();
+    sm_fd.clear();
+    sm_r.clear();
 
-    c_note.text = sm.data[sm.BROKE_NOTE]?["value"]?.toString() ?? "";
+    tmp = await dio.post(ep.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
+    for (var e in sm_r.data.entries) e.value["value"] = tmp.data[0][e.key];
 
+    if (sm_r.data[sm_r.FRONT_DESK_ID]!["value"] != null) {
+      tmp = await dio.post(ep.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_r.data[sm_r.FRONT_DESK_ID]!["value"]});
+      for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
+    }
+
+    c_note.text = sm_fd.data[sm_fd.BROKE_NOTE]?["value"]?.toString() ?? "";
     setState(() {});
   }
 
@@ -88,20 +94,20 @@ class _Main_State extends State<Main_> {
 
   void on_broke() async {
     try {
-      tmp = await dio.post(
-        ep.FRONT_DESK_FORM_BROKE, // create
+      await dio.post(
+        ep.ROOM_UPDATE, //
         data: {
-          sm.ROOM_ID: widget.room_id, //
-          sm.BROKE_NOTE: c_note.text,
+          sm_r.ID: sm_r.data[sm_r.ID]!["value"], //
+          sm_r.STATUS: "Pending Fix", //
+          sm_r.FRONT_DESK_ID: tmp.data[0][sm_fd.ID], //
         },
       );
 
       await dio.post(
-        ep.ROOM_UPDATE, //
+        ep.FRONT_DESK_FORM_BROKE,
         data: {
-          sm_r.ID: widget.room_id, //
-          sm_r.STATUS: "Pending Fix", //
-          sm_r.FRONT_DESK_ID: tmp.data[0][sm.ID], //
+          sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //
+          sm_fd.BROKE_NOTE: c_note.text, //
         },
       );
 

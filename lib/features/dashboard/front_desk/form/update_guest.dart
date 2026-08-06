@@ -3,40 +3,72 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_light.dart" as theme;
-import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
+import "package:speanmeas/core/widget/snackbar.dart" as sb;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
 import "package:speanmeas/features/database/guest/schema.g.dart" as sm_g;
+import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
-import "../schema.g.dart" as sm;
+import "../schema.g.dart" as sm_fd;
 import "../widget/guest_search.dart" as g_search;
+
+Widget _layout(List<Widget> children) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(
+        "Update Guest", //
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+
+      centerTitle: false,
+      toolbarHeight: 40,
+      titleSpacing: 0,
+
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(1), //
+        child: Divider(height: 1, color: Colors.black),
+      ),
+    ),
+    body: SingleChildScrollView(
+      child: Center(
+        child: Container(
+          width: 600,
+          padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
+          child: Column(
+            spacing: 8,
+            children: children, //
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-
   final c_g_search = TextEditingController();
 
   void init() async {
     try {
-      sm.clear();
+      sm_fd.clear();
+      sm_r.clear();
       sm_g.clear();
 
-      tmp = await dio.post(
-        ep.FRONT_DESK_READ_ID,
-        data: {
-          sm.ID: widget.front_desk_id, //
-        },
-      );
+      //
+      tmp = await dio.post(ep.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
+      for (var e in sm_r.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
+      //
+      tmp = await dio.post(ep.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_r.data[sm_r.FRONT_DESK_ID]!["value"]});
+      for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      c_g_search.text = sm.data[sm.GUEST_PHONE_NUMBER]?["value"]?.toString() ?? "";
-
+      //
+      c_g_search.text = sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"]?.toString() ?? "";
       setState(() {});
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -46,67 +78,64 @@ class _Main_State extends State<Main_> {
       g_search.Main_(
         controller: c_g_search,
         onChanged: (v) {
-          sm.data[sm.GUEST_ID]?["value"] = v[sm_g.ID];
-          sm.data[sm.GUEST_FULL_NAME]?["value"] = v[sm_g.FULL_NAME];
-          sm.data[sm.GUEST_PHONE_NUMBER]?["value"] = v[sm_g.PHONE_NUMBER];
-          sm.data[sm.GUEST_GENDER]?["value"] = v[sm_g.GENDER];
-          sm.data[sm.GUEST_NATIONALITY]?["value"] = v[sm_g.NATIONALITY];
+          sm_fd.data[sm_fd.GUEST_ID]?["value"] = v[sm_g.ID];
+          sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"] = v[sm_g.FULL_NAME];
+          sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"] = v[sm_g.PHONE_NUMBER];
+          sm_fd.data[sm_fd.GUEST_GENDER]?["value"] = v[sm_g.GENDER];
+          sm_fd.data[sm_fd.GUEST_NATIONALITY]?["value"] = v[sm_g.NATIONALITY];
           setState(() {});
         },
         onCleared: () {
-          sm.data[sm.GUEST_ID]?["value"] = null;
-          sm.data[sm.GUEST_FULL_NAME]?["value"] = null;
-          sm.data[sm.GUEST_PHONE_NUMBER]?["value"] = null;
-          sm.data[sm.GUEST_GENDER]?["value"] = null;
-          sm.data[sm.GUEST_NATIONALITY]?["value"] = null;
+          sm_fd.data[sm_fd.GUEST_ID]?["value"] = null;
+          sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"] = null;
+          sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"] = null;
+          sm_fd.data[sm_fd.GUEST_GENDER]?["value"] = null;
+          sm_fd.data[sm_fd.GUEST_NATIONALITY]?["value"] = null;
           setState(() {});
         },
       ),
 
       (() {
         String value = "";
-        if (sm.data[sm.GUEST_FULL_NAME]?["value"] != null) //
-          value = sm.data[sm.GUEST_FULL_NAME]?["value"].toString() ?? "";
-
+        if (sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"] != null) //
+          value = sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"].toString() ?? "";
         return show_data.Main_(
-          title: sm.data[sm.GUEST_FULL_NAME]?["title"] ?? "", //
+          title: sm_fd.data[sm_fd.GUEST_FULL_NAME]?["title"] ?? "", //
           value: value,
         );
       })(),
 
       (() {
         String value = "";
-        if (sm.data[sm.GUEST_PHONE_NUMBER]?["value"] != null) //
-          value = sm.data[sm.GUEST_PHONE_NUMBER]?["value"].toString() ?? "";
+        if (sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"] != null) //
+          value = sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"].toString() ?? "";
         return show_data.Main_(
-          title: sm.data[sm.GUEST_PHONE_NUMBER]?["title"] ?? "", //
+          title: sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["title"] ?? "", //
           value: value,
         );
       })(),
 
       (() {
         String value = "";
-        if (sm.data[sm.GUEST_GENDER]?["value"] != null) //
-          value = sm.data[sm.GUEST_GENDER]?["value"].toString() ?? "";
+        if (sm_fd.data[sm_fd.GUEST_GENDER]?["value"] != null) //
+          value = sm_fd.data[sm_fd.GUEST_GENDER]?["value"].toString() ?? "";
         return show_data.Main_(
-          title: sm.data[sm.GUEST_GENDER]?["title"] ?? "", //
+          title: sm_fd.data[sm_fd.GUEST_GENDER]?["title"] ?? "", //
           value: value,
         );
       })(),
 
       (() {
         String value = "";
-        if (sm.data[sm.GUEST_NATIONALITY]?["value"] != null) //
-          value = sm.data[sm.GUEST_NATIONALITY]?["value"].toString() ?? "";
+        if (sm_fd.data[sm_fd.GUEST_NATIONALITY]?["value"] != null) //
+          value = sm_fd.data[sm_fd.GUEST_NATIONALITY]?["value"].toString() ?? "";
         return show_data.Main_(
-          title: sm.data[sm.GUEST_NATIONALITY]?["title"] ?? "", //
+          title: sm_fd.data[sm_fd.GUEST_NATIONALITY]?["title"] ?? "", //
           value: value,
         );
       })(),
 
-      SizedBox(height: 8),
-
-      // additional information
+      //
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -123,22 +152,20 @@ class _Main_State extends State<Main_> {
   void on_update() async {
     try {
       //
-      tmp = await dio.post(
+      await dio.post(
         ep.FRONT_DESK_UPDATE, //
         data: {
-          sm.ID: widget.front_desk_id, //
-          sm.GUEST_ID: sm.data[sm.GUEST_ID]?["value"],
+          sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //
+          sm_fd.GUEST_ID: sm_fd.data[sm_fd.GUEST_ID]?["value"],
         },
       );
 
       Navigator.pop(context, true);
-
-      snackbar.view(context: context, message: "Update Successful", color: Colors.green);
-
+      sb.view(context: context, message: "Update Successful", color: Colors.green);
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 
@@ -151,46 +178,14 @@ class _Main_State extends State<Main_> {
   //
 }
 
-Widget _layout(List<Widget> children) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(
-        "Update Guest", //
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      ),
-
-      centerTitle: false,
-      toolbarHeight: 40,
-      titleSpacing: 0,
-
-      // Add a divider at the bottom of the app bar
-      bottom: PreferredSize(
-        preferredSize: Size.fromHeight(1), //
-        child: Divider(height: 1, color: Colors.black),
-      ),
-    ),
-    body: SingleChildScrollView(
-      child: Center(
-        child: Container(
-          width: 600,
-          padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
-          child: Column(
-            children: children, //
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
 //
 class Main_ extends StatefulWidget {
   const Main_({
     super.key,
-    this.front_desk_id, //
+    this.room_id, //
   });
 
-  final String? front_desk_id;
+  final String? room_id;
 
   @override
   State<Main_> createState() => _Main_State();

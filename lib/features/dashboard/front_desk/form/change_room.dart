@@ -7,7 +7,7 @@ import "package:speanmeas/core/widget/snackbar.dart" as sb;
 import "package:speanmeas/core/widget/select_dynamic.dart" as select_dnm;
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
-import "../schema.g.dart" as sm;
+import "../schema.g.dart" as sm_fd;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -52,21 +52,24 @@ class _Main_State extends State<Main_> {
 
   List<Map<String, dynamic>> rooms = [];
 
-  String? from_room_id;
-
   void init() async {
     try {
-      sm.clear();
+      sm_fd.clear();
       sm_r.clear();
 
-      tmp = await dio.post(ep.FRONT_DESK_READ_ID, data: {sm.ID: widget.front_desk_id});
-      for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
-      from_room_id = sm.data[sm.ROOM_ID]!["value"]?.toString();
+      //
+      tmp = await dio.post(ep.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
+      for (var e in sm_r.data.entries) e.value["value"] = tmp.data[0][e.key];
 
+      //
+      tmp = await dio.post(ep.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_r.data[sm_r.FRONT_DESK_ID]!["value"]});
+      for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
+
+      //
       tmp = await dio.post(ep.ROOM_READ);
       rooms = List<Map<String, dynamic>>.from(tmp.data);
 
-      c_note.text = sm.data[sm.CHANGE_ROOM_NOTE]?["value"]?.toString() ?? "";
+      c_note.text = sm_fd.data[sm_fd.CHANGE_ROOM_NOTE]?["value"]?.toString() ?? "";
 
       setState(() {});
       //
@@ -92,16 +95,6 @@ class _Main_State extends State<Main_> {
           }
           return options;
         })(),
-        onChanged: (value) {
-          setState(() {});
-        },
-      ),
-
-      //
-      select_dnm.Main_(
-        controller: c_from_room_status,
-        title: "Old Room Status:", //
-        options: ["Available", "Pending Clean"],
         onChanged: (value) {
           setState(() {});
         },
@@ -135,7 +128,7 @@ class _Main_State extends State<Main_> {
   }
 
   bool get can_change {
-    if (c_from_room_status.text.isEmpty) return false;
+    // if (c_from_room_status.text.isEmpty) return false;
     if (c_to_room.text.isEmpty) return false;
     return true;
   }
@@ -143,7 +136,7 @@ class _Main_State extends State<Main_> {
   void on_change_room() async {
     try {
       //
-
+      String? from_room_id = sm_fd.data[sm_fd.ROOM_ID]!["value"]?.toString();
       String? to_room_id;
       for (var r in rooms) {
         if (r[sm_r.NUMBER]?.toString() == c_to_room.text) {
@@ -152,41 +145,41 @@ class _Main_State extends State<Main_> {
         }
       }
 
-      // THINK
+      // validation
       if (from_room_id == null) throw "From Room ID is null";
       if (to_room_id == null) throw "To Room ID is null";
 
-      // TODO: update old room
+      //
       await dio.post(
         ep.ROOM_UPDATE, //
         data: {
           sm_r.ID: from_room_id, //
-          sm_r.STATUS: c_from_room_status.text, //
-          sm_r.FRONT_DESK_ID: null, //
+          sm_r.STATUS: "Pending Clean", //
+          sm_r.FRONT_DESK_ID: null, // * ចំណាំ៖ ការពារការកែប្រែថ្មី
         },
       );
 
-      // TODO: update new room
+      //
       await dio.post(
         ep.ROOM_UPDATE, //
         data: {
           sm_r.ID: to_room_id, //
-          sm_r.STATUS: "Available", //
-          sm_r.FRONT_DESK_ID: null, //
+          sm_r.STATUS: "Pending Pay", // * ចំណាំ៖ ត្រឡប់ទៅ Pending Pay ដើម្បីបង្ហាញថាអតិថិជនត្រូវបង់ប្រាក់សម្រាប់បន្ទប់ថ្មី
+          sm_r.FRONT_DESK_ID: widget.room_id, //
         },
       );
 
-      // TODO: update front desk
+      //
       tmp = await dio.post(
         ep.FRONT_DESK_FORM_CHANGE_ROOM,
         data: {
-          sm.ID: widget.front_desk_id, //
-          sm.ROOM_ID: to_room_id, //
-          sm.CHANGE_ROOM_NOTE: c_note.text, //
+          sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //
+          sm_fd.ROOM_ID: to_room_id, //
+          sm_fd.CHANGE_ROOM_NOTE: c_note.text, //
         },
       );
-      // Navigator.pop(context, true);
 
+      Navigator.pop(context, true);
       sb.view(context: context, message: "Clean Successful", color: Colors.green);
 
       //
@@ -209,10 +202,10 @@ class _Main_State extends State<Main_> {
 class Main_ extends StatefulWidget {
   const Main_({
     super.key,
-    this.front_desk_id, //
+    this.room_id, //
   });
 
-  final String? front_desk_id;
+  final String? room_id;
 
   @override
   State<Main_> createState() => _Main_State();
