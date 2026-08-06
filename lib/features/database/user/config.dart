@@ -1,10 +1,10 @@
-String HEADER = "User";
+const String HEADER = "User";
 
 String get PATH => "/${HEADER.toLowerCase().replaceAll(" ", "_")}";
 
-final DATE_FORMAT = "EEEE dd-MM-yyyy h:mm a";
+const String DATE_FORMAT = "EEEE dd-MM-yyyy h:mm a";
 
-int LIMIT = 1000;
+const int LIMIT = 1000;
 
-String KEY = "created_at";
-int ORDER = -1;
+const String KEY = "created_at";
+const int ORDER = -1;

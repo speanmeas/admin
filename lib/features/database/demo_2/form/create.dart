@@ -64,6 +64,8 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
+    sm.clear();
+
     sm.data[sm.NATIONALITY_NAME]!["value"] = "Cambodian";
 
     if (sm.data[sm.NATIONALITY_NAME]!["value"] != null) //

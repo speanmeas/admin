@@ -57,15 +57,25 @@ class _Main_State extends State<Main_> {
 
   final c_nationality = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
   void init() async {
-    if (sm.data[sm.NATIONALITY_NAME]!["value"] != null) //
-      c_nationality.text = sm.data[sm.NATIONALITY_NAME]!["value"];
+    try {
+      sm.clear();
+
+      tmp = await dio.post(
+        "$PATH/read_id", //
+        data: {sm.ID: widget.id},
+      );
+      for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
+
+      if (sm.data[sm.NATIONALITY_NAME]!["value"] != null) //
+        c_nationality.text = sm.data[sm.NATIONALITY_NAME]!["value"];
+
+      setState(() {});
+      //
+    } catch (e, st) {
+      print(st);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
+    }
   }
 
   @override
@@ -241,16 +251,14 @@ class _Main_State extends State<Main_> {
     try {
       // * រៀបចំ payload
       var payload = {};
-      for (var e in sm.data.entries) payload[e.key] = e.value["value"];
+      for (var e in sm.data.entries) //
+        payload[e.key] = e.value["value"];
 
       //
-      final r = await dio.post(
-        "$PATH/update", //
-        data: {...payload},
-      );
+      tmp = await dio.post("$PATH/update", data: {...payload});
 
       //
-      Navigator.pop(context, r.data);
+      Navigator.pop(context, tmp.data[0]);
 
       //
       sb.view(context: context, message: "Success", color: Colors.green);
@@ -261,10 +269,21 @@ class _Main_State extends State<Main_> {
       sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
 }
 
 class Main_ extends StatefulWidget {
-  const Main_({super.key});
+  const Main_({
+    super.key, //
+    required this.id, //
+  });
+
+  final String id;
 
   @override
   State<Main_> createState() => _Main_State();
@@ -275,7 +294,7 @@ void main() {
     MaterialApp(
       title: "Development", //
       theme: theme.data(), //
-      home: Main_(),
+      home: Main_(id: "1"),
       debugShowCheckedModeBanner: false,
     ),
   );
