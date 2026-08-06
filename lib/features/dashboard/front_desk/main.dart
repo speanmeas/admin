@@ -10,7 +10,6 @@ import "package:speanmeas/core/theme/light.dart" as theme; // ignore: unused_imp
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
 import "config.dart";
-
 import "schema.g.dart" as sm_fd;
 
 import "form/detail.dart" as detail;
@@ -26,20 +25,7 @@ import "form/fix.dart" as fix;
 import "form/change_room.dart" as change_room;
 
 import "form/guest_update.dart" as update_guest;
-// import "form/update_payment_revenue.dart" as update_revenue_payment;
 import "form/check_in_update.dart" as update_stay;
-
-Widget _layout(List<Widget> children) {
-  return Scaffold(
-    body: SingleChildScrollView(
-      child: Center(
-        child: Wrap(
-          children: children, //
-        ),
-      ),
-    ),
-  );
-}
 
 class _Main_State extends State<Main_> {
   //
@@ -72,6 +58,47 @@ class _Main_State extends State<Main_> {
       print(st);
       sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
+  }
+
+  Widget _layout(List<Widget> children) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          //
+          Positioned.fill(
+            child: SingleChildScrollView(
+              child: Center(
+                child: Wrap(
+                  children: children, //
+                ),
+              ),
+            ),
+          ),
+
+          //
+          Positioned.fill(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Tooltip(
+                  message: "Refresh",
+                  child: InkWell(
+                    onTap: init,
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      alignment: Alignment.center,
+                      child: Icon(Icons.refresh, size: 24, color: Colors.blue), //
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

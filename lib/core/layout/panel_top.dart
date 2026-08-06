@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
@@ -5,26 +6,22 @@ import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
 
-import "package:speanmeas/features/auth/schema.g.dart" as u_schema;
+import "package:speanmeas/features/auth/schema.g.dart" as sm_u;
 import "package:speanmeas/features/auth/profile.dart" as profile;
 
-import "../../notification.dart" as notification;
+import "../../notification.dart" as noti;
 
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
 
-  @override
-  void initState() {
-    super.initState();
-    init();
+  void init() async {
+    //
   }
-
-  void init() async {}
 
   @override
   Widget build(BuildContext context) {
-    bool isMobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
+    final is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
     String body = context.watch<Global>().body;
     String version = context.watch<Global>().VERSION;
     return SizedBox(
@@ -32,7 +29,7 @@ class _Main_State extends State<Main_> {
       child: Row(
         children: [
           //
-          if (!isMobile) SizedBox(width: 4),
+          if (!is_mobile) SizedBox(width: 4),
 
           // logo
           SizedBox(
@@ -64,17 +61,18 @@ class _Main_State extends State<Main_> {
           Spacer(),
 
           // Notification Icon
-          Badge(
-            label: Text("3"), //
-            offset: Offset(-4, 4),
-            child: IconButton(
-              icon: Icon(Icons.notifications_outlined),
-              onPressed: () {
-                // Handle notification tap
-                Navigator.push(context, MaterialPageRoute(builder: (_) => notification.Main_()));
-              },
+          if (kDebugMode) // TODO
+            Badge(
+              label: Text("3"), //
+              offset: Offset(-4, 4),
+              child: IconButton(
+                icon: Icon(Icons.notifications_outlined),
+                onPressed: () {
+                  // Handle notification tap
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => noti.Main_()));
+                },
+              ),
             ),
-          ),
 
           SizedBox(width: 4),
 
@@ -91,8 +89,8 @@ class _Main_State extends State<Main_> {
               ),
               child: Text(
                 (() {
-                  if (u_schema.data[u_schema.FULL_NAME]!["value"] != null) //
-                    return u_schema.data[u_schema.FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "X";
+                  if (sm_u.data[sm_u.FULL_NAME]!["value"] != null) //
+                    return sm_u.data[sm_u.FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "X";
                   else
                     return "X";
                 })(),
@@ -109,6 +107,12 @@ class _Main_State extends State<Main_> {
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
   }
 }
 
