@@ -102,7 +102,7 @@ class _Main_State extends State<Main_> {
                   return SizedBox();
                 })(),
 
-              SizedBox(height: 8),
+              SizedBox(height: height - 100),
             ],
           ),
         ),

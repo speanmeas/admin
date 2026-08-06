@@ -653,7 +653,10 @@ class _Main_State extends State<Main_> {
     //
     if (type == "date-time") {
       if (data == "") return null;
-      if (data != "") return DateTime.tryParse(data.toString())?.toIso8601String();
+      if (data != "") {
+        final tmp = DateFormat(DATE_FORMAT).tryParse(data.toString());
+        if (tmp != null) return tmp.toIso8601String();
+      }
     }
 
     if (type == "boolean") {
@@ -689,7 +692,7 @@ class _Main_State extends State<Main_> {
     if (type == "date-time") {
       if (data != null) {
         final tmp = DateTime.tryParse(data.toString());
-        if (tmp != null) return DateFormat(DATE_FORMAT).format(tmp);
+        if (tmp != null) return DateFormat(DATE_FORMAT).format(tmp.toLocal());
       }
     }
 

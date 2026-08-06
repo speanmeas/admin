@@ -7,17 +7,51 @@ import "package:intl/intl.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
 import "package:speanmeas/core/dialog/datetime.dart" as datetime_picker;
-import "package:speanmeas/core/widget/snackbar.dart" as snackbar;
+import "package:speanmeas/core/widget/snackbar.dart" as sb;
 import "package:speanmeas/core/widget/show_data.dart" as show_data;
+import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
+import "package:speanmeas/features/database/guest/schema.g.dart" as sm_g;
 
 import "../config.dart";
-import "../schema.g.dart" as schema;
+import "../schema.g.dart" as sm;
 
-import "package:speanmeas/features/database/room/schema.g.dart" as r_schema;
 import "../widget/room_search.dart" as r_search;
-
-import "package:speanmeas/features/database/guest/schema.g.dart" as g_schema;
 import "../widget/guest_search.dart" as g_search;
+
+Widget _layout(List<Widget> children) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(
+        "Create", //
+        style: TextStyle(
+          fontSize: 20, //
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+
+      centerTitle: false,
+      toolbarHeight: 40,
+      titleSpacing: 0,
+
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(1), //
+        child: Divider(height: 1, color: Colors.black),
+      ),
+    ),
+    body: SingleChildScrollView(
+      child: Center(
+        child: Container(
+          width: 600,
+          padding: EdgeInsets.fromLTRB(8, 8, 16, 8),
+          child: Column(
+            spacing: 8,
+            children: children, //
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
 class _Main_State extends State<Main_> {
   //
@@ -33,301 +67,243 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    if (schema.data[schema.ROOM_NUMBER]!["value"] != null) //
-      c_room.text = schema.data[schema.ROOM_NUMBER]!["value"];
+    if (sm.data[sm.ROOM_NUMBER]!["value"] != null) //
+      c_room.text = sm.data[sm.ROOM_NUMBER]!["value"];
 
-    if (schema.data[schema.GUEST_PHONE_NUMBER]!["value"] != null) //
-      c_guest.text = schema.data[schema.GUEST_PHONE_NUMBER]!["value"];
+    if (sm.data[sm.GUEST_PHONE_NUMBER]!["value"] != null) //
+      c_guest.text = sm.data[sm.GUEST_PHONE_NUMBER]!["value"];
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Create", //
-          style: TextStyle(
-            fontSize: 20, //
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+    final height = MediaQuery.of(context).size.height;
+    return _layout([
+      for (var e in sm.data.entries)
+        (() {
+          // * search
+          if (e.key == sm.ROOM_ID) {
+            return r_search.Main_(
+              controller: c_room,
+              onChanged: (v) {
+                e.value["value"] = v[sm_r.ID];
+                sm.data[sm.ROOM_NUMBER]!["value"] = v[sm_r.NUMBER];
+                sm.data[sm.ROOM_KIND]!["value"] = v[sm_r.KIND];
+                sm.data[sm.ROOM_USD_PER_3H]!["value"] = v[sm_r.USD_PER_3H];
+                sm.data[sm.ROOM_USD_PER_DAY]!["value"] = v[sm_r.USD_PER_DAY];
+                setState(() {});
+              },
+              onCleared: () {
+                e.value["value"] = null;
+                sm.data[sm.ROOM_NUMBER]!["value"] = null;
+                sm.data[sm.ROOM_KIND]!["value"] = null;
+                sm.data[sm.ROOM_USD_PER_3H]!["value"] = null;
+                sm.data[sm.ROOM_USD_PER_DAY]!["value"] = null;
+                setState(() {});
+              },
+            );
+          }
 
-        centerTitle: false,
-        toolbarHeight: 40,
-        titleSpacing: 0,
+          // * search
+          if (e.key == sm.GUEST_ID) {
+            return g_search.Main_(
+              controller: c_guest,
+              onChanged: (v) {
+                e.value["value"] = v[sm_g.ID];
+                sm.data[sm.GUEST_FULL_NAME]!["value"] = v[sm_g.FULL_NAME];
+                sm.data[sm.GUEST_GENDER]!["value"] = v[sm_g.GENDER];
+                sm.data[sm.GUEST_PHONE_NUMBER]!["value"] = v[sm_g.PHONE_NUMBER];
+                sm.data[sm.GUEST_NATIONALITY]!["value"] = v[sm_g.NATIONALITY];
+                setState(() {});
+              },
+              onCleared: () {
+                e.value["value"] = null;
+                sm.data[sm.GUEST_FULL_NAME]!["value"] = null;
+                sm.data[sm.GUEST_GENDER]!["value"] = null;
+                sm.data[sm.GUEST_PHONE_NUMBER]!["value"] = null;
+                sm.data[sm.GUEST_NATIONALITY]!["value"] = null;
+                setState(() {});
+              },
+            );
+          }
 
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1), //
-          child: Divider(height: 1, color: Colors.black),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              for (var e in schema.data.entries)
-                (() {
-                  // * search
-                  if (e.key == schema.ROOM_ID) {
-                    return Container(
-                      width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: r_search.Main_(
-                        controller: c_room,
-                        onChanged: (v) {
-                          e.value["value"] = v[r_schema.ID];
-                          schema.data[schema.ROOM_NUMBER]!["value"] = v[r_schema.NUMBER];
-                          schema.data[schema.ROOM_KIND]!["value"] = v[r_schema.KIND];
-                          schema.data[schema.ROOM_USD_PER_3H]!["value"] = v[r_schema.USD_PER_3H];
-                          schema.data[schema.ROOM_USD_PER_DAY]!["value"] = v[r_schema.USD_PER_DAY];
-                          setState(() {});
-                        },
-                        onCleared: () {
-                          e.value["value"] = null;
-                          schema.data[schema.ROOM_NUMBER]!["value"] = null;
-                          schema.data[schema.ROOM_KIND]!["value"] = null;
-                          schema.data[schema.ROOM_USD_PER_3H]!["value"] = null;
-                          schema.data[schema.ROOM_USD_PER_DAY]!["value"] = null;
-                          setState(() {});
-                        },
-                      ),
-                    );
-                  }
+          // * lock
+          if (e.value["lock"] == true) {
+            String value = "";
+            if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
+            return show_data.Main_(
+              title: e.value["title"], //
+              value: value,
+            );
+          }
 
-                  // * search
-                  if (e.key == schema.GUEST_ID) {
-                    return Container(
-                      width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: g_search.Main_(
-                        controller: c_guest,
-                        onChanged: (v) {
-                          e.value["value"] = v[g_schema.ID];
-                          schema.data[schema.GUEST_FULL_NAME]!["value"] = v[g_schema.FULL_NAME];
-                          schema.data[schema.GUEST_GENDER]!["value"] = v[g_schema.GENDER];
-                          schema.data[schema.GUEST_PHONE_NUMBER]!["value"] = v[g_schema.PHONE_NUMBER];
-                          schema.data[schema.GUEST_NATIONALITY]!["value"] = v[g_schema.NATIONALITY];
-                          setState(() {});
-                        },
-                        onCleared: () {
-                          e.value["value"] = null;
-                          schema.data[schema.GUEST_FULL_NAME]!["value"] = null;
-                          schema.data[schema.GUEST_GENDER]!["value"] = null;
-                          schema.data[schema.GUEST_PHONE_NUMBER]!["value"] = null;
-                          schema.data[schema.GUEST_NATIONALITY]!["value"] = null;
-                          setState(() {});
-                        },
-                      ),
-                    );
-                  }
-
-                  // * lock
-                  if (e.value["lock"] == true) {
-                    String value = "";
-                    if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
-                    return Container(
-                      width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      child: show_data.Main_(
-                        title: e.value["title"], //
-                        value: value,
-                      ),
-                    );
-                  }
-
-                  // * អក្សរ
-                  if (e.value["type"] == "string") {
-                    String value = "";
-                    if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
-                    return Container(
-                      width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: TextField(
-                        controller: TextEditingController(text: value.trim()),
-                        maxLines: e.key.contains("note") ? 4 : 1,
-                        decoration: InputDecoration(
-                          labelText: e.value["title"] + ":", //
-                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          prefixIcon: Icon(Icons.text_fields), //
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child: IconButton(
-                              icon: Icon(Icons.clear, color: Colors.red),
-                              onPressed: () async {
-                                e.value["value"] = "";
-                                setState(() {});
-                              },
-                            ), //
-                          ),
-                        ),
-                        onChanged: (v) {
-                          if (v.isEmpty)
-                            e.value["value"] = " "; //
-                          else
-                            e.value["value"] = v.trim(); //
-                        },
-                      ),
-                    );
-                  }
-
-                  // * លេខ
-                  if (e.value["type"] == "number") {
-                    String value = "";
-                    if (e.value["value"] != null && e.value["value"] != 0) {
-                      value = e.value["value"].toString();
-                    }
-                    return Container(
-                      width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: TextField(
-                        controller: TextEditingController(text: value.trim()),
-                        decoration: InputDecoration(
-                          labelText: e.value["title"] + ":", //
-                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          prefixIcon: Icon(Icons.numbers), //
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child: IconButton(
-                              icon: Icon(Icons.clear, color: Colors.red),
-                              onPressed: () async {
-                                e.value["value"] = "";
-                                setState(() {});
-                              },
-                            ), //
-                          ),
-                        ),
-                        keyboardType: TextInputType.numberWithOptions(decimal: true),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
-                        onChanged: (v) {
-                          if (v.isEmpty) e.value["value"] = 0;
-                          if (v.isNotEmpty) e.value["value"] = double.tryParse(v) ?? 0;
-                        },
-                      ),
-                    );
-                  }
-
-                  // * ថ្ងៃខែឆ្នាំ និង ម៉ោង
-                  // todo: clear date-time?
-                  if (e.value["type"] == "date-time") {
-                    String value = "";
-                    if (e.value["value"] != null) {
-                      DateTime? tmp = DateTime.tryParse(e.value["value"].toString());
-                      if (tmp != null) {
-                        value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
-                      }
-                    }
-                    DateTime init = DateTime.now();
-                    if (DateTime.tryParse(value) != null) {
-                      init = DateTime.tryParse(value)!;
-                    }
-                    return Container(
-                      width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: TextField(
-                        controller: TextEditingController(text: value),
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(), //
-                          labelText: e.value["title"] + ":", //
-                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          prefixIcon: Icon(Icons.calendar_month_outlined), //
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child: IconButton(
-                              icon: Icon(Icons.clear, color: Colors.red),
-                              onPressed: () async {
-                                e.value["value"] = "";
-                                setState(() {});
-                              },
-                            ), //
-                          ),
-                        ),
-                        onTap: () async {
-                          DateTime? datetime = await datetime_picker.view(context, initial_datetime: init);
-                          if (datetime == null) return;
-                          e.value["value"] = datetime.toIso8601String();
-                          setState(() {});
-                        }, //,
-                      ),
-                    );
-                  }
-
-                  // * តក្កវិទ្យា
-                  if (e.value["type"] == "boolean") {
-                    String? value;
-                    if (e.value["value"] != null) {
-                      if (e.value["value"] == true) value = "Yes";
-                      if (e.value["value"] == false) value = "No";
-                    }
-                    final controller_search = TextEditingController(text: value);
-                    return Container(
-                      width: 600,
-                      margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: TypeAheadField<String>(
-                        controller: controller_search,
-                        suggestionsCallback: (query) => ["Yes", "No"],
-                        builder: (context, controller, focusNode) {
-                          return TextField(
-                            controller: controller,
-                            focusNode: focusNode,
-                            decoration: InputDecoration(
-                              labelText: e.value["title"] + ":", //
-                              labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
-                              prefixIcon: Icon(Icons.toggle_on_outlined), //
-                              suffixIcon: Padding(
-                                padding: EdgeInsets.only(right: 4),
-                                child: IconButton(
-                                  icon: Icon(Icons.clear, color: Colors.red),
-                                  onPressed: () async {
-                                    e.value["value"] = "";
-                                    setState(() {});
-                                  },
-                                ), //
-                              ),
-                            ),
-                          );
-                        },
-                        itemBuilder: (context, item) => ListTile(title: Text(item)),
-                        onSelected: (v) {
-                          controller_search.text = v;
-                          if (v == "Yes") e.value["value"] = true;
-                          if (v == "No") e.value["value"] = false;
-                          setState(() {});
-                        },
-                      ),
-                    );
-                  }
-
-                  //
-                  return SizedBox();
-                })(),
-
-              //
-              Container(
-                margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: OutlinedButton.icon(
-                  icon: Icon(Icons.check),
-                  label: Text("Create"),
-                  style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-                  onPressed: on_create,
+          // * អក្សរ
+          if (e.value["type"] == "string") {
+            String value = "";
+            if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
+            return TextField(
+              controller: TextEditingController(text: value.trim()),
+              maxLines: e.key.contains("note") ? 4 : 1,
+              decoration: InputDecoration(
+                labelText: e.value["title"] + ":", //
+                labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                suffixIcon: Padding(
+                  padding: EdgeInsets.only(right: 4),
+                  child: IconButton(
+                    icon: Icon(Icons.clear, color: Colors.red),
+                    onPressed: () async {
+                      e.value["value"] = "";
+                      setState(() {});
+                    },
+                  ), //
                 ),
               ),
-            ],
-          ),
-        ),
+              onChanged: (v) {
+                if (v.isEmpty)
+                  e.value["value"] = " "; //
+                else
+                  e.value["value"] = v.trim(); //
+              },
+            );
+          }
+
+          // * លេខ
+          if (e.value["type"] == "number") {
+            String value = "";
+            if (e.value["value"] != null && e.value["value"] != 0) {
+              value = e.value["value"].toString();
+            }
+            return TextField(
+              controller: TextEditingController(text: value.trim()),
+              decoration: InputDecoration(
+                labelText: e.value["title"] + ":", //
+                labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                suffixIcon: Padding(
+                  padding: EdgeInsets.only(right: 4),
+                  child: IconButton(
+                    icon: Icon(Icons.clear, color: Colors.red),
+                    onPressed: () async {
+                      e.value["value"] = "";
+                      setState(() {});
+                    },
+                  ), //
+                ),
+              ),
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
+              onChanged: (v) {
+                if (v.isEmpty) e.value["value"] = 0;
+                if (v.isNotEmpty) e.value["value"] = double.tryParse(v) ?? 0;
+              },
+            );
+          }
+
+          // * ថ្ងៃខែឆ្នាំ និង ម៉ោង
+          // todo: clear date-time?
+          if (e.value["type"] == "date-time") {
+            String value = "";
+            if (e.value["value"] != null) {
+              DateTime? tmp = DateTime.tryParse(e.value["value"].toString());
+              if (tmp != null) {
+                value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
+              }
+            }
+            DateTime init = DateTime.now();
+            if (DateTime.tryParse(value) != null) {
+              init = DateTime.tryParse(value)!;
+            }
+            return TextField(
+              controller: TextEditingController(text: value),
+              readOnly: true,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(), //
+                labelText: e.value["title"] + ":", //
+                labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                suffixIcon: Padding(
+                  padding: EdgeInsets.only(right: 4),
+                  child: IconButton(
+                    icon: Icon(Icons.clear, color: Colors.red),
+                    onPressed: () async {
+                      e.value["value"] = "";
+                      setState(() {});
+                    },
+                  ), //
+                ),
+              ),
+              onTap: () async {
+                DateTime? datetime = await datetime_picker.view(context, initial_datetime: init);
+                if (datetime == null) return;
+                e.value["value"] = datetime.toIso8601String();
+                setState(() {});
+              }, //,
+            );
+          }
+
+          // * តក្កវិទ្យា
+          if (e.value["type"] == "boolean") {
+            String? value;
+            if (e.value["value"] != null) {
+              if (e.value["value"] == true) value = "Yes";
+              if (e.value["value"] == false) value = "No";
+            }
+            final controller_search = TextEditingController(text: value);
+            return TypeAheadField<String>(
+              controller: controller_search,
+              suggestionsCallback: (query) => ["Yes", "No"],
+              builder: (context, controller, focusNode) {
+                return TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  decoration: InputDecoration(
+                    labelText: e.value["title"] + ":", //
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    suffixIcon: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: IconButton(
+                        icon: Icon(Icons.clear, color: Colors.red),
+                        onPressed: () async {
+                          e.value["value"] = "";
+                          setState(() {});
+                        },
+                      ), //
+                    ),
+                  ),
+                );
+              },
+              itemBuilder: (context, item) => ListTile(title: Text(item)),
+              onSelected: (v) {
+                controller_search.text = v;
+                if (v == "Yes") e.value["value"] = true;
+                if (v == "No") e.value["value"] = false;
+                setState(() {});
+              },
+            );
+          }
+
+          //
+          return SizedBox();
+        })(),
+
+      //
+      OutlinedButton.icon(
+        icon: Icon(Icons.check),
+        label: Text("Create"),
+        style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+        onPressed: on_create,
       ),
-    );
+
+      SizedBox(height: height - 100),
+    ]);
   }
 
   void on_create() async {
     try {
       //
       var payload = {};
-      for (var e in schema.data.entries) payload[e.key] = e.value["value"];
+      for (var e in sm.data.entries) payload[e.key] = e.value["value"];
 
       // request
       final r = await dio.post("$PATH/create", data: payload);
@@ -336,12 +312,12 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, r.data[0]);
 
       //
-      snackbar.view(context: context, message: "Success", color: Colors.green);
+      sb.view(context: context, message: "Success", color: Colors.green);
 
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(context: context, message: e.toString(), color: Colors.red);
     }
   }
 }
