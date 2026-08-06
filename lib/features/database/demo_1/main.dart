@@ -59,7 +59,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -81,12 +81,12 @@ class _Main_State extends State<Main_> {
       //
       load_page(page);
 
-      sb.view(context: context, message: "Refresh completed.", color: Colors.green);
+      sb.view(ct: context, ms: "Refresh completed.", cl: Colors.green);
 
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -144,7 +144,7 @@ class _Main_State extends State<Main_> {
       setState(() {});
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
       if (request_id == load_request_id && mounted) {
         is_loading = false;
         setState(() {});
@@ -282,7 +282,7 @@ class _Main_State extends State<Main_> {
                       ), //
                     ), //
                     onTap: () {
-                      sb.view(context: context, message: "Development", color: Colors.black);
+                      sb.view(ct: context, ms: "Development", cl: Colors.black);
                     },
                   ),
                 ),
@@ -525,7 +525,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -534,7 +534,7 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        sb.view(context: context, message: "Please select a row.", color: Colors.red);
+        sb.view(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
@@ -551,7 +551,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -560,7 +560,7 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        sb.view(context: context, message: "Please select a row.", color: Colors.red);
+        sb.view(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
@@ -581,7 +581,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -590,7 +590,7 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        sb.view(context: context, message: "Please select a row.", color: Colors.red);
+        sb.view(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
@@ -612,7 +612,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 

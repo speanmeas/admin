@@ -63,7 +63,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -84,12 +84,12 @@ class _Main_State extends State<Main_> {
       //
       load_page(page);
 
-      sb.view(context: context, message: "Refresh completed.", color: Colors.green);
+      sb.view(ct: context, ms: "Refresh completed.", cl: Colors.green);
 
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -147,7 +147,7 @@ class _Main_State extends State<Main_> {
       setState(() {});
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
       if (request_id == load_request_id && mounted) {
         is_loading = false;
         setState(() {});
@@ -159,15 +159,15 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     return _layout([
       // menu
-      (() {
-        return Container(
-          height: 32, //
-          alignment: Alignment.topCenter,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Create
+      Container(
+        height: 32, //
+        alignment: Alignment.topCenter,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Create
+            if (kDebugMode)
               Tooltip(
                 message: "Create",
                 child: InkWell(
@@ -185,7 +185,8 @@ class _Main_State extends State<Main_> {
                 ),
               ),
 
-              // Read
+            // Read
+            if (kDebugMode)
               Tooltip(
                 message: "Read",
                 child: InkWell(
@@ -203,7 +204,8 @@ class _Main_State extends State<Main_> {
                 ),
               ),
 
-              // Update
+            // Update
+            if (kDebugMode)
               Tooltip(
                 message: "Update",
                 child: InkWell(
@@ -221,7 +223,8 @@ class _Main_State extends State<Main_> {
                 ),
               ),
 
-              // Delete
+            // Delete
+            if (kDebugMode)
               Tooltip(
                 message: "Delete",
                 child: InkWell(
@@ -239,78 +242,75 @@ class _Main_State extends State<Main_> {
                 ),
               ),
 
-              Spacer(),
+            Spacer(),
 
-              // filter
+            // filter
+            Tooltip(
+              message: is_filter ? "Hide Filter" : "Show Filter",
+              child: InkWell(
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  alignment: Alignment.center,
+                  child: Icon(
+                    is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
+                    size: 24,
+                    color: Colors.blue,
+                  ), //
+                ), //
+                onTap: () {
+                  is_filter = !is_filter;
+                  state_manager?.setShowColumnFilter(is_filter);
+
+                  // * លុប filter ពេលលាក់
+                  if (!is_filter) state_manager?.setFilterWithFilterRows([]);
+
+                  setState(() {});
+                },
+              ),
+            ),
+
+            // search
+            if (kDebugMode)
               Tooltip(
-                message: is_filter ? "Hide Filter" : "Show Filter",
+                message: "Search",
                 child: InkWell(
                   child: Container(
                     width: 32,
                     height: 32,
                     alignment: Alignment.center,
                     child: Icon(
-                      is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
+                      Icons.search, //
                       size: 24,
                       color: Colors.blue,
                     ), //
                   ), //
                   onTap: () {
-                    is_filter = !is_filter;
-                    state_manager?.setShowColumnFilter(is_filter);
-
-                    // * លុប filter ពេលលាក់
-                    if (!is_filter) {
-                      state_manager?.setFilterWithFilterRows([]);
-                    }
-
-                    setState(() {});
+                    sb.view(ct: context, ms: "Development", cl: Colors.black);
                   },
                 ),
               ),
 
-              // search
-              if (kDebugMode)
-                Tooltip(
-                  message: "Search",
-                  child: InkWell(
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.search, //
-                        size: 24,
-                        color: Colors.blue,
-                      ), //
-                    ), //
-                    onTap: () {
-                      sb.view(context: context, message: "Development", color: Colors.black);
-                    },
-                  ),
-                ),
-
-              // refresh
-              Tooltip(
-                message: "Refresh",
-                child: InkWell(
-                  onTap: on_refresh,
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.refresh, //
-                      size: 24,
-                      color: Colors.blue,
-                    ), //
-                  ),
+            // refresh
+            Tooltip(
+              message: "Refresh",
+              child: InkWell(
+                onTap: on_refresh,
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.refresh, //
+                    size: 24,
+                    color: Colors.blue,
+                  ), //
                 ),
               ),
-            ],
-          ),
-        );
-      })(),
+            ),
+          ],
+        ),
+      ),
 
       if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
@@ -522,7 +522,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -532,7 +532,7 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        sb.view(context: context, message: "Please select a row.", color: Colors.red);
+        sb.view(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
@@ -543,7 +543,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -553,7 +553,7 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        sb.view(context: context, message: "Please select a row.", color: Colors.red);
+        sb.view(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
@@ -567,7 +567,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -577,7 +577,7 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        sb.view(context: context, message: "Please select a row.", color: Colors.red);
+        sb.view(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
@@ -592,7 +592,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 

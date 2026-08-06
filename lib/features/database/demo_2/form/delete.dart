@@ -76,7 +76,7 @@ class _Main_State extends State<Main_> {
       tmp = await dio.post("$PATH/delete", data: {"_id": widget.id});
 
       //
-      sb.view(context: context, message: "Success", color: Colors.green);
+      sb.view(ct: context, ms: "Success", cl: Colors.green);
 
       //
       Navigator.pop(context, tmp.data);
@@ -84,7 +84,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 }

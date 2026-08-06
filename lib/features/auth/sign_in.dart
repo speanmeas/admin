@@ -129,7 +129,7 @@ class _Main_State extends State<Main_> {
       for (var e in u_schema.data.entries) u_schema.data[e.key]!["value"] = tmp.data[e.key];
 
       //
-      sb.view(context: context, message: "Success", color: Colors.green);
+      sb.view(ct: context, ms: "Success", cl: Colors.green);
 
       //
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
@@ -137,7 +137,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 

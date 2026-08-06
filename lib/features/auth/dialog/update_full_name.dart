@@ -90,11 +90,11 @@ class _Dialog_State extends State<Dialog_> {
       if (tmp == null) throw "Failed";
 
       Navigator.pop(context, true);
-      sb.view(context: context, message: "Success", color: Colors.green);
+      sb.view(ct: context, ms: "Success", cl: Colors.green);
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 

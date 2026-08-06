@@ -53,7 +53,7 @@ class _Main_State extends State<Main_> {
       widget.onChanged?.call(items[0]);
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -149,7 +149,7 @@ class _Main_State extends State<Main_> {
       widget.onChanged?.call(tmp.data[0]);
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -174,7 +174,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
       return [];
     }
   }

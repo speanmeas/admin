@@ -1,11 +1,11 @@
 import "package:flutter/material.dart";
 
 void view({
-  required BuildContext context, //
-  required String message, //
-  required Color color, //
+  required BuildContext ct, //
+  required String ms, //
+  required Color cl, //
 }) {
-  ScaffoldMessenger.of(context)
+  ScaffoldMessenger.of(ct)
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
@@ -15,10 +15,10 @@ void view({
           children: [
             Icon(Icons.info_outline, color: Colors.white),
             SizedBox(width: 8),
-            Expanded(child: Text(message, softWrap: true)),
+            Expanded(child: Text(ms, softWrap: true)),
           ],
         ),
-        backgroundColor: color,
+        backgroundColor: cl,
         behavior: SnackBarBehavior.floating,
       ),
     );

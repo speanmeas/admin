@@ -71,7 +71,7 @@ class _Main_State extends State<Main_> {
       setState(() {});
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -173,11 +173,11 @@ class _Main_State extends State<Main_> {
         );
 
       Navigator.pop(context, true);
-      sb.view(context: context, message: "Update Successful", color: Colors.green);
+      sb.view(ct: context, ms: "Update Successful", cl: Colors.green);
       //
     } catch (e, st) {
       print(st);
-      sb.view(context: context, message: e.toString(), color: Colors.red);
+      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 

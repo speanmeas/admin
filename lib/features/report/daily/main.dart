@@ -94,7 +94,7 @@ class _Main_State extends State<Main_> {
       // setState(() {});
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      snackbar.view(ct: context, ms: e.toString(), cl: Colors.red);
       is_loading = false;
       setState(() {});
     }
@@ -225,7 +225,7 @@ class _Main_State extends State<Main_> {
           const SizedBox(width: 4),
 
           _text_btn("Print", () {
-            snackbar.view(context: context, message: "Printing...", color: Colors.blue);
+            snackbar.view(ct: context, ms: "Printing...", cl: Colors.blue);
           }),
         ],
       ),

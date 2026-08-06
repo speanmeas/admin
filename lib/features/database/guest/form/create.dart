@@ -271,12 +271,12 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, tmp.data[0]);
 
       //
-      snackbar.view(context: context, message: "Success", color: Colors.green);
+      snackbar.view(ct: context, ms: "Success", cl: Colors.green);
 
       //
     } catch (e, st) {
       print(st);
-      snackbar.view(context: context, message: e.toString(), color: Colors.red);
+      snackbar.view(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 }
