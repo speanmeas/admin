@@ -110579,12 +110579,13 @@ $icT:1}
 A.ob.prototype={
 gie(){return this.d}}
 A.FM.prototype={
-I(){var s=0,r=A.n(t.H),q
+I(){var s=0,r=A.n(t.H),q=this,p
 var $async$I=A.o(function(a,b){if(a===1)return A.k(b,r)
 for(;;)switch(s){case 0:s=2
 return A.p(A.apI(),$async$I)
-case 2:q=b
-$.oW().b=q.c+"+"+q.d
+case 2:p=b
+$.oW().b=p.c+"+"+p.d
+q.ad()
 A.ao("Global initialized.")
 return A.l(null,r)}})
 return A.m($async$I,r)}}
@@ -111343,7 +111344,7 @@ $S:166}
 A.uJ.prototype={
 M(){return new A.NH()}}
 A.N4.prototype={
-v(a){var s=this,r=null,q=A.arJ(a,t.zR).b,p=A.a2(r,A.b6_("assets/logo.png",r),B.e,r,r,r,r,160,new A.S(8,8,8,0),r,r,r,r),o=A.a2(B.x,A.N("Welcome to Spean Meas Hotel",r,r,r,r,A.U(r,r,r,r,r,r,r,r,r,r,r,24,r,r,B.j,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),B.e,r,r,r,r,r,new A.S(8,8,8,0),r,r,r,600),n=A.a2(B.x,A.N(q,r,r,r,r,A.U(r,r,B.k,r,r,r,r,r,r,r,r,12,r,r,B.j,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),B.e,r,r,r,r,r,new A.S(8,0,8,0),r,r,r,600),m=A.a2(r,A.aW(r,B.B,!0,r,!0,B.q,r,A.aY(),r,r,r,r,r,r,2,A.aT(r,r,r,r,r,r,r,r,!0,r,r,r,r,r,r,r,r,r,B.G,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,A.U(r,r,r,r,r,r,r,r,r,r,r,r,r,r,B.j,r,r,!0,r,r,r,r,r,r,r,r),"Username:",!0,!0,!1,r,r,r,r,r,r,r,r,r,r,r,r,r,r),B.v,!0,r,!0,r,!1,r,B.A,r,r,r,r,r,r,r,r,1,r,r,!1,"\u2022",r,new A.aLY(s),r,new A.aLZ(s),r,!1,r,r,!1,r,!0,r,B.D,r,r,r,r,r,r,r,r,r,r,r,r,!0,B.y,r,B.E,r,r,r,r),B.e,r,r,r,r,r,new A.S(8,8,8,0),r,r,r,600),l=A.U(r,r,r,r,r,r,r,r,r,r,r,r,r,r,B.j,r,r,!0,r,r,r,r,r,r,r,r),k=!s.e
+v(a){var s=this,r=null,q=A.arJ(a,t.zR).b,p=A.a2(r,A.b6_("assets/logo.png",r),B.e,r,r,r,r,160,new A.S(8,8,8,0),r,r,r,r),o=A.a2(B.x,A.N("Spean Meas Hotel",r,r,r,r,A.U(r,r,r,r,r,r,r,r,r,r,r,24,r,r,B.j,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),B.e,r,r,r,r,r,new A.S(8,8,8,0),r,r,r,600),n=A.a2(B.x,A.N(q,r,r,r,r,A.U(r,r,B.k,r,r,r,r,r,r,r,r,12,r,r,B.j,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),B.e,r,r,r,r,r,new A.S(8,0,8,0),r,r,r,600),m=A.a2(r,A.aW(r,B.B,!0,r,!0,B.q,r,A.aY(),r,r,r,r,r,r,2,A.aT(r,r,r,r,r,r,r,r,!0,r,r,r,r,r,r,r,r,r,B.G,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,A.U(r,r,r,r,r,r,r,r,r,r,r,r,r,r,B.j,r,r,!0,r,r,r,r,r,r,r,r),"Username:",!0,!0,!1,r,r,r,r,r,r,r,r,r,r,r,r,r,r),B.v,!0,r,!0,r,!1,r,B.A,r,r,r,r,r,r,r,r,1,r,r,!1,"\u2022",r,new A.aLY(s),r,new A.aLZ(s),r,!1,r,r,!1,r,!0,r,B.D,r,r,r,r,r,r,r,r,r,r,r,r,!0,B.y,r,B.E,r,r,r,r),B.e,r,r,r,r,r,new A.S(8,8,8,0),r,r,r,600),l=A.U(r,r,r,r,r,r,r,r,r,r,r,r,r,r,B.j,r,r,!0,r,r,r,r,r,r,r,r),k=!s.e
 return A.ca(r,A.ch(A.c4(A.b2(A.b([p,o,n,m,A.a2(r,A.aW(r,B.B,!1,r,!0,B.q,r,A.aY(),r,r,r,r,r,r,2,A.aT(r,r,r,r,r,r,r,r,!0,r,r,r,r,r,r,r,r,r,B.G,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,l,"Password:",!0,!0,!1,r,r,r,r,r,r,r,r,A.aO(!1,r,!0,A.a0(k?B.nm:B.nn,r,r,r),r,!0,r,r,r,r,r,r,r,r,r,r,s.gaO6(),r,r,r,r),r,r,r,r,r),B.v,!0,r,!0,r,!1,r,B.A,r,r,r,r,r,r,r,r,1,r,r,k,"\u2022",r,new A.aM_(s),r,new A.aMX(s),r,!1,r,r,!1,r,!0,r,B.D,r,r,r,r,r,r,r,r,r,r,r,r,!0,B.y,r,B.E,r,r,r,r),B.e,r,r,r,r,r,new A.S(8,8,8,0),r,r,r,600),A.a2(r,A.cY(!1,A.a0(B.nl,r,r,r),A.N("Signin",r,r,r,r,r,r,r,r),s.gaNM(),r),B.e,r,r,r,r,r,new A.S(8,8,8,0),r,r,r,r)],t.p),B.m,B.a7,B.l,0,B.z),r,r),r,r,r,r,B.C),r)},
 o9(){var s=0,r=A.n(t.H),q=1,p=[],o=this,n,m,l,k,j,i,h,g
 var $async$o9=A.o(function(a,b){if(a===1){p.push(b)

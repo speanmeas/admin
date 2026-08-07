@@ -22,7 +22,7 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
-    String VERSION = context.watch<Global>().VERSION;
+    final VERSION = context.watch<Global>().VERSION;
     return Scaffold(
       body: SingleChildScrollView(
         child: Center(
@@ -40,7 +40,7 @@ class _Main_State extends State<Main_> {
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 alignment: Alignment.center,
                 child: Text(
-                  "Welcome to Spean Meas Hotel", //
+                  "Spean Meas Hotel", //
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),

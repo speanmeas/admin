@@ -12,6 +12,7 @@ class Global extends ChangeNotifier {
     final info = await PackageInfo.fromPlatform();
     glob.VERSION = "${info.version}+${info.buildNumber}";
 
+    notifyListeners();
     print("Global initialized.");
   }
 
