@@ -37,15 +37,21 @@ class _Main_State extends State<Main_> {
   void try_access_token() async {
     try {
       //
-      final at = await ss.read(key: "access_token");
+      final ac_tk = await ss.read(key: "access_token");
 
-      if (at == null) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => form_si.Main_()));
-      if (at == null) return;
+      if (ac_tk == null)
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => form_si.Main_(), //
+          ),
+        );
+      if (ac_tk == null) return;
 
       //
       tmp = await dio.post(
         ep.AUTH_ACCESS_TOKEN, //
-        data: {"access_token": at},
+        data: {"access_token": ac_tk},
       );
       if (tmp == null) throw Exception("Invalid Access Token");
       for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
@@ -65,10 +71,15 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      // sb.view(ct: context, ms: e.toString(), cl: Colors.red);
       await ss.delete(key: "access_token");
       await ss.delete(key: "_id");
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => form_si.Main_()));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => form_si.Main_(), //
+        ),
+      );
     }
   }
 }
