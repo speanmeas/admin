@@ -2,28 +2,23 @@ import "package:flutter/material.dart";
 
 ThemeData data() {
   return ThemeData(
-    fontFamily: "Nokora", //
+    fontFamily: "Nokora",
 
+    //
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.blue, //
+      seedColor: Colors.white, //
       brightness: Brightness.light,
-    ), //
+    ),
 
-    scaffoldBackgroundColor: Colors.white, //
+    //
+    scaffoldBackgroundColor: Colors.white,
 
+    //
     appBarTheme: AppBarTheme(
       titleTextStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       backgroundColor: Colors.white, //
-    ), //
-
-    textTheme: const TextTheme(
-      // bodyMedium: TextStyle(fontSize: 12.0), //
-      // textcolor
     ),
-    //
-    //
 
-    // [OUTLINED BUTTON]
     //
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
@@ -38,6 +33,7 @@ ThemeData data() {
       ),
     ),
 
+    //
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         textStyle: TextStyle(fontSize: 16.0), //
@@ -48,6 +44,7 @@ ThemeData data() {
       ),
     ),
 
+    //
     iconButtonTheme: IconButtonThemeData(
       style: IconButton.styleFrom(
         foregroundColor: Colors.blue, //
@@ -56,10 +53,7 @@ ThemeData data() {
         ),
       ),
     ),
-    //
-    //
 
-    //
     //
     dialogTheme: DialogThemeData(
       shape: RoundedRectangleBorder(
@@ -67,6 +61,7 @@ ThemeData data() {
       ),
     ),
 
+    //
     drawerTheme: DrawerThemeData(
       width: 300,
       shape: RoundedRectangleBorder(
@@ -74,11 +69,13 @@ ThemeData data() {
       ),
     ),
 
+    //
     inputDecorationTheme: InputDecorationTheme(
       //
       border: const OutlineInputBorder(),
     ),
 
+    //
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       elevation: 0,
       highlightElevation: 0,
@@ -96,31 +93,7 @@ ThemeData data() {
 
     dividerColor: Colors.transparent,
 
-    // iconButtonTheme: IconButtonThemeData(
-    //   style: IconButton.styleFrom(
-    //     foregroundColor: Colors.blue, //
-    //     backgroundColor: Colors.transparent,
-    //   ),
-    // ),
     //
-    //
-    // expansionTileTheme: ExpansionTileThemeData(
-    //   iconColor: Colors.black,
-    //   textColor: Colors.black,
-    //   collapsedIconColor: Colors.black,
-    //   collapsedTextColor: Colors.black, //
-    // ),
-
-    // listtile
-    // listTileTheme: ListTileThemeData(
-    //   shape: RoundedRectangleBorder(
-    //     borderRadius: BorderRadius.circular(0), //
-    //   ),
-    //   textColor: Colors.blue,
-    //   iconColor: Colors.blue,
-    // ),
-    // bottomAppBarTheme: BottomAppBarThemeData(color: Colors.amber),
-    // scaffoldBackgroundColor: Colors.white,
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       // backgroundColor: Colors.blue, //
       selectedItemColor: Colors.blue,
