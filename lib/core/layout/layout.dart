@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:speanmeas/core/config.dart";
-import "package:speanmeas/core/theme/light.dart" as theme;
+import "package:speanmeas/core/theme/theme_data.dart";
 
 import "panel_body.dart" as body;
 import "panel_left.dart" as left;
@@ -65,7 +65,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "Development", //
-      theme: theme.data(), //
+      theme: theme_data, //
       home: Main_(),
       debugShowCheckedModeBanner: false,
     ),

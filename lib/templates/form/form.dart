@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:speanmeas/core/theme/light.dart" as theme;
+import "package:speanmeas/core/theme/theme_data.dart";
 
 /// Usage:
 ///   import "..." as form;
@@ -70,7 +70,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "Template Form", //
-      theme: theme.data(), //
+      theme: theme_data, //
       debugShowCheckedModeBanner: false,
       home: Main_(),
     ),

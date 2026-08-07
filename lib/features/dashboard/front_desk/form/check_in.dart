@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/theme/light.dart" as theme;
+import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/select_dynamic.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/show_data_new.dart";
@@ -295,7 +295,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "Check In", //
-      theme: theme.data(), //
+      theme: theme_data, //
       home: Main_(), //
       debugShowCheckedModeBanner: false,
     ),

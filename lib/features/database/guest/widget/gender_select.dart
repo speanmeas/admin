@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
-import "package:speanmeas/core/theme/light.dart" as theme;
+import "package:speanmeas/core/theme/theme_data.dart";
 
 class _Main_State extends State<Main_> {
   //
@@ -65,7 +65,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      theme: theme.data(), //
+      theme: theme_data, //
       home: Scaffold(
         body: Center(
           child: Main_(

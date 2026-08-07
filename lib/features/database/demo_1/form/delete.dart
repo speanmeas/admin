@@ -2,7 +2,7 @@ import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/theme/light.dart" as theme;
+import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 
 import "../config.dart";
@@ -105,7 +105,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "Development", //
-      theme: theme.data(), //
+      theme: theme_data, //
       home: Main_(id: "1"),
       debugShowCheckedModeBanner: false,
     ),

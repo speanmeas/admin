@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
-import "package:speanmeas/core/theme/light.dart" as theme;
+import "package:speanmeas/core/theme/theme_data.dart";
 
 class _Main_State extends State<Main_> {
   //
@@ -60,7 +60,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "TypeAhead", //
-      theme: theme.data(), //
+      theme: theme_data, //
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(

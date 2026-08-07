@@ -4,7 +4,7 @@ import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/theme/light.dart" as theme; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/layout/layout.dart" as layout;
 import "package:speanmeas/core/widget/snackbar.dart";
 
@@ -89,7 +89,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "Development", //
-      theme: theme.data(), //
+      theme: theme_data, //
       home: Main_(),
       debugShowCheckedModeBanner: false,
     ),

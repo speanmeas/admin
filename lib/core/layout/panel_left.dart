@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/theme/light.dart" as theme;
+import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/features/auth/schema.g.dart" as sm_u;
 
 class _Main_State extends State<Main_> {
@@ -157,7 +157,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "Development", //
-      theme: theme.data(), //
+      theme: theme_data, //
       home: Main_(),
       debugShowCheckedModeBanner: false,
     ),

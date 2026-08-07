@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:speanmeas/core/theme/light.dart" as theme;
+import "package:speanmeas/core/theme/theme_data.dart";
 
 class _Dialog_State extends State<Dialog_> {
   final title = "Update Password"; //
@@ -154,7 +154,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "Development", //
-      theme: theme.data(), //
+      theme: theme_data, //
       home: Main_(),
       debugShowCheckedModeBanner: false,
     ),

@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-import "package:speanmeas/core/theme/light.dart" as theme;
+import "package:speanmeas/core/theme/theme_data.dart";
 
 class _ShowDataState extends State<ShowData> {
   //
@@ -52,7 +52,7 @@ class ShowData extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      theme: theme.data(), //
+      theme: theme_data, //
       home: const Scaffold(
         body: Center(
           child: ShowData(

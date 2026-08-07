@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 
 //
-import "package:speanmeas/core/theme/light.dart" as theme;
+import "package:speanmeas/core/theme/theme_data.dart";
 
 //
 // Reusable "Select Page" dialog.
@@ -213,7 +213,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      theme: theme.data(), //
+      theme: theme_data, //
       home: const Main_(),
       debugShowCheckedModeBanner: false,
     ),

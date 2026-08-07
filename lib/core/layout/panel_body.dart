@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/theme/light.dart" as theme;
+import "package:speanmeas/core/theme/theme_data.dart";
 
 // dashboard
 import "package:speanmeas/features/dashboard/front_desk/main.dart" as d_front_desk;
@@ -80,7 +80,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "Development", //
-      theme: theme.data(), //
+      theme: theme_data, //
       home: Main_(),
       debugShowCheckedModeBanner: false,
     ),

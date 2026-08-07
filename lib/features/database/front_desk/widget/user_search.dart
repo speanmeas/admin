@@ -4,7 +4,7 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 //
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/theme/light.dart" as theme;
+import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/features/database/user/schema.g.dart" as n_schema_r;
 import "package:speanmeas/core/widget/snackbar.dart";
 
@@ -145,7 +145,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      theme: theme.data(), //
+      theme: theme_data, //
       home: Scaffold(
         body: Center(
           child: Main_(
