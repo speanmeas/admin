@@ -77,6 +77,7 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     return _layout([
       // number of guests
       select_dnm.Main_(
@@ -116,16 +117,13 @@ class _Main_State extends State<Main_> {
       ),
 
       // additional information
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          OutlinedButton.icon(
-            icon: Icon(Icons.check), //
-            label: Text("Update"), //
-            onPressed: can_update ? on_update : null, //
-          ),
-        ],
+      OutlinedButton.icon(
+        icon: Icon(Icons.check), //
+        label: Text("Update"), //
+        onPressed: can_update ? on_update : null, //
       ),
+
+      SizedBox(height: height - 100),
     ]);
   }
 

@@ -81,6 +81,7 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     return _layout([
       //
       select_dnm.Main_(
@@ -113,17 +114,14 @@ class _Main_State extends State<Main_> {
       ),
 
       // additional information
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          OutlinedButton.icon(
-            autofocus: true,
-            icon: Icon(Icons.swap_horiz_outlined), //
-            label: Text("Change"), //
-            onPressed: can_change ? on_change_room : null, //
-          ),
-        ],
+      OutlinedButton.icon(
+        autofocus: true,
+        icon: Icon(Icons.swap_horiz_outlined), //
+        label: Text("Change"), //
+        onPressed: can_change ? on_change_room : null, //
       ),
+
+      SizedBox(height: height - 100),
     ]);
   }
 

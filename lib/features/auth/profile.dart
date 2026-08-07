@@ -8,16 +8,12 @@ import "package:speanmeas/core/theme/light.dart" as theme; // ignore: unused_imp
 
 import "schema.g.dart" as sm;
 
-// import "form/full_name.dart" as form_fn;
-// import "form/phone_number.dart" as form_pn;
 import "dialog/update_full_name.dart" as dialog_fn;
 import "dialog/update_phone_number.dart" as dialog_pn;
 import "dialog/update_username.dart" as dialog_un;
 import "dialog/update_password.dart" as dialog_pw;
 
-import "sign_in.dart" as form_si;
-
-// import secure_storage from "package:speanmeas/core/utility/secure_storage.dart";
+import "sign_in.dart" as sign_in;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -53,23 +49,16 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   //
-
-  //
   dynamic tmp;
 
   void init() async {
-    //
     try {
       //
-
       tmp = await dio.post(
         ep.AUTH_ACCESS_TOKEN, //
         data: {"access_token": await ss.read(key: "access_token")},
       );
-      if (tmp != null) {
-        // print("tmp: $tmp");
-        for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
-      }
+      if (tmp != null) for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
     } catch (e, st) {
       print(st);
       sb.view(ct: context, ms: e.toString(), cl: Colors.red);
@@ -81,6 +70,7 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     return _layout([
       // Position
       (() {
@@ -195,6 +185,8 @@ class _Main_State extends State<Main_> {
         style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
         onPressed: on_sign_out,
       ),
+
+      SizedBox(height: height - 100),
     ]);
   }
 
@@ -209,7 +201,7 @@ class _Main_State extends State<Main_> {
       // goto to sign in
       Navigator.pop(context);
       Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (_) => form_si.Main_()));
+      Navigator.push(context, MaterialPageRoute(builder: (_) => sign_in.Main_()));
 
       //
       sb.view(ct: context, ms: "Success", cl: Colors.green);

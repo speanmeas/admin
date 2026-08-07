@@ -14,14 +14,14 @@ import "schema.g.dart" as u_schema;
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-
   bool is_password_visible = false;
 
-  String username = "";
-  String password = "";
+  final c_username = TextEditingController();
+  final c_password = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     final VERSION = context.watch<Global>().VERSION;
     return Scaffold(
       body: SingleChildScrollView(
@@ -60,12 +60,13 @@ class _Main_State extends State<Main_> {
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
                   autofocus: true,
+                  controller: c_username,
                   decoration: InputDecoration(
                     labelText: "Username:", //
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
-                  onChanged: (v) => username = v,
+                  onChanged: (v) => setState(() {}),
                   onSubmitted: (_) => on_sign_in(),
                 ),
               ),
@@ -74,18 +75,18 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  // controller: controller_password,
+                  controller: c_password,
                   decoration: InputDecoration(
                     labelText: "Password:", //
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     suffixIcon: InkWell(
                       onTap: password_visibility_toggle,
-                      child: Icon(!is_password_visible ? Icons.visibility : Icons.visibility_off), //
+                      child: Icon(!is_password_visible ? Icons.visibility_outlined : Icons.visibility_off_outlined), //
                     ),
                   ),
                   obscureText: !is_password_visible,
-                  onChanged: (v) => password = v,
+                  onChanged: (v) => setState(() {}),
                   onSubmitted: (_) => on_sign_in(),
                 ),
               ),
@@ -98,6 +99,8 @@ class _Main_State extends State<Main_> {
                   onPressed: on_sign_in,
                 ),
               ),
+
+              SizedBox(height: height - 100),
             ],
           ),
         ),
@@ -110,7 +113,7 @@ class _Main_State extends State<Main_> {
       //
       tmp = await dio.post(
         ep.AUTH_SIGN_IN, //
-        data: {"username": username, "password": password},
+        data: {"username": c_username.text, "password": c_password.text},
       );
       if (tmp == null) throw Exception("Invalid Username or Password");
 

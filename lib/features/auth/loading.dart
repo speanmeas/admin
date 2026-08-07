@@ -64,14 +64,9 @@ class _Main_State extends State<Main_> {
 
       //
       await glob.init();
-
-      //
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
-
-      //
     } catch (e, st) {
       print(st);
-      // sb.view(ct: context, ms: e.toString(), cl: Colors.red);
       await ss.delete(key: "access_token");
       await ss.delete(key: "_id");
       Navigator.pushReplacement(

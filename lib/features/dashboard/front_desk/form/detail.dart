@@ -78,6 +78,8 @@ class _Main_State extends State<Main_> {
   //
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+
     return _layout([
       for (var e in sm_fd.data.entries.where((e) => (!e.value["hide"] || kDebugMode))) //
         (() {
@@ -147,6 +149,8 @@ class _Main_State extends State<Main_> {
         icon: Icon(Icons.check), //
         onPressed: () => Navigator.pop(context), //
       ),
+
+      SizedBox(height: height - 100),
     ]);
   }
 

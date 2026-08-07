@@ -74,6 +74,7 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     return _layout([
       // guest search
       Row(
@@ -202,16 +203,13 @@ class _Main_State extends State<Main_> {
       ),
 
       // additional information
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          OutlinedButton.icon(
-            icon: Icon(Icons.login_outlined), //
-            label: Text("Check In"), //
-            onPressed: can_check_in ? on_check_in : null, //
-          ),
-        ],
+      OutlinedButton.icon(
+        icon: Icon(Icons.login_outlined), //
+        label: Text("Check In"), //
+        onPressed: can_check_in ? on_check_in : null, //
       ),
+
+      SizedBox(height: height - 100),
     ]);
   }
 

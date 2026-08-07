@@ -70,6 +70,7 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     return _layout([
       // note
       TextField(
@@ -84,17 +85,14 @@ class _Main_State extends State<Main_> {
       ),
 
       // additional information
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          OutlinedButton.icon(
-            autofocus: true,
-            icon: Icon(Icons.logout), //
-            label: Text("Check Out"), //
-            onPressed: on_check_out, //
-          ),
-        ],
+      OutlinedButton.icon(
+        autofocus: true,
+        icon: Icon(Icons.logout), //
+        label: Text("Check Out"), //
+        onPressed: on_check_out, //
       ),
+
+      SizedBox(height: height - 100),
     ]);
   }
 

@@ -74,6 +74,7 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     return _layout([
       g_search.Main_(
         controller: c_g_search,
@@ -136,16 +137,13 @@ class _Main_State extends State<Main_> {
       })(),
 
       //
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          OutlinedButton.icon(
-            icon: Icon(Icons.check), //
-            label: Text("Update"), //
-            onPressed: on_update, //
-          ),
-        ],
+      OutlinedButton.icon(
+        icon: Icon(Icons.check), //
+        label: Text("Update"), //
+        onPressed: on_update, //
       ),
+
+      SizedBox(height: height - 100),
     ]);
   }
 
