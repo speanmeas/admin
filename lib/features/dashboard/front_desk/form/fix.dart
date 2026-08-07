@@ -80,23 +80,20 @@ class _Main_State extends State<Main_> {
           labelText: "Note:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixIcon: Icon(Icons.note_alt_outlined), //
         ),
         maxLines: 4,
         onChanged: (v) => setState(() {}), //
       ),
 
-      // additional information
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          OutlinedButton.icon(
-            autofocus: true,
-            icon: Icon(Icons.build_outlined), //
-            label: Text("Fix"), //
-            onPressed: on_fix, //
-          ),
-        ],
+      //
+      OutlinedButton.icon(
+        autofocus: true,
+        icon: Icon(Icons.build_outlined), //
+        label: Text("Fix"), //
+        onPressed: on_fix, //
       ),
+
       SizedBox(height: height - 100),
     ]);
   }

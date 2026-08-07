@@ -329,7 +329,7 @@ class _Main_State extends State<Main_> {
                       if (!["Pending Fix"].contains(r[sm_r.STATUS]))
                         (() {
                           final price_ro = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.ROOM_PRICE] ?? "0";
-                          final pay_ro = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.ROOM_PAY] ?? "0";
+                          final pay_ro = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.ROOM_PAY_TOTAL] ?? "0";
                           final return_ro = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.ROOM_RETURN] ?? "0";
                           return Row(
                             spacing: 4,
@@ -368,7 +368,7 @@ class _Main_State extends State<Main_> {
                       if (!["Pending Fix"].contains(r[sm_r.STATUS]))
                         (() {
                           final price_re = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.REVENUE_PRICE] ?? "0";
-                          final pay_re = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.REVENUE_PAY] ?? "0";
+                          final pay_re = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.REVENUE_PAY_TOTAL] ?? "0";
                           final return_re = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.REVENUE_RETURN] ?? "0";
                           return Row(
                             spacing: 4,

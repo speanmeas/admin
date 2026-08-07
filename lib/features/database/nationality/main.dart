@@ -343,6 +343,8 @@ class _Main_State extends State<Main_> {
               rowHeight: 28, //
               columnHeight: 32,
               columnFilterHeight: 36,
+              defaultColumnTitlePadding: EdgeInsets.fromLTRB(8, 0, 24, 0),
+              defaultColumnFilterPadding: EdgeInsets.fromLTRB(1, 1, 1, 1),
             ),
           ),
           onLoaded: (event) {

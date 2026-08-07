@@ -173,6 +173,7 @@ class _Main_State extends State<Main_> {
         title: "Number of Guests:",
         options: List.generate(10, (index) => index + 1),
         onChanged: (v) => setState(() {}), //
+        prefixIcon: Icon(Icons.people_outline), //
       ),
 
       // stay duration days
@@ -181,6 +182,7 @@ class _Main_State extends State<Main_> {
         title: "Stay Duration (Days):",
         options: List.generate(365, (index) => index),
         onChanged: (v) => setState(() {}), //
+        prefixIcon: Icon(Icons.calendar_month_outlined),
       ),
 
       // stay duration hours
@@ -189,6 +191,7 @@ class _Main_State extends State<Main_> {
         title: "Stay Duration (Hours):",
         options: [0, 3, 6, 9, 12, 15, 18, 21],
         onChanged: (v) => setState(() {}), //
+        prefixIcon: Icon(Icons.access_time_outlined),
       ),
 
       // note
@@ -199,6 +202,7 @@ class _Main_State extends State<Main_> {
           labelText: "Note:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixIcon: Icon(Icons.note_alt_outlined), //
         ),
         onChanged: (v) => setState(() {}), //
       ),
@@ -233,8 +237,8 @@ class _Main_State extends State<Main_> {
       int stay_days = int.tryParse(c_d_day.text) ?? 0;
       int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
       double price_day = double.tryParse(sm_r.data[sm_r.USD_PER_DAY]?["value"].toString() ?? "") ?? 0;
-      double price_hour = double.tryParse(sm_r.data[sm_r.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
-      double room_price = (price_day * stay_days) + (price_hour * stay_hours / 3);
+      double price_3hours = double.tryParse(sm_r.data[sm_r.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
+      double room_price = (price_day * stay_days) + (price_3hours * stay_hours / 3);
 
       //
       tmp = await dio.post(

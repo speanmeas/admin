@@ -85,6 +85,7 @@ class _Main_State extends State<Main_> {
         title: "Number of Guests:",
         options: List.generate(10, (index) => index + 1),
         onChanged: (v) => setState(() {}), //
+        prefixIcon: Icon(Icons.people_outline), //
       ),
 
       // stay duration days
@@ -93,6 +94,7 @@ class _Main_State extends State<Main_> {
         title: "Stay Duration (Days):",
         options: List.generate(365, (index) => index),
         onChanged: (v) => setState(() {}), //
+        prefixIcon: Icon(Icons.calendar_month_outlined),
       ),
 
       // stay duration hours
@@ -101,6 +103,7 @@ class _Main_State extends State<Main_> {
         title: "Stay Duration (Hours):",
         options: [0, 3, 6, 9, 12, 15, 18, 21],
         onChanged: (v) => setState(() {}), //
+        prefixIcon: Icon(Icons.access_time_outlined),
       ),
 
       // note
@@ -111,6 +114,7 @@ class _Main_State extends State<Main_> {
           labelText: "Note:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixIcon: Icon(Icons.note_alt_outlined),
         ),
         onChanged: (v) => setState(() {}), //
         onSubmitted: (v) => can_update ? on_update() : null, //
@@ -143,11 +147,11 @@ class _Main_State extends State<Main_> {
       int stay_days = int.tryParse(c_d_day.text) ?? 0;
       int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
       double price_day = double.tryParse(sm_r.data[sm_r.USD_PER_DAY]?["value"].toString() ?? "") ?? 0;
-      double price_hour = double.tryParse(sm_r.data[sm_r.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
-      double room_paid = double.tryParse(sm_fd.data[sm_fd.ROOM_PAY]?["value"].toString() ?? "") ?? 0;
-      double room_price = (price_day * stay_days) + (price_hour * stay_hours / 3);
+      double price_3hours = double.tryParse(sm_r.data[sm_r.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
+      double room_paid = double.tryParse(sm_fd.data[sm_fd.ROOM_PAY_TOTAL]?["value"].toString() ?? "") ?? 0;
+      double room_price = (price_day * stay_days) + (price_3hours * stay_hours / 3);
 
-      //
+      // * ធ្វើការផ្លាស់ប្តូរទិន្នន័យនៅក្នុង Front Desk Table នៅលើ Database
       await dio.post(
         endpoint.FRONT_DESK_FORM_CHECK_IN_UPDATE, //
         data: {
@@ -160,8 +164,14 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      //
-      if (room_paid != room_price)
+      // * ប្រៀបធៀបដោយ tolerance (0.00001$) ដើម្បីចៀសវាងបញ្ហា floating point
+      const double epsilon = 0.00001;
+
+      // * ត្រឡប់ទៅ Pending Pay តែពេលបង់មិនទាន់គ្រប់ (ចៀសវាងការធ្លាក់ពេលអតិថិជនបង់លើស)
+      final bool is_underpaid = room_paid < room_price - epsilon;
+
+      // * ប្រសិនបើលុយបានបង់គ្រប់ ឬ បង់លើស ត្រឡប់ទៅ Pending Leave វិញ
+      if (is_underpaid)
         await dio.post(
           endpoint.ROOM_UPDATE, //
           data: {
@@ -170,8 +180,8 @@ class _Main_State extends State<Main_> {
           },
         );
 
-      Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Update Successful", cl: Colors.green);
+      Navigator.pop(context, true); // * បិទ Form នេះ
+      snackbar(ct: context, ms: "Update Successful", cl: Colors.green); // * បង្ហាញសារ Success
       //
     } catch (e, st) {
       print(st);

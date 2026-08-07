@@ -45,7 +45,8 @@ class _Main_State extends State<Main_> {
   dynamic tmp;
 
   final c_price = TextEditingController();
-  final c_pay = TextEditingController();
+  final c_pay_cash = TextEditingController();
+  final c_pay_bank = TextEditingController();
   final c_change = TextEditingController();
   final c_note = TextEditingController();
 
@@ -64,7 +65,8 @@ class _Main_State extends State<Main_> {
 
       //
       c_price.text = sm_fd.data[sm_fd.REVENUE_PRICE]?["value"]?.toString() ?? "";
-      c_pay.text = sm_fd.data[sm_fd.REVENUE_PAY]?["value"]?.toString() ?? "";
+      c_pay_cash.text = sm_fd.data[sm_fd.REVENUE_PAY_CASH]?["value"]?.toString() ?? "";
+      c_pay_bank.text = sm_fd.data[sm_fd.REVENUE_PAY_BANK]?["value"]?.toString() ?? "";
       c_change.text = sm_fd.data[sm_fd.REVENUE_RETURN]?["value"]?.toString() ?? "";
       c_note.text = sm_fd.data[sm_fd.REVENUE_PAY_NOTE]?["value"]?.toString() ?? "";
 
@@ -88,19 +90,31 @@ class _Main_State extends State<Main_> {
           labelText: "Revenue Price:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixText: "\$ ",
+          prefixIcon: Icon(Icons.attach_money_outlined), //
         ),
         onChanged: (v) => setState(() {}), //
       ),
 
       //
       TextField(
-        controller: c_pay,
+        controller: c_pay_cash,
         decoration: InputDecoration(
-          labelText: "Payment:", //
+          labelText: "Cash Payment:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixText: "\$ ",
+          prefixIcon: Icon(Icons.payments_outlined), //
+        ),
+        onChanged: (v) => setState(() {}), //
+      ),
+
+      //
+      TextField(
+        controller: c_pay_bank,
+        decoration: InputDecoration(
+          labelText: "Bank Payment:", //
+          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixIcon: Icon(Icons.account_balance_outlined),
         ),
         onChanged: (v) => setState(() {}), //
       ),
@@ -112,7 +126,7 @@ class _Main_State extends State<Main_> {
           labelText: "Return:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixText: "\$ ",
+          prefixIcon: Icon(Icons.currency_exchange_outlined),
         ),
         onChanged: (v) => setState(() {}), //
       ),
@@ -125,6 +139,7 @@ class _Main_State extends State<Main_> {
           labelText: "Note:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixIcon: Icon(Icons.note_alt_outlined), //
         ),
         onChanged: (v) => setState(() {}), //
       ),
@@ -161,15 +176,17 @@ class _Main_State extends State<Main_> {
 
   double get balanced {
     double price = double.tryParse(c_price.text) ?? 0;
-    double pay = double.tryParse(c_pay.text) ?? 0;
+    double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
+    double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
     double change = double.tryParse(c_change.text) ?? 0;
-    return pay - price - change;
+    return (pay_cash + pay_bank) - price - change;
   }
 
   void on_pay() async {
     try {
       double price = double.tryParse(c_price.text) ?? 0;
-      double pay = double.tryParse(c_pay.text) ?? 0;
+      double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
+      double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
       double change = double.tryParse(c_change.text) ?? 0;
 
       await dio.post(
@@ -177,7 +194,8 @@ class _Main_State extends State<Main_> {
         data: {
           sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //
           sm_fd.REVENUE_PRICE: price, //
-          sm_fd.REVENUE_PAY: pay, //
+          sm_fd.REVENUE_PAY_CASH: pay_cash, //
+          sm_fd.REVENUE_PAY_BANK: pay_bank, //
           sm_fd.REVENUE_RETURN: change, //
           sm_fd.REVENUE_PAY_NOTE: c_note.text, //
         },

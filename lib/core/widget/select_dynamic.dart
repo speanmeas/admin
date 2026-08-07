@@ -22,6 +22,7 @@ class _SelectDynamicState extends State<SelectDynamic> {
             labelText: widget.title,
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
             floatingLabelBehavior: FloatingLabelBehavior.always,
+            prefixIcon: widget.prefixIcon,
             suffixIcon: Padding(
               padding: EdgeInsets.only(right: 4),
               child: IconButton(
@@ -50,12 +51,14 @@ class SelectDynamic extends StatefulWidget {
     required this.title,
     required this.options,
     required this.onChanged,
+    this.prefixIcon,
   });
 
   final TextEditingController controller;
   final String title;
   final List<dynamic> options;
   final ValueChanged<dynamic> onChanged;
+  final Widget? prefixIcon;
 
   @override
   State<SelectDynamic> createState() => _SelectDynamicState();

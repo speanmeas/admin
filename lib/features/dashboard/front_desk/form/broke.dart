@@ -73,6 +73,7 @@ class _Main_State extends State<Main_> {
           labelText: "Note:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixIcon: Icon(Icons.note_alt_outlined), //
         ),
         onChanged: (v) => setState(() {}), //
       ),
@@ -92,6 +93,14 @@ class _Main_State extends State<Main_> {
 
   void on_broke() async {
     try {
+      tmp = await dio.post(
+        endpoint.FRONT_DESK_FORM_BROKE,
+        data: {
+          sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //
+          sm_fd.BROKE_NOTE: c_note.text, //
+        },
+      );
+
       await dio.post(
         endpoint.ROOM_UPDATE, //
         data: {
@@ -100,15 +109,6 @@ class _Main_State extends State<Main_> {
           sm_r.FRONT_DESK_ID: tmp.data[0][sm_fd.ID], //
         },
       );
-
-      await dio.post(
-        endpoint.FRONT_DESK_FORM_BROKE,
-        data: {
-          sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //
-          sm_fd.BROKE_NOTE: c_note.text, //
-        },
-      );
-
       Navigator.pop(context, true);
 
       snackbar(ct: context, ms: "Success", cl: Colors.green);

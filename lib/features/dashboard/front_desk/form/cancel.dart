@@ -45,7 +45,8 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-  final c_pay = TextEditingController();
+  final c_pay_cash = TextEditingController();
+  final c_pay_bank = TextEditingController();
   final c_return = TextEditingController();
   final c_note = TextEditingController();
 
@@ -62,7 +63,8 @@ class _Main_State extends State<Main_> {
         for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
       }
 
-      c_pay.text = sm_fd.data[sm_fd.ROOM_PAY]?["value"]?.toString() ?? "";
+      c_pay_cash.text = sm_fd.data[sm_fd.ROOM_PAY_CASH]?["value"]?.toString() ?? "";
+      c_pay_bank.text = sm_fd.data[sm_fd.ROOM_PAY_BANK]?["value"]?.toString() ?? "";
       c_return.text = sm_fd.data[sm_fd.ROOM_RETURN]?["value"]?.toString() ?? "";
       c_note.text = sm_fd.data[sm_fd.CANCEL_NOTE]?["value"]?.toString() ?? "";
 
@@ -80,9 +82,20 @@ class _Main_State extends State<Main_> {
     return _layout([
       //
       TextField(
-        controller: c_pay,
+        controller: c_pay_cash,
         decoration: InputDecoration(
-          labelText: "Payment:", //
+          labelText: "Cash Payment:", //
+          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixText: "\$ ",
+        ),
+        onChanged: (v) => setState(() {}), //
+      ),
+
+      TextField(
+        controller: c_pay_bank,
+        decoration: InputDecoration(
+          labelText: "Bank Payment:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
           prefixText: "\$ ",
@@ -164,9 +177,10 @@ class _Main_State extends State<Main_> {
 
   //
   double get balanced {
-    double pay_r = double.tryParse(c_pay.text) ?? 0;
+    double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
+    double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
     double return_r = double.tryParse(c_return.text) ?? 0;
-    return pay_r - return_r;
+    return (pay_cash + pay_bank) - return_r;
   }
 
   //
@@ -177,7 +191,8 @@ class _Main_State extends State<Main_> {
         endpoint.FRONT_DESK_FORM_CANCEL,
         data: {
           sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //
-          sm_fd.ROOM_PAY: double.tryParse(c_pay.text) ?? 0, //
+          sm_fd.ROOM_PAY_CASH: double.tryParse(c_pay_cash.text) ?? 0, //
+          sm_fd.ROOM_PAY_BANK: double.tryParse(c_pay_bank.text) ?? 0, //
           sm_fd.ROOM_RETURN: double.tryParse(c_return.text) ?? 0, //
           sm_fd.CANCEL_NOTE: c_note.text, //
         },

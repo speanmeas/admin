@@ -14,12 +14,15 @@ import "schema.g.dart" as sm;
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
+  bool is_filter = false;
+  bool is_loading = false;
   final c_start = TextEditingController();
   final c_end = TextEditingController();
   PlutoGridStateManager? state_manager;
   List<PlutoRow> rows = []; // * ជួរដេកទិន្នន័យ
 
   void init() async {
+    setState(() => is_loading = true);
     try {
       //
       tmp = await dio.post(
@@ -31,13 +34,15 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      print(tmp.data[0]);
+      // print(tmp.data[0]);
 
       //
       setState(() {});
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    } finally {
+      setState(() => is_loading = false);
     }
   }
 
@@ -54,29 +59,37 @@ class _Main_State extends State<Main_> {
                 OutlinedButton.icon(
                   onPressed: () {},
                   icon: Icon(Icons.calendar_month),
-                  label: Text("Start Date"), //
+                  label: Text("Datetime Start"), //
                 ),
 
                 //
                 OutlinedButton.icon(
                   onPressed: () {},
                   icon: Icon(Icons.calendar_month),
-                  label: Text("End Date"), //
+                  label: Text("Datetime Stop"), //
                 ),
 
                 Spacer(),
 
-                //
+                // filter
                 Tooltip(
-                  message: "Filter",
+                  message: is_filter ? "Hide Filter" : "Show Filter",
                   child: InkWell(
                     child: Container(
                       width: 32,
                       height: 32,
-                      child: Icon(Icons.filter_alt_outlined, size: 24, color: Colors.blue), //
+                      alignment: Alignment.center,
+                      child: Icon(
+                        is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
+                        size: 24,
+                        color: Colors.blue,
+                      ), //
                     ), //
                     onTap: () {
-                      // snackbar(ct: context, ms: "Development", cl: Colors.black);
+                      is_filter = !is_filter; // *
+                      state_manager?.setShowColumnFilter(is_filter);
+                      if (!is_filter) state_manager?.setFilterWithFilterRows([]);
+                      setState(() {});
                     },
                   ),
                 ),
@@ -102,17 +115,65 @@ class _Main_State extends State<Main_> {
             ),
           ),
 
+          if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
+
           Expanded(child: child), //
 
           Container(
             height: 34, //
             padding: EdgeInsets.all(1),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                SizedBox(width: 8),
                 //
-                Text("ចំណូលសរុប: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), //
-                Text("100 \$", style: TextStyle(color: Colors.green)), //
+                Text(
+                  "ចំណូលសរុប: ", //
+                  style: TextStyle(
+                    fontSize: 20, //
+                    fontWeight: FontWeight.bold,
+                  ),
+                ), //
+                Text(
+                  "100 \$",
+                  style: TextStyle(
+                    fontSize: 18, //
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+
+                Spacer(),
+
+                //
+                Tooltip(
+                  message: "Export to PDF",
+                  child: InkWell(
+                    onTap: () {},
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      alignment: Alignment.center,
+                      child: Icon(Icons.picture_as_pdf_outlined, color: Colors.blue), //
+                    ),
+                  ),
+                ),
+
+                //
+                Tooltip(
+                  message: "Export to Excel",
+                  child: InkWell(
+                    onTap: () {},
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      alignment: Alignment.center,
+                      child: Icon(Icons.table_chart_outlined, color: Colors.blue), //
+                    ),
+                  ),
+                ),
+
+                SizedBox(width: 8),
               ],
             ),
           ),
@@ -166,6 +227,8 @@ class _Main_State extends State<Main_> {
     return "";
   }
 
+  final WIDTH = 120.0; // * ទទឹងស្តង់ដាររបស់ជួរឈរទិន្នន័យ
+
   @override
   Widget build(BuildContext context) {
     return _layout(
@@ -175,127 +238,131 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: "_id", //
             title: "ID",
-
             type: PlutoColumnType.number(),
+            width: WIDTH,
             hide: true, //
           ),
           PlutoColumn(
-            field: "no", //
+            field: "index", //
             title: "ល.រ.",
-
             type: PlutoColumnType.number(),
+            width: WIDTH,
           ),
           PlutoColumn(
             field: "room_number", //
             title: "បន្ទប់",
-
             type: PlutoColumnType.text(),
+            width: WIDTH,
           ),
           PlutoColumn(
             field: "guest_full_name", //
             title: "ឈ្មោះភ្ញៀវ",
-
             type: PlutoColumnType.text(),
+            width: WIDTH,
           ),
           PlutoColumn(
-            field: "stay_n_guest", //
+            field: "stay_number_of_guest", //
             title: "ចំនួនភ្ញៀវ",
-
             type: PlutoColumnType.number(),
+            width: WIDTH,
           ),
           //
           PlutoColumn(
             field: "check_in_at", //
             title: "ពេលចូល",
-
             type: PlutoColumnType.text(),
+            width: WIDTH,
           ),
           //
           PlutoColumn(
             field: "checkout", //
             title: "ពេលចេញ",
-
             type: PlutoColumnType.text(),
+            width: WIDTH,
           ),
           //
           PlutoColumn(
             field: "stay_days", //
             title: "ចំនួនថ្ងៃ",
-
             type: PlutoColumnType.text(),
+            width: WIDTH,
           ),
           //
           PlutoColumn(
             field: "stay_hours", //
             title: "ចំនួនម៉ោង",
-
             type: PlutoColumnType.text(),
+            width: WIDTH,
           ),
           //
           PlutoColumn(
             field: "room_price", //
             title: "តម្លៃបន្ទប់",
-
             type: PlutoColumnType.text(),
+            width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "room_pay", //
-            title: "ប្រាក់បង់",
-
+            field: "room_pay_cash", //
+            title: "បង់តាមសាច់ប្រាក់",
             type: PlutoColumnType.text(),
+            width: WIDTH,
+          ),
+          //
+          PlutoColumn(
+            field: "room_pay_bank", //
+            title: "បង់តាមធនាគារ",
+            type: PlutoColumnType.text(),
+            width: WIDTH,
           ),
           //
           PlutoColumn(
             field: "room_return", //
             title: "ប្រាប់អាប់",
-
             type: PlutoColumnType.text(),
-          ),
-          PlutoColumn(
-            field: "room_pay_method", //
-            title: "ទូទាត់តាម",
-
-            type: PlutoColumnType.text(),
+            width: WIDTH,
           ),
           //
           PlutoColumn(
             field: "revenue_price", //
             title: "តម្លៃចំណូល",
-
             type: PlutoColumnType.text(),
+            width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "revenue_pay", //
-            title: "ប្រាក់បង់",
-
+            field: "revenue_pay_cash", //
+            title: "បង់តាមសាច់ប្រាក់",
             type: PlutoColumnType.text(),
+            width: WIDTH,
+          ),
+          //
+          PlutoColumn(
+            field: "revenue_pay_bank", //
+            title: "បង់តាមធនាគារ",
+            type: PlutoColumnType.text(),
+            width: WIDTH,
           ),
           //
           PlutoColumn(
             field: "revenue_return", //
             title: "ប្រាប់អាប់",
-
             type: PlutoColumnType.text(),
+            width: WIDTH,
           ),
+          //
           PlutoColumn(
-            field: "revenue_pay_method", //
-            title: "ទូទាត់តាម",
-
+            field: "check_in_by", //
+            title: "ឲចូលដោយ",
             type: PlutoColumnType.text(),
+            width: WIDTH,
           ),
+          //
           PlutoColumn(
-            field: "checkinby", //
-            title: "ចូលដោយ",
-
+            field: "check_out_by", //
+            title: "ឲចេញដោយ",
             type: PlutoColumnType.text(),
-          ),
-          PlutoColumn(
-            field: "checkoutby", //
-            title: "ចេញដោយ",
-
-            type: PlutoColumnType.text(),
+            width: WIDTH,
           ),
         ], //
         //
@@ -310,12 +377,11 @@ class _Main_State extends State<Main_> {
             columnHeight: 32,
             columnFilterHeight: 36,
             defaultColumnTitlePadding: EdgeInsets.fromLTRB(8, 0, 24, 0),
+            defaultColumnFilterPadding: EdgeInsets.fromLTRB(1, 1, 1, 1),
           ),
         ),
         onLoaded: (event) {
           state_manager = event.stateManager;
-          state_manager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.scale));
-          state_manager?.notifyListeners();
           state_manager?.addListener(() => setState(() {}));
         },
       ),
@@ -327,6 +393,8 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
+
+  //
 }
 
 class Main_ extends StatefulWidget {

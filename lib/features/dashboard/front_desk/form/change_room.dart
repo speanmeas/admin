@@ -96,9 +96,8 @@ class _Main_State extends State<Main_> {
           }
           return options;
         })(),
-        onChanged: (value) {
-          setState(() {});
-        },
+        onChanged: (value) => setState(() {}),
+        prefixIcon: Icon(Icons.hotel_outlined), //
       ),
 
       // note
@@ -109,6 +108,7 @@ class _Main_State extends State<Main_> {
           labelText: "Note:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixIcon: Icon(Icons.note_alt_outlined), //
         ),
         onChanged: (v) => setState(() {}), //
       ),

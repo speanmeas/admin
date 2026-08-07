@@ -153,23 +153,30 @@ Map<String, Map<String, dynamic>> data = {
     "lock": false,
     "value": null
   },
-  "room_pay": {
+  "room_pay_cash": {
     "type": "number",
-    "title": "Room Pay [USD]",
+    "title": "Room Pay Cash [USD]",
     "hide": false,
     "lock": false,
+    "value": null
+  },
+  "room_pay_bank": {
+    "type": "number",
+    "title": "Room Pay Bank [USD]",
+    "hide": false,
+    "lock": false,
+    "value": null
+  },
+  "room_pay_total": {
+    "type": "number",
+    "title": "Room Pay Total [USD]",
+    "hide": false,
+    "lock": true,
     "value": null
   },
   "room_return": {
     "type": "number",
     "title": "Room Return [USD]",
-    "hide": false,
-    "lock": false,
-    "value": null
-  },
-  "room_pay_method": {
-    "type": "number",
-    "title": "Room Pay Method",
     "hide": false,
     "lock": false,
     "value": null
@@ -202,11 +209,25 @@ Map<String, Map<String, dynamic>> data = {
     "lock": false,
     "value": null
   },
-  "revenue_pay": {
+  "revenue_pay_cash": {
     "type": "number",
-    "title": "Revenue Pay [USD]",
+    "title": "Revenue Pay Cash [USD]",
     "hide": false,
     "lock": false,
+    "value": null
+  },
+  "revenue_pay_bank": {
+    "type": "number",
+    "title": "Revenue Pay Bank [USD]",
+    "hide": false,
+    "lock": false,
+    "value": null
+  },
+  "revenue_pay_total": {
+    "type": "number",
+    "title": "Revenue Pay Total [USD]",
+    "hide": false,
+    "lock": true,
     "value": null
   },
   "revenue_return": {
@@ -221,13 +242,6 @@ Map<String, Map<String, dynamic>> data = {
     "title": "Revenue Balance [USD]",
     "hide": false,
     "lock": true,
-    "value": null
-  },
-  "revenue_pay_method": {
-    "type": "number",
-    "title": "Revenue Pay Method",
-    "hide": false,
-    "lock": false,
     "value": null
   },
   "revenue_pay_note": {
@@ -380,17 +394,19 @@ final CANCEL_NOTE = "cancel_note";
 final CANCEL_BY = "cancel_by";
 final CANCEL_AT = "cancel_at";
 final ROOM_PRICE = "room_price";
-final ROOM_PAY = "room_pay";
+final ROOM_PAY_CASH = "room_pay_cash";
+final ROOM_PAY_BANK = "room_pay_bank";
+final ROOM_PAY_TOTAL = "room_pay_total";
 final ROOM_RETURN = "room_return";
-final ROOM_PAY_METHOD = "room_pay_method";
 final ROOM_PAY_NOTE = "room_pay_note";
 final ROOM_PAY_BY = "room_pay_by";
 final ROOM_PAY_AT = "room_pay_at";
 final REVENUE_PRICE = "revenue_price";
-final REVENUE_PAY = "revenue_pay";
+final REVENUE_PAY_CASH = "revenue_pay_cash";
+final REVENUE_PAY_BANK = "revenue_pay_bank";
+final REVENUE_PAY_TOTAL = "revenue_pay_total";
 final REVENUE_RETURN = "revenue_return";
 final REVENUE_BALANCE = "revenue_balance";
-final REVENUE_PAY_METHOD = "revenue_pay_method";
 final REVENUE_PAY_NOTE = "revenue_pay_note";
 final REVENUE_PAY_BY = "revenue_pay_by";
 final REVENUE_PAY_AT = "revenue_pay_at";
