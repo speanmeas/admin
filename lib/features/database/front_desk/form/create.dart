@@ -7,7 +7,7 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/light.dart" as theme;
 import "package:speanmeas/core/dialog/datetime.dart" as dt_picker;
-import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/core/widget/snackbar_new.dart";
 import "package:speanmeas/core/widget/show_data.dart" as sd;
 
 import "../config.dart";
@@ -294,12 +294,12 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, tmp.data[0]);
 
       //
-      sb.view(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: "Success", cl: Colors.green);
 
       //
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 }

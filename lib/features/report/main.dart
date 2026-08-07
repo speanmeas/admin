@@ -6,7 +6,7 @@ import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
-import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/core/widget/snackbar_new.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep;
 
 import "schema.g.dart" as sm;
@@ -37,7 +37,7 @@ class _Main_State extends State<Main_> {
       setState(() {});
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -76,7 +76,7 @@ class _Main_State extends State<Main_> {
                       child: Icon(Icons.filter_alt_outlined, size: 24, color: Colors.blue), //
                     ), //
                     onTap: () {
-                      // sb.view(ct: context, ms: "Development", cl: Colors.black);
+                      // snackbar(ct: context, ms: "Development", cl: Colors.black);
                     },
                   ),
                 ),

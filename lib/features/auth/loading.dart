@@ -4,9 +4,9 @@ import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart" as sb; // ignore: unused_import
 import "package:speanmeas/core/theme/light.dart" as theme; // ignore: unused_import
 import "package:speanmeas/core/layout/layout.dart" as layout;
+import "package:speanmeas/core/widget/snackbar_new.dart";
 
 import "sign_in.dart" as form_si;
 import "schema.g.dart" as sm;
@@ -60,7 +60,7 @@ class _Main_State extends State<Main_> {
       dio.options.headers["Authorization"] = "Bearer ${await ss.read(key: "access_token")}";
 
       //
-      sb.view(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: "Success", cl: Colors.green);
 
       //
       await glob.init();

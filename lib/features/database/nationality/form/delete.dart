@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
-import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/core/widget/snackbar_new.dart";
 
 import "../config.dart";
 
@@ -75,7 +75,7 @@ class _Main_State extends State<Main_> {
       tmp = await dio.post("$PATH/delete", data: {"_id": widget.id});
 
       //
-      sb.view(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: "Success", cl: Colors.green);
 
       //
       Navigator.pop(context, tmp.data);
@@ -83,7 +83,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 }

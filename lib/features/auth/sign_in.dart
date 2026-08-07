@@ -5,7 +5,7 @@ import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/utility/secure_storage.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/core/widget/snackbar_new.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
 import "package:speanmeas/core/layout/layout.dart" as layout;
 
@@ -126,7 +126,7 @@ class _Main_State extends State<Main_> {
       for (var e in u_schema.data.entries) u_schema.data[e.key]!["value"] = tmp.data[e.key];
 
       //
-      sb.view(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: "Success", cl: Colors.green);
 
       //
       await glob.init();
@@ -137,7 +137,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 

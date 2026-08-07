@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
 
-class _Main_State extends State<Main_> {
+class _SelectDynamicState extends State<SelectDynamic> {
   //
   dynamic tmp;
 
@@ -43,8 +43,8 @@ class _Main_State extends State<Main_> {
   }
 }
 
-class Main_ extends StatefulWidget {
-  const Main_({
+class SelectDynamic extends StatefulWidget {
+  const SelectDynamic({
     super.key, //
     required this.controller,
     required this.title,
@@ -58,7 +58,7 @@ class Main_ extends StatefulWidget {
   final ValueChanged<dynamic> onChanged;
 
   @override
-  State<Main_> createState() => _Main_State();
+  State<SelectDynamic> createState() => _SelectDynamicState();
 }
 
 void main() {
@@ -67,7 +67,7 @@ void main() {
       theme: theme.data(), //
       home: Scaffold(
         body: Center(
-          child: Main_(
+          child: SelectDynamic(
             controller: TextEditingController(text: "1"),
             title: "Number of Guests:",
             options: List.generate(100, (index) => index),

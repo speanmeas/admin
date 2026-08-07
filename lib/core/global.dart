@@ -7,7 +7,8 @@ class Global extends ChangeNotifier {
   Global._();
 
   Future<void> init() async {
-    if (kDebugMode) body = "Data Front Desk";
+    if (kDebugMode) body = "Front Desk";
+    // if (kDebugMode) body = "Data Front Desk";
 
     final info = await PackageInfo.fromPlatform();
     glob.VERSION = "${info.version}+${info.buildNumber}";

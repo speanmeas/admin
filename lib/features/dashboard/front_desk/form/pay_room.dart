@@ -3,7 +3,8 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/light.dart" as theme;
-import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/core/widget/select_dynamic.dart";
+import "package:speanmeas/core/widget/snackbar_new.dart";
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 import "../schema.g.dart" as sm_fd;
 
@@ -47,6 +48,7 @@ class _Main_State extends State<Main_> {
   final c_pay = TextEditingController();
   final c_change = TextEditingController();
   final c_note = TextEditingController();
+  final c_method = TextEditingController();
 
   void init() async {
     try {
@@ -70,7 +72,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -92,17 +94,35 @@ class _Main_State extends State<Main_> {
       ),
 
       // payment
-      TextField(
-        autofocus: true,
-        controller: c_pay,
-        decoration: InputDecoration(
-          labelText: "Payment:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixText: "\$ ",
-        ),
-        onChanged: (v) => setState(() {}), //
-        onSubmitted: (v) => can_pay ? on_pay() : null, //
+      Row(
+        spacing: 8,
+        children: [
+          Expanded(
+            child: TextField(
+              controller: c_pay,
+              decoration: InputDecoration(
+                labelText: "Payment:", //
+                labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                prefixText: "\$ ",
+              ),
+              onChanged: (v) => setState(() {}), //
+              onSubmitted: (v) => can_pay ? on_pay() : null, //
+            ),
+          ),
+
+          SizedBox(
+            width: 160,
+            child: SelectDynamic(
+              controller: c_method, //
+              title: "Payment Method:",
+              options: ["Cash", "Bank"],
+              onChanged: (value) {
+                print("Selected payment method: $value");
+              },
+            ),
+          ),
+        ],
       ),
 
       // return
@@ -197,6 +217,7 @@ class _Main_State extends State<Main_> {
           sm_fd.ROOM_PRICE: price, //
           sm_fd.ROOM_PAY: pay, //
           sm_fd.ROOM_RETURN: change, //
+          sm_fd.ROOM_PAY_METHOD: c_method.text, //
           sm_fd.ROOM_PAY_NOTE: c_note.text, //
         },
       );
@@ -210,11 +231,11 @@ class _Main_State extends State<Main_> {
       );
 
       Navigator.pop(context, true);
-      sb.view(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: "Success", cl: Colors.green);
       //
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 

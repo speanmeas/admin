@@ -6,7 +6,7 @@ import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
-import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/core/widget/snackbar_new.dart";
 
 import "config.dart";
 import "schema.g.dart" as sm;
@@ -63,7 +63,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -84,12 +84,12 @@ class _Main_State extends State<Main_> {
       //
       load_page(page);
 
-      sb.view(ct: context, ms: "Refresh completed.", cl: Colors.green);
+      snackbar(ct: context, ms: "Refresh completed.", cl: Colors.green);
 
       //
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -148,7 +148,7 @@ class _Main_State extends State<Main_> {
       setState(() {});
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
       if (request_id == load_request_id && mounted) {
         is_loading = false;
         setState(() {});
@@ -286,7 +286,7 @@ class _Main_State extends State<Main_> {
                       ), //
                     ), //
                     onTap: () {
-                      sb.view(ct: context, ms: "Development", cl: Colors.black);
+                      snackbar(ct: context, ms: "Development", cl: Colors.black);
                     },
                   ),
                 ),
@@ -523,7 +523,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -533,7 +533,7 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        sb.view(ct: context, ms: "Please select a row.", cl: Colors.red);
+        snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
@@ -544,7 +544,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -554,7 +554,7 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        sb.view(ct: context, ms: "Please select a row.", cl: Colors.red);
+        snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
@@ -568,7 +568,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -578,7 +578,7 @@ class _Main_State extends State<Main_> {
       //
       final row = state_manager?.currentRow;
       if (row == null) {
-        sb.view(ct: context, ms: "Please select a row.", cl: Colors.red);
+        snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
@@ -593,7 +593,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 

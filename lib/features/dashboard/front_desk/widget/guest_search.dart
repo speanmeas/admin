@@ -5,7 +5,7 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 //
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
-import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/core/widget/snackbar_new.dart";
 
 import "package:speanmeas/features/database/guest/form/create.dart" as g_create;
 import "package:speanmeas/features/database/guest/schema.g.dart" as g_schema;
@@ -53,7 +53,7 @@ class _Main_State extends State<Main_> {
       widget.onChanged?.call(items[0]);
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -149,7 +149,7 @@ class _Main_State extends State<Main_> {
       widget.onChanged?.call(tmp.data[0]);
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
@@ -174,7 +174,7 @@ class _Main_State extends State<Main_> {
       //
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
       return [];
     }
   }

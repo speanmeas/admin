@@ -3,11 +3,11 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/light.dart" as theme;
-import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/core/widget/select_dynamic.dart";
+import "package:speanmeas/core/widget/snackbar_new.dart";
 import "package:speanmeas/core/widget/show_data.dart" as sd;
 import "package:speanmeas/features/database/guest/schema.g.dart" as sm_g;
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
-import "package:speanmeas/core/widget/select_dynamic.dart" as select_dnm;
 
 import "../schema.g.dart" as sm_fd;
 import "../widget/guest_search.dart" as g_search;
@@ -167,7 +167,7 @@ class _Main_State extends State<Main_> {
       ),
 
       // number of guests
-      select_dnm.Main_(
+      SelectDynamic(
         controller: c_n_o_guest,
         title: "Number of Guests:",
         options: List.generate(10, (index) => index + 1),
@@ -175,7 +175,7 @@ class _Main_State extends State<Main_> {
       ),
 
       // stay duration days
-      select_dnm.Main_(
+      SelectDynamic(
         controller: c_d_day,
         title: "Stay Duration (Days):",
         options: List.generate(365, (index) => index),
@@ -183,7 +183,7 @@ class _Main_State extends State<Main_> {
       ),
 
       // stay duration hours
-      select_dnm.Main_(
+      SelectDynamic(
         controller: c_d_hour,
         title: "Stay Duration (Hours):",
         options: [0, 3, 6, 9, 12, 15, 18, 21],
@@ -259,11 +259,11 @@ class _Main_State extends State<Main_> {
       );
 
       Navigator.pop(context, true);
-      sb.view(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: "Success", cl: Colors.green);
       //
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 

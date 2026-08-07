@@ -9,7 +9,7 @@ import "package:speanmeas/core/theme/light.dart" as theme;
 //
 import "package:speanmeas/features/database/room/form/create.dart" as r_create;
 import "package:speanmeas/features/database/room/schema.g.dart" as r_schema;
-import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/core/widget/snackbar_new.dart";
 
 class _Main_State extends State<Main_> {
   //
@@ -48,7 +48,7 @@ class _Main_State extends State<Main_> {
       widget.onChanged?.call(List<Map<String, dynamic>>.from(r.data).first);
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
       widget.controller.clear();
       widget.onChanged?.call({});
     }
@@ -88,7 +88,7 @@ class _Main_State extends State<Main_> {
                 //
               } catch (e, st) {
                 print(st);
-                sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+                snackbar(ct: context, ms: e.toString(), cl: Colors.red);
                 return [];
               }
             },

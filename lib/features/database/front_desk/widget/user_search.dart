@@ -6,7 +6,7 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/light.dart" as theme;
 import "package:speanmeas/features/database/user/schema.g.dart" as n_schema_r;
-import "package:speanmeas/core/widget/snackbar.dart" as sb;
+import "package:speanmeas/core/widget/snackbar_new.dart";
 
 class _Main_State extends State<Main_> {
   //
@@ -45,7 +45,7 @@ class _Main_State extends State<Main_> {
       widget.onChanged?.call(List<Map<String, dynamic>>.from(r.data).first);
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
       widget.controller.clear();
       widget.onChanged?.call({});
     }
@@ -85,7 +85,7 @@ class _Main_State extends State<Main_> {
                 //
               } catch (e, st) {
                 print(st);
-                sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+                snackbar(ct: context, ms: e.toString(), cl: Colors.red);
                 return [];
               }
             },

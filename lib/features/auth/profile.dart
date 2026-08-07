@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart" as sb; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar_new.dart";
 import "package:speanmeas/core/theme/light.dart" as theme; // ignore: unused_import
 
 import "schema.g.dart" as sm;
@@ -61,7 +61,7 @@ class _Main_State extends State<Main_> {
       if (tmp != null) for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
 
     setState(() {});
@@ -204,10 +204,10 @@ class _Main_State extends State<Main_> {
       Navigator.push(context, MaterialPageRoute(builder: (_) => sign_in.Main_()));
 
       //
-      sb.view(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: "Success", cl: Colors.green);
     } catch (e, st) {
       print(st);
-      sb.view(ct: context, ms: e.toString(), cl: Colors.red);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
