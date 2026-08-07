@@ -2,38 +2,20 @@ import "package:flutter/material.dart";
 
 ThemeData data() {
   return ThemeData(
-    //
-    //
     fontFamily: "Nokora", //
-    //
-    //
-    colorScheme: ColorScheme.fromSeed(
-      // seedColor: Colors.yellow[800]!,
-      seedColor: Colors.blue,
-      // background: const Color(0xFFFFD700), // gold color
-      // seedColor: const Color(0xFFC0C0C0), // silver color
-      // primary: Colors.blueAccent, //
-    ),
 
-    // [APP BAR]
-    //
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.blue, //
+      brightness: Brightness.light,
+    ), //
+
+    scaffoldBackgroundColor: Colors.white, //
+
     appBarTheme: AppBarTheme(
       titleTextStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      // backgroundColor: Colors.white, //
-      // foregroundColor: Colors.blue, //
-      // shape: const RoundedRectangleBorder(
-      //   side: BorderSide(
-      // color: Colors.grey,
-      //     width: 1, //
-      //   ),
-      // ),
-      // elevation: 0,
-    ),
-    //
-    //
+      backgroundColor: Colors.white, //
+    ), //
 
-    // [TEXT]
-    //
     textTheme: const TextTheme(
       // bodyMedium: TextStyle(fontSize: 12.0), //
       // textcolor
