@@ -6,7 +6,7 @@ import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
-import "package:speanmeas/core/widget/snackbar_new.dart";
+import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep;
 
 import "schema.g.dart" as sm;

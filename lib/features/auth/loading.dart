@@ -6,7 +6,7 @@ import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_i
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/light.dart" as theme; // ignore: unused_import
 import "package:speanmeas/core/layout/layout.dart" as layout;
-import "package:speanmeas/core/widget/snackbar_new.dart";
+import "package:speanmeas/core/widget/snackbar.dart";
 
 import "sign_in.dart" as form_si;
 import "schema.g.dart" as sm;
@@ -37,7 +37,7 @@ class _Main_State extends State<Main_> {
   void try_access_token() async {
     try {
       //
-      final ac_tk = await ss.read(key: "access_token");
+      final ac_tk = await secure_storage.read(key: "access_token");
 
       if (ac_tk == null)
         Navigator.pushReplacement(
@@ -57,7 +57,7 @@ class _Main_State extends State<Main_> {
       for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       //
-      dio.options.headers["Authorization"] = "Bearer ${await ss.read(key: "access_token")}";
+      dio.options.headers["Authorization"] = "Bearer ${await secure_storage.read(key: "access_token")}";
 
       //
       snackbar(ct: context, ms: "Success", cl: Colors.green);
@@ -67,8 +67,8 @@ class _Main_State extends State<Main_> {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
     } catch (e, st) {
       print(st);
-      await ss.delete(key: "access_token");
-      await ss.delete(key: "_id");
+      await secure_storage.delete(key: "access_token");
+      await secure_storage.delete(key: "_id");
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(

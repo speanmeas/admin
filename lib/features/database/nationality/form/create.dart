@@ -7,8 +7,8 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/light.dart" as theme;
 import "package:speanmeas/core/dialog/datetime.dart" as dt_picker;
-import "package:speanmeas/core/widget/snackbar_new.dart";
-import "package:speanmeas/core/widget/show_data.dart" as show_data;
+import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/widget/show_data_new.dart";
 
 import "../config.dart";
 import "../schema.g.dart" as sm;
@@ -72,7 +72,7 @@ class _Main_State extends State<Main_> {
           if (e.value["lock"] == true) {
             String value = "";
             if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
-            return show_data.Main_(
+            return ShowData(
               title: e.value["title"], //
               value: value,
             );

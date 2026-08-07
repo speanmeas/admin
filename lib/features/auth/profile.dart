@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar_new.dart";
+import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/theme/light.dart" as theme; // ignore: unused_import
 
 import "schema.g.dart" as sm;
@@ -56,7 +56,7 @@ class _Main_State extends State<Main_> {
       //
       tmp = await dio.post(
         ep.AUTH_ACCESS_TOKEN, //
-        data: {"access_token": await ss.read(key: "access_token")},
+        data: {"access_token": await secure_storage.read(key: "access_token")},
       );
       if (tmp != null) for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
     } catch (e, st) {
@@ -195,8 +195,8 @@ class _Main_State extends State<Main_> {
       //
       sm.clear();
       await dio.options.headers.remove("Authorization");
-      await ss.delete(key: "access_token");
-      await ss.delete(key: "_id");
+      await secure_storage.delete(key: "access_token");
+      await secure_storage.delete(key: "_id");
 
       // goto to sign in
       Navigator.pop(context);

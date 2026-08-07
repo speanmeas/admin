@@ -5,7 +5,7 @@ import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/utility/secure_storage.dart";
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar_new.dart";
+import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
 import "package:speanmeas/core/layout/layout.dart" as layout;
 
@@ -118,8 +118,8 @@ class _Main_State extends State<Main_> {
       if (tmp == null) throw Exception("Invalid Username or Password");
 
       //
-      await ss.write(key: "access_token", value: tmp.data["access_token"]);
-      await ss.write(key: "_id", value: tmp.data["_id"]);
+      await secure_storage.write(key: "access_token", value: tmp.data["access_token"]);
+      await secure_storage.write(key: "_id", value: tmp.data["_id"]);
       dio.options.headers["Authorization"] = "Bearer ${tmp.data["access_token"]}";
 
       //

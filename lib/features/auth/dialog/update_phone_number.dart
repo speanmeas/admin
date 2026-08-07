@@ -4,7 +4,7 @@ import "package:flutter/services.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar_new.dart";
+import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/theme/light.dart" as theme; // ignore: unused_import
 
 import "../schema.g.dart" as sm;
@@ -85,7 +85,7 @@ class _Dialog_State extends State<Dialog_> {
       tmp = await dio.post(
         ep.USER_UPDATE, //
         data: {
-          "_id": await ss.read(key: "_id"), //
+          "_id": await secure_storage.read(key: "_id"), //
           sm.PHONE_NUMBER: controller.text, //
         },
       );

@@ -1,10 +1,11 @@
 import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
 import "package:speanmeas/core/theme/light.dart" as theme;
-import "package:speanmeas/core/widget/snackbar_new.dart";
-import "package:speanmeas/core/widget/show_data.dart" as sd;
+import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/widget/show_data_new.dart";
+import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
+
 import "package:speanmeas/features/database/guest/schema.g.dart" as sm_g;
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
@@ -100,7 +101,7 @@ class _Main_State extends State<Main_> {
         String value = "";
         if (sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"] != null) //
           value = sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"].toString() ?? "";
-        return sd.Main_(
+        return ShowData(
           title: sm_fd.data[sm_fd.GUEST_FULL_NAME]?["title"] ?? "", //
           value: value,
         );
@@ -110,7 +111,7 @@ class _Main_State extends State<Main_> {
         String value = "";
         if (sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"] != null) //
           value = sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"].toString() ?? "";
-        return sd.Main_(
+        return ShowData(
           title: sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["title"] ?? "", //
           value: value,
         );
@@ -120,7 +121,7 @@ class _Main_State extends State<Main_> {
         String value = "";
         if (sm_fd.data[sm_fd.GUEST_GENDER]?["value"] != null) //
           value = sm_fd.data[sm_fd.GUEST_GENDER]?["value"].toString() ?? "";
-        return sd.Main_(
+        return ShowData(
           title: sm_fd.data[sm_fd.GUEST_GENDER]?["title"] ?? "", //
           value: value,
         );
@@ -130,7 +131,7 @@ class _Main_State extends State<Main_> {
         String value = "";
         if (sm_fd.data[sm_fd.GUEST_NATIONALITY]?["value"] != null) //
           value = sm_fd.data[sm_fd.GUEST_NATIONALITY]?["value"].toString() ?? "";
-        return sd.Main_(
+        return ShowData(
           title: sm_fd.data[sm_fd.GUEST_NATIONALITY]?["title"] ?? "", //
           value: value,
         );

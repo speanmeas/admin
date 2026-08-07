@@ -5,8 +5,8 @@ import "package:intl/intl.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/light.dart" as theme;
 import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar_new.dart";
-import "package:speanmeas/core/widget/show_data.dart" as sd;
+import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/widget/show_data_new.dart";
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
 
 import "../config.dart";
@@ -87,7 +87,7 @@ class _Main_State extends State<Main_> {
           if (e.value["type"] == "id") {
             String value = "";
             if (e.value["value"] != null) value = e.value["value"].toString();
-            return sd.Main_(
+            return ShowData(
               title: e.value["title"]?.toString() ?? "", //
               value: value, //
             );
@@ -97,7 +97,7 @@ class _Main_State extends State<Main_> {
           if (e.value["type"] == "string") {
             String value = "";
             if (e.value["value"] != null) value = e.value["value"].toString();
-            return sd.Main_(
+            return ShowData(
               title: e.value["title"]?.toString() ?? "", //
               value: value, //
             );
@@ -107,7 +107,7 @@ class _Main_State extends State<Main_> {
           if (e.value["type"] == "number") {
             String value = "0";
             if (e.value["value"] != null) value = e.value["value"].toString();
-            return sd.Main_(
+            return ShowData(
               title: e.value["title"]?.toString() ?? "", //
               value: value, //
             );
@@ -120,7 +120,7 @@ class _Main_State extends State<Main_> {
               tmp = DateTime.tryParse(e.value["value"].toString());
               if (tmp != null) value = DateFormat(DATE_FORMAT).format(tmp);
             }
-            return sd.Main_(
+            return ShowData(
               title: e.value["title"]?.toString() ?? "", //
               value: value, //
             );
@@ -133,7 +133,7 @@ class _Main_State extends State<Main_> {
               if (e.value["value"] == true) value = "Yes";
               if (e.value["value"] == false) value = "No";
             }
-            return sd.Main_(
+            return ShowData(
               title: e.value["title"]?.toString() ?? "", //
               value: value, //
             );
