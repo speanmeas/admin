@@ -59,16 +59,16 @@ class _Main_State extends State<Main_> {
               ),
 
               // Reports
-              if (is_admin)
+              if (is_admin | is_manager | is_recept)
                 ExpansionTile(
                   leading: Icon(Icons.assessment_outlined), //
                   title: Text("Report"),
                   initiallyExpanded: true,
                   children: [
-                    list_tile_l2(prefix: "Report", name: "Daily", icon: Icons.today_outlined),
-                    list_tile_l2(prefix: "Report", name: "Weekly", icon: Icons.date_range_outlined),
-                    list_tile_l2(prefix: "Report", name: "Monthly", icon: Icons.calendar_month_outlined),
-                    list_tile_l2(prefix: "Report", name: "Yearly", icon: Icons.event_note_outlined),
+                    list_tile_l2(prefix: "Report", name: "Income", icon: Icons.today_outlined),
+                    // list_tile_l2(prefix: "Report", name: "Weekly", icon: Icons.date_range_outlined),
+                    // list_tile_l2(prefix: "Report", name: "Monthly", icon: Icons.calendar_month_outlined),
+                    // list_tile_l2(prefix: "Report", name: "Yearly", icon: Icons.event_note_outlined),
                   ],
                 ),
 

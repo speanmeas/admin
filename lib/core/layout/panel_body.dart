@@ -15,10 +15,10 @@ import "package:speanmeas/features/database/user/main.dart" as user;
 import "package:speanmeas/features/database/nationality/main.dart" as nationality;
 
 // report
-import "package:speanmeas/features/report/daily/main.dart" as report_daily;
-import "package:speanmeas/features/report/weekly/main.dart" as report_weekly;
-import "package:speanmeas/features/report/monthly/main.dart" as report_monthly;
-import "package:speanmeas/features/report/yearly/main.dart" as report_yearly;
+import "package:speanmeas/features/report/main.dart" as report;
+// import "package:speanmeas/features/report/weekly/main.dart" as report_weekly;
+// import "package:speanmeas/features/report/monthly/main.dart" as report_monthly;
+// import "package:speanmeas/features/report/yearly/main.dart" as report_yearly;
 
 import "package:speanmeas/features/database/demo_1/main.dart" as demo_1;
 import "package:speanmeas/features/database/demo_2/main.dart" as demo_2;
@@ -42,10 +42,10 @@ class _Main_State extends State<Main_> {
     {"name": "Data User", "panel": user.Main_()},
     {"name": "Data Nationality", "panel": nationality.Main_()},
     //
-    {"name": "Report Daily", "panel": report_daily.Main_()}, //
-    {"name": "Report Weekly", "panel": report_weekly.Main_()}, //
-    {"name": "Report Monthly", "panel": report_monthly.Main_()}, //
-    {"name": "Report Yearly", "panel": report_yearly.Main_()}, //
+    {"name": "Report Income", "panel": report.Main_()}, //
+    // {"name": "Report Weekly", "panel": report_weekly.Main_()}, //
+    // {"name": "Report Monthly", "panel": report_monthly.Main_()}, //
+    // {"name": "Report Yearly", "panel": report_yearly.Main_()}, //
     //
     {"name": "Demo 001", "panel": demo_1.Main_()},
     {"name": "Demo 002", "panel": demo_2.Main_()},
