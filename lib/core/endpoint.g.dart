@@ -1,3 +1,4 @@
+class EndPoint {
 final AUTH_ACCESS_TOKEN = "/auth/access_token";
 final AUTH_SIGN_IN = "/auth/sign_in";
 final AUTH_CLIENT_KHUNBUNHAP_SIGN_IN = "/auth_client/khunbunhap/sign_in";
@@ -114,3 +115,5 @@ final USER_CLIENT_READ_NUMBER = "/user_client/read_number";
 final USER_CLIENT_READ_STRING = "/user_client/read_string";
 final USER_CLIENT_UPDATE = "/user_client/update";
 final WS_ACTION = "/ws/action";
+}
+EndPoint endpoint = EndPoint();

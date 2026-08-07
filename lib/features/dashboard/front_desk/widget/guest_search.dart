@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
 //
@@ -36,7 +36,7 @@ class _Main_State extends State<Main_> {
   void init(dynamic q) async {
     try {
       tmp = await dio.post(
-        ep.GUEST_FORM_SEARCH, //
+        endpoint.GUEST_FORM_SEARCH, //
         data: {"query": q},
       );
 
@@ -139,7 +139,7 @@ class _Main_State extends State<Main_> {
   void select_by_id(dynamic id) async {
     try {
       tmp = await dio.post(
-        ep.GUEST_READ_ID, //
+        endpoint.GUEST_READ_ID, //
         data: {"_id": id},
       );
 
@@ -157,7 +157,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       tmp = await dio.post(
-        ep.GUEST_FORM_SEARCH, //
+        endpoint.GUEST_FORM_SEARCH, //
         data: {"query": q},
       );
       data = List<Map<String, dynamic>>.from(tmp.data);

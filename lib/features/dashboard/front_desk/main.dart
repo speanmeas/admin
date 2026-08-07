@@ -6,7 +6,7 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
@@ -40,14 +40,14 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       // * ទាញយកទិន្នន័យបន្ទប់ទាំងអស់ពី Server
-      tmp = await dio.post(ep.ROOM_READ, data: {"key": sm_r.NUMBER, "order": 1});
+      tmp = await dio.post(endpoint.ROOM_READ, data: {"key": sm_r.NUMBER, "order": 1});
       list_r = List<Map<String, dynamic>>.from(tmp.data);
 
       // * ទាញយកទិន្នន័យ front desk ដែលទាក់ទងនឹងបន្ទប់នីមួយៗ
       for (var r in list_r) {
         if (r[sm_r.FRONT_DESK_ID] != null) {
           tmp = await dio.post(
-            ep.FRONT_DESK_READ_ID, //
+            endpoint.FRONT_DESK_READ_ID, //
             data: {
               sm_fd.ID: r[sm_r.FRONT_DESK_ID], //
             },

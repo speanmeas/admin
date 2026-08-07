@@ -1,4 +1,4 @@
-import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart";
 import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
@@ -38,7 +38,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       final r = await dio.post(
-        ep.ROOM_READ_STRING, //
+        endpoint.ROOM_READ_STRING, //
         data: {
           "key": r_schema.NUMBER, //
           "query": q, //
@@ -67,7 +67,7 @@ class _Main_State extends State<Main_> {
               try {
                 //
                 final r = await dio.post(
-                  ep.ROOM_READ_STRING, //
+                  endpoint.ROOM_READ_STRING, //
                   data: {
                     "key": r_schema.NUMBER, //
                     "query": q, //

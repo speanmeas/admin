@@ -5,7 +5,7 @@ ThemeData theme_data = ThemeData(
 
   //
   colorScheme: ColorScheme.fromSeed(
-    seedColor: Colors.white, //
+    seedColor: Colors.blue, //
     brightness: Brightness.light,
   ),
 

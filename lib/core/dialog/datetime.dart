@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-Future<DateTime?> view(
+Future<DateTime?> datetime_picker(
   BuildContext context, { //
   DateTime? initial_datetime,
 }) async {
@@ -60,7 +60,7 @@ class _Datetime_Picker_State extends State<Datetime_Picker_> {
           children: [
             OutlinedButton.icon(
               onPressed: () async {
-                await view(context);
+                await datetime_picker(context);
                 // print(datetime);
               }, //
               label: const Text("Select Date & Time"),

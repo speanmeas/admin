@@ -4,11 +4,11 @@ import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/dialog/datetime.dart" as dt_picker;
+import "package:speanmeas/core/dialog/datetime.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/widget/show_data_new.dart";
+import "package:speanmeas/core/widget/show_data.dart";
 
 import "../config.dart";
 import "../schema.g.dart" as sm;
@@ -201,7 +201,7 @@ class _Main_State extends State<Main_> {
                 ),
               ),
               onTap: () async {
-                DateTime? datetime = await dt_picker.view(context, initial_datetime: init);
+                DateTime? datetime = await datetime_picker(context, initial_datetime: init);
                 if (datetime == null) return;
                 e.value["value"] = datetime.toIso8601String();
                 setState(() {});

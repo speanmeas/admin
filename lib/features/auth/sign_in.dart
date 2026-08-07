@@ -4,7 +4,7 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/utility/secure_storage.dart";
-import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/layout/layout.dart" as layout;
@@ -112,7 +112,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       tmp = await dio.post(
-        ep.AUTH_SIGN_IN, //
+        endpoint.AUTH_SIGN_IN, //
         data: {"username": c_username.text, "password": c_password.text},
       );
       if (tmp == null) throw Exception("Invalid Username or Password");

@@ -3,7 +3,7 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 
 //
 import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/endpoint.g.dart" as ep; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/features/database/user/schema.g.dart" as n_schema_r;
 import "package:speanmeas/core/widget/snackbar.dart";
@@ -35,7 +35,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       final r = await dio.post(
-        ep.USER_READ_STRING, //
+        endpoint.USER_READ_STRING, //
         data: {
           "key": n_schema_r.FULL_NAME, //
           "query": q, //
@@ -64,7 +64,7 @@ class _Main_State extends State<Main_> {
               try {
                 //
                 final r = await dio.post(
-                  ep.USER_READ_STRING, //
+                  endpoint.USER_READ_STRING, //
                   data: {
                     "key": n_schema_r.FULL_NAME, //
                     "query": q, //

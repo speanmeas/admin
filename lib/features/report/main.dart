@@ -7,7 +7,7 @@ import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/endpoint.g.dart" as ep;
+import "package:speanmeas/core/endpoint.g.dart";
 
 import "schema.g.dart" as sm;
 
@@ -23,7 +23,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       tmp = await dio.post(
-        ep.REPORT,
+        endpoint.REPORT,
         data: {
           "key": "check_in_at", //
           "start": "2026-01-01T00:00:00.000Z",
