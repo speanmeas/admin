@@ -90,7 +90,7 @@ class _Main_State extends State<Main_> {
           labelText: "Room Price:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixText: "\$ ",
+          prefixIcon: Icon(Icons.attach_money_outlined), //
         ),
         onChanged: (v) => setState(() {}), //
         onSubmitted: (v) => on_update(), //
@@ -103,7 +103,7 @@ class _Main_State extends State<Main_> {
           labelText: "Cash Payment:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixText: "\$ ",
+          prefixIcon: Icon(Icons.payments_outlined), //
         ),
         onChanged: (v) => setState(() {}), //
         onSubmitted: (v) => on_update(), //
@@ -116,7 +116,7 @@ class _Main_State extends State<Main_> {
           labelText: "Bank Payment:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixText: "\$ ",
+          prefixIcon: Icon(Icons.account_balance_outlined),
         ),
         onChanged: (v) => setState(() {}), //
         onSubmitted: (v) => on_update(), //
@@ -129,7 +129,7 @@ class _Main_State extends State<Main_> {
           labelText: "Return:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixText: "\$ ",
+          prefixIcon: Icon(Icons.currency_exchange_outlined),
         ),
         onChanged: (v) => setState(() {}), //
         onSubmitted: (v) => on_update(), //
@@ -143,6 +143,7 @@ class _Main_State extends State<Main_> {
           labelText: "Note:", //
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
+          prefixIcon: Icon(Icons.note_alt_outlined), //
         ),
         onChanged: (v) => setState(() {}), //
         onSubmitted: (v) => on_update(), //
