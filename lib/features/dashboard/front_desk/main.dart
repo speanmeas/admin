@@ -1,5 +1,7 @@
 // TODO: Add notification when overtime.
 
+import "dart:async";
+
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 
@@ -30,13 +32,14 @@ import "form/check_in_update.dart" as update_stay;
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
+  Timer? _debounce; // * ពន្យាពេល rebuild ពេលវាយស្វែងរក
+  final c_search = TextEditingController();
   List<Map<String, dynamic>> list_r = [];
   Map<String, dynamic> map_fd = {};
 
   void init() async {
     try {
-      // * ទាញយកទិន្នន័យបន្ទប់ទាំងអស់ពីម៉ាស៊ីនមេ
-      // * រក្សាទុកទិន្នន័យបន្ទប់ទៅក្នុងបញ្ជី
+      // * ទាញយកទិន្នន័យបន្ទប់ទាំងអស់ពី Server
       tmp = await dio.post(ep.ROOM_READ, data: {"key": sm_r.NUMBER, "order": 1});
       list_r = List<Map<String, dynamic>>.from(tmp.data);
 
@@ -62,38 +65,65 @@ class _Main_State extends State<Main_> {
 
   Widget _layout(List<Widget> children) {
     return Scaffold(
-      body: Stack(
+      body: Column(
         children: [
-          //
-          Positioned.fill(
+          // * បង្ហាញប៊ូតុង refresh
+          Row(
+            children: [
+              SizedBox(width: 32),
+
+              Spacer(),
+
+              Container(
+                width: 160,
+                height: 32,
+                padding: EdgeInsets.fromLTRB(0, 1, 0, 1),
+                child: TextField(
+                  controller: c_search,
+                  decoration: InputDecoration(
+                    isDense: true, //
+                    hintText: "Search", //
+                    border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+                    contentPadding: EdgeInsets.symmetric(vertical: 0), //
+                    prefixIcon: Icon(Icons.search, size: 20), //
+                  ),
+                  onChanged: (v) {
+                    // * រង់ចាំអ្នកប្រើឈប់វាយ 500ms ទើប rebuild
+                    _debounce?.cancel();
+                    _debounce = Timer(const Duration(milliseconds: 500), () {
+                      setState(() {});
+                    });
+                  },
+                ),
+              ),
+
+              Spacer(),
+
+              Tooltip(
+                message: "Refresh",
+                child: InkWell(
+                  onTap: init,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    alignment: Alignment.center,
+                    child: Icon(Icons.refresh, size: 24, color: Colors.blue), //
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          Divider(height: 1, color: Colors.grey),
+
+          Expanded(
             child: SingleChildScrollView(
               child: Center(
                 child: Wrap(
                   children: children, //
                 ),
               ),
-            ),
-          ),
-
-          //
-          Positioned.fill(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Tooltip(
-                  message: "Refresh",
-                  child: InkWell(
-                    onTap: init,
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      alignment: Alignment.center,
-                      child: Icon(Icons.refresh, size: 24, color: Colors.blue), //
-                    ),
-                  ),
-                ),
-              ],
             ),
           ),
         ],
@@ -104,8 +134,8 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     return _layout([
-      // * បង្ហាញបញ្ជីបន្ទប់ទាំងអស់
-      for (var r in list_r)
+      // * បង្ហាញបញ្ជីបន្ទប់ទាំងអស់ (ត្រងតាមការស្វែងរក)
+      for (var r in _list_show)
         Container(
           width: 500,
           margin: EdgeInsets.all(2),
@@ -250,7 +280,7 @@ class _Main_State extends State<Main_> {
                               Text(guest_phone, style: TextStyle(color: Colors.blue)), //
                               // always show
                               Tooltip(
-                                message: "Edit guest",
+                                message: "Update guest",
                                 child: InkWell(
                                   child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
                                   onTap: () => on_update_guest(r),
@@ -285,7 +315,7 @@ class _Main_State extends State<Main_> {
                               Text("$stay_hour Hours", style: TextStyle(color: Colors.blue)),
                               if (r[sm_r.STATUS] != "Pending Clean")
                                 Tooltip(
-                                  message: "Edit stay info",
+                                  message: "Update stay",
                                   child: InkWell(
                                     child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
                                     onTap: () => on_update_stay(r),
@@ -324,7 +354,7 @@ class _Main_State extends State<Main_> {
 
                               if (!["Pending Clean"].contains(r[sm_r.STATUS]))
                                 Tooltip(
-                                  message: "Update Room Payment",
+                                  message: "Update room payment",
                                   child: InkWell(
                                     onTap: () => on_update_rp(r),
                                     child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
@@ -363,7 +393,7 @@ class _Main_State extends State<Main_> {
                               //
                               if (r[sm_r.STATUS] != "Pending Clean")
                                 Tooltip(
-                                  message: "Update Revenue",
+                                  message: "Update revenue payment",
                                   child: InkWell(
                                     onTap: () => on_update_rvn(r),
                                     child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
@@ -789,34 +819,31 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
-  // void on_update_rvn(dynamic r) async {
-  //   try {
-  //     //
-  //     tmp = await Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (context) => update_revenue_payment.Main_(
-  //           room_id: r[sm_r.ID], //
-  //         ), //
-  //       ),
-  //     );
-
-  //     //
-  //     if (tmp != null) init();
-
-  //     //
-  //   } catch (e, st) {
-  //     print(st);
-  //     sb.view(context: context, message: e.toString(), color: Colors.red);
-  //   }
-  // }
+  // * បញ្ជីបន្ទប់ដែលត្រងតាមការស្វែងរក (លេខបន្ទប់ + ស្ថានភាព)
+  List<Map<String, dynamic>> get _list_show {
+    final q = c_search.text.trim().toLowerCase();
+    if (q.isEmpty) return list_r;
+    return list_r.where((r) {
+      final room_number = '${r[sm_r.NUMBER]}'.toLowerCase();
+      final room_status = '${r[sm_r.STATUS]}'.toLowerCase();
+      final room_kind = '${r[sm_r.KIND]}'.toLowerCase();
+      return room_number.contains(q) || room_status.contains(q) || room_kind.contains(q);
+    }).toList();
+  }
 
   //
   @override
   void initState() {
     super.initState();
     init();
+  }
+
+  //
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    c_search.dispose();
+    super.dispose();
   }
 
   //

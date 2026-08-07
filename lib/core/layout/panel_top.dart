@@ -62,45 +62,51 @@ class _Main_State extends State<Main_> {
 
           // Notification Icon
           if (kDebugMode) // TODO
-            Badge(
-              label: Text("3"), //
-              offset: Offset(-4, 4),
-              child: IconButton(
-                icon: Icon(Icons.notifications_outlined),
-                onPressed: () {
-                  // Handle notification tap
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => noti.Main_()));
-                },
+            Tooltip(
+              message: "Notification",
+              child: Badge(
+                label: Text("3"), //
+                offset: Offset(-4, 4),
+                child: IconButton(
+                  icon: Icon(Icons.notifications_outlined),
+                  onPressed: () {
+                    // Handle notification tap
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => noti.Main_()));
+                  },
+                ),
               ),
             ),
 
           SizedBox(width: 4),
 
           // User Avatar
-          InkWell(
-            customBorder: const CircleBorder(),
-            child: Container(
-              width: 32,
-              height: 32,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.blue, width: 2),
+          Tooltip(
+            message: "User",
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              child: Container(
+                width: 32,
+                height: 32,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.blue, width: 2),
+                ),
+                child: Text(
+                  (() {
+                    if (sm_u.data[sm_u.FULL_NAME]!["value"] != null) //
+                      return sm_u.data[sm_u.FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "X";
+                    else
+                      return "X";
+                  })(),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                ),
               ),
-              child: Text(
-                (() {
-                  if (sm_u.data[sm_u.FULL_NAME]!["value"] != null) //
-                    return sm_u.data[sm_u.FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "X";
-                  else
-                    return "X";
-                })(),
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
-              ),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => profile.Main_()));
+                init();
+              },
             ),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => profile.Main_()));
-              init();
-            },
           ),
 
           SizedBox(width: 8), //

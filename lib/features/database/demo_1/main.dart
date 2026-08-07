@@ -158,8 +158,8 @@ class _Main_State extends State<Main_> {
       // menu
       (() {
         return Container(
-          height: 32, //
-          alignment: Alignment.topCenter,
+          height: 34, //
+          padding: EdgeInsets.all(1),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
