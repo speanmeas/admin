@@ -2,8 +2,8 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/features/auth/schema.g.dart" as sm_u;
 
 class _Main_State extends State<Main_> {
   //
@@ -18,10 +18,10 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
-    is_admin = sm_u.data[sm_u.IS_ADMIN]?["value"] == true;
-    is_manager = sm_u.data[sm_u.IS_MANAGER]?["value"] == true;
-    is_recept = sm_u.data[sm_u.IS_RECEPTIONIST]?["value"] == true;
-    is_cleaner = sm_u.data[sm_u.IS_HOUSEKEEPER]?["value"] == true;
+    is_admin = sm_user.data[sm_user.IS_ADMIN]?["value"] == true;
+    is_manager = sm_user.data[sm_user.IS_MANAGER]?["value"] == true;
+    is_recept = sm_user.data[sm_user.IS_RECEPTIONIST]?["value"] == true;
+    is_cleaner = sm_user.data[sm_user.IS_HOUSEKEEPER]?["value"] == true;
     return Column(
       children: [
         Expanded(

@@ -8,8 +8,7 @@ import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/layout/layout.dart" as layout;
-
-import "schema.g.dart" as u_schema;
+import "package:speanmeas/core/schema/user.g.dart";
 
 class _Main_State extends State<Main_> {
   //
@@ -123,7 +122,7 @@ class _Main_State extends State<Main_> {
       dio.options.headers["Authorization"] = "Bearer ${tmp.data["access_token"]}";
 
       //
-      for (var e in u_schema.data.entries) u_schema.data[e.key]!["value"] = tmp.data[e.key];
+      for (var e in sm_user.data.entries) sm_user.data[e.key]!["value"] = tmp.data[e.key];
 
       //
       snackbar(ct: context, ms: "Success", cl: Colors.green);

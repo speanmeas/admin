@@ -4,9 +4,8 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-
-import "schema.g.dart" as sm;
 
 import "dialog/update_full_name.dart" as dialog_fn;
 import "dialog/update_phone_number.dart" as dialog_pn;
@@ -58,7 +57,7 @@ class _Main_State extends State<Main_> {
         endpoint.AUTH_ACCESS_TOKEN, //
         data: {"access_token": await secure_storage.read(key: "access_token")},
       );
-      if (tmp != null) for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
+      if (tmp != null) for (var e in sm_user.data.entries) e.value["value"] = tmp.data[0][e.key];
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -75,10 +74,10 @@ class _Main_State extends State<Main_> {
       // Position
       (() {
         String value = "N/A";
-        if (sm.data[sm.IS_ADMIN]!["value"] == true) value = "Administrator";
-        if (sm.data[sm.IS_MANAGER]!["value"] == true) value = "Manager";
-        if (sm.data[sm.IS_RECEPTIONIST]!["value"] == true) value = "Receptionist";
-        if (sm.data[sm.IS_HOUSEKEEPER]!["value"] == true) value = "Housekeeper";
+        if (sm_user.data[sm_user.IS_ADMIN]!["value"] == true) value = "Administrator";
+        if (sm_user.data[sm_user.IS_MANAGER]!["value"] == true) value = "Manager";
+        if (sm_user.data[sm_user.IS_RECEPTIONIST]!["value"] == true) value = "Receptionist";
+        if (sm_user.data[sm_user.IS_HOUSEKEEPER]!["value"] == true) value = "Housekeeper";
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -94,8 +93,8 @@ class _Main_State extends State<Main_> {
 
       (() {
         String value = "N/A";
-        if (sm.data[sm.FULL_NAME]!["value"] != null) //
-          value = sm.data[sm.FULL_NAME]!["value"].toString();
+        if (sm_user.data[sm_user.FULL_NAME]!["value"] != null) //
+          value = sm_user.data[sm_user.FULL_NAME]!["value"].toString();
         return Row(
           spacing: 4,
           children: [
@@ -116,8 +115,8 @@ class _Main_State extends State<Main_> {
       // phone number
       (() {
         String value = "N/A";
-        if (sm.data[sm.PHONE_NUMBER]!["value"] != null) //
-          value = sm.data[sm.PHONE_NUMBER]!["value"].toString();
+        if (sm_user.data[sm_user.PHONE_NUMBER]!["value"] != null) //
+          value = sm_user.data[sm_user.PHONE_NUMBER]!["value"].toString();
         return Row(
           spacing: 4,
           children: [
@@ -138,8 +137,8 @@ class _Main_State extends State<Main_> {
       // username
       (() {
         String value = "N/A";
-        if (sm.data[sm.USERNAME]!["value"] != null) //
-          value = sm.data[sm.USERNAME]!["value"].toString();
+        if (sm_user.data[sm_user.USERNAME]!["value"] != null) //
+          value = sm_user.data[sm_user.USERNAME]!["value"].toString();
         return Row(
           spacing: 4,
           children: [
@@ -193,7 +192,7 @@ class _Main_State extends State<Main_> {
   void on_sign_out() async {
     try {
       //
-      sm.clear();
+      sm_user.clear();
       await dio.options.headers.remove("Authorization");
       await secure_storage.delete(key: "access_token");
       await secure_storage.delete(key: "_id");

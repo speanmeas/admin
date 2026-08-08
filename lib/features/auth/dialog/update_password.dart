@@ -4,9 +4,8 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-
-import "../schema.g.dart" as sm;
 
 class _Dialog_State extends State<Dialog_> {
   //
@@ -123,7 +122,7 @@ class _Dialog_State extends State<Dialog_> {
         endpoint.USER_UPDATE, //
         data: {
           "_id": await secure_storage.read(key: "_id"), //
-          sm.PASSWORD: controller_pw.text, //
+          sm_user.PASSWORD: controller_pw.text, //
         },
       );
       if (tmp == null) throw "Failed";

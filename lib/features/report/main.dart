@@ -9,8 +9,6 @@ import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 
-import "schema.g.dart" as sm;
-
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;

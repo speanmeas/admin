@@ -4,9 +4,9 @@ import "package:provider/provider.dart";
 
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 
-import "package:speanmeas/features/auth/schema.g.dart" as sm_u;
 import "package:speanmeas/features/auth/profile.dart" as profile;
 
 import "../../notification.dart" as noti;
@@ -94,8 +94,8 @@ class _Main_State extends State<Main_> {
                 ),
                 child: Text(
                   (() {
-                    if (sm_u.data[sm_u.FULL_NAME]!["value"] != null) //
-                      return sm_u.data[sm_u.FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "X";
+                    if (sm_user.data[sm_user.FULL_NAME]!["value"] != null) //
+                      return sm_user.data[sm_user.FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "X";
                     else
                       return "X";
                   })(),
