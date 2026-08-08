@@ -11,9 +11,9 @@ import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/show_data.dart";
 
 import "../config.dart";
-import "../schema.g.dart" as sm;
+import "package:speanmeas/core/schema/demo_2.g.dart";
 
-import "package:speanmeas/features/database/nationality/schema.g.dart" as sm_nt;
+import "package:speanmeas/core/schema/nationality.g.dart";
 import "../widget/nationality_search.dart" as n_search;
 
 Widget _layout(List<Widget> children) {
@@ -59,16 +59,16 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     try {
-      sm.clear();
+      sm_demo_2.clear();
 
       tmp = await dio.post(
         "$PATH/read_id", //
-        data: {sm.ID: widget.id},
+        data: {sm_demo_2.ID: widget.id},
       );
-      for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
+      for (var e in sm_demo_2.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      if (sm.data[sm.NATIONALITY_NAME]!["value"] != null) //
-        c_nationality.text = sm.data[sm.NATIONALITY_NAME]!["value"];
+      if (sm_demo_2.data[sm_demo_2.NATIONALITY_NAME]!["value"] != null) //
+        c_nationality.text = sm_demo_2.data[sm_demo_2.NATIONALITY_NAME]!["value"];
 
       setState(() {});
       //
@@ -82,22 +82,22 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      for (var e in sm.data.entries)
+      for (var e in sm_demo_2.data.entries)
         (() {
           // * search nationality
-          if (e.key == sm.NATIONALITY_ID) {
+          if (e.key == sm_demo_2.NATIONALITY_ID) {
             return n_search.Main_(
               controller: c_nationality,
               onChanged: (v) {
-                e.value["value"] = v[sm_nt.ID];
-                sm.data[sm.NATIONALITY_NAME]!["value"] = v[sm_nt.NAME];
-                sm.data[sm.NATIONALITY_NOTE]!["value"] = v[sm_nt.NOTE];
+                e.value["value"] = v[sm_nationality.ID];
+                sm_demo_2.data[sm_demo_2.NATIONALITY_NAME]!["value"] = v[sm_nationality.NAME];
+                sm_demo_2.data[sm_demo_2.NATIONALITY_NOTE]!["value"] = v[sm_nationality.NOTE];
                 setState(() {});
               },
               onCleared: () {
                 e.value["value"] = null;
-                sm.data[sm.NATIONALITY_NAME]!["value"] = null;
-                sm.data[sm.NATIONALITY_NOTE]!["value"] = null;
+                sm_demo_2.data[sm_demo_2.NATIONALITY_NAME]!["value"] = null;
+                sm_demo_2.data[sm_demo_2.NATIONALITY_NOTE]!["value"] = null;
                 setState(() {});
               },
             );
@@ -251,11 +251,11 @@ class _Main_State extends State<Main_> {
     try {
       // * រៀបចំ payload
       var payload = {};
-      for (var e in sm.data.entries) //
+      for (var e in sm_demo_2.data.entries) //
         payload[e.key] = e.value["value"];
 
       //
-      tmp = await dio.post("$PATH/update", data: {...payload});
+      tmp = await dio.post("$PATH/update", data: payload);
 
       //
       Navigator.pop(context, tmp.data[0]);

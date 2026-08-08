@@ -9,7 +9,7 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
+import "package:speanmeas/core/schema/room.g.dart";
 
 import "config.dart";
 import "schema.g.dart" as sm_fd;
@@ -40,19 +40,19 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       // * ទាញយកទិន្នន័យបន្ទប់ទាំងអស់ពី Server
-      tmp = await dio.post(endpoint.ROOM_READ, data: {"key": sm_r.NUMBER, "order": 1});
+      tmp = await dio.post(endpoint.ROOM_READ, data: {"key": sm_room.NUMBER, "order": 1});
       list_r = List<Map<String, dynamic>>.from(tmp.data);
 
       // * ទាញយកទិន្នន័យ front desk ដែលទាក់ទងនឹងបន្ទប់នីមួយៗ
       for (var r in list_r) {
-        if (r[sm_r.FRONT_DESK_ID] != null) {
+        if (r[sm_room.FRONT_DESK_ID] != null) {
           tmp = await dio.post(
             endpoint.FRONT_DESK_READ_ID, //
             data: {
-              sm_fd.ID: r[sm_r.FRONT_DESK_ID], //
+              sm_fd.ID: r[sm_room.FRONT_DESK_ID], //
             },
           );
-          map_fd[r[sm_r.FRONT_DESK_ID]] = tmp.data[0];
+          map_fd[r[sm_room.FRONT_DESK_ID]] = tmp.data[0];
         }
       }
 
@@ -158,7 +158,7 @@ class _Main_State extends State<Main_> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              " ${r[sm_r.NUMBER]}",
+                              " ${r[sm_room.NUMBER]}",
                               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                             ),
                           ],
@@ -167,18 +167,18 @@ class _Main_State extends State<Main_> {
                         // * ស្ថានភាពបន្ទប់នៅខាងស្តាំ
                         (() {
                           var color = Colors.black; // Default color
-                          if (["Available"].contains(r[sm_r.STATUS])) color = Colors.green;
-                          if (["Pending Pay"].contains(r[sm_r.STATUS])) color = Colors.orange;
-                          if (["Pending Leave"].contains(r[sm_r.STATUS])) color = Colors.blue;
-                          if (["Pending Clean"].contains(r[sm_r.STATUS])) color = Colors.grey;
-                          if (["Pending Fix"].contains(r[sm_r.STATUS])) color = Colors.red;
+                          if (["Available"].contains(r[sm_room.STATUS])) color = Colors.green;
+                          if (["Pending Pay"].contains(r[sm_room.STATUS])) color = Colors.orange;
+                          if (["Pending Leave"].contains(r[sm_room.STATUS])) color = Colors.blue;
+                          if (["Pending Clean"].contains(r[sm_room.STATUS])) color = Colors.grey;
+                          if (["Pending Fix"].contains(r[sm_room.STATUS])) color = Colors.red;
 
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Icon(Icons.circle, size: 10, color: color),
                               SizedBox(width: 4),
-                              Text("${r[sm_r.STATUS]}", style: TextStyle(fontSize: 14, color: color)),
+                              Text("${r[sm_room.STATUS]}", style: TextStyle(fontSize: 14, color: color)),
 
                               // menu
                               Tooltip(
@@ -200,21 +200,21 @@ class _Main_State extends State<Main_> {
                                   },
                                   menuChildren: [
                                     //
-                                    if (!["Available"].contains(r[sm_r.STATUS]))
+                                    if (!["Available"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.receipt_outlined, color: Colors.blue),
                                         child: Text("Detail", style: TextStyle(color: Colors.blue)), //
                                         onPressed: () => on_detail(r), //
                                       ),
 
-                                    if (["Available"].contains(r[sm_r.STATUS]))
+                                    if (["Available"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.bug_report_outlined, color: Colors.blue),
                                         child: Text("Broke", style: TextStyle(color: Colors.blue)), //
                                         onPressed: () => on_broke(r), //
                                       ),
 
-                                    if (["Pending Fix"].contains(r[sm_r.STATUS]))
+                                    if (["Pending Fix"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.build_outlined, color: Colors.blue),
                                         child: Text("Fixed", style: TextStyle(color: Colors.blue)), //
@@ -222,7 +222,7 @@ class _Main_State extends State<Main_> {
                                       ),
 
                                     //
-                                    if (["Pending Pay", "Pending Leave"].contains(r[sm_r.STATUS]))
+                                    if (["Pending Pay", "Pending Leave"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.swap_horiz_outlined, color: Colors.blue),
                                         child: Text("Change Room", style: TextStyle(color: Colors.blue)),
@@ -230,7 +230,7 @@ class _Main_State extends State<Main_> {
                                       ),
 
                                     //
-                                    if (["Pending Pay", "Pending Leave"].contains(r[sm_r.STATUS]))
+                                    if (["Pending Pay", "Pending Leave"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
                                         child: Text("Cancel", style: TextStyle(color: Colors.red)),
@@ -250,21 +250,21 @@ class _Main_State extends State<Main_> {
                       spacing: 4,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("${r[sm_r.KIND]}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                        Text("${r[sm_room.KIND]}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                         Text("-"), //
-                        Text("${r[sm_r.USD_PER_3H]} \$ / 3 Hours", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)), //
+                        Text("${r[sm_room.USD_PER_3H]} \$ / 3 Hours", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)), //
                         Text("-"), //
-                        Text("${r[sm_r.USD_PER_DAY]} \$ / Day", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                        Text("${r[sm_room.USD_PER_DAY]} \$ / Day", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                       ],
                     ),
 
                     //
-                    if (r[sm_r.FRONT_DESK_ID] != null) ...[
+                    if (r[sm_room.FRONT_DESK_ID] != null) ...[
                       // guest info
-                      if (!"${r[sm_r.STATUS]}".contains("Pending Fix"))
+                      if (!"${r[sm_room.STATUS]}".contains("Pending Fix"))
                         (() {
-                          final guest_name = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.GUEST_FULL_NAME] ?? "N/A";
-                          final guest_phone = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.GUEST_PHONE_NUMBER] ?? "N/A";
+                          final guest_name = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.GUEST_FULL_NAME] ?? "N/A";
+                          final guest_phone = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.GUEST_PHONE_NUMBER] ?? "N/A";
                           return Row(
                             spacing: 4,
                             children: [
@@ -291,11 +291,11 @@ class _Main_State extends State<Main_> {
                         })(),
 
                       // stay info
-                      if (!["Pending Fix"].contains(r[sm_r.STATUS]))
+                      if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          final stay_n_guest = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.STAY_N_GUEST] ?? "0";
-                          final stay_day = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.STAY_DAY] ?? "0";
-                          final stay_hour = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.STAY_HOUR] ?? "0";
+                          final stay_n_guest = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.STAY_N_GUEST] ?? "0";
+                          final stay_day = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.STAY_DAY] ?? "0";
+                          final stay_hour = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.STAY_HOUR] ?? "0";
                           return Row(
                             spacing: 4,
                             children: [
@@ -313,7 +313,7 @@ class _Main_State extends State<Main_> {
                               SizedBox(width: 2), //
                               Icon(Icons.circle, size: 6), //
                               Text("$stay_hour Hours", style: TextStyle(color: Colors.blue)),
-                              if (r[sm_r.STATUS] != "Pending Clean")
+                              if (r[sm_room.STATUS] != "Pending Clean")
                                 Tooltip(
                                   message: "Update stay",
                                   child: InkWell(
@@ -326,11 +326,11 @@ class _Main_State extends State<Main_> {
                         })(),
 
                       // payment room info
-                      if (!["Pending Fix"].contains(r[sm_r.STATUS]))
+                      if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          final price_ro = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.ROOM_PRICE] ?? "0";
-                          final pay_ro = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.ROOM_PAY_TOTAL] ?? "0";
-                          final return_ro = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.ROOM_RETURN] ?? "0";
+                          final price_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.ROOM_PRICE] ?? "0";
+                          final pay_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.ROOM_PAY_TOTAL] ?? "0";
+                          final return_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.ROOM_RETURN] ?? "0";
                           return Row(
                             spacing: 4,
                             children: [
@@ -352,7 +352,7 @@ class _Main_State extends State<Main_> {
                               Text("Return", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("$return_ro \$", style: TextStyle(color: Colors.blue)), //
 
-                              if (!["Pending Clean"].contains(r[sm_r.STATUS]))
+                              if (!["Pending Clean"].contains(r[sm_room.STATUS]))
                                 Tooltip(
                                   message: "Update room payment",
                                   child: InkWell(
@@ -365,11 +365,11 @@ class _Main_State extends State<Main_> {
                         })(),
 
                       // payment revenue info
-                      if (!["Pending Fix"].contains(r[sm_r.STATUS]))
+                      if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          final price_re = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.REVENUE_PRICE] ?? "0";
-                          final pay_re = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.REVENUE_PAY_TOTAL] ?? "0";
-                          final return_re = map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.REVENUE_RETURN] ?? "0";
+                          final price_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.REVENUE_PRICE] ?? "0";
+                          final pay_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.REVENUE_PAY_TOTAL] ?? "0";
+                          final return_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.REVENUE_RETURN] ?? "0";
                           return Row(
                             spacing: 4,
                             children: [
@@ -391,7 +391,7 @@ class _Main_State extends State<Main_> {
                               Text("Return", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("$return_re \$", style: TextStyle(color: Colors.blue)), //
                               //
-                              if (r[sm_r.STATUS] != "Pending Clean")
+                              if (r[sm_room.STATUS] != "Pending Clean")
                                 Tooltip(
                                   message: "Update revenue payment",
                                   child: InkWell(
@@ -404,11 +404,11 @@ class _Main_State extends State<Main_> {
                         })(),
 
                       // check in, due to, check out info
-                      if (r[sm_r.STATUS] != "Pending Fix")
+                      if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
                           String check_in = "";
-                          if (map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.CHECK_IN_AT] != null) {
-                            final due = DateTime.parse(map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.CHECK_IN_AT]);
+                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.CHECK_IN_AT] != null) {
+                            final due = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.CHECK_IN_AT]);
                             check_in = DateFormat(DATE_FORMAT).format(due);
                           }
                           return Row(
@@ -422,11 +422,11 @@ class _Main_State extends State<Main_> {
                         })(),
 
                       // due to info
-                      if (r[sm_r.STATUS] != "Pending Fix")
+                      if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
                           String due = "";
-                          if (map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.STAY_DUE] != null) {
-                            tmp = DateTime.parse(map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.STAY_DUE]);
+                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.STAY_DUE] != null) {
+                            tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.STAY_DUE]);
                             due = DateFormat(DATE_FORMAT).format(tmp);
                           }
                           return Row(
@@ -440,11 +440,11 @@ class _Main_State extends State<Main_> {
                         })(),
 
                       //
-                      if (r[sm_r.STATUS] != "Pending Fix")
+                      if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
                           String check_out = "";
-                          if (map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.CHECK_OUT_AT] != null) {
-                            tmp = DateTime.parse(map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.CHECK_OUT_AT]);
+                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.CHECK_OUT_AT] != null) {
+                            tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.CHECK_OUT_AT]);
                             check_out = DateFormat(DATE_FORMAT).format(tmp);
                           }
                           return Row(
@@ -458,11 +458,11 @@ class _Main_State extends State<Main_> {
                         })(),
 
                       // broke info
-                      if (r[sm_r.STATUS] == "Pending Fix")
+                      if (r[sm_room.STATUS] == "Pending Fix")
                         (() {
                           String broke_date = "";
-                          if (map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.BROKE_AT] != null) {
-                            tmp = DateTime.parse(map_fd[r[sm_r.FRONT_DESK_ID]][sm_fd.BROKE_AT]);
+                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.BROKE_AT] != null) {
+                            tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.BROKE_AT]);
                             broke_date = DateFormat(DATE_FORMAT).format(tmp);
                           }
                           return Row(
@@ -481,7 +481,7 @@ class _Main_State extends State<Main_> {
                       spacing: 4,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (r[sm_r.STATUS] == "Available") //
+                        if (r[sm_room.STATUS] == "Available") //
                           OutlinedButton.icon(
                             onPressed: () => on_check_in(r), //
                             icon: Icon(Icons.login),
@@ -489,7 +489,7 @@ class _Main_State extends State<Main_> {
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.green)),
                           ), //
 
-                        if (r[sm_r.STATUS] == "Pending Pay") //
+                        if (r[sm_room.STATUS] == "Pending Pay") //
                           OutlinedButton.icon(
                             onPressed: () => on_payment(r), //
                             icon: Icon(Icons.payment),
@@ -497,7 +497,7 @@ class _Main_State extends State<Main_> {
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.orange)),
                           ), //
 
-                        if (r[sm_r.STATUS] == "Pending Leave") //
+                        if (r[sm_room.STATUS] == "Pending Leave") //
                           OutlinedButton.icon(
                             onPressed: () => on_check_out(r), //
                             icon: Icon(Icons.logout),
@@ -505,7 +505,7 @@ class _Main_State extends State<Main_> {
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.blue)),
                           ), //
 
-                        if (r[sm_r.STATUS] == "Pending Clean") //
+                        if (r[sm_room.STATUS] == "Pending Clean") //
                           OutlinedButton.icon(
                             onPressed: () => on_clean(r), //
                             icon: Icon(Icons.cleaning_services),
@@ -531,7 +531,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => detail.Main_(
-            room_id: r[sm_r.ID], //
+            room_id: r[sm_room.ID], //
           ), //
         ),
       );
@@ -554,7 +554,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => cancel.Main_(
-            room_id: r[sm_r.ID], //
+            room_id: r[sm_room.ID], //
           ), //
         ),
       );
@@ -577,7 +577,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => fix.Main_(
-            room_id: r[sm_r.ID], //
+            room_id: r[sm_room.ID], //
           ), //
         ),
       );
@@ -600,7 +600,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => broke.Main_(
-            room_id: r[sm_r.ID], //
+            room_id: r[sm_room.ID], //
           ), //
         ),
       );
@@ -623,7 +623,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => clean.Main_(
-            room_id: r[sm_r.ID], //
+            room_id: r[sm_room.ID], //
           ), //
         ),
       );
@@ -646,7 +646,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => check_out.Main_(
-            room_id: r[sm_r.ID], //
+            room_id: r[sm_room.ID], //
           ), //
         ),
       );
@@ -668,7 +668,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => payment_room.Main_(
-            room_id: r[sm_r.ID], //
+            room_id: r[sm_room.ID], //
           ), //
         ),
       );
@@ -690,7 +690,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => payment_room_update.Main_(
-            room_id: r[sm_r.ID], //
+            room_id: r[sm_room.ID], //
           ), //
         ),
       );
@@ -712,7 +712,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => check_in.Main_(
-            room_id: r[sm_r.ID], //
+            room_id: r[sm_room.ID], //
           ), //
         ),
       );
@@ -735,7 +735,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => change_room.Main_(
-            room_id: r[sm_r.ID], //
+            room_id: r[sm_room.ID], //
           ),
         ),
       );
@@ -758,7 +758,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => update_stay.Main_(
-            room_id: r[sm_r.ID], //
+            room_id: r[sm_room.ID], //
           ), //
         ),
       );
@@ -781,7 +781,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => update_guest.Main_(
-            room_id: r[sm_r.ID], //
+            room_id: r[sm_room.ID], //
           ),
         ),
       );
@@ -804,7 +804,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => payment_revenue.Main_(
-            room_id: r[sm_r.ID], //
+            room_id: r[sm_room.ID], //
           ), //
         ),
       );
@@ -824,9 +824,9 @@ class _Main_State extends State<Main_> {
     final q = c_search.text.trim().toLowerCase();
     if (q.isEmpty) return list_r;
     return list_r.where((r) {
-      final room_number = '${r[sm_r.NUMBER]}'.toLowerCase();
-      final room_status = '${r[sm_r.STATUS]}'.toLowerCase();
-      final room_kind = '${r[sm_r.KIND]}'.toLowerCase();
+      final room_number = '${r[sm_room.NUMBER]}'.toLowerCase();
+      final room_status = '${r[sm_room.STATUS]}'.toLowerCase();
+      final room_kind = '${r[sm_room.KIND]}'.toLowerCase();
       return room_number.contains(q) || room_status.contains(q) || room_kind.contains(q);
     }).toList();
   }

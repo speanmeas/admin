@@ -8,7 +8,7 @@ import "package:speanmeas/core/theme/theme_data.dart";
 
 //
 import "package:speanmeas/features/database/room/form/create.dart" as r_create;
-import "package:speanmeas/features/database/room/schema.g.dart" as r_schema;
+import "package:speanmeas/core/schema/room.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 
 class _Main_State extends State<Main_> {
@@ -40,7 +40,7 @@ class _Main_State extends State<Main_> {
       final r = await dio.post(
         endpoint.ROOM_READ_STRING, //
         data: {
-          "key": r_schema.NUMBER, //
+          "key": sm_room.NUMBER, //
           "query": q, //
         },
       );
@@ -69,7 +69,7 @@ class _Main_State extends State<Main_> {
                 final r = await dio.post(
                   endpoint.ROOM_READ_STRING, //
                   data: {
-                    "key": r_schema.NUMBER, //
+                    "key": sm_room.NUMBER, //
                     "query": q, //
                     "order": 1, //
                     "limit": 100, //
@@ -79,8 +79,8 @@ class _Main_State extends State<Main_> {
                 //
                 List<String> options = [];
                 for (var d in r.data) {
-                  if (d[r_schema.NUMBER] == null) continue;
-                  options.add(d[r_schema.NUMBER] ?? "");
+                  if (d[sm_room.NUMBER] == null) continue;
+                  options.add(d[sm_room.NUMBER] ?? "");
                 }
 
                 //
@@ -135,17 +135,17 @@ class _Main_State extends State<Main_> {
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
             //
-            r_schema.clear();
+            sm_room.clear();
 
             //
             final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => r_create.Main_()));
             if (v == null) return;
 
             //
-            widget.controller.text = v[r_schema.NUMBER];
+            widget.controller.text = v[sm_room.NUMBER];
 
             //
-            select(v[r_schema.NUMBER]);
+            select(v[sm_room.NUMBER]);
           },
         ),
       ],

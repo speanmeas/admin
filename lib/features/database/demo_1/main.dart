@@ -3,13 +3,13 @@ import "package:flutter/foundation.dart";
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
+import "package:speanmeas/core/schema/demo_1.g.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 
 import "config.dart";
-import "schema.g.dart" as sm;
 
 import "form/create.dart" as create;
 import "form/read.dart" as read;
@@ -124,7 +124,7 @@ class _Main_State extends State<Main_> {
         for (var d in data)
           PlutoRow(
             cells: {
-              for (var e in sm.data.entries) //
+              for (var e in sm_demo_1.data.entries) //
                 e.key: PlutoCell(
                   value: e.key.contains("password")
                       ? "**********" //
@@ -316,7 +316,7 @@ class _Main_State extends State<Main_> {
         child: PlutoGrid(
           rows: [],
           columns: [
-            for (var e in sm.data.entries)
+            for (var e in sm_demo_1.data.entries)
               PlutoColumn(
                 field: e.key, //
                 title: e.value["title"]!,
@@ -545,7 +545,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => read.Main_(
-            id: row.cells[sm.ID]!.value.toString(), //
+            id: row.cells[sm_demo_1.ID]!.value.toString(), //
           ),
         ),
       );
@@ -571,7 +571,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => update.Main_(
-            id: row.cells[sm.ID]!.value.toString(), //
+            id: row.cells[sm_demo_1.ID]!.value.toString(), //
           ),
         ),
       );
@@ -601,7 +601,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => delete.Main_(
-            id: row.cells[sm.ID]!.value.toString(), //
+            id: row.cells[sm_demo_1.ID]!.value.toString(), //
           ),
         ),
       );

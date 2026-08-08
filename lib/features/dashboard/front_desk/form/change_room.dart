@@ -5,7 +5,7 @@ import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/select_dynamic.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
+import "package:speanmeas/core/schema/room.g.dart";
 
 import "../schema.g.dart" as sm_fd;
 
@@ -54,15 +54,15 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     try {
-      sm_r.clear();
+      sm_room.clear();
       sm_fd.clear();
 
       //
       tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
-      for (var e in sm_r.data.entries) e.value["value"] = tmp.data[0][e.key];
+      for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       //
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_r.data[sm_r.FRONT_DESK_ID]!["value"]});
+      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
       for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       //
@@ -90,8 +90,8 @@ class _Main_State extends State<Main_> {
         options: (() {
           var options = [];
           for (var r in rooms) {
-            if (r[sm_r.STATUS] == "Available") {
-              options.add(r[sm_r.NUMBER]?.toString() ?? "");
+            if (r[sm_room.STATUS] == "Available") {
+              options.add(r[sm_room.NUMBER]?.toString() ?? "");
             }
           }
           return options;
@@ -137,8 +137,8 @@ class _Main_State extends State<Main_> {
       String? from_room_id = sm_fd.data[sm_fd.ROOM_ID]!["value"]?.toString();
       String? to_room_id;
       for (var r in rooms) {
-        if (r[sm_r.NUMBER]?.toString() == c_to_room.text) {
-          to_room_id = r[sm_r.ID]!.toString();
+        if (r[sm_room.NUMBER]?.toString() == c_to_room.text) {
+          to_room_id = r[sm_room.ID]!.toString();
           break;
         }
       }
@@ -151,9 +151,9 @@ class _Main_State extends State<Main_> {
       await dio.post(
         endpoint.ROOM_UPDATE, //
         data: {
-          sm_r.ID: from_room_id, //
-          sm_r.STATUS: "Pending Clean", //
-          sm_r.FRONT_DESK_ID: null, // * ចំណាំ៖ ការពារការកែប្រែថ្មី
+          sm_room.ID: from_room_id, //
+          sm_room.STATUS: "Pending Clean", //
+          sm_room.FRONT_DESK_ID: null, // * ចំណាំ៖ ការពារការកែប្រែថ្មី
         },
       );
 
@@ -161,9 +161,9 @@ class _Main_State extends State<Main_> {
       await dio.post(
         endpoint.ROOM_UPDATE, //
         data: {
-          sm_r.ID: to_room_id, //
-          sm_r.STATUS: "Pending Pay", // * ចំណាំ៖ ត្រឡប់ទៅ Pending Pay ដើម្បីបង្ហាញថាអតិថិជនត្រូវបង់ប្រាក់សម្រាប់បន្ទប់ថ្មី
-          sm_r.FRONT_DESK_ID: sm_fd.data[sm_fd.ID]!["value"], //
+          sm_room.ID: to_room_id, //
+          sm_room.STATUS: "Pending Pay", // * ចំណាំ៖ ត្រឡប់ទៅ Pending Pay ដើម្បីបង្ហាញថាអតិថិជនត្រូវបង់ប្រាក់សម្រាប់បន្ទប់ថ្មី
+          sm_room.FRONT_DESK_ID: sm_fd.data[sm_fd.ID]!["value"], //
         },
       );
 

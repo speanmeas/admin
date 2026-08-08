@@ -9,9 +9,9 @@ import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/dialog/datetime.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/show_data.dart";
+import "package:speanmeas/core/schema/demo_1.g.dart";
 
 import "../config.dart";
-import "../schema.g.dart" as sm;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -59,14 +59,14 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    sm.clear();
+    sm_demo_1.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      for (var e in sm.data.entries)
+      for (var e in sm_demo_1.data.entries)
         (() {
           // * lock
           if (e.value["lock"] == true) {
@@ -219,7 +219,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       var payload = {};
-      for (var e in sm.data.entries) payload[e.key] = e.value["value"];
+      for (var e in sm_demo_1.data.entries) payload[e.key] = e.value["value"];
 
       //
       tmp = await dio.post("$PATH/create", data: payload);

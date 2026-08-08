@@ -11,12 +11,12 @@ import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/show_data.dart";
 
 import "../config.dart";
-import "../schema.g.dart" as sm;
+import "package:speanmeas/core/schema/front_desk.g.dart";
 
-import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
+import "package:speanmeas/core/schema/room.g.dart";
 import "../widget/room_search.dart" as r_search;
 
-import "package:speanmeas/features/database/guest/schema.g.dart" as sm_g;
+import "package:speanmeas/core/schema/guest.g.dart";
 import "../widget/guest_search.dart" as g_search;
 
 Widget _layout(List<Widget> children) {
@@ -68,62 +68,62 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    sm.clear();
+    sm_front_desk.clear();
 
-    if (sm.data[sm.ROOM_NUMBER]!["value"] != null) //
-      c_room.text = sm.data[sm.ROOM_NUMBER]!["value"];
+    if (sm_front_desk.data[sm_front_desk.ROOM_NUMBER]!["value"] != null) //
+      c_room.text = sm_front_desk.data[sm_front_desk.ROOM_NUMBER]!["value"];
 
-    if (sm.data[sm.GUEST_PHONE_NUMBER]!["value"] != null) //
-      c_guest.text = sm.data[sm.GUEST_PHONE_NUMBER]!["value"];
+    if (sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]!["value"] != null) //
+      c_guest.text = sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]!["value"];
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      for (var e in sm.data.entries)
+      for (var e in sm_front_desk.data.entries)
         (() {
           // * search
-          if (e.key == sm.ROOM_ID) {
+          if (e.key == sm_front_desk.ROOM_ID) {
             return r_search.Main_(
               controller: c_room,
               onChanged: (v) {
-                e.value["value"] = v[sm_r.ID];
-                sm.data[sm.ROOM_NUMBER]!["value"] = v[sm_r.NUMBER];
-                sm.data[sm.ROOM_KIND]!["value"] = v[sm_r.KIND];
-                sm.data[sm.ROOM_USD_PER_3H]!["value"] = v[sm_r.USD_PER_3H];
-                sm.data[sm.ROOM_USD_PER_DAY]!["value"] = v[sm_r.USD_PER_DAY];
+                e.value["value"] = v[sm_room.ID];
+                sm_front_desk.data[sm_front_desk.ROOM_NUMBER]!["value"] = v[sm_room.NUMBER];
+                sm_front_desk.data[sm_front_desk.ROOM_KIND]!["value"] = v[sm_room.KIND];
+                sm_front_desk.data[sm_front_desk.ROOM_USD_PER_3H]!["value"] = v[sm_room.USD_PER_3H];
+                sm_front_desk.data[sm_front_desk.ROOM_USD_PER_DAY]!["value"] = v[sm_room.USD_PER_DAY];
                 setState(() {});
               },
               onCleared: () {
                 e.value["value"] = null;
-                sm.data[sm.ROOM_NUMBER]!["value"] = null;
-                sm.data[sm.ROOM_KIND]!["value"] = null;
-                sm.data[sm.ROOM_USD_PER_3H]!["value"] = null;
-                sm.data[sm.ROOM_USD_PER_DAY]!["value"] = null;
+                sm_front_desk.data[sm_front_desk.ROOM_NUMBER]!["value"] = null;
+                sm_front_desk.data[sm_front_desk.ROOM_KIND]!["value"] = null;
+                sm_front_desk.data[sm_front_desk.ROOM_USD_PER_3H]!["value"] = null;
+                sm_front_desk.data[sm_front_desk.ROOM_USD_PER_DAY]!["value"] = null;
                 setState(() {});
               },
             );
           }
 
           // * search
-          if (e.key == sm.GUEST_ID) {
+          if (e.key == sm_front_desk.GUEST_ID) {
             return g_search.Main_(
               controller: c_guest,
               onChanged: (v) {
-                e.value["value"] = v[sm_g.ID];
-                sm.data[sm.GUEST_FULL_NAME]!["value"] = v[sm_g.FULL_NAME];
-                sm.data[sm.GUEST_GENDER]!["value"] = v[sm_g.GENDER];
-                sm.data[sm.GUEST_PHONE_NUMBER]!["value"] = v[sm_g.PHONE_NUMBER];
-                sm.data[sm.GUEST_NATIONALITY]!["value"] = v[sm_g.NATIONALITY];
+                e.value["value"] = v[sm_guest.ID];
+                sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]!["value"] = v[sm_guest.FULL_NAME];
+                sm_front_desk.data[sm_front_desk.GUEST_GENDER]!["value"] = v[sm_guest.GENDER];
+                sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]!["value"] = v[sm_guest.PHONE_NUMBER];
+                sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]!["value"] = v[sm_guest.NATIONALITY];
                 setState(() {});
               },
               onCleared: () {
                 e.value["value"] = null;
-                sm.data[sm.GUEST_FULL_NAME]!["value"] = null;
-                sm.data[sm.GUEST_GENDER]!["value"] = null;
-                sm.data[sm.GUEST_PHONE_NUMBER]!["value"] = null;
-                sm.data[sm.GUEST_NATIONALITY]!["value"] = null;
+                sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]!["value"] = null;
+                sm_front_desk.data[sm_front_desk.GUEST_GENDER]!["value"] = null;
+                sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]!["value"] = null;
+                sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]!["value"] = null;
                 setState(() {});
               },
             );
@@ -285,7 +285,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       var payload = {};
-      for (var e in sm.data.entries) payload[e.key] = e.value["value"];
+      for (var e in sm_front_desk.data.entries) payload[e.key] = e.value["value"];
 
       //
       tmp = await dio.post("$PATH/create", data: payload);

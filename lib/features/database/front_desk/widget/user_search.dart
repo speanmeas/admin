@@ -5,7 +5,7 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/features/database/user/schema.g.dart" as n_schema_r;
+import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 
 class _Main_State extends State<Main_> {
@@ -37,7 +37,7 @@ class _Main_State extends State<Main_> {
       final r = await dio.post(
         endpoint.USER_READ_STRING, //
         data: {
-          "key": n_schema_r.FULL_NAME, //
+          "key": sm_user.FULL_NAME, //
           "query": q, //
         },
       );
@@ -66,7 +66,7 @@ class _Main_State extends State<Main_> {
                 final r = await dio.post(
                   endpoint.USER_READ_STRING, //
                   data: {
-                    "key": n_schema_r.FULL_NAME, //
+                    "key": sm_user.FULL_NAME, //
                     "query": q, //
                     "order": 1, //
                     "limit": 100, //
@@ -76,8 +76,8 @@ class _Main_State extends State<Main_> {
                 //
                 List<String> options = [];
                 for (var d in r.data) {
-                  if (d[n_schema_r.FULL_NAME] == null) continue;
-                  options.add(d[n_schema_r.FULL_NAME] ?? "");
+                  if (d[sm_user.FULL_NAME] == null) continue;
+                  options.add(d[sm_user.FULL_NAME] ?? "");
                 }
 
                 //

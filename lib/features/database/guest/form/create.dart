@@ -11,9 +11,9 @@ import "package:speanmeas/core/widget/show_data.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 
 import "../config.dart";
-import "../schema.g.dart" as sm;
+import "package:speanmeas/core/schema/guest.g.dart";
 
-import "package:speanmeas/features/database/nationality/schema.g.dart" as sm_nt;
+import "package:speanmeas/core/schema/nationality.g.dart";
 import "../widget/nationality_search.dart" as n_search;
 import "../widget/gender_select.dart" as g_select;
 
@@ -66,42 +66,42 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    sm.clear();
+    sm_guest.clear();
 
-    sm.data[sm.NATIONALITY]!["value"] = "Cambodian";
-    sm.data[sm.GENDER]!["value"] = "Male";
+    sm_guest.data[sm_guest.NATIONALITY]!["value"] = "Cambodian";
+    sm_guest.data[sm_guest.GENDER]!["value"] = "Male";
 
-    if (sm.data[sm.NATIONALITY]!["value"] != null) //
-      c_nationality.text = sm.data[sm.NATIONALITY]!["value"];
-    if (sm.data[sm.GENDER]!["value"] != null) //
-      c_gender.text = sm.data[sm.GENDER]!["value"];
+    if (sm_guest.data[sm_guest.NATIONALITY]!["value"] != null) //
+      c_nationality.text = sm_guest.data[sm_guest.NATIONALITY]!["value"];
+    if (sm_guest.data[sm_guest.GENDER]!["value"] != null) //
+      c_gender.text = sm_guest.data[sm_guest.GENDER]!["value"];
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      for (var e in sm.data.entries)
+      for (var e in sm_guest.data.entries)
         (() {
           // * search nationality
-          if (e.key == sm.NATIONALITY_ID) {
+          if (e.key == sm_guest.NATIONALITY_ID) {
             return n_search.Main_(
               controller: c_nationality,
               onChanged: (v) {
-                e.value["value"] = v[sm_nt.ID];
-                sm.data[sm.NATIONALITY]!["value"] = v[sm_nt.NAME];
+                e.value["value"] = v[sm_nationality.ID];
+                sm_guest.data[sm_guest.NATIONALITY]!["value"] = v[sm_nationality.NAME];
                 setState(() {});
               },
               onCleared: () {
                 e.value["value"] = null;
-                sm.data[sm.NATIONALITY]!["value"] = null;
+                sm_guest.data[sm_guest.NATIONALITY]!["value"] = null;
                 setState(() {});
               },
             );
           }
 
           // * select gender
-          if (e.key == sm.GENDER) {
+          if (e.key == sm_guest.GENDER) {
             return g_select.Main_(
               controller: c_gender,
               onChanged: (v) {
@@ -259,7 +259,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       var payload = {};
-      for (var e in sm.data.entries) //
+      for (var e in sm_guest.data.entries) //
         payload[e.key] = e.value["value"];
 
       // request

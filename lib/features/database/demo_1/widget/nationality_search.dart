@@ -1,6 +1,7 @@
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
+import "package:speanmeas/core/schema/nationality.g.dart";
 
 //
 import "package:speanmeas/core/utility/dio.dart";
@@ -8,7 +9,6 @@ import "package:speanmeas/core/theme/theme_data.dart";
 
 //
 import "package:speanmeas/features/database/nationality/form/create.dart" as n_f_create;
-import "package:speanmeas/features/database/nationality/schema.g.dart" as n_schema_r;
 import "package:speanmeas/core/widget/snackbar.dart";
 
 class _Main_State extends State<Main_> {
@@ -57,7 +57,7 @@ class _Main_State extends State<Main_> {
       final r = await dio.post(
         "/nationality/read_string", //
         data: {
-          "key": n_schema_r.NAME, //
+          "key": sm_nationality.NAME, //
           "query": q, //
         },
       );
@@ -85,7 +85,7 @@ class _Main_State extends State<Main_> {
                 final r = await dio.post(
                   "/nationality/read_string", //
                   data: {
-                    "key": n_schema_r.NAME, //
+                    "key": sm_nationality.NAME, //
                     "query": q, //
                     "order": 1, //
                     "limit": 100, //
@@ -95,8 +95,8 @@ class _Main_State extends State<Main_> {
                 //
                 List<String> options = [];
                 for (var d in r.data) {
-                  if (d[n_schema_r.NAME] == null) continue;
-                  options.add(d[n_schema_r.NAME] ?? "");
+                  if (d[sm_nationality.NAME] == null) continue;
+                  options.add(d[sm_nationality.NAME] ?? "");
                 }
 
                 //
@@ -153,17 +153,17 @@ class _Main_State extends State<Main_> {
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
             //
-            n_schema_r.clear();
+            sm_nationality.clear();
 
             //
             final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => n_f_create.Main_()));
             if (v == null) return;
 
             //
-            widget.controller.text = v[n_schema_r.NAME];
+            widget.controller.text = v[sm_nationality.NAME];
 
             //
-            select(v[n_schema_r.NAME]);
+            select(v[sm_nationality.NAME]);
           },
         ),
       ],

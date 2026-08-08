@@ -5,7 +5,7 @@ import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/select_dynamic.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
+import "package:speanmeas/core/schema/room.g.dart";
 
 import "../schema.g.dart" as sm_fd;
 
@@ -55,12 +55,12 @@ class _Main_State extends State<Main_> {
     try {
       //
       sm_fd.clear();
-      sm_r.clear();
+      sm_room.clear();
 
       tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
-      for (var e in sm_r.data.entries) e.value["value"] = tmp.data[0][e.key];
+      for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_r.data[sm_r.FRONT_DESK_ID]!["value"]});
+      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
       for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       c_n_o_guest.text = sm_fd.data[sm_fd.STAY_N_GUEST]?["value"]?.toString() ?? "";
@@ -146,8 +146,8 @@ class _Main_State extends State<Main_> {
     try {
       int stay_days = int.tryParse(c_d_day.text) ?? 0;
       int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
-      double price_day = double.tryParse(sm_r.data[sm_r.USD_PER_DAY]?["value"].toString() ?? "") ?? 0;
-      double price_3hours = double.tryParse(sm_r.data[sm_r.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
+      double price_day = double.tryParse(sm_room.data[sm_room.USD_PER_DAY]?["value"].toString() ?? "") ?? 0;
+      double price_3hours = double.tryParse(sm_room.data[sm_room.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
       double room_paid = double.tryParse(sm_fd.data[sm_fd.ROOM_PAY_TOTAL]?["value"].toString() ?? "") ?? 0;
       double room_price = (price_day * stay_days) + (price_3hours * stay_hours / 3);
 
@@ -175,8 +175,8 @@ class _Main_State extends State<Main_> {
         await dio.post(
           endpoint.ROOM_UPDATE, //
           data: {
-            sm_r.ID: sm_r.data[sm_r.ID]!["value"], //
-            sm_r.STATUS: "Pending Pay", //
+            sm_room.ID: sm_room.data[sm_room.ID]!["value"], //
+            sm_room.STATUS: "Pending Pay", //
           },
         );
 

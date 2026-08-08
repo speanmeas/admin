@@ -7,8 +7,8 @@ import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/show_data.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 
-import "package:speanmeas/features/database/guest/schema.g.dart" as sm_g;
-import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
+import "package:speanmeas/core/schema/guest.g.dart";
+import "package:speanmeas/core/schema/room.g.dart";
 
 import "../schema.g.dart" as sm_fd;
 import "../widget/guest_search.dart" as g_search;
@@ -57,12 +57,12 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     sm_fd.clear();
-    sm_r.clear();
+    sm_room.clear();
 
     tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
-    for (var e in sm_r.data.entries) e.value["value"] = tmp.data[0][e.key];
+    for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-    c_g_search.text = sm_g.data[sm_g.PHONE_NUMBER]?["value"]?.toString() ?? "";
+    c_g_search.text = sm_guest.data[sm_guest.PHONE_NUMBER]?["value"]?.toString() ?? "";
 
     sm_fd.data[sm_fd.STAY_N_GUEST]?["value"] = 1;
     c_n_o_guest.text = sm_fd.data[sm_fd.STAY_N_GUEST]?["value"]?.toString() ?? "";
@@ -95,11 +95,11 @@ class _Main_State extends State<Main_> {
       g_search.Main_(
         controller: c_g_search,
         onChanged: (v) {
-          sm_fd.data[sm_fd.GUEST_ID]?["value"] = v[sm_g.ID];
-          sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"] = v[sm_g.FULL_NAME];
-          sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"] = v[sm_g.PHONE_NUMBER];
-          sm_fd.data[sm_fd.GUEST_GENDER]?["value"] = v[sm_g.GENDER];
-          sm_fd.data[sm_fd.GUEST_NATIONALITY]?["value"] = v[sm_g.NATIONALITY];
+          sm_fd.data[sm_fd.GUEST_ID]?["value"] = v[sm_guest.ID];
+          sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"] = v[sm_guest.FULL_NAME];
+          sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"] = v[sm_guest.PHONE_NUMBER];
+          sm_fd.data[sm_fd.GUEST_GENDER]?["value"] = v[sm_guest.GENDER];
+          sm_fd.data[sm_fd.GUEST_NATIONALITY]?["value"] = v[sm_guest.NATIONALITY];
           setState(() {});
         },
         onCleared: () {
@@ -236,8 +236,8 @@ class _Main_State extends State<Main_> {
     try {
       int stay_days = int.tryParse(c_d_day.text) ?? 0;
       int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
-      double price_day = double.tryParse(sm_r.data[sm_r.USD_PER_DAY]?["value"].toString() ?? "") ?? 0;
-      double price_3hours = double.tryParse(sm_r.data[sm_r.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
+      double price_day = double.tryParse(sm_room.data[sm_room.USD_PER_DAY]?["value"].toString() ?? "") ?? 0;
+      double price_3hours = double.tryParse(sm_room.data[sm_room.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
       double room_price = (price_day * stay_days) + (price_3hours * stay_hours / 3);
 
       //
@@ -257,9 +257,9 @@ class _Main_State extends State<Main_> {
       await dio.post(
         endpoint.ROOM_UPDATE, //
         data: {
-          sm_r.ID: widget.room_id, //
-          sm_r.STATUS: "Pending Pay", //
-          sm_r.FRONT_DESK_ID: tmp.data[0][sm_g.ID], //
+          sm_room.ID: widget.room_id, //
+          sm_room.STATUS: "Pending Pay", //
+          sm_room.FRONT_DESK_ID: tmp.data[0][sm_guest.ID], //
         },
       );
 

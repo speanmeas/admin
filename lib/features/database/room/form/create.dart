@@ -11,7 +11,7 @@ import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/show_data.dart";
 
 import "../config.dart";
-import "../schema.g.dart" as sm;
+import "package:speanmeas/core/schema/room.g.dart";
 
 import "../widget/status_select.dart" as s_select;
 import "../widget/kind_select.dart" as k_select;
@@ -65,25 +65,25 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    sm.clear();
+    sm_room.clear();
 
-    sm.data[sm.STATUS]!["value"] = "Available";
-    sm.data[sm.KIND]!["value"] = "Single";
+    sm_room.data[sm_room.STATUS]!["value"] = "Available";
+    sm_room.data[sm_room.KIND]!["value"] = "Single";
 
-    if (sm.data[sm.STATUS]!["value"] != null) //
-      c_status.text = sm.data[sm.STATUS]!["value"];
-    if (sm.data[sm.KIND]!["value"] != null) //
-      c_kind.text = sm.data[sm.KIND]!["value"];
+    if (sm_room.data[sm_room.STATUS]!["value"] != null) //
+      c_status.text = sm_room.data[sm_room.STATUS]!["value"];
+    if (sm_room.data[sm_room.KIND]!["value"] != null) //
+      c_kind.text = sm_room.data[sm_room.KIND]!["value"];
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      for (var e in sm.data.entries)
+      for (var e in sm_room.data.entries)
         (() {
           // * select status
-          if (e.key == sm.STATUS) {
+          if (e.key == sm_room.STATUS) {
             return s_select.Main_(
               controller: c_status,
               onChanged: (v) {
@@ -98,7 +98,7 @@ class _Main_State extends State<Main_> {
           }
 
           // * select kind
-          if (e.key == sm.KIND) {
+          if (e.key == sm_room.KIND) {
             return k_select.Main_(
               controller: c_kind,
               onChanged: (v) {
@@ -256,7 +256,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       var payload = {};
-      for (var e in sm.data.entries) //
+      for (var e in sm_room.data.entries) //
         payload[e.key] = e.value["value"];
 
       // request

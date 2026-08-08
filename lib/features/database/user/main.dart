@@ -9,7 +9,7 @@ import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 
 import "config.dart";
-import "schema.g.dart" as sm;
+import "package:speanmeas/core/schema/user.g.dart";
 
 import "form/create.dart" as create;
 import "form/read.dart" as read;
@@ -128,7 +128,7 @@ class _Main_State extends State<Main_> {
         for (var d in data)
           PlutoRow(
             cells: {
-              for (var e in sm.data.entries) //
+              for (var e in sm_user.data.entries) //
                 e.key: PlutoCell(
                   value: e.key.contains("password")
                       ? "**********" //
@@ -320,7 +320,7 @@ class _Main_State extends State<Main_> {
         child: PlutoGrid(
           rows: [],
           columns: [
-            for (var e in sm.data.entries)
+            for (var e in sm_user.data.entries)
               PlutoColumn(
                 field: e.key, //
                 title: e.value["title"]!,
@@ -540,7 +540,7 @@ class _Main_State extends State<Main_> {
       }
 
       //
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => read.Main_(id: row.cells[sm.ID]!.value.toString())));
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => read.Main_(id: row.cells[sm_user.ID]!.value.toString())));
       if (tmp == null) return;
 
       //
@@ -561,7 +561,7 @@ class _Main_State extends State<Main_> {
       }
 
       //
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_(id: row.cells[sm.ID]!.value.toString())));
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_(id: row.cells[sm_user.ID]!.value.toString())));
       if (tmp == null) return;
 
       //
@@ -585,7 +585,7 @@ class _Main_State extends State<Main_> {
       }
 
       //
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_(id: row.cells[sm.ID]!.value.toString())));
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_(id: row.cells[sm_user.ID]!.value.toString())));
       if (tmp == null) return;
 
       //

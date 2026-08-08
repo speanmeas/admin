@@ -8,7 +8,7 @@ import "package:speanmeas/core/theme/theme_data.dart";
 
 //
 import "package:speanmeas/features/database/guest/form/create.dart" as g_create;
-import "package:speanmeas/features/database/guest/schema.g.dart" as g_schema;
+import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 
 class _Main_State extends State<Main_> {
@@ -40,7 +40,7 @@ class _Main_State extends State<Main_> {
       final r = await dio.post(
         endpoint.GUEST_READ_STRING, //
         data: {
-          "key": g_schema.PHONE_NUMBER, //
+          "key": sm_guest.PHONE_NUMBER, //
           "query": q, //
         },
       );
@@ -69,7 +69,7 @@ class _Main_State extends State<Main_> {
                 final r = await dio.post(
                   endpoint.GUEST_READ_STRING, //
                   data: {
-                    "key": g_schema.PHONE_NUMBER, //
+                    "key": sm_guest.PHONE_NUMBER, //
                     "query": q, //
                     "order": 1, //
                     "limit": 100, //
@@ -79,8 +79,8 @@ class _Main_State extends State<Main_> {
                 //
                 List<String> options = [];
                 for (var d in r.data) {
-                  if (d[g_schema.PHONE_NUMBER] == null) continue;
-                  options.add(d[g_schema.PHONE_NUMBER] ?? "");
+                  if (d[sm_guest.PHONE_NUMBER] == null) continue;
+                  options.add(d[sm_guest.PHONE_NUMBER] ?? "");
                 }
 
                 //
@@ -135,17 +135,17 @@ class _Main_State extends State<Main_> {
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
             //
-            g_schema.clear();
+            sm_guest.clear();
 
             //
             final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => g_create.Main_()));
             if (v == null) return;
 
             //
-            widget.controller.text = v[g_schema.PHONE_NUMBER];
+            widget.controller.text = v[sm_guest.PHONE_NUMBER];
 
             //
-            select(v[g_schema.PHONE_NUMBER]);
+            select(v[sm_guest.PHONE_NUMBER]);
           },
         ),
       ],

@@ -7,7 +7,7 @@ import "package:speanmeas/core/widget/show_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 
 import "../config.dart";
-import "../schema.g.dart" as sm;
+import "package:speanmeas/core/schema/guest.g.dart";
 
 class _Main_State extends State<Main_> {
   //
@@ -15,13 +15,13 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     try {
-      sm.clear();
+      sm_guest.clear();
 
       tmp = await dio.post(
         "$PATH/read_id", //
-        data: {sm.ID: widget.id},
+        data: {sm_guest.ID: widget.id},
       );
-      for (var e in sm.data.entries) e.value["value"] = tmp.data[0][e.key];
+      for (var e in sm_guest.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       setState(() {});
       //
@@ -54,7 +54,7 @@ class _Main_State extends State<Main_> {
           child: Column(
             children: [
               SizedBox(height: 8),
-              for (var e in sm.data.entries)
+              for (var e in sm_guest.data.entries)
                 (() {
                   if (e.value["type"] == "string") {
                     String value = "";

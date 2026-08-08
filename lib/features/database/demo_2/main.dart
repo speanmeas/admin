@@ -9,7 +9,7 @@ import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 
 import "config.dart";
-import "schema.g.dart" as sm;
+import "package:speanmeas/core/schema/demo_2.g.dart";
 
 import "form/create.dart" as create;
 import "form/read.dart" as read;
@@ -117,7 +117,7 @@ class _Main_State extends State<Main_> {
         for (var d in data)
           PlutoRow(
             cells: {
-              for (var e in sm.data.entries) //
+              for (var e in sm_demo_2.data.entries) //
                 e.key: PlutoCell(
                   value: e.key.contains("password")
                       ? "**********" //
@@ -309,7 +309,7 @@ class _Main_State extends State<Main_> {
         child: PlutoGrid(
           rows: [],
           columns: [
-            for (var e in sm.data.entries)
+            for (var e in sm_demo_2.data.entries)
               PlutoColumn(
                 field: e.key, //
                 title: e.value["title"]!,
@@ -540,7 +540,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => read.Main_(
-            id: row.cells[sm.ID]!.value.toString(), //
+            id: row.cells[sm_demo_2.ID]!.value.toString(), //
           ),
         ),
       );
@@ -567,7 +567,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => update.Main_(
-            id: row.cells[sm.ID]!.value.toString(), //
+            id: row.cells[sm_demo_2.ID]!.value.toString(), //
           ),
         ),
       );
@@ -598,7 +598,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => delete.Main_(
-            id: row.cells[sm.ID]!.value.toString(), //
+            id: row.cells[sm_demo_2.ID]!.value.toString(), //
           ),
         ),
       );

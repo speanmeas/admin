@@ -11,7 +11,7 @@ import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/show_data.dart";
 
 import "../config.dart";
-import "../schema.g.dart" as sm;
+import "package:speanmeas/core/schema/user.g.dart";
 
 import "../widget/password_input.dart" as p_input;
 
@@ -63,17 +63,17 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    sm.clear();
+    sm_user.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      for (var e in sm.data.entries)
+      for (var e in sm_user.data.entries)
         (() {
           // * password input
-          if (e.key == sm.PASSWORD) {
+          if (e.key == sm_user.PASSWORD) {
             return p_input.Main_(
               controller: c_password,
               onChanged: (v) {
@@ -231,7 +231,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       var payload = {};
-      for (var e in sm.data.entries) //
+      for (var e in sm_user.data.entries) //
         payload[e.key] = e.value["value"];
 
       // request

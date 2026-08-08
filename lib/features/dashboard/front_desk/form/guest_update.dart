@@ -6,8 +6,8 @@ import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/show_data.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 
-import "package:speanmeas/features/database/guest/schema.g.dart" as sm_g;
-import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
+import "package:speanmeas/core/schema/guest.g.dart";
+import "package:speanmeas/core/schema/room.g.dart";
 
 import "../schema.g.dart" as sm_fd;
 import "../widget/guest_search.dart" as g_search;
@@ -52,15 +52,15 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       sm_fd.clear();
-      sm_r.clear();
-      sm_g.clear();
+      sm_room.clear();
+      sm_guest.clear();
 
       //
       tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
-      for (var e in sm_r.data.entries) e.value["value"] = tmp.data[0][e.key];
+      for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       //
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_r.data[sm_r.FRONT_DESK_ID]!["value"]});
+      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
       for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       //
@@ -80,11 +80,11 @@ class _Main_State extends State<Main_> {
       g_search.Main_(
         controller: c_g_search,
         onChanged: (v) {
-          sm_fd.data[sm_fd.GUEST_ID]?["value"] = v[sm_g.ID];
-          sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"] = v[sm_g.FULL_NAME];
-          sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"] = v[sm_g.PHONE_NUMBER];
-          sm_fd.data[sm_fd.GUEST_GENDER]?["value"] = v[sm_g.GENDER];
-          sm_fd.data[sm_fd.GUEST_NATIONALITY]?["value"] = v[sm_g.NATIONALITY];
+          sm_fd.data[sm_fd.GUEST_ID]?["value"] = v[sm_guest.ID];
+          sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"] = v[sm_guest.FULL_NAME];
+          sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"] = v[sm_guest.PHONE_NUMBER];
+          sm_fd.data[sm_fd.GUEST_GENDER]?["value"] = v[sm_guest.GENDER];
+          sm_fd.data[sm_fd.GUEST_NATIONALITY]?["value"] = v[sm_guest.NATIONALITY];
           setState(() {});
         },
         onCleared: () {

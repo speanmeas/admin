@@ -8,7 +8,7 @@ import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 
 import "package:speanmeas/features/database/guest/form/create.dart" as g_create;
-import "package:speanmeas/features/database/guest/schema.g.dart" as g_schema;
+import "package:speanmeas/core/schema/guest.g.dart";
 
 class _Main_State extends State<Main_> {
   //
@@ -48,7 +48,7 @@ class _Main_State extends State<Main_> {
       }
 
       is_selected = true;
-      widget.controller.text = items[0][g_schema.FULL_NAME];
+      widget.controller.text = items[0][sm_guest.FULL_NAME];
 
       widget.onChanged?.call(items[0]);
     } catch (e, st) {
@@ -97,13 +97,13 @@ class _Main_State extends State<Main_> {
               // select from data list
               Map<String, dynamic> d = {};
               for (var e in data) {
-                if ("${e[g_schema.FULL_NAME] ?? ""} (${e[g_schema.PHONE_NUMBER] ?? "N/A"})" == v) {
+                if ("${e[sm_guest.FULL_NAME] ?? ""} (${e[sm_guest.PHONE_NUMBER] ?? "N/A"})" == v) {
                   d = e;
                   break;
                 }
               }
 
-              widget.controller.text = d[g_schema.FULL_NAME] ?? "";
+              widget.controller.text = d[sm_guest.FULL_NAME] ?? "";
 
               widget.onChanged?.call(d);
             },
@@ -120,14 +120,14 @@ class _Main_State extends State<Main_> {
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
             //
-            g_schema.clear();
+            sm_guest.clear();
 
             //
             final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => g_create.Main_()));
             if (v == null) return;
 
             //
-            select_by_id(v[g_schema.ID]);
+            select_by_id(v[sm_guest.ID]);
 
             //
           },
@@ -144,7 +144,7 @@ class _Main_State extends State<Main_> {
       );
 
       is_selected = true;
-      widget.controller.text = tmp.data[0][g_schema.FULL_NAME];
+      widget.controller.text = tmp.data[0][sm_guest.FULL_NAME];
 
       widget.onChanged?.call(tmp.data[0]);
     } catch (e, st) {
@@ -165,7 +165,7 @@ class _Main_State extends State<Main_> {
       //
       List<String> options = [];
       for (var d in data) {
-        final text = "${d[g_schema.FULL_NAME] ?? ""} (${d[g_schema.PHONE_NUMBER] ?? "N/A"})";
+        final text = "${d[sm_guest.FULL_NAME] ?? ""} (${d[sm_guest.PHONE_NUMBER] ?? "N/A"})";
         options.add(text);
       }
 

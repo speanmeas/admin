@@ -11,7 +11,7 @@ import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/show_data.dart";
 
 import "../config.dart";
-import "../schema.g.dart" as sm;
+import "package:speanmeas/core/schema/nationality.g.dart";
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -59,14 +59,14 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    sm.clear();
+    sm_nationality.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      for (var e in sm.data.entries)
+      for (var e in sm_nationality.data.entries)
         (() {
           // * lock
           if (e.value["lock"] == true) {
@@ -212,7 +212,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       var payload = {};
-      for (var e in sm.data.entries) //
+      for (var e in sm_nationality.data.entries) //
         payload[e.key] = e.value["value"];
 
       // request

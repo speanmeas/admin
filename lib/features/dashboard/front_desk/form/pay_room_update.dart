@@ -5,7 +5,7 @@ import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 
-import "package:speanmeas/features/database/room/schema.g.dart" as sm_r;
+import "package:speanmeas/core/schema/room.g.dart";
 
 import "../schema.g.dart" as sm_fd;
 
@@ -54,14 +54,14 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       sm_fd.clear();
-      sm_r.clear();
+      sm_room.clear();
 
       //
       tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
-      for (var e in sm_r.data.entries) e.value["value"] = tmp.data[0][e.key];
+      for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       //
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_r.data[sm_r.FRONT_DESK_ID]!["value"]});
+      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
       for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       //
@@ -208,8 +208,8 @@ class _Main_State extends State<Main_> {
         await dio.post(
           endpoint.ROOM_UPDATE, //
           data: {
-            sm_r.ID: sm_r.data[sm_r.ID]!["value"], //
-            sm_r.STATUS: "Pending Leave", // * ត្រឡប់ទៅ Pending Leave វិញ
+            sm_room.ID: sm_room.data[sm_room.ID]!["value"], //
+            sm_room.STATUS: "Pending Leave", // * ត្រឡប់ទៅ Pending Leave វិញ
           },
         );
       // * ប្រសិនបើលុយមិនទាន់បង់គ្រប់ ឬ បង់លើស
@@ -217,8 +217,8 @@ class _Main_State extends State<Main_> {
         await dio.post(
           endpoint.ROOM_UPDATE, //
           data: {
-            sm_r.ID: sm_r.data[sm_r.ID]!["value"], //
-            sm_r.STATUS: "Pending Pay", // * ត្រឡប់ទៅ Pending Pay វិញ
+            sm_room.ID: sm_room.data[sm_room.ID]!["value"], //
+            sm_room.STATUS: "Pending Pay", // * ត្រឡប់ទៅ Pending Pay វិញ
           },
         );
 
