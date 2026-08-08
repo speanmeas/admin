@@ -1,7 +1,5 @@
 // TODO: make report
 
-import "dart:math";
-
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_svg/flutter_svg.dart";
@@ -11,6 +9,7 @@ import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/widget/select_datetime.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
@@ -20,14 +19,32 @@ class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_filter = false;
   bool is_loading = false;
-  final c_start = TextEditingController();
-  final c_end = TextEditingController();
+  DateTime? start;
+  DateTime? stop;
+  double total_income = 0.0;
   PlutoGridStateManager? state_manager;
-  List<PlutoRow> rows = []; // * ជួរដេកទិន្នន័យ
-
-  List<Map<String, dynamic>> data = []; // * ទិន្នន័យដើមពីម៉ាស៊ីនមេ
 
   void init() async {
+    //
+  }
+
+  void on_search() async {
+    // validate
+    if (start == null) {
+      snackbar(ct: context, ms: "Please select start date", cl: Colors.red);
+      return;
+    }
+    if (stop == null) {
+      snackbar(ct: context, ms: "Please select stop date", cl: Colors.red);
+      return;
+    }
+
+    // check if start is after stop
+    if (start!.isAfter(stop!)) {
+      snackbar(ct: context, ms: "Start date must be before stop date", cl: Colors.red);
+      return;
+    }
+
     setState(() => is_loading = true);
     try {
       //
@@ -35,33 +52,31 @@ class _Main_State extends State<Main_> {
         endpoint.REPORT,
         data: {
           "key": "check_in_at", //
-          "start": "2026-01-01T00:00:00.000Z",
-          "stop": "2026-12-30T23:59:59.000Z",
+          "start": start?.toUtc().toIso8601String(),
+          "stop": stop?.toUtc().toIso8601String(),
         },
       );
-
-      data = List<Map<String, dynamic>>.from(tmp.data);
 
       // add data to row
       state_manager?.removeAllRows();
       state_manager?.appendRows([
-        for (var d in data)
+        for (var d in tmp.data)
           PlutoRow(
             cells: {
-              "index": PlutoCell(value: data.indexOf(d) + 1),
+              "index": PlutoCell(value: tmp.data.indexOf(d) + 1),
               for (var e in sm_front_desk.data.entries) //
-                e.key: PlutoCell(
-                  value: e.key.contains("password")
-                      ? "**********" //
-                      : data_to_cell(data: d[e.key], type: e.value["type"]),
-                ),
+                e.key: PlutoCell(value: d[e.key] ?? ""),
             },
           ),
       ]);
 
-      // print(tmp.data[0]);
+      // calculate total income
+      total_income = 0.0;
+      for (var d in tmp.data) {
+        total_income += d[sm_front_desk.ROOM_PAY_TOTAL] ?? 0.0;
+        total_income += d[sm_front_desk.REVENUE_PAY_TOTAL] ?? 0.0;
+      }
 
-      //
       setState(() {});
     } catch (e, st) {
       print(st);
@@ -80,21 +95,43 @@ class _Main_State extends State<Main_> {
             height: 34, //
             padding: EdgeInsets.all(1),
             child: Row(
+              spacing: 1,
               children: [
                 //
-                OutlinedButton.icon(
-                  onPressed: () {},
-                  icon: Icon(Icons.calendar_month),
-                  label: Text("Datetime Start"), //
+                SizedBox(
+                  width: 160,
+                  child: SelectDateTime(
+                    title: "Datetime Start:", //
+                    onChanged: (v) => start = v,
+                  ),
                 ),
 
                 //
-                OutlinedButton.icon(
-                  onPressed: () {},
-                  icon: Icon(Icons.calendar_month),
-                  label: Text("Datetime Stop"), //
+                SizedBox(
+                  width: 160,
+                  child: SelectDateTime(
+                    title: "Datetime Stop:", //
+                    onChanged: (v) => stop = v,
+                  ),
                 ),
 
+                // search
+                Tooltip(
+                  message: "Search",
+                  child: InkWell(
+                    onTap: on_search,
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.search, //
+                        size: 24,
+                        color: Colors.blue,
+                      ), //
+                    ), //
+                  ),
+                ),
                 Spacer(),
 
                 // filter
@@ -117,24 +154,6 @@ class _Main_State extends State<Main_> {
                       if (!is_filter) state_manager?.setFilterWithFilterRows([]);
                       setState(() {});
                     },
-                  ),
-                ),
-
-                //
-                Tooltip(
-                  message: "Refresh",
-                  child: InkWell(
-                    onTap: () {},
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.refresh, //
-                        size: 24,
-                        color: Colors.blue,
-                      ), //
-                    ),
                   ),
                 ),
               ],
@@ -163,7 +182,7 @@ class _Main_State extends State<Main_> {
                   ),
                 ), //
                 Text(
-                  "100 \$",
+                  "$total_income \$",
                   style: TextStyle(
                     fontSize: 18, //
                     fontWeight: FontWeight.bold,
@@ -222,7 +241,7 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  final WIDTH = 120.0; // * ទទឹងស្តង់ដាររបស់ជួរឈរទិន្នន័យ
+  final WIDTH = 100.0; // * ទទឹងស្តង់ដាររបស់ជួរឈរទិន្នន័យ
 
   @override
   Widget build(BuildContext context) {
@@ -235,6 +254,12 @@ class _Main_State extends State<Main_> {
             title: "ល.រ.",
             type: PlutoColumnType.number(),
             width: WIDTH,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(rc.cell.value.toString()),
+              );
+            },
           ),
           PlutoColumn(
             field: sm_front_desk.ID, //
@@ -248,12 +273,26 @@ class _Main_State extends State<Main_> {
             title: "បន្ទប់",
             type: PlutoColumnType.text(),
             width: WIDTH,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(rc.cell.value.toString()),
+              );
+            },
           ),
           PlutoColumn(
             field: sm_front_desk.GUEST_FULL_NAME, //
             title: "ឈ្មោះភ្ញៀវ",
             type: PlutoColumnType.text(),
-            width: WIDTH,
+            width: 160,
+            renderer: (rc) {
+              String value = "";
+              if (rc.cell.value != null) value = rc.cell.value.toString();
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(value),
+              );
+            },
           ),
           PlutoColumn(
             field: sm_front_desk.STAY_N_GUEST, //
@@ -267,14 +306,36 @@ class _Main_State extends State<Main_> {
             field: sm_front_desk.CHECK_IN_AT, //
             title: "ពេលចូល",
             type: PlutoColumnType.text(),
-            width: WIDTH,
+            width: 160,
+            renderer: (rc) {
+              String value = "";
+              if (rc.cell.value != null) {
+                final tmp = DateTime.tryParse(rc.cell.value.toString());
+                if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
+              }
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(value),
+              );
+            },
           ),
           //
           PlutoColumn(
             field: sm_front_desk.CHECK_OUT_AT, //
             title: "ពេលចេញ",
             type: PlutoColumnType.text(),
-            width: WIDTH,
+            width: 160,
+            renderer: (rc) {
+              String value = "";
+              if (rc.cell.value != null) {
+                final tmp = DateTime.tryParse(rc.cell.value.toString());
+                if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
+              }
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(value),
+              );
+            },
           ),
           //
           PlutoColumn(
@@ -282,7 +343,12 @@ class _Main_State extends State<Main_> {
             title: "ចំនួនថ្ងៃ",
             type: PlutoColumnType.number(),
             width: WIDTH,
-            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value} ថ្ងៃ')),
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text('${rc.cell.value} ថ្ងៃ'),
+              );
+            },
           ),
           //
           PlutoColumn(
@@ -290,7 +356,12 @@ class _Main_State extends State<Main_> {
             title: "ចំនួនម៉ោង",
             type: PlutoColumnType.number(),
             width: WIDTH,
-            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value} ម៉ោង')),
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text('${rc.cell.value.toString()} ម៉ោង'),
+              );
+            },
           ),
           //
           PlutoColumn(
@@ -298,7 +369,12 @@ class _Main_State extends State<Main_> {
             title: "តម្លៃបន្ទប់",
             type: PlutoColumnType.number(),
             width: WIDTH,
-            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text('${rc.cell.value.toStringAsFixed(2)} \$'),
+              );
+            },
           ),
           //
           PlutoColumn(
@@ -306,7 +382,12 @@ class _Main_State extends State<Main_> {
             title: "បង់តាមសាច់ប្រាក់",
             type: PlutoColumnType.number(),
             width: WIDTH,
-            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text('${rc.cell.value.toStringAsFixed(2)} \$'),
+              );
+            },
           ),
           //
           PlutoColumn(
@@ -314,7 +395,12 @@ class _Main_State extends State<Main_> {
             title: "បង់តាមធនាគារ",
             type: PlutoColumnType.number(),
             width: WIDTH,
-            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text('${rc.cell.value.toStringAsFixed(2)} \$'),
+              );
+            },
           ),
           //
           PlutoColumn(
@@ -322,7 +408,12 @@ class _Main_State extends State<Main_> {
             title: "ប្រាប់អាប់",
             type: PlutoColumnType.number(),
             width: WIDTH,
-            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text('${rc.cell.value.toStringAsFixed(2)} \$'),
+              );
+            },
           ),
           //
           PlutoColumn(
@@ -330,7 +421,12 @@ class _Main_State extends State<Main_> {
             title: "តម្លៃចំណូល",
             type: PlutoColumnType.number(),
             width: WIDTH,
-            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text('${rc.cell.value.toStringAsFixed(2)} \$'),
+              );
+            },
           ),
           //
           PlutoColumn(
@@ -338,7 +434,12 @@ class _Main_State extends State<Main_> {
             title: "បង់តាមសាច់ប្រាក់",
             type: PlutoColumnType.number(),
             width: WIDTH,
-            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text('${rc.cell.value.toStringAsFixed(2)} \$'),
+              );
+            },
           ),
           //
           PlutoColumn(
@@ -346,7 +447,12 @@ class _Main_State extends State<Main_> {
             title: "បង់តាមធនាគារ",
             type: PlutoColumnType.number(),
             width: WIDTH,
-            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text('${rc.cell.value.toStringAsFixed(2)} \$'),
+              );
+            },
           ),
           //
           PlutoColumn(
@@ -354,7 +460,12 @@ class _Main_State extends State<Main_> {
             title: "ប្រាប់អាប់",
             type: PlutoColumnType.number(),
             width: WIDTH,
-            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text('${rc.cell.value.toStringAsFixed(2)} \$'),
+              );
+            },
           ),
           //
           PlutoColumn(
@@ -362,6 +473,14 @@ class _Main_State extends State<Main_> {
             title: "ឲចូលដោយ",
             type: PlutoColumnType.text(),
             width: WIDTH,
+            renderer: (rc) {
+              String value = "";
+              if (rc.cell.value != null) value = rc.cell.value.toString();
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(value),
+              );
+            },
           ),
           //
           PlutoColumn(
@@ -369,6 +488,14 @@ class _Main_State extends State<Main_> {
             title: "ឲចេញដោយ",
             type: PlutoColumnType.text(),
             width: WIDTH,
+            renderer: (rc) {
+              String value = "";
+              if (rc.cell.value != null) value = rc.cell.value.toString();
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(value),
+              );
+            },
           ),
         ], //
         //

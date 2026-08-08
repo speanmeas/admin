@@ -4,7 +4,9 @@ final TITLE = "Spean Meas";
 
 final MOBILE_SCREEN_WIDTH = 1000;
 
-final DEFAULT_DATE_FORMAT = "EE d-M-yy h:mm a";
+// final DEFAULT_DATE_FORMAT = "EEEE dd-MM-yyyy h:mm a";
+final DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm";
+// final DEFAULT_DATE_FORMAT = "EE d-M-yy h:mm a";
 final DEFAULT_LIMIT_ROW = 1000;
 final DEFAULT_KEY = "created_at";
 final DEFAULT_ORDER = -1;
