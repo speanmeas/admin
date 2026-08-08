@@ -4,6 +4,11 @@ final TITLE = "Spean Meas";
 
 final MOBILE_SCREEN_WIDTH = 1000;
 
+final DEFAULT_DATE_FORMAT = "EE d-M-yy h:mm a";
+final DEFAULT_LIMIT_ROW = 1000;
+final DEFAULT_KEY = "created_at";
+final DEFAULT_ORDER = -1;
+
 final is_local = false;
 final is_github = false;
 String get_api_host() {

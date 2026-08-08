@@ -107,8 +107,8 @@ class _Main_State extends State<Main_> {
       final r = await dio.post(
         "$PATH/read", //
         data: {
-          "key": KEY, //
-          "order": ORDER, //
+          "key": sm_room.NUMBER, //
+          "order": 1, //
           "offset": (p - 1) * LIMIT, //
           "limit": LIMIT,
         },

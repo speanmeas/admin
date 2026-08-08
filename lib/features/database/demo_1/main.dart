@@ -5,11 +5,10 @@ import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/schema/demo_1.g.dart";
 
+import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-
-import "config.dart";
 
 import "form/create.dart" as create;
 import "form/read.dart" as read;
@@ -35,7 +34,7 @@ class _Main_State extends State<Main_> {
   bool is_loading = true;
   bool is_filter = false;
   int load_request_id = 0;
-  int get total_pages => row_total == 0 ? 1 : (row_total + LIMIT - 1) ~/ LIMIT;
+  int get total_pages => row_total == 0 ? 1 : (row_total + DEFAULT_LIMIT_ROW - 1) ~/ DEFAULT_LIMIT_ROW;
 
   @override
   void initState() {
@@ -48,7 +47,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       final r = await dio.post(
-        "$PATH/read_count", //
+        endpoint.DEMO_1_READ_COUNT, //
         data: {"count": true},
       );
       row_total = int.parse(r.data.toString());
@@ -69,7 +68,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       final r = await dio.post(
-        "$PATH/read_count", //
+        endpoint.DEMO_1_READ_COUNT, //
         data: {"count": true},
       );
       row_total = int.parse(r.data.toString());
@@ -101,12 +100,12 @@ class _Main_State extends State<Main_> {
 
       //
       final r = await dio.post(
-        "$PATH/read", //
+        endpoint.DEMO_1_READ, //
         data: {
-          "key": KEY, //
-          "order": ORDER, //
-          "offset": (p - 1) * LIMIT, //
-          "limit": LIMIT,
+          "key": DEFAULT_KEY, //
+          "order": DEFAULT_ORDER, //
+          "offset": (p - 1) * DEFAULT_LIMIT_ROW, //
+          "limitroLIMIT_ROW": DEFAULT_LIMIT_ROW,
         },
       );
       final data = List<Map<String, dynamic>>.from(r.data);
@@ -425,7 +424,7 @@ class _Main_State extends State<Main_> {
                       context, //
                       page: page,
                       row_total: row_total,
-                      limit: LIMIT,
+                      limit: DEFAULT_LIMIT_ROW,
                     );
                     if (v == null) return;
                     page = v;
@@ -644,7 +643,7 @@ class _Main_State extends State<Main_> {
     if (type == "date-time") {
       if (data == "") return null;
       if (data != "") {
-        final tmp = DateFormat(DATE_FORMAT).tryParse(data.toString());
+        final tmp = DateFormat(DEFAULT_DATE_FORMAT).tryParse(data.toString());
         if (tmp != null) return tmp.toIso8601String();
       }
     }
@@ -681,7 +680,7 @@ class _Main_State extends State<Main_> {
     if (type == "date-time") {
       if (data != null) {
         final tmp = DateTime.tryParse(data.toString());
-        if (tmp != null) return DateFormat(DATE_FORMAT).format(tmp.toLocal());
+        if (tmp != null) return DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
       }
     }
 
@@ -695,6 +694,8 @@ class _Main_State extends State<Main_> {
 
     return "";
   }
+
+  //
 }
 
 class Main_ extends StatefulWidget {
@@ -706,7 +707,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      title: HEADER, //
+      title: "Development", //
       theme: theme_data, //
       home: const Main_(),
       debugShowCheckedModeBanner: false,

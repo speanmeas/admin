@@ -6,10 +6,9 @@ import "package:speanmeas/core/schema/nationality.g.dart";
 //
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-
-//
-import "package:speanmeas/features/database/nationality/form/create.dart" as n_f_create;
 import "package:speanmeas/core/widget/snackbar.dart";
+
+import "package:speanmeas/features/database/nationality/form/create.dart" as n_f_create;
 
 class _Main_State extends State<Main_> {
   //

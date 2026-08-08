@@ -6,13 +6,12 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 
+import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/schema/room.g.dart";
-
-import "config.dart";
 
 import "form/detail.dart" as detail;
 import "form/check_in.dart" as check_in;
@@ -409,7 +408,7 @@ class _Main_State extends State<Main_> {
                           String check_in = "";
                           if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.CHECK_IN_AT] != null) {
                             final due = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.CHECK_IN_AT]);
-                            check_in = DateFormat(DATE_FORMAT).format(due);
+                            check_in = DateFormat(DEFAULT_DATE_FORMAT).format(due);
                           }
                           return Row(
                             spacing: 4,
@@ -427,7 +426,7 @@ class _Main_State extends State<Main_> {
                           String due = "";
                           if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.STAY_DUE] != null) {
                             tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.STAY_DUE]);
-                            due = DateFormat(DATE_FORMAT).format(tmp);
+                            due = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
                           }
                           return Row(
                             spacing: 4,
@@ -445,7 +444,7 @@ class _Main_State extends State<Main_> {
                           String check_out = "";
                           if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.CHECK_OUT_AT] != null) {
                             tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.CHECK_OUT_AT]);
-                            check_out = DateFormat(DATE_FORMAT).format(tmp);
+                            check_out = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
                           }
                           return Row(
                             spacing: 4,
@@ -463,7 +462,7 @@ class _Main_State extends State<Main_> {
                           String broke_date = "";
                           if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.BROKE_AT] != null) {
                             tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.BROKE_AT]);
-                            broke_date = DateFormat(DATE_FORMAT).format(tmp);
+                            broke_date = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
                           }
                           return Row(
                             spacing: 4,
@@ -860,7 +859,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      title: HEADER, //
+      title: "Development", //
       theme: theme_data, //
       home: Main_(),
       debugShowCheckedModeBanner: false,

@@ -3,11 +3,16 @@
 import "dart:math";
 
 import "package:flutter/material.dart";
+import "package:flutter_svg/flutter_svg.dart";
+import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
+
+import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/endpoint.g.dart";
+import "package:speanmeas/core/schema/front_desk.g.dart";
 
 class _Main_State extends State<Main_> {
   //
@@ -18,6 +23,8 @@ class _Main_State extends State<Main_> {
   final c_end = TextEditingController();
   PlutoGridStateManager? state_manager;
   List<PlutoRow> rows = []; // * ជួរដេកទិន្នន័យ
+
+  List<Map<String, dynamic>> data = []; // * ទិន្នន័យដើមពីម៉ាស៊ីនមេ
 
   void init() async {
     setState(() => is_loading = true);
@@ -31,6 +38,25 @@ class _Main_State extends State<Main_> {
           "stop": "2026-12-30T23:59:59.000Z",
         },
       );
+
+      data = List<Map<String, dynamic>>.from(tmp.data);
+
+      // add data to row
+      state_manager?.removeAllRows();
+      state_manager?.appendRows([
+        for (var d in data)
+          PlutoRow(
+            cells: {
+              "index": PlutoCell(value: data.indexOf(d) + 1),
+              for (var e in sm_front_desk.data.entries) //
+                e.key: PlutoCell(
+                  value: e.key.contains("password")
+                      ? "**********" //
+                      : data_to_cell(data: d[e.key], type: e.value["type"]),
+                ),
+            },
+          ),
+      ]);
 
       // print(tmp.data[0]);
 
@@ -152,7 +178,12 @@ class _Main_State extends State<Main_> {
                       width: 32,
                       height: 32,
                       alignment: Alignment.center,
-                      child: Icon(Icons.picture_as_pdf_outlined, color: Colors.blue), //
+                      child: SvgPicture.asset(
+                        "icon/pdf.svg", //
+                        width: 20,
+                        height: 20,
+                        colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
+                      ),
                     ),
                   ),
                 ),
@@ -166,7 +197,12 @@ class _Main_State extends State<Main_> {
                       width: 32,
                       height: 32,
                       alignment: Alignment.center,
-                      child: Icon(Icons.table_chart_outlined, color: Colors.blue), //
+                      child: SvgPicture.asset(
+                        "icon/excel.svg", //
+                        width: 20,
+                        height: 20,
+                        colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
+                      ),
                     ),
                   ),
                 ),
@@ -178,51 +214,6 @@ class _Main_State extends State<Main_> {
         ], //
       ),
     );
-  }
-
-  // * បង្កើតតម្លៃចៃដន្យតាមប្រភេទទិន្នន័យរបស់សសរ
-  String random_cell({
-    required String key, //
-    String? type, //
-    required int index, //
-    required Random random, //
-    required DateTime now, //
-    required List<String> first_names, //
-    required List<String> last_names, //
-    required List<String> staff_names, //
-  }) {
-    // * id
-    if (type == "id") return "$index";
-
-    // * string
-    if (type == "string") {
-      if (key == "room_number") return "${100 + index}";
-      if (key == "guest_full_name") {
-        return "${first_names[random.nextInt(first_names.length)]} ${last_names[random.nextInt(last_names.length)]}";
-      }
-      // check_in_by / check_out_by
-      return staff_names[random.nextInt(staff_names.length)];
-    }
-
-    // * number
-    if (type == "number") {
-      if (key == "stay_n_guest") return "${random.nextInt(4) + 1}";
-      return "${random.nextInt(200)}";
-    }
-
-    // * date-time
-    if (type == "date-time") {
-      final d = now.subtract(
-        Duration(
-          days: random.nextInt(30), //
-          hours: random.nextInt(24), //
-          minutes: random.nextInt(60), //
-        ),
-      );
-      return d.toIso8601String();
-    }
-
-    return "";
   }
 
   final WIDTH = 120.0; // * ទទឹងស្តង់ដាររបស់ជួរឈរទិន្នន័យ
@@ -247,117 +238,117 @@ class _Main_State extends State<Main_> {
             width: WIDTH,
           ),
           PlutoColumn(
-            field: "room_number", //
+            field: sm_front_desk.ROOM_NUMBER, //
             title: "បន្ទប់",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           PlutoColumn(
-            field: "guest_full_name", //
+            field: sm_front_desk.GUEST_FULL_NAME, //
             title: "ឈ្មោះភ្ញៀវ",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           PlutoColumn(
-            field: "stay_number_of_guest", //
+            field: sm_front_desk.STAY_N_GUEST, //
             title: "ចំនួនភ្ញៀវ",
             type: PlutoColumnType.number(),
             width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "check_in_at", //
+            field: sm_front_desk.CHECK_IN_AT, //
             title: "ពេលចូល",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "checkout", //
+            field: sm_front_desk.CHECK_OUT_AT, //
             title: "ពេលចេញ",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "stay_days", //
+            field: sm_front_desk.STAY_DAY, //
             title: "ចំនួនថ្ងៃ",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "stay_hours", //
+            field: sm_front_desk.STAY_HOUR, //
             title: "ចំនួនម៉ោង",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "room_price", //
+            field: sm_front_desk.ROOM_PRICE, //
             title: "តម្លៃបន្ទប់",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "room_pay_cash", //
+            field: sm_front_desk.ROOM_PAY_CASH, //
             title: "បង់តាមសាច់ប្រាក់",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "room_pay_bank", //
+            field: sm_front_desk.ROOM_PAY_BANK, //
             title: "បង់តាមធនាគារ",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "room_return", //
+            field: sm_front_desk.ROOM_RETURN, //
             title: "ប្រាប់អាប់",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "revenue_price", //
+            field: sm_front_desk.REVENUE_PRICE, //
             title: "តម្លៃចំណូល",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "revenue_pay_cash", //
+            field: sm_front_desk.REVENUE_PAY_CASH, //
             title: "បង់តាមសាច់ប្រាក់",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "revenue_pay_bank", //
+            field: sm_front_desk.REVENUE_PAY_BANK, //
             title: "បង់តាមធនាគារ",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "revenue_return", //
+            field: sm_front_desk.REVENUE_RETURN, //
             title: "ប្រាប់អាប់",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "check_in_by", //
+            field: sm_front_desk.CHECK_IN_BY, //
             title: "ឲចូលដោយ",
             type: PlutoColumnType.text(),
             width: WIDTH,
           ),
           //
           PlutoColumn(
-            field: "check_out_by", //
+            field: sm_front_desk.CHECK_OUT_BY, //
             title: "ឲចេញដោយ",
             type: PlutoColumnType.text(),
             width: WIDTH,
@@ -384,6 +375,84 @@ class _Main_State extends State<Main_> {
         },
       ),
     );
+  }
+
+  dynamic cell_to_data({
+    dynamic data, //
+    String? type, //
+  }) {
+    //
+    if (type == "id") {
+      if (data == "") return null;
+      if (data != "") return data.toString();
+    }
+
+    //
+    if (type == "string") {
+      if (data == "") return null;
+      if (data != "") return data.toString();
+    }
+
+    //
+    if (type == "number") {
+      if (data == "") return null;
+      if (data != "") return double.tryParse(data.toString());
+    }
+
+    //
+    if (type == "date-time") {
+      if (data == "") return null;
+      if (data != "") {
+        final tmp = DateFormat(DEFAULT_DATE_FORMAT).tryParse(data.toString());
+        if (tmp != null) return tmp.toIso8601String();
+      }
+    }
+
+    if (type == "boolean") {
+      if (data == "") return null;
+      if (data == "Yes") return true;
+      if (data == "No") return false;
+    }
+
+    return null;
+  }
+
+  String data_to_cell({
+    dynamic data, //
+    String? type, //
+  }) {
+    //
+    if (type == "id") {
+      if (data != null) return data.toString();
+    }
+
+    //
+    if (type == "string") {
+      if (data != null) return data.toString();
+    }
+
+    //
+    if (type == "number") {
+      if (data != null) return data.toString();
+    }
+
+    //
+    if (type == "date-time") {
+      if (data != null) {
+        final tmp = DateTime.tryParse(data.toString());
+        if (tmp != null) return DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
+      }
+    }
+
+    //
+    if (type == "boolean") {
+      if (data != null) {
+        if (data == true) return "Yes";
+        if (data == false) return "No";
+      }
+    }
+
+    return "";
   }
 
   @override

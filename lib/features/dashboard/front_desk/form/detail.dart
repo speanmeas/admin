@@ -2,6 +2,7 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 
+import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/endpoint.g.dart";
@@ -9,8 +10,6 @@ import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/show_data.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
-
-import "../config.dart";
 
 //
 Widget _layout(List<Widget> children) {
@@ -118,7 +117,7 @@ class _Main_State extends State<Main_> {
             String value = "";
             if (e.value["value"] != null) {
               tmp = DateTime.tryParse(e.value["value"].toString());
-              if (tmp != null) value = DateFormat(DATE_FORMAT).format(tmp);
+              if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
             }
             return ShowData(
               title: e.value["title"]?.toString() ?? "", //

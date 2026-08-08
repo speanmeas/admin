@@ -5,8 +5,6 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 
-import "../config.dart";
-
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -73,7 +71,10 @@ class _Main_State extends State<Main_> {
   void on_delete() async {
     try {
       //
-      tmp = await dio.post("$PATH/delete", data: {"_id": widget.id});
+      tmp = await dio.post(
+        endpoint.DEMO_1_DELETE, //
+        data: {"_id": widget.id},
+      );
 
       //
       snackbar(ct: context, ms: "Success", cl: Colors.green);
