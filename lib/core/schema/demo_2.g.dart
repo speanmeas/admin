@@ -1,32 +1,85 @@
 class Demo_2 {
-  static final Demo_2 instance = Demo_2._();
-  Demo_2._();
+static final Demo_2 instance = Demo_2._();
+Demo_2._();
 
-  Map<String, Map<String, dynamic>> data = {
-    "_id": {"type": "id", "title": "ID", "hide": true, "lock": false, "value": null},
-    "text_1": {"type": "string", "title": "Text 1", "hide": false, "lock": false, "value": null},
-    "number_1": {"type": "number", "title": "Number 1", "hide": false, "lock": false, "value": null},
-    "datetime_1": {"type": "date-time", "title": "Datetime 1", "hide": false, "lock": false, "value": null},
-    "logic_1": {"type": "boolean", "title": "Logic 1", "hide": false, "lock": false, "value": null},
-    "note": {"type": "string", "title": "Note", "hide": false, "lock": false, "value": null},
-    "nationality_id": {"type": "id", "title": "Nationality ID", "hide": true, "lock": false, "value": null},
-    "nationality_name": {"type": "string", "title": "Nationality", "hide": false, "lock": true, "value": null},
-    "nationality_note": {"type": "string", "title": "Nationality Note", "hide": false, "lock": true, "value": null},
-  };
-
-  final ID = "_id";
-  final TEXT_1 = "text_1";
-  final NUMBER_1 = "number_1";
-  final DATETIME_1 = "datetime_1";
-  final LOGIC_1 = "logic_1";
-  final NOTE = "note";
-  final NATIONALITY_ID = "nationality_id";
-  final NATIONALITY_NAME = "nationality_name";
-  final NATIONALITY_NOTE = "nationality_note";
-
-  void clear() {
-    for (var k in data.keys) data[k]!["value"] = null;
+Map<String, Map<String, dynamic>> data = {
+  "_id": {
+    "type": "id",
+    "title": "ID",
+    "hide": true,
+    "lock": false,
+    "value": null
+  },
+  "text_1": {
+    "type": "string",
+    "title": "Text 1",
+    "hide": false,
+    "lock": false,
+    "value": null
+  },
+  "number_1": {
+    "type": "number",
+    "title": "Number 1",
+    "hide": false,
+    "lock": false,
+    "value": null
+  },
+  "datetime_1": {
+    "type": "date-time",
+    "title": "Datetime 1",
+    "hide": false,
+    "lock": false,
+    "value": null
+  },
+  "logic_1": {
+    "type": "boolean",
+    "title": "Logic 1",
+    "hide": false,
+    "lock": false,
+    "value": null
+  },
+  "note": {
+    "type": "string",
+    "title": "Note",
+    "hide": false,
+    "lock": false,
+    "value": null
+  },
+  "nationality_id": {
+    "type": "id",
+    "title": "Nationality ID",
+    "hide": true,
+    "lock": false,
+    "value": null
+  },
+  "nationality_name": {
+    "type": "string",
+    "title": "Nationality",
+    "hide": false,
+    "lock": true,
+    "value": null
+  },
+  "nationality_note": {
+    "type": "string",
+    "title": "Nationality Note",
+    "hide": false,
+    "lock": true,
+    "value": null
   }
+};
+
+final ID = "_id";
+final TEXT_1 = "text_1";
+final NUMBER_1 = "number_1";
+final DATETIME_1 = "datetime_1";
+final LOGIC_1 = "logic_1";
+final NOTE = "note";
+final NATIONALITY_ID = "nationality_id";
+final NATIONALITY_NAME = "nationality_name";
+final NATIONALITY_NOTE = "nationality_note";
+
+void clear() { for (var k in data.keys) data[k]!["value"] = null; }
+
 }
 
 Demo_2 sm_demo_2 = Demo_2.instance;
