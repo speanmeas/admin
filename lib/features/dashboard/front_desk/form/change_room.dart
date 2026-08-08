@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:speanmeas/core/schema/front_desk.g.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart";
@@ -6,8 +7,6 @@ import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/select_dynamic.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/schema/room.g.dart";
-
-import "../schema.g.dart" as sm_fd;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -55,21 +54,21 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       sm_room.clear();
-      sm_fd.clear();
+      sm_front_desk.clear();
 
       //
-      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
+      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_front_desk.ID: widget.room_id});
       for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       //
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
-      for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
+      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
+      for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       //
       tmp = await dio.post(endpoint.ROOM_READ);
       rooms = List<Map<String, dynamic>>.from(tmp.data);
 
-      c_note.text = sm_fd.data[sm_fd.CHANGE_ROOM_NOTE]?["value"]?.toString() ?? "";
+      c_note.text = sm_front_desk.data[sm_front_desk.CHANGE_ROOM_NOTE]?["value"]?.toString() ?? "";
 
       setState(() {});
       //
@@ -134,7 +133,7 @@ class _Main_State extends State<Main_> {
   void on_change_room() async {
     try {
       //
-      String? from_room_id = sm_fd.data[sm_fd.ROOM_ID]!["value"]?.toString();
+      String? from_room_id = sm_front_desk.data[sm_front_desk.ROOM_ID]!["value"]?.toString();
       String? to_room_id;
       for (var r in rooms) {
         if (r[sm_room.NUMBER]?.toString() == c_to_room.text) {
@@ -163,7 +162,7 @@ class _Main_State extends State<Main_> {
         data: {
           sm_room.ID: to_room_id, //
           sm_room.STATUS: "Pending Pay", // * ចំណាំ៖ ត្រឡប់ទៅ Pending Pay ដើម្បីបង្ហាញថាអតិថិជនត្រូវបង់ប្រាក់សម្រាប់បន្ទប់ថ្មី
-          sm_room.FRONT_DESK_ID: sm_fd.data[sm_fd.ID]!["value"], //
+          sm_room.FRONT_DESK_ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
         },
       );
 
@@ -171,9 +170,9 @@ class _Main_State extends State<Main_> {
       await dio.post(
         endpoint.FRONT_DESK_FORM_CHANGE_ROOM,
         data: {
-          sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //
-          sm_fd.ROOM_ID: to_room_id, //
-          sm_fd.CHANGE_ROOM_NOTE: c_note.text, //
+          sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
+          sm_front_desk.ROOM_ID: to_room_id, //
+          sm_front_desk.CHANGE_ROOM_NOTE: c_note.text, //
         },
       );
 

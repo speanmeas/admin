@@ -5,9 +5,8 @@ import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/select_dynamic.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
-
-import "../schema.g.dart" as sm_fd;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -54,19 +53,19 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       //
-      sm_fd.clear();
+      sm_front_desk.clear();
       sm_room.clear();
 
-      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
+      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_front_desk.ID: widget.room_id});
       for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
-      for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
+      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
+      for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      c_n_o_guest.text = sm_fd.data[sm_fd.STAY_N_GUEST]?["value"]?.toString() ?? "";
-      c_d_day.text = sm_fd.data[sm_fd.STAY_DAY]?["value"]?.toString() ?? "";
-      c_d_hour.text = sm_fd.data[sm_fd.STAY_HOUR]?["value"]?.toString() ?? "";
-      c_note.text = sm_fd.data[sm_fd.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
+      c_n_o_guest.text = sm_front_desk.data[sm_front_desk.STAY_N_GUEST]?["value"]?.toString() ?? "";
+      c_d_day.text = sm_front_desk.data[sm_front_desk.STAY_DAY]?["value"]?.toString() ?? "";
+      c_d_hour.text = sm_front_desk.data[sm_front_desk.STAY_HOUR]?["value"]?.toString() ?? "";
+      c_note.text = sm_front_desk.data[sm_front_desk.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
 
       setState(() {});
     } catch (e, st) {
@@ -148,19 +147,19 @@ class _Main_State extends State<Main_> {
       int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
       double price_day = double.tryParse(sm_room.data[sm_room.USD_PER_DAY]?["value"].toString() ?? "") ?? 0;
       double price_3hours = double.tryParse(sm_room.data[sm_room.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
-      double room_paid = double.tryParse(sm_fd.data[sm_fd.ROOM_PAY_TOTAL]?["value"].toString() ?? "") ?? 0;
+      double room_paid = double.tryParse(sm_front_desk.data[sm_front_desk.ROOM_PAY_TOTAL]?["value"].toString() ?? "") ?? 0;
       double room_price = (price_day * stay_days) + (price_3hours * stay_hours / 3);
 
       // * ធ្វើការផ្លាស់ប្តូរទិន្នន័យនៅក្នុង Front Desk Table នៅលើ Database
       await dio.post(
         endpoint.FRONT_DESK_FORM_CHECK_IN_UPDATE, //
         data: {
-          sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //
-          sm_fd.STAY_N_GUEST: int.tryParse(c_n_o_guest.text), //
-          sm_fd.STAY_DAY: int.tryParse(c_d_day.text), //
-          sm_fd.STAY_HOUR: int.tryParse(c_d_hour.text), //
-          sm_fd.ROOM_PRICE: room_price, //
-          sm_fd.CHECK_IN_NOTE: c_note.text, //
+          sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
+          sm_front_desk.STAY_N_GUEST: int.tryParse(c_n_o_guest.text), //
+          sm_front_desk.STAY_DAY: int.tryParse(c_d_day.text), //
+          sm_front_desk.STAY_HOUR: int.tryParse(c_d_hour.text), //
+          sm_front_desk.ROOM_PRICE: room_price, //
+          sm_front_desk.CHECK_IN_NOTE: c_note.text, //
         },
       );
 

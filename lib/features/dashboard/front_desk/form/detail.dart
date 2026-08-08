@@ -7,10 +7,10 @@ import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/show_data.dart";
+import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
 import "../config.dart";
-import "../schema.g.dart" as sm_fd;
 
 //
 Widget _layout(List<Widget> children) {
@@ -55,15 +55,15 @@ class _Main_State extends State<Main_> {
     //
 
     try {
-      sm_fd.clear();
+      sm_front_desk.clear();
       sm_room.clear();
 
-      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
+      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_front_desk.ID: widget.room_id});
       for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       if (sm_room.data[sm_room.FRONT_DESK_ID]!["value"] != null) {
-        tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
-        for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
+        tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
+        for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
       }
 
       setState(() {});
@@ -81,7 +81,7 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
 
     return _layout([
-      for (var e in sm_fd.data.entries.where((e) => (!e.value["hide"] || kDebugMode))) //
+      for (var e in sm_front_desk.data.entries.where((e) => (!e.value["hide"] || kDebugMode))) //
         (() {
           //
           if (e.value["type"] == "id") {

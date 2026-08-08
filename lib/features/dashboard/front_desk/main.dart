@@ -4,6 +4,7 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
+import "package:speanmeas/core/schema/front_desk.g.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart";
@@ -12,7 +13,6 @@ import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
 import "config.dart";
-import "schema.g.dart" as sm_fd;
 
 import "form/detail.dart" as detail;
 import "form/check_in.dart" as check_in;
@@ -49,7 +49,7 @@ class _Main_State extends State<Main_> {
           tmp = await dio.post(
             endpoint.FRONT_DESK_READ_ID, //
             data: {
-              sm_fd.ID: r[sm_room.FRONT_DESK_ID], //
+              sm_front_desk.ID: r[sm_room.FRONT_DESK_ID], //
             },
           );
           map_fd[r[sm_room.FRONT_DESK_ID]] = tmp.data[0];
@@ -263,8 +263,8 @@ class _Main_State extends State<Main_> {
                       // guest info
                       if (!"${r[sm_room.STATUS]}".contains("Pending Fix"))
                         (() {
-                          final guest_name = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.GUEST_FULL_NAME] ?? "N/A";
-                          final guest_phone = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.GUEST_PHONE_NUMBER] ?? "N/A";
+                          final guest_name = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.GUEST_FULL_NAME] ?? "N/A";
+                          final guest_phone = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.GUEST_PHONE_NUMBER] ?? "N/A";
                           return Row(
                             spacing: 4,
                             children: [
@@ -293,9 +293,9 @@ class _Main_State extends State<Main_> {
                       // stay info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          final stay_n_guest = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.STAY_N_GUEST] ?? "0";
-                          final stay_day = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.STAY_DAY] ?? "0";
-                          final stay_hour = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.STAY_HOUR] ?? "0";
+                          final stay_n_guest = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.STAY_N_GUEST] ?? "0";
+                          final stay_day = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.STAY_DAY] ?? "0";
+                          final stay_hour = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.STAY_HOUR] ?? "0";
                           return Row(
                             spacing: 4,
                             children: [
@@ -328,9 +328,9 @@ class _Main_State extends State<Main_> {
                       // payment room info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          final price_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.ROOM_PRICE] ?? "0";
-                          final pay_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.ROOM_PAY_TOTAL] ?? "0";
-                          final return_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.ROOM_RETURN] ?? "0";
+                          final price_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.ROOM_PRICE] ?? "0";
+                          final pay_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.ROOM_PAY_TOTAL] ?? "0";
+                          final return_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.ROOM_RETURN] ?? "0";
                           return Row(
                             spacing: 4,
                             children: [
@@ -367,9 +367,9 @@ class _Main_State extends State<Main_> {
                       // payment revenue info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          final price_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.REVENUE_PRICE] ?? "0";
-                          final pay_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.REVENUE_PAY_TOTAL] ?? "0";
-                          final return_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.REVENUE_RETURN] ?? "0";
+                          final price_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_PRICE] ?? "0";
+                          final pay_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_PAY_TOTAL] ?? "0";
+                          final return_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_RETURN] ?? "0";
                           return Row(
                             spacing: 4,
                             children: [
@@ -407,8 +407,8 @@ class _Main_State extends State<Main_> {
                       if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
                           String check_in = "";
-                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.CHECK_IN_AT] != null) {
-                            final due = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.CHECK_IN_AT]);
+                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.CHECK_IN_AT] != null) {
+                            final due = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.CHECK_IN_AT]);
                             check_in = DateFormat(DATE_FORMAT).format(due);
                           }
                           return Row(
@@ -425,8 +425,8 @@ class _Main_State extends State<Main_> {
                       if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
                           String due = "";
-                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.STAY_DUE] != null) {
-                            tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.STAY_DUE]);
+                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.STAY_DUE] != null) {
+                            tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.STAY_DUE]);
                             due = DateFormat(DATE_FORMAT).format(tmp);
                           }
                           return Row(
@@ -443,8 +443,8 @@ class _Main_State extends State<Main_> {
                       if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
                           String check_out = "";
-                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.CHECK_OUT_AT] != null) {
-                            tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.CHECK_OUT_AT]);
+                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.CHECK_OUT_AT] != null) {
+                            tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.CHECK_OUT_AT]);
                             check_out = DateFormat(DATE_FORMAT).format(tmp);
                           }
                           return Row(
@@ -461,8 +461,8 @@ class _Main_State extends State<Main_> {
                       if (r[sm_room.STATUS] == "Pending Fix")
                         (() {
                           String broke_date = "";
-                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.BROKE_AT] != null) {
-                            tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_fd.BROKE_AT]);
+                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.BROKE_AT] != null) {
+                            tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.BROKE_AT]);
                             broke_date = DateFormat(DATE_FORMAT).format(tmp);
                           }
                           return Row(

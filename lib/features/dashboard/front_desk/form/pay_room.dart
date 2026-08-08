@@ -4,8 +4,8 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
-import "../schema.g.dart" as sm_fd;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -51,22 +51,22 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     try {
-      sm_fd.clear();
+      sm_front_desk.clear();
       sm_room.clear();
 
-      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
+      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_front_desk.ID: widget.room_id});
       for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       if (sm_room.data[sm_room.FRONT_DESK_ID]!["value"] != null) {
-        tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
-        for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
+        tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
+        for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
       }
 
-      c_price.text = sm_fd.data[sm_fd.ROOM_PRICE]?["value"]?.toString() ?? "";
-      c_pay_cash.text = sm_fd.data[sm_fd.ROOM_PAY_CASH]?["value"]?.toString() ?? "";
-      c_pay_bank.text = sm_fd.data[sm_fd.ROOM_PAY_BANK]?["value"]?.toString() ?? "";
-      c_change.text = sm_fd.data[sm_fd.ROOM_RETURN]?["value"]?.toString() ?? "";
-      c_note.text = sm_fd.data[sm_fd.ROOM_PAY_NOTE]?["value"]?.toString() ?? "";
+      c_price.text = sm_front_desk.data[sm_front_desk.ROOM_PRICE]?["value"]?.toString() ?? "";
+      c_pay_cash.text = sm_front_desk.data[sm_front_desk.ROOM_PAY_CASH]?["value"]?.toString() ?? "";
+      c_pay_bank.text = sm_front_desk.data[sm_front_desk.ROOM_PAY_BANK]?["value"]?.toString() ?? "";
+      c_change.text = sm_front_desk.data[sm_front_desk.ROOM_RETURN]?["value"]?.toString() ?? "";
+      c_note.text = sm_front_desk.data[sm_front_desk.ROOM_PAY_NOTE]?["value"]?.toString() ?? "";
 
       setState(() {});
       //
@@ -210,12 +210,12 @@ class _Main_State extends State<Main_> {
       await dio.post(
         endpoint.FRONT_DESK_FORM_PAY_ROOM,
         data: {
-          sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //
-          sm_fd.ROOM_PRICE: price, //
-          sm_fd.ROOM_PAY_CASH: pay_cash, //
-          sm_fd.ROOM_PAY_BANK: pay_bank, //
-          sm_fd.ROOM_RETURN: change, //
-          sm_fd.ROOM_PAY_NOTE: c_note.text, //
+          sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
+          sm_front_desk.ROOM_PRICE: price, //
+          sm_front_desk.ROOM_PAY_CASH: pay_cash, //
+          sm_front_desk.ROOM_PAY_BANK: pay_bank, //
+          sm_front_desk.ROOM_RETURN: change, //
+          sm_front_desk.ROOM_PAY_NOTE: c_note.text, //
         },
       );
 

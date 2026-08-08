@@ -6,10 +6,10 @@ import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/show_data.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 
+import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
-import "../schema.g.dart" as sm_fd;
 import "../widget/guest_search.dart" as g_search;
 
 Widget _layout(List<Widget> children) {
@@ -51,20 +51,20 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     try {
-      sm_fd.clear();
+      sm_front_desk.clear();
       sm_room.clear();
       sm_guest.clear();
 
       //
-      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_fd.ID: widget.room_id});
+      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_front_desk.ID: widget.room_id});
       for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       //
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_fd.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
-      for (var e in sm_fd.data.entries) e.value["value"] = tmp.data[0][e.key];
+      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
+      for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       //
-      c_g_search.text = sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"]?.toString() ?? "";
+      c_g_search.text = sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]?["value"]?.toString() ?? "";
       setState(() {});
       //
     } catch (e, st) {
@@ -80,59 +80,59 @@ class _Main_State extends State<Main_> {
       g_search.Main_(
         controller: c_g_search,
         onChanged: (v) {
-          sm_fd.data[sm_fd.GUEST_ID]?["value"] = v[sm_guest.ID];
-          sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"] = v[sm_guest.FULL_NAME];
-          sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"] = v[sm_guest.PHONE_NUMBER];
-          sm_fd.data[sm_fd.GUEST_GENDER]?["value"] = v[sm_guest.GENDER];
-          sm_fd.data[sm_fd.GUEST_NATIONALITY]?["value"] = v[sm_guest.NATIONALITY];
+          sm_front_desk.data[sm_front_desk.GUEST_ID]?["value"] = v[sm_guest.ID];
+          sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]?["value"] = v[sm_guest.FULL_NAME];
+          sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]?["value"] = v[sm_guest.PHONE_NUMBER];
+          sm_front_desk.data[sm_front_desk.GUEST_GENDER]?["value"] = v[sm_guest.GENDER];
+          sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]?["value"] = v[sm_guest.NATIONALITY];
           setState(() {});
         },
         onCleared: () {
-          sm_fd.data[sm_fd.GUEST_ID]?["value"] = null;
-          sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"] = null;
-          sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"] = null;
-          sm_fd.data[sm_fd.GUEST_GENDER]?["value"] = null;
-          sm_fd.data[sm_fd.GUEST_NATIONALITY]?["value"] = null;
+          sm_front_desk.data[sm_front_desk.GUEST_ID]?["value"] = null;
+          sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]?["value"] = null;
+          sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]?["value"] = null;
+          sm_front_desk.data[sm_front_desk.GUEST_GENDER]?["value"] = null;
+          sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]?["value"] = null;
           setState(() {});
         },
       ),
 
       (() {
         String value = "";
-        if (sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"] != null) //
-          value = sm_fd.data[sm_fd.GUEST_FULL_NAME]?["value"].toString() ?? "";
+        if (sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]?["value"] != null) //
+          value = sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]?["value"].toString() ?? "";
         return ShowData(
-          title: sm_fd.data[sm_fd.GUEST_FULL_NAME]?["title"] ?? "", //
+          title: sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]?["title"] ?? "", //
           value: value,
         );
       })(),
 
       (() {
         String value = "";
-        if (sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"] != null) //
-          value = sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["value"].toString() ?? "";
+        if (sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]?["value"] != null) //
+          value = sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]?["value"].toString() ?? "";
         return ShowData(
-          title: sm_fd.data[sm_fd.GUEST_PHONE_NUMBER]?["title"] ?? "", //
+          title: sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]?["title"] ?? "", //
           value: value,
         );
       })(),
 
       (() {
         String value = "";
-        if (sm_fd.data[sm_fd.GUEST_GENDER]?["value"] != null) //
-          value = sm_fd.data[sm_fd.GUEST_GENDER]?["value"].toString() ?? "";
+        if (sm_front_desk.data[sm_front_desk.GUEST_GENDER]?["value"] != null) //
+          value = sm_front_desk.data[sm_front_desk.GUEST_GENDER]?["value"].toString() ?? "";
         return ShowData(
-          title: sm_fd.data[sm_fd.GUEST_GENDER]?["title"] ?? "", //
+          title: sm_front_desk.data[sm_front_desk.GUEST_GENDER]?["title"] ?? "", //
           value: value,
         );
       })(),
 
       (() {
         String value = "";
-        if (sm_fd.data[sm_fd.GUEST_NATIONALITY]?["value"] != null) //
-          value = sm_fd.data[sm_fd.GUEST_NATIONALITY]?["value"].toString() ?? "";
+        if (sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]?["value"] != null) //
+          value = sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]?["value"].toString() ?? "";
         return ShowData(
-          title: sm_fd.data[sm_fd.GUEST_NATIONALITY]?["title"] ?? "", //
+          title: sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]?["title"] ?? "", //
           value: value,
         );
       })(),
@@ -154,8 +154,8 @@ class _Main_State extends State<Main_> {
       await dio.post(
         endpoint.FRONT_DESK_UPDATE, //
         data: {
-          sm_fd.ID: sm_fd.data[sm_fd.ID]!["value"], //
-          sm_fd.GUEST_ID: sm_fd.data[sm_fd.GUEST_ID]?["value"],
+          sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
+          sm_front_desk.GUEST_ID: sm_front_desk.data[sm_front_desk.GUEST_ID]?["value"],
         },
       );
 
