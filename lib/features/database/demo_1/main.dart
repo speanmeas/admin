@@ -105,7 +105,7 @@ class _Main_State extends State<Main_> {
           "key": DEFAULT_KEY, //
           "order": DEFAULT_ORDER, //
           "offset": (p - 1) * DEFAULT_LIMIT_ROW, //
-          "limitroLIMIT_ROW": DEFAULT_LIMIT_ROW,
+          "limit": DEFAULT_LIMIT_ROW,
         },
       );
       final data = List<Map<String, dynamic>>.from(r.data);

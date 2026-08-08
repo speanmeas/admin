@@ -1,13 +1,13 @@
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
+import "package:speanmeas/core/endpoint.g.dart";
+import "package:speanmeas/core/schema/demo_2.g.dart";
 
+import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/show_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-
-import "../config.dart";
-import "package:speanmeas/core/schema/demo_2.g.dart";
 
 class _Main_State extends State<Main_> {
   //
@@ -18,7 +18,7 @@ class _Main_State extends State<Main_> {
       sm_demo_2.clear();
 
       tmp = await dio.post(
-        "$PATH/read_id", //
+        endpoint.DEMO_2_READ_ID, //
         data: {sm_demo_2.ID: widget.id},
       );
       for (var e in sm_demo_2.data.entries) e.value["value"] = tmp.data[0][e.key];
@@ -90,7 +90,7 @@ class _Main_State extends State<Main_> {
                     String value = "";
                     if (e.value["value"] != null) {
                       final tmp = DateTime.tryParse(e.value["value"].toString());
-                      if (tmp != null) value = DateFormat(DATE_FORMAT).format(tmp);
+                      if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
                     }
                     return Container(
                       width: 600,

@@ -2,6 +2,7 @@
 
 import "dart:math";
 
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:intl/intl.dart";
@@ -74,6 +75,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       body: Column(
         children: [
+          // header
           Container(
             height: 34, //
             padding: EdgeInsets.all(1),
@@ -141,8 +143,10 @@ class _Main_State extends State<Main_> {
 
           if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
-          Expanded(child: child), //
+          // body
+          Expanded(child: child),
 
+          // footer
           Container(
             height: 34, //
             padding: EdgeInsets.all(1),
@@ -170,42 +174,44 @@ class _Main_State extends State<Main_> {
                 Spacer(),
 
                 //
-                Tooltip(
-                  message: "Export to PDF",
-                  child: InkWell(
-                    onTap: () {},
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      alignment: Alignment.center,
-                      child: SvgPicture.asset(
-                        "icon/pdf.svg", //
-                        width: 20,
-                        height: 20,
-                        colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
+                if (kDebugMode)
+                  Tooltip(
+                    message: "Export to PDF",
+                    child: InkWell(
+                      onTap: () {},
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: SvgPicture.asset(
+                          "icon/pdf.svg", //
+                          width: 20,
+                          height: 20,
+                          colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
+                        ),
                       ),
                     ),
                   ),
-                ),
 
                 //
-                Tooltip(
-                  message: "Export to Excel",
-                  child: InkWell(
-                    onTap: () {},
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      alignment: Alignment.center,
-                      child: SvgPicture.asset(
-                        "icon/excel.svg", //
-                        width: 20,
-                        height: 20,
-                        colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
+                if (kDebugMode)
+                  Tooltip(
+                    message: "Export to Excel",
+                    child: InkWell(
+                      onTap: () {},
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        alignment: Alignment.center,
+                        child: SvgPicture.asset(
+                          "icon/excel.svg", //
+                          width: 20,
+                          height: 20,
+                          colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
+                        ),
                       ),
                     ),
                   ),
-                ),
 
                 SizedBox(width: 8),
               ],
@@ -225,17 +231,17 @@ class _Main_State extends State<Main_> {
         rows: [], //
         columns: [
           PlutoColumn(
-            field: "_id", //
-            title: "ID",
-            type: PlutoColumnType.number(),
-            width: WIDTH,
-            hide: true, //
-          ),
-          PlutoColumn(
             field: "index", //
             title: "ល.រ.",
             type: PlutoColumnType.number(),
             width: WIDTH,
+          ),
+          PlutoColumn(
+            field: sm_front_desk.ID, //
+            title: "ID",
+            type: PlutoColumnType.number(),
+            width: WIDTH,
+            hide: true, //
           ),
           PlutoColumn(
             field: sm_front_desk.ROOM_NUMBER, //
@@ -254,6 +260,7 @@ class _Main_State extends State<Main_> {
             title: "ចំនួនភ្ញៀវ",
             type: PlutoColumnType.number(),
             width: WIDTH,
+            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value} នាក់')),
           ),
           //
           PlutoColumn(
@@ -273,71 +280,81 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: sm_front_desk.STAY_DAY, //
             title: "ចំនួនថ្ងៃ",
-            type: PlutoColumnType.text(),
+            type: PlutoColumnType.number(),
             width: WIDTH,
+            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value} ថ្ងៃ')),
           ),
           //
           PlutoColumn(
             field: sm_front_desk.STAY_HOUR, //
             title: "ចំនួនម៉ោង",
-            type: PlutoColumnType.text(),
+            type: PlutoColumnType.number(),
             width: WIDTH,
+            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value} ម៉ោង')),
           ),
           //
           PlutoColumn(
             field: sm_front_desk.ROOM_PRICE, //
             title: "តម្លៃបន្ទប់",
-            type: PlutoColumnType.text(),
+            type: PlutoColumnType.number(),
             width: WIDTH,
+            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
           ),
           //
           PlutoColumn(
             field: sm_front_desk.ROOM_PAY_CASH, //
             title: "បង់តាមសាច់ប្រាក់",
-            type: PlutoColumnType.text(),
+            type: PlutoColumnType.number(),
             width: WIDTH,
+            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
           ),
           //
           PlutoColumn(
             field: sm_front_desk.ROOM_PAY_BANK, //
             title: "បង់តាមធនាគារ",
-            type: PlutoColumnType.text(),
+            type: PlutoColumnType.number(),
             width: WIDTH,
+            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
           ),
           //
           PlutoColumn(
             field: sm_front_desk.ROOM_RETURN, //
             title: "ប្រាប់អាប់",
-            type: PlutoColumnType.text(),
+            type: PlutoColumnType.number(),
             width: WIDTH,
+            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
           ),
           //
           PlutoColumn(
             field: sm_front_desk.REVENUE_PRICE, //
             title: "តម្លៃចំណូល",
-            type: PlutoColumnType.text(),
+            type: PlutoColumnType.number(),
             width: WIDTH,
+            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
           ),
           //
           PlutoColumn(
             field: sm_front_desk.REVENUE_PAY_CASH, //
             title: "បង់តាមសាច់ប្រាក់",
-            type: PlutoColumnType.text(),
+            type: PlutoColumnType.number(),
             width: WIDTH,
+            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
           ),
           //
           PlutoColumn(
             field: sm_front_desk.REVENUE_PAY_BANK, //
             title: "បង់តាមធនាគារ",
-            type: PlutoColumnType.text(),
+            type: PlutoColumnType.number(),
             width: WIDTH,
+            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
           ),
           //
           PlutoColumn(
             field: sm_front_desk.REVENUE_RETURN, //
             title: "ប្រាប់អាប់",
-            type: PlutoColumnType.text(),
+            type: PlutoColumnType.number(),
             width: WIDTH,
+            renderer: (rc) => Align(alignment: Alignment.centerRight, child: Text('${rc.cell.value.toStringAsFixed(2)} \$')),
           ),
           //
           PlutoColumn(

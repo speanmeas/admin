@@ -3,14 +3,14 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
+import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/utility/dio.dart";
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/dialog/datetime.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/show_data.dart";
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 
-import "../config.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
 
 import "package:speanmeas/core/schema/nationality.g.dart";
@@ -167,7 +167,7 @@ class _Main_State extends State<Main_> {
           // * ថ្ងៃខែឆ្នាំ និង ម៉ោង
           if (e.value["type"] == "date-time") {
             final tmp = DateTime.tryParse(e.value["value"]?.toString() ?? "");
-            final value = tmp != null ? DateFormat(DATE_FORMAT).format(tmp.toLocal()) : "";
+            final value = tmp != null ? DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal()) : "";
             final init = tmp ?? DateTime.now();
             return TextField(
               controller: TextEditingController(text: value),
@@ -263,7 +263,7 @@ class _Main_State extends State<Main_> {
         payload[e.key] = e.value["value"];
 
       // request
-      tmp = await dio.post("$PATH/create", data: payload);
+      tmp = await dio.post(endpoint.GUEST_CREATE, data: payload);
 
       //
       Navigator.pop(context, tmp.data[0]);

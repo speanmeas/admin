@@ -4,16 +4,6 @@ import "package:flutter/services.dart";
 //
 import "package:speanmeas/core/theme/theme_data.dart";
 
-//
-// Reusable "Select Page" dialog.
-//
-// Usage:
-//   final p = await select_page_show(context, page: page, row_total: row_total, limit: LIMIT);
-//   if (p == null) return;
-//   page = p;
-//   load_page(page);
-//
-
 Future<int?> show(
   BuildContext context, {
   required int page, //
@@ -30,7 +20,7 @@ Future<int?> show(
     builder: (context) {
       return AlertDialog(
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        titlePadding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
+        titlePadding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
         contentPadding: EdgeInsets.zero,
         title: Row(
           children: [
@@ -48,7 +38,7 @@ Future<int?> show(
               child: Text(
                 "$total_pages Pages ($row_total rows)", //
                 style: const TextStyle(
-                  fontSize: 11, //
+                  fontSize: 12, //
                   fontWeight: FontWeight.bold,
                   color: Colors.blue,
                 ),
@@ -57,7 +47,7 @@ Future<int?> show(
             const Spacer(),
             IconButton(
               icon: const Icon(Icons.close, size: 24, color: Colors.red),
-              padding: EdgeInsets.zero,
+              padding: EdgeInsets.all(4),
               constraints: const BoxConstraints(),
               onPressed: () => Navigator.pop(context),
             ),
@@ -131,9 +121,8 @@ Future<int?> show(
                       child: Container(
                         height: ITEM_HEIGHT,
                         decoration: BoxDecoration(
-                          color: is_current ? Colors.blue.withValues(alpha: 0.08) : null,
                           border: Border(
-                            top: const BorderSide(color: Colors.black12),
+                            top: const BorderSide(color: Colors.grey),
                             left: is_current ? const BorderSide(color: Colors.blue, width: 3) : BorderSide.none,
                           ),
                         ),

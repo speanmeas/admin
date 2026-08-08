@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
+import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart";
@@ -10,7 +11,6 @@ import "package:speanmeas/core/dialog/datetime.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/show_data.dart";
 
-import "../config.dart";
 import "package:speanmeas/core/schema/demo_2.g.dart";
 
 import "package:speanmeas/core/schema/nationality.g.dart";
@@ -153,7 +153,7 @@ class _Main_State extends State<Main_> {
             if (e.value["value"] != null) {
               DateTime? tmp = DateTime.tryParse(e.value["value"].toString());
               if (tmp != null) {
-                value = DateFormat(DATE_FORMAT).format(tmp.toLocal());
+                value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
               }
             }
             DateTime init = DateTime.now();
@@ -253,7 +253,10 @@ class _Main_State extends State<Main_> {
       for (var e in sm_demo_2.data.entries) payload[e.key] = e.value["value"];
 
       //
-      tmp = await dio.post("$PATH/create", data: payload);
+      tmp = await dio.post(
+        endpoint.DEMO_2_CREATE, //
+        data: payload,
+      );
 
       //
       Navigator.pop(context, tmp.data[0]);
