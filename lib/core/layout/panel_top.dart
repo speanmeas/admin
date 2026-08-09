@@ -6,6 +6,7 @@ import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/widget/snackbar.dart";
 
 import "package:speanmeas/features/auth/profile.dart" as profile;
 
@@ -61,32 +62,33 @@ class _Main_State extends State<Main_> {
           Spacer(),
 
           // Notification Icon
-          if (kDebugMode) // TODO
-            Tooltip(
-              message: "Notification",
-              child: Badge(
-                label: Text("3"), //
-                offset: Offset(-4, 4),
-                child: IconButton(
-                  icon: Icon(Icons.notifications_outlined),
-                  onPressed: () {
-                    // Handle notification tap
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => noti.Main_()));
-                  },
-                ),
+          // if (kDebugMode) // TODO
+          Tooltip(
+            message: "ដំណឹង", //
+            child: Badge(
+              label: Text("N"), //
+              offset: Offset(-4, 4),
+              child: IconButton(
+                icon: Icon(Icons.notifications_outlined, size: 30),
+                onPressed: () {
+                  snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
+                  // Handle notification tap
+                  // Navigator.push(context, MaterialPageRoute(builder: (_) => noti.Main_()));
+                },
               ),
             ),
+          ),
 
           SizedBox(width: 4),
 
           // User Avatar
           Tooltip(
-            message: "User",
+            message: "អ្នកប្រើប្រាស់", //
             child: InkWell(
               customBorder: const CircleBorder(),
               child: Container(
-                width: 32,
-                height: 32,
+                width: 38,
+                height: 38,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -99,7 +101,7 @@ class _Main_State extends State<Main_> {
                     else
                       return "X";
                   })(),
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
                 ),
               ),
               onTap: () {

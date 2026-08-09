@@ -208,21 +208,21 @@ class _Main_State extends State<Main_> {
                                     if (!["Available"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.receipt_outlined, color: Colors.blue),
-                                        child: Text("Detail", style: TextStyle(color: Colors.blue)), //
+                                        child: Text("មើលព័ត៌មានលម្អិត", style: TextStyle(color: Colors.blue)), //
                                         onPressed: () => on_detail(r), //
                                       ),
 
                                     if (["Available"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.bug_report_outlined, color: Colors.blue),
-                                        child: Text("Broke", style: TextStyle(color: Colors.blue)), //
+                                        child: Text("ដាក់ជាបន្ទប់ខូច", style: TextStyle(color: Colors.blue)), //
                                         onPressed: () => on_broke(r), //
                                       ),
 
                                     if (["Pending Fix"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.build_outlined, color: Colors.blue),
-                                        child: Text("Fixed", style: TextStyle(color: Colors.blue)), //
+                                        child: Text("ជុសជុលបន្ទប់រួច", style: TextStyle(color: Colors.blue)), //
                                         onPressed: () => on_fix(r), //
                                       ),
 
@@ -230,7 +230,7 @@ class _Main_State extends State<Main_> {
                                     if (["Pending Pay", "Pending Leave"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.swap_horiz_outlined, color: Colors.blue),
-                                        child: Text("Change Room", style: TextStyle(color: Colors.blue)),
+                                        child: Text("ប្តូបន្ទប់", style: TextStyle(color: Colors.blue)),
                                         onPressed: () => on_change_room(r), //
                                       ),
 
@@ -238,7 +238,7 @@ class _Main_State extends State<Main_> {
                                     if (["Pending Pay", "Pending Leave"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
-                                        child: Text("Cancel", style: TextStyle(color: Colors.red)),
+                                        child: Text("បោះបង់", style: TextStyle(color: Colors.red)),
                                         onPressed: () => on_cancel(r), //
                                       ),
                                   ],
@@ -273,7 +273,7 @@ class _Main_State extends State<Main_> {
                           return Row(
                             spacing: 4,
                             children: [
-                              Icon(Icons.person, size: 20), //
+                              Icon(Icons.person, size: 24), //
                               Text("អតិថិជន:", style: TextStyle(fontWeight: FontWeight.bold)),
                               //
                               SizedBox(width: 2), //
@@ -285,9 +285,9 @@ class _Main_State extends State<Main_> {
                               Text(guest_phone, style: TextStyle(color: Colors.blue)), //
                               // always show
                               Tooltip(
-                                message: "Update guest",
+                                message: "កែព័ត៌មានអតិថិជន",
                                 child: InkWell(
-                                  child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                                  child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
                                   onTap: () => on_update_guest(r),
                                 ),
                               ),
@@ -304,7 +304,7 @@ class _Main_State extends State<Main_> {
                           return Row(
                             spacing: 4,
                             children: [
-                              Icon(Icons.calendar_month, size: 20), //
+                              Icon(Icons.calendar_month, size: 24), //
                               Text("ស្នាក់នៅ:", style: TextStyle(fontWeight: FontWeight.bold)),
                               //
                               SizedBox(width: 2), //
@@ -320,9 +320,9 @@ class _Main_State extends State<Main_> {
                               Text("$stay_hour Hours", style: TextStyle(color: Colors.blue)),
                               if (r[sm_room.STATUS] != "Pending Clean")
                                 Tooltip(
-                                  message: "Update stay",
+                                  message: "កែព័ត៌មានស្នាក់នៅ",
                                   child: InkWell(
-                                    child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                                    child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
                                     onTap: () => on_update_stay(r),
                                   ),
                                 ),
@@ -339,8 +339,8 @@ class _Main_State extends State<Main_> {
                           return Row(
                             spacing: 4,
                             children: [
-                              Icon(Icons.receipt_outlined, size: 20), //
-                              Text("ថ្លៃបន្ទប់:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Icon(Icons.receipt_outlined, size: 24), //
+                              Text("បង់ថ្លៃបន្ទប់:", style: TextStyle(fontWeight: FontWeight.bold)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
@@ -359,10 +359,10 @@ class _Main_State extends State<Main_> {
 
                               if (!["Pending Clean"].contains(r[sm_room.STATUS]))
                                 Tooltip(
-                                  message: "Update room payment",
+                                  message: "កែព័ត៌មានបង់ប្រាក់បន្ទប់",
                                   child: InkWell(
                                     onTap: () => on_update_rp(r),
-                                    child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                                    child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
                                   ),
                                 ),
                             ],
@@ -378,8 +378,8 @@ class _Main_State extends State<Main_> {
                           return Row(
                             spacing: 4,
                             children: [
-                              Icon(Icons.receipt_outlined, size: 20), //
-                              Text("ថ្លៃផ្សេងៗ:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Icon(Icons.receipt_outlined, size: 24), //
+                              Text("បង់ថ្លៃផ្សេងៗ:", style: TextStyle(fontWeight: FontWeight.bold)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
@@ -398,10 +398,10 @@ class _Main_State extends State<Main_> {
                               //
                               if (r[sm_room.STATUS] != "Pending Clean")
                                 Tooltip(
-                                  message: "Update revenue payment",
+                                  message: "កែព័ត៌មានបង់ប្រាក់ផ្សេងៗ",
                                   child: InkWell(
                                     onTap: () => on_update_rvn(r),
-                                    child: Icon(Icons.edit_outlined, size: 20, color: Colors.blue), //
+                                    child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
                                   ),
                                 ),
                             ],
@@ -419,7 +419,7 @@ class _Main_State extends State<Main_> {
                           return Row(
                             spacing: 4,
                             children: [
-                              Icon(Icons.login, size: 20), //
+                              Icon(Icons.login, size: 24), //
                               Text("ពេលចូល:", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(check_in, style: TextStyle(color: Colors.blue)), //
                             ],
@@ -437,8 +437,8 @@ class _Main_State extends State<Main_> {
                           return Row(
                             spacing: 4,
                             children: [
-                              Icon(Icons.time_to_leave_outlined, size: 20), //
-                              Text("ពេលដែលត្រូវចេញ:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Icon(Icons.time_to_leave_outlined, size: 24), //
+                              Text("ពេលត្រូវចេញ:", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(due, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
@@ -455,7 +455,7 @@ class _Main_State extends State<Main_> {
                           return Row(
                             spacing: 4,
                             children: [
-                              Icon(Icons.logout, size: 20), //
+                              Icon(Icons.logout, size: 24), //
                               Text("ពេលចេញ:", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(check_out, style: TextStyle(color: Colors.blue)), //
                             ],
@@ -473,8 +473,8 @@ class _Main_State extends State<Main_> {
                           return Row(
                             spacing: 4,
                             children: [
-                              Icon(Icons.bug_report_outlined, size: 20), //
-                              Text("Broke Date:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Icon(Icons.bug_report_outlined, size: 24), //
+                              Text("ពេលបន្ទប់ខូច:", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(broke_date, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
