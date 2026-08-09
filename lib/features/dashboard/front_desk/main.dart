@@ -48,17 +48,26 @@ class _Main_State extends State<Main_> {
       );
       list_r = List<Map<String, dynamic>>.from(tmp.data);
 
-      // * ទាញយកទិន្នន័យ front desk ដែលទាក់ទងនឹងបន្ទប់នីមួយៗ
+      // * ទាញយកទិន្នន័យ front desk ដែលទាក់ទងនឹងបន្ទប់
+      // * (ផ្ញើរួមគ្នាប៉ារ៉ាឡែល មិនរង់ចាំមួយៗ ដើម្បីកុំឲ្យយឺត)
+      final ids = <dynamic>[];
       for (var r in list_r) {
-        if (r[sm_room.FRONT_DESK_ID] != null) {
-          tmp = await dio.post(
+        final fd_id = r[sm_room.FRONT_DESK_ID];
+        if (fd_id != null && !ids.contains(fd_id)) ids.add(fd_id);
+      }
+
+      final futures = [
+        for (var fd_id in ids)
+          dio.post(
             endpoint.FRONT_DESK_READ_ID, //
             data: {
-              sm_front_desk.ID: r[sm_room.FRONT_DESK_ID], //
+              sm_front_desk.ID: fd_id, //
             },
-          );
-          map_fd[r[sm_room.FRONT_DESK_ID]] = tmp.data[0];
-        }
+          ),
+      ];
+      final results = await Future.wait(futures);
+      for (var i = 0; i < ids.length; i++) {
+        map_fd[ids[i]] = results[i].data[0];
       }
 
       setState(() {});
