@@ -10,12 +10,21 @@ void snackbar({
     ..showSnackBar(
       SnackBar(
         margin: EdgeInsets.fromLTRB(8, 0, 8, 8),
-        duration: Duration(seconds: 2),
+        duration: Duration(seconds: 5),
         content: Row(
           children: [
             Icon(Icons.info_outline, color: Colors.white),
             SizedBox(width: 8),
-            Expanded(child: Text(ms, softWrap: true)),
+            Expanded(
+              child: Text(
+                ms, //
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 18, //
+                  color: Colors.white,
+                ),
+              ),
+            ),
           ],
         ),
         backgroundColor: cl,

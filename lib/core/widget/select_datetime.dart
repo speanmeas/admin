@@ -22,7 +22,7 @@ class _SelectDateTimeState extends State<SelectDateTime> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 6),
+      margin: EdgeInsets.only(top: 8),
       child: TextField(
         controller: controller,
         textAlign: TextAlign.center,

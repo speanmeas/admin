@@ -39,7 +39,13 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       // * ទាញយកទិន្នន័យបន្ទប់ទាំងអស់ពី Server
-      tmp = await dio.post(endpoint.ROOM_READ, data: {"key": sm_room.NUMBER, "order": 1});
+      tmp = await dio.post(
+        endpoint.ROOM_READ,
+        data: {
+          "key": sm_room.NUMBER, //
+          "order": 1, //
+        },
+      );
       list_r = List<Map<String, dynamic>>.from(tmp.data);
 
       // * ទាញយកទិន្នន័យ front desk ដែលទាក់ទងនឹងបន្ទប់នីមួយៗ
@@ -69,22 +75,24 @@ class _Main_State extends State<Main_> {
           // * បង្ហាញប៊ូតុង refresh
           Row(
             children: [
-              SizedBox(width: 32),
+              SizedBox(width: 38),
 
               Spacer(),
 
               Container(
-                width: 160,
-                height: 32,
-                padding: EdgeInsets.fromLTRB(0, 1, 0, 1),
+                width: 200,
+                height: 40,
+                padding: EdgeInsets.only(top: 8), //
                 child: TextField(
                   controller: c_search,
                   decoration: InputDecoration(
                     isDense: true, //
-                    hintText: "Search", //
+                    labelText: "ស្វែងរក", //
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
                     focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
-                    contentPadding: EdgeInsets.symmetric(vertical: 0), //
+                    contentPadding: EdgeInsets.fromLTRB(4, 8, 4, 8),
                     prefixIcon: Icon(Icons.search, size: 20), //
                   ),
                   onChanged: (v) {
@@ -104,17 +112,15 @@ class _Main_State extends State<Main_> {
                 child: InkWell(
                   onTap: init,
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 38,
+                    height: 38,
                     alignment: Alignment.center,
-                    child: Icon(Icons.refresh, size: 24, color: Colors.blue), //
+                    child: Icon(Icons.refresh, size: 30, color: Colors.blue), //
                   ),
                 ),
               ),
             ],
           ),
-
-          Divider(height: 1, color: Colors.grey),
 
           Expanded(
             child: SingleChildScrollView(
@@ -157,7 +163,7 @@ class _Main_State extends State<Main_> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              " ${r[sm_room.NUMBER]}",
+                              "បន្ទប់ ${r[sm_room.NUMBER]}",
                               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                             ),
                           ],
@@ -251,9 +257,9 @@ class _Main_State extends State<Main_> {
                       children: [
                         Text("${r[sm_room.KIND]}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                         Text("-"), //
-                        Text("${r[sm_room.USD_PER_3H]} \$ / 3 Hours", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)), //
+                        Text("${r[sm_room.USD_PER_3H]} \$ / 3 ម៉ោង", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)), //
                         Text("-"), //
-                        Text("${r[sm_room.USD_PER_DAY]} \$ / Day", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                        Text("${r[sm_room.USD_PER_DAY]} \$ / 1 ថ្ងៃ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                       ],
                     ),
 
@@ -268,7 +274,7 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.person, size: 20), //
-                              Text("Guest:", style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text("អតិថិជន:", style: TextStyle(fontWeight: FontWeight.bold)),
                               //
                               SizedBox(width: 2), //
                               Icon(Icons.circle, size: 6), //
@@ -299,7 +305,7 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.calendar_month, size: 20), //
-                              Text("Stay:", style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text("ស្នាក់នៅ:", style: TextStyle(fontWeight: FontWeight.bold)),
                               //
                               SizedBox(width: 2), //
                               Icon(Icons.circle, size: 6), //
@@ -334,21 +340,21 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.receipt_outlined, size: 20), //
-                              Text("Room:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("ថ្លៃបន្ទប់:", style: TextStyle(fontWeight: FontWeight.bold)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("Price", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("ថ្លៃ", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("$price_ro \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("Payment", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("បង់", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("$pay_ro \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("Return", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("អាប់", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("$return_ro \$", style: TextStyle(color: Colors.blue)), //
 
                               if (!["Pending Clean"].contains(r[sm_room.STATUS]))
@@ -373,21 +379,21 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.receipt_outlined, size: 20), //
-                              Text("Revenue:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("ថ្លៃផ្សេងៗ:", style: TextStyle(fontWeight: FontWeight.bold)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("Price", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("ថ្លៃ", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("$price_re \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("Payment", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("បង់", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("$pay_re \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("Return", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("អាប់", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("$return_re \$", style: TextStyle(color: Colors.blue)), //
                               //
                               if (r[sm_room.STATUS] != "Pending Clean")
@@ -414,7 +420,7 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.login, size: 20), //
-                              Text("Check In:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("ពេលចូល:", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(check_in, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
@@ -432,7 +438,7 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.time_to_leave_outlined, size: 20), //
-                              Text("Due To:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("ពេលដែលត្រូវចេញ:", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(due, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
@@ -450,7 +456,7 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.logout, size: 20), //
-                              Text("Check Out:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("ពេលចេញ:", style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(check_out, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
