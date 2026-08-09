@@ -1,4 +1,3 @@
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
@@ -9,8 +8,6 @@ import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 
 import "package:speanmeas/features/auth/profile.dart" as profile;
-
-import "../../notification.dart" as noti;
 
 class _Main_State extends State<Main_> {
   //
