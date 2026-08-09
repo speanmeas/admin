@@ -210,7 +210,7 @@ class _Main_State extends State<Main_> {
                       height: 38,
                       alignment: Alignment.center,
                       child: SvgPicture.asset(
-                        "icon/pdf.svg", //
+                        "assets/icon/pdf.svg", //
                         width: 30,
                         height: 30,
                         colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
@@ -232,7 +232,7 @@ class _Main_State extends State<Main_> {
                       height: 38,
                       alignment: Alignment.center,
                       child: SvgPicture.asset(
-                        "icon/excel.svg", //
+                        "assets/icon/excel.svg", //
                         width: 30,
                         height: 30,
                         colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),

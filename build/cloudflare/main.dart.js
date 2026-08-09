@@ -117911,7 +117911,7 @@ G(){var s=0,r=A.p(t.H),q=1,p=[],o=this,n,m,l,k,j,i,h,g,f,e,d,c
 var $async$G=A.q(function(a,b){if(a===1){p.push(b)
 s=q}for(;;)switch(s){case 0:q=3
 s=6
-return A.r($.F5().aav("data/banks.md"),$async$G)
+return A.r($.F5().aav("assets/data/banks.md"),$async$G)
 case 6:n=b
 for(i=[" to ABA Bank","to ACLEDA Bank"],h=0;h<2;++h){m=i[h]
 for(g=J.b66(n,"\n"),f=g.length,e=0;e<g.length;g.length===f||(0,A.C)(g),++e){l=g[e]
@@ -125049,7 +125049,7 @@ axi(a){var s=this,r=null,q=A.ah(A.beu(new A.aLm(s),"\u1785\u17b6\u1794\u17cb\u17
 m=A.b([A.a6(r,A.bn(A.b([q,p,o,new A.dM(r),A.b2(A.aO(!1,!0,A.a6(B.p,A.T(n?B.dE:B.d8,B.j,r,30),B.e,r,r,r,r,38,r,r,r,r,38),r,!0,r,r,r,r,r,r,r,r,r,r,new A.aLo(s),r,r,r,r),m)],l),B.r,B.u,B.m,1,r),B.e,r,r,r,r,40,r,new A.H(1,1,1,1),r,r,r)],l)
 if(s.f)m.push(A.qK(r,B.j,4))
 m.push(A.cK(a,1))
-m.push(A.a6(r,A.bn(A.b([A.ah(r,r,8),A.L("\u1785\u17c6\u178e\u17bc\u179b\u179f\u179a\u17bb\u1794: ",r,r,r,r,A.U(r,r,r,r,r,r,r,r,r,r,r,20,r,r,B.i,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),A.L(A.l(s.x)+" $",r,r,r,r,A.U(r,r,B.T,r,r,r,r,r,r,r,r,18,r,r,B.i,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),new A.dM(r),A.b2(A.aO(!1,!0,A.a6(B.p,A.beV("icon/pdf.svg",new A.qk(B.j,B.lP,r,B.qH),30,30),B.e,r,r,r,r,38,r,r,r,r,38),r,!0,r,r,r,r,r,r,r,r,r,r,new A.aLp(s),r,r,r,r),"\u1794\u1789\u17d2\u1785\u17c1\u1789\u1787\u17b6 PDF"),A.b2(A.aO(!1,!0,A.a6(B.p,A.beV("icon/excel.svg",new A.qk(B.j,B.lP,r,B.qH),30,30),B.e,r,r,r,r,38,r,r,r,r,38),r,!0,r,r,r,r,r,r,r,r,r,r,new A.aLq(s),r,r,r,r),"\u1794\u1789\u17d2\u1785\u17c1\u1789\u1787\u17b6 Excel"),A.ah(r,r,8)],l),B.r,B.u,B.m,0,r),B.e,r,r,r,r,40,r,new A.H(1,1,1,1),r,r,r))
+m.push(A.a6(r,A.bn(A.b([A.ah(r,r,8),A.L("\u1785\u17c6\u178e\u17bc\u179b\u179f\u179a\u17bb\u1794: ",r,r,r,r,A.U(r,r,r,r,r,r,r,r,r,r,r,20,r,r,B.i,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),A.L(A.l(s.x)+" $",r,r,r,r,A.U(r,r,B.T,r,r,r,r,r,r,r,r,18,r,r,B.i,r,r,!0,r,r,r,r,r,r,r,r),r,r,r),new A.dM(r),A.b2(A.aO(!1,!0,A.a6(B.p,A.beV("assets/icon/pdf.svg",new A.qk(B.j,B.lP,r,B.qH),30,30),B.e,r,r,r,r,38,r,r,r,r,38),r,!0,r,r,r,r,r,r,r,r,r,r,new A.aLp(s),r,r,r,r),"\u1794\u1789\u17d2\u1785\u17c1\u1789\u1787\u17b6 PDF"),A.b2(A.aO(!1,!0,A.a6(B.p,A.beV("assets/icon/excel.svg",new A.qk(B.j,B.lP,r,B.qH),30,30),B.e,r,r,r,r,38,r,r,r,r,38),r,!0,r,r,r,r,r,r,r,r,r,r,new A.aLq(s),r,r,r,r),"\u1794\u1789\u17d2\u1785\u17c1\u1789\u1787\u17b6 Excel"),A.ah(r,r,8)],l),B.r,B.u,B.m,0,r),B.e,r,r,r,r,40,r,new A.H(1,1,1,1),r,r,r))
 return A.cd(r,A.bd(m,B.r,B.u,B.m,0,B.B),r)},
 B(a2){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c=null,b="\u179f\u17b6\u1785\u17cb\u1794\u17d2\u179a\u17b6\u1780\u17cb",a="\u1794\u17d2\u179a\u17b6\u1780\u17cb\u17a2\u17b6\u1794\u17cb",a0=A.b([],t.C),a1=A.dY(!1,!0,!0,!0,!0,!0,!0,!1,!0,!0,"index",c,c,!1,!1,new A.aT3(),B.O,"\u179b.\u179a.",B.O,A.kG(),100)
 $.a4()

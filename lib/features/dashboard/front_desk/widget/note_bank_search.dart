@@ -9,7 +9,7 @@ class _NoteBankSearchState extends State<NoteBankSearch> {
 
   void init() async {
     try {
-      final raw = await rootBundle.loadString("data/banks.md");
+      final raw = await rootBundle.loadString("assets/data/banks.md");
       for (var to in [" to ABA Bank", "to ACLEDA Bank"])
         for (var line in raw.split("\n")) {
           String from = line.trim();
