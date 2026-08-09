@@ -1,18 +1,18 @@
 // TODO: make report
 
-import "package:flutter/foundation.dart";
-import "package:flutter/material.dart";
-import "package:flutter_svg/flutter_svg.dart";
 import "package:intl/intl.dart";
+import "package:flutter/material.dart";
+import "package:flutter/foundation.dart";
 import "package:pluto_grid/pluto_grid.dart";
+import "package:flutter_svg/flutter_svg.dart";
 
 import "package:speanmeas/core/config.dart";
-import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/widget/select_datetime.dart";
-import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/endpoint.g.dart";
+import "package:speanmeas/core/utility/dio.dart";
+import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
+import "package:speanmeas/core/widget/select_datetime.dart";
 
 class _Main_State extends State<Main_> {
   //
@@ -55,6 +55,7 @@ class _Main_State extends State<Main_> {
           "key": "check_in_at", //
           "start": start?.toIso8601String(),
           "stop": stop?.toIso8601String(),
+          "limit": 1000, //
         },
       );
 

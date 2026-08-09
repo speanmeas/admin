@@ -1,21 +1,20 @@
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:flutter/foundation.dart";
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
+import "package:flutter/foundation.dart";
 import "package:pluto_grid/pluto_grid.dart";
-import "package:speanmeas/core/schema/guest.g.dart";
 
 import "package:speanmeas/core/config.dart";
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/dialog/select_page.dart";
 
 import "form/create.dart" as create;
 import "form/read.dart" as read;
 import "form/update.dart" as update;
 import "form/delete.dart" as delete;
-
-import "widget/page_select.dart" as p_select;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -420,7 +419,7 @@ class _Main_State extends State<Main_> {
                     ), //
                   ), //
                   onTap: () async {
-                    final v = await p_select.show(
+                    final v = await select_page(
                       context, //
                       page: page,
                       row_total: row_total,
