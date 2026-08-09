@@ -96,6 +96,7 @@ class _Main_State extends State<Main_> {
         endpoint.FRONT_DESK_FORM_BROKE,
         data: {
           sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
+          sm_front_desk.ROOM_ID: sm_room.data[sm_room.ID]!["value"],
           sm_front_desk.BROKE_NOTE: c_note.text, //
         },
       );
