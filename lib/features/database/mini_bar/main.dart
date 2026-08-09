@@ -1,6 +1,6 @@
 import "package:intl/intl.dart";
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:flutter/foundation.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/config.dart";
@@ -9,7 +9,8 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/dialog/select_page.dart";
-import "package:speanmeas/core/schema/nationality.g.dart";
+
+import "package:speanmeas/core/schema/mini_bar.g.dart";
 
 import "form/create.dart" as create;
 import "form/read.dart" as read;
@@ -27,16 +28,12 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-
-  //
+  PlutoGridStateManager? state_manager;
   int page = 1;
   int row_total = 0;
-
   bool is_loading = true;
   bool is_filter = false;
-  PlutoGridStateManager? state_manager;
   int load_request_id = 0;
-
   int get total_pages => row_total == 0 ? 1 : (row_total + DEFAULT_LIMIT_ROW - 1) ~/ DEFAULT_LIMIT_ROW;
 
   @override
@@ -50,7 +47,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       final r = await dio.post(
-        endpoint.NATIONALITY_READ_COUNT, //
+        endpoint.MINI_BAR_READ_COUNT, //
         data: {"count": true},
       );
       row_total = int.parse(r.data.toString());
@@ -66,11 +63,12 @@ class _Main_State extends State<Main_> {
   }
 
   //
+  //
   void on_refresh() async {
     try {
       //
       final r = await dio.post(
-        endpoint.NATIONALITY_READ_COUNT, //
+        endpoint.MINI_BAR_READ_COUNT, //
         data: {"count": true},
       );
       row_total = int.parse(r.data.toString());
@@ -91,7 +89,6 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
   void load_page(int p) async {
     final request_id = ++load_request_id;
 
@@ -103,7 +100,7 @@ class _Main_State extends State<Main_> {
 
       //
       final r = await dio.post(
-        endpoint.NATIONALITY_READ, //
+        endpoint.MINI_BAR_READ, //
         data: {
           "key": DEFAULT_KEY, //
           "order": DEFAULT_ORDER, //
@@ -126,7 +123,7 @@ class _Main_State extends State<Main_> {
         for (var d in data)
           PlutoRow(
             cells: {
-              for (var e in sm_nationality.data.entries) //
+              for (var e in sm_mini_bar.data.entries) //
                 e.key: PlutoCell(
                   value: e.key.contains("password")
                       ? "**********" //
@@ -318,7 +315,7 @@ class _Main_State extends State<Main_> {
         child: PlutoGrid(
           rows: [],
           columns: [
-            for (var e in sm_nationality.data.entries)
+            for (var e in sm_mini_bar.data.entries)
               PlutoColumn(
                 field: e.key, //
                 title: e.value["title"]!,
@@ -509,11 +506,17 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
-  //
   void on_create() async {
     try {
       //
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
+      tmp = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => create.Main_(
+            //
+          ),
+        ),
+      );
       if (tmp == null) return;
 
       // * លុប sort + filter
@@ -535,7 +538,6 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
   void on_read() async {
     try {
       //
@@ -546,8 +548,14 @@ class _Main_State extends State<Main_> {
       }
 
       //
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => read.Main_(id: row.cells[sm_nationality.ID]!.value.toString())));
-      if (tmp == null) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => read.Main_(
+            id: row.cells[sm_mini_bar.ID]!.value.toString(), //
+          ),
+        ),
+      );
 
       //
     } catch (e, st) {
@@ -556,7 +564,6 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
   void on_update() async {
     try {
       //
@@ -567,7 +574,14 @@ class _Main_State extends State<Main_> {
       }
 
       //
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_(id: row.cells[sm_nationality.ID]!.value.toString())));
+      tmp = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => update.Main_(
+            id: row.cells[sm_mini_bar.ID]!.value.toString(), //
+          ),
+        ),
+      );
       if (tmp == null) return;
 
       //
@@ -580,7 +594,6 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
   void on_delete() async {
     try {
       //
@@ -591,7 +604,14 @@ class _Main_State extends State<Main_> {
       }
 
       //
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_(id: row.cells[sm_nationality.ID]!.value.toString())));
+      tmp = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => delete.Main_(
+            id: row.cells[sm_mini_bar.ID]!.value.toString(), //
+          ),
+        ),
+      );
       if (tmp == null) return;
 
       //
@@ -605,7 +625,6 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
   dynamic cell_to_data({
     dynamic data, //
     String? type, //
@@ -646,7 +665,6 @@ class _Main_State extends State<Main_> {
     return null;
   }
 
-  //
   String data_to_cell({
     dynamic data, //
     String? type, //
@@ -684,6 +702,8 @@ class _Main_State extends State<Main_> {
 
     return "";
   }
+
+  //
 }
 
 class Main_ extends StatefulWidget {

@@ -55,6 +55,10 @@ class _Main_State extends State<Main_> {
                   // user
                   if (is_admin || is_manager) //
                     list_tile_l2(prefix: "Data", name: "User", icon: Icons.person_outline),
+
+                  // mini bar
+                  if (is_admin || is_manager || is_recept) //
+                    list_tile_l2(prefix: "Data", name: "Mini Bar", icon: Icons.local_bar_outlined),
                 ],
               ),
 

@@ -13,12 +13,10 @@ import "package:speanmeas/features/database/guest/main.dart" as guest;
 import "package:speanmeas/features/database/room/main.dart" as room;
 import "package:speanmeas/features/database/user/main.dart" as user;
 import "package:speanmeas/features/database/nationality/main.dart" as nationality;
+import "package:speanmeas/features/database/mini_bar/main.dart" as mini_bar;
 
 // report
 import "package:speanmeas/features/report/main.dart" as report;
-// import "package:speanmeas/features/report/weekly/main.dart" as report_weekly;
-// import "package:speanmeas/features/report/monthly/main.dart" as report_monthly;
-// import "package:speanmeas/features/report/yearly/main.dart" as report_yearly;
 
 import "package:speanmeas/features/database/demo_1/main.dart" as demo_1;
 import "package:speanmeas/features/database/demo_2/main.dart" as demo_2;
@@ -41,6 +39,7 @@ class _Main_State extends State<Main_> {
     {"name": "Data Guest", "panel": guest.Main_()},
     {"name": "Data User", "panel": user.Main_()},
     {"name": "Data Nationality", "panel": nationality.Main_()},
+    {"name": "Data Mini Bar", "panel": mini_bar.Main_()}, //
     //
     {"name": "Report Income", "panel": report.Main_()}, //
     // {"name": "Report Weekly", "panel": report_weekly.Main_()}, //

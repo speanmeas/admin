@@ -7,6 +7,8 @@ import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
+import "package:speanmeas/features/dashboard/front_desk/widget/note_bank_search.dart";
+
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -131,15 +133,8 @@ class _Main_State extends State<Main_> {
       ),
 
       // note
-      TextField(
-        controller: c_note,
-        maxLines: 4,
-        decoration: InputDecoration(
-          labelText: "Note:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(Icons.note_alt_outlined), //
-        ),
+      NoteBankSearch(
+        controller: c_note, //
         onChanged: (v) => setState(() {}), //
       ),
 

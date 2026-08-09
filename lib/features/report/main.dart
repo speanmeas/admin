@@ -58,7 +58,7 @@ class _Main_State extends State<Main_> {
           "key": "check_in_at", //
           "start": start?.toIso8601String(),
           "stop": stop?.toIso8601String(),
-          "limit": 1000, //
+          "limit": 10000, //
         },
       );
 

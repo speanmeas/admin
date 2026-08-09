@@ -7,6 +7,7 @@ import "package:speanmeas/core/widget/snackbar.dart";
 
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
+import "package:speanmeas/features/dashboard/front_desk/widget/note_bank_search.dart";
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -49,6 +50,8 @@ class _Main_State extends State<Main_> {
   final c_pay_bank = TextEditingController();
   final c_change = TextEditingController();
   final c_note = TextEditingController();
+
+  final c_options = TextEditingController();
 
   void init() async {
     try {
@@ -134,18 +137,9 @@ class _Main_State extends State<Main_> {
         onSubmitted: (v) => on_update(), //
       ),
 
-      // note
-      TextField(
-        controller: c_note,
-        maxLines: 4,
-        decoration: InputDecoration(
-          labelText: "Note:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(Icons.note_alt_outlined), //
-        ),
+      NoteBankSearch(
+        controller: c_note, //
         onChanged: (v) => setState(() {}), //
-        onSubmitted: (v) => on_update(), //
       ),
 
       Divider(color: Colors.black),

@@ -200,7 +200,7 @@ class _Main_State extends State<Main_> {
 
               // Update
               Tooltip(
-                message: "កែប្រែ", //
+                message: "កែ", //
                 child: InkWell(
                   onTap: on_update,
                   child: Container(

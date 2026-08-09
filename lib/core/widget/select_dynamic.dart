@@ -3,16 +3,12 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 
 class _SelectDynamicState extends State<SelectDynamic> {
-  //
-  dynamic tmp;
-
-  //
   @override
   Widget build(BuildContext context) {
     return TypeAheadField<dynamic>(
       controller: widget.controller,
       itemBuilder: (context, i) => ListTile(title: Text(i.toString())),
-      suggestionsCallback: (q) => widget.options.toList(),
+      suggestionsCallback: (q) => widget.options?.toList(),
       builder: (context, controller, focusNode) {
         return TextField(
           readOnly: true,
@@ -29,7 +25,7 @@ class _SelectDynamicState extends State<SelectDynamic> {
                 icon: Icon(Icons.clear, color: Colors.red),
                 onPressed: () {
                   widget.controller.clear();
-                  widget.onChanged.call(null);
+                  widget.onChanged?.call(null);
                 },
               ), //
             ),
@@ -38,7 +34,7 @@ class _SelectDynamicState extends State<SelectDynamic> {
       },
       onSelected: (value) {
         widget.controller.text = value.toString();
-        widget.onChanged.call(value);
+        widget.onChanged?.call(value);
       },
     );
   }
@@ -48,16 +44,16 @@ class SelectDynamic extends StatefulWidget {
   const SelectDynamic({
     super.key, //
     required this.controller,
-    required this.title,
-    required this.options,
-    required this.onChanged,
+    this.title,
+    this.options,
+    this.onChanged,
     this.prefixIcon,
   });
 
   final TextEditingController controller;
-  final String title;
-  final List<dynamic> options;
-  final ValueChanged<dynamic> onChanged;
+  final String? title;
+  final List<dynamic>? options;
+  final Function(dynamic)? onChanged;
   final Widget? prefixIcon;
 
   @override

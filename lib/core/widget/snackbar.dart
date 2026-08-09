@@ -20,7 +20,7 @@ void snackbar({
                 ms, //
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 18, //
+                  fontSize: 16, //
                   color: Colors.white,
                 ),
               ),

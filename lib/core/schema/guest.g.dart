@@ -45,20 +45,6 @@ Map<String, Map<String, dynamic>> data = {
     "lock": true,
     "value": null
   },
-  "id_number": {
-    "type": "string",
-    "title": "ID Number",
-    "hide": false,
-    "lock": false,
-    "value": null
-  },
-  "passport_number": {
-    "type": "string",
-    "title": "Passport Number",
-    "hide": false,
-    "lock": false,
-    "value": null
-  },
   "note": {
     "type": "string",
     "title": "Note",
@@ -74,8 +60,6 @@ final PHONE_NUMBER = "phone_number";
 final GENDER = "gender";
 final NATIONALITY_ID = "nationality_id";
 final NATIONALITY = "nationality";
-final ID_NUMBER = "id_number";
-final PASSPORT_NUMBER = "passport_number";
 final NOTE = "note";
 
 void clear() { for (var k in data.keys) data[k]!["value"] = null; }

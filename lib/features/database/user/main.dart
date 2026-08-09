@@ -160,7 +160,7 @@ class _Main_State extends State<Main_> {
       // menu
       (() {
         return Container(
-          height: 34, //
+          height: 40, //
           padding: EdgeInsets.all(1),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -168,16 +168,16 @@ class _Main_State extends State<Main_> {
             children: [
               // Create
               Tooltip(
-                message: "Create",
+                message: "បង្កើតថ្មី", //
                 child: InkWell(
                   onTap: on_create,
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 38,
+                    height: 38,
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.add, //
-                      size: 24,
+                      size: 30,
                       color: Colors.blue,
                     ), //
                   ),
@@ -186,16 +186,16 @@ class _Main_State extends State<Main_> {
 
               // Read
               Tooltip(
-                message: "Read",
+                message: "មើល", //
                 child: InkWell(
                   onTap: on_read,
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 38,
+                    height: 38,
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.visibility_outlined, //
-                      size: 24,
+                      size: 30,
                       color: Colors.blue,
                     ), //
                   ),
@@ -204,16 +204,16 @@ class _Main_State extends State<Main_> {
 
               // Update
               Tooltip(
-                message: "Update",
+                message: "កែ", //
                 child: InkWell(
                   onTap: on_update,
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 38,
+                    height: 38,
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.edit_outlined, //
-                      size: 24,
+                      size: 30,
                       color: Colors.blue,
                     ), //
                   ),
@@ -222,16 +222,16 @@ class _Main_State extends State<Main_> {
 
               // Delete
               Tooltip(
-                message: "Delete",
+                message: "លុប", //
                 child: InkWell(
                   onTap: on_delete,
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 38,
+                    height: 38,
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.delete_outline, //
-                      size: 24,
+                      size: 30,
                       color: Colors.red,
                     ), //
                   ),
@@ -242,15 +242,15 @@ class _Main_State extends State<Main_> {
 
               // filter
               Tooltip(
-                message: is_filter ? "Hide Filter" : "Show Filter",
+                message: is_filter ? "បិទច្រោះ" : "បើកច្រោះ", //
                 child: InkWell(
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 38,
+                    height: 38,
                     alignment: Alignment.center,
                     child: Icon(
                       is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
-                      size: 24,
+                      size: 30,
                       color: Colors.blue,
                     ), //
                   ), //
@@ -271,36 +271,36 @@ class _Main_State extends State<Main_> {
               // search
               if (kDebugMode)
                 Tooltip(
-                  message: "Search",
+                  message: "ស្វែងរក", //
                   child: InkWell(
                     child: Container(
-                      width: 32,
-                      height: 32,
+                      width: 38,
+                      height: 38,
                       alignment: Alignment.center,
                       child: Icon(
                         Icons.search, //
-                        size: 24,
+                        size: 30,
                         color: Colors.blue,
                       ), //
                     ), //
                     onTap: () {
-                      snackbar(ct: context, ms: "Development", cl: Colors.black);
+                      snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
                     },
                   ),
                 ),
 
               // refresh
               Tooltip(
-                message: "Refresh",
+                message: "មើលទិន្នន័យថ្មី", //
                 child: InkWell(
                   onTap: on_refresh,
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 38,
+                    height: 38,
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.refresh, //
-                      size: 24,
+                      size: 30,
                       color: Colors.blue,
                     ), //
                   ),
@@ -355,27 +355,27 @@ class _Main_State extends State<Main_> {
       // footer
       (() {
         return Container(
-          height: 32, //
+          height: 40, //
           alignment: Alignment.topCenter,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(width: 80),
+              SizedBox(width: 100),
 
               Spacer(),
 
               // * ត្រលប់ទៅទំព័រដំបូង
               Tooltip(
-                message: "First Page",
+                message: "ទៅទំព័រដំបូង", //
                 child: InkWell(
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 38,
+                    height: 38,
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.first_page, //
-                      size: 24,
+                      size: 30,
                       color: Colors.blue,
                     ), //
                   ), //
@@ -389,15 +389,15 @@ class _Main_State extends State<Main_> {
 
               // previous page
               Tooltip(
-                message: "Previous Page",
+                message: "ទៅទំព័រមុន", //
                 child: InkWell(
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 38,
+                    height: 38,
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.navigate_before, //
-                      size: 24,
+                      size: 30,
                       color: Colors.blue,
                     ), //
                   ), //
@@ -411,15 +411,19 @@ class _Main_State extends State<Main_> {
 
               // select page
               Tooltip(
-                message: "Select Page",
+                message: "ជ្រើសទំព័រ", //
                 child: InkWell(
                   child: Container(
-                    height: 32,
+                    height: 38,
                     padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                     alignment: Alignment.center,
                     child: Text(
                       "$page / $total_pages", //
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
+                      style: TextStyle(
+                        fontSize: 18, //
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
                     ), //
                   ), //
                   onTap: () async {
@@ -438,15 +442,15 @@ class _Main_State extends State<Main_> {
 
               // next page
               Tooltip(
-                message: "Next Page",
+                message: "ទៅទំព័របន្ទាប់",
                 child: InkWell(
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 38,
+                    height: 38,
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.navigate_next, //
-                      size: 24,
+                      size: 30,
                       color: Colors.blue,
                     ), //
                   ), //
@@ -460,15 +464,15 @@ class _Main_State extends State<Main_> {
 
               // last page
               Tooltip(
-                message: "Last Page",
+                message: "ទៅទំព័រចុងក្រោយ",
                 child: InkWell(
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 38,
+                    height: 38,
                     alignment: Alignment.center,
                     child: Icon(
                       Icons.last_page, //
-                      size: 24,
+                      size: 30,
                       color: Colors.blue,
                     ), //
                   ), //
@@ -484,12 +488,16 @@ class _Main_State extends State<Main_> {
 
               // total row
               Container(
-                height: 32,
-                padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                height: 40,
+                padding: EdgeInsets.only(right: 8),
                 alignment: Alignment.center,
                 child: Text(
                   "${state_manager?.rows.length} Rows", //
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
+                  style: TextStyle(
+                    fontSize: 18, //
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ), //
               ),
 
