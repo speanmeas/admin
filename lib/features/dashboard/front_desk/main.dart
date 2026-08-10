@@ -260,17 +260,22 @@ class _Main_State extends State<Main_> {
                     ),
 
                     // * room info
-                    Row(
-                      spacing: 4,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("${r[sm_room.KIND]}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                        Text("-"), //
-                        Text("${r[sm_room.USD_PER_3H]} \$ / 3 ម៉ោង", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)), //
-                        Text("-"), //
-                        Text("${r[sm_room.USD_PER_DAY]} \$ / 1 ថ្ងៃ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
+                    (() {
+                      String kind = r[sm_room.KIND] ?? "N/A";
+                      double usd_per_3h = (r[sm_room.USD_PER_3H] as num?)?.toDouble() ?? 0;
+                      double usd_per_day = (r[sm_room.USD_PER_DAY] as num?)?.toDouble() ?? 0;
+                      return Row(
+                        spacing: 4,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("${r[sm_room.KIND]}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                          Text("-"), //
+                          Text("${usd_per_3h.toStringAsFixed(2)} \$ / 3 ម៉ោង", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)), //
+                          Text("-"), //
+                          Text("${usd_per_day.toStringAsFixed(2)} \$ / 1 ថ្ងៃ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                        ],
+                      );
+                    })(),
 
                     //
                     if (r[sm_room.FRONT_DESK_ID] != null) ...[
@@ -342,9 +347,9 @@ class _Main_State extends State<Main_> {
                       // payment room info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          final price_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.ROOM_PRICE] ?? "0";
-                          final pay_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.ROOM_PAY_TOTAL] ?? "0";
-                          final return_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.ROOM_RETURN] ?? "0";
+                          double price_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.ROOM_PRICE] ?? 0;
+                          double pay_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.ROOM_PAY_TOTAL] ?? 0;
+                          double return_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.ROOM_RETURN] ?? 0;
                           return Row(
                             spacing: 4,
                             children: [
@@ -354,17 +359,17 @@ class _Main_State extends State<Main_> {
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
                               Text("ថ្លៃ", style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("$price_ro \$", style: TextStyle(color: Colors.blue)), //
+                              Text("${price_ro.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
                               Text("បង់", style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("$pay_ro \$", style: TextStyle(color: Colors.blue)), //
+                              Text("${pay_ro.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
                               Text("អាប់", style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("$return_ro \$", style: TextStyle(color: Colors.blue)), //
+                              Text("${return_ro.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
 
                               if (!["Pending Clean"].contains(r[sm_room.STATUS]))
                                 Tooltip(
@@ -381,9 +386,9 @@ class _Main_State extends State<Main_> {
                       // payment revenue info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          final price_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_PRICE] ?? "0";
-                          final pay_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_PAY_TOTAL] ?? "0";
-                          final return_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_RETURN] ?? "0";
+                          double price_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_PRICE] ?? 0;
+                          double pay_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_PAY_TOTAL] ?? 0;
+                          double return_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_RETURN] ?? 0;
                           return Row(
                             spacing: 4,
                             children: [
@@ -393,17 +398,17 @@ class _Main_State extends State<Main_> {
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
                               Text("ថ្លៃ", style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("$price_re \$", style: TextStyle(color: Colors.blue)), //
+                              Text("${price_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
                               Text("បង់", style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("$pay_re \$", style: TextStyle(color: Colors.blue)), //
+                              Text("${pay_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
                               Text("អាប់", style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("$return_re \$", style: TextStyle(color: Colors.blue)), //
+                              Text("${return_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               if (r[sm_room.STATUS] != "Pending Clean")
                                 Tooltip(
