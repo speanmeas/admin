@@ -23,44 +23,41 @@ class _NoteBankSearchState extends State<NoteBankSearch> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(top: 8),
-      child: TypeAheadField<dynamic>(
-        controller: widget.controller,
-        itemBuilder: (context, item) => ListTile(title: Text(item)),
-        suggestionsCallback: (q) {
-          List<dynamic> opts = [];
-          for (var e in options) {
-            final tmp = e.split(" to ")[0];
-            if (tmp.toLowerCase().contains(q.toLowerCase())) opts.add(e);
-          }
-          return opts;
-        },
-        builder: (context, controller, focusNode) {
-          return TextField(
-            maxLines: 4,
-            controller: controller,
-            focusNode: focusNode,
-            decoration: InputDecoration(
-              labelText: "Note:", //
-              labelStyle: TextStyle(fontWeight: FontWeight.bold),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              prefixIcon: Icon(Icons.note_alt_outlined, color: Colors.blue),
-              suffixIcon: Padding(
-                padding: EdgeInsets.only(right: 4),
-                child: Icon(Icons.arrow_drop_down, color: Colors.blue),
-              ),
+    return TypeAheadField<dynamic>(
+      controller: widget.controller,
+      itemBuilder: (context, item) => ListTile(title: Text(item)),
+      suggestionsCallback: (q) {
+        List<dynamic> opts = [];
+        for (var e in options) {
+          final tmp = e.split(" to ")[0];
+          if (tmp.toLowerCase().contains(q.toLowerCase())) opts.add(e);
+        }
+        return opts;
+      },
+      builder: (context, controller, focusNode) {
+        return TextField(
+          maxLines: 4,
+          controller: controller,
+          focusNode: focusNode,
+          decoration: InputDecoration(
+            labelText: "Note:", //
+            labelStyle: TextStyle(fontWeight: FontWeight.bold),
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            prefixIcon: Icon(Icons.note_alt_outlined, color: Colors.blue),
+            suffixIcon: Padding(
+              padding: EdgeInsets.only(right: 4),
+              child: Icon(Icons.arrow_drop_down, color: Colors.blue),
             ),
-            onChanged: (v) {
-              //
-            },
-          );
-        },
-        onSelected: (v) {
-          widget.controller.text = v.toString();
-          widget.onChanged?.call(v);
-        },
-      ),
+          ),
+          onChanged: (v) {
+            //
+          },
+        );
+      },
+      onSelected: (v) {
+        widget.controller.text = v.toString();
+        widget.onChanged?.call(v);
+      },
     );
   }
 

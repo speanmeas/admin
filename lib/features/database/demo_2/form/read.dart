@@ -63,7 +63,7 @@ class _Main_State extends State<Main_> {
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      child: ShowData(
+                      child: Show_Data(
                         title: e.value["title"], //
                         value: value,
                         max_lines: e.key.contains("note") ? 4 : 1,
@@ -78,7 +78,7 @@ class _Main_State extends State<Main_> {
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      child: ShowData(
+                      child: Show_Data(
                         title: e.value["title"], //
                         value: value,
                       ),
@@ -95,7 +95,7 @@ class _Main_State extends State<Main_> {
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      child: ShowData(
+                      child: Show_Data(
                         title: e.value["title"], //
                         value: value,
                       ),
@@ -112,7 +112,7 @@ class _Main_State extends State<Main_> {
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      child: ShowData(
+                      child: Show_Data(
                         title: e.value["title"], //
                         value: value,
                       ),

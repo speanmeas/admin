@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/theme/theme_data.dart";
 
-class _ShowDataState extends State<ShowData> {
+class _Show_DataState extends State<Show_Data> {
   //
   dynamic tmp;
 
@@ -31,8 +31,8 @@ class _ShowDataState extends State<ShowData> {
   }
 }
 
-class ShowData extends StatefulWidget {
-  const ShowData({
+class Show_Data extends StatefulWidget {
+  const Show_Data({
     super.key, //
     this.title,
     this.value,
@@ -46,7 +46,7 @@ class ShowData extends StatefulWidget {
   final int? max_lines;
 
   @override
-  State<ShowData> createState() => _ShowDataState();
+  State<Show_Data> createState() => _Show_DataState();
 }
 
 void main() {
@@ -55,7 +55,7 @@ void main() {
       theme: theme_data, //
       home: const Scaffold(
         body: Center(
-          child: ShowData(
+          child: Show_Data(
             title: "Hello", //
             value: "World",
             suffix: "!",

@@ -13,7 +13,7 @@ Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Update Revenue Payment", //
+        "Add Other Payment", //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -96,6 +96,18 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => setState(() {}), //
       ),
 
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text("Last Paid: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+
+          Text(
+            "${0.toStringAsFixed(2)} \$",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+          ),
+        ],
+      ),
+
       //
       TextField(
         controller: c_pay_cash,
@@ -147,7 +159,7 @@ class _Main_State extends State<Main_> {
           Text("Balanced: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
 
           Text(
-            "$balanced\$",
+            "${balanced.toStringAsFixed(2)} \$",
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold, //
@@ -159,8 +171,8 @@ class _Main_State extends State<Main_> {
 
       //
       OutlinedButton.icon(
-        icon: Icon(Icons.check), //
-        label: Text("Update"), //
+        icon: Icon(Icons.add), //
+        label: Text("Add Payment"), //
         onPressed: balanced == 0 ? on_pay : null, //
       ),
 

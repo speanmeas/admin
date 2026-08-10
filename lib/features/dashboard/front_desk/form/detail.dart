@@ -86,7 +86,7 @@ class _Main_State extends State<Main_> {
           if (e.value["type"] == "id") {
             String value = "";
             if (e.value["value"] != null) value = e.value["value"].toString();
-            return ShowData(
+            return Show_Data(
               title: e.value["title"]?.toString() ?? "", //
               value: value, //
             );
@@ -96,7 +96,7 @@ class _Main_State extends State<Main_> {
           if (e.value["type"] == "string") {
             String value = "";
             if (e.value["value"] != null) value = e.value["value"].toString();
-            return ShowData(
+            return Show_Data(
               title: e.value["title"]?.toString() ?? "", //
               value: value, //
             );
@@ -106,8 +106,8 @@ class _Main_State extends State<Main_> {
           if (e.value["type"] == "number") {
             String value = "0";
             if (e.value["value"] != null) value = e.value["value"].toStringAsFixed(2);
-            return ShowData(
-              title: e.value["title"]?.toString() ?? "", //
+            return Show_Data(
+              title: e.value["title"]?.toStringAsFixed(2) ?? "", //
               value: value, //
             );
           }
@@ -119,7 +119,7 @@ class _Main_State extends State<Main_> {
               tmp = DateTime.tryParse(e.value["value"].toString());
               if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
             }
-            return ShowData(
+            return Show_Data(
               title: e.value["title"]?.toString() ?? "", //
               value: value, //
             );
@@ -132,7 +132,7 @@ class _Main_State extends State<Main_> {
               if (e.value["value"] == true) value = "Yes";
               if (e.value["value"] == false) value = "No";
             }
-            return ShowData(
+            return Show_Data(
               title: e.value["title"]?.toString() ?? "", //
               value: value, //
             );

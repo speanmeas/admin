@@ -101,7 +101,7 @@ class _Main_State extends State<Main_> {
         String value = "";
         if (sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]?["value"] != null) //
           value = sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]?["value"].toString() ?? "";
-        return ShowData(
+        return Show_Data(
           title: sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]?["title"] ?? "", //
           value: value,
         );
@@ -111,7 +111,7 @@ class _Main_State extends State<Main_> {
         String value = "";
         if (sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]?["value"] != null) //
           value = sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]?["value"].toString() ?? "";
-        return ShowData(
+        return Show_Data(
           title: sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]?["title"] ?? "", //
           value: value,
         );
@@ -121,7 +121,7 @@ class _Main_State extends State<Main_> {
         String value = "";
         if (sm_front_desk.data[sm_front_desk.GUEST_GENDER]?["value"] != null) //
           value = sm_front_desk.data[sm_front_desk.GUEST_GENDER]?["value"].toString() ?? "";
-        return ShowData(
+        return Show_Data(
           title: sm_front_desk.data[sm_front_desk.GUEST_GENDER]?["title"] ?? "", //
           value: value,
         );
@@ -131,7 +131,7 @@ class _Main_State extends State<Main_> {
         String value = "";
         if (sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]?["value"] != null) //
           value = sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]?["value"].toString() ?? "";
-        return ShowData(
+        return Show_Data(
           title: sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]?["title"] ?? "", //
           value: value,
         );

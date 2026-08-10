@@ -5,16 +5,16 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
+
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
-
-import "../widget/note_bank_search.dart";
+import "package:speanmeas/features/dashboard/front_desk/widget/note_bank_search.dart";
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Room Payment", //
+        "Add Room Payment", //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -47,24 +47,34 @@ class _Main_State extends State<Main_> {
   //
   dynamic tmp;
   final c_price = TextEditingController();
-  final c_pay_bank = TextEditingController();
   final c_pay_cash = TextEditingController();
+  final c_pay_bank = TextEditingController();
   final c_change = TextEditingController();
   final c_note = TextEditingController();
+  final c_options = TextEditingController();
+
+  double last_paid = 0;
 
   void init() async {
     try {
       sm_front_desk.clear();
       sm_room.clear();
 
+      //
       tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_front_desk.ID: widget.room_id});
       for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      if (sm_room.data[sm_room.FRONT_DESK_ID]!["value"] != null) {
-        tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
-        for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
+      //
+      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
+      for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
+
+      for (var l in tmp.data[0]["pay_room"]) {
+        last_paid += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
+        last_paid += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
+        last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
       }
 
+      //
       c_price.text = sm_front_desk.data[sm_front_desk.ROOM_PRICE]?["value"]?.toString() ?? "";
       c_pay_cash.text = sm_front_desk.data[sm_front_desk.ROOM_PAY_CASH]?["value"]?.toString() ?? "";
       c_pay_bank.text = sm_front_desk.data[sm_front_desk.ROOM_PAY_BANK]?["value"]?.toString() ?? "";
@@ -95,7 +105,7 @@ class _Main_State extends State<Main_> {
           prefixIcon: Icon(Icons.attach_money_outlined), //
         ),
         onChanged: (v) => setState(() {}), //
-        onSubmitted: (v) => can_pay ? on_pay() : null, //
+        onSubmitted: (v) => on_update(), //
       ),
 
       Row(
@@ -104,7 +114,7 @@ class _Main_State extends State<Main_> {
           Text("Last Paid: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
 
           Text(
-            "${0.toStringAsFixed(2)} \$",
+            "${last_paid.toStringAsFixed(2)} \$",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
@@ -122,10 +132,10 @@ class _Main_State extends State<Main_> {
           prefixIcon: Icon(Icons.payments_outlined), //
         ),
         onChanged: (v) => setState(() {}), //
-        onSubmitted: (v) => can_pay ? on_pay() : null, //
+        onSubmitted: (v) => on_update(), //
       ),
 
-      // payment
+      //
       TextField(
         controller: c_pay_bank,
         keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -137,7 +147,7 @@ class _Main_State extends State<Main_> {
           prefixIcon: Icon(Icons.account_balance_outlined),
         ),
         onChanged: (v) => setState(() {}), //
-        onSubmitted: (v) => can_pay ? on_pay() : null, //
+        onSubmitted: (v) => on_update(), //
       ),
 
       // return
@@ -152,7 +162,7 @@ class _Main_State extends State<Main_> {
           prefixIcon: Icon(Icons.currency_exchange_outlined),
         ),
         onChanged: (v) => setState(() {}), //
-        onSubmitted: (v) => can_pay ? on_pay() : null, //
+        onSubmitted: (v) => on_update(), //
       ),
 
       NoteBankSearch(
@@ -187,32 +197,25 @@ class _Main_State extends State<Main_> {
 
       //
       OutlinedButton.icon(
-        icon: Icon(Icons.payments_outlined), //
-        label: Text("Complete Payment"), //
-        onPressed: can_pay ? on_pay : null, //
+        icon: Icon(Icons.add), //
+        label: Text("Add Payment"), //
+        onPressed: on_update, //
       ),
 
       SizedBox(height: height - 100),
     ]);
   }
 
-  bool get can_pay {
-    double price = double.tryParse(c_price.text) ?? 0;
-
-    if (price <= 0) return false;
-    if (balanced != 0) return false;
-    return true;
-  }
-
+  // * គណនាបានប្រាក់សំណើរ
   double get balanced {
     double price = double.tryParse(c_price.text) ?? 0;
     double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
     double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
     double change = double.tryParse(c_change.text) ?? 0;
-    return (pay_cash + pay_bank) - price - change;
+    return (pay_cash + pay_bank + last_paid) - price - change;
   }
 
-  void on_pay() async {
+  void on_update() async {
     try {
       //
 
@@ -221,28 +224,39 @@ class _Main_State extends State<Main_> {
       double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
       double change = double.tryParse(c_change.text) ?? 0;
 
+      // * ប្រសិនបើលុយបានបង់គ្រប់
+      if (pay_cash + pay_bank + last_paid == price + change)
+        await dio.post(
+          endpoint.ROOM_UPDATE, //
+          data: {
+            sm_room.ID: sm_room.data[sm_room.ID]!["value"], //
+            sm_room.STATUS: "Pending Leave", // * ត្រឡប់ទៅ Pending Leave វិញ
+          },
+        );
+      // * ប្រសិនបើលុយមិនទាន់បង់គ្រប់ ឬ បង់លើស
+      else
+        await dio.post(
+          endpoint.ROOM_UPDATE, //
+          data: {
+            sm_room.ID: sm_room.data[sm_room.ID]!["value"], //
+            sm_room.STATUS: "Pending Pay", // * ត្រឡប់ទៅ Pending Pay វិញ
+          },
+        );
+
+      // * បន្ទាប់មកធ្វើការកែប្រែទិន្នន័យនៅក្នុង Front Desk
       await dio.post(
-        endpoint.FRONT_DESK_FORM_PAY_ROOM,
+        endpoint.FRONT_DESK_FORM_ADD_PAY_ROOM,
         data: {
           sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
-          sm_front_desk.ROOM_PRICE: price, //
-          sm_front_desk.ROOM_PAY_CASH: pay_cash, //
-          sm_front_desk.ROOM_PAY_BANK: pay_bank, //
-          sm_front_desk.ROOM_RETURN: change, //
-          sm_front_desk.ROOM_PAY_NOTE: c_note.text, //
+          "pay_cash": double.tryParse(c_pay_cash.text) ?? 0,
+          "pay_bank": double.tryParse(c_pay_bank.text) ?? 0,
+          "pay_return": double.tryParse(c_change.text) ?? 0,
+          "pay_note": c_note.text,
         },
       );
 
-      await dio.post(
-        endpoint.ROOM_UPDATE, //
-        data: {
-          sm_room.ID: sm_room.data[sm_room.ID]!["value"], //
-          sm_room.STATUS: "Pending Leave", //
-        },
-      );
-
-      Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
+      Navigator.pop(context, true); // * បិទ Form នេះ
+      snackbar(ct: context, ms: "Success", cl: Colors.green); // * បង្ហាញ Success Snackbar
       //
     } catch (e, st) {
       print(st);
