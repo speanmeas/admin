@@ -105,7 +105,7 @@ class _Main_State extends State<Main_> {
           //
           if (e.value["type"] == "number") {
             String value = "0";
-            if (e.value["value"] != null) value = e.value["value"].toString();
+            if (e.value["value"] != null) value = e.value["value"].toStringAsFixed(2);
             return ShowData(
               title: e.value["title"]?.toString() ?? "", //
               value: value, //

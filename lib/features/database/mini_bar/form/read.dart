@@ -75,7 +75,7 @@ class _Main_State extends State<Main_> {
                   //
                   if (e.value["type"] == "number") {
                     String value = "";
-                    if (e.value["value"] != null) value = e.value["value"].toString();
+                    if (e.value["value"] != null) value = e.value["value"].toStringAsFixed(2);
                     return Container(
                       width: 600,
                       margin: EdgeInsets.fromLTRB(8, 0, 8, 0),

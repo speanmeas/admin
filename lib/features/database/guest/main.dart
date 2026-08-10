@@ -319,7 +319,7 @@ class _Main_State extends State<Main_> {
                 field: e.key, //
                 title: e.value["title"]!,
                 type: e.value["type"] == "number"
-                    ? PlutoColumnType.number() //
+                    ? PlutoColumnType.number(format: "#,##0.00") //
                     : PlutoColumnType.text(),
                 hide: e.value["hide"]!,
                 width: 160,

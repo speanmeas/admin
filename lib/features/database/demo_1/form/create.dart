@@ -99,7 +99,7 @@ class _Main_State extends State<Main_> {
           if (e.value["type"] == "number") {
             String value = "";
             if (e.value["value"] != null && e.value["value"] != 0) {
-              value = e.value["value"].toString();
+              value = e.value["value"].toStringAsFixed(2);
             }
             return TextField(
               controller: TextEditingController(text: value.trim()),
