@@ -78,8 +78,6 @@ class _Main_State extends State<Main_> {
         map_fd[ids[i]] = results[i].data[0];
       }
 
-      print(map_fd);
-
       setState(() {});
     } catch (e, st) {
       print(st);

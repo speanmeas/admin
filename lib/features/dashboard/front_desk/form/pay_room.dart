@@ -52,6 +52,8 @@ class _Main_State extends State<Main_> {
   final c_change = TextEditingController();
   final c_note = TextEditingController();
 
+  double last_paid = 0;
+
   void init() async {
     try {
       sm_front_desk.clear();
@@ -63,6 +65,13 @@ class _Main_State extends State<Main_> {
       if (sm_room.data[sm_room.FRONT_DESK_ID]!["value"] != null) {
         tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
         for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
+
+        // * គណនាចំនួនលុយដែលបានបង់រួច
+        for (var l in tmp.data[0]["pay_room"]) {
+          last_paid += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
+          last_paid += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
+          last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+        }
       }
 
       c_price.text = sm_front_desk.data[sm_front_desk.ROOM_PRICE]?["value"]?.toString() ?? "";
@@ -104,7 +113,7 @@ class _Main_State extends State<Main_> {
           Text("Last Paid: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
 
           Text(
-            "${0.toStringAsFixed(2)} \$",
+            "${last_paid.toStringAsFixed(2)} \$",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
@@ -209,7 +218,7 @@ class _Main_State extends State<Main_> {
     double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
     double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
     double change = double.tryParse(c_change.text) ?? 0;
-    return (pay_cash + pay_bank) - price - change;
+    return (pay_cash + pay_bank + last_paid) - price - change;
   }
 
   void on_pay() async {
@@ -233,13 +242,24 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      await dio.post(
-        endpoint.ROOM_UPDATE, //
-        data: {
-          sm_room.ID: sm_room.data[sm_room.ID]!["value"], //
-          sm_room.STATUS: "Pending Leave", //
-        },
-      );
+      // * ប្រសិនបើលុយបានបង់គ្រប់
+      if (pay_cash + pay_bank + last_paid == price + change)
+        await dio.post(
+          endpoint.ROOM_UPDATE, //
+          data: {
+            sm_room.ID: sm_room.data[sm_room.ID]!["value"], //
+            sm_room.STATUS: "Pending Leave", // * ត្រឡប់ទៅ Pending Leave វិញ
+          },
+        );
+      // * ប្រសិនបើលុយមិនទាន់បង់គ្រប់ ឬ បង់លើស
+      else
+        await dio.post(
+          endpoint.ROOM_UPDATE, //
+          data: {
+            sm_room.ID: sm_room.data[sm_room.ID]!["value"], //
+            sm_room.STATUS: "Pending Pay", // * ត្រឡប់ទៅ Pending Pay វិញ
+          },
+        );
 
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
