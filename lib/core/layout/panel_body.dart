@@ -6,6 +6,7 @@ import "package:speanmeas/core/theme/theme_data.dart";
 
 // dashboard
 import "package:speanmeas/features/dashboard/front_desk/main.dart" as d_front_desk;
+import "package:speanmeas/features/dashboard/mini_bar/main.dart" as d_mini_bar;
 
 // database
 import "package:speanmeas/features/database/front_desk/main.dart" as front_desk;
@@ -33,6 +34,7 @@ class _Main_State extends State<Main_> {
     {"name": "", "panel": Text("This page is under development..")},
     //
     {"name": "Front Desk", "panel": d_front_desk.Main_()}, //
+    {"name": "Mini Bar", "panel": d_mini_bar.Main_()}, //
     //
     {"name": "Data Front Desk", "panel": front_desk.Main_()}, //
     {"name": "Data Room", "panel": room.Main_()}, //
