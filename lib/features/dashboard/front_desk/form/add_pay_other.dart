@@ -51,6 +51,8 @@ class _Main_State extends State<Main_> {
   final c_change = TextEditingController();
   final c_note = TextEditingController();
 
+  double last_paid = 0;
+
   void init() async {
     try {
       sm_front_desk.clear();
@@ -70,6 +72,13 @@ class _Main_State extends State<Main_> {
       c_pay_bank.text = sm_front_desk.data[sm_front_desk.REVENUE_PAY_BANK]?["value"]?.toString() ?? "";
       c_change.text = sm_front_desk.data[sm_front_desk.REVENUE_RETURN]?["value"]?.toString() ?? "";
       c_note.text = sm_front_desk.data[sm_front_desk.REVENUE_PAY_NOTE]?["value"]?.toString() ?? "";
+
+      // * គណនាចំនួនលុយដែលបានបង់រួច (pay_other)
+      for (var l in (tmp.data[0]["pay_other"] ?? [])) {
+        last_paid += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
+        last_paid += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
+        last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+      }
 
       setState(() {});
       //
@@ -102,7 +111,7 @@ class _Main_State extends State<Main_> {
           Text("Last Paid: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
 
           Text(
-            "${0.toStringAsFixed(2)} \$",
+            "${last_paid.toStringAsFixed(2)} \$",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
@@ -185,25 +194,25 @@ class _Main_State extends State<Main_> {
     double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
     double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
     double change = double.tryParse(c_change.text) ?? 0;
-    return (pay_cash + pay_bank) - price - change;
+    return (pay_cash + pay_bank + last_paid) - price - change;
   }
 
   void on_pay() async {
     try {
-      double price = double.tryParse(c_price.text) ?? 0;
+      //
       double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
       double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
       double change = double.tryParse(c_change.text) ?? 0;
 
+      // * រក្សាទុកប្រវត្តិនៅក្នុង pay_other
       await dio.post(
-        endpoint.FRONT_DESK_FORM_PAY_REVENUE,
+        endpoint.FRONT_DESK_FORM_ADD_PAY_OTHER,
         data: {
           sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
-          sm_front_desk.REVENUE_PRICE: price, //
-          sm_front_desk.REVENUE_PAY_CASH: pay_cash, //
-          sm_front_desk.REVENUE_PAY_BANK: pay_bank, //
-          sm_front_desk.REVENUE_RETURN: change, //
-          sm_front_desk.REVENUE_PAY_NOTE: c_note.text, //
+          "pay_cash": pay_cash, //
+          "pay_bank": pay_bank, //
+          "pay_return": change, //
+          "pay_note": c_note.text, //
         },
       );
 

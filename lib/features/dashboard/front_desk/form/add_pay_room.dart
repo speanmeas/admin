@@ -68,7 +68,7 @@ class _Main_State extends State<Main_> {
       tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
       for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      for (var l in tmp.data[0]["pay_room"]) {
+      for (var l in (tmp.data[0]["pay_room"] ?? [])) {
         last_paid += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
         last_paid += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
         last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;

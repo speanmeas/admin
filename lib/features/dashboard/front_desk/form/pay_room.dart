@@ -67,7 +67,7 @@ class _Main_State extends State<Main_> {
         for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
 
         // * គណនាចំនួនលុយដែលបានបង់រួច
-        for (var l in tmp.data[0]["pay_room"]) {
+        for (var l in (tmp.data[0]["pay_room"] ?? [])) {
           last_paid += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
           last_paid += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
           last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;

@@ -4,6 +4,7 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 
 import "package:speanmeas/core/config.dart";
@@ -104,7 +105,7 @@ class _Main_State extends State<Main_> {
                   controller: c_search,
                   decoration: InputDecoration(
                     isDense: true, //
-                    labelText: "ស្វែងរក", //
+                    labelText: t("Search"), //
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
@@ -180,7 +181,7 @@ class _Main_State extends State<Main_> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "បន្ទប់ ${r[sm_room.NUMBER]}",
+                              "${t("Room")} ${r[sm_room.NUMBER]}",
                               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                             ),
                           ],
@@ -225,21 +226,21 @@ class _Main_State extends State<Main_> {
                                     if (!["Available"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.receipt_outlined, color: Colors.blue),
-                                        child: Text("មើលព័ត៌មានលម្អិត", style: TextStyle(color: Colors.blue)), //
+                                        child: Text(t("View Details"), style: TextStyle(color: Colors.blue)), //
                                         onPressed: () => on_detail(r), //
                                       ),
 
                                     if (["Available"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.bug_report_outlined, color: Colors.blue),
-                                        child: Text("ដាក់ជាបន្ទប់ខូច", style: TextStyle(color: Colors.blue)), //
+                                        child: Text(t("Set as Broken"), style: TextStyle(color: Colors.blue)), //
                                         onPressed: () => on_broke(r), //
                                       ),
 
                                     if (["Pending Fix"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.build_outlined, color: Colors.blue),
-                                        child: Text("ជុសជុលបន្ទប់រួច", style: TextStyle(color: Colors.blue)), //
+                                        child: Text(t("Mark as Fixed"), style: TextStyle(color: Colors.blue)), //
                                         onPressed: () => on_fix(r), //
                                       ),
 
@@ -247,7 +248,7 @@ class _Main_State extends State<Main_> {
                                     if (["Pending Pay", "Pending Leave"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.swap_horiz_outlined, color: Colors.blue),
-                                        child: Text("ប្តូបន្ទប់", style: TextStyle(color: Colors.blue)),
+                                        child: Text(t("Change Room"), style: TextStyle(color: Colors.blue)),
                                         onPressed: () => on_change_room(r), //
                                       ),
 
@@ -255,7 +256,7 @@ class _Main_State extends State<Main_> {
                                     if (["Pending Pay", "Pending Leave"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
-                                        child: Text("បោះបង់", style: TextStyle(color: Colors.red)),
+                                        child: Text(t("Cancel"), style: TextStyle(color: Colors.red)),
                                         onPressed: () => on_cancel(r), //
                                       ),
                                   ],
@@ -278,9 +279,9 @@ class _Main_State extends State<Main_> {
                         children: [
                           Text(kind, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                           Text("-"), //
-                          Text("${usd_per_3h.toStringAsFixed(2)} \$ / 3 ម៉ោង", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)), //
+                          Text("${usd_per_3h.toStringAsFixed(2)} \$ / 3 ${t("Hours")}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)), //
                           Text("-"), //
-                          Text("${usd_per_day.toStringAsFixed(2)} \$ / 1 ថ្ងៃ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                          Text("${usd_per_day.toStringAsFixed(2)} \$ / 1 ${t("Days")}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                         ],
                       );
                     })(),
@@ -290,13 +291,14 @@ class _Main_State extends State<Main_> {
                       // guest info
                       if (!"${r[sm_room.STATUS]}".contains("Pending Fix"))
                         (() {
-                          final guest_name = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.GUEST_FULL_NAME] ?? "N/A";
-                          final guest_phone = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.GUEST_PHONE_NUMBER] ?? "N/A";
+                          final fd = map_fd[r[sm_room.FRONT_DESK_ID]];
+                          final guest_name = fd?[sm_front_desk.GUEST_FULL_NAME] ?? "N/A";
+                          final guest_phone = fd?[sm_front_desk.GUEST_PHONE_NUMBER] ?? "N/A";
                           return Row(
                             spacing: 4,
                             children: [
                               Icon(Icons.person, size: 24), //
-                              Text("អតិថិជន:", style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text(t("Guest:"), style: TextStyle(fontWeight: FontWeight.bold)),
                               //
                               SizedBox(width: 2), //
                               Icon(Icons.circle, size: 6), //
@@ -307,7 +309,7 @@ class _Main_State extends State<Main_> {
                               Text(guest_phone, style: TextStyle(color: Colors.blue)), //
                               // always show
                               Tooltip(
-                                message: "កែព័ត៌មានអតិថិជន",
+                                message: t("Edit Guest Info"),
                                 child: InkWell(
                                   child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
                                   onTap: () => on_update_guest(r),
@@ -320,29 +322,30 @@ class _Main_State extends State<Main_> {
                       // stay info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          final stay_n_guest = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.STAY_N_GUEST] ?? "0";
-                          final stay_day = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.STAY_DAY] ?? "0";
-                          final stay_hour = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.STAY_HOUR] ?? "0";
+                          final fd = map_fd[r[sm_room.FRONT_DESK_ID]];
+                          final stay_n_guest = fd?[sm_front_desk.STAY_N_GUEST] ?? "0";
+                          final stay_day = fd?[sm_front_desk.STAY_DAY] ?? "0";
+                          final stay_hour = fd?[sm_front_desk.STAY_HOUR] ?? "0";
                           return Row(
                             spacing: 4,
                             children: [
                               Icon(Icons.calendar_month, size: 24), //
-                              Text("ស្នាក់នៅ:", style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text(t("Stay:"), style: TextStyle(fontWeight: FontWeight.bold)),
                               //
                               SizedBox(width: 2), //
                               Icon(Icons.circle, size: 6), //
-                              Text("$stay_n_guest Persons", style: TextStyle(color: Colors.blue)),
+                              Text("$stay_n_guest ${t("Persons")}", style: TextStyle(color: Colors.blue)),
                               //
                               SizedBox(width: 2), //
                               Icon(Icons.circle, size: 6), //
-                              Text("$stay_day Days", style: TextStyle(color: Colors.blue)),
+                              Text("$stay_day ${t("Days")}", style: TextStyle(color: Colors.blue)),
                               //
                               SizedBox(width: 2), //
                               Icon(Icons.circle, size: 6), //
-                              Text("$stay_hour Hours", style: TextStyle(color: Colors.blue)),
+                              Text("$stay_hour ${t("Hours")}", style: TextStyle(color: Colors.blue)),
                               if (r[sm_room.STATUS] != "Pending Clean")
                                 Tooltip(
-                                  message: "កែព័ត៌មានស្នាក់នៅ",
+                                  message: t("Edit Stay Info"),
                                   child: InkWell(
                                     child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
                                     onTap: () => on_update_stay(r),
@@ -355,10 +358,10 @@ class _Main_State extends State<Main_> {
                       // payment room info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          double price_ro = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.ROOM_PRICE] ?? 0;
+                          double price_ro = (map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.ROOM_PRICE] as num?)?.toDouble() ?? 0;
                           double pay_room = 0;
                           double pay_return = 0;
-                          for (var l in map_fd[r[sm_room.FRONT_DESK_ID]]["pay_room"]) {
+                          for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_room"] ?? [])) {
                             pay_room += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
                             pay_room += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
                             pay_return += double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
@@ -367,26 +370,26 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.receipt_outlined, size: 24), //
-                              Text("បង់ថ្លៃបន្ទប់:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Room Payment:"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("ថ្លៃ", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Price"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("${price_ro.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("បង់", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Pay"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("${pay_room.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("អាប់", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Change"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("${pay_return.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
 
                               if (!["Pending Clean"].contains(r[sm_room.STATUS]))
                                 Tooltip(
-                                  message: "កែព័ត៌មានបង់ប្រាក់បន្ទប់",
+                                  message: t("Edit Room Payment"),
                                   child: InkWell(
                                     onTap: () => on_update_rp(r),
                                     child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
@@ -399,33 +402,38 @@ class _Main_State extends State<Main_> {
                       // payment mini bar info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          double price_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_PRICE] ?? 0;
-                          double pay_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_PAY_TOTAL] ?? 0;
-                          double return_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_RETURN] ?? 0;
+                          double price_re = (map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.REVENUE_PRICE] as num?)?.toDouble() ?? 0;
+                          double pay_re = 0;
+                          double return_re = 0;
+                          for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_other"] ?? [])) {
+                            pay_re += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
+                            pay_re += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
+                            return_re += double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+                          }
                           return Row(
                             spacing: 4,
                             children: [
                               Icon(Icons.receipt_outlined, size: 24), //
-                              Text("បង់ថ្លៃមីនីបារ:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Mini Bar Payment:"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("ថ្លៃ", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Price"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("${price_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("បង់", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Pay"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("${pay_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("អាប់", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Change"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("${return_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               if (r[sm_room.STATUS] != "Pending Clean")
                                 Tooltip(
-                                  message: "កែព័ត៌មានបង់ប្រាក់មីនីបារ",
+                                  message: t("Edit Mini Bar Payment"),
                                   child: InkWell(
                                     onTap: () => on_update_mnb(r),
                                     child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
@@ -438,33 +446,38 @@ class _Main_State extends State<Main_> {
                       // payment other info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          double price_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_PRICE] ?? 0;
-                          double pay_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_PAY_TOTAL] ?? 0;
-                          double return_re = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.REVENUE_RETURN] ?? 0;
+                          double price_re = (map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.REVENUE_PRICE] as num?)?.toDouble() ?? 0;
+                          double pay_re = 0;
+                          double return_re = 0;
+                          for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_other"] ?? [])) {
+                            pay_re += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
+                            pay_re += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
+                            return_re += double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+                          }
                           return Row(
                             spacing: 4,
                             children: [
                               Icon(Icons.receipt_outlined, size: 24), //
-                              Text("បង់ថ្លៃផ្សេងៗ:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Other Payment:"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("ថ្លៃ", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Price"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("${price_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("បង់", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Pay"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("${pay_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text("អាប់", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Change"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("${return_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               if (r[sm_room.STATUS] != "Pending Clean")
                                 Tooltip(
-                                  message: "កែព័ត៌មានបង់ប្រាក់ផ្សេងៗ",
+                                  message: t("Edit Other Payment"),
                                   child: InkWell(
                                     onTap: () => on_update_ot(r),
                                     child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
@@ -478,15 +491,16 @@ class _Main_State extends State<Main_> {
                       if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
                           String check_in = "";
-                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.CHECK_IN_AT] != null) {
-                            final due = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.CHECK_IN_AT]);
+                          final check_in_at = map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.CHECK_IN_AT];
+                          if (check_in_at != null) {
+                            final due = DateTime.parse(check_in_at);
                             check_in = DateFormat(DEFAULT_DATE_FORMAT).format(due);
                           }
                           return Row(
                             spacing: 4,
                             children: [
                               Icon(Icons.login, size: 24), //
-                              Text("ពេលចូល:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Time In:"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(check_in, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
@@ -496,15 +510,16 @@ class _Main_State extends State<Main_> {
                       if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
                           String due = "";
-                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.STAY_DUE] != null) {
-                            tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.STAY_DUE]);
+                          final stay_due = map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.STAY_DUE];
+                          if (stay_due != null) {
+                            tmp = DateTime.parse(stay_due);
                             due = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
                           }
                           return Row(
                             spacing: 4,
                             children: [
                               Icon(Icons.time_to_leave_outlined, size: 24), //
-                              Text("ពេលត្រូវចេញ:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Due:"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(due, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
@@ -514,15 +529,16 @@ class _Main_State extends State<Main_> {
                       if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
                           String check_out = "";
-                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.CHECK_OUT_AT] != null) {
-                            tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.CHECK_OUT_AT]);
+                          final check_out_at = map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.CHECK_OUT_AT];
+                          if (check_out_at != null) {
+                            tmp = DateTime.parse(check_out_at);
                             check_out = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
                           }
                           return Row(
                             spacing: 4,
                             children: [
                               Icon(Icons.logout, size: 24), //
-                              Text("ពេលចេញ:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Time Out:"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(check_out, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
@@ -532,15 +548,16 @@ class _Main_State extends State<Main_> {
                       if (r[sm_room.STATUS] == "Pending Fix")
                         (() {
                           String broke_date = "";
-                          if (map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.BROKE_AT] != null) {
-                            tmp = DateTime.parse(map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.BROKE_AT]);
+                          final broke_at = map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.BROKE_AT];
+                          if (broke_at != null) {
+                            tmp = DateTime.parse(broke_at);
                             broke_date = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
                           }
                           return Row(
                             spacing: 4,
                             children: [
                               Icon(Icons.bug_report_outlined, size: 24), //
-                              Text("ពេលបន្ទប់ខូច:", style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Broken At:"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(broke_date, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
