@@ -420,6 +420,7 @@ class _Main_State extends State<Main_> {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
                 type: PlutoAggregateColumnType.sum,
+                format: "#,##0.00", //
                 titleSpanBuilder: (value) {
                   return [
                     TextSpan(
@@ -455,6 +456,7 @@ class _Main_State extends State<Main_> {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
                 type: PlutoAggregateColumnType.sum,
+                format: "#,##0.00", //
                 titleSpanBuilder: (value) {
                   return [
                     TextSpan(
@@ -490,6 +492,7 @@ class _Main_State extends State<Main_> {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
                 type: PlutoAggregateColumnType.sum,
+                format: "#,##0.00",
                 titleSpanBuilder: (value) {
                   return [
                     TextSpan(
@@ -525,6 +528,7 @@ class _Main_State extends State<Main_> {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
                 type: PlutoAggregateColumnType.sum,
+                format: "#,##0.00",
                 titleSpanBuilder: (value) {
                   return [
                     TextSpan(
@@ -560,6 +564,7 @@ class _Main_State extends State<Main_> {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
                 type: PlutoAggregateColumnType.sum,
+                format: "#,##0.00", //
                 titleSpanBuilder: (value) {
                   return [
                     TextSpan(
@@ -595,6 +600,7 @@ class _Main_State extends State<Main_> {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
                 type: PlutoAggregateColumnType.sum,
+                format: "#,##0.00", //
                 titleSpanBuilder: (value) {
                   return [
                     TextSpan(
@@ -630,6 +636,7 @@ class _Main_State extends State<Main_> {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
                 type: PlutoAggregateColumnType.sum,
+                format: "#,##0.00", //
                 titleSpanBuilder: (value) {
                   return [
                     TextSpan(
@@ -665,6 +672,7 @@ class _Main_State extends State<Main_> {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
                 type: PlutoAggregateColumnType.sum,
+                format: "#,##0.00", //
                 titleSpanBuilder: (value) {
                   return [
                     TextSpan(
