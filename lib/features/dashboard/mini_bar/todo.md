@@ -1,0 +1,2 @@
+- how to store in database effectively?
+- how to add mini bar for room + mini bar for walkin

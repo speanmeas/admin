@@ -709,6 +709,24 @@ class _Main_State extends State<Main_> {
           ),
           //
           PlutoColumn(
+            field: sm_front_desk.ROOM_PAY_BY, //
+            title: "ទទួលប្រាក់ដោយ",
+            type: PlutoColumnType.text(),
+            width: 160,
+            renderer: (rc) {
+              String value = "";
+              if (rc.cell.value != null) value = rc.cell.value.toString();
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(
+                  value,
+                  overflow: TextOverflow.ellipsis, //
+                ),
+              );
+            },
+          ),
+          //
+          PlutoColumn(
             field: sm_front_desk.CHECK_OUT_BY, //
             title: "ឲចេញដោយ",
             type: PlutoColumnType.text(),
@@ -725,6 +743,9 @@ class _Main_State extends State<Main_> {
               );
             },
           ),
+          //
+          // TODO: Add all notes together
+          //
         ], //
         //
         configuration: PlutoGridConfiguration(
