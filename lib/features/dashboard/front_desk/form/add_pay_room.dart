@@ -54,6 +54,7 @@ class _Main_State extends State<Main_> {
   final c_options = TextEditingController();
 
   double last_paid = 0;
+  double last_price = 0; // * តម្លៃដែលបានផ្ទុកពី Server
 
   void init() async {
     try {
@@ -74,8 +75,14 @@ class _Main_State extends State<Main_> {
         last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
       }
 
-      //
-      c_price.text = sm_front_desk.data[sm_front_desk.ROOM_PRICE]?["value"]?.toString() ?? "";
+      // * យកតម្លៃបច្ចុប្បន្នពីបញ្ជីប្រវត្តិតម្លៃ price_room (element ចុងក្រោយ = តម្លៃបច្ចុប្បន្ន)
+      final price_room_list = tmp.data[0]["price_room"];
+      if (price_room_list is List && price_room_list.isNotEmpty) {
+        c_price.text = (double.tryParse(price_room_list.last["price"]?.toString() ?? "0") ?? 0).toString();
+      } else {
+        c_price.text = sm_front_desk.data[sm_front_desk.ROOM_PRICE]?["value"]?.toString() ?? "";
+      }
+      last_price = double.tryParse(c_price.text) ?? 0;
       c_pay_cash.text = sm_front_desk.data[sm_front_desk.ROOM_PAY_CASH]?["value"]?.toString() ?? "";
       c_pay_bank.text = sm_front_desk.data[sm_front_desk.ROOM_PAY_BANK]?["value"]?.toString() ?? "";
       c_change.text = sm_front_desk.data[sm_front_desk.ROOM_RETURN]?["value"]?.toString() ?? "";
@@ -223,6 +230,19 @@ class _Main_State extends State<Main_> {
       double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
       double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
       double change = double.tryParse(c_change.text) ?? 0;
+
+      // * ធ្វើបច្ចុប្បន្នភាពតម្លៃបន្ទប់ (append ទៅប្រវត្តិ price_room)
+      // * (តែនៅពេលតម្លៃផ្លាស់ប្តូរ ដើម្បីកុំឲ្យមានប្រវត្តិច្រើន)
+      if (price != last_price) {
+        await dio.post(
+          endpoint.FRONT_DESK_FORM_UPDATE_ROOM_PRICE, //
+          data: {
+            sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
+            "room_price": price, //
+          },
+        );
+        last_price = price;
+      }
 
       // * ប្រសិនបើលុយបានបង់គ្រប់
       if (pay_cash + pay_bank + last_paid == price + change)

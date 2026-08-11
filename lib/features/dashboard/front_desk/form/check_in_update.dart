@@ -50,6 +50,8 @@ class _Main_State extends State<Main_> {
   final c_d_hour = TextEditingController();
   final c_note = TextEditingController();
 
+  double last_price = 0; // * តម្លៃបន្ទប់ដែលបានផ្ទុកពី Server
+
   void init() async {
     try {
       //
@@ -66,6 +68,14 @@ class _Main_State extends State<Main_> {
       c_d_day.text = sm_front_desk.data[sm_front_desk.STAY_DAY]?["value"]?.toString() ?? "";
       c_d_hour.text = sm_front_desk.data[sm_front_desk.STAY_HOUR]?["value"]?.toString() ?? "";
       c_note.text = sm_front_desk.data[sm_front_desk.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
+
+      // * យកតម្លៃបច្ចុប្បន្នពីបញ្ជីប្រវត្តិតម្លៃ price_room (element ចុងក្រោយ = តម្លៃបច្ចុប្បន្ន)
+      final price_room_list = tmp.data[0]["price_room"];
+      if (price_room_list is List && price_room_list.isNotEmpty) {
+        last_price = double.tryParse(price_room_list.last["price"]?.toString() ?? "0") ?? 0;
+      } else {
+        last_price = double.tryParse(sm_front_desk.data[sm_front_desk.ROOM_PRICE]?["value"]?.toString() ?? "") ?? 0;
+      }
 
       setState(() {});
     } catch (e, st) {
@@ -149,6 +159,19 @@ class _Main_State extends State<Main_> {
       double price_3hours = double.tryParse(sm_room.data[sm_room.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
       double room_paid = double.tryParse(sm_front_desk.data[sm_front_desk.ROOM_PAY_TOTAL]?["value"].toString() ?? "") ?? 0;
       double room_price = (price_day * stay_days) + (price_3hours * stay_hours / 3);
+
+      // * ធ្វើបច្ចុប្បន្នភាពតម្លៃបន្ទប់ (append ទៅប្រវត្តិ price_room)
+      // * (តែនៅពេលតម្លៃផ្លាស់ប្តូរ ដើម្បីកុំឲ្យមានប្រវត្តិច្រើន)
+      if (room_price != last_price) {
+        await dio.post(
+          endpoint.FRONT_DESK_FORM_UPDATE_ROOM_PRICE, //
+          data: {
+            sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
+            "room_price": room_price, //
+          },
+        );
+        last_price = room_price;
+      }
 
       // * ធ្វើការផ្លាស់ប្តូរទិន្នន័យនៅក្នុង Front Desk Table នៅលើ Database
       await dio.post(

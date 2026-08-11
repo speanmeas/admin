@@ -11,7 +11,7 @@ import "package:speanmeas/core/schema/room.g.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/mini_bar.g.dart";
 
-import "form/charge.dart" as charge;
+import "../front_desk/form/add_pay mini_bar_a.dart" as charge;
 
 class _Main_State extends State<Main_> {
   //
@@ -56,7 +56,7 @@ class _Main_State extends State<Main_> {
           dio.post(
             endpoint.FRONT_DESK_READ_ID, //
             data: {
-              sm_front_desk.ID: fd_id, //
+              // sm_front_desk.ID: fd_id, //
             },
           ),
       ];
@@ -375,6 +375,13 @@ class _Main_State extends State<Main_> {
   // * បន្ថែមទំនិញ mini bar ទៅបន្ទប់
   void on_charge(dynamic r) async {
     try {
+      // * គណនាចំនួនដែលបានគិតប្រាក់រួចហើយរបស់បន្ទប់នេះ
+      final sold = <dynamic, int>{};
+      for (var line in map_charge["${r[sm_room.ID]}"] ?? []) {
+        final id = line[sm_mini_bar.ID];
+        if (id != null) sold[id] = (sold[id] ?? 0) + (line["qty"] as int);
+      }
+
       //
       tmp = await Navigator.push(
         context,
@@ -382,6 +389,7 @@ class _Main_State extends State<Main_> {
           builder: (context) => charge.Charge_(
             room: r, //
             catalog: list_mb, //
+            sold: sold, //
           ), //
         ),
       );
@@ -410,6 +418,13 @@ class _Main_State extends State<Main_> {
   // * បន្ថែមទំនិញ mini bar សម្រាប់អតិថិជនដើរចូលទិញ (Walk-in)
   void on_walkin() async {
     try {
+      // * គណនាចំនួនដែលបានលក់រួចហើយ (walk-in)
+      final sold = <dynamic, int>{};
+      for (var line in list_walkin) {
+        final id = line[sm_mini_bar.ID];
+        if (id != null) sold[id] = (sold[id] ?? 0) + (line["qty"] as int);
+      }
+
       //
       tmp = await Navigator.push(
         context,
@@ -417,6 +432,7 @@ class _Main_State extends State<Main_> {
           builder: (context) => charge.Charge_(
             room: null, //
             catalog: list_mb, //
+            sold: sold, //
           ), //
         ),
       );

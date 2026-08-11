@@ -1,9 +1,8 @@
-class Nationality {
-	static final Nationality instance = Nationality._();
-	Nationality._();
+class Sse {
+	static final Sse instance = Sse._();
+	Sse._();
 
 	final ID = "_id";
-	final NAME = "name";
 	final NOTE = "note";
 	final CREATED_AT = "created_at";
 	final CREATED_BY = "created_by";
@@ -13,4 +12,4 @@ class Nationality {
 	final DELETED_BY = "deleted_by";
 }
 
-Nationality sm_nationality = Nationality.instance;
+Sse sm_sse = Sse.instance;

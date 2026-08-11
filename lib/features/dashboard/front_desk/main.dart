@@ -14,12 +14,13 @@ import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/schema/room.g.dart";
+import "package:speanmeas/core/schema/mini_bar.g.dart";
 
+import "form/add_pay mini_bar_a.dart" as charge;
 import "form/detail.dart" as detail;
 import "form/check_in.dart" as check_in;
 import "form/pay_room.dart" as pay_room;
 import "form/add_pay_room.dart" as pay_room_update;
-import "form/add_pay_mini_bar.dart" as pay_mini_bar;
 import "form/add_pay_other.dart" as pay_other;
 import "form/check_out.dart" as check_out;
 import "form/clean.dart" as clean;
@@ -38,6 +39,8 @@ class _Main_State extends State<Main_> {
   final c_search = TextEditingController();
   List<Map<String, dynamic>> list_r = [];
   Map<String, dynamic> map_fd = {};
+  List<Map<String, dynamic>> list_mb = []; // * បញ្ជីទំនិញ mini bar (catalog) សម្រាប់លក់
+  List<Map<String, dynamic>> list_walkin = []; // * ទំនិញ walk-in (អតិថិជនដើរចូលទិញ មិនស្នាក់នៅបន្ទប់)
 
   void init() async {
     try {
@@ -79,11 +82,29 @@ class _Main_State extends State<Main_> {
         map_fd[ids[i]] = results[i].data[0];
       }
 
+      // * ទាញយកបញ្ជីទំនិញ mini bar (catalog) ពី Server
+      tmp = await dio.post(
+        endpoint.MINI_BAR_READ, //
+        data: {
+          "key": DEFAULT_KEY, //
+          "order": DEFAULT_ORDER, //
+          "offset": 0, //
+          "limit": DEFAULT_LIMIT_ROW,
+        },
+      );
+      list_mb = List<Map<String, dynamic>>.from(tmp.data);
+
       setState(() {});
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
+  }
+
+  // * យកតម្លៃបច្ចុប្បន្នពីបញ្ជីប្រវត្តិតម្លៃ (element ចុងក្រោយ = តម្លៃបច្ចុប្បន្ន)
+  double _current_price(dynamic list) {
+    if (list is! List || list.isEmpty) return 0;
+    return double.tryParse(list.last["price"]?.toString() ?? "0") ?? 0;
   }
 
   Widget _layout(List<Widget> children) {
@@ -157,6 +178,69 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     return _layout([
+      // * បង្ហាញ container សម្រាប់លក់ mini bar ឲ្យអតិថិជនដើរចូលទិញ (Walk-in)
+      // Container(
+      //   width: 500,
+      //   margin: EdgeInsets.all(2),
+      //   padding: EdgeInsets.all(4),
+      //   decoration: BoxDecoration(border: Border.all(color: Colors.purple, width: 1)),
+      //   child: Row(
+      //     children: [
+      //       // info
+      //       // Expanded(
+      //       //   child: Column(
+      //       //     mainAxisAlignment: MainAxisAlignment.start,
+      //       //     crossAxisAlignment: CrossAxisAlignment.start,
+      //       //     children: [
+      //       //       // header row
+      //       //       Row(
+      //       //         spacing: 4,
+      //       //         children: [
+      //       //           Icon(Icons.person_add_outlined, size: 24, color: Colors.purple), //
+      //       //           Text(t("Mini Bar For Sale (Walk-in):"), style: TextStyle(fontWeight: FontWeight.bold)), //
+      //       //           //
+      //       //           SizedBox(width: 4), //
+      //       //           Icon(Icons.circle, size: 6), //
+      //       //           Text("${_walkin_total.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.purple)), //
+      //       //         ],
+      //       //       ),
+
+      //       //       // items
+      //       //       if (list_walkin.isEmpty) Text(t("No Items"), style: TextStyle(color: Colors.grey)),
+      //       //       for (var line in list_walkin)
+      //       //         Row(
+      //       //           spacing: 4,
+      //       //           children: [
+      //       //             Text("${line[sm_mini_bar.NAME]}", style: TextStyle(fontWeight: FontWeight.bold)), //
+      //       //             Text("x${line["qty"]}", style: TextStyle(color: Colors.grey)), //
+      //       //             Text("${line["total"]} \$", style: TextStyle(color: Colors.blue)), //
+      //       //           ],
+      //       //         ),
+      //       //     ],
+      //       //   ),
+      //       // ),
+
+      //       // buttons
+      //       OutlinedButton.icon(
+      //         onPressed: list_mb.isEmpty ? null : on_walkin, //
+      //         icon: Icon(Icons.add_shopping_cart),
+      //         label: Text(t("Sell")),
+      //         style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.purple)),
+      //       ), //
+
+      //       if (list_walkin.isNotEmpty)
+      //         OutlinedButton.icon(
+      //           onPressed: on_clear_walkin, //
+      //           icon: Icon(Icons.delete_outline),
+      //           label: Text(t("Clear")),
+      //           style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.red)),
+      //         ), //
+      //     ],
+      //   ),
+      // ),
+
+      //
+
       // * បង្ហាញបញ្ជីបន្ទប់ទាំងអស់ (ត្រងតាមការស្វែងរក)
       for (var r in _list_show)
         Container(
@@ -286,7 +370,7 @@ class _Main_State extends State<Main_> {
                       );
                     })(),
 
-                    //
+                    // * guest info
                     if (r[sm_room.FRONT_DESK_ID] != null) ...[
                       // guest info
                       if (!"${r[sm_room.STATUS]}".contains("Pending Fix"))
@@ -319,7 +403,7 @@ class _Main_State extends State<Main_> {
                           );
                         })(),
 
-                      // stay info
+                      // * stay info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
                           final fd = map_fd[r[sm_room.FRONT_DESK_ID]];
@@ -358,7 +442,7 @@ class _Main_State extends State<Main_> {
                       // payment room info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          double price_ro = (map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.ROOM_PRICE] as num?)?.toDouble() ?? 0;
+                          double price_ro = _current_price(map_fd[r[sm_room.FRONT_DESK_ID]]?["price_room"]);
                           double pay_room = 0;
                           double pay_return = 0;
                           for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_room"] ?? [])) {
@@ -402,12 +486,18 @@ class _Main_State extends State<Main_> {
                       // payment mini bar info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          double price_re = (map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.REVENUE_PRICE] as num?)?.toDouble() ?? 0;
+                          // * បន្ទាប់ពី update backend៖ pay_mini_bar រាល់បន្ទាត់ = Mini_Bar {name, quantity, price, price_total, ...}
+                          double price_re = 0;
+                          for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_mini_bar"] ?? [])) {
+                            price_re += double.tryParse(l["price_total"]?.toString() ?? "0") ?? 0;
+                          }
                           double pay_re = 0;
-                          double return_re = 0;
-                          for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_other"] ?? [])) {
+                          for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_mini_bar"] ?? [])) {
                             pay_re += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
                             pay_re += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
+                          }
+                          double return_re = 0;
+                          for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_mini_bar"] ?? [])) {
                             return_re += double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
                           }
                           return Row(
@@ -446,7 +536,7 @@ class _Main_State extends State<Main_> {
                       // payment other info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          double price_re = (map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.REVENUE_PRICE] as num?)?.toDouble() ?? 0;
+                          double price_re = _current_price(map_fd[r[sm_room.FRONT_DESK_ID]]?["price_other"]);
                           double pay_re = 0;
                           double return_re = 0;
                           for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_other"] ?? [])) {
@@ -891,8 +981,9 @@ class _Main_State extends State<Main_> {
       tmp = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => pay_mini_bar.Main_(
-            room_id: r[sm_room.ID], //
+          builder: (context) => charge.Charge_(
+            room: r, //
+            catalog: list_mb, //
           ), //
         ),
       );
@@ -928,6 +1019,59 @@ class _Main_State extends State<Main_> {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
+  }
+
+  //
+  // * បន្ថែមទំនិញ mini bar សម្រាប់អតិថិជនដើរចូលទិញ (Walk-in)
+  void on_walkin() async {
+    try {
+      // * គណនាចំនួនដែលបានលក់រួចហើយ (walk-in)
+      final sold = <dynamic, int>{};
+      for (var line in list_walkin) {
+        final id = line[sm_mini_bar.ID];
+        if (id != null) sold[id] = (sold[id] ?? 0) + (line["qty"] as int);
+      }
+
+      //
+      tmp = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => charge.Charge_(
+            room: null, //
+            catalog: list_mb, //
+            sold: sold, //
+          ), //
+        ),
+      );
+
+      //
+      if (tmp != null) {
+        list_walkin.addAll(List<Map<String, dynamic>>.from(tmp));
+        setState(() {});
+      }
+
+      //
+    } catch (e, st) {
+      print(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
+
+  //
+  // * សម្អាតទំនិញ walk-in ទាំងអស់
+  void on_clear_walkin() {
+    list_walkin.clear();
+    setState(() {});
+  }
+
+  //
+  // * សរុបតម្លៃ walk-in
+  double get _walkin_total {
+    var total = 0.0;
+    for (var line in list_walkin) {
+      total += (line["total"] as num).toDouble();
+    }
+    return total;
   }
 
   // * បញ្ជីបន្ទប់ដែលត្រងតាមការស្វែងរក (លេខបន្ទប់ + ស្ថានភាព)

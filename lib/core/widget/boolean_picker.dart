@@ -1,0 +1,103 @@
+import "package:flutter/material.dart";
+import "package:flutter_typeahead/flutter_typeahead.dart";
+
+import "package:speanmeas/core/theme/theme_data.dart";
+
+class _Boolean_PickerState extends State<Boolean_Picker> {
+  //
+  final controller = TextEditingController();
+
+  void init() async {
+    if (widget.initial != null) {
+      if (widget.initial == true) controller.text = "Yes";
+      if (widget.initial == false) controller.text = "No";
+      widget.onChanged?.call(widget.initial);
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TypeAheadField<String>(
+      controller: controller,
+      suggestionsCallback: (query) => ["Yes", "No"],
+      builder: (context, controller, focusNode) {
+        return TextField(
+          controller: controller,
+          focusNode: focusNode,
+          decoration: InputDecoration(
+            labelText: "Logic 1:", //
+            labelStyle: TextStyle(fontWeight: FontWeight.bold),
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            prefixIcon: Icon(controller.text == "Yes" ? Icons.toggle_on : Icons.toggle_off_outlined),
+            suffixIcon: ExcludeFocus(
+              child: Padding(
+                padding: EdgeInsets.only(right: 4),
+                child: IconButton(
+                  icon: Icon(Icons.clear, color: Colors.red),
+                  onPressed: () async {
+                    controller.clear();
+                    widget.onChanged?.call(null);
+                    setState(() {});
+                  },
+                ), //
+              ),
+            ),
+          ),
+        );
+      },
+      itemBuilder: (context, item) => ListTile(title: Text(item)),
+      onSelected: (v) {
+        controller.text = v;
+        if (v == "Yes") widget.onChanged?.call(true);
+        if (v == "No") widget.onChanged?.call(false);
+        setState(() {});
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+}
+
+class Boolean_Picker extends StatefulWidget {
+  const Boolean_Picker({
+    super.key, //
+    this.initial,
+    this.title, //
+    this.onChanged,
+  });
+
+  final bool? initial;
+  final String? title;
+  final Function(bool?)? onChanged;
+
+  @override
+  State<Boolean_Picker> createState() => _Boolean_PickerState();
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      theme: theme_data, //
+      home: Scaffold(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Boolean_Picker(
+              title: "Boolean Value:",
+              initial: true,
+              onChanged: (v) {
+                print("Selected: $v");
+              },
+            ),
+          ],
+        ),
+      ),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
+}

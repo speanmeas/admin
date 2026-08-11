@@ -194,6 +194,24 @@ class _Main_State extends State<Main_> {
         prefixIcon: Icon(Icons.access_time_outlined),
       ),
 
+      Divider(color: Colors.black),
+
+      // * បង្ហាញតម្លៃបន្ទប់ដែលគណនាដោយស្វ័យប្រវត្តិ
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            "Room Price: ", //
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+
+          Text(
+            "${room_price.toStringAsFixed(2)} \$", //
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+          ),
+        ],
+      ),
+
       // note
       TextField(
         controller: c_note,
@@ -218,6 +236,15 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * គណនាតម្លៃបន្ទប់ (ថ្ងៃ x តម្លៃថ្ងៃ + ម៉ោង x តម្លៃ 3 ម៉ោង)
+  double get room_price {
+    int stay_days = int.tryParse(c_d_day.text) ?? 0;
+    int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
+    double price_day = double.tryParse(sm_room.data[sm_room.USD_PER_DAY]?["value"].toString() ?? "") ?? 0;
+    double price_3hours = double.tryParse(sm_room.data[sm_room.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
+    return (price_day * stay_days) + (price_3hours * stay_hours / 3);
+  }
+
   bool get can_check_in {
     int n_guest = int.tryParse(c_n_o_guest.text) ?? 0;
     int n_day = int.tryParse(c_d_day.text) ?? 0;
@@ -234,11 +261,7 @@ class _Main_State extends State<Main_> {
 
   void on_check_in() async {
     try {
-      int stay_days = int.tryParse(c_d_day.text) ?? 0;
-      int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
-      double price_day = double.tryParse(sm_room.data[sm_room.USD_PER_DAY]?["value"].toString() ?? "") ?? 0;
-      double price_3hours = double.tryParse(sm_room.data[sm_room.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
-      double room_price = (price_day * stay_days) + (price_3hours * stay_hours / 3);
+      double room_price = this.room_price;
 
       //
       tmp = await dio.post(

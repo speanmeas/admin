@@ -51,6 +51,8 @@ class _Main_State extends State<Main_> {
   final c_change = TextEditingController();
   final c_note = TextEditingController();
 
+  double last_paid = 0;
+
   void init() async {
     try {
       sm_front_desk.clear();
@@ -64,8 +66,20 @@ class _Main_State extends State<Main_> {
       tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
       for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      //
-      c_price.text = sm_front_desk.data[sm_front_desk.REVENUE_PRICE]?["value"]?.toString() ?? "";
+      // * គណនាចំនួនលុយដែលបានបង់រួច (pay_mini_bar)
+      for (var l in (tmp.data[0]["pay_mini_bar"] ?? [])) {
+        last_paid += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
+        last_paid += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
+        last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+      }
+
+      // * យកតម្លៃបច្ចុប្បន្នពីបញ្ជីប្រវត្តិតម្លៃ price_mini_bar (element ចុងក្រោយ = តម្លៃបច្ចុប្បន្ន)
+      final price_mini_bar_list = tmp.data[0]["price_mini_bar"];
+      if (price_mini_bar_list is List && price_mini_bar_list.isNotEmpty) {
+        c_price.text = (double.tryParse(price_mini_bar_list.last["price"]?.toString() ?? "0") ?? 0).toString();
+      } else {
+        c_price.text = sm_front_desk.data[sm_front_desk.REVENUE_PRICE]?["value"]?.toString() ?? "";
+      }
       c_pay_cash.text = sm_front_desk.data[sm_front_desk.REVENUE_PAY_CASH]?["value"]?.toString() ?? "";
       c_pay_bank.text = sm_front_desk.data[sm_front_desk.REVENUE_PAY_BANK]?["value"]?.toString() ?? "";
       c_change.text = sm_front_desk.data[sm_front_desk.REVENUE_RETURN]?["value"]?.toString() ?? "";
@@ -102,7 +116,7 @@ class _Main_State extends State<Main_> {
           Text("Last Paid: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
 
           Text(
-            "${0.toStringAsFixed(2)} \$",
+            "${last_paid.toStringAsFixed(2)} \$",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
@@ -185,7 +199,7 @@ class _Main_State extends State<Main_> {
     double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
     double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
     double change = double.tryParse(c_change.text) ?? 0;
-    return (pay_cash + pay_bank) - price - change;
+    return (pay_cash + pay_bank + last_paid) - price - change;
   }
 
   void on_pay() async {

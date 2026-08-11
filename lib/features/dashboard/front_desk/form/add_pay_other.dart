@@ -52,6 +52,7 @@ class _Main_State extends State<Main_> {
   final c_note = TextEditingController();
 
   double last_paid = 0;
+  double last_price = 0; // * តម្លៃដែលបានផ្ទុកពី Server
 
   void init() async {
     try {
@@ -66,8 +67,14 @@ class _Main_State extends State<Main_> {
       tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
       for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
 
-      //
-      c_price.text = sm_front_desk.data[sm_front_desk.REVENUE_PRICE]?["value"]?.toString() ?? "";
+      // * យកតម្លៃបច្ចុប្បន្នពីបញ្ជីប្រវត្តិតម្លៃ price_other (element ចុងក្រោយ = តម្លៃបច្ចុប្បន្ន)
+      final price_other_list = tmp.data[0]["price_other"];
+      if (price_other_list is List && price_other_list.isNotEmpty) {
+        c_price.text = (double.tryParse(price_other_list.last["price"]?.toString() ?? "0") ?? 0).toString();
+      } else {
+        c_price.text = sm_front_desk.data[sm_front_desk.REVENUE_PRICE]?["value"]?.toString() ?? "";
+      }
+      last_price = double.tryParse(c_price.text) ?? 0;
       c_pay_cash.text = sm_front_desk.data[sm_front_desk.REVENUE_PAY_CASH]?["value"]?.toString() ?? "";
       c_pay_bank.text = sm_front_desk.data[sm_front_desk.REVENUE_PAY_BANK]?["value"]?.toString() ?? "";
       c_change.text = sm_front_desk.data[sm_front_desk.REVENUE_RETURN]?["value"]?.toString() ?? "";
@@ -200,9 +207,23 @@ class _Main_State extends State<Main_> {
   void on_pay() async {
     try {
       //
+      double price = double.tryParse(c_price.text) ?? 0;
       double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
       double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
       double change = double.tryParse(c_change.text) ?? 0;
+
+      // * ធ្វើបច្ចុប្បន្នភាពតម្លៃផ្សេងៗ (append ទៅប្រវត្តិ price_other)
+      // * (តែនៅពេលតម្លៃផ្លាស់ប្តូរ ដើម្បីកុំឲ្យមានប្រវត្តិច្រើន)
+      if (price != last_price) {
+        await dio.post(
+          endpoint.FRONT_DESK_FORM_UPDATE_OTHER_PRICE, //
+          data: {
+            sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
+            "revenue_price": price, //
+          },
+        );
+        last_price = price;
+      }
 
       // * រក្សាទុកប្រវត្តិនៅក្នុង pay_other
       await dio.post(

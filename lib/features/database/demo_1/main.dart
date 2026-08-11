@@ -12,9 +12,9 @@ import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/dialog/select_page.dart";
 
 import "form/create.dart" as create;
-import "form/read.dart" as read;
-import "form/update.dart" as update;
-import "form/delete.dart" as delete;
+// import "form/read.dart" as read;
+// import "form/update.dart" as update;
+// import "form/delete.dart" as delete;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -33,7 +33,9 @@ class _Main_State extends State<Main_> {
   bool is_loading = true;
   bool is_filter = false;
   int load_request_id = 0;
-  int get total_pages => row_total == 0 ? 1 : (row_total + DEFAULT_LIMIT_ROW - 1) ~/ DEFAULT_LIMIT_ROW;
+
+  dynamic data;
+  final double WIDTH = 120;
 
   @override
   void initState() {
@@ -46,7 +48,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       final r = await dio.post(
-        endpoint.DEMO_1_READ_COUNT, //
+        endpoint.DEMO_1_CRUD_READ_COUNT, //
         data: {"count": true},
       );
       row_total = int.parse(r.data.toString());
@@ -67,7 +69,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       final r = await dio.post(
-        endpoint.DEMO_1_READ_COUNT, //
+        endpoint.DEMO_1_CRUD_READ_COUNT, //
         data: {"count": true},
       );
       row_total = int.parse(r.data.toString());
@@ -98,8 +100,8 @@ class _Main_State extends State<Main_> {
       setState(() {});
 
       //
-      final r = await dio.post(
-        endpoint.DEMO_1_READ, //
+      tmp = await dio.post(
+        endpoint.DEMO_1_CRUD_READ, //
         data: {
           "key": DEFAULT_KEY, //
           "order": DEFAULT_ORDER, //
@@ -107,7 +109,7 @@ class _Main_State extends State<Main_> {
           "limit": DEFAULT_LIMIT_ROW,
         },
       );
-      final data = List<Map<String, dynamic>>.from(r.data);
+      final data = List<Map<String, dynamic>>.from(tmp.data);
 
       // Ignore a response from an earlier page request.
       if (!mounted || request_id != load_request_id) return;
@@ -122,12 +124,17 @@ class _Main_State extends State<Main_> {
         for (var d in data)
           PlutoRow(
             cells: {
-              for (var e in sm_demo_1.data.entries) //
-                e.key: PlutoCell(
-                  value: e.key.contains("password")
-                      ? "**********" //
-                      : data_to_cell(data: d[e.key], type: e.value["type"]),
-                ),
+              "index": PlutoCell(value: data.indexOf(d) + 1),
+              sm_demo_1.ID: PlutoCell(value: d[sm_demo_1.ID] ?? ""),
+              sm_demo_1.TEXT_1: PlutoCell(value: d[sm_demo_1.TEXT_1] ?? ""),
+              sm_demo_1.TEXT_2: PlutoCell(value: d[sm_demo_1.TEXT_2] ?? ""),
+              sm_demo_1.NUMBER_1: PlutoCell(value: d[sm_demo_1.NUMBER_1] ?? ""),
+              sm_demo_1.NUMBER_2: PlutoCell(value: d[sm_demo_1.NUMBER_2] ?? ""),
+              sm_demo_1.DATETIME_1: PlutoCell(value: d[sm_demo_1.DATETIME_1] ?? ""),
+              sm_demo_1.DATETIME_2: PlutoCell(value: d[sm_demo_1.DATETIME_2] ?? ""),
+              sm_demo_1.LOGIC_1: PlutoCell(value: d[sm_demo_1.LOGIC_1] ?? ""),
+              sm_demo_1.LOGIC_2: PlutoCell(value: d[sm_demo_1.LOGIC_2] ?? ""),
+              sm_demo_1.NOTE: PlutoCell(value: d[sm_demo_1.NOTE] ?? ""),
             },
           ),
       ]);
@@ -154,158 +161,156 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     return _layout([
       // menu
-      (() {
-        return Container(
-          height: 40, //
-          padding: EdgeInsets.all(1),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Create
-              Tooltip(
-                message: "បង្កើតថ្មី", //
-                child: InkWell(
-                  onTap: on_create,
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.add, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ),
+      Container(
+        height: 40, //
+        padding: EdgeInsets.all(1),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Create
+            Tooltip(
+              message: "បង្កើតថ្មី", //
+              child: InkWell(
+                onTap: on_create,
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.add, //
+                    size: 30,
+                    color: Colors.blue,
+                  ), //
                 ),
               ),
+            ),
 
-              // Read
-              Tooltip(
-                message: "មើល", //
-                child: InkWell(
-                  onTap: on_read,
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.visibility_outlined, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ),
+            // Read
+            Tooltip(
+              message: "មើល", //
+              child: InkWell(
+                //   onTap: on_read,
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.visibility_outlined, //
+                    size: 30,
+                    color: Colors.blue,
+                  ), //
                 ),
               ),
+            ),
 
-              // Update
-              Tooltip(
-                message: "កែ", //
-                child: InkWell(
-                  onTap: on_update,
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.edit_outlined, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ),
+            // Update
+            Tooltip(
+              message: "កែ", //
+              child: InkWell(
+                //   onTap: on_update,
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.edit_outlined, //
+                    size: 30,
+                    color: Colors.blue,
+                  ), //
                 ),
               ),
+            ),
 
-              // Delete
-              Tooltip(
-                message: "លុប", //
-                child: InkWell(
-                  onTap: on_delete,
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.delete_outline, //
-                      size: 30,
-                      color: Colors.red,
-                    ), //
-                  ),
+            // Delete
+            Tooltip(
+              message: "លុប", //
+              child: InkWell(
+                //   onTap: on_delete,
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.delete_outline, //
+                    size: 30,
+                    color: Colors.red,
+                  ), //
                 ),
               ),
+            ),
 
-              Spacer(),
+            Spacer(),
 
-              // filter
+            // filter
+            Tooltip(
+              message: is_filter ? "បិទច្រោះ" : "បើកច្រោះ", //
+              child: InkWell(
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  alignment: Alignment.center,
+                  child: Icon(
+                    is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
+                    size: 30,
+                    color: Colors.blue,
+                  ), //
+                ), //
+                onTap: () {
+                  is_filter = !is_filter;
+                  state_manager?.setShowColumnFilter(is_filter);
+
+                  // * លុប filter ពេលលាក់
+                  if (!is_filter) {
+                    state_manager?.setFilterWithFilterRows([]);
+                  }
+
+                  setState(() {});
+                },
+              ),
+            ),
+
+            // search
+            if (kDebugMode)
               Tooltip(
-                message: is_filter ? "បិទច្រោះ" : "បើកច្រោះ", //
+                message: "ស្វែងរក", //
                 child: InkWell(
                   child: Container(
                     width: 38,
                     height: 38,
                     alignment: Alignment.center,
                     child: Icon(
-                      is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
+                      Icons.search, //
                       size: 30,
                       color: Colors.blue,
                     ), //
                   ), //
                   onTap: () {
-                    is_filter = !is_filter;
-                    state_manager?.setShowColumnFilter(is_filter);
-
-                    // * លុប filter ពេលលាក់
-                    if (!is_filter) {
-                      state_manager?.setFilterWithFilterRows([]);
-                    }
-
-                    setState(() {});
+                    snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
                   },
                 ),
               ),
 
-              // search
-              if (kDebugMode)
-                Tooltip(
-                  message: "ស្វែងរក", //
-                  child: InkWell(
-                    child: Container(
-                      width: 38,
-                      height: 38,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.search, //
-                        size: 30,
-                        color: Colors.blue,
-                      ), //
-                    ), //
-                    onTap: () {
-                      snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
-                    },
-                  ),
-                ),
-
-              // refresh
-              Tooltip(
-                message: "មើលទិន្នន័យថ្មី", //
-                child: InkWell(
-                  onTap: on_refresh,
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.refresh, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ),
+            // refresh
+            Tooltip(
+              message: "មើលទិន្នន័យថ្មី", //
+              child: InkWell(
+                onTap: on_refresh,
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.refresh, //
+                    size: 30,
+                    color: Colors.blue,
+                  ), //
                 ),
               ),
-            ],
-          ),
-        );
-      })(),
+            ),
+          ],
+        ),
+      ),
 
       if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
@@ -314,18 +319,188 @@ class _Main_State extends State<Main_> {
         child: PlutoGrid(
           rows: [],
           columns: [
-            for (var e in sm_demo_1.data.entries)
-              PlutoColumn(
-                field: e.key, //
-                title: e.value["title"]!,
-                type: e.value["type"] == "number"
-                    ? PlutoColumnType.number(format: "#,##0.00") //
-                    : PlutoColumnType.text(),
-                hide: e.value["hide"]!,
-                width: 160,
-                enableEditingMode: false,
-              ),
-          ], //
+            PlutoColumn(
+              field: "index", //
+              title: "No.",
+              type: PlutoColumnType.number(),
+              width: WIDTH,
+              renderer: (rc) {
+                return Align(
+                  alignment: Alignment.center, //
+                  child: Text(
+                    rc.cell.value.toString(), //
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              },
+            ),
+            PlutoColumn(
+              field: sm_demo_1.ID, //
+              title: "ID",
+              type: PlutoColumnType.number(),
+              width: WIDTH,
+              hide: true, //
+            ),
+            PlutoColumn(
+              field: sm_demo_1.TEXT_1, //
+              title: "Text 1",
+              type: PlutoColumnType.text(),
+              width: WIDTH,
+              renderer: (rc) {
+                return Align(
+                  alignment: Alignment.center, //
+                  child: Text(
+                    rc.cell.value.toString(), //
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              },
+            ),
+            PlutoColumn(
+              field: sm_demo_1.TEXT_2, //
+              title: "Text 2",
+              type: PlutoColumnType.text(),
+              width: WIDTH,
+              renderer: (rc) {
+                String value = "";
+                if (rc.cell.value != null) value = rc.cell.value.toString();
+                return Align(
+                  alignment: Alignment.center, //
+                  child: Text(
+                    value, //
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              },
+            ),
+            PlutoColumn(
+              field: sm_demo_1.NUMBER_1, //
+              title: "Number 1",
+              type: PlutoColumnType.number(),
+              width: WIDTH,
+              renderer: (rc) {
+                return Align(
+                  alignment: Alignment.center, //
+                  child: Text(
+                    rc.cell.value.toString(), //
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              },
+            ),
+            PlutoColumn(
+              field: sm_demo_1.NUMBER_2, //
+              title: "Number 2",
+              type: PlutoColumnType.number(),
+              width: WIDTH,
+              renderer: (rc) {
+                return Align(
+                  alignment: Alignment.center, //
+                  child: Text(
+                    rc.cell.value.toString(), //
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              },
+            ),
+            PlutoColumn(
+              field: sm_demo_1.DATETIME_1, //
+              title: "Date Time 1",
+              type: PlutoColumnType.text(),
+              width: WIDTH,
+              renderer: (rc) {
+                String value = "";
+                if (rc.cell.value != null) {
+                  final tmp = DateTime.tryParse(rc.cell.value.toString());
+                  if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
+                }
+                return Align(
+                  alignment: Alignment.center, //
+                  child: Text(
+                    value, //
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              },
+            ),
+            PlutoColumn(
+              field: sm_demo_1.DATETIME_2, //
+              title: "Date Time 2",
+              type: PlutoColumnType.text(),
+              width: WIDTH,
+              renderer: (rc) {
+                String value = "";
+                if (rc.cell.value != null) {
+                  final tmp = DateTime.tryParse(rc.cell.value.toString());
+                  if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
+                }
+                return Align(
+                  alignment: Alignment.center, //
+                  child: Text(
+                    value, //
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              },
+            ),
+            PlutoColumn(
+              field: sm_demo_1.LOGIC_1, //
+              title: "Logic 1",
+              type: PlutoColumnType.text(),
+              width: WIDTH,
+              renderer: (rc) {
+                String value = "";
+                if (rc.cell.value != null) {
+                  if (rc.cell.value == true) value = "Yes";
+                  if (rc.cell.value == false) value = "No";
+                }
+                return Align(
+                  alignment: Alignment.center, //
+                  child: Text(
+                    value, //
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              },
+            ),
+            PlutoColumn(
+              field: sm_demo_1.LOGIC_2, //
+              title: "Logic 2",
+              type: PlutoColumnType.text(),
+              width: WIDTH,
+              renderer: (rc) {
+                String value = "";
+                if (rc.cell.value != null) {
+                  if (rc.cell.value == true) value = "Yes";
+                  if (rc.cell.value == false) value = "No";
+                }
+                return Align(
+                  alignment: Alignment.center, //
+                  child: Text(
+                    value, //
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              },
+            ),
+            PlutoColumn(
+              field: sm_demo_1.NOTE, //
+              title: "Note",
+              type: PlutoColumnType.text(),
+              width: WIDTH,
+              renderer: (rc) {
+                String value = "";
+                if (rc.cell.value != null) value = rc.cell.value.toString();
+                return Align(
+                  alignment: Alignment.center, //
+                  child: Text(
+                    value, //
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              },
+            ),
+          ],
           //
           configuration: PlutoGridConfiguration(
             scrollbar: PlutoGridScrollbarConfig(
@@ -508,14 +683,7 @@ class _Main_State extends State<Main_> {
   void on_create() async {
     try {
       //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => create.Main_(
-            //
-          ),
-        ),
-      );
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
       if (tmp == null) return;
 
       // * លុប sort + filter
@@ -537,169 +705,96 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  void on_read() async {
-    try {
-      //
-      final row = state_manager?.currentRow;
-      if (row == null) {
-        snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
-        return;
-      }
+  //   void on_read() async {
+  //     try {
+  //       //
+  //       final row = state_manager?.currentRow;
+  //       if (row == null) {
+  //         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
+  //         return;
+  //       }
 
-      //
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => read.Main_(
-            id: row.cells[sm_demo_1.ID]!.value.toString(), //
-          ),
-        ),
-      );
+  //       //
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => read.Main_(
+  //             id: row.cells[sm_demo_1.ID]!.value.toString(), //
+  //           ),
+  //         ),
+  //       );
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  void on_update() async {
-    try {
-      //
-      final row = state_manager?.currentRow;
-      if (row == null) {
-        snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
-        return;
-      }
+  //   void on_update() async {
+  //     try {
+  //       //
+  //       final row = state_manager?.currentRow;
+  //       if (row == null) {
+  //         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
+  //         return;
+  //       }
 
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => update.Main_(
-            id: row.cells[sm_demo_1.ID]!.value.toString(), //
-          ),
-        ),
-      );
-      if (tmp == null) return;
+  //       //
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => update.Main_(
+  //             id: row.cells[sm_demo_1.ID]!.value.toString(), //
+  //           ),
+  //         ),
+  //       );
+  //       if (tmp == null) return;
 
-      //
-      load_page(page);
+  //       //
+  //       load_page(page);
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  void on_delete() async {
-    try {
-      //
-      final row = state_manager?.currentRow;
-      if (row == null) {
-        snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
-        return;
-      }
+  //   void on_delete() async {
+  //     try {
+  //       //
+  //       final row = state_manager?.currentRow;
+  //       if (row == null) {
+  //         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
+  //         return;
+  //       }
 
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => delete.Main_(
-            id: row.cells[sm_demo_1.ID]!.value.toString(), //
-          ),
-        ),
-      );
-      if (tmp == null) return;
+  //       //
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => delete.Main_(
+  //             id: row.cells[sm_demo_1.ID]!.value.toString(), //
+  //           ),
+  //         ),
+  //       );
+  //       if (tmp == null) return;
 
-      //
-      row_total = row_total - 1;
-      state_manager?.removeCurrentRow();
+  //       //
+  //       row_total = row_total - 1;
+  //       state_manager?.removeCurrentRow();
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  dynamic cell_to_data({
-    dynamic data, //
-    String? type, //
-  }) {
-    //
-    if (type == "id") {
-      if (data == "") return null;
-      if (data != "") return data.toString();
-    }
-
-    //
-    if (type == "string") {
-      if (data == "") return null;
-      if (data != "") return data.toString();
-    }
-
-    //
-    if (type == "number") {
-      if (data == "") return null;
-      if (data != "") return double.tryParse(data.toString());
-    }
-
-    //
-    if (type == "date-time") {
-      if (data == "") return null;
-      if (data != "") {
-        final tmp = DateFormat(DEFAULT_DATE_FORMAT).tryParse(data.toString());
-        if (tmp != null) return tmp.toIso8601String();
-      }
-    }
-
-    if (type == "boolean") {
-      if (data == "") return null;
-      if (data == "Yes") return true;
-      if (data == "No") return false;
-    }
-
-    return null;
-  }
-
-  String data_to_cell({
-    dynamic data, //
-    String? type, //
-  }) {
-    //
-    if (type == "id") {
-      if (data != null) return data.toString();
-    }
-
-    //
-    if (type == "string") {
-      if (data != null) return data.toString();
-    }
-
-    //
-    if (type == "number") {
-      if (data != null) return data.toString();
-    }
-
-    //
-    if (type == "date-time") {
-      if (data != null) {
-        final tmp = DateTime.tryParse(data.toString());
-        if (tmp != null) return DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
-      }
-    }
-
-    //
-    if (type == "boolean") {
-      if (data != null) {
-        if (data == true) return "Yes";
-        if (data == false) return "No";
-      }
-    }
-
-    return "";
+  int get total_pages {
+    if (row_total == 0) return 1;
+    return (row_total + DEFAULT_LIMIT_ROW - 1) ~/ DEFAULT_LIMIT_ROW;
   }
 
   //

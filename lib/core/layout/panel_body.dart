@@ -9,7 +9,7 @@ import "package:speanmeas/features/dashboard/front_desk/main.dart" as d_front_de
 import "package:speanmeas/features/dashboard/mini_bar/main.dart" as d_mini_bar;
 
 // database
-import "package:speanmeas/features/database/front_desk/main.dart" as front_desk;
+import "package:speanmeas/features/database/.front_desk/main.dart" as front_desk;
 import "package:speanmeas/features/database/guest/main.dart" as guest;
 import "package:speanmeas/features/database/room/main.dart" as room;
 import "package:speanmeas/features/database/user/main.dart" as user;

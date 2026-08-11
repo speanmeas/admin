@@ -4,7 +4,7 @@ Future<DateTime?> datetime_picker(
   BuildContext context, { //
   DateTime? initial_datetime,
 }) async {
-  // Select Date
+  // select date
   final DateTime? picked_date = await showDatePicker(
     context: context, //
     initialDate: initial_datetime ?? DateTime.now(),
@@ -14,16 +14,17 @@ Future<DateTime?> datetime_picker(
 
   if (picked_date == null) return null;
 
-  // Select Time
+  // select time
+  final initial_time = initial_datetime != null ? TimeOfDay.fromDateTime(initial_datetime) : TimeOfDay(hour: 12, minute: 0);
   final TimeOfDay? picked_time = await showTimePicker(
     context: context, //
-    initialTime: TimeOfDay(hour: 12, minute: 0),
+    initialTime: initial_time,
     // initialTime: TimeOfDay.now(),
   );
 
   if (picked_time == null) return null;
 
-  // Combine Date + Time
+  // combine date and time
   final DateTime picked_datetime = DateTime(
     picked_date.year, //
     picked_date.month,
@@ -33,13 +34,6 @@ Future<DateTime?> datetime_picker(
   );
 
   return picked_datetime;
-}
-
-class Datetime_Picker_ extends StatefulWidget {
-  const Datetime_Picker_({super.key});
-
-  @override
-  State<Datetime_Picker_> createState() => _Datetime_Picker_State();
 }
 
 class _Datetime_Picker_State extends State<Datetime_Picker_> {
@@ -71,6 +65,13 @@ class _Datetime_Picker_State extends State<Datetime_Picker_> {
       ),
     );
   }
+}
+
+class Datetime_Picker_ extends StatefulWidget {
+  const Datetime_Picker_({super.key});
+
+  @override
+  State<Datetime_Picker_> createState() => _Datetime_Picker_State();
 }
 
 void main() {

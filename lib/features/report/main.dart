@@ -80,6 +80,14 @@ class _Main_State extends State<Main_> {
       for (var d in tmp.data) {
         total_income += d[sm_front_desk.ROOM_PAY_TOTAL] ?? 0.0;
         total_income += d[sm_front_desk.REVENUE_PAY_TOTAL] ?? 0.0;
+
+        // * បូកបញ្ចូលចំណូល mini bar ពីបញ្ជី pay_mini_bar នៃ record នីមួយៗ
+        final pay_mini_bar = d["pay_mini_bar"];
+        if (pay_mini_bar is List) {
+          for (var mb in pay_mini_bar) {
+            if (mb is Map) total_income += (mb["price_total"] as num?)?.toDouble() ?? 0.0;
+          }
+        }
       }
 
       setState(() {});

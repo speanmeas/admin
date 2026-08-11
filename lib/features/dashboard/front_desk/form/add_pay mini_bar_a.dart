@@ -1,8 +1,12 @@
 import "package:flutter/material.dart";
 
+import "package:speanmeas/core/endpoint.g.dart";
+import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/mini_bar.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/utility/dio.dart";
+import "package:speanmeas/core/widget/snackbar.dart";
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -41,11 +45,13 @@ class Charge_ extends StatefulWidget {
   //
   final dynamic room;
   final List<Map<String, dynamic>> catalog;
+  final Map<dynamic, int> sold; // * ចំនួនដែលបានលក់/គិតប្រាក់រួចហើយ (item id → qty)
   //
   const Charge_({
     super.key, //
     required this.room, //
     required this.catalog, //
+    this.sold = const {}, //
   });
   //
   @override
@@ -57,6 +63,20 @@ class _Charge_State extends State<Charge_> {
   //
   // * catalog item id → qty
   final map_qty = <dynamic, int>{};
+
+  // * ប្រអប់ស្វែងរកទំនិញ mini bar
+  final c_search = TextEditingController();
+  String q = "";
+
+  //
+  // * បញ្ជីទំនិញបន្ទាប់ពីត្រងតាមពាក្យស្វែងរក (ឈ្មោះ)
+  List<Map<String, dynamic>> get _catalog_filtered => q.isEmpty ? widget.catalog : widget.catalog.where((item) => "${item[sm_mini_bar.NAME]}".toLowerCase().contains(q)).toList();
+
+  @override
+  void dispose() {
+    c_search.dispose();
+    super.dispose();
+  }
 
   //
   // * សរុបតម្លៃទំនិញដែលបានជ្រើស
@@ -77,6 +97,8 @@ class _Charge_State extends State<Charge_> {
   //
   // * កំណត់ចំនួនទំនិញ
   void _set_qty(dynamic id, int qty) {
+    final remaining = _remaining(id);
+    if (remaining != null && qty > remaining) qty = remaining; // * កំណត់មិនឲ្យលើសស្តុក
     setState(() {
       if (qty <= 0) {
         map_qty.remove(id);
@@ -87,17 +109,84 @@ class _Charge_State extends State<Charge_> {
   }
 
   //
-  // * បញ្ជាក់ការបន្ថែមទំនិញ (pop ត្រឡប់បញ្ជីទំនិញដែលបានជ្រើស)
-  void on_confirm() {
+  // * ចំនួនស្តុកដែលនៅសល់អាចលក់បាន (stock - បានលក់ហើយ)
+  // * (stock គ្មានតម្លៃ = គ្មានដែនកំណត់)
+  int? _remaining(dynamic id) {
+    dynamic stock;
+    for (var item in widget.catalog) {
+      if (item[sm_mini_bar.ID] == id) {
+        stock = item[sm_mini_bar.STOCK];
+        break;
+      }
+    }
+    if (stock == null) return null;
+    final remain = (stock as num).toInt() - (widget.sold[id] ?? 0);
+    return remain < 0 ? 0 : remain;
+  }
+
+  //
+  // * បញ្ជាក់ការបន្ថែមទំនិញ
+  // * (បើមានបន្ទប់៖ បញ្ជូនទំនិញនីមួយៗទៅ Server តាម /front_desk/form/add_pay_mini_bar
+  // *  walk-in (គ្មានបន្ទប់)៖ រក្សាទុកទាំងអស់ទៅ Server តាម /front_desk/form/add_walkin_mini_bar
+  // *  ដើម្បីឲ្យ report រាប់តាមថ្ងៃ)
+  void on_confirm() async {
     final charges = <Map<String, dynamic>>[];
     for (var item in widget.catalog) {
       final qty = map_qty[item[sm_mini_bar.ID]] ?? 0;
       if (qty > 0) {
         final price = (item[sm_mini_bar.PRICE] as num).toDouble();
-        charges.add({sm_mini_bar.NAME: item[sm_mini_bar.NAME], sm_mini_bar.PRICE: price, "qty": qty, "total": price * qty});
+        charges.add({
+          sm_mini_bar.ID: item[sm_mini_bar.ID], //
+          sm_mini_bar.NAME: item[sm_mini_bar.NAME], //
+          sm_mini_bar.PRICE: price, //
+          "qty": qty, //
+          "total": price * qty, //
+        });
       }
     }
-    Navigator.pop(context, charges);
+
+    try {
+      // * គិតប្រាក់ទៅបន្ទប់៖ បញ្ជូនទំនិញនីមួយៗទៅកាន់ Server
+      if (widget.room != null) {
+        final front_desk_id = widget.room[sm_room.FRONT_DESK_ID];
+        for (var l in charges) {
+          await dio.post(
+            endpoint.FRONT_DESK_FORM_ADD_PAY_MINI_BAR,
+            data: {
+              sm_front_desk.ID: front_desk_id, //
+              sm_mini_bar.NAME: l[sm_mini_bar.NAME], //
+              "quantity": l["qty"], //
+              sm_mini_bar.PRICE: l[sm_mini_bar.PRICE], //
+              "mini_bar_note": "", //
+            },
+          );
+        }
+      }
+      // * លក់ Walk-in៖ រក្សាទុកទំនិញទាំងអស់ទៅក្នុង front desk
+      // * (បង្កើត record ថ្មីគ្មានបន្ទប់/ភ្ញៀវ ដើម្បីឲ្យ report រាប់តាមថ្ងៃ)
+      else {
+        await dio.post(
+          endpoint.FRONT_DESK_FORM_ADD_WALKIN_MINI_BAR,
+          data: {
+            "items": [
+              for (var l in charges) //
+                {
+                  sm_mini_bar.NAME: l[sm_mini_bar.NAME], //
+                  "quantity": l["qty"], //
+                  sm_mini_bar.PRICE: l[sm_mini_bar.PRICE], //
+                },
+            ],
+            "mini_bar_note": "", //
+          },
+        );
+      }
+
+      Navigator.pop(context, charges);
+      //
+    } catch (e, st) {
+      print(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
   }
 
   @override
@@ -134,6 +223,18 @@ class _Charge_State extends State<Charge_> {
           ],
         ),
 
+      // * ប្រអប់ស្វែងរកទំនិញ mini bar
+      TextField(
+        controller: c_search,
+        onChanged: (v) => setState(() => q = v.trim().toLowerCase()),
+        decoration: InputDecoration(
+          hintText: "ស្វែងរកទំនិញ...", //
+          prefixIcon: Icon(Icons.search), //
+          isDense: true, //
+          border: OutlineInputBorder(), //
+        ),
+      ),
+
       Divider(height: 1, color: Colors.grey), //
       // * បញ្ជីទំនិញ mini bar
       if (widget.catalog.isEmpty)
@@ -145,12 +246,22 @@ class _Charge_State extends State<Charge_> {
             style: TextStyle(color: Colors.red),
           ),
         )
+      else if (_catalog_filtered.isEmpty)
+        Container(
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1)),
+          child: Text(
+            "រកមិនឃើញទំនិញ \"$q\"", //
+            style: TextStyle(color: Colors.red),
+          ),
+        )
       else
-        for (var item in widget.catalog)
+        for (var item in _catalog_filtered)
           (() {
             final item_id = item[sm_mini_bar.ID];
             final qty = map_qty[item_id] ?? 0;
             final price = (item[sm_mini_bar.PRICE] as num).toDouble();
+            final remaining = _remaining(item_id);
             return Container(
               padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
               decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1)),
@@ -163,7 +274,12 @@ class _Charge_State extends State<Charge_> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text("${item[sm_mini_bar.NAME]}", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                        Text("$price \$", style: TextStyle(fontSize: 14, color: Colors.blue)),
+                        Text("${price.toStringAsFixed(2)} \$", style: TextStyle(fontSize: 14, color: Colors.blue)),
+                        if (remaining != null)
+                          Text(
+                            "Remaining: $remaining", //
+                            style: TextStyle(fontSize: 12, color: remaining == 0 ? Colors.red : Colors.green),
+                          ),
                       ],
                     ),
                   ),
@@ -185,7 +301,7 @@ class _Charge_State extends State<Charge_> {
                   ),
 
                   IconButton(
-                    onPressed: () => _set_qty(item_id, qty + 1), //
+                    onPressed: remaining == null || qty < remaining ? () => _set_qty(item_id, qty + 1) : null, //
                     icon: Icon(Icons.add_circle_outline),
                     color: Colors.green, //
                   ),
