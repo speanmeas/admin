@@ -3,15 +3,14 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/theme/theme_data.dart";
 
-class _Boolean_PickerState extends State<Boolean_Picker> {
+class _Picker_BooleanState extends State<Picker_Boolean> {
   //
   final controller = TextEditingController();
 
-  void init() async {
+  void init() {
     if (widget.initial != null) {
       if (widget.initial == true) controller.text = "Yes";
       if (widget.initial == false) controller.text = "No";
-      widget.onChanged?.call(widget.initial);
       setState(() {});
     }
   }
@@ -63,8 +62,8 @@ class _Boolean_PickerState extends State<Boolean_Picker> {
   }
 }
 
-class Boolean_Picker extends StatefulWidget {
-  const Boolean_Picker({
+class Picker_Boolean extends StatefulWidget {
+  const Picker_Boolean({
     super.key, //
     this.initial,
     this.title, //
@@ -76,7 +75,7 @@ class Boolean_Picker extends StatefulWidget {
   final Function(bool?)? onChanged;
 
   @override
-  State<Boolean_Picker> createState() => _Boolean_PickerState();
+  State<Picker_Boolean> createState() => _Picker_BooleanState();
 }
 
 void main() {
@@ -87,7 +86,7 @@ void main() {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Boolean_Picker(
+            Picker_Boolean(
               title: "Boolean Value:",
               initial: true,
               onChanged: (v) {

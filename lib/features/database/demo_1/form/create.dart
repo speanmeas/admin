@@ -1,20 +1,14 @@
-import "package:intl/intl.dart";
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
-import "package:flutter_typeahead/flutter_typeahead.dart";
 
-import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/dialog/datetime.dart";
-import "package:speanmeas/core/widget/boolean_picker.dart";
-import "package:speanmeas/core/widget/datetime_picker.dart";
-import "package:speanmeas/core/widget/number_input.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/widget/show_data.dart";
+import "package:speanmeas/core/widget/picker_boolean.dart";
+import "package:speanmeas/core/widget/picker_datetime.dart";
+import "package:speanmeas/core/widget/input_text.dart";
+import "package:speanmeas/core/widget/input_number.dart";
 import "package:speanmeas/core/schema/demo_1.g.dart";
-import "package:speanmeas/core/widget/text_input.dart";
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -55,16 +49,6 @@ class _Main_State extends State<Main_> {
   //
   dynamic tmp; // ignore: unused
 
-  final c_text_1 = TextEditingController();
-  final c_text_2 = TextEditingController();
-  final c_number_1 = TextEditingController();
-  final c_number_2 = TextEditingController();
-  final c_datetime_1 = TextEditingController();
-  final c_datetime_2 = TextEditingController();
-  final c_logic_1 = TextEditingController();
-  final c_logic_2 = TextEditingController();
-  final c_note = TextEditingController();
-
   String? text_1;
   String? text_2;
   double? number_1;
@@ -73,12 +57,7 @@ class _Main_State extends State<Main_> {
   DateTime? datetime_2;
   bool? logic_1;
   bool? logic_2;
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
+  String? note;
 
   void init() async {
     //
@@ -89,7 +68,7 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     return _layout([
       //
-      Text_Input(
+      Input_Text(
         initial: text_1, //
         title: "Text 1:", //
         onChanged: (v) {
@@ -100,7 +79,7 @@ class _Main_State extends State<Main_> {
       ),
 
       //
-      Text_Input(
+      Input_Text(
         initial: text_2, //
         title: "Text 2:", //
         onChanged: (v) {
@@ -111,7 +90,7 @@ class _Main_State extends State<Main_> {
       ),
 
       //
-      Number_Input(
+      Input_Number(
         initial: number_1, //
         title: "Number 1:", //
         onChanged: (v) {
@@ -122,7 +101,7 @@ class _Main_State extends State<Main_> {
       ),
 
       //
-      Number_Input(
+      Input_Number(
         initial: number_2, //
         title: "Number 2:", //
         onChanged: (v) {
@@ -132,7 +111,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      Datetime_Picker(
+      Picker_Datetime(
         initial: datetime_1, //
         title: "Datetime 1:", //
         onChanged: (v) {
@@ -142,7 +121,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      Datetime_Picker(
+      Picker_Datetime(
         initial: datetime_2, //
         title: "Datetime 2:", //
         onChanged: (v) {
@@ -152,7 +131,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      Boolean_Picker(
+      Picker_Boolean(
         initial: logic_1, //
         title: "Logic 1:", //
         onChanged: (v) {
@@ -162,7 +141,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      Boolean_Picker(
+      Picker_Boolean(
         initial: logic_2, //
         title: "Logic 2:", //
         onChanged: (v) {
@@ -172,16 +151,15 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      //
-      TextField(
-        controller: c_note,
-        maxLines: 4,
-        decoration: InputDecoration(
-          labelText: "Note:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-        ),
-        onChanged: (v) => setState(() {}),
+      Input_Text(
+        initial: null, //
+        title: "Note:", //
+        maxLines: 4, //
+        onChanged: (v) {
+          note = v ?? "";
+          print(note);
+          setState(() {});
+        },
       ),
 
       //
@@ -202,23 +180,15 @@ class _Main_State extends State<Main_> {
       tmp = await dio.post(
         endpoint.DEMO_1_CRUD_CREATE, //
         data: {
-          sm_demo_1.TEXT_1: c_text_1.text.trim(),
-          sm_demo_1.TEXT_2: c_text_2.text.trim(),
-          sm_demo_1.NUMBER_1: double.tryParse(c_number_1.text.trim()),
-          sm_demo_1.NUMBER_2: double.tryParse(c_number_2.text.trim()),
-          sm_demo_1.DATETIME_1: c_datetime_1.text.trim(),
-          sm_demo_1.DATETIME_2: c_datetime_2.text.trim(),
-          sm_demo_1.LOGIC_1: c_logic_1.text.trim() == "Yes"
-              ? true
-              : c_logic_1.text.trim() == "No"
-              ? false
-              : null,
-          sm_demo_1.LOGIC_2: c_logic_2.text.trim() == "Yes"
-              ? true
-              : c_logic_2.text.trim() == "No"
-              ? false
-              : null,
-          sm_demo_1.NOTE: c_note.text.trim(),
+          sm_demo_1.TEXT_1: text_1,
+          sm_demo_1.TEXT_2: text_2,
+          sm_demo_1.NUMBER_1: number_1,
+          sm_demo_1.NUMBER_2: number_2,
+          sm_demo_1.DATETIME_1: datetime_1?.toIso8601String(),
+          sm_demo_1.DATETIME_2: datetime_2?.toIso8601String(),
+          sm_demo_1.LOGIC_1: logic_1,
+          sm_demo_1.LOGIC_2: logic_2,
+          sm_demo_1.NOTE: note, //
         },
       );
 
@@ -234,6 +204,14 @@ class _Main_State extends State<Main_> {
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  //
 }
 
 class Main_ extends StatefulWidget {

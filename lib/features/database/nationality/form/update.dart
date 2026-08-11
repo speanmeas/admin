@@ -9,7 +9,7 @@ import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/dialog/datetime.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/widget/show_data.dart";
+import "package:speanmeas/core/widget/showdata.dart";
 
 import "package:speanmeas/core/schema/nationality.g.dart";
 

@@ -4,17 +4,20 @@ import "package:flutter/foundation.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/config.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart";
+import "package:speanmeas/core/widget/menu_button_icon.dart";
+import "package:speanmeas/core/widget/menu_button_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/schema/demo_1.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/dialog/select_page.dart";
+import "package:speanmeas/core/schema/demo_1.g.dart";
 
 import "form/create.dart" as create;
-// import "form/read.dart" as read;
-// import "form/update.dart" as update;
-// import "form/delete.dart" as delete;
+import "form/read.dart" as read;
+import "form/update.dart" as update;
+import "form/delete.dart" as delete;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -27,15 +30,12 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-  PlutoGridStateManager? state_manager;
   int page = 1;
   int row_total = 0;
   bool is_loading = true;
   bool is_filter = false;
   int load_request_id = 0;
-
-  dynamic data;
-  final double WIDTH = 120;
+  PlutoGridStateManager? state_manager;
 
   @override
   void initState() {
@@ -47,11 +47,11 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       //
-      final r = await dio.post(
+      tmp = await dio.post(
         endpoint.DEMO_1_CRUD_READ_COUNT, //
         data: {"count": true},
       );
-      row_total = int.parse(r.data.toString());
+      row_total = int.parse(tmp.data.toString());
 
       //
       load_page(page);
@@ -63,7 +63,6 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
   //
   void on_refresh() async {
     try {
@@ -168,145 +167,64 @@ class _Main_State extends State<Main_> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Create
-            Tooltip(
-              message: "បង្កើតថ្មី", //
-              child: InkWell(
-                onTap: on_create,
-                child: Container(
-                  width: 38,
-                  height: 38,
-                  alignment: Alignment.center,
-                  child: Icon(
-                    Icons.add, //
-                    size: 30,
-                    color: Colors.blue,
-                  ), //
-                ),
-              ),
+            // create
+            Menu_Button_Icon(
+              tip: t("Create"), //
+              icon: Icons.add,
+              onPressed: on_create,
             ),
 
-            // Read
-            Tooltip(
-              message: "មើល", //
-              child: InkWell(
-                //   onTap: on_read,
-                child: Container(
-                  width: 38,
-                  height: 38,
-                  alignment: Alignment.center,
-                  child: Icon(
-                    Icons.visibility_outlined, //
-                    size: 30,
-                    color: Colors.blue,
-                  ), //
-                ),
-              ),
+            // read
+            Menu_Button_Icon(
+              tip: t("Read"), //
+              icon: Icons.visibility_outlined,
+              onPressed: on_read,
             ),
 
-            // Update
-            Tooltip(
-              message: "កែ", //
-              child: InkWell(
-                //   onTap: on_update,
-                child: Container(
-                  width: 38,
-                  height: 38,
-                  alignment: Alignment.center,
-                  child: Icon(
-                    Icons.edit_outlined, //
-                    size: 30,
-                    color: Colors.blue,
-                  ), //
-                ),
-              ),
+            // update
+            Menu_Button_Icon(
+              tip: t("Update"), //
+              icon: Icons.edit_outlined,
+              onPressed: on_update,
             ),
 
-            // Delete
-            Tooltip(
-              message: "លុប", //
-              child: InkWell(
-                //   onTap: on_delete,
-                child: Container(
-                  width: 38,
-                  height: 38,
-                  alignment: Alignment.center,
-                  child: Icon(
-                    Icons.delete_outline, //
-                    size: 30,
-                    color: Colors.red,
-                  ), //
-                ),
-              ),
+            // delete
+            Menu_Button_Icon(
+              tip: t("Delete"), //
+              icon: Icons.delete_outline,
+              onPressed: on_delete,
+              color: Colors.red,
             ),
 
             Spacer(),
 
             // filter
-            Tooltip(
-              message: is_filter ? "បិទច្រោះ" : "បើកច្រោះ", //
-              child: InkWell(
-                child: Container(
-                  width: 38,
-                  height: 38,
-                  alignment: Alignment.center,
-                  child: Icon(
-                    is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
-                    size: 30,
-                    color: Colors.blue,
-                  ), //
-                ), //
-                onTap: () {
-                  is_filter = !is_filter;
-                  state_manager?.setShowColumnFilter(is_filter);
-
-                  // * លុប filter ពេលលាក់
-                  if (!is_filter) {
-                    state_manager?.setFilterWithFilterRows([]);
-                  }
-
-                  setState(() {});
-                },
-              ),
+            Menu_Button_Icon(
+              tip: is_filter ? t("Close Filter") : t("Open Filter"), //
+              icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
+              onPressed: () {
+                is_filter = !is_filter;
+                state_manager?.setShowColumnFilter(is_filter);
+                if (!is_filter) state_manager?.setFilterWithFilterRows([]);
+                setState(() {});
+              },
             ),
 
             // search
             if (kDebugMode)
-              Tooltip(
-                message: "ស្វែងរក", //
-                child: InkWell(
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.search, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ), //
-                  onTap: () {
-                    snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
-                  },
-                ),
+              Menu_Button_Icon(
+                tip: "Search", //
+                icon: Icons.search,
+                onPressed: () {
+                  snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
+                },
               ),
 
             // refresh
-            Tooltip(
-              message: "មើលទិន្នន័យថ្មី", //
-              child: InkWell(
-                onTap: on_refresh,
-                child: Container(
-                  width: 38,
-                  height: 38,
-                  alignment: Alignment.center,
-                  child: Icon(
-                    Icons.refresh, //
-                    size: 30,
-                    color: Colors.blue,
-                  ), //
-                ),
-              ),
+            Menu_Button_Icon(
+              tip: t("Refresh"), //
+              icon: Icons.refresh,
+              onPressed: on_refresh,
             ),
           ],
         ),
@@ -317,191 +235,8 @@ class _Main_State extends State<Main_> {
       // pluto table
       Expanded(
         child: PlutoGrid(
-          rows: [],
-          columns: [
-            PlutoColumn(
-              field: "index", //
-              title: "No.",
-              type: PlutoColumnType.number(),
-              width: WIDTH,
-              renderer: (rc) {
-                return Align(
-                  alignment: Alignment.center, //
-                  child: Text(
-                    rc.cell.value.toString(), //
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              },
-            ),
-            PlutoColumn(
-              field: sm_demo_1.ID, //
-              title: "ID",
-              type: PlutoColumnType.number(),
-              width: WIDTH,
-              hide: true, //
-            ),
-            PlutoColumn(
-              field: sm_demo_1.TEXT_1, //
-              title: "Text 1",
-              type: PlutoColumnType.text(),
-              width: WIDTH,
-              renderer: (rc) {
-                return Align(
-                  alignment: Alignment.center, //
-                  child: Text(
-                    rc.cell.value.toString(), //
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              },
-            ),
-            PlutoColumn(
-              field: sm_demo_1.TEXT_2, //
-              title: "Text 2",
-              type: PlutoColumnType.text(),
-              width: WIDTH,
-              renderer: (rc) {
-                String value = "";
-                if (rc.cell.value != null) value = rc.cell.value.toString();
-                return Align(
-                  alignment: Alignment.center, //
-                  child: Text(
-                    value, //
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              },
-            ),
-            PlutoColumn(
-              field: sm_demo_1.NUMBER_1, //
-              title: "Number 1",
-              type: PlutoColumnType.number(),
-              width: WIDTH,
-              renderer: (rc) {
-                return Align(
-                  alignment: Alignment.center, //
-                  child: Text(
-                    rc.cell.value.toString(), //
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              },
-            ),
-            PlutoColumn(
-              field: sm_demo_1.NUMBER_2, //
-              title: "Number 2",
-              type: PlutoColumnType.number(),
-              width: WIDTH,
-              renderer: (rc) {
-                return Align(
-                  alignment: Alignment.center, //
-                  child: Text(
-                    rc.cell.value.toString(), //
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              },
-            ),
-            PlutoColumn(
-              field: sm_demo_1.DATETIME_1, //
-              title: "Date Time 1",
-              type: PlutoColumnType.text(),
-              width: WIDTH,
-              renderer: (rc) {
-                String value = "";
-                if (rc.cell.value != null) {
-                  final tmp = DateTime.tryParse(rc.cell.value.toString());
-                  if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
-                }
-                return Align(
-                  alignment: Alignment.center, //
-                  child: Text(
-                    value, //
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              },
-            ),
-            PlutoColumn(
-              field: sm_demo_1.DATETIME_2, //
-              title: "Date Time 2",
-              type: PlutoColumnType.text(),
-              width: WIDTH,
-              renderer: (rc) {
-                String value = "";
-                if (rc.cell.value != null) {
-                  final tmp = DateTime.tryParse(rc.cell.value.toString());
-                  if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
-                }
-                return Align(
-                  alignment: Alignment.center, //
-                  child: Text(
-                    value, //
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              },
-            ),
-            PlutoColumn(
-              field: sm_demo_1.LOGIC_1, //
-              title: "Logic 1",
-              type: PlutoColumnType.text(),
-              width: WIDTH,
-              renderer: (rc) {
-                String value = "";
-                if (rc.cell.value != null) {
-                  if (rc.cell.value == true) value = "Yes";
-                  if (rc.cell.value == false) value = "No";
-                }
-                return Align(
-                  alignment: Alignment.center, //
-                  child: Text(
-                    value, //
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              },
-            ),
-            PlutoColumn(
-              field: sm_demo_1.LOGIC_2, //
-              title: "Logic 2",
-              type: PlutoColumnType.text(),
-              width: WIDTH,
-              renderer: (rc) {
-                String value = "";
-                if (rc.cell.value != null) {
-                  if (rc.cell.value == true) value = "Yes";
-                  if (rc.cell.value == false) value = "No";
-                }
-                return Align(
-                  alignment: Alignment.center, //
-                  child: Text(
-                    value, //
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              },
-            ),
-            PlutoColumn(
-              field: sm_demo_1.NOTE, //
-              title: "Note",
-              type: PlutoColumnType.text(),
-              width: WIDTH,
-              renderer: (rc) {
-                String value = "";
-                if (rc.cell.value != null) value = rc.cell.value.toString();
-                return Align(
-                  alignment: Alignment.center, //
-                  child: Text(
-                    value, //
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              },
-            ),
-          ],
-          //
+          rows: [], //
+          columns: columns, //
           configuration: PlutoGridConfiguration(
             scrollbar: PlutoGridScrollbarConfig(
               scrollbarThickness: 12, //
@@ -524,159 +259,99 @@ class _Main_State extends State<Main_> {
       ),
 
       // footer
-      (() {
-        return Container(
-          height: 40, //
-          alignment: Alignment.topCenter,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(width: 100),
+      Container(
+        height: 40, //
+        alignment: Alignment.topCenter,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: 120),
 
-              Spacer(),
+            Spacer(),
 
-              // * ត្រលប់ទៅទំព័រដំបូង
-              Tooltip(
-                message: "ទៅទំព័រដំបូង", //
-                child: InkWell(
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.first_page, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ), //
-                  onTap: () {
-                    if (page == 1) return;
-                    page = 1;
-                    load_page(page);
-                  },
+            // * ត្រលប់ទៅទំព័រដំបូង
+            Menu_Button_Icon(
+              tip: t("First Page"), //
+              icon: Icons.first_page,
+              onPressed: () {
+                if (page == 1) return;
+                page = 1;
+                load_page(page);
+              },
+            ),
+
+            // previous page
+            Menu_Button_Icon(
+              tip: t("Previous Page"), //
+              icon: Icons.navigate_before,
+              onPressed: () {
+                if (page == 1) return;
+                page = page - 1;
+                load_page(page);
+              },
+            ),
+
+            // select page
+            Menu_Button_Text(
+              tip: t("Select Page"), //
+              text: "$page / $total_pages", //
+              onPressed: () async {
+                final v = await select_page(
+                  context, //
+                  page: page,
+                  row_total: row_total,
+                  limit: DEFAULT_LIMIT_ROW,
+                );
+                if (v == null) return;
+                page = v;
+                load_page(page);
+              },
+            ),
+
+            // next page
+            Menu_Button_Icon(
+              tip: t("Next Page"), //
+              icon: Icons.navigate_next,
+              onPressed: () {
+                if (page == total_pages) return;
+                page = page + 1;
+                load_page(page);
+              },
+            ),
+
+            // last page
+            Menu_Button_Icon(
+              tip: t("Last Page"), //
+              icon: Icons.last_page,
+              onPressed: () {
+                if (page == total_pages) return;
+                page = total_pages;
+                load_page(page);
+              },
+            ),
+
+            Spacer(),
+
+            // total row
+            Container(
+              height: 40,
+              padding: EdgeInsets.only(right: 16),
+              alignment: Alignment.center,
+              child: Text(
+                "${state_manager?.rows.length} Rows", //
+                style: TextStyle(
+                  fontSize: 18, //
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-              ),
+              ), //
+            ),
 
-              // previous page
-              Tooltip(
-                message: "ទៅទំព័រមុន", //
-                child: InkWell(
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.navigate_before, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ), //
-                  onTap: () {
-                    if (page == 1) return;
-                    page = page - 1;
-                    load_page(page);
-                  },
-                ),
-              ),
-
-              // select page
-              Tooltip(
-                message: "ជ្រើសទំព័រ", //
-                child: InkWell(
-                  child: Container(
-                    height: 38,
-                    padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    alignment: Alignment.center,
-                    child: Text(
-                      "$page / $total_pages", //
-                      style: TextStyle(
-                        fontSize: 18, //
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ), //
-                  ), //
-                  onTap: () async {
-                    final v = await select_page(
-                      context, //
-                      page: page,
-                      row_total: row_total,
-                      limit: DEFAULT_LIMIT_ROW,
-                    );
-                    if (v == null) return;
-                    page = v;
-                    load_page(page);
-                  }, //
-                ),
-              ),
-
-              // next page
-              Tooltip(
-                message: "ទៅទំព័របន្ទាប់",
-                child: InkWell(
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.navigate_next, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ), //
-                  onTap: () {
-                    if (page == total_pages) return;
-                    page = page + 1;
-                    load_page(page);
-                  },
-                ),
-              ),
-
-              // last page
-              Tooltip(
-                message: "ទៅទំព័រចុងក្រោយ",
-                child: InkWell(
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.last_page, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ), //
-                  onTap: () {
-                    if (page == total_pages) return;
-                    page = total_pages;
-                    load_page(page);
-                  },
-                ),
-              ),
-
-              Spacer(),
-
-              // total row
-              Container(
-                height: 40,
-                padding: EdgeInsets.only(right: 8),
-                alignment: Alignment.center,
-                child: Text(
-                  "${state_manager?.rows.length} Rows", //
-                  style: TextStyle(
-                    fontSize: 18, //
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ), //
-              ),
-
-              SizedBox(width: 4),
-            ],
-          ),
-        );
-      })(),
+            SizedBox(width: 4),
+          ],
+        ),
+      ),
     ]);
   }
 
@@ -705,92 +380,91 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //   void on_read() async {
-  //     try {
-  //       //
-  //       final row = state_manager?.currentRow;
-  //       if (row == null) {
-  //         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
-  //         return;
-  //       }
+  void on_read() async {
+    try {
+      //
+      final row = state_manager?.currentRow;
+      if (row == null) {
+        snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
+        return;
+      }
 
-  //       //
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => read.Main_(
-  //             id: row.cells[sm_demo_1.ID]!.value.toString(), //
-  //           ),
-  //         ),
-  //       );
+      //
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => read.Main_(
+            id: row.cells[sm_demo_1.ID]!.value.toString(), //
+          ),
+        ),
+      );
 
-  //       //
-  //     } catch (e, st) {
-  //       print(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
+      //
+    } catch (e, st) {
+      print(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
-  //   void on_update() async {
-  //     try {
-  //       //
-  //       final row = state_manager?.currentRow;
-  //       if (row == null) {
-  //         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
-  //         return;
-  //       }
+  void on_update() async {
+    try {
+      //
+      final row = state_manager?.currentRow;
+      if (row == null) {
+        snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
+        return;
+      }
 
-  //       //
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => update.Main_(
-  //             id: row.cells[sm_demo_1.ID]!.value.toString(), //
-  //           ),
-  //         ),
-  //       );
-  //       if (tmp == null) return;
+      //
+      tmp = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => update.Main_(
+            id: row.cells[sm_demo_1.ID]!.value.toString(), //
+          ),
+        ),
+      );
+      if (tmp == null) return;
 
-  //       //
-  //       load_page(page);
+      //
+      load_page(page);
 
-  //       //
-  //     } catch (e, st) {
-  //       print(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
+      //
+    } catch (e, st) {
+      print(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
-  //   void on_delete() async {
-  //     try {
-  //       //
-  //       final row = state_manager?.currentRow;
-  //       if (row == null) {
-  //         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
-  //         return;
-  //       }
+  void on_delete() async {
+    try {
+      //
+      final row = state_manager?.currentRow;
+      if (row == null) {
+        snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
+        return;
+      }
 
-  //       //
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => delete.Main_(
-  //             id: row.cells[sm_demo_1.ID]!.value.toString(), //
-  //           ),
-  //         ),
-  //       );
-  //       if (tmp == null) return;
+      //
+      tmp = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => delete.Main_(
+            id: row.cells[sm_demo_1.ID]!.value.toString(), //
+          ),
+        ),
+      );
+      if (tmp == null) return;
 
-  //       //
-  //       row_total = row_total - 1;
-  //       state_manager?.removeCurrentRow();
+      //
+      load_page(page);
 
-  //       //
-  //     } catch (e, st) {
-  //       print(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
+      //
+    } catch (e, st) {
+      print(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
   int get total_pages {
     if (row_total == 0) return 1;
@@ -799,6 +473,204 @@ class _Main_State extends State<Main_> {
 
   //
 }
+
+const double WIDTH = 120;
+
+final columns = [
+  PlutoColumn(
+    field: "index", //
+    title: "No.",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          rc.cell.value.toString(), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_demo_1.ID, //
+    title: "ID",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    enableEditingMode: false,
+    hide: true, //
+  ),
+  PlutoColumn(
+    field: sm_demo_1.TEXT_1, //
+    title: "Text 1",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          rc.cell.value.toString(), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_demo_1.TEXT_2, //
+    title: "Text 2",
+    type: PlutoColumnType.text(),
+    enableEditingMode: false,
+    width: WIDTH,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) value = rc.cell.value.toString();
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_demo_1.NUMBER_1, //
+    title: "Number 1",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          rc.cell.value.toString(), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_demo_1.NUMBER_2, //
+    title: "Number 2",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          rc.cell.value.toString(), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    enableEditingMode: false,
+    field: sm_demo_1.DATETIME_1, //
+    title: "Date Time 1",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) {
+        final tmp = DateTime.tryParse(rc.cell.value.toString());
+        if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
+      }
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_demo_1.DATETIME_2, //
+    title: "Date Time 2",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) {
+        final tmp = DateTime.tryParse(rc.cell.value.toString());
+        if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
+      }
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+
+  PlutoColumn(
+    field: sm_demo_1.LOGIC_1, //
+    title: "Logic 1",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) {
+        if (rc.cell.value == true) value = "Yes";
+        if (rc.cell.value == false) value = "No";
+      }
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_demo_1.LOGIC_2, //
+    title: "Logic 2",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) {
+        if (rc.cell.value == true) value = "Yes";
+        if (rc.cell.value == false) value = "No";
+      }
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_demo_1.NOTE, //
+    title: "Note",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) value = rc.cell.value.toString();
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+];
 
 class Main_ extends StatefulWidget {
   const Main_({super.key});

@@ -3,17 +3,16 @@ import "package:flutter/services.dart";
 
 import "package:speanmeas/core/theme/theme_data.dart";
 
-class _Number_InputState extends State<Number_Input> {
+class _Input_NumberState extends State<Input_Number> {
   //
   final controller = TextEditingController();
   final focusNode = FocusNode();
 
   bool is_error = false;
 
-  void init() async {
+  void init() {
     if (widget.initial != null) {
       controller.text = widget.initial!.toString();
-      widget.onChanged?.call(widget.initial);
       setState(() {});
     }
   }
@@ -71,8 +70,8 @@ class _Number_InputState extends State<Number_Input> {
   }
 }
 
-class Number_Input extends StatefulWidget {
-  const Number_Input({
+class Input_Number extends StatefulWidget {
+  const Input_Number({
     super.key, //
     this.initial,
     this.title,
@@ -84,7 +83,7 @@ class Number_Input extends StatefulWidget {
   final Function(double?)? onChanged;
 
   @override
-  State<Number_Input> createState() => _Number_InputState();
+  State<Input_Number> createState() => _Input_NumberState();
 }
 
 void main() {
@@ -95,7 +94,7 @@ void main() {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Number_Input(
+            Input_Number(
               title: "Number Value:",
               initial: 5.0,
               onChanged: (v) {

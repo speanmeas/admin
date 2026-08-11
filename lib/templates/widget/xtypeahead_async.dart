@@ -154,7 +154,7 @@ class _Main_State extends State<Main_> {
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
             //
-            sm_nationality.clear();
+            // sm_nationality.clear();
 
             //
             final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => n_f_create.Main_()));

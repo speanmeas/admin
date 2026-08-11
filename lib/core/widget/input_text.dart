@@ -2,15 +2,14 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/theme/theme_data.dart";
 
-class _Text_InputState extends State<Text_Input> {
+class _Input_TextState extends State<Input_Text> {
   //
   final controller = TextEditingController();
   final focusNode = FocusNode();
 
-  void init() async {
+  void init() {
     if (widget.initial != null) {
       controller.text = widget.initial!;
-      widget.onChanged?.call(widget.initial);
       setState(() {});
     }
   }
@@ -54,8 +53,8 @@ class _Text_InputState extends State<Text_Input> {
   }
 }
 
-class Text_Input extends StatefulWidget {
-  const Text_Input({
+class Input_Text extends StatefulWidget {
+  const Input_Text({
     super.key, //
     this.initial,
     this.title,
@@ -69,7 +68,7 @@ class Text_Input extends StatefulWidget {
   final int? maxLines;
 
   @override
-  State<Text_Input> createState() => _Text_InputState();
+  State<Input_Text> createState() => _Input_TextState();
 }
 
 void main() {
@@ -80,7 +79,7 @@ void main() {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text_Input(
+            Input_Text(
               title: "Text Value:",
               initial: "Hello",
               onChanged: (v) {

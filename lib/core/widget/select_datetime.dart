@@ -11,10 +11,9 @@ class _SelectDateTimeState extends State<SelectDateTime> {
   dynamic tmp;
   final controller = TextEditingController();
 
-  void init() async {
+  void init() {
     if (widget.initial != null) {
       controller.text = DateFormat(DEFAULT_DATE_FORMAT).format(widget.initial!);
-      widget.onChanged?.call(widget.initial);
       setState(() {});
     }
   }

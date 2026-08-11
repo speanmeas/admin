@@ -4,14 +4,13 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 
-class _Datetime_PickerState extends State<Datetime_Picker> {
+class _Picker_DatetimeState extends State<Picker_Datetime> {
   //
   final controller = TextEditingController();
 
-  void init() async {
+  void init() {
     if (widget.initial != null) {
       controller.text = DateFormat(DEFAULT_DATE_FORMAT).format(widget.initial!);
-      widget.onChanged?.call(widget.initial);
       setState(() {});
     }
   }
@@ -93,8 +92,8 @@ class _Datetime_PickerState extends State<Datetime_Picker> {
   }
 }
 
-class Datetime_Picker extends StatefulWidget {
-  const Datetime_Picker({
+class Picker_Datetime extends StatefulWidget {
+  const Picker_Datetime({
     super.key, //
     this.initial,
     this.title, //
@@ -106,7 +105,7 @@ class Datetime_Picker extends StatefulWidget {
   final Function(DateTime?)? onChanged;
 
   @override
-  State<Datetime_Picker> createState() => _Datetime_PickerState();
+  State<Picker_Datetime> createState() => _Picker_DatetimeState();
 }
 
 void main() {
@@ -117,7 +116,7 @@ void main() {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Datetime_Picker(
+            Picker_Datetime(
               title: "Datetime Start:",
               initial: DateTime.tryParse("2023-01-01 12:00"),
               onChanged: (DateTime? value) {

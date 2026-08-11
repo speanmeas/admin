@@ -72,7 +72,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       tmp = await dio.post(
-        endpoint.DEMO_1_DELETE, //
+        endpoint.DEMO_1_CRUD_DELETE, //
         data: {"_id": widget.id},
       );
 
