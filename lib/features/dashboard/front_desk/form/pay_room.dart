@@ -22,7 +22,6 @@ Widget _layout(List<Widget> children) {
       toolbarHeight: 40,
       titleSpacing: 0,
 
-      // Add a divider at the bottom of the app bar
       bottom: PreferredSize(
         preferredSize: Size.fromHeight(1), //
         child: Divider(height: 1, color: Colors.black),
@@ -44,61 +43,62 @@ Widget _layout(List<Widget> children) {
 }
 
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
+  bool is_loading = true;
+
   final c_price = TextEditingController();
   final c_pay_bank = TextEditingController();
   final c_pay_cash = TextEditingController();
   final c_change = TextEditingController();
   final c_note = TextEditingController();
 
+  String? front_desk_id;
   double last_paid = 0;
 
   void init() async {
-    try {
-      sm_front_desk.clear();
-      sm_room.clear();
+    tmp = await dio.post(
+      endpoint.ROOM_CRUD_READ_ID, //
+      data: {sm_room.ID: widget.room_id},
+    );
+    front_desk_id = tmp.data[0][sm_room.FRONT_DESK_ID];
 
-      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_front_desk.ID: widget.room_id});
-      for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
+    if (front_desk_id != null) {
+      tmp = await dio.post(
+        endpoint.FRONT_DESK_READ_ID, //
+        data: {sm_front_desk.ID: front_desk_id},
+      );
 
-      if (sm_room.data[sm_room.FRONT_DESK_ID]!["value"] != null) {
-        tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
-        for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
-
-        // * គណនាចំនួនលុយដែលបានបង់រួច
-        for (var l in (tmp.data[0]["pay_room"] ?? [])) {
-          last_paid += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
-          last_paid += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
-          last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
-        }
+      double total_cash = 0, total_bank = 0, total_return = 0;
+      String? last_note;
+      for (var l in (tmp.data[0]["pay_room"] ?? [])) {
+        last_paid += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
+        last_paid += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
+        last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+        total_cash += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
+        total_bank += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
+        total_return += double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+        if (l["pay_note"] != null) last_note = l["pay_note"].toString();
       }
 
-      // * យកតម្លៃបច្ចុប្បន្នពីបញ្ជីប្រវត្តិតម្លៃ price_room (element ចុងក្រោយ = តម្លៃបច្ចុប្បន្ន)
       final price_room_list = tmp.data[0]["price_room"];
       if (price_room_list is List && price_room_list.isNotEmpty) {
         c_price.text = (double.tryParse(price_room_list.last["price"]?.toString() ?? "0") ?? 0).toString();
-      } else {
-        c_price.text = sm_front_desk.data[sm_front_desk.ROOM_PRICE]?["value"]?.toString() ?? "";
       }
-      c_pay_cash.text = sm_front_desk.data[sm_front_desk.ROOM_PAY_CASH]?["value"]?.toString() ?? "";
-      c_pay_bank.text = sm_front_desk.data[sm_front_desk.ROOM_PAY_BANK]?["value"]?.toString() ?? "";
-      c_change.text = sm_front_desk.data[sm_front_desk.ROOM_RETURN]?["value"]?.toString() ?? "";
-      c_note.text = sm_front_desk.data[sm_front_desk.ROOM_PAY_NOTE]?["value"]?.toString() ?? "";
-
-      setState(() {});
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+      c_pay_cash.text = total_cash.toString();
+      c_pay_bank.text = total_bank.toString();
+      c_change.text = total_return.toString();
+      c_note.text = last_note ?? "";
     }
+
+    is_loading = false;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      // room price
       TextField(
         controller: c_price,
         keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -117,7 +117,6 @@ class _Main_State extends State<Main_> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text("Last Paid: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-
           Text(
             "${last_paid.toStringAsFixed(2)} \$",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
@@ -125,7 +124,6 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
-      // payment
       TextField(
         controller: c_pay_cash,
         keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -140,7 +138,6 @@ class _Main_State extends State<Main_> {
         onSubmitted: (v) => can_pay ? on_pay() : null, //
       ),
 
-      // payment
       TextField(
         controller: c_pay_bank,
         keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -155,7 +152,6 @@ class _Main_State extends State<Main_> {
         onSubmitted: (v) => can_pay ? on_pay() : null, //
       ),
 
-      // return
       TextField(
         controller: c_change,
         keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -177,7 +173,6 @@ class _Main_State extends State<Main_> {
 
       Divider(color: Colors.black),
 
-      // balanced
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -188,7 +183,6 @@ class _Main_State extends State<Main_> {
               fontWeight: FontWeight.bold, //
             ),
           ),
-
           Text(
             "${balanced.toStringAsFixed(2)} \$",
             style: TextStyle(
@@ -200,7 +194,6 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
-      //
       OutlinedButton.icon(
         icon: Icon(Icons.payments_outlined), //
         label: Text("Complete Payment"), //
@@ -229,47 +222,42 @@ class _Main_State extends State<Main_> {
 
   void on_pay() async {
     try {
-      //
-
       double price = double.tryParse(c_price.text) ?? 0;
       double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
       double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
       double change = double.tryParse(c_change.text) ?? 0;
 
       await dio.post(
-        endpoint.FRONT_DESK_FORM_PAY_ROOM,
+        endpoint.FRONT_DESK_ADD_PAY_ROOM,
         data: {
-          sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
-          sm_front_desk.ROOM_PRICE: price, //
-          sm_front_desk.ROOM_PAY_CASH: pay_cash, //
-          sm_front_desk.ROOM_PAY_BANK: pay_bank, //
-          sm_front_desk.ROOM_RETURN: change, //
-          sm_front_desk.ROOM_PAY_NOTE: c_note.text, //
+          sm_front_desk.ID: front_desk_id, //
+          "pay_price": price, //
+          "pay_cash": pay_cash, //
+          "pay_bank": pay_bank, //
+          "pay_return": change, //
+          "pay_note": c_note.text, //
         },
       );
 
-      // * ប្រសិនបើលុយបានបង់គ្រប់
       if (pay_cash + pay_bank + last_paid == price + change)
         await dio.post(
-          endpoint.ROOM_UPDATE, //
+          endpoint.ROOM_CRUD_UPDATE, //
           data: {
-            sm_room.ID: sm_room.data[sm_room.ID]!["value"], //
-            sm_room.STATUS: "Pending Leave", // * ត្រឡប់ទៅ Pending Leave វិញ
+            sm_room.ID: widget.room_id, //
+            sm_room.STATUS: "Pending Leave", //
           },
         );
-      // * ប្រសិនបើលុយមិនទាន់បង់គ្រប់ ឬ បង់លើស
       else
         await dio.post(
-          endpoint.ROOM_UPDATE, //
+          endpoint.ROOM_CRUD_UPDATE, //
           data: {
-            sm_room.ID: sm_room.data[sm_room.ID]!["value"], //
-            sm_room.STATUS: "Pending Pay", // * ត្រឡប់ទៅ Pending Pay វិញ
+            sm_room.ID: widget.room_id, //
+            sm_room.STATUS: "Pending Pay", //
           },
         );
 
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

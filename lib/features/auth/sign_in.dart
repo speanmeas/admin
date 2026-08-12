@@ -109,23 +109,22 @@ class _Main_State extends State<Main_> {
 
   void on_sign_in() async {
     try {
-      //
       tmp = await dio.post(
         endpoint.AUTH_SIGN_IN, //
-        data: {"username": c_username.text, "password": c_password.text},
+        data: {
+          "username": c_username.text, //
+          "password": c_password.text,
+        },
       );
       if (tmp == null) throw Exception("Invalid Username or Password");
 
-      //
       await secure_storage.write(key: "_id", value: tmp.data["_id"]);
       await secure_storage.write(key: "access_token", value: tmp.data["access_token"]);
       dio.options.headers["Authorization"] = "Bearer ${tmp.data["access_token"]}";
 
-      //
       await glob.init();
       snackbar(ct: context, ms: "Success", cl: Colors.green);
 
-      //
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
 
       //

@@ -1,10 +1,11 @@
 import "package:flutter/material.dart";
-import "package:speanmeas/core/schema/front_desk.g.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
 //
@@ -20,7 +21,6 @@ Widget _layout(List<Widget> children) {
       toolbarHeight: 40,
       titleSpacing: 0,
 
-      // Add a divider at the bottom of the app bar
       bottom: PreferredSize(
         preferredSize: Size.fromHeight(1), //
         child: Divider(height: 1, color: Colors.black),
@@ -42,44 +42,44 @@ Widget _layout(List<Widget> children) {
 }
 
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
+  bool is_loading = true;
+
   final c_pay_cash = TextEditingController();
   final c_pay_bank = TextEditingController();
   final c_return = TextEditingController();
-  final c_note = TextEditingController();
+
+  String? front_desk_id;
+  String? note;
 
   void init() async {
-    try {
-      sm_front_desk.clear();
-      sm_room.clear();
+    tmp = await dio.post(
+      endpoint.ROOM_CRUD_READ_ID, //
+      data: {sm_room.ID: widget.room_id},
+    );
+    front_desk_id = tmp.data[0][sm_room.FRONT_DESK_ID];
 
-      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_front_desk.ID: widget.room_id});
-      for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
+    if (front_desk_id != null) {
+      tmp = await dio.post(
+        endpoint.FRONT_DESK_READ_ID, //
+        data: {sm_front_desk.ID: front_desk_id},
+      );
 
-      if (sm_room.data[sm_room.FRONT_DESK_ID]!["value"] != null) {
-        tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
-        for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
-      }
-
-      c_pay_cash.text = sm_front_desk.data[sm_front_desk.ROOM_PAY_CASH]?["value"]?.toString() ?? "";
-      c_pay_bank.text = sm_front_desk.data[sm_front_desk.ROOM_PAY_BANK]?["value"]?.toString() ?? "";
-      c_return.text = sm_front_desk.data[sm_front_desk.ROOM_RETURN]?["value"]?.toString() ?? "";
-      c_note.text = sm_front_desk.data[sm_front_desk.CANCEL_NOTE]?["value"]?.toString() ?? "";
-
-      setState(() {});
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+      c_pay_cash.text = tmp.data[0]["room_pay_cash"]?.toString() ?? "";
+      c_pay_bank.text = tmp.data[0]["room_pay_bank"]?.toString() ?? "";
+      c_return.text = tmp.data[0]["room_return"]?.toString() ?? "";
+      note = tmp.data[0][sm_front_desk.CANCEL_NOTE]?.toString() ?? "";
     }
+
+    is_loading = false;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      //
       TextField(
         controller: c_pay_cash,
         decoration: InputDecoration(
@@ -102,7 +102,6 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => setState(() {}), //
       ),
 
-      //
       TextField(
         controller: c_return,
         decoration: InputDecoration(
@@ -114,21 +113,18 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => setState(() {}), //
       ),
 
-      // note
-      TextField(
-        controller: c_note,
+      Input_Text(
+        init: note, //
+        lead: "Reason:", //
         maxLines: 4,
-        decoration: InputDecoration(
-          labelText: "Reason:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-        ),
-        onChanged: (v) => setState(() {}), //
+        onChanged: (v) {
+          note = v;
+          setState(() {});
+        },
       ),
 
       Divider(color: Colors.black),
 
-      // balanced
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -156,7 +152,6 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
-      // additional information
       OutlinedButton.icon(
         style: OutlinedButton.styleFrom(foregroundColor: Colors.red), //
         icon: Icon(Icons.cancel_outlined), //
@@ -168,40 +163,32 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
-  //
   bool get can_cancel {
     if (balanced != 0) return false;
     return true;
   }
 
-  //
   double get balanced {
-    double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
-    double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
-    double return_r = double.tryParse(c_return.text) ?? 0;
-    return (pay_cash + pay_bank) - return_r;
+    double cash = double.tryParse(c_pay_cash.text) ?? 0;
+    double bank = double.tryParse(c_pay_bank.text) ?? 0;
+    double ret = double.tryParse(c_return.text) ?? 0;
+    return (cash + bank) - ret;
   }
 
-  //
   void on_cancel() async {
     try {
-      //
       await dio.post(
-        endpoint.FRONT_DESK_FORM_CANCEL,
+        endpoint.FRONT_DESK_CANCEL,
         data: {
-          sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
-          sm_front_desk.ROOM_PAY_CASH: double.tryParse(c_pay_cash.text) ?? 0, //
-          sm_front_desk.ROOM_PAY_BANK: double.tryParse(c_pay_bank.text) ?? 0, //
-          sm_front_desk.ROOM_RETURN: double.tryParse(c_return.text) ?? 0, //
-          sm_front_desk.CANCEL_NOTE: c_note.text, //
+          sm_front_desk.ID: front_desk_id, //
+          sm_front_desk.CANCEL_NOTE: note, //
         },
       );
 
-      //
       await dio.post(
-        endpoint.ROOM_UPDATE, //
+        endpoint.ROOM_CRUD_UPDATE, //
         data: {
-          sm_room.ID: sm_room.data[sm_room.ID]!["value"], //
+          sm_room.ID: widget.room_id, //
           sm_room.STATUS: "Available", //
           sm_room.FRONT_DESK_ID: null, //
         },
@@ -209,8 +196,6 @@ class _Main_State extends State<Main_> {
 
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: "Your can't cancel within 1 hour after check-in.", cl: Colors.red);
@@ -245,7 +230,9 @@ void main() {
     MaterialApp(
       title: "Development", //
       theme: theme_data, //
-      home: Main_(), //
+      home: Main_(
+        room_id: "6a6ec9d7599d64fa5d293fb9", //
+      ), //
       debugShowCheckedModeBanner: false,
     ),
   );

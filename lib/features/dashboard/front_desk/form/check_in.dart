@@ -64,7 +64,7 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.ROOM_CRUD_READ_ID, //
       data: {
-        sm_front_desk.ID: widget.room_id, //
+        sm_room.ID: widget.room_id, //
       },
     );
 
@@ -214,7 +214,7 @@ class _Main_State extends State<Main_> {
         data: {
           sm_room.ID: widget.room_id, //
           sm_room.STATUS: "Pending Pay", //
-          sm_room.FRONT_DESK_ID: tmp.data[0][sm_guest.ID], //
+          sm_room.FRONT_DESK_ID: tmp.data[0][sm_front_desk.ID], //
         },
       );
 

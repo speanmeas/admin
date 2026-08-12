@@ -20,7 +20,6 @@ Widget _layout(List<Widget> children) {
       toolbarHeight: 40,
       titleSpacing: 0,
 
-      // Add a divider at the bottom of the app bar
       bottom: PreferredSize(
         preferredSize: Size.fromHeight(1), //
         child: Divider(height: 1, color: Colors.black),
@@ -151,34 +150,28 @@ class _Charge_State extends State<Charge_> {
         final front_desk_id = widget.room[sm_room.FRONT_DESK_ID];
         for (var l in charges) {
           await dio.post(
-            endpoint.FRONT_DESK_FORM_ADD_PAY_MINI_BAR,
+            endpoint.FRONT_DESK_ADD_PAY_MINI_BAR,
             data: {
               sm_front_desk.ID: front_desk_id, //
-              sm_mini_bar.NAME: l[sm_mini_bar.NAME], //
-              "quantity": l["qty"], //
-              sm_mini_bar.PRICE: l[sm_mini_bar.PRICE], //
-              "mini_bar_note": "", //
+              "item_id": l[sm_mini_bar.ID], //
+              "item_quantity": l["qty"], //
+              "pay_price": l[sm_mini_bar.PRICE], //
+              "pay_note": "", //
             },
           );
         }
-      }
-      // * លក់ Walk-in៖ រក្សាទុកទំនិញទាំងអស់ទៅក្នុង front desk
-      // * (បង្កើត record ថ្មីគ្មានបន្ទប់/ភ្ញៀវ ដើម្បីឲ្យ report រាប់តាមថ្ងៃ)
-      else {
-        await dio.post(
-          endpoint.FRONT_DESK_FORM_ADD_WALKIN_MINI_BAR,
-          data: {
-            "items": [
-              for (var l in charges) //
-                {
-                  sm_mini_bar.NAME: l[sm_mini_bar.NAME], //
-                  "quantity": l["qty"], //
-                  sm_mini_bar.PRICE: l[sm_mini_bar.PRICE], //
-                },
-            ],
-            "mini_bar_note": "", //
-          },
-        );
+      } else {
+        for (var l in charges) {
+          await dio.post(
+            endpoint.FRONT_DESK_ADD_PAY_MINI_BAR,
+            data: {
+              "item_id": l[sm_mini_bar.ID], //
+              "item_quantity": l["qty"], //
+              "pay_price": l[sm_mini_bar.PRICE], //
+              "pay_note": "", //
+            },
+          );
+        }
       }
 
       Navigator.pop(context, charges);

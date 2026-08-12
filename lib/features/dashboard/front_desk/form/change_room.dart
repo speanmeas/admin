@@ -1,11 +1,12 @@
 import "package:flutter/material.dart";
-import "package:speanmeas/core/schema/front_desk.g.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/select/select_dynamic.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
 Widget _layout(List<Widget> children) {
@@ -20,7 +21,6 @@ Widget _layout(List<Widget> children) {
       toolbarHeight: 40,
       titleSpacing: 0,
 
-      // Add a divider at the bottom of the app bar
       bottom: PreferredSize(
         preferredSize: Size.fromHeight(1), //
         child: Divider(height: 1, color: Colors.black),
@@ -42,49 +42,43 @@ Widget _layout(List<Widget> children) {
 }
 
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
+  bool is_loading = true;
 
-  final c_note = TextEditingController();
-  final c_from_room_status = TextEditingController();
-  final c_to_room = TextEditingController();
+  String? front_desk_id;
+  String? note;
+  String? to_room_number;
 
   List<Map<String, dynamic>> rooms = [];
 
   void init() async {
-    try {
-      sm_room.clear();
-      sm_front_desk.clear();
+    tmp = await dio.post(
+      endpoint.ROOM_CRUD_READ_ID, //
+      data: {sm_room.ID: widget.room_id},
+    );
+    front_desk_id = tmp.data[0][sm_room.FRONT_DESK_ID];
 
-      //
-      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_front_desk.ID: widget.room_id});
-      for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
-
-      //
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
-      for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
-
-      //
-      tmp = await dio.post(endpoint.ROOM_READ);
-      rooms = List<Map<String, dynamic>>.from(tmp.data);
-
-      c_note.text = sm_front_desk.data[sm_front_desk.CHANGE_ROOM_NOTE]?["value"]?.toString() ?? "";
-
-      setState(() {});
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    if (front_desk_id != null) {
+      tmp = await dio.post(
+        endpoint.FRONT_DESK_READ_ID, //
+        data: {sm_front_desk.ID: front_desk_id},
+      );
+      note = tmp.data[0][sm_front_desk.CHANGE_NOTE]?.toString() ?? "";
     }
+
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ);
+    rooms = List<Map<String, dynamic>>.from(tmp.data);
+
+    is_loading = false;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      //
       Select_Dynamic(
-        controller: c_to_room,
         lead: "New Room Number:", //
         options: (() {
           var options = [];
@@ -95,26 +89,24 @@ class _Main_State extends State<Main_> {
           }
           return options;
         })(),
-        onChanged: (value) => setState(() {}),
-        prefixIcon: Icon(Icons.hotel_outlined), //
+        onChanged: (v) {
+          to_room_number = v;
+          setState(() {});
+        },
+        prefixIcon: Icons.hotel_outlined, //
       ),
 
-      // note
-      TextField(
-        controller: c_note,
+      Input_Text(
+        init: note, //
+        lead: "Note:", //
         maxLines: 4,
-        decoration: InputDecoration(
-          labelText: "Note:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(Icons.note_alt_outlined), //
-        ),
-        onChanged: (v) => setState(() {}), //
+        onChanged: (v) {
+          note = v;
+          setState(() {});
+        },
       ),
 
-      // additional information
       OutlinedButton.icon(
-        autofocus: true,
         icon: Icon(Icons.swap_horiz_outlined), //
         label: Text("Change"), //
         onPressed: can_change ? on_change_room : null, //
@@ -125,61 +117,51 @@ class _Main_State extends State<Main_> {
   }
 
   bool get can_change {
-    // if (c_from_room_status.text.isEmpty) return false;
-    if (c_to_room.text.isEmpty) return false;
+    if (to_room_number == null || to_room_number!.isEmpty) return false;
     return true;
   }
 
   void on_change_room() async {
     try {
-      //
-      String? from_room_id = sm_front_desk.data[sm_front_desk.ROOM_ID]!["value"]?.toString();
       String? to_room_id;
       for (var r in rooms) {
-        if (r[sm_room.NUMBER]?.toString() == c_to_room.text) {
+        if (r[sm_room.NUMBER]?.toString() == to_room_number) {
           to_room_id = r[sm_room.ID]!.toString();
           break;
         }
       }
 
-      // validation
-      if (from_room_id == null) throw "From Room ID is null";
       if (to_room_id == null) throw "To Room ID is null";
 
-      //
       await dio.post(
-        endpoint.ROOM_UPDATE, //
+        endpoint.ROOM_CRUD_UPDATE, //
         data: {
-          sm_room.ID: from_room_id, //
+          sm_room.ID: widget.room_id, //
           sm_room.STATUS: "Pending Clean", //
-          sm_room.FRONT_DESK_ID: null, // * ចំណាំ៖ ការពារការកែប្រែថ្មី
+          sm_room.FRONT_DESK_ID: null, //
         },
       );
 
-      //
       await dio.post(
-        endpoint.ROOM_UPDATE, //
+        endpoint.ROOM_CRUD_UPDATE, //
         data: {
           sm_room.ID: to_room_id, //
-          sm_room.STATUS: "Pending Pay", // * ចំណាំ៖ ត្រឡប់ទៅ Pending Pay ដើម្បីបង្ហាញថាអតិថិជនត្រូវបង់ប្រាក់សម្រាប់បន្ទប់ថ្មី
-          sm_room.FRONT_DESK_ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
+          sm_room.STATUS: "Pending Pay", //
+          sm_room.FRONT_DESK_ID: front_desk_id, //
         },
       );
 
-      //
       await dio.post(
-        endpoint.FRONT_DESK_FORM_CHANGE_ROOM,
+        endpoint.FRONT_DESK_UPDATE_ROOM,
         data: {
-          sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
+          sm_front_desk.ID: front_desk_id, //
           sm_front_desk.ROOM_ID: to_room_id, //
-          sm_front_desk.CHANGE_ROOM_NOTE: c_note.text, //
+          sm_front_desk.CHANGE_NOTE: note, //
         },
       );
 
       Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Clean Successful", cl: Colors.green);
-
-      //
+      snackbar(ct: context, ms: "Success", cl: Colors.green);
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

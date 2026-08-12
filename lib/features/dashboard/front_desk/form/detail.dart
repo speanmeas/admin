@@ -120,9 +120,24 @@ class _Main_State extends State<Main_> {
         check_in_at = tmp.data[0][sm_front_desk.CHECK_IN_AT]?.toString();
         check_in_by = tmp.data[0][sm_front_desk.CHECK_IN_BY]?.toString();
 
-        pay_room = (tmp.data[0][sm_front_desk.PAY_ROOM] as num?)?.toDouble();
-        pay_mini_bar = (tmp.data[0][sm_front_desk.PAY_MINI_BAR] as num?)?.toDouble();
-        pay_other = (tmp.data[0][sm_front_desk.PAY_OTHER] as num?)?.toDouble();
+        pay_room = 0;
+        for (var l in (tmp.data[0][sm_front_desk.PAY_ROOM] ?? [])) {
+          pay_room = pay_room! + (double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0);
+          pay_room = pay_room! + (double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0);
+          pay_room = pay_room! - (double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0);
+        }
+        pay_mini_bar = 0;
+        for (var l in (tmp.data[0][sm_front_desk.PAY_MINI_BAR] ?? [])) {
+          pay_mini_bar = pay_mini_bar! + (double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0);
+          pay_mini_bar = pay_mini_bar! + (double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0);
+          pay_mini_bar = pay_mini_bar! - (double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0);
+        }
+        pay_other = 0;
+        for (var l in (tmp.data[0][sm_front_desk.PAY_OTHER] ?? [])) {
+          pay_other = pay_other! + (double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0);
+          pay_other = pay_other! + (double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0);
+          pay_other = pay_other! - (double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0);
+        }
 
         check_out_note = tmp.data[0][sm_front_desk.CHECK_OUT_NOTE]?.toString();
         check_out_at = tmp.data[0][sm_front_desk.CHECK_OUT_AT]?.toString();

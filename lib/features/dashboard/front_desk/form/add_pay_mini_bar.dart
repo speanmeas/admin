@@ -7,7 +7,7 @@ import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
-import "package:speanmeas/features/dashboard/front_desk/widget/note_bank_search.dart";
+import "../widget/note_bank_search.dart";
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -42,8 +42,8 @@ Widget _layout(List<Widget> children) {
 }
 
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
+  bool is_loading = true;
 
   final c_price = TextEditingController();
   final c_pay_cash = TextEditingController();
@@ -51,53 +51,53 @@ class _Main_State extends State<Main_> {
   final c_change = TextEditingController();
   final c_note = TextEditingController();
 
+  String? front_desk_id;
   double last_paid = 0;
 
   void init() async {
-    try {
-      sm_front_desk.clear();
-      sm_room.clear();
+    tmp = await dio.post(
+      endpoint.ROOM_CRUD_READ_ID, //
+      data: {sm_room.ID: widget.room_id},
+    );
+    front_desk_id = tmp.data[0][sm_room.FRONT_DESK_ID];
 
-      //
-      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_front_desk.ID: widget.room_id});
-      for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
+    if (front_desk_id != null) {
+      tmp = await dio.post(
+        endpoint.FRONT_DESK_READ_ID, //
+        data: {sm_front_desk.ID: front_desk_id},
+      );
 
-      //
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
-      for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
-
-      // * គណនាចំនួនលុយដែលបានបង់រួច (pay_mini_bar)
+      double total_cash = 0, total_bank = 0, total_return = 0;
+      String? last_note;
       for (var l in (tmp.data[0]["pay_mini_bar"] ?? [])) {
         last_paid += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
         last_paid += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
         last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+        total_cash += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
+        total_bank += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
+        total_return += double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+        if (l["pay_note"] != null) last_note = l["pay_note"].toString();
       }
 
-      // * យកតម្លៃបច្ចុប្បន្នពីបញ្ជីប្រវត្តិតម្លៃ price_mini_bar (element ចុងក្រោយ = តម្លៃបច្ចុប្បន្ន)
       final price_mini_bar_list = tmp.data[0]["price_mini_bar"];
       if (price_mini_bar_list is List && price_mini_bar_list.isNotEmpty) {
         c_price.text = (double.tryParse(price_mini_bar_list.last["price"]?.toString() ?? "0") ?? 0).toString();
-      } else {
-        c_price.text = sm_front_desk.data[sm_front_desk.REVENUE_PRICE]?["value"]?.toString() ?? "";
       }
-      c_pay_cash.text = sm_front_desk.data[sm_front_desk.REVENUE_PAY_CASH]?["value"]?.toString() ?? "";
-      c_pay_bank.text = sm_front_desk.data[sm_front_desk.REVENUE_PAY_BANK]?["value"]?.toString() ?? "";
-      c_change.text = sm_front_desk.data[sm_front_desk.REVENUE_RETURN]?["value"]?.toString() ?? "";
-      c_note.text = sm_front_desk.data[sm_front_desk.REVENUE_PAY_NOTE]?["value"]?.toString() ?? "";
-
-      setState(() {});
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+      c_pay_cash.text = total_cash.toString();
+      c_pay_bank.text = total_bank.toString();
+      c_change.text = total_return.toString();
+      c_note.text = last_note ?? "";
     }
+
+    is_loading = false;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      //
       TextField(
         autofocus: true,
         controller: c_price,
@@ -114,7 +114,6 @@ class _Main_State extends State<Main_> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text("Last Paid: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-
           Text(
             "${last_paid.toStringAsFixed(2)} \$",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
@@ -122,7 +121,6 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
-      //
       TextField(
         controller: c_pay_cash,
         decoration: InputDecoration(
@@ -134,7 +132,6 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => setState(() {}), //
       ),
 
-      //
       TextField(
         controller: c_pay_bank,
         decoration: InputDecoration(
@@ -146,7 +143,6 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => setState(() {}), //
       ),
 
-      //
       TextField(
         controller: c_change,
         decoration: InputDecoration(
@@ -158,7 +154,6 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => setState(() {}), //
       ),
 
-      // note
       NoteBankSearch(
         controller: c_note, //
         onChanged: (v) => setState(() {}), //
@@ -166,12 +161,10 @@ class _Main_State extends State<Main_> {
 
       Divider(color: Colors.black),
 
-      // balanced
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text("Balanced: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-
           Text(
             "${balanced.toStringAsFixed(2)} \$",
             style: TextStyle(
@@ -183,7 +176,6 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
-      //
       OutlinedButton.icon(
         icon: Icon(Icons.add), //
         label: Text("Add Payment"), //
@@ -210,20 +202,21 @@ class _Main_State extends State<Main_> {
       double change = double.tryParse(c_change.text) ?? 0;
 
       await dio.post(
-        endpoint.FRONT_DESK_FORM_PAY_REVENUE,
+        endpoint.FRONT_DESK_ADD_PAY_MINI_BAR,
         data: {
-          sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
-          sm_front_desk.REVENUE_PRICE: price, //
-          sm_front_desk.REVENUE_PAY_CASH: pay_cash, //
-          sm_front_desk.REVENUE_PAY_BANK: pay_bank, //
-          sm_front_desk.REVENUE_RETURN: change, //
-          sm_front_desk.REVENUE_PAY_NOTE: c_note.text, //
+          sm_front_desk.ID: front_desk_id, //
+          "item_id": widget.item_id, //
+          "item_quantity": 1, //
+          "pay_price": price, //
+          "pay_cash": pay_cash, //
+          "pay_bank": pay_bank, //
+          "pay_return": change, //
+          "pay_note": c_note.text, //
         },
       );
 
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -244,9 +237,11 @@ class Main_ extends StatefulWidget {
   const Main_({
     super.key,
     this.room_id, //
+    this.item_id, //
   });
 
   final String? room_id;
+  final String? item_id;
 
   @override
   State<Main_> createState() => _Main_State();

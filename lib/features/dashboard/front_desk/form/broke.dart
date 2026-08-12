@@ -98,10 +98,10 @@ class _Main_State extends State<Main_> {
 
   void on_broke() async {
     try {
-      tmp = await dio.post(
+      await dio.post(
         endpoint.FRONT_DESK_BROKE,
         data: {
-          sm_front_desk.ROOM_ID: widget.room_id, //
+          sm_front_desk.ID: front_desk_id, //
           sm_front_desk.BROKE_NOTE: note, //
         },
       );
@@ -111,7 +111,6 @@ class _Main_State extends State<Main_> {
         data: {
           sm_room.ID: widget.room_id, //
           sm_room.STATUS: "Pending Fix", //
-          sm_room.FRONT_DESK_ID: tmp.data[0][sm_front_desk.ID], //
         },
       );
 

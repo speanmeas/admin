@@ -8,49 +8,38 @@ import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 
 import "package:speanmeas/core/config.dart";
-import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/schema/room.g.dart";
+import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/mini_bar.g.dart";
 
-import "form/add_pay mini_bar_a.dart" as charge;
-import "form/detail.dart" as detail;
 import "form/check_in.dart" as check_in;
-import "form/pay_room.dart" as pay_room;
-import "form/add_pay_room.dart" as pay_room_update;
-import "form/add_pay_other.dart" as pay_other;
-import "form/check_out.dart" as check_out;
-import "form/clean.dart" as clean;
-import "form/cancel.dart" as cancel;
-import "form/broke.dart" as broke;
-import "form/fix.dart" as fix;
-import "form/change_room.dart" as change_room;
-
-import "form/guest_update.dart" as update_guest;
-import "form/check_in_update.dart" as update_stay;
+// import "form/add_pay mini_bar_a.dart" as charge;
+// import "form/detail.dart" as detail;
+// import "form/pay_room.dart" as pay_room;
+// import "form/add_pay_room.dart" as pay_room_update;
+// import "form/add_pay_other.dart" as pay_other;
+// import "form/check_out.dart" as check_out;
+// import "form/clean.dart" as clean;
+// import "form/cancel.dart" as cancel;
+// import "form/broke.dart" as broke;
+// import "form/fix.dart" as fix;
+// import "form/change_room.dart" as change_room;
+// import "form/guest_update.dart" as update_guest;
+// import "form/check_in_update.dart" as update_stay;
 
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
   Timer? _debounce; // * ពន្យាពេល rebuild ពេលវាយស្វែងរក
   final c_search = TextEditingController();
-  List<Map<String, dynamic>> list_r = [];
-  Map<String, dynamic> map_fd = {};
-  List<Map<String, dynamic>> list_mb = []; // * បញ្ជីទំនិញ mini bar (catalog) សម្រាប់លក់
-  List<Map<String, dynamic>> list_walkin = []; // * ទំនិញ walk-in (អតិថិជនដើរចូលទិញ មិនស្នាក់នៅបន្ទប់)
 
+  dynamic list_r = [];
+  dynamic map_fd = {};
   void init() async {
     try {
-      map_fd.clear();
-      list_r.clear();
-      // sm_room.clear();
-      // sm_guest.clear();
-      // sm_front_desk.clear();
-
-      // * ទាញយកទិន្នន័យបន្ទប់ទាំងអស់ពី Server
       tmp = await dio.post(
         endpoint.ROOM_CRUD_READ,
         data: {
@@ -58,53 +47,27 @@ class _Main_State extends State<Main_> {
           "order": 1, //
         },
       );
-      list_r = List<Map<String, dynamic>>.from(tmp.data);
+      list_r = tmp.data;
 
-      // * ទាញយកទិន្នន័យ front desk ដែលទាក់ទងនឹងបន្ទប់
-      // * (ផ្ញើរួមគ្នាប៉ារ៉ាឡែល មិនរង់ចាំមួយៗ ដើម្បីកុំឲ្យយឺត)
-      final ids = <dynamic>[];
-      for (var r in list_r) {
-        final fd_id = r[sm_room.FRONT_DESK_ID];
-        if (fd_id != null && !ids.contains(fd_id)) ids.add(fd_id);
-      }
+      for (var r in list_r) print(r);
 
-      final futures = [
-        for (var fd_id in ids)
-          dio.post(
-            endpoint.FRONT_DESK_READ_ID, //
-            data: {
-              sm_front_desk.ID: fd_id, //
-            },
-          ),
-      ];
-      final results = await Future.wait(futures);
-      for (var i = 0; i < ids.length; i++) {
-        map_fd[ids[i]] = results[i].data[0];
-      }
-
-      // * ទាញយកបញ្ជីទំនិញ mini bar (catalog) ពី Server
-      // tmp = await dio.post(
-      //   endpoint.MINI_BAR_READ, //
-      //   data: {
-      //     "key": DEFAULT_KEY, //
-      //     "order": DEFAULT_ORDER, //
-      //     "offset": 0, //
-      //     "limit": DEFAULT_LIMIT_ROW,
-      //   },
-      // );
-      list_mb = List<Map<String, dynamic>>.from(tmp.data);
+      //   for (var r in list_r) {
+      //     if (r[sm_room.FRONT_DESK_ID] != null) {
+      //       tmp = await dio.post(
+      //         endpoint.FRONT_DESK_READ_ID, //
+      //         data: {
+      //           sm_front_desk.ID: r[sm_room.FRONT_DESK_ID], //
+      //         },
+      //       );
+      //       map_fd[r[sm_room.FRONT_DESK_ID]] = tmp.data[0];
+      //     }
+      //   }
 
       setState(() {});
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
-  }
-
-  // * យកតម្លៃបច្ចុប្បន្នពីបញ្ជីប្រវត្តិតម្លៃ (element ចុងក្រោយ = តម្លៃបច្ចុប្បន្ន)
-  double _current_price(dynamic list) {
-    if (list is! List || list.isEmpty) return 0;
-    return double.tryParse(list.last["price"]?.toString() ?? "0") ?? 0;
   }
 
   Widget _layout(List<Widget> children) {
@@ -178,70 +141,6 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     return _layout([
-      // * បង្ហាញ container សម្រាប់លក់ mini bar ឲ្យអតិថិជនដើរចូលទិញ (Walk-in)
-      // Container(
-      //   width: 500,
-      //   margin: EdgeInsets.all(2),
-      //   padding: EdgeInsets.all(4),
-      //   decoration: BoxDecoration(border: Border.all(color: Colors.purple, width: 1)),
-      //   child: Row(
-      //     children: [
-      //       // info
-      //       // Expanded(
-      //       //   child: Column(
-      //       //     mainAxisAlignment: MainAxisAlignment.start,
-      //       //     crossAxisAlignment: CrossAxisAlignment.start,
-      //       //     children: [
-      //       //       // header row
-      //       //       Row(
-      //       //         spacing: 4,
-      //       //         children: [
-      //       //           Icon(Icons.person_add_outlined, size: 24, color: Colors.purple), //
-      //       //           Text(t("Mini Bar For Sale (Walk-in):"), style: TextStyle(fontWeight: FontWeight.bold)), //
-      //       //           //
-      //       //           SizedBox(width: 4), //
-      //       //           Icon(Icons.circle, size: 6), //
-      //       //           Text("${_walkin_total.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.purple)), //
-      //       //         ],
-      //       //       ),
-
-      //       //       // items
-      //       //       if (list_walkin.isEmpty) Text(t("No Items"), style: TextStyle(color: Colors.grey)),
-      //       //       for (var line in list_walkin)
-      //       //         Row(
-      //       //           spacing: 4,
-      //       //           children: [
-      //       //             Text("${line[sm_mini_bar.NAME]}", style: TextStyle(fontWeight: FontWeight.bold)), //
-      //       //             Text("x${line["qty"]}", style: TextStyle(color: Colors.grey)), //
-      //       //             Text("${line["total"]} \$", style: TextStyle(color: Colors.blue)), //
-      //       //           ],
-      //       //         ),
-      //       //     ],
-      //       //   ),
-      //       // ),
-
-      //       // buttons
-      //       OutlinedButton.icon(
-      //         onPressed: list_mb.isEmpty ? null : on_walkin, //
-      //         icon: Icon(Icons.add_shopping_cart),
-      //         label: Text(t("Sell")),
-      //         style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.purple)),
-      //       ), //
-
-      //       if (list_walkin.isNotEmpty)
-      //         OutlinedButton.icon(
-      //           onPressed: on_clear_walkin, //
-      //           icon: Icon(Icons.delete_outline),
-      //           label: Text(t("Clear")),
-      //           style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.red)),
-      //         ), //
-      //     ],
-      //   ),
-      // ),
-
-      //
-
-      // * បង្ហាញបញ្ជីបន្ទប់ទាំងអស់ (ត្រងតាមការស្វែងរក)
       for (var r in _list_show)
         Container(
           width: 500,
@@ -311,21 +210,21 @@ class _Main_State extends State<Main_> {
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.receipt_outlined, color: Colors.blue),
                                         child: Text(t("View Details"), style: TextStyle(color: Colors.blue)), //
-                                        onPressed: () => on_detail(r), //
+                                        // onPressed: () => on_detail(r), //
                                       ),
 
                                     if (["Available"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.bug_report_outlined, color: Colors.blue),
                                         child: Text(t("Set as Broken"), style: TextStyle(color: Colors.blue)), //
-                                        onPressed: () => on_broke(r), //
+                                        // onPressed: () => on_broke(r), //
                                       ),
 
                                     if (["Pending Fix"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.build_outlined, color: Colors.blue),
                                         child: Text(t("Mark as Fixed"), style: TextStyle(color: Colors.blue)), //
-                                        onPressed: () => on_fix(r), //
+                                        // onPressed: () => on_fix(r), //
                                       ),
 
                                     //
@@ -333,7 +232,7 @@ class _Main_State extends State<Main_> {
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.swap_horiz_outlined, color: Colors.blue),
                                         child: Text(t("Change Room"), style: TextStyle(color: Colors.blue)),
-                                        onPressed: () => on_change_room(r), //
+                                        // onPressed: () => on_change_room(r), //
                                       ),
 
                                     //
@@ -341,7 +240,7 @@ class _Main_State extends State<Main_> {
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
                                         child: Text(t("Cancel"), style: TextStyle(color: Colors.red)),
-                                        onPressed: () => on_cancel(r), //
+                                        // onPressed: () => on_cancel(r), //
                                       ),
                                   ],
                                 ),
@@ -352,7 +251,6 @@ class _Main_State extends State<Main_> {
                       ],
                     ),
 
-                    // * room info
                     (() {
                       String kind = r[sm_room.KIND] ?? "N/A";
                       double usd_per_3h = (r[sm_room.USD_PER_3H] as num?)?.toDouble() ?? 0;
@@ -396,7 +294,7 @@ class _Main_State extends State<Main_> {
                                 message: t("Edit Guest Info"),
                                 child: InkWell(
                                   child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
-                                  onTap: () => on_update_guest(r),
+                                  //   onTap: () => on_update_guest(r),
                                 ),
                               ),
                             ],
@@ -432,7 +330,8 @@ class _Main_State extends State<Main_> {
                                   message: t("Edit Stay Info"),
                                   child: InkWell(
                                     child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
-                                    onTap: () => on_update_stay(r),
+                                    // onTap: () => on_update_stay(r),
+                                    onTap: () {},
                                   ),
                                 ),
                             ],
@@ -442,7 +341,7 @@ class _Main_State extends State<Main_> {
                       // payment room info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          double price_ro = _current_price(map_fd[r[sm_room.FRONT_DESK_ID]]?["price_room"]);
+                          double price_ro = 0;
                           double pay_room = 0;
                           double pay_return = 0;
                           for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_room"] ?? [])) {
@@ -475,58 +374,9 @@ class _Main_State extends State<Main_> {
                                 Tooltip(
                                   message: t("Edit Room Payment"),
                                   child: InkWell(
-                                    onTap: () => on_update_rp(r),
                                     child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
-                                  ),
-                                ),
-                            ],
-                          );
-                        })(),
-
-                      // payment mini bar info
-                      if (!["Pending Fix"].contains(r[sm_room.STATUS]))
-                        (() {
-                          // * បន្ទាប់ពី update backend៖ pay_mini_bar រាល់បន្ទាត់ = Mini_Bar {name, quantity, price, price_total, ...}
-                          double price_re = 0;
-                          for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_mini_bar"] ?? [])) {
-                            price_re += double.tryParse(l["price_total"]?.toString() ?? "0") ?? 0;
-                          }
-                          double pay_re = 0;
-                          for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_mini_bar"] ?? [])) {
-                            pay_re += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
-                            pay_re += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
-                          }
-                          double return_re = 0;
-                          for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_mini_bar"] ?? [])) {
-                            return_re += double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
-                          }
-                          return Row(
-                            spacing: 4,
-                            children: [
-                              Icon(Icons.receipt_outlined, size: 24), //
-                              Text(t("Mini Bar Payment:"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                              //
-                              SizedBox(width: 4), //
-                              Icon(Icons.circle, size: 6), //
-                              Text(t("Price"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("${price_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
-                              //
-                              SizedBox(width: 4), //
-                              Icon(Icons.circle, size: 6), //
-                              Text(t("Pay"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("${pay_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
-                              //
-                              SizedBox(width: 4), //
-                              Icon(Icons.circle, size: 6), //
-                              Text(t("Change"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("${return_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
-                              //
-                              if (r[sm_room.STATUS] != "Pending Clean")
-                                Tooltip(
-                                  message: t("Edit Mini Bar Payment"),
-                                  child: InkWell(
-                                    onTap: () => on_update_mnb(r),
-                                    child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
+                                    // onTap: () => on_update_rp(r),
+                                    onTap: () {},
                                   ),
                                 ),
                             ],
@@ -536,7 +386,7 @@ class _Main_State extends State<Main_> {
                       // payment other info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          double price_re = _current_price(map_fd[r[sm_room.FRONT_DESK_ID]]?["price_other"]);
+                          double price_re = 0;
                           double pay_re = 0;
                           double return_re = 0;
                           for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_other"] ?? [])) {
@@ -569,8 +419,9 @@ class _Main_State extends State<Main_> {
                                 Tooltip(
                                   message: t("Edit Other Payment"),
                                   child: InkWell(
-                                    onTap: () => on_update_ot(r),
                                     child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
+                                    // onTap: () => on_update_ot(r),
+                                    onTap: () {},
                                   ),
                                 ),
                             ],
@@ -661,34 +512,38 @@ class _Main_State extends State<Main_> {
                       children: [
                         if (r[sm_room.STATUS] == "Available") //
                           OutlinedButton.icon(
-                            onPressed: () => on_check_in(r), //
                             icon: Icon(Icons.login),
                             label: Text("Check In"),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.green)),
+                            onPressed: () => on_check_in(r), //
+                            // onPressed: () {},
                           ), //
 
                         if (r[sm_room.STATUS] == "Pending Pay") //
                           OutlinedButton.icon(
-                            onPressed: () => on_payment(r), //
                             icon: Icon(Icons.payment),
                             label: Text("Payment"),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.orange)),
+                            // onPressed: () => on_payment(r), //
+                            onPressed: () {},
                           ), //
 
                         if (r[sm_room.STATUS] == "Pending Leave") //
                           OutlinedButton.icon(
-                            onPressed: () => on_check_out(r), //
                             icon: Icon(Icons.logout),
                             label: Text("Check Out"),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.blue)),
+                            // onPressed: () => on_check_out(r), //
+                            onPressed: () {},
                           ), //
 
                         if (r[sm_room.STATUS] == "Pending Clean") //
                           OutlinedButton.icon(
-                            onPressed: () => on_clean(r), //
                             icon: Icon(Icons.cleaning_services),
                             label: Text("Clean"),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.grey)),
+                            // onPressed: () => on_clean(r), //
+                            onPressed: () {},
                           ), //
                       ],
                     ),
@@ -701,189 +556,180 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
-  //
-  void on_detail(dynamic r) async {
-    try {
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => detail.Main_(
-            room_id: r[sm_room.ID], //
-          ), //
-        ),
-      );
+  //   void on_detail(dynamic r) async {
+  //     try {
+  //       //
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => detail.Main_(
+  //             room_id: r[sm_room.ID], //
+  //           ), //
+  //         ),
+  //       );
 
-      //
-      if (tmp != null) init();
+  //       //
+  //       if (tmp != null) init();
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  //
-  void on_cancel(dynamic r) async {
-    try {
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => cancel.Main_(
-            room_id: r[sm_room.ID], //
-          ), //
-        ),
-      );
+  //   void on_cancel(dynamic r) async {
+  //     try {
+  //       //
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => cancel.Main_(
+  //             room_id: r[sm_room.ID], //
+  //           ), //
+  //         ),
+  //       );
 
-      //
-      if (tmp != null) init();
+  //       //
+  //       if (tmp != null) init();
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  //
-  void on_fix(dynamic r) async {
-    try {
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => fix.Main_(
-            room_id: r[sm_room.ID], //
-          ), //
-        ),
-      );
+  //   void on_fix(dynamic r) async {
+  //     try {
+  //       //
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => fix.Main_(
+  //             room_id: r[sm_room.ID], //
+  //           ), //
+  //         ),
+  //       );
 
-      //
-      if (tmp != null) init();
+  //       //
+  //       if (tmp != null) init();
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  //
-  void on_broke(dynamic r) async {
-    try {
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => broke.Main_(
-            room_id: r[sm_room.ID], //
-          ), //
-        ),
-      );
+  //   void on_broke(dynamic r) async {
+  //     try {
+  //       //
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => broke.Main_(
+  //             room_id: r[sm_room.ID], //
+  //           ), //
+  //         ),
+  //       );
 
-      //
-      if (tmp != null) init();
+  //       //
+  //       if (tmp != null) init();
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  //
-  void on_clean(dynamic r) async {
-    try {
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => clean.Main_(
-            room_id: r[sm_room.ID], //
-          ), //
-        ),
-      );
+  //   void on_clean(dynamic r) async {
+  //     try {
+  //       //
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => clean.Main_(
+  //             room_id: r[sm_room.ID], //
+  //           ), //
+  //         ),
+  //       );
 
-      //
-      if (tmp != null) init();
+  //       //
+  //       if (tmp != null) init();
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  //
-  void on_check_out(dynamic r) async {
-    try {
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => check_out.Main_(
-            room_id: r[sm_room.ID], //
-          ), //
-        ),
-      );
+  //   void on_check_out(dynamic r) async {
+  //     try {
+  //       //
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => check_out.Main_(
+  //             room_id: r[sm_room.ID], //
+  //           ), //
+  //         ),
+  //       );
 
-      //
-      if (tmp != null) init();
+  //       //
+  //       if (tmp != null) init();
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  //
-  void on_payment(dynamic r) async {
-    try {
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => pay_room.Main_(
-            room_id: r[sm_room.ID], //
-          ), //
-        ),
-      );
+  //   void on_payment(dynamic r) async {
+  //     try {
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => pay_room.Main_(
+  //             room_id: r[sm_room.ID], //
+  //           ), //
+  //         ),
+  //       );
 
-      //
-      if (tmp != null) init();
+  //       //
+  //       if (tmp != null) init();
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  //
-  void on_update_rp(dynamic r) async {
-    try {
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => pay_room_update.Main_(
-            room_id: r[sm_room.ID], //
-          ), //
-        ),
-      );
+  //   void on_update_rp(dynamic r) async {
+  //     try {
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => pay_room_update.Main_(
+  //             room_id: r[sm_room.ID], //
+  //           ), //
+  //         ),
+  //       );
 
-      //
-      if (tmp != null) init();
+  //       //
+  //       if (tmp != null) init();
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  //
   void on_check_in(dynamic r) async {
     try {
       tmp = await Navigator.push(
@@ -905,176 +751,164 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
-  void on_change_room(dynamic r) async {
-    try {
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => change_room.Main_(
-            room_id: r[sm_room.ID], //
-          ),
-        ),
-      );
+  //   void on_change_room(dynamic r) async {
+  //     try {
+  //       //
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => change_room.Main_(
+  //             room_id: r[sm_room.ID], //
+  //           ),
+  //         ),
+  //       );
 
-      //
-      if (tmp != null) init();
+  //       //
+  //       if (tmp != null) init();
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  //
-  void on_update_stay(dynamic r) async {
-    try {
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => update_stay.Main_(
-            room_id: r[sm_room.ID], //
-          ), //
-        ),
-      );
+  //   void on_update_stay(dynamic r) async {
+  //     try {
+  //       //
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => update_stay.Main_(
+  //             room_id: r[sm_room.ID], //
+  //           ), //
+  //         ),
+  //       );
 
-      //
-      if (tmp != null) init();
+  //       //
+  //       if (tmp != null) init();
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  //
-  void on_update_guest(dynamic r) async {
-    try {
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => update_guest.Main_(
-            room_id: r[sm_room.ID], //
-          ),
-        ),
-      );
+  //   void on_update_guest(dynamic r) async {
+  //     try {
+  //       //
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => update_guest.Main_(
+  //             room_id: r[sm_room.ID], //
+  //           ),
+  //         ),
+  //       );
 
-      //
-      if (tmp != null) init();
+  //       //
+  //       if (tmp != null) init();
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  //
-  void on_update_mnb(dynamic r) async {
-    try {
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => charge.Charge_(
-            room: r, //
-            catalog: list_mb, //
-          ), //
-        ),
-      );
+  //   void on_update_mnb(dynamic r) async {
+  //     try {
+  //       //
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => charge.Charge_(
+  //             room: r, //
+  //             catalog: list_mb, //
+  //           ), //
+  //         ),
+  //       );
 
-      //
-      if (tmp != null) init();
+  //       //
+  //       if (tmp != null) init();
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  //
-  void on_update_ot(dynamic r) async {
-    try {
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => pay_other.Main_(
-            room_id: r[sm_room.ID], //
-          ), //
-        ),
-      );
+  //   void on_update_ot(dynamic r) async {
+  //     try {
+  //       //
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => pay_other.Main_(
+  //             room_id: r[sm_room.ID], //
+  //           ), //
+  //         ),
+  //       );
 
-      //
-      if (tmp != null) init();
+  //       //
+  //       if (tmp != null) init();
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  //
-  // * បន្ថែមទំនិញ mini bar សម្រាប់អតិថិជនដើរចូលទិញ (Walk-in)
-  void on_walkin() async {
-    try {
-      // * គណនាចំនួនដែលបានលក់រួចហើយ (walk-in)
-      final sold = <dynamic, int>{};
-      for (var line in list_walkin) {
-        final id = line[sm_mini_bar.ID];
-        if (id != null) sold[id] = (sold[id] ?? 0) + (line["qty"] as int);
-      }
+  //   void on_walkin() async {
+  //     try {
+  //       // * គណនាចំនួនដែលបានលក់រួចហើយ (walk-in)
+  //       final sold = <dynamic, int>{};
+  //       for (var line in list_walkin) {
+  //         final id = line[sm_mini_bar.ID];
+  //         if (id != null) sold[id] = (sold[id] ?? 0) + (line["qty"] as int);
+  //       }
 
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => charge.Charge_(
-            room: null, //
-            catalog: list_mb, //
-            sold: sold, //
-          ), //
-        ),
-      );
+  //       //
+  //       tmp = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => charge.Charge_(
+  //             room: null, //
+  //             catalog: list_mb, //
+  //             sold: sold, //
+  //           ), //
+  //         ),
+  //       );
 
-      //
-      if (tmp != null) {
-        list_walkin.addAll(List<Map<String, dynamic>>.from(tmp));
-        setState(() {});
-      }
+  //       //
+  //       if (tmp != null) {
+  //         list_walkin.addAll(List<Map<String, dynamic>>.from(tmp));
+  //         setState(() {});
+  //       }
 
-      //
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+  //       //
+  //     } catch (e, st) {
+  //       print(st);
+  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+  //     }
+  //   }
 
-  //
-  // * សម្អាតទំនិញ walk-in ទាំងអស់
-  void on_clear_walkin() {
-    list_walkin.clear();
-    setState(() {});
-  }
+  //   void on_clear_walkin() {
+  //     list_walkin.clear();
+  //     setState(() {});
+  //   }
 
-  //
-  // * សរុបតម្លៃ walk-in
-  double get _walkin_total {
-    var total = 0.0;
-    for (var line in list_walkin) {
-      total += (line["total"] as num).toDouble();
-    }
-    return total;
-  }
+  //   double get _walkin_total {
+  //     var total = 0.0;
+  //     for (var line in list_walkin) {
+  //       total += (line["total"] as num).toDouble();
+  //     }
+  //     return total;
+  //   }
 
-  // * បញ្ជីបន្ទប់ដែលត្រងតាមការស្វែងរក (លេខបន្ទប់ + ស្ថានភាព)
   List<Map<String, dynamic>> get _list_show {
     final q = c_search.text.trim().toLowerCase();
     if (q.isEmpty) return list_r;
@@ -1086,22 +920,11 @@ class _Main_State extends State<Main_> {
     }).toList();
   }
 
-  //
   @override
   void initState() {
     super.initState();
     init();
   }
-
-  //
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    c_search.dispose();
-    super.dispose();
-  }
-
-  //
 }
 
 //

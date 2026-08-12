@@ -8,6 +8,8 @@ import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
+import "package:speanmeas/core/widget/input/input_text.dart";
+
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -20,7 +22,6 @@ Widget _layout(List<Widget> children) {
       toolbarHeight: 40,
       titleSpacing: 0,
 
-      // Add a divider at the bottom of the app bar
       bottom: PreferredSize(
         preferredSize: Size.fromHeight(1), //
         child: Divider(height: 1, color: Colors.black),
@@ -42,94 +43,82 @@ Widget _layout(List<Widget> children) {
 }
 
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
+  bool is_loading = true;
 
   final c_n_o_guest = TextEditingController();
   final c_d_day = TextEditingController();
   final c_d_hour = TextEditingController();
   final c_note = TextEditingController();
 
-  double last_price = 0; // * តម្លៃបន្ទប់ដែលបានផ្ទុកពី Server
+  String? front_desk_id;
+  double last_price = 0;
 
   void init() async {
-    try {
-      //
-      sm_front_desk.clear();
-      sm_room.clear();
+    tmp = await dio.post(
+      endpoint.ROOM_CRUD_READ_ID, //
+      data: {sm_room.ID: widget.room_id},
+    );
+    front_desk_id = tmp.data[0][sm_room.FRONT_DESK_ID];
 
-      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_front_desk.ID: widget.room_id});
-      for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
+    if (front_desk_id != null) {
+      tmp = await dio.post(
+        endpoint.FRONT_DESK_READ_ID, //
+        data: {sm_front_desk.ID: front_desk_id},
+      );
 
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
-      for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
+      c_n_o_guest.text = tmp.data[0][sm_front_desk.CHECK_IN_NUMBER]?.toString() ?? "";
+      c_d_day.text = tmp.data[0][sm_front_desk.CHECK_IN_DAY]?.toString() ?? "";
+      c_d_hour.text = tmp.data[0][sm_front_desk.CHECK_IN_HOUR]?.toString() ?? "";
+      c_note.text = tmp.data[0][sm_front_desk.CHECK_IN_NOTE]?.toString() ?? "";
 
-      c_n_o_guest.text = sm_front_desk.data[sm_front_desk.STAY_N_GUEST]?["value"]?.toString() ?? "";
-      c_d_day.text = sm_front_desk.data[sm_front_desk.STAY_DAY]?["value"]?.toString() ?? "";
-      c_d_hour.text = sm_front_desk.data[sm_front_desk.STAY_HOUR]?["value"]?.toString() ?? "";
-      c_note.text = sm_front_desk.data[sm_front_desk.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
-
-      // * យកតម្លៃបច្ចុប្បន្នពីបញ្ជីប្រវត្តិតម្លៃ price_room (element ចុងក្រោយ = តម្លៃបច្ចុប្បន្ន)
       final price_room_list = tmp.data[0]["price_room"];
       if (price_room_list is List && price_room_list.isNotEmpty) {
         last_price = double.tryParse(price_room_list.last["price"]?.toString() ?? "0") ?? 0;
-      } else {
-        last_price = double.tryParse(sm_front_desk.data[sm_front_desk.ROOM_PRICE]?["value"]?.toString() ?? "") ?? 0;
       }
-
-      setState(() {});
-    } catch (e, st) {
-      print(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
+
+    is_loading = false;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      // number of guests
       Select_Dynamic(
-        controller: c_n_o_guest,
+        init: int.tryParse(c_n_o_guest.text),
         lead: "Number of Guests:",
         options: List.generate(10, (index) => index + 1),
         onChanged: (v) => setState(() {}), //
-        prefixIcon: Icon(Icons.people_outline), //
+        prefixIcon: Icons.people_outline, //
       ),
 
-      // stay duration days
       Select_Dynamic(
-        controller: c_d_day,
+        init: int.tryParse(c_d_day.text),
         lead: "Stay Duration (Days):",
         options: List.generate(365, (index) => index),
         onChanged: (v) => setState(() {}), //
-        prefixIcon: Icon(Icons.calendar_month_outlined),
+        prefixIcon: Icons.calendar_month_outlined,
       ),
 
-      // stay duration hours
       Select_Dynamic(
-        controller: c_d_hour,
+        init: int.tryParse(c_d_hour.text),
         lead: "Stay Duration (Hours):",
         options: [0, 3, 6, 9, 12, 15, 18, 21],
         onChanged: (v) => setState(() {}), //
-        prefixIcon: Icon(Icons.access_time_outlined),
+        prefixIcon: Icons.access_time_outlined,
       ),
 
-      // note
-      TextField(
-        controller: c_note,
-        maxLines: 4,
-        decoration: InputDecoration(
-          labelText: "Note:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(Icons.note_alt_outlined),
-        ),
+      Input_Text(
+        init: c_note.text, //
+        lead: "Note:", //
+        prefixIcon: Icons.note_alt_outlined, //
+        maxLines: 4, //
         onChanged: (v) => setState(() {}), //
-        onSubmitted: (v) => can_update ? on_update() : null, //
       ),
 
-      // additional information
       OutlinedButton.icon(
         icon: Icon(Icons.check), //
         label: Text("Update"), //
@@ -153,58 +142,19 @@ class _Main_State extends State<Main_> {
 
   void on_update() async {
     try {
-      int stay_days = int.tryParse(c_d_day.text) ?? 0;
-      int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
-      double price_day = double.tryParse(sm_room.data[sm_room.USD_PER_DAY]?["value"].toString() ?? "") ?? 0;
-      double price_3hours = double.tryParse(sm_room.data[sm_room.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
-      double room_paid = double.tryParse(sm_front_desk.data[sm_front_desk.ROOM_PAY_TOTAL]?["value"].toString() ?? "") ?? 0;
-      double room_price = (price_day * stay_days) + (price_3hours * stay_hours / 3);
-
-      // * ធ្វើបច្ចុប្បន្នភាពតម្លៃបន្ទប់ (append ទៅប្រវត្តិ price_room)
-      // * (តែនៅពេលតម្លៃផ្លាស់ប្តូរ ដើម្បីកុំឲ្យមានប្រវត្តិច្រើន)
-      if (room_price != last_price) {
-        await dio.post(
-          endpoint.FRONT_DESK_FORM_UPDATE_ROOM_PRICE, //
-          data: {
-            sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
-            "room_price": room_price, //
-          },
-        );
-        last_price = room_price;
-      }
-
-      // * ធ្វើការផ្លាស់ប្តូរទិន្នន័យនៅក្នុង Front Desk Table នៅលើ Database
       await dio.post(
-        endpoint.FRONT_DESK_FORM_CHECK_IN_UPDATE, //
+        endpoint.FRONT_DESK_UPDATE_CHECK_IN, //
         data: {
-          sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
-          sm_front_desk.STAY_N_GUEST: int.tryParse(c_n_o_guest.text), //
-          sm_front_desk.STAY_DAY: int.tryParse(c_d_day.text), //
-          sm_front_desk.STAY_HOUR: int.tryParse(c_d_hour.text), //
-          sm_front_desk.ROOM_PRICE: room_price, //
+          sm_front_desk.ID: front_desk_id, //
+          sm_front_desk.CHECK_IN_NUMBER: int.tryParse(c_n_o_guest.text), //
+          sm_front_desk.CHECK_IN_DAY: int.tryParse(c_d_day.text), //
+          sm_front_desk.CHECK_IN_HOUR: int.tryParse(c_d_hour.text), //
           sm_front_desk.CHECK_IN_NOTE: c_note.text, //
         },
       );
 
-      // * ប្រៀបធៀបដោយ tolerance (0.00001$) ដើម្បីចៀសវាងបញ្ហា floating point
-      const double epsilon = 0.00001;
-
-      // * ត្រឡប់ទៅ Pending Pay តែពេលបង់មិនទាន់គ្រប់ (ចៀសវាងការធ្លាក់ពេលអតិថិជនបង់លើស)
-      final bool is_underpaid = room_paid < room_price - epsilon;
-
-      // * ប្រសិនបើលុយបានបង់គ្រប់ ឬ បង់លើស ត្រឡប់ទៅ Pending Leave វិញ
-      if (is_underpaid)
-        await dio.post(
-          endpoint.ROOM_UPDATE, //
-          data: {
-            sm_room.ID: sm_room.data[sm_room.ID]!["value"], //
-            sm_room.STATUS: "Pending Pay", //
-          },
-        );
-
-      Navigator.pop(context, true); // * បិទ Form នេះ
-      snackbar(ct: context, ms: "Update Successful", cl: Colors.green); // * បង្ហាញសារ Success
-      //
+      Navigator.pop(context, true);
+      snackbar(ct: context, ms: "Update Successful", cl: Colors.green);
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

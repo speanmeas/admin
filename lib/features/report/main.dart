@@ -13,17 +13,16 @@ import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/widget/select/select_datetime.dart";
 
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
+  bool is_loading = true;
+
   bool is_filter = false;
-  bool is_loading = false;
   DateTime? start;
   DateTime? stop;
   double total_income = 0.0;
   PlutoGridStateManager? state_manager;
 
   void init() async {
-    //
     if (kDebugMode) start = DateTime.now().subtract(Duration(days: 7));
     if (kDebugMode) stop = DateTime.now();
     if (kDebugMode) on_search();
@@ -63,31 +62,31 @@ class _Main_State extends State<Main_> {
 
       // add data to row
       state_manager?.removeAllRows();
-      state_manager?.appendRows([
-        for (var d in tmp.data)
-          PlutoRow(
-            cells: {
-              "index": PlutoCell(value: tmp.data.indexOf(d) + 1),
-              for (var e in sm_front_desk.data.entries) //
-                e.key: PlutoCell(value: d[e.key] ?? ""),
-            },
-          ),
-      ]);
+      // state_manager?.appendRows([
+      //   for (var d in tmp.data)
+      //     PlutoRow(
+      //       cells: {
+      //         "index": PlutoCell(value: tmp.data.indexOf(d) + 1),
+      //         for (var e in sm_front_desk.data.entries) //
+      //           e.key: PlutoCell(value: d[e.key] ?? ""),
+      //       },
+      //     ),
+      // ]);
 
       // calculate total income
-      total_income = 0.0;
-      for (var d in tmp.data) {
-        total_income += d[sm_front_desk.ROOM_PAY_TOTAL] ?? 0.0;
-        total_income += d[sm_front_desk.REVENUE_PAY_TOTAL] ?? 0.0;
+      // total_income = 0.0;
+      // for (var d in tmp.data) {
+      //   total_income += d[sm_front_desk.ROOM_PAY_TOTAL] ?? 0.0;
+      //   total_income += d[sm_front_desk.REVENUE_PAY_TOTAL] ?? 0.0;
 
-        // * បូកបញ្ចូលចំណូល mini bar ពីបញ្ជី pay_mini_bar នៃ record នីមួយៗ
-        final pay_mini_bar = d["pay_mini_bar"];
-        if (pay_mini_bar is List) {
-          for (var mb in pay_mini_bar) {
-            if (mb is Map) total_income += (mb["price_total"] as num?)?.toDouble() ?? 0.0;
-          }
-        }
-      }
+      //   // * បូកបញ្ចូលចំណូល mini bar ពីបញ្ជី pay_mini_bar នៃ record នីមួយៗ
+      //   final pay_mini_bar = d["pay_mini_bar"];
+      //   if (pay_mini_bar is List) {
+      //     for (var mb in pay_mini_bar) {
+      //       if (mb is Map) total_income += (mb["price_total"] as num?)?.toDouble() ?? 0.0;
+      //     }
+      //   }
+      // }
 
       setState(() {});
     } catch (e, st) {
@@ -261,6 +260,7 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout(
       PlutoGrid(
         rows: [], //
@@ -406,7 +406,7 @@ final columns = [
     hide: true, //
   ),
   PlutoColumn(
-    field: sm_front_desk.room, //
+    field: sm_front_desk.ROOM_ID, //
     title: "បន្ទប់",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -421,7 +421,7 @@ final columns = [
     },
   ),
   PlutoColumn(
-    field: sm_front_desk.GUEST_FULL_NAME, //
+    field: "${sm_front_desk.GUEST_ID}_name", //
     title: "ឈ្មោះភ្ញៀវ",
     type: PlutoColumnType.text(),
     width: 150,
@@ -438,7 +438,7 @@ final columns = [
     },
   ),
   PlutoColumn(
-    field: sm_front_desk.STAY_N_GUEST, //
+    field: "${sm_front_desk.GUEST_ID}_number", //
     title: "ចំនួនភ្ញៀវ",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -496,7 +496,7 @@ final columns = [
   ),
   //
   PlutoColumn(
-    field: sm_front_desk.STAY_DAY, //
+    field: "${sm_front_desk.CHECK_IN_NUMBER}", //
     title: "ចំនួនថ្ងៃ",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -512,7 +512,7 @@ final columns = [
   ),
   //
   PlutoColumn(
-    field: sm_front_desk.STAY_HOUR, //
+    field: "${sm_front_desk.CHECK_IN_HOUR}", //
     title: "ចំនួនម៉ោង",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -528,7 +528,7 @@ final columns = [
   ),
   //
   PlutoColumn(
-    field: sm_front_desk.ROOM_PRICE, //
+    field: "${sm_front_desk.PAY_ROOM}_price", //
     title: "ថ្លៃបន្ទប់",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -564,7 +564,7 @@ final columns = [
   ),
   //
   PlutoColumn(
-    field: sm_front_desk.ROOM_PAY_CASH, //
+    field: "${sm_front_desk.PAY_ROOM}_cash", //
     title: "សាច់ប្រាក់",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -600,7 +600,7 @@ final columns = [
   ),
   //
   PlutoColumn(
-    field: sm_front_desk.ROOM_PAY_BANK, //
+    field: "${sm_front_desk.PAY_ROOM}_bank", //
     title: "ធនាគារ",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -636,7 +636,7 @@ final columns = [
   ),
   //
   PlutoColumn(
-    field: sm_front_desk.ROOM_RETURN, //
+    field: "${sm_front_desk.PAY_ROOM}_return", //
     title: "ប្រាក់អាប់",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -672,7 +672,7 @@ final columns = [
   ),
   //
   PlutoColumn(
-    field: sm_front_desk.REVENUE_PRICE, //
+    field: "${sm_front_desk.PAY_OTHER}_price", //
     title: "ថ្លៃផ្សេងៗ",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -708,7 +708,7 @@ final columns = [
   ),
   //
   PlutoColumn(
-    field: sm_front_desk.REVENUE_PAY_CASH, //
+    field: "${sm_front_desk.PAY_OTHER}_cash", //
     title: "សាច់ប្រាក់",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -744,7 +744,7 @@ final columns = [
   ),
   //
   PlutoColumn(
-    field: sm_front_desk.REVENUE_PAY_BANK, //
+    field: "${sm_front_desk.PAY_OTHER}_bank", //
     title: "ធនាគារ",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -780,7 +780,7 @@ final columns = [
   ),
   //
   PlutoColumn(
-    field: sm_front_desk.REVENUE_RETURN, //
+    field: "${sm_front_desk.PAY_OTHER}_return", //
     title: "ប្រាក់អាប់",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -834,7 +834,7 @@ final columns = [
   ),
   //
   PlutoColumn(
-    field: sm_front_desk.ROOM_PAY_BY, //
+    field: "${sm_front_desk.PAY_ROOM}_by", //
     title: "ទទួលប្រាក់ដោយ",
     type: PlutoColumnType.text(),
     width: 160,
