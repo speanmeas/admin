@@ -8,61 +8,65 @@ import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 
 import "package:speanmeas/core/config.dart";
+import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart";
+import "package:speanmeas/core/utility/pprint.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/schema/room.g.dart";
-import "package:speanmeas/core/schema/guest.g.dart";
-import "package:speanmeas/core/schema/mini_bar.g.dart";
+// import "package:speanmeas/core/schema/guest.g.dart";
+// import "package:speanmeas/core/schema/mini_bar.g.dart";
 
 import "form/check_in.dart" as check_in;
-// import "form/add_pay mini_bar_a.dart" as charge;
-// import "form/detail.dart" as detail;
-// import "form/pay_room.dart" as pay_room;
+import "form/pay_room.dart" as pay_room;
+import "form/check_out.dart" as check_out;
+import "form/clean.dart" as clean;
+import "form/broke.dart" as broke;
+import "form/fix.dart" as fix;
+
+import "form/detail.dart" as detail;
 // import "form/add_pay_room.dart" as pay_room_update;
 // import "form/add_pay_other.dart" as pay_other;
-// import "form/check_out.dart" as check_out;
-// import "form/clean.dart" as clean;
 // import "form/cancel.dart" as cancel;
-// import "form/broke.dart" as broke;
-// import "form/fix.dart" as fix;
 // import "form/change_room.dart" as change_room;
 // import "form/guest_update.dart" as update_guest;
 // import "form/check_in_update.dart" as update_stay;
+// import "form/add_pay mini_bar_a.dart" as charge;
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
+  bool is_loading = true;
   Timer? _debounce; // * ពន្យាពេល rebuild ពេលវាយស្វែងរក
   final c_search = TextEditingController();
+
+  double? room_price;
+  double? room_pay;
+  double? room_return;
+  double? other_price;
+  double? other_pay;
+  double? other_return;
 
   dynamic list_r = [];
   dynamic map_fd = {};
   void init() async {
     try {
-      tmp = await dio.post(
-        endpoint.ROOM_CRUD_READ,
-        data: {
-          "key": sm_room.NUMBER, //
-          "order": 1, //
-        },
-      );
+      tmp = await dio.post(endpoint.ROOM_CRUD_READ, data: {"key": sm_room.NUMBER, "order": 1});
       list_r = tmp.data;
 
-      for (var r in list_r) print(r);
+      for (var r in list_r) {
+        if (r[sm_room.FRONT_DESK_ID] != null) {
+          tmp = await dio.post(
+            endpoint.FRONT_DESK_READ_ID, //
+            data: {
+              sm_front_desk.ID: r[sm_room.FRONT_DESK_ID][sm_front_desk.ID], //
+            },
+          );
+          map_fd[r[sm_room.ID]] = tmp.data[0];
+        }
+      }
 
-      //   for (var r in list_r) {
-      //     if (r[sm_room.FRONT_DESK_ID] != null) {
-      //       tmp = await dio.post(
-      //         endpoint.FRONT_DESK_READ_ID, //
-      //         data: {
-      //           sm_front_desk.ID: r[sm_room.FRONT_DESK_ID], //
-      //         },
-      //       );
-      //       map_fd[r[sm_room.FRONT_DESK_ID]] = tmp.data[0];
-      //     }
-      //   }
-
+      is_loading = false;
       setState(() {});
     } catch (e, st) {
       print(st);
@@ -74,7 +78,6 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       body: Column(
         children: [
-          // * បង្ហាញប៊ូតុង refresh
           Row(
             children: [
               SizedBox(width: 38),
@@ -140,8 +143,9 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      for (var r in _list_show)
+      for (var r in list_r)
         Container(
           width: 500,
           margin: EdgeInsets.all(2),
@@ -149,16 +153,13 @@ class _Main_State extends State<Main_> {
           decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1)),
           child: Row(
             children: [
-              // info.
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // * លេខបន្ទប់ (កណ្តាល) + ស្ថានភាព (ស្តាំ)
                     Stack(
                       children: [
-                        // * លេខបន្ទប់នៅកណ្តាលជានិច្ច
                         Row(
                           spacing: 4,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -170,7 +171,6 @@ class _Main_State extends State<Main_> {
                           ],
                         ),
 
-                        // * ស្ថានភាពបន្ទប់នៅខាងស្តាំ
                         (() {
                           var color = Colors.black; // Default color
                           if (["Available"].contains(r[sm_room.STATUS])) color = Colors.green;
@@ -186,7 +186,6 @@ class _Main_State extends State<Main_> {
                               SizedBox(width: 4),
                               Text("${r[sm_room.STATUS]}", style: TextStyle(fontSize: 14, color: color)),
 
-                              // menu
                               Tooltip(
                                 message: "Menu",
                                 child: MenuAnchor(
@@ -205,29 +204,28 @@ class _Main_State extends State<Main_> {
                                     );
                                   },
                                   menuChildren: [
-                                    //
                                     if (!["Available"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.receipt_outlined, color: Colors.blue),
                                         child: Text(t("View Details"), style: TextStyle(color: Colors.blue)), //
-                                        // onPressed: () => on_detail(r), //
+                                        onPressed: () => on_detail(r), //
+                                        // onPressed: () {},
                                       ),
 
                                     if (["Available"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.bug_report_outlined, color: Colors.blue),
                                         child: Text(t("Set as Broken"), style: TextStyle(color: Colors.blue)), //
-                                        // onPressed: () => on_broke(r), //
+                                        onPressed: () => on_broke(r), //
                                       ),
 
                                     if (["Pending Fix"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.build_outlined, color: Colors.blue),
                                         child: Text(t("Mark as Fixed"), style: TextStyle(color: Colors.blue)), //
-                                        // onPressed: () => on_fix(r), //
+                                        onPressed: () => on_fix(r), //
                                       ),
 
-                                    //
                                     if (["Pending Pay", "Pending Leave"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.swap_horiz_outlined, color: Colors.blue),
@@ -235,12 +233,12 @@ class _Main_State extends State<Main_> {
                                         // onPressed: () => on_change_room(r), //
                                       ),
 
-                                    //
                                     if (["Pending Pay", "Pending Leave"].contains(r[sm_room.STATUS]))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
                                         child: Text(t("Cancel"), style: TextStyle(color: Colors.red)),
                                         // onPressed: () => on_cancel(r), //
+                                        onPressed: () {},
                                       ),
                                   ],
                                 ),
@@ -268,14 +266,12 @@ class _Main_State extends State<Main_> {
                       );
                     })(),
 
-                    // * guest info
                     if (r[sm_room.FRONT_DESK_ID] != null) ...[
-                      // guest info
                       if (!"${r[sm_room.STATUS]}".contains("Pending Fix"))
                         (() {
-                          final fd = map_fd[r[sm_room.FRONT_DESK_ID]];
-                          final guest_name = fd?[sm_front_desk.GUEST_ID]["full_name"] ?? "N/A";
-                          final guest_phone = fd?[sm_front_desk.GUEST_ID]["phone_number"] ?? "N/A";
+                          tmp = map_fd[r[sm_room.ID]][sm_front_desk.GUEST_ID] as Map<String, dynamic>? ?? {};
+                          final guest_name = tmp[sm_guest.FULL_NAME] ?? "N/A";
+                          final guest_phone = tmp[sm_guest.PHONE_NUMBER] ?? "N/A";
                           return Row(
                             spacing: 4,
                             children: [
@@ -295,6 +291,7 @@ class _Main_State extends State<Main_> {
                                 child: InkWell(
                                   child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
                                   //   onTap: () => on_update_guest(r),
+                                  onTap: () {},
                                 ),
                               ),
                             ],
@@ -304,10 +301,10 @@ class _Main_State extends State<Main_> {
                       // * stay info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          final fd = map_fd[r[sm_room.FRONT_DESK_ID]];
-                          final stay_n_guest = fd?[sm_front_desk.CHECK_IN_NUMBER] ?? "0";
-                          final stay_day = fd?[sm_front_desk.CHECK_IN_DAY] ?? "0";
-                          final stay_hour = fd?[sm_front_desk.CHECK_IN_HOUR] ?? "0";
+                          tmp = map_fd[r[sm_room.ID]] as Map<String, dynamic>? ?? {};
+                          final stay_n_guest = tmp[sm_front_desk.CHECK_IN_NUMBER] ?? "0";
+                          final stay_day = tmp[sm_front_desk.CHECK_IN_DAY] ?? "0";
+                          final stay_hour = tmp[sm_front_desk.CHECK_IN_HOUR] ?? "0";
                           return Row(
                             spacing: 4,
                             children: [
@@ -341,13 +338,15 @@ class _Main_State extends State<Main_> {
                       // payment room info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          double price_ro = 0;
-                          double pay_room = 0;
-                          double pay_return = 0;
-                          for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_room"] ?? [])) {
-                            pay_room += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
-                            pay_room += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
-                            pay_return += double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+                          tmp = map_fd[r[sm_room.ID]][sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
+                          double price = 0;
+                          double pay = 0;
+                          double change = 0;
+                          if (tmp.isNotEmpty) price = double.parse(tmp.last["pay_price"]?.toString() ?? "0");
+                          for (var l in tmp) {
+                            pay += double.parse(l["pay_cash"]?.toString() ?? "0");
+                            pay += double.parse(l["pay_bank"]?.toString() ?? "0");
+                            change += double.parse(l["pay_return"]?.toString() ?? "0");
                           }
                           return Row(
                             spacing: 4,
@@ -358,17 +357,17 @@ class _Main_State extends State<Main_> {
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
                               Text(t("Price"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("${price_ro.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
+                              Text("${price.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
                               Text(t("Pay"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("${pay_room.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
+                              Text("${pay.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text(t("Change"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("${pay_return.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
+                              Text(t("Return"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("${change.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
 
                               if (!["Pending Clean"].contains(r[sm_room.STATUS]))
                                 Tooltip(
@@ -386,13 +385,15 @@ class _Main_State extends State<Main_> {
                       // payment other info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          double price_re = 0;
-                          double pay_re = 0;
-                          double return_re = 0;
-                          for (var l in (map_fd[r[sm_room.FRONT_DESK_ID]]?["pay_other"] ?? [])) {
-                            pay_re += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
-                            pay_re += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
-                            return_re += double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+                          tmp = map_fd[r[sm_room.ID]][sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
+                          double price = 0;
+                          double pay = 0;
+                          double change = 0;
+                          if (tmp.isNotEmpty) price = double.parse(tmp.last["pay_price"]?.toString() ?? "0");
+                          for (var l in tmp) {
+                            pay += double.parse(l["pay_cash"]?.toString() ?? "0");
+                            pay += double.parse(l["pay_bank"]?.toString() ?? "0");
+                            change += double.parse(l["pay_return"]?.toString() ?? "0");
                           }
                           return Row(
                             spacing: 4,
@@ -403,17 +404,17 @@ class _Main_State extends State<Main_> {
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
                               Text(t("Price"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("${price_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
+                              Text("${price.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
                               Text(t("Pay"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("${pay_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
+                              Text("${pay.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
-                              Text(t("Change"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                              Text("${return_re.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
+                              Text(t("Return"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text("${change.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
                               if (r[sm_room.STATUS] != "Pending Clean")
                                 Tooltip(
@@ -431,17 +432,17 @@ class _Main_State extends State<Main_> {
                       // check in, due to, check out info
                       if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
+                          tmp = map_fd[r[sm_room.ID]] as Map<String, dynamic>? ?? {};
                           String check_in = "";
-                          final check_in_at = map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.CHECK_IN_AT];
-                          if (check_in_at != null) {
-                            final due = DateTime.parse(check_in_at);
-                            check_in = DateFormat(DEFAULT_DATE_FORMAT).format(due);
+                          if (tmp[sm_front_desk.CHECK_IN_AT] != null) {
+                            final dt = DateTime.parse(tmp[sm_front_desk.CHECK_IN_AT]);
+                            check_in = DateFormat(DEFAULT_DATE_FORMAT).format(dt);
                           }
                           return Row(
                             spacing: 4,
                             children: [
                               Icon(Icons.login, size: 24), //
-                              Text(t("Time In:"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Check In:"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(check_in, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
@@ -450,11 +451,11 @@ class _Main_State extends State<Main_> {
                       // due to info
                       if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
+                          tmp = map_fd[r[sm_room.ID]] as Map<String, dynamic>? ?? {};
                           String due = "";
-                          final stay_due = map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.CHECK_IN_DUE];
-                          if (stay_due != null) {
-                            tmp = DateTime.parse(stay_due);
-                            due = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
+                          if (tmp[sm_front_desk.CHECK_IN_DUE] != null) {
+                            final dt = DateTime.parse(tmp[sm_front_desk.CHECK_IN_DUE]);
+                            due = DateFormat(DEFAULT_DATE_FORMAT).format(dt);
                           }
                           return Row(
                             spacing: 4,
@@ -469,17 +470,17 @@ class _Main_State extends State<Main_> {
                       //
                       if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
+                          tmp = map_fd[r[sm_room.ID]] as Map<String, dynamic>? ?? {};
                           String check_out = "";
-                          final check_out_at = map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.CHECK_OUT_AT];
-                          if (check_out_at != null) {
-                            tmp = DateTime.parse(check_out_at);
-                            check_out = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
+                          if (tmp[sm_front_desk.CHECK_OUT_AT] != null) {
+                            final dt = DateTime.parse(tmp[sm_front_desk.CHECK_OUT_AT]);
+                            check_out = DateFormat(DEFAULT_DATE_FORMAT).format(dt);
                           }
                           return Row(
                             spacing: 4,
                             children: [
                               Icon(Icons.logout, size: 24), //
-                              Text(t("Time Out:"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Check Out:"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(check_out, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
@@ -498,14 +499,12 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.bug_report_outlined, size: 24), //
-                              Text(t("Broken At:"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text(t("Broken Date:"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(broke_date, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
                         })(),
                     ],
-
-                    // buttons
                     Row(
                       spacing: 4,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -516,34 +515,27 @@ class _Main_State extends State<Main_> {
                             label: Text("Check In"),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.green)),
                             onPressed: () => on_check_in(r), //
-                            // onPressed: () {},
                           ), //
-
                         if (r[sm_room.STATUS] == "Pending Pay") //
                           OutlinedButton.icon(
                             icon: Icon(Icons.payment),
                             label: Text("Payment"),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.orange)),
-                            // onPressed: () => on_payment(r), //
-                            onPressed: () {},
+                            onPressed: () => on_payment(r), //
                           ), //
-
                         if (r[sm_room.STATUS] == "Pending Leave") //
                           OutlinedButton.icon(
                             icon: Icon(Icons.logout),
                             label: Text("Check Out"),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.blue)),
-                            // onPressed: () => on_check_out(r), //
-                            onPressed: () {},
+                            onPressed: () => on_check_out(r), //
                           ), //
-
                         if (r[sm_room.STATUS] == "Pending Clean") //
                           OutlinedButton.icon(
                             icon: Icon(Icons.cleaning_services),
                             label: Text("Clean"),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.grey)),
-                            // onPressed: () => on_clean(r), //
-                            onPressed: () {},
+                            onPressed: () => on_clean(r), //
                           ), //
                       ],
                     ),
@@ -556,27 +548,15 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
-  //   void on_detail(dynamic r) async {
-  //     try {
-  //       //
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => detail.Main_(
-  //             room_id: r[sm_room.ID], //
-  //           ), //
-  //         ),
-  //       );
-
-  //       //
-  //       if (tmp != null) init();
-
-  //       //
-  //     } catch (e, st) {
-  //       print(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
+  void on_detail(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => detail.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      print(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
   //   void on_cancel(dynamic r) async {
   //     try {
@@ -600,114 +580,55 @@ class _Main_State extends State<Main_> {
   //     }
   //   }
 
-  //   void on_fix(dynamic r) async {
-  //     try {
-  //       //
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => fix.Main_(
-  //             room_id: r[sm_room.ID], //
-  //           ), //
-  //         ),
-  //       );
+  void on_fix(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => fix.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      print(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
-  //       //
-  //       if (tmp != null) init();
+  void on_broke(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => broke.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      print(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
-  //       //
-  //     } catch (e, st) {
-  //       print(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
+  void on_clean(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => clean.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      print(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
-  //   void on_broke(dynamic r) async {
-  //     try {
-  //       //
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => broke.Main_(
-  //             room_id: r[sm_room.ID], //
-  //           ), //
-  //         ),
-  //       );
+  void on_check_out(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_out.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      print(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
-  //       //
-  //       if (tmp != null) init();
-
-  //       //
-  //     } catch (e, st) {
-  //       print(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
-
-  //   void on_clean(dynamic r) async {
-  //     try {
-  //       //
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => clean.Main_(
-  //             room_id: r[sm_room.ID], //
-  //           ), //
-  //         ),
-  //       );
-
-  //       //
-  //       if (tmp != null) init();
-
-  //       //
-  //     } catch (e, st) {
-  //       print(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
-
-  //   void on_check_out(dynamic r) async {
-  //     try {
-  //       //
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => check_out.Main_(
-  //             room_id: r[sm_room.ID], //
-  //           ), //
-  //         ),
-  //       );
-
-  //       //
-  //       if (tmp != null) init();
-
-  //       //
-  //     } catch (e, st) {
-  //       print(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
-
-  //   void on_payment(dynamic r) async {
-  //     try {
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => pay_room.Main_(
-  //             room_id: r[sm_room.ID], //
-  //           ), //
-  //         ),
-  //       );
-
-  //       //
-  //       if (tmp != null) init();
-
-  //       //
-  //     } catch (e, st) {
-  //       print(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
+  void on_payment(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => pay_room.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      print(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
   //   void on_update_rp(dynamic r) async {
   //     try {
@@ -732,19 +653,8 @@ class _Main_State extends State<Main_> {
 
   void on_check_in(dynamic r) async {
     try {
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => check_in.Main_(
-            room_id: r[sm_room.ID], //
-          ), //
-        ),
-      );
-
-      //
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_in.Main_(room_id: r[sm_room.ID])));
       if (tmp != null) init();
-
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

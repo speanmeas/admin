@@ -92,13 +92,13 @@ class _Main_State extends State<Main_> {
     return _layout([
       Show_Text(
         prefixIcon: Icons.text_fields,
-        leading: "Text 1:", //
+        lead: "Text 1:", //
         value: text_1,
       ),
 
       Show_Text(
         prefixIcon: Icons.text_fields,
-        leading: "Text 2:", //
+        lead: "Text 2:", //
         value: text_2,
       ),
 
@@ -140,7 +140,7 @@ class _Main_State extends State<Main_> {
 
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
-        leading: "Note:", //
+        lead: "Note:", //
         value: note,
         maxLines: 4,
       ),

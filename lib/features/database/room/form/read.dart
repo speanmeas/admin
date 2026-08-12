@@ -84,7 +84,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       Show_Text(
         prefixIcon: Icons.meeting_room_outlined,
-        leading: "Number:", //
+        lead: "Number:", //
         value: number,
       ),
 
@@ -102,19 +102,19 @@ class _Main_State extends State<Main_> {
 
       Show_Text(
         prefixIcon: Icons.king_bed_outlined,
-        leading: "Kind:", //
+        lead: "Kind:", //
         value: kind,
       ),
 
       Show_Text(
         prefixIcon: Icons.verified_outlined,
-        leading: "Status:", //
+        lead: "Status:", //
         value: status,
       ),
 
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
-        leading: "Note:", //
+        lead: "Note:", //
         value: note,
         maxLines: 4,
       ),

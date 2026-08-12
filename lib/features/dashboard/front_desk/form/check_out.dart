@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/utility/pprint.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
@@ -42,26 +43,29 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
+  dynamic map_r;
+  dynamic map_fd;
   bool is_loading = true;
 
   String? front_desk_id;
+  String? room_number;
+
   String? note;
 
   void init() async {
     try {
-      tmp = await dio.post(
-        endpoint.ROOM_CRUD_READ_ID, //
-        data: {sm_front_desk.ID: widget.room_id},
-      );
-      print(tmp);
-      front_desk_id = tmp.data[0][sm_room.FRONT_DESK_ID];
+      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+      map_r = tmp.data[0] as Map<String, dynamic>;
+      // pprint(map_r);
 
-      if (front_desk_id != null) {
-        tmp = await dio.post(
-          endpoint.FRONT_DESK_READ_ID, //
-          data: {sm_front_desk.ID: front_desk_id},
-        );
+      if (map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID] != null) {
+        tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
+        map_fd = tmp.data[0] as Map<String, dynamic>;
       }
+      // pprint(map_fd);
+
+      front_desk_id = map_fd[sm_front_desk.ID];
+      room_number = map_r[sm_room.NUMBER];
 
       is_loading = false;
       setState(() {});
@@ -76,6 +80,19 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Room: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text(
+            room_number ?? "Unknown",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+          ),
+        ],
+      ),
+
+      Divider(height: 1, color: Colors.black),
+
       Input_Text(
         init: note, //
         lead: "Note:", //
@@ -118,8 +135,6 @@ class _Main_State extends State<Main_> {
 
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

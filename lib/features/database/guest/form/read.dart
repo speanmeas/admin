@@ -87,43 +87,43 @@ class _Main_State extends State<Main_> {
     return _layout([
       Show_Text(
         prefixIcon: Icons.person_outline,
-        leading: "Full Name:", //
+        lead: "Full Name:", //
         value: full_name,
       ),
 
       Show_Text(
         prefixIcon: Icons.phone_outlined,
-        leading: "Phone Number:", //
+        lead: "Phone Number:", //
         value: phone_number,
       ),
 
       Show_Text(
         prefixIcon: Icons.wc_outlined,
-        leading: "Gender:", //
+        lead: "Gender:", //
         value: gender,
       ),
 
       Show_Text(
         prefixIcon: Icons.flag_outlined,
-        leading: "Nationality:", //
+        lead: "Nationality:", //
         value: nationality_id,
       ),
 
       Show_Text(
         prefixIcon: Icons.badge_outlined,
-        leading: "ID Number:", //
+        lead: "ID Number:", //
         value: id_number,
       ),
 
       Show_Text(
         prefixIcon: Icons.book_outlined,
-        leading: "Passport Number:", //
+        lead: "Passport Number:", //
         value: passport_number,
       ),
 
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
-        leading: "Note:", //
+        lead: "Note:", //
         value: note,
         maxLines: 4,
       ),

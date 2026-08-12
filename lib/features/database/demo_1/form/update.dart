@@ -103,14 +103,14 @@ class _Main_State extends State<Main_> {
       ),
 
       Input_Number(
-        initial: number_1, //
-        title: "Number 1:", //
+        init: number_1, //
+        lead: "Number 1:", //
         onChanged: (v) => number_1 = v,
       ),
 
       Input_Number(
-        initial: number_2, //
-        title: "Number 2:", //
+        init: number_2, //
+        lead: "Number 2:", //
         onChanged: (v) => number_2 = v,
       ),
 

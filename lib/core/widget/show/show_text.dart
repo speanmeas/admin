@@ -1,8 +1,25 @@
 import "package:flutter/material.dart";
+import "package:intl/intl.dart";
+import "package:speanmeas/core/config.dart";
 
 import "package:speanmeas/core/theme/theme_data.dart";
 
 class _Show_TextState extends State<Show_Text> {
+  String value = "";
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.value != null) {
+      if (widget.value is String) value = widget.value;
+      if (widget.value is int) value = widget.value.toString();
+      if (widget.value is double) value = widget.value.toString();
+      if (widget.value is bool) value = widget.value ? "Yes" : "No";
+      if (widget.value is DateTime) value = DateFormat(DEFAULT_DATE_FORMAT).format(widget.value);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -15,12 +32,12 @@ class _Show_TextState extends State<Show_Text> {
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         Text(
-          widget.leading ?? "", //
+          widget.lead ?? "", //
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         Expanded(
           child: Text(
-            widget.value ?? "", //
+            value,
             style: TextStyle(color: Colors.blue),
             overflow: TextOverflow.ellipsis,
             softWrap: true,
@@ -35,15 +52,15 @@ class _Show_TextState extends State<Show_Text> {
 class Show_Text extends StatefulWidget {
   const Show_Text({
     super.key, //
-    required this.leading,
+    required this.lead,
     required this.value,
     this.prefixIcon,
     this.prefixText,
     this.maxLines,
   });
 
-  final String? leading;
-  final String? value;
+  final String? lead;
+  final dynamic value;
   final IconData? prefixIcon;
   final String? prefixText;
   final int? maxLines;
@@ -59,7 +76,7 @@ void main() {
       home: Scaffold(
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Show_Text(leading: "Text Value:", value: "Hello")],
+          children: [Show_Text(lead: "Text Value:", value: "Hello")],
         ),
       ),
       debugShowCheckedModeBanner: false,

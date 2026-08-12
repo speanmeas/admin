@@ -7,6 +7,17 @@ class EndPoint {
 	final AUTH_CLIENT_KHUNBUNHAP_SIGN_OUT = "/auth_client/khunbunhap/sign_out";
 	final AUTH_CLIENT_KHUNBUNHAP_SIGN_UP = "/auth_client/khunbunhap/sign_up";
 	final AUTH_CLIENT_TRYCHANSAK_TELEGRAM = "/auth_client/trychansak/telegram";
+	final BANK_CRUD_CREATE = "/bank/crud/create";
+	final BANK_CRUD_DELETE = "/bank/crud/delete";
+	final BANK_CRUD_DELETE_HARD = "/bank/crud/delete_hard";
+	final BANK_CRUD_READ = "/bank/crud/read";
+	final BANK_CRUD_READ_BOOLEAN = "/bank/crud/read_boolean";
+	final BANK_CRUD_READ_COUNT = "/bank/crud/read_count";
+	final BANK_CRUD_READ_DATETIME = "/bank/crud/read_datetime";
+	final BANK_CRUD_READ_ID = "/bank/crud/read_id";
+	final BANK_CRUD_READ_NUMBER = "/bank/crud/read_number";
+	final BANK_CRUD_READ_STRING = "/bank/crud/read_string";
+	final BANK_CRUD_UPDATE = "/bank/crud/update";
 	final DEMO_1_CRUD_CREATE = "/demo_1/crud/create";
 	final DEMO_1_CRUD_DELETE = "/demo_1/crud/delete";
 	final DEMO_1_CRUD_DELETE_HARD = "/demo_1/crud/delete_hard";

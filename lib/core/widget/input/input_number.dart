@@ -11,8 +11,8 @@ class _Input_NumberState extends State<Input_Number> {
   bool is_error = false;
 
   void init() {
-    if (widget.initial != null) {
-      controller.text = widget.initial!.toString();
+    if (widget.init != null) {
+      controller.text = widget.init!.toStringAsFixed(2);
       setState(() {});
     }
   }
@@ -25,11 +25,11 @@ class _Input_NumberState extends State<Input_Number> {
       keyboardType: TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
       decoration: InputDecoration(
-        labelText: widget.title,
+        labelText: widget.lead,
         labelStyle: TextStyle(fontWeight: FontWeight.bold),
         floatingLabelBehavior: FloatingLabelBehavior.always,
         errorText: is_error ? "Invalid number" : null,
-        prefixIcon: Icon(Icons.onetwothree), //
+        prefixIcon: Icon(widget.prefixIcon ?? Icons.onetwothree), //
         suffixIcon: ExcludeFocus(
           child: Padding(
             padding: EdgeInsets.only(right: 4),
@@ -73,14 +73,16 @@ class _Input_NumberState extends State<Input_Number> {
 class Input_Number extends StatefulWidget {
   const Input_Number({
     super.key, //
-    this.initial,
-    this.title,
+    this.init,
+    this.lead,
     this.onChanged,
+    this.prefixIcon,
   });
 
-  final double? initial;
-  final String? title;
+  final double? init;
+  final String? lead;
   final Function(double?)? onChanged;
+  final IconData? prefixIcon;
 
   @override
   State<Input_Number> createState() => _Input_NumberState();
@@ -95,8 +97,8 @@ void main() {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Input_Number(
-              title: "Number Value:",
-              initial: 5.0,
+              lead: "Number Value:",
+              init: 5.0,
               onChanged: (v) {
                 print("Changed: $v");
               },

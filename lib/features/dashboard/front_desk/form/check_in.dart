@@ -11,7 +11,7 @@ import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 
 import "package:speanmeas/core/schema/front_desk.g.dart";
-import "package:speanmeas/core/schema/guest.g.dart";
+// import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
 Widget _layout(List<Widget> children) {
@@ -48,6 +48,7 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
+  dynamic map_r;
   bool is_loading = true;
 
   String? room_number;
@@ -61,16 +62,13 @@ class _Main_State extends State<Main_> {
   String? note;
 
   void init() async {
-    tmp = await dio.post(
-      endpoint.ROOM_CRUD_READ_ID, //
-      data: {
-        sm_room.ID: widget.room_id, //
-      },
-    );
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    map_r = tmp.data[0] as Map<String, dynamic>;
+    // pprint(map_r);
 
-    room_number = tmp.data[0][sm_room.NUMBER] ?? "Unknown";
-    price_per_day = tmp.data[0][sm_room.USD_PER_DAY] ?? 0;
-    price_per_3hours = tmp.data[0][sm_room.USD_PER_3H] ?? 0;
+    room_number = map_r[sm_room.NUMBER] ?? "Unknown";
+    price_per_day = map_r[sm_room.USD_PER_DAY] ?? 0;
+    price_per_3hours = map_r[sm_room.USD_PER_3H] ?? 0;
 
     number_of_guest = 1;
     stay_days = 0;
@@ -88,41 +86,15 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Text("Room: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
-            "Room: ", //
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            room_number!,
+            room_number ?? "Unknown",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
       ),
 
       Divider(height: 1, color: Colors.black),
-
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text("Guest", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
-        ],
-      ),
-
-      Search_Guest(
-        onChanged: (v) {
-          guest_id = v;
-          setState(() {});
-        },
-      ),
-
-      Divider(height: 1, color: Colors.black),
-
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text("Stay", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
-        ],
-      ),
 
       Select_Dynamic(
         lead: "Number of Guests:",
@@ -167,13 +139,12 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      Divider(height: 1, color: Colors.black),
-
-      if (kDebugMode)
-        Show_Text(
-          leading: "Room Price:", //
-          value: room_price.toStringAsFixed(2),
-        ),
+      Search_Guest(
+        onChanged: (v) {
+          guest_id = v;
+          setState(() {});
+        },
+      ),
 
       OutlinedButton.icon(
         icon: Icon(Icons.login_outlined), //
@@ -206,6 +177,18 @@ class _Main_State extends State<Main_> {
           sm_front_desk.CHECK_IN_DAY: stay_days, //
           sm_front_desk.CHECK_IN_HOUR: stay_hours, //
           sm_front_desk.CHECK_IN_NOTE: note, //
+        },
+      );
+
+      await dio.post(
+        endpoint.FRONT_DESK_ADD_PAY_ROOM, // update
+        data: {
+          sm_front_desk.ID: tmp.data[0][sm_front_desk.ID], //
+          "pay_price": room_price, //
+          // "pay_cash": 0,
+          // "pay_bank": 0,
+          // "pay_return": 0,
+          // "pay_note": "",
         },
       );
 

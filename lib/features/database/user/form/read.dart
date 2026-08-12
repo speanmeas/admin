@@ -88,25 +88,25 @@ class _Main_State extends State<Main_> {
     return _layout([
       Show_Text(
         prefixIcon: Icons.person_outline,
-        leading: "Username:", //
+        lead: "Username:", //
         value: username,
       ),
 
       Show_Text(
         prefixIcon: Icons.lock_outline,
-        leading: "Password:", //
+        lead: "Password:", //
         value: "**********",
       ),
 
       Show_Text(
         prefixIcon: Icons.badge_outlined,
-        leading: "Full Name:", //
+        lead: "Full Name:", //
         value: full_name,
       ),
 
       Show_Text(
         prefixIcon: Icons.phone_outlined,
-        leading: "Phone Number:", //
+        lead: "Phone Number:", //
         value: phone_number,
       ),
 
@@ -136,7 +136,7 @@ class _Main_State extends State<Main_> {
 
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
-        leading: "Note:", //
+        lead: "Note:", //
         value: note,
         maxLines: 4,
       ),

@@ -72,8 +72,8 @@ class _Main_State extends State<Main_> {
 
       //
       Input_Number(
-        initial: price, //
-        title: "Price:", //
+        init: price, //
+        lead: "Price:", //
         onChanged: (v) {
           price = v;
           setState(() {});
@@ -82,8 +82,8 @@ class _Main_State extends State<Main_> {
 
       //
       Input_Number(
-        initial: stock, //
-        title: "Stock:", //
+        init: stock, //
+        lead: "Stock:", //
         onChanged: (v) {
           stock = v;
           setState(() {});

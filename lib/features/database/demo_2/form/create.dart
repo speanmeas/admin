@@ -70,8 +70,8 @@ class _Main_State extends State<Main_> {
       ),
 
       Input_Number(
-        initial: number_1, //
-        title: "Number 1:", //
+        init: number_1, //
+        lead: "Number 1:", //
         onChanged: (v) => number_1 = v,
       ),
 

@@ -188,19 +188,19 @@ class _Search_NationalityState extends State<Search_Nationality> {
         //
         if (kDebugMode)
           Show_Text(
-            leading: "ID:", //
+            lead: "ID:", //
             value: id ?? "",
           ),
 
         //
         Show_Text(
-          leading: "Nationality:", //
+          lead: "Nationality:", //
           value: nationality ?? "",
         ),
 
         //
         Show_Text(
-          leading: "Note:", //
+          lead: "Note:", //
           value: note ?? "",
         ),
       ],

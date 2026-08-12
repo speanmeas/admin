@@ -92,14 +92,14 @@ class _Main_State extends State<Main_> {
       ),
 
       Input_Number(
-        initial: usd_per_day, //
-        title: "USD/Day:", //
+        init: usd_per_day, //
+        lead: "USD/Day:", //
         onChanged: (v) => usd_per_day = v,
       ),
 
       Input_Number(
-        initial: usd_per_3h, //
-        title: "USD/3H:", //
+        init: usd_per_3h, //
+        lead: "USD/3H:", //
         onChanged: (v) => usd_per_3h = v,
       ),
 

@@ -122,10 +122,10 @@ class _Main_State extends State<Main_> {
         onChanged: _on_guest_selected,
       ),
 
-      Show_Text(leading: "Name:", value: guest_full_name ?? ""),
-      Show_Text(leading: "Phone:", value: guest_phone_number ?? ""),
-      Show_Text(leading: "Gender:", value: guest_gender ?? ""),
-      Show_Text(leading: "Nationality:", value: guest_nationality ?? ""),
+      Show_Text(lead: "Name:", value: guest_full_name ?? ""),
+      Show_Text(lead: "Phone:", value: guest_phone_number ?? ""),
+      Show_Text(lead: "Gender:", value: guest_gender ?? ""),
+      Show_Text(lead: "Nationality:", value: guest_nationality ?? ""),
 
       OutlinedButton.icon(
         icon: Icon(Icons.check), //
