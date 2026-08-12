@@ -45,8 +45,7 @@ Widget _layout(List<Widget> children) {
 }
 
 class _Main_State extends State<Main_> {
-  //
-  dynamic tmp; // ignore: unused
+  dynamic tmp;
 
   String? full_name;
   String? phone_number;
@@ -64,62 +63,61 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      //
       Input_Text(
         init: full_name, //
         lead: "Full Name:", //
         onChanged: (v) => full_name = v,
       ),
-      //
+
       Input_Text(
         init: phone_number, //
         lead: "Phone Number:", //
         onChanged: (v) => phone_number = v,
       ),
-      //
+
       Select_Dynamic(
-        prefixIcon: Icon(Icons.wc),
+        prefixIcon: Icons.wc,
         options: ["Male", "Female", "Other"], //
         onChanged: (v) => gender = v,
       ),
-      //
+
       Search_Nationality(
         init: "Cambodian", //
         onChanged: (v) => nationality_id = v,
       ),
-      //
+
       Input_Text(
         init: id_number, //
         lead: "National ID Number:", //
         onChanged: (v) => id_number = v,
       ),
-      //
+
       Input_Text(
         init: passport_number, //
         lead: "Passport Number:", //
         onChanged: (v) => passport_number = v,
       ),
+
       Input_Text(
         init: note, //
         lead: "Note:", //
         maxLines: 4, //
         onChanged: (v) => note = v ?? "",
       ),
-      //
+
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Create"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
         onPressed: on_create,
       ),
-      //
+
       SizedBox(height: height - 100),
     ]);
   }
 
   void on_create() async {
     try {
-      //
       tmp = await dio.post(
         endpoint.GUEST_CRUD_CREATE, //
         data: {
@@ -133,13 +131,9 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      //
       Navigator.pop(context, tmp.data[0]);
 
-      //
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -151,8 +145,6 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
 class Main_ extends StatefulWidget {
@@ -165,7 +157,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "Development", //
-      theme: theme_data, //
+      theme: theme_data,
       home: Main_(),
       debugShowCheckedModeBanner: false,
     ),

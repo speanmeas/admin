@@ -41,10 +41,8 @@ Widget _layout(List<Widget> children) {
 }
 
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
 
-  //
   void init() async {
     //
   }
@@ -53,13 +51,11 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      // * បញ្ជាក់
       Text(
         "Confirm to delete?", //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
-      // * ប៊ូតុង Delete
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.delete_outlined),
@@ -68,26 +64,20 @@ class _Main_State extends State<Main_> {
         onPressed: on_delete,
       ),
 
-      //
       SizedBox(height: height - 100),
     ]);
   }
 
   void on_delete() async {
     try {
-      //
       tmp = await dio.post(
         endpoint.GUEST_CRUD_DELETE, //
         data: {"_id": widget.id},
       );
 
-      //
       snackbar(ct: context, ms: "Success", cl: Colors.green);
 
-      //
       Navigator.pop(context, tmp.data);
-
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

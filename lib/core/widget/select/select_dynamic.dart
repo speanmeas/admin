@@ -8,8 +8,8 @@ class _Select_DynamicState extends State<Select_Dynamic> {
   @override
   void initState() {
     super.initState();
-    if (widget.initial != null) {
-      controller.text = widget.initial.toString();
+    if (widget.init != null) {
+      controller.text = widget.init.toString();
     }
   }
 
@@ -28,7 +28,7 @@ class _Select_DynamicState extends State<Select_Dynamic> {
             labelText: widget.lead,
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
             floatingLabelBehavior: FloatingLabelBehavior.always,
-            prefixIcon: widget.prefixIcon,
+            prefixIcon: Icon(widget.prefixIcon),
             suffixIcon: Padding(
               padding: EdgeInsets.only(right: 4),
               child: IconButton(
@@ -56,15 +56,15 @@ class Select_Dynamic extends StatefulWidget {
     required this.options,
     required this.onChanged,
     this.lead,
-    this.initial,
+    this.init,
     this.prefixIcon,
   });
 
   final String? lead;
-  final dynamic initial;
+  final dynamic init;
   final List<dynamic>? options;
   final Function(dynamic)? onChanged;
-  final Widget? prefixIcon;
+  final IconData? prefixIcon;
 
   @override
   State<Select_Dynamic> createState() => _Select_DynamicState();
@@ -78,9 +78,9 @@ void main() {
         body: Center(
           child: Select_Dynamic(
             lead: "Number of Guests:",
-            initial: 5,
+            init: 5,
             options: List.generate(100, (index) => index),
-            prefixIcon: Icon(Icons.people_alt_outlined), //
+            prefixIcon: Icons.people_alt_outlined, //
             onChanged: (value) {
               print("Selected value: $value");
             },

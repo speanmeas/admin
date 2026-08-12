@@ -27,8 +27,8 @@ Widget _layout(List<Widget> children) {
 }
 
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
+
   int page = 1;
   int row_total = 0;
   bool is_loading = true;

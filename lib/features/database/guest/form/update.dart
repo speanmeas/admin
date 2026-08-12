@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/widget/select/select_string.dart";
+import "package:speanmeas/core/widget/select/select_dynamic.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/search/search_nationality.dart";
@@ -45,8 +45,7 @@ Widget _layout(List<Widget> children) {
 }
 
 class _Main_State extends State<Main_> {
-  //
-  dynamic tmp; // ignore: unused
+  dynamic tmp;
   bool is_loading = true;
 
   String? full_name;
@@ -57,11 +56,8 @@ class _Main_State extends State<Main_> {
   String? passport_number;
   String? note;
 
-  //
   void init() async {
-    //
     try {
-      //
       tmp = await dio.post(
         endpoint.GUEST_CRUD_READ_ID, //
         data: {sm_guest.ID: widget.id},
@@ -85,68 +81,85 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      //
       Input_Text(
         init: full_name, //
         lead: "Full Name:",
-        onChanged: (v) => full_name = v,
+        onChanged: (v) {
+          full_name = v;
+          setState(() {});
+        },
       ),
-      //
+
       Input_Text(
         init: phone_number, //
         lead: "Phone Number:",
-        onChanged: (v) => phone_number = v,
+        onChanged: (v) {
+          phone_number = v;
+          setState(() {});
+        },
       ),
-      //
-      Select_String(
+
+      Select_Dynamic(
         init: gender, //
         lead: "Gender:", //
         options: ["Male", "Female", "Other"], //
-        prefixIcon: Icon(Icons.wc),
-        onChanged: (v) => gender = v,
+        prefixIcon: Icons.wc,
+        onChanged: (v) {
+          gender = v;
+          setState(() {});
+        },
       ),
-      //
+
       Search_Nationality(
         init: nationality_id, //
-        onChanged: (v) => nationality_id = v,
+        onChanged: (v) {
+          nationality_id = v;
+          setState(() {});
+        },
       ),
-      //
+
       Input_Text(
         init: id_number, //
         lead: "ID Number:",
-        onChanged: (v) => id_number = v,
+        onChanged: (v) {
+          id_number = v;
+          setState(() {});
+        },
       ),
-      //
+
       Input_Text(
         init: passport_number, //
         lead: "Passport Number:",
-        onChanged: (v) => passport_number = v,
+        onChanged: (v) {
+          passport_number = v;
+          setState(() {});
+        },
       ),
-      //
+
       Input_Text(
         init: note, //
         lead: "Note:",
         maxLines: 4,
-        onChanged: (v) => note = v,
+        onChanged: (v) {
+          note = v;
+          setState(() {});
+        },
       ),
-
-      //
       OutlinedButton.icon(
         icon: Icon(Icons.check), //
         label: Text("Update"),
         onPressed: on_update,
       ),
-      //
-      SizedBox(height: 100), //
+
+      SizedBox(height: height - 100), //
     ]);
   }
 
-  //
   void on_update() async {
     try {
-      //
       tmp = await dio.post(
         endpoint.GUEST_CRUD_UPDATE, //
         data: {
@@ -161,13 +174,9 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      //
       Navigator.pop(context, tmp.data[0]);
 
-      //
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -179,14 +188,12 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
-    required this.id, //
+    required this.id,
   });
 
   final String id;
@@ -199,7 +206,7 @@ void main() {
   runApp(
     MaterialApp(
       title: "Development", //
-      theme: theme_data, //
+      theme: theme_data,
       home: Main_(id: "1"),
       debugShowCheckedModeBanner: false,
     ),

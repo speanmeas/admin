@@ -49,7 +49,6 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-  bool is_loading = true;
 
   String? room_number;
   double? price_per_day;
@@ -77,14 +76,12 @@ class _Main_State extends State<Main_> {
     stay_days = 0;
     stay_hours = 0;
 
-    is_loading = false;
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -127,9 +124,9 @@ class _Main_State extends State<Main_> {
 
       Select_Dynamic(
         lead: "Number of Guests:",
-        initial: number_of_guest, //
+        init: number_of_guest, //
         options: List.generate(10, (index) => index + 1),
-        prefixIcon: Icon(Icons.people_outline), //
+        prefixIcon: Icons.people_outline, //
         onChanged: (v) {
           number_of_guest = v;
           setState(() {});
@@ -138,9 +135,9 @@ class _Main_State extends State<Main_> {
 
       Select_Dynamic(
         lead: "Stay Duration (Days):",
-        initial: stay_days, //
+        init: stay_days, //
         options: List.generate(365, (index) => index),
-        prefixIcon: Icon(Icons.calendar_month_outlined),
+        prefixIcon: Icons.calendar_month_outlined,
         onChanged: (v) {
           stay_days = v;
           setState(() {});
@@ -149,9 +146,9 @@ class _Main_State extends State<Main_> {
 
       Select_Dynamic(
         lead: "Stay Duration (Hours):",
-        initial: stay_hours,
+        init: stay_hours,
         options: [0, 3, 6, 9, 12, 15, 18, 21],
-        prefixIcon: Icon(Icons.access_time_outlined),
+        prefixIcon: Icons.access_time_outlined,
         onChanged: (v) {
           stay_hours = v;
           setState(() {});

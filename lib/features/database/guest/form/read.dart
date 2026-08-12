@@ -74,7 +74,6 @@ class _Main_State extends State<Main_> {
 
       is_loading = false;
       setState(() {});
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -86,50 +85,49 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      //
       Show_Text(
         prefixIcon: Icons.person_outline,
         leading: "Full Name:", //
         value: full_name,
       ),
-      //
+
       Show_Text(
         prefixIcon: Icons.phone_outlined,
         leading: "Phone Number:", //
         value: phone_number,
       ),
-      //
+
       Show_Text(
         prefixIcon: Icons.wc_outlined,
         leading: "Gender:", //
         value: gender,
       ),
-      //
+
       Show_Text(
         prefixIcon: Icons.flag_outlined,
         leading: "Nationality:", //
         value: nationality_id,
       ),
-      //
+
       Show_Text(
         prefixIcon: Icons.badge_outlined,
         leading: "ID Number:", //
         value: id_number,
       ),
-      //
+
       Show_Text(
         prefixIcon: Icons.book_outlined,
         leading: "Passport Number:", //
         value: passport_number,
       ),
-      //
+
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
         leading: "Note:", //
         value: note,
         maxLines: 4,
       ),
-      //
+
       SizedBox(height: height - 100),
     ]);
   }
