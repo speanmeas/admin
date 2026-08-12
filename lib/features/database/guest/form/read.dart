@@ -72,7 +72,8 @@ class _Main_State extends State<Main_> {
       passport_number = tmp.data[0][sm_guest.PASSPORT_NUMBER];
       note = tmp.data[0][sm_guest.NOTE];
 
-      setState(() => is_loading = false);
+      is_loading = false;
+      setState(() {});
       //
     } catch (e, st) {
       print(st);
@@ -89,52 +90,45 @@ class _Main_State extends State<Main_> {
       Show_Text(
         prefixIcon: Icons.person_outline,
         leading: "Full Name:", //
-        value: full_name ?? "",
+        value: full_name,
       ),
-
       //
       Show_Text(
         prefixIcon: Icons.phone_outlined,
         leading: "Phone Number:", //
-        value: phone_number ?? "",
+        value: phone_number,
       ),
-
       //
       Show_Text(
         prefixIcon: Icons.wc_outlined,
         leading: "Gender:", //
-        value: gender ?? "",
+        value: gender,
       ),
-
       //
       Show_Text(
         prefixIcon: Icons.flag_outlined,
         leading: "Nationality:", //
-        value: nationality_id ?? "",
+        value: nationality_id,
       ),
-
       //
       Show_Text(
         prefixIcon: Icons.badge_outlined,
         leading: "ID Number:", //
-        value: id_number ?? "",
+        value: id_number,
       ),
-
       //
       Show_Text(
         prefixIcon: Icons.book_outlined,
         leading: "Passport Number:", //
-        value: passport_number ?? "",
+        value: passport_number,
       ),
-
       //
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
         leading: "Note:", //
-        value: note ?? "",
+        value: note,
         maxLines: 4,
       ),
-
       //
       SizedBox(height: height - 100),
     ]);

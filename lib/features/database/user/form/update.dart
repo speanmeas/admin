@@ -91,8 +91,8 @@ class _Main_State extends State<Main_> {
     return _layout([
       //
       Input_Text(
-        initial: username, //
-        title: "Username:", //
+        init: username, //
+        lead: "Username:", //
         onChanged: (v) {
           username = v;
           setState(() {});
@@ -111,8 +111,8 @@ class _Main_State extends State<Main_> {
 
       //
       Input_Text(
-        initial: full_name, //
-        title: "Full Name:", //
+        init: full_name, //
+        lead: "Full Name:", //
         onChanged: (v) {
           full_name = v;
           setState(() {});
@@ -121,8 +121,8 @@ class _Main_State extends State<Main_> {
 
       //
       Input_Text(
-        initial: phone_number, //
-        title: "Phone Number:", //
+        init: phone_number, //
+        lead: "Phone Number:", //
         onChanged: (v) {
           phone_number = v;
           setState(() {});
@@ -170,8 +170,8 @@ class _Main_State extends State<Main_> {
       ),
 
       Input_Text(
-        initial: note, //
-        title: "Note:", //
+        init: note, //
+        lead: "Note:", //
         maxLines: 4, //
         onChanged: (v) {
           note = v ?? "";

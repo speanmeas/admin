@@ -9,9 +9,9 @@ class _Select_StringState extends State<Select_String> {
   @override
   void initState() {
     super.initState();
-    if (widget.initial != null) {
-      controller.text = widget.initial.toString();
-      widget.onChanged?.call(widget.initial.toString());
+    if (widget.init != null) {
+      controller.text = widget.init.toString();
+      widget.onChanged?.call(widget.init.toString());
     }
   }
 
@@ -27,7 +27,7 @@ class _Select_StringState extends State<Select_String> {
           controller: controller,
           focusNode: focusNode,
           decoration: InputDecoration(
-            labelText: widget.leading,
+            labelText: widget.lead,
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             prefixIcon: widget.prefixIcon,
@@ -57,15 +57,15 @@ class _Select_StringState extends State<Select_String> {
 class Select_String extends StatefulWidget {
   const Select_String({
     super.key, //
-    this.leading,
-    this.initial,
+    this.lead,
+    this.init,
     required this.options,
     required this.onChanged,
     this.prefixIcon,
   });
 
-  final String? leading;
-  final String? initial;
+  final String? lead;
+  final String? init;
   final List<String>? options;
   final Function(String?)? onChanged;
   final Widget? prefixIcon;
@@ -81,8 +81,8 @@ void main() {
       home: Scaffold(
         body: Center(
           child: Select_String(
-            leading: "Number of Guests:",
-            initial: "5",
+            lead: "Number of Guests:",
+            init: "5",
             options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
             prefixIcon: Icon(Icons.people_alt_outlined), //
             onChanged: (value) {

@@ -37,12 +37,14 @@ class _Search_NationalityState extends State<Search_Nationality> {
       }
     });
 
+    if (widget.init == null || widget.init!.isEmpty) return;
+
     try {
       tmp = await dio.post(
         endpoint.NATIONALITY_CRUD_READ_STRING, //
         data: {
           "key": sm_nationality.NAME, //
-          "query": widget.initial, //
+          "query": widget.init, //
         },
       );
       if (tmp.data.isEmpty) return;
@@ -219,11 +221,11 @@ class Search_Nationality extends StatefulWidget {
   const Search_Nationality({
     super.key, //
     required this.onChanged,
-    this.initial,
+    this.init,
   });
 
   final ValueChanged<String?>? onChanged; // * ត្រឡប់ id របស់សញ្ជាតិ
-  final String? initial; // * តម្លៃដំបូង (ឈ្មោះសញ្ជាតិ)
+  final String? init; // * តម្លៃដំបូង (ឈ្មោះសញ្ជាតិ)
 
   @override
   State<Search_Nationality> createState() => _Search_NationalityState();
@@ -236,7 +238,7 @@ void main() {
       home: Scaffold(
         body: Center(
           child: Search_Nationality(
-            initial: "Cambodian",
+            init: "Cambodian",
             onChanged: (v) {
               print("Changed: $v");
             },

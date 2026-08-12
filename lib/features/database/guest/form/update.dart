@@ -3,14 +3,11 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/widget/select/select_dynamic.dart";
 import "package:speanmeas/core/widget/select/select_string.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/search/search_nationality.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
-
-// import "../widget/gender_select.dart" as g_select;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -69,12 +66,11 @@ class _Main_State extends State<Main_> {
         endpoint.GUEST_CRUD_READ_ID, //
         data: {sm_guest.ID: widget.id},
       );
-      print(tmp);
 
       full_name = tmp.data[0][sm_guest.FULL_NAME];
       phone_number = tmp.data[0][sm_guest.PHONE_NUMBER];
       gender = tmp.data[0][sm_guest.GENDER];
-      // nationality_id = tmp.data[0][sm_guest.NATIONALITY_ID];
+      nationality_id = tmp.data[0][sm_guest.NATIONALITY_ID]?["name"];
       id_number = tmp.data[0][sm_guest.ID_NUMBER];
       passport_number = tmp.data[0][sm_guest.PASSPORT_NUMBER];
       note = tmp.data[0][sm_guest.NOTE];
@@ -89,77 +85,51 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       //
       Input_Text(
-        initial: full_name, //
-        title: "Full Name:", //
-        onChanged: (v) {
-          full_name = v;
-          setState(() {});
-        },
+        init: full_name, //
+        lead: "Full Name:",
+        onChanged: (v) => full_name = v,
       ),
-
       //
       Input_Text(
-        initial: phone_number, //
-        title: "Phone Number:", //
-        onChanged: (v) {
-          phone_number = v;
-          setState(() {});
-        },
+        init: phone_number, //
+        lead: "Phone Number:",
+        onChanged: (v) => phone_number = v,
       ),
-
       //
       Select_String(
-        initial: gender, //
+        init: gender, //
+        lead: "Gender:", //
         options: ["Male", "Female", "Other"], //
         prefixIcon: Icon(Icons.wc),
-        onChanged: (v) {
-          gender = v;
-          setState(() {});
-        },
+        onChanged: (v) => gender = v,
       ),
-
       //
       Search_Nationality(
-        initial: "Cambodian", //
-        onChanged: (v) {
-          nationality_id = v;
-          setState(() {});
-        },
+        init: nationality_id, //
+        onChanged: (v) => nationality_id = v,
       ),
-
       //
       Input_Text(
-        initial: id_number, //
-        title: "ID Number:", //
-        onChanged: (v) {
-          id_number = v;
-          setState(() {});
-        },
+        init: id_number, //
+        lead: "ID Number:",
+        onChanged: (v) => id_number = v,
       ),
-
       //
       Input_Text(
-        initial: passport_number, //
-        title: "Passport Number:", //
-        onChanged: (v) {
-          passport_number = v;
-          setState(() {});
-        },
+        init: passport_number, //
+        lead: "Passport Number:",
+        onChanged: (v) => passport_number = v,
       ),
-
+      //
       Input_Text(
-        initial: note, //
-        title: "Note:", //
-        maxLines: 4, //
-        onChanged: (v) {
-          note = v ?? "";
-          setState(() {});
-        },
+        init: note, //
+        lead: "Note:",
+        maxLines: 4,
+        onChanged: (v) => note = v,
       ),
 
       //
@@ -168,9 +138,8 @@ class _Main_State extends State<Main_> {
         label: Text("Update"),
         onPressed: on_update,
       ),
-
       //
-      SizedBox(height: height - 100),
+      SizedBox(height: 100), //
     ]);
   }
 
@@ -181,14 +150,14 @@ class _Main_State extends State<Main_> {
       tmp = await dio.post(
         endpoint.GUEST_CRUD_UPDATE, //
         data: {
-          sm_guest.ID: widget.id,
-          sm_guest.FULL_NAME: full_name,
-          sm_guest.PHONE_NUMBER: phone_number,
-          sm_guest.GENDER: gender,
-          sm_guest.NATIONALITY_ID: nationality_id,
-          sm_guest.ID_NUMBER: id_number,
-          sm_guest.PASSPORT_NUMBER: passport_number,
+          sm_guest.ID: widget.id, //
+          sm_guest.FULL_NAME: full_name, //
+          sm_guest.PHONE_NUMBER: phone_number, //
+          sm_guest.ID_NUMBER: id_number, //
+          sm_guest.PASSPORT_NUMBER: passport_number, //
           sm_guest.NOTE: note, //
+          sm_guest.GENDER: gender, //
+          sm_guest.NATIONALITY_ID: nationality_id, //
         },
       );
 

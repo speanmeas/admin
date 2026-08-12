@@ -66,73 +66,45 @@ class _Main_State extends State<Main_> {
     return _layout([
       //
       Input_Text(
-        initial: full_name, //
-        title: "Full Name:", //
-        onChanged: (v) {
-          full_name = v;
-          setState(() {});
-        },
+        init: full_name, //
+        lead: "Full Name:", //
+        onChanged: (v) => full_name = v,
       ),
-
       //
       Input_Text(
-        initial: phone_number, //
-        title: "Phone Number:", //
-        onChanged: (v) {
-          phone_number = v;
-          setState(() {});
-        },
+        init: phone_number, //
+        lead: "Phone Number:", //
+        onChanged: (v) => phone_number = v,
       ),
-
       //
       Select_Dynamic(
         prefixIcon: Icon(Icons.wc),
         options: ["Male", "Female", "Other"], //
-        onChanged: (v) {
-          gender = v;
-          setState(() {});
-        },
+        onChanged: (v) => gender = v,
       ),
-
       //
       Search_Nationality(
-        initial: "Cambodian", //
-        onChanged: (v) {
-          nationality_id = v;
-          setState(() {});
-        },
+        init: "Cambodian", //
+        onChanged: (v) => nationality_id = v,
       ),
-
       //
       Input_Text(
-        initial: id_number, //
-        title: "National ID Number:", //
-        onChanged: (v) {
-          id_number = v;
-          setState(() {});
-        },
+        init: id_number, //
+        lead: "National ID Number:", //
+        onChanged: (v) => id_number = v,
       ),
-
       //
       Input_Text(
-        initial: passport_number, //
-        title: "Passport Number:", //
-        onChanged: (v) {
-          passport_number = v;
-          setState(() {});
-        },
+        init: passport_number, //
+        lead: "Passport Number:", //
+        onChanged: (v) => passport_number = v,
       ),
-
       Input_Text(
-        initial: note, //
-        title: "Note:", //
+        init: note, //
+        lead: "Note:", //
         maxLines: 4, //
-        onChanged: (v) {
-          note = v ?? "";
-          setState(() {});
-        },
+        onChanged: (v) => note = v ?? "",
       ),
-
       //
       OutlinedButton.icon(
         icon: Icon(Icons.check),
@@ -140,7 +112,7 @@ class _Main_State extends State<Main_> {
         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
         onPressed: on_create,
       ),
-
+      //
       SizedBox(height: height - 100),
     ]);
   }

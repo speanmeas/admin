@@ -44,6 +44,11 @@ class _Main_State extends State<Main_> {
   //
   dynamic tmp;
 
+  //
+  void init() async {
+    //
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -61,9 +66,9 @@ class _Main_State extends State<Main_> {
         label: Text("Delete"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
         onPressed: on_delete,
-        // style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
       ),
 
+      //
       SizedBox(height: height - 100),
     ]);
   }
@@ -87,6 +92,12 @@ class _Main_State extends State<Main_> {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
   }
 }
 

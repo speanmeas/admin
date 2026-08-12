@@ -36,12 +36,6 @@ class _Main_State extends State<Main_> {
   int load_request_id = 0;
   PlutoGridStateManager? state_manager;
 
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
   //
   void init() async {
     try {
@@ -126,8 +120,9 @@ class _Main_State extends State<Main_> {
               "index": PlutoCell(value: data.indexOf(d) + 1),
               sm_guest.ID: PlutoCell(value: d[sm_guest.ID] ?? ""),
               sm_guest.FULL_NAME: PlutoCell(value: d[sm_guest.FULL_NAME] ?? ""),
-              sm_guest.PHONE_NUMBER: PlutoCell(value: d[sm_guest.PHONE_NUMBER] ?? ""),
               sm_guest.GENDER: PlutoCell(value: d[sm_guest.GENDER] ?? ""),
+              sm_guest.PHONE_NUMBER: PlutoCell(value: d[sm_guest.PHONE_NUMBER] ?? ""),
+              sm_guest.NATIONALITY_ID: PlutoCell(value: d[sm_guest.NATIONALITY_ID]?["name"] ?? ""),
               sm_guest.ID_NUMBER: PlutoCell(value: d[sm_guest.ID_NUMBER] ?? ""),
               sm_guest.PASSPORT_NUMBER: PlutoCell(value: d[sm_guest.PASSPORT_NUMBER] ?? ""),
               sm_guest.NOTE: PlutoCell(value: d[sm_guest.NOTE] ?? ""),
@@ -474,6 +469,13 @@ class _Main_State extends State<Main_> {
   }
 
   //
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  //
 }
 
 const double WIDTH = 120;
@@ -519,24 +521,7 @@ final columns = [
       );
     },
   ),
-  PlutoColumn(
-    field: sm_guest.PHONE_NUMBER, //
-    title: "Phone",
-    type: PlutoColumnType.text(),
-    width: WIDTH,
-    enableEditingMode: false,
-    renderer: (rc) {
-      String value = "";
-      if (rc.cell.value != null) value = rc.cell.value.toString();
-      return Align(
-        alignment: Alignment.center, //
-        child: Text(
-          value, //
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    },
-  ),
+
   PlutoColumn(
     field: sm_guest.GENDER, //
     title: "Gender",
@@ -556,8 +541,44 @@ final columns = [
     },
   ),
   PlutoColumn(
+    field: sm_guest.PHONE_NUMBER, //
+    title: "Phone",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) value = rc.cell.value.toString();
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
     field: sm_guest.ID_NUMBER, //
     title: "ID Number",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) value = rc.cell.value.toString();
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_guest.NATIONALITY_ID, //
+    title: "Nationality",
     type: PlutoColumnType.text(),
     width: WIDTH,
     enableEditingMode: false,

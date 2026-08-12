@@ -8,8 +8,8 @@ class _Input_TextState extends State<Input_Text> {
   final focusNode = FocusNode();
 
   void init() {
-    if (widget.initial != null) {
-      controller.text = widget.initial!;
+    if (widget.init != null) {
+      controller.text = widget.init!;
       setState(() {});
     }
   }
@@ -21,7 +21,7 @@ class _Input_TextState extends State<Input_Text> {
       controller: controller,
       maxLines: widget.maxLines,
       decoration: InputDecoration(
-        labelText: widget.title,
+        labelText: widget.lead,
         labelStyle: TextStyle(fontWeight: FontWeight.bold),
         floatingLabelBehavior: FloatingLabelBehavior.always,
         prefixIcon: Icon(widget.prefixIcon ?? Icons.text_fields), //
@@ -56,15 +56,15 @@ class _Input_TextState extends State<Input_Text> {
 class Input_Text extends StatefulWidget {
   const Input_Text({
     super.key, //
-    this.initial,
-    this.title,
+    this.init,
+    this.lead,
     this.onChanged,
     this.maxLines,
     this.prefixIcon,
   });
 
-  final String? initial;
-  final String? title;
+  final String? init;
+  final String? lead;
   final Function(String?)? onChanged;
   final int? maxLines;
   final IconData? prefixIcon;
@@ -82,8 +82,8 @@ void main() {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Input_Text(
-              title: "Text Value:",
-              initial: "Hello",
+              lead: "Text Value:",
+              init: "Hello",
               onChanged: (v) {
                 print("Changed: $v");
               },

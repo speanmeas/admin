@@ -92,8 +92,8 @@ class _Main_State extends State<Main_> {
     return _layout([
       //
       Input_Text(
-        initial: text_1, //
-        title: "Text 1:", //
+        init: text_1, //
+        lead: "Text 1:", //
         onChanged: (v) {
           text_1 = v;
           setState(() {});
@@ -102,8 +102,8 @@ class _Main_State extends State<Main_> {
 
       //
       Input_Text(
-        initial: text_2, //
-        title: "Text 2:", //
+        init: text_2, //
+        lead: "Text 2:", //
         onChanged: (v) {
           text_2 = v;
           setState(() {});
@@ -172,8 +172,8 @@ class _Main_State extends State<Main_> {
 
       //
       Input_Text(
-        initial: note, //
-        title: "Note:", //
+        init: note, //
+        lead: "Note:", //
         maxLines: 4, //
         onChanged: (v) {
           note = v ?? "";
