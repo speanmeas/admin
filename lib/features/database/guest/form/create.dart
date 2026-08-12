@@ -70,7 +70,6 @@ class _Main_State extends State<Main_> {
         title: "Full Name:", //
         onChanged: (v) {
           full_name = v;
-          print(full_name);
           setState(() {});
         },
       ),
@@ -81,7 +80,6 @@ class _Main_State extends State<Main_> {
         title: "Phone Number:", //
         onChanged: (v) {
           phone_number = v;
-          print(phone_number);
           setState(() {});
         },
       ),
@@ -92,7 +90,6 @@ class _Main_State extends State<Main_> {
         options: ["Male", "Female", "Other"], //
         onChanged: (v) {
           gender = v;
-          print(gender);
           setState(() {});
         },
       ),
@@ -102,7 +99,6 @@ class _Main_State extends State<Main_> {
         initial: "Cambodian", //
         onChanged: (v) {
           nationality_id = v;
-          print(nationality_id);
           setState(() {});
         },
       ),
@@ -113,7 +109,6 @@ class _Main_State extends State<Main_> {
         title: "National ID Number:", //
         onChanged: (v) {
           id_number = v;
-          print(id_number);
           setState(() {});
         },
       ),
@@ -124,7 +119,6 @@ class _Main_State extends State<Main_> {
         title: "Passport Number:", //
         onChanged: (v) {
           passport_number = v;
-          print(passport_number);
           setState(() {});
         },
       ),
@@ -135,7 +129,6 @@ class _Main_State extends State<Main_> {
         maxLines: 4, //
         onChanged: (v) {
           note = v ?? "";
-          print(note);
           setState(() {});
         },
       ),

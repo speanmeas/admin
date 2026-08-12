@@ -46,7 +46,16 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-  dynamic data;
+  bool is_loading = true;
+
+  String? username;
+  String? full_name;
+  String? phone_number;
+  bool? is_admin;
+  bool? is_manager;
+  bool? is_receptionist;
+  bool? is_housekeeper;
+  String? note;
 
   void init() async {
     try {
@@ -55,9 +64,16 @@ class _Main_State extends State<Main_> {
         data: {sm_user.ID: widget.id},
       );
 
-      data = tmp.data[0];
+      username = tmp.data[0][sm_user.USERNAME];
+      full_name = tmp.data[0][sm_user.FULL_NAME];
+      phone_number = tmp.data[0][sm_user.PHONE_NUMBER];
+      is_admin = tmp.data[0][sm_user.IS_ADMIN];
+      is_manager = tmp.data[0][sm_user.IS_MANAGER];
+      is_receptionist = tmp.data[0][sm_user.IS_RECEPTIONIST];
+      is_housekeeper = tmp.data[0][sm_user.IS_HOUSEKEEPER];
+      note = tmp.data[0][sm_user.NOTE];
 
-      setState(() {});
+      setState(() => is_loading = false);
       //
     } catch (e, st) {
       print(st);
@@ -68,13 +84,13 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    if (data == null) return Center(child: CircularProgressIndicator());
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       //
       Show_Text(
         prefixIcon: Icons.person_outline,
         leading: "Username:", //
-        value: data[sm_user.USERNAME] ?? "",
+        value: username,
       ),
 
       //
@@ -88,49 +104,49 @@ class _Main_State extends State<Main_> {
       Show_Text(
         prefixIcon: Icons.badge_outlined,
         leading: "Full Name:", //
-        value: data[sm_user.FULL_NAME] ?? "",
+        value: full_name,
       ),
 
       //
       Show_Text(
         prefixIcon: Icons.phone_outlined,
         leading: "Phone Number:", //
-        value: data[sm_user.PHONE_NUMBER] ?? "",
+        value: phone_number,
       ),
 
       //
       Show_Boolean(
         prefixIcon: Icons.admin_panel_settings_outlined,
         leading: "Is Admin:", //
-        value: data[sm_user.IS_ADMIN],
+        value: is_admin,
       ),
 
       //
       Show_Boolean(
         prefixIcon: Icons.manage_accounts_outlined,
         leading: "Is Manager:", //
-        value: data[sm_user.IS_MANAGER],
+        value: is_manager,
       ),
 
       //
       Show_Boolean(
         prefixIcon: Icons.support_agent_outlined,
         leading: "Is Receptionist:", //
-        value: data[sm_user.IS_RECEPTIONIST],
+        value: is_receptionist,
       ),
 
       //
       Show_Boolean(
         prefixIcon: Icons.cleaning_services_outlined,
         leading: "Is Housekeeper:", //
-        value: data[sm_user.IS_HOUSEKEEPER],
+        value: is_housekeeper,
       ),
 
       //
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
         leading: "Note:", //
-        value: data[sm_user.NOTE],
+        value: note,
         maxLines: 4,
       ),
 

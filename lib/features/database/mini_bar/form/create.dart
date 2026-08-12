@@ -66,7 +66,6 @@ class _Main_State extends State<Main_> {
         title: "Name:", //
         onChanged: (v) {
           name = v;
-          print(name);
           setState(() {});
         },
       ),
@@ -77,7 +76,6 @@ class _Main_State extends State<Main_> {
         title: "Price:", //
         onChanged: (v) {
           price = v;
-          print(price);
           setState(() {});
         },
       ),
@@ -88,7 +86,6 @@ class _Main_State extends State<Main_> {
         title: "Stock:", //
         onChanged: (v) {
           stock = v;
-          print(stock);
           setState(() {});
         },
       ),
@@ -99,7 +96,6 @@ class _Main_State extends State<Main_> {
         maxLines: 4, //
         onChanged: (v) {
           note = v ?? "";
-          print(note);
           setState(() {});
         },
       ),

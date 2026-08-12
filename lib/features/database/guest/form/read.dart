@@ -45,7 +45,7 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-  // dynamic map;
+  bool is_loading = true;
 
   String? id;
   String? full_name;
@@ -72,7 +72,7 @@ class _Main_State extends State<Main_> {
       passport_number = tmp.data[0][sm_guest.PASSPORT_NUMBER];
       note = tmp.data[0][sm_guest.NOTE];
 
-      setState(() {});
+      setState(() => is_loading = false);
       //
     } catch (e, st) {
       print(st);
@@ -83,6 +83,7 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       //
       Show_Text(

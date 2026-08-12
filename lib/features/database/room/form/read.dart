@@ -46,7 +46,14 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-  dynamic data;
+  bool is_loading = true;
+
+  String? number;
+  double? usd_per_day;
+  double? usd_per_3h;
+  String? kind;
+  String? status;
+  String? note;
 
   void init() async {
     try {
@@ -55,9 +62,14 @@ class _Main_State extends State<Main_> {
         data: {sm_room.ID: widget.id},
       );
 
-      data = tmp.data[0];
+      number = tmp.data[0][sm_room.NUMBER];
+      usd_per_day = tmp.data[0][sm_room.USD_PER_DAY];
+      usd_per_3h = tmp.data[0][sm_room.USD_PER_3H];
+      kind = tmp.data[0][sm_room.KIND];
+      status = tmp.data[0][sm_room.STATUS];
+      note = tmp.data[0][sm_room.NOTE];
 
-      setState(() {});
+      setState(() => is_loading = false);
       //
     } catch (e, st) {
       print(st);
@@ -68,48 +80,48 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    if (data == null) return Center(child: CircularProgressIndicator());
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       //
       Show_Text(
         prefixIcon: Icons.meeting_room_outlined,
         leading: "Number:", //
-        value: data[sm_room.NUMBER] ?? "",
+        value: number,
       ),
 
       //
       Show_Number(
         prefixIcon: Icons.attach_money,
         leading: "USD/Day:", //
-        value: data[sm_room.USD_PER_DAY],
+        value: usd_per_day,
       ),
 
       //
       Show_Number(
         prefixIcon: Icons.attach_money,
         leading: "USD/3H:", //
-        value: data[sm_room.USD_PER_3H],
+        value: usd_per_3h,
       ),
 
       //
       Show_Text(
         prefixIcon: Icons.king_bed_outlined,
         leading: "Kind:", //
-        value: data[sm_room.KIND] ?? "",
+        value: kind,
       ),
 
       //
       Show_Text(
         prefixIcon: Icons.verified_outlined,
         leading: "Status:", //
-        value: data[sm_room.STATUS] ?? "",
+        value: status,
       ),
 
       //
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
         leading: "Note:", //
-        value: data[sm_room.NOTE],
+        value: note,
         maxLines: 4,
       ),
 

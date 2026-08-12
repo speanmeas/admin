@@ -48,7 +48,7 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp; // ignore: unused
-  dynamic data;
+  bool is_loading = true;
 
   String? text_1;
   double? number_1;
@@ -64,15 +64,14 @@ class _Main_State extends State<Main_> {
         endpoint.DEMO_2_CRUD_READ_ID, //
         data: {sm_demo_2.ID: widget.id},
       );
-      data = tmp.data[0];
 
-      text_1 = data[sm_demo_2.TEXT_1];
-      number_1 = data[sm_demo_2.NUMBER_1];
-      datetime_1 = data[sm_demo_2.DATETIME_1] != null ? DateTime.parse(data[sm_demo_2.DATETIME_1]) : null;
-      logic_1 = data[sm_demo_2.LOGIC_1];
-      note = data[sm_demo_2.NOTE];
+      text_1 = tmp.data[0][sm_demo_2.TEXT_1];
+      number_1 = tmp.data[0][sm_demo_2.NUMBER_1];
+      datetime_1 = tmp.data[0][sm_demo_2.DATETIME_1] != null ? DateTime.parse(tmp.data[0][sm_demo_2.DATETIME_1]) : null;
+      logic_1 = tmp.data[0][sm_demo_2.LOGIC_1];
+      note = tmp.data[0][sm_demo_2.NOTE];
 
-      setState(() {});
+      setState(() => is_loading = false);
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -82,7 +81,7 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    if (data == null) return Center(child: CircularProgressIndicator());
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       //
       Input_Text(
@@ -90,7 +89,6 @@ class _Main_State extends State<Main_> {
         title: "Text 1:", //
         onChanged: (v) {
           text_1 = v;
-          print(text_1);
           setState(() {});
         },
       ),
@@ -101,7 +99,6 @@ class _Main_State extends State<Main_> {
         title: "Number 1:", //
         onChanged: (v) {
           number_1 = v;
-          print(number_1);
           setState(() {});
         },
       ),
@@ -111,7 +108,6 @@ class _Main_State extends State<Main_> {
         title: "Datetime 1:", //
         onChanged: (v) {
           datetime_1 = v;
-          print(datetime_1);
           setState(() {});
         },
       ),
@@ -121,7 +117,6 @@ class _Main_State extends State<Main_> {
         title: "Logic 1:", //
         onChanged: (v) {
           logic_1 = v;
-          print(logic_1);
           setState(() {});
         },
       ),
@@ -132,7 +127,6 @@ class _Main_State extends State<Main_> {
         maxLines: 4, //
         onChanged: (v) {
           note = v ?? "";
-          print(note);
           setState(() {});
         },
       ),

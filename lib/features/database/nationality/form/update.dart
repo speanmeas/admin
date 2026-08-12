@@ -45,7 +45,7 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp; // ignore: unused
-  dynamic data;
+  bool is_loading = true;
 
   String? name;
   String? note;
@@ -58,12 +58,11 @@ class _Main_State extends State<Main_> {
         endpoint.NATIONALITY_CRUD_READ_ID, //
         data: {sm_nationality.ID: widget.id},
       );
-      data = tmp.data[0];
 
-      name = data[sm_nationality.NAME];
-      note = data[sm_nationality.NOTE];
+      name = tmp.data[0][sm_nationality.NAME];
+      note = tmp.data[0][sm_nationality.NOTE];
 
-      setState(() {});
+      setState(() => is_loading = false);
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -73,7 +72,7 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    if (data == null) return Center(child: CircularProgressIndicator());
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       //
       Input_Text(
@@ -81,7 +80,6 @@ class _Main_State extends State<Main_> {
         title: "Name:", //
         onChanged: (v) {
           name = v;
-          print(name);
           setState(() {});
         },
       ),
@@ -93,7 +91,6 @@ class _Main_State extends State<Main_> {
         prefixIcon: Icons.note_alt_outlined, //
         onChanged: (v) {
           note = v ?? "";
-          print(note);
           setState(() {});
         },
       ),

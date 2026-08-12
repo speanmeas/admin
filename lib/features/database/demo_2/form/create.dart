@@ -9,7 +9,6 @@ import "package:speanmeas/core/widget/pick/pick_datetime.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
 import "package:speanmeas/core/schema/demo_2.g.dart";
-import "package:speanmeas/core/widget/search/search_nationality.dart";
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -56,8 +55,6 @@ class _Main_State extends State<Main_> {
   bool? logic_1;
   String? note;
 
-  String? nationality_id;
-
   void init() async {
     //
   }
@@ -72,7 +69,6 @@ class _Main_State extends State<Main_> {
         title: "Text 1:", //
         onChanged: (v) {
           text_1 = v;
-          print(text_1);
           setState(() {});
         },
       ),
@@ -83,7 +79,6 @@ class _Main_State extends State<Main_> {
         title: "Number 1:", //
         onChanged: (v) {
           number_1 = v;
-          print(number_1);
           setState(() {});
         },
       ),
@@ -93,7 +88,6 @@ class _Main_State extends State<Main_> {
         title: "Datetime 1:", //
         onChanged: (v) {
           datetime_1 = v;
-          print(datetime_1);
           setState(() {});
         },
       ),
@@ -103,7 +97,6 @@ class _Main_State extends State<Main_> {
         title: "Logic 1:", //
         onChanged: (v) {
           logic_1 = v;
-          print(logic_1);
           setState(() {});
         },
       ),
@@ -114,17 +107,6 @@ class _Main_State extends State<Main_> {
         maxLines: 4, //
         onChanged: (v) {
           note = v ?? "";
-          print(note);
-          setState(() {});
-        },
-      ),
-
-      //
-      Search_Nationality(
-        initial: "Cambodian",
-        onChanged: (v) {
-          nationality_id = v;
-          print(nationality_id);
           setState(() {});
         },
       ),

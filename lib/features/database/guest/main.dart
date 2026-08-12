@@ -4,7 +4,7 @@ import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/i18n.dart";
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/button/menu_button_text.dart";
@@ -88,6 +88,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void load_page(int p) async {
     final request_id = ++load_request_id;
 
@@ -351,6 +352,7 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  //
   void on_create() async {
     try {
       //
@@ -376,6 +378,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_read() async {
     try {
       //
@@ -402,6 +405,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_update() async {
     try {
       //
@@ -432,6 +436,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   void on_delete() async {
     try {
       //
@@ -462,6 +467,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  //
   int get total_pages {
     if (row_total == 0) return 1;
     return (row_total + DEFAULT_LIMIT_ROW - 1) ~/ DEFAULT_LIMIT_ROW;

@@ -48,7 +48,13 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-  dynamic data;
+  bool is_loading = true;
+
+  String? text_1;
+  double? number_1;
+  DateTime? datetime_1;
+  bool? logic_1;
+  String? note;
 
   void init() async {
     try {
@@ -57,9 +63,13 @@ class _Main_State extends State<Main_> {
         data: {sm_demo_2.ID: widget.id},
       );
 
-      data = tmp.data[0];
+      text_1 = tmp.data[0][sm_demo_2.TEXT_1];
+      number_1 = tmp.data[0][sm_demo_2.NUMBER_1];
+      datetime_1 = DateTime.parse(tmp.data[0][sm_demo_2.DATETIME_1]);
+      logic_1 = tmp.data[0][sm_demo_2.LOGIC_1];
+      note = tmp.data[0][sm_demo_2.NOTE];
 
-      setState(() {});
+      setState(() => is_loading = false);
       //
     } catch (e, st) {
       print(st);
@@ -70,41 +80,41 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    if (data == null) return Center(child: CircularProgressIndicator());
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       //
       Show_Text(
         prefixIcon: Icons.text_fields,
         leading: "Text 1:", //
-        value: data[sm_demo_2.TEXT_1] ?? "",
+        value: text_1,
       ),
 
       //
       Show_Number(
         prefixIcon: Icons.numbers,
         leading: "Number 1:", //
-        value: data[sm_demo_2.NUMBER_1] ?? "",
+        value: number_1,
       ),
 
       //
       Show_Datetime(
         prefixIcon: Icons.calendar_month,
         leading: "Datetime 1:", //
-        value: DateTime.tryParse(data[sm_demo_2.DATETIME_1]),
+        value: datetime_1,
       ),
 
       //
       Show_Boolean(
         prefixIcon: Icons.toggle_on,
         leading: "Boolean:", //
-        value: data[sm_demo_2.LOGIC_1],
+        value: logic_1,
       ),
 
       //
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
         leading: "Note:", //
-        value: data[sm_demo_2.NOTE],
+        value: note,
         maxLines: 4,
       ),
 

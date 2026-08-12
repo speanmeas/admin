@@ -71,7 +71,6 @@ class _Main_State extends State<Main_> {
         title: "Number:", //
         onChanged: (v) {
           number = v;
-          print(number);
           setState(() {});
         },
       ),
@@ -82,7 +81,6 @@ class _Main_State extends State<Main_> {
         title: "USD/Day:", //
         onChanged: (v) {
           usd_per_day = v;
-          print(usd_per_day);
           setState(() {});
         },
       ),
@@ -93,7 +91,6 @@ class _Main_State extends State<Main_> {
         title: "USD/3H:", //
         onChanged: (v) {
           usd_per_3h = v;
-          print(usd_per_3h);
           setState(() {});
         },
       ),
@@ -103,7 +100,6 @@ class _Main_State extends State<Main_> {
         initial: kind, //
         onChanged: (v) {
           kind = v;
-          print(kind);
           setState(() {});
         },
       ),
@@ -113,7 +109,6 @@ class _Main_State extends State<Main_> {
         initial: status, //
         onChanged: (v) {
           status = v;
-          print(status);
           setState(() {});
         },
       ),
@@ -124,7 +119,6 @@ class _Main_State extends State<Main_> {
         maxLines: 4, //
         onChanged: (v) {
           note = v ?? "";
-          print(note);
           setState(() {});
         },
       ),

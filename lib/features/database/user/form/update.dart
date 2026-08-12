@@ -47,7 +47,7 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp; // ignore: unused
-  dynamic data;
+  bool is_loading = true;
 
   String? username;
   String? password;
@@ -67,18 +67,17 @@ class _Main_State extends State<Main_> {
         endpoint.USER_CRUD_READ_ID, //
         data: {sm_user.ID: widget.id},
       );
-      data = tmp.data[0];
 
-      username = data[sm_user.USERNAME];
-      full_name = data[sm_user.FULL_NAME];
-      phone_number = data[sm_user.PHONE_NUMBER];
-      is_admin = data[sm_user.IS_ADMIN];
-      is_manager = data[sm_user.IS_MANAGER];
-      is_receptionist = data[sm_user.IS_RECEPTIONIST];
-      is_housekeeper = data[sm_user.IS_HOUSEKEEPER];
-      note = data[sm_user.NOTE];
+      username = tmp.data[0][sm_user.USERNAME];
+      full_name = tmp.data[0][sm_user.FULL_NAME];
+      phone_number = tmp.data[0][sm_user.PHONE_NUMBER];
+      is_admin = tmp.data[0][sm_user.IS_ADMIN];
+      is_manager = tmp.data[0][sm_user.IS_MANAGER];
+      is_receptionist = tmp.data[0][sm_user.IS_RECEPTIONIST];
+      is_housekeeper = tmp.data[0][sm_user.IS_HOUSEKEEPER];
+      note = tmp.data[0][sm_user.NOTE];
 
-      setState(() {});
+      setState(() => is_loading = false);
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -88,7 +87,7 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    if (data == null) return Center(child: CircularProgressIndicator());
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       //
       Input_Text(
@@ -96,7 +95,6 @@ class _Main_State extends State<Main_> {
         title: "Username:", //
         onChanged: (v) {
           username = v;
-          print(username);
           setState(() {});
         },
       ),
@@ -107,7 +105,6 @@ class _Main_State extends State<Main_> {
         hint: "New Password", //
         onChanged: (v) {
           password = v;
-          print(password);
           setState(() {});
         },
       ),
@@ -118,7 +115,6 @@ class _Main_State extends State<Main_> {
         title: "Full Name:", //
         onChanged: (v) {
           full_name = v;
-          print(full_name);
           setState(() {});
         },
       ),
@@ -129,7 +125,6 @@ class _Main_State extends State<Main_> {
         title: "Phone Number:", //
         onChanged: (v) {
           phone_number = v;
-          print(phone_number);
           setState(() {});
         },
       ),
@@ -140,7 +135,6 @@ class _Main_State extends State<Main_> {
         title: "Is Admin:", //
         onChanged: (v) {
           is_admin = v;
-          print(is_admin);
           setState(() {});
         },
       ),
@@ -151,7 +145,6 @@ class _Main_State extends State<Main_> {
         title: "Is Manager:", //
         onChanged: (v) {
           is_manager = v;
-          print(is_manager);
           setState(() {});
         },
       ),
@@ -162,7 +155,6 @@ class _Main_State extends State<Main_> {
         title: "Is Receptionist:", //
         onChanged: (v) {
           is_receptionist = v;
-          print(is_receptionist);
           setState(() {});
         },
       ),
@@ -173,7 +165,6 @@ class _Main_State extends State<Main_> {
         title: "Is Housekeeper:", //
         onChanged: (v) {
           is_housekeeper = v;
-          print(is_housekeeper);
           setState(() {});
         },
       ),
@@ -184,7 +175,6 @@ class _Main_State extends State<Main_> {
         maxLines: 4, //
         onChanged: (v) {
           note = v ?? "";
-          print(note);
           setState(() {});
         },
       ),

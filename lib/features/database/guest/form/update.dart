@@ -4,6 +4,7 @@ import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/select/select_dynamic.dart";
+import "package:speanmeas/core/widget/select/select_string.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/search/search_nationality.dart";
@@ -49,7 +50,7 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp; // ignore: unused
-  // dynamic data;
+  bool is_loading = true;
 
   String? full_name;
   String? phone_number;
@@ -59,6 +60,7 @@ class _Main_State extends State<Main_> {
   String? passport_number;
   String? note;
 
+  //
   void init() async {
     //
     try {
@@ -67,15 +69,17 @@ class _Main_State extends State<Main_> {
         endpoint.GUEST_CRUD_READ_ID, //
         data: {sm_guest.ID: widget.id},
       );
+      print(tmp);
 
       full_name = tmp.data[0][sm_guest.FULL_NAME];
       phone_number = tmp.data[0][sm_guest.PHONE_NUMBER];
       gender = tmp.data[0][sm_guest.GENDER];
-      nationality_id = tmp.data[0][sm_guest.NATIONALITY_ID];
+      // nationality_id = tmp.data[0][sm_guest.NATIONALITY_ID];
       id_number = tmp.data[0][sm_guest.ID_NUMBER];
       passport_number = tmp.data[0][sm_guest.PASSPORT_NUMBER];
       note = tmp.data[0][sm_guest.NOTE];
 
+      is_loading = false;
       setState(() {});
     } catch (e, st) {
       print(st);
@@ -86,6 +90,7 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       //
       Input_Text(
@@ -93,7 +98,6 @@ class _Main_State extends State<Main_> {
         title: "Full Name:", //
         onChanged: (v) {
           full_name = v;
-          print(full_name);
           setState(() {});
         },
       ),
@@ -104,19 +108,17 @@ class _Main_State extends State<Main_> {
         title: "Phone Number:", //
         onChanged: (v) {
           phone_number = v;
-          print(phone_number);
           setState(() {});
         },
       ),
 
       //
-      Select_Dynamic(
+      Select_String(
         initial: gender, //
         options: ["Male", "Female", "Other"], //
         prefixIcon: Icon(Icons.wc),
         onChanged: (v) {
           gender = v;
-          print(gender);
           setState(() {});
         },
       ),
@@ -126,7 +128,6 @@ class _Main_State extends State<Main_> {
         initial: "Cambodian", //
         onChanged: (v) {
           nationality_id = v;
-          print(nationality_id);
           setState(() {});
         },
       ),
@@ -137,7 +138,6 @@ class _Main_State extends State<Main_> {
         title: "ID Number:", //
         onChanged: (v) {
           id_number = v;
-          print(id_number);
           setState(() {});
         },
       ),
@@ -148,34 +148,33 @@ class _Main_State extends State<Main_> {
         title: "Passport Number:", //
         onChanged: (v) {
           passport_number = v;
-          print(passport_number);
           setState(() {});
         },
       ),
 
-      //
       Input_Text(
         initial: note, //
         title: "Note:", //
         maxLines: 4, //
         onChanged: (v) {
           note = v ?? "";
-          print(note);
           setState(() {});
         },
       ),
 
       //
       OutlinedButton.icon(
-        icon: Icon(Icons.check),
+        icon: Icon(Icons.check), //
         label: Text("Update"),
-        style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
         onPressed: on_update,
       ),
+
+      //
       SizedBox(height: height - 100),
     ]);
   }
 
+  //
   void on_update() async {
     try {
       //

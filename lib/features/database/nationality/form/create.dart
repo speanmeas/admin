@@ -63,7 +63,6 @@ class _Main_State extends State<Main_> {
         title: "Name:", //
         onChanged: (v) {
           name = v;
-          print(name);
           setState(() {});
         },
       ),
@@ -75,7 +74,6 @@ class _Main_State extends State<Main_> {
         maxLines: 4, //
         onChanged: (v) {
           note = v ?? "";
-          print(note);
           setState(() {});
         },
       ),

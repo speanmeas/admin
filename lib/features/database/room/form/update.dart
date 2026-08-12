@@ -49,7 +49,7 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp; // ignore: unused
-  dynamic data;
+  bool is_loading = true;
 
   String? number;
   double? usd_per_day;
@@ -66,16 +66,15 @@ class _Main_State extends State<Main_> {
         endpoint.ROOM_CRUD_READ_ID, //
         data: {sm_room.ID: widget.id},
       );
-      data = tmp.data[0];
 
-      number = data[sm_room.NUMBER];
-      usd_per_day = data[sm_room.USD_PER_DAY];
-      usd_per_3h = data[sm_room.USD_PER_3H];
-      kind = data[sm_room.KIND];
-      status = data[sm_room.STATUS];
-      note = data[sm_room.NOTE];
+      number = tmp.data[0][sm_room.NUMBER];
+      usd_per_day = tmp.data[0][sm_room.USD_PER_DAY];
+      usd_per_3h = tmp.data[0][sm_room.USD_PER_3H];
+      kind = tmp.data[0][sm_room.KIND];
+      status = tmp.data[0][sm_room.STATUS];
+      note = tmp.data[0][sm_room.NOTE];
 
-      setState(() {});
+      setState(() => is_loading = false);
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -85,7 +84,7 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    if (data == null) return Center(child: CircularProgressIndicator());
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       //
       Input_Text(
@@ -93,7 +92,6 @@ class _Main_State extends State<Main_> {
         title: "Number:", //
         onChanged: (v) {
           number = v;
-          print(number);
           setState(() {});
         },
       ),
@@ -104,7 +102,6 @@ class _Main_State extends State<Main_> {
         title: "USD/Day:", //
         onChanged: (v) {
           usd_per_day = v;
-          print(usd_per_day);
           setState(() {});
         },
       ),
@@ -115,7 +112,6 @@ class _Main_State extends State<Main_> {
         title: "USD/3H:", //
         onChanged: (v) {
           usd_per_3h = v;
-          print(usd_per_3h);
           setState(() {});
         },
       ),
@@ -125,7 +121,6 @@ class _Main_State extends State<Main_> {
         initial: kind, //
         onChanged: (v) {
           kind = v;
-          print(kind);
           setState(() {});
         },
       ),
@@ -135,7 +130,6 @@ class _Main_State extends State<Main_> {
         initial: status, //
         onChanged: (v) {
           status = v;
-          print(status);
           setState(() {});
         },
       ),
@@ -146,7 +140,6 @@ class _Main_State extends State<Main_> {
         maxLines: 4, //
         onChanged: (v) {
           note = v ?? "";
-          print(note);
           setState(() {});
         },
       ),

@@ -45,7 +45,10 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-  dynamic data;
+  bool is_loading = true;
+
+  String? name;
+  String? note;
 
   void init() async {
     try {
@@ -54,9 +57,10 @@ class _Main_State extends State<Main_> {
         data: {sm_nationality.ID: widget.id},
       );
 
-      data = tmp.data[0];
+      name = tmp.data[0][sm_nationality.NAME];
+      note = tmp.data[0][sm_nationality.NOTE];
 
-      setState(() {});
+      setState(() => is_loading = false);
       //
     } catch (e, st) {
       print(st);
@@ -67,20 +71,20 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    if (data == null) return Center(child: CircularProgressIndicator());
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       //
       Show_Text(
         prefixIcon: Icons.text_fields,
         leading: "Name:", //
-        value: data[sm_nationality.NAME] ?? "",
+        value: name,
       ),
 
       //
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
         leading: "Note:", //
-        value: data[sm_nationality.NOTE],
+        value: note,
         maxLines: 4,
       ),
 
