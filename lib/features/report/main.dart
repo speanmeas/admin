@@ -264,497 +264,7 @@ class _Main_State extends State<Main_> {
     return _layout(
       PlutoGrid(
         rows: [], //
-        columns: [
-          PlutoColumn(
-            field: "index", //
-            title: "ល.រ.",
-            type: PlutoColumnType.number(),
-            width: WIDTH,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  rc.cell.value.toString(), //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-          PlutoColumn(
-            field: sm_front_desk.ID, //
-            title: "ID",
-            type: PlutoColumnType.number(),
-            width: WIDTH,
-            hide: true, //
-          ),
-          PlutoColumn(
-            field: sm_front_desk.ROOM_NUMBER, //
-            title: "បន្ទប់",
-            type: PlutoColumnType.text(),
-            width: WIDTH,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(
-                  rc.cell.value.toString(), //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-          PlutoColumn(
-            field: sm_front_desk.GUEST_FULL_NAME, //
-            title: "ឈ្មោះភ្ញៀវ",
-            type: PlutoColumnType.text(),
-            width: 150,
-            renderer: (rc) {
-              String value = "";
-              if (rc.cell.value != null) value = rc.cell.value.toString();
-              return Align(
-                alignment: Alignment.centerLeft, //
-                child: Text(
-                  value, //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-          PlutoColumn(
-            field: sm_front_desk.STAY_N_GUEST, //
-            title: "ចំនួនភ្ញៀវ",
-            type: PlutoColumnType.number(),
-            width: WIDTH,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  '${rc.cell.value} នាក់', //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.CHECK_IN_AT, //
-            title: "ពេលចូល",
-            type: PlutoColumnType.text(),
-            width: 150,
-            renderer: (rc) {
-              String value = "";
-              if (rc.cell.value != null) {
-                final tmp = DateTime.tryParse(rc.cell.value.toString());
-                if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
-              }
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(
-                  value, //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.CHECK_OUT_AT, //
-            title: "ពេលចេញ",
-            type: PlutoColumnType.text(),
-            width: 150,
-            renderer: (rc) {
-              String value = "";
-              if (rc.cell.value != null) {
-                final tmp = DateTime.tryParse(rc.cell.value.toString());
-                if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
-              }
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(
-                  value, //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.STAY_DAY, //
-            title: "ចំនួនថ្ងៃ",
-            type: PlutoColumnType.number(),
-            width: WIDTH,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  '${rc.cell.value} ថ្ងៃ', //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.STAY_HOUR, //
-            title: "ចំនួនម៉ោង",
-            type: PlutoColumnType.number(),
-            width: WIDTH,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  '${rc.cell.value.toString()} ម៉ោង', //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.ROOM_PRICE, //
-            title: "ថ្លៃបន្ទប់",
-            type: PlutoColumnType.number(),
-            width: WIDTH,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  '${rc.cell.value.toStringAsFixed(2)} \$', //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                type: PlutoAggregateColumnType.sum,
-                format: "#,##0.00", //
-                titleSpanBuilder: (value) {
-                  return [
-                    TextSpan(
-                      text: "$value \$", //
-                      style: TextStyle(
-                        fontSize: 16, //
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ];
-                },
-                alignment: Alignment.center,
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.ROOM_PAY_CASH, //
-            title: "សាច់ប្រាក់",
-            type: PlutoColumnType.number(),
-            width: WIDTH,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  '${rc.cell.value.toStringAsFixed(2)} \$', //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                type: PlutoAggregateColumnType.sum,
-                format: "#,##0.00", //
-                titleSpanBuilder: (value) {
-                  return [
-                    TextSpan(
-                      text: "$value \$", //
-                      style: TextStyle(
-                        fontSize: 16, //
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ];
-                },
-                alignment: Alignment.center,
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.ROOM_PAY_BANK, //
-            title: "ធនាគារ",
-            type: PlutoColumnType.number(),
-            width: WIDTH,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  '${rc.cell.value.toStringAsFixed(2)} \$', //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                type: PlutoAggregateColumnType.sum,
-                format: "#,##0.00",
-                titleSpanBuilder: (value) {
-                  return [
-                    TextSpan(
-                      text: "$value \$", //
-                      style: TextStyle(
-                        fontSize: 16, //
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ];
-                },
-                alignment: Alignment.center,
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.ROOM_RETURN, //
-            title: "ប្រាក់អាប់",
-            type: PlutoColumnType.number(),
-            width: WIDTH,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  '${rc.cell.value.toStringAsFixed(2)} \$',
-                  overflow: TextOverflow.ellipsis, //
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                type: PlutoAggregateColumnType.sum,
-                format: "#,##0.00",
-                titleSpanBuilder: (value) {
-                  return [
-                    TextSpan(
-                      text: "- $value \$", //
-                      style: TextStyle(
-                        fontSize: 16, //
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ];
-                },
-                alignment: Alignment.center,
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.REVENUE_PRICE, //
-            title: "ថ្លៃផ្សេងៗ",
-            type: PlutoColumnType.number(),
-            width: WIDTH,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  '${rc.cell.value.toStringAsFixed(2)} \$',
-                  overflow: TextOverflow.ellipsis, //
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                type: PlutoAggregateColumnType.sum,
-                format: "#,##0.00", //
-                titleSpanBuilder: (value) {
-                  return [
-                    TextSpan(
-                      text: "$value \$", //
-                      style: TextStyle(
-                        fontSize: 16, //
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ];
-                },
-                alignment: Alignment.center,
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.REVENUE_PAY_CASH, //
-            title: "សាច់ប្រាក់",
-            type: PlutoColumnType.number(),
-            width: WIDTH,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  '${rc.cell.value.toStringAsFixed(2)} \$',
-                  overflow: TextOverflow.ellipsis, //
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                type: PlutoAggregateColumnType.sum,
-                format: "#,##0.00", //
-                titleSpanBuilder: (value) {
-                  return [
-                    TextSpan(
-                      text: "$value \$", //
-                      style: TextStyle(
-                        fontSize: 16, //
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ];
-                },
-                alignment: Alignment.center,
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.REVENUE_PAY_BANK, //
-            title: "ធនាគារ",
-            type: PlutoColumnType.number(),
-            width: WIDTH,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  '${rc.cell.value.toStringAsFixed(2)} \$',
-                  overflow: TextOverflow.ellipsis, //
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                type: PlutoAggregateColumnType.sum,
-                format: "#,##0.00", //
-                titleSpanBuilder: (value) {
-                  return [
-                    TextSpan(
-                      text: "$value \$", //
-                      style: TextStyle(
-                        fontSize: 16, //
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ];
-                },
-                alignment: Alignment.center,
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.REVENUE_RETURN, //
-            title: "ប្រាក់អាប់",
-            type: PlutoColumnType.number(),
-            width: WIDTH,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  '${rc.cell.value.toStringAsFixed(2)} \$',
-                  overflow: TextOverflow.ellipsis, //
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                type: PlutoAggregateColumnType.sum,
-                format: "#,##0.00", //
-                titleSpanBuilder: (value) {
-                  return [
-                    TextSpan(
-                      text: "- $value \$", //
-                      style: TextStyle(
-                        fontSize: 16, //
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ];
-                },
-                alignment: Alignment.center,
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.CHECK_IN_BY, //
-            title: "ឲចូលដោយ",
-            type: PlutoColumnType.text(),
-            width: 160,
-            renderer: (rc) {
-              String value = "";
-              if (rc.cell.value != null) value = rc.cell.value.toString();
-              return Align(
-                alignment: Alignment.centerLeft, //
-                child: Text(
-                  value,
-                  overflow: TextOverflow.ellipsis, //
-                ),
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.ROOM_PAY_BY, //
-            title: "ទទួលប្រាក់ដោយ",
-            type: PlutoColumnType.text(),
-            width: 160,
-            renderer: (rc) {
-              String value = "";
-              if (rc.cell.value != null) value = rc.cell.value.toString();
-              return Align(
-                alignment: Alignment.centerLeft, //
-                child: Text(
-                  value,
-                  overflow: TextOverflow.ellipsis, //
-                ),
-              );
-            },
-          ),
-          //
-          PlutoColumn(
-            field: sm_front_desk.CHECK_OUT_BY, //
-            title: "ឲចេញដោយ",
-            type: PlutoColumnType.text(),
-            width: 160,
-            renderer: (rc) {
-              String value = "";
-              if (rc.cell.value != null) value = rc.cell.value.toString();
-              return Align(
-                alignment: Alignment.centerLeft, //
-                child: Text(
-                  value,
-                  overflow: TextOverflow.ellipsis, //
-                ),
-              );
-            },
-          ),
-          //
-          // TODO: Add all notes together
-          //
-        ], //
-        //
+        columns: columns, //
         configuration: PlutoGridConfiguration(
           // columnSize: PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.scale),
           // columnSize: PlutoGridColumnSizeConfig(
@@ -869,6 +379,499 @@ class _Main_State extends State<Main_> {
 
   //
 }
+
+final WIDTH = 120.0; // * ទទឹងស្តង់ដាររបស់ជួរឈរទិន្នន័យ
+
+final columns = [
+  PlutoColumn(
+    field: "index", //
+    title: "ល.រ.",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          rc.cell.value.toString(), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_front_desk.ID, //
+    title: "ID",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    hide: true, //
+  ),
+  PlutoColumn(
+    field: sm_front_desk.room, //
+    title: "បន្ទប់",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          rc.cell.value.toString(), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_front_desk.GUEST_FULL_NAME, //
+    title: "ឈ្មោះភ្ញៀវ",
+    type: PlutoColumnType.text(),
+    width: 150,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) value = rc.cell.value.toString();
+      return Align(
+        alignment: Alignment.centerLeft, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_front_desk.STAY_N_GUEST, //
+    title: "ចំនួនភ្ញៀវ",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight,
+        child: Text(
+          '${rc.cell.value} នាក់', //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.CHECK_IN_AT, //
+    title: "ពេលចូល",
+    type: PlutoColumnType.text(),
+    width: 150,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) {
+        final tmp = DateTime.tryParse(rc.cell.value.toString());
+        if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
+      }
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.CHECK_OUT_AT, //
+    title: "ពេលចេញ",
+    type: PlutoColumnType.text(),
+    width: 150,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) {
+        final tmp = DateTime.tryParse(rc.cell.value.toString());
+        if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
+      }
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.STAY_DAY, //
+    title: "ចំនួនថ្ងៃ",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          '${rc.cell.value} ថ្ងៃ', //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.STAY_HOUR, //
+    title: "ចំនួនម៉ោង",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          '${rc.cell.value.toString()} ម៉ោង', //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.ROOM_PRICE, //
+    title: "ថ្លៃបន្ទប់",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          '${rc.cell.value.toStringAsFixed(2)} \$', //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+    footerRenderer: (rc) {
+      return PlutoAggregateColumnFooter(
+        rendererContext: rc, //
+        type: PlutoAggregateColumnType.sum,
+        format: "#,##0.00", //
+        titleSpanBuilder: (value) {
+          return [
+            TextSpan(
+              text: "$value \$", //
+              style: TextStyle(
+                fontSize: 16, //
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
+          ];
+        },
+        alignment: Alignment.center,
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.ROOM_PAY_CASH, //
+    title: "សាច់ប្រាក់",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          '${rc.cell.value.toStringAsFixed(2)} \$', //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+    footerRenderer: (rc) {
+      return PlutoAggregateColumnFooter(
+        rendererContext: rc, //
+        type: PlutoAggregateColumnType.sum,
+        format: "#,##0.00", //
+        titleSpanBuilder: (value) {
+          return [
+            TextSpan(
+              text: "$value \$", //
+              style: TextStyle(
+                fontSize: 16, //
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+          ];
+        },
+        alignment: Alignment.center,
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.ROOM_PAY_BANK, //
+    title: "ធនាគារ",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          '${rc.cell.value.toStringAsFixed(2)} \$', //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+    footerRenderer: (rc) {
+      return PlutoAggregateColumnFooter(
+        rendererContext: rc, //
+        type: PlutoAggregateColumnType.sum,
+        format: "#,##0.00",
+        titleSpanBuilder: (value) {
+          return [
+            TextSpan(
+              text: "$value \$", //
+              style: TextStyle(
+                fontSize: 16, //
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+          ];
+        },
+        alignment: Alignment.center,
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.ROOM_RETURN, //
+    title: "ប្រាក់អាប់",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          '${rc.cell.value.toStringAsFixed(2)} \$',
+          overflow: TextOverflow.ellipsis, //
+        ),
+      );
+    },
+    footerRenderer: (rc) {
+      return PlutoAggregateColumnFooter(
+        rendererContext: rc, //
+        type: PlutoAggregateColumnType.sum,
+        format: "#,##0.00",
+        titleSpanBuilder: (value) {
+          return [
+            TextSpan(
+              text: "- $value \$", //
+              style: TextStyle(
+                fontSize: 16, //
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+            ),
+          ];
+        },
+        alignment: Alignment.center,
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.REVENUE_PRICE, //
+    title: "ថ្លៃផ្សេងៗ",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          '${rc.cell.value.toStringAsFixed(2)} \$',
+          overflow: TextOverflow.ellipsis, //
+        ),
+      );
+    },
+    footerRenderer: (rc) {
+      return PlutoAggregateColumnFooter(
+        rendererContext: rc, //
+        type: PlutoAggregateColumnType.sum,
+        format: "#,##0.00", //
+        titleSpanBuilder: (value) {
+          return [
+            TextSpan(
+              text: "$value \$", //
+              style: TextStyle(
+                fontSize: 16, //
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
+          ];
+        },
+        alignment: Alignment.center,
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.REVENUE_PAY_CASH, //
+    title: "សាច់ប្រាក់",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          '${rc.cell.value.toStringAsFixed(2)} \$',
+          overflow: TextOverflow.ellipsis, //
+        ),
+      );
+    },
+    footerRenderer: (rc) {
+      return PlutoAggregateColumnFooter(
+        rendererContext: rc, //
+        type: PlutoAggregateColumnType.sum,
+        format: "#,##0.00", //
+        titleSpanBuilder: (value) {
+          return [
+            TextSpan(
+              text: "$value \$", //
+              style: TextStyle(
+                fontSize: 16, //
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+          ];
+        },
+        alignment: Alignment.center,
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.REVENUE_PAY_BANK, //
+    title: "ធនាគារ",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          '${rc.cell.value.toStringAsFixed(2)} \$',
+          overflow: TextOverflow.ellipsis, //
+        ),
+      );
+    },
+    footerRenderer: (rc) {
+      return PlutoAggregateColumnFooter(
+        rendererContext: rc, //
+        type: PlutoAggregateColumnType.sum,
+        format: "#,##0.00", //
+        titleSpanBuilder: (value) {
+          return [
+            TextSpan(
+              text: "$value \$", //
+              style: TextStyle(
+                fontSize: 16, //
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+          ];
+        },
+        alignment: Alignment.center,
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.REVENUE_RETURN, //
+    title: "ប្រាក់អាប់",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          '${rc.cell.value.toStringAsFixed(2)} \$',
+          overflow: TextOverflow.ellipsis, //
+        ),
+      );
+    },
+    footerRenderer: (rc) {
+      return PlutoAggregateColumnFooter(
+        rendererContext: rc, //
+        type: PlutoAggregateColumnType.sum,
+        format: "#,##0.00", //
+        titleSpanBuilder: (value) {
+          return [
+            TextSpan(
+              text: "- $value \$", //
+              style: TextStyle(
+                fontSize: 16, //
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+            ),
+          ];
+        },
+        alignment: Alignment.center,
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.CHECK_IN_BY, //
+    title: "ឲចូលដោយ",
+    type: PlutoColumnType.text(),
+    width: 160,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) value = rc.cell.value.toString();
+      return Align(
+        alignment: Alignment.centerLeft, //
+        child: Text(
+          value,
+          overflow: TextOverflow.ellipsis, //
+        ),
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.ROOM_PAY_BY, //
+    title: "ទទួលប្រាក់ដោយ",
+    type: PlutoColumnType.text(),
+    width: 160,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) value = rc.cell.value.toString();
+      return Align(
+        alignment: Alignment.centerLeft, //
+        child: Text(
+          value,
+          overflow: TextOverflow.ellipsis, //
+        ),
+      );
+    },
+  ),
+  //
+  PlutoColumn(
+    field: sm_front_desk.CHECK_OUT_BY, //
+    title: "ឲចេញដោយ",
+    type: PlutoColumnType.text(),
+    width: 160,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) value = rc.cell.value.toString();
+      return Align(
+        alignment: Alignment.centerLeft, //
+        child: Text(
+          value,
+          overflow: TextOverflow.ellipsis, //
+        ),
+      );
+    },
+  ),
+  //
+  // TODO: Add all notes together
+  //
+];
 
 class Main_ extends StatefulWidget {
   const Main_({super.key});

@@ -122,7 +122,7 @@ class _Main_State extends State<Main_> {
       ),
 
       Input_Text(
-        init: null, //
+        init: note, //
         lead: "Note:", //
         maxLines: 4, //
         onChanged: (v) {

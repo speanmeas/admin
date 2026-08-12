@@ -9,9 +9,9 @@ import "package:speanmeas/core/widget/show/show_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
 
-// import "package:speanmeas/features/database/nationality/form/create.dart" as n_f_create;
+import "package:speanmeas/features/database/guest/form/create.dart" as create_guest;
 
-class _Search_NationalityState extends State<Search_Nationality> {
+class _Search_GuestState extends State<Search_Guest> {
   //
   bool is_selected = false;
   FocusNode focusNode = FocusNode();
@@ -45,6 +45,8 @@ class _Search_NationalityState extends State<Search_Nationality> {
       }
     });
 
+    if (widget.initial == null || widget.initial!.isEmpty) return;
+
     try {
       tmp = await dio.post(
         endpoint.GUEST_SEARCH, //
@@ -70,7 +72,6 @@ class _Search_NationalityState extends State<Search_Nationality> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      spacing: 8,
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
@@ -175,13 +176,26 @@ class _Search_NationalityState extends State<Search_Nationality> {
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
               onPressed: () async {
                 // * បើកទម្រង់បង្កើតសញ្ជាតិថ្មី
-                // final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => n_f_create.Main_()));
-                // if (v == null) return;
+                final v = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => create_guest.Main_(), //
+                  ),
+                );
+                if (v == null) return;
 
-                // // * បង្ហាញឈ្មោះសញ្ជាតិថ្មី និងជ្រើសរើសភ្លាមៗ
-                // controller.text = v[sm_nationality.NAME]?.toString() ?? "";
-                // is_selected = true;
-                // select(controller.text);
+                // * បង្ហាញឈ្មោះសញ្ជាតិថ្មី និងជ្រើសរើសភ្លាមៗ
+                is_selected = true;
+                id = v[sm_guest.ID]?.toString();
+                full_name = v[sm_guest.FULL_NAME]?.toString();
+                phone_number = v[sm_guest.PHONE_NUMBER]?.toString();
+                gender = v[sm_guest.GENDER]?.toString();
+                nationality = v[sm_guest.NATIONALITY_ID]["name"]?.toString();
+                note = v[sm_guest.NOTE]?.toString();
+
+                controller.text = full_name ?? "";
+                widget.onChanged?.call(id);
+                setState(() {});
               },
             ),
           ],
@@ -236,18 +250,18 @@ class _Search_NationalityState extends State<Search_Nationality> {
   //
 }
 
-class Search_Nationality extends StatefulWidget {
-  const Search_Nationality({
+class Search_Guest extends StatefulWidget {
+  const Search_Guest({
     super.key, //
-    required this.onChanged,
     this.initial,
+    required this.onChanged,
   });
 
-  final ValueChanged<String?>? onChanged; // * ត្រឡប់ id របស់សញ្ជាតិ
   final String? initial; // * តម្លៃដំបូង (ឈ្មោះសញ្ជាតិ)
+  final ValueChanged<String?>? onChanged; // * ត្រឡប់ id របស់សញ្ជាតិ
 
   @override
-  State<Search_Nationality> createState() => _Search_NationalityState();
+  State<Search_Guest> createState() => _Search_GuestState();
 }
 
 void main() {
@@ -256,7 +270,7 @@ void main() {
       theme: theme_data, //
       home: Scaffold(
         body: Center(
-          child: Search_Nationality(
+          child: Search_Guest(
             initial: "Cambodian",
             onChanged: (v) {
               print("Changed: $v");

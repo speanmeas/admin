@@ -1,8 +1,12 @@
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/widget/input/input_text.dart";
+import "package:speanmeas/core/widget/search/search_guest.dart";
 import "package:speanmeas/core/widget/select/select_dynamic.dart";
+import "package:speanmeas/core/widget/show/show_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 
@@ -45,181 +49,133 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
+  bool is_loading = true;
 
-  final c_g_search = TextEditingController();
-  final c_n_o_guest = TextEditingController();
-  final c_d_day = TextEditingController();
-  final c_d_hour = TextEditingController();
-  final c_note = TextEditingController();
+  String? room_number;
+  double? price_per_day;
+  double? price_per_3hours;
+
+  String? guest_id;
+  int? number_of_guest;
+  int? stay_days;
+  int? stay_hours;
+  String? note;
 
   void init() async {
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_front_desk.ID: widget.room_id});
-    for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
+    tmp = await dio.post(
+      endpoint.ROOM_CRUD_READ_ID, //
+      data: {
+        sm_front_desk.ID: widget.room_id, //
+      },
+    );
 
-    c_g_search.text = sm_guest.data[sm_guest.PHONE_NUMBER]?["value"]?.toString() ?? "";
+    room_number = tmp.data[0][sm_room.NUMBER] ?? "Unknown";
+    price_per_day = tmp.data[0][sm_room.USD_PER_DAY] ?? 0;
+    price_per_3hours = tmp.data[0][sm_room.USD_PER_3H] ?? 0;
 
-    sm_front_desk.data[sm_front_desk.STAY_N_GUEST]?["value"] = 1;
-    c_n_o_guest.text = sm_front_desk.data[sm_front_desk.STAY_N_GUEST]?["value"]?.toString() ?? "";
-    c_d_day.text = sm_front_desk.data[sm_front_desk.STAY_DAY]?["value"]?.toString() ?? "";
-    c_d_hour.text = sm_front_desk.data[sm_front_desk.STAY_HOUR]?["value"]?.toString() ?? "";
-    c_note.text = sm_front_desk.data[sm_front_desk.CHECK_IN_NOTE]?["value"]?.toString() ?? "";
+    number_of_guest = 1;
+    stay_days = 0;
+    stay_hours = 0;
 
+    is_loading = false;
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      // guest search
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            "Guest",
-            style: TextStyle(
-              fontSize: 20, //
-              fontWeight: FontWeight.bold, //
-            ),
-          ), //
+            "Room: ", //
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            room_number!,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+          ),
         ],
       ),
 
-      // [x] update to search with phone and name
-      g_search.Main_(
-        controller: c_g_search,
+      Divider(height: 1, color: Colors.black),
+
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Guest", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
+        ],
+      ),
+
+      Search_Guest(
         onChanged: (v) {
-          sm_front_desk.data[sm_front_desk.GUEST_ID]?["value"] = v[sm_guest.ID];
-          sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]?["value"] = v[sm_guest.FULL_NAME];
-          sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]?["value"] = v[sm_guest.PHONE_NUMBER];
-          sm_front_desk.data[sm_front_desk.GUEST_GENDER]?["value"] = v[sm_guest.GENDER];
-          sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]?["value"] = v[sm_guest.NATIONALITY];
-          setState(() {});
-        },
-        onCleared: () {
-          sm_front_desk.data[sm_front_desk.GUEST_ID]?["value"] = null;
-          sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]?["value"] = null;
-          sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]?["value"] = null;
-          sm_front_desk.data[sm_front_desk.GUEST_GENDER]?["value"] = null;
-          sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]?["value"] = null;
+          guest_id = v;
           setState(() {});
         },
       ),
 
-      (() {
-        String value = "";
-        if (sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]?["value"] != null) //
-          value = sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]?["value"].toString() ?? "";
-        return Show_Data(
-          title: sm_front_desk.data[sm_front_desk.GUEST_FULL_NAME]?["title"] ?? "", //
-          value: value,
-        );
-      })(),
-
-      (() {
-        String value = "";
-        if (sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]?["value"] != null) //
-          value = sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]?["value"].toString() ?? "";
-        return Show_Data(
-          title: sm_front_desk.data[sm_front_desk.GUEST_PHONE_NUMBER]?["title"] ?? "", //
-          value: value,
-        );
-      })(),
-
-      (() {
-        String value = "";
-        if (sm_front_desk.data[sm_front_desk.GUEST_GENDER]?["value"] != null) //
-          value = sm_front_desk.data[sm_front_desk.GUEST_GENDER]?["value"].toString() ?? "";
-        return Show_Data(
-          title: sm_front_desk.data[sm_front_desk.GUEST_GENDER]?["title"] ?? "", //
-          value: value,
-        );
-      })(),
-
-      (() {
-        String value = "";
-        if (sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]?["value"] != null) //
-          value = sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]?["value"].toString() ?? "";
-        return Show_Data(
-          title: sm_front_desk.data[sm_front_desk.GUEST_NATIONALITY]?["title"] ?? "", //
-          value: value,
-        );
-      })(),
-
-      Divider(color: Colors.black),
+      Divider(height: 1, color: Colors.black),
 
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            "Stay",
-            style: TextStyle(
-              fontSize: 20, //
-              fontWeight: FontWeight.bold, //
-            ),
-          ), //
+          Text("Stay", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
         ],
       ),
 
-      // number of guests
       Select_Dynamic(
-        controller: c_n_o_guest,
-        leading: "Number of Guests:",
+        lead: "Number of Guests:",
+        initial: number_of_guest, //
         options: List.generate(10, (index) => index + 1),
-        onChanged: (v) => setState(() {}), //
         prefixIcon: Icon(Icons.people_outline), //
+        onChanged: (v) {
+          number_of_guest = v;
+          setState(() {});
+        },
       ),
 
-      // stay duration days
       Select_Dynamic(
-        controller: c_d_day,
-        leading: "Stay Duration (Days):",
+        lead: "Stay Duration (Days):",
+        initial: stay_days, //
         options: List.generate(365, (index) => index),
-        onChanged: (v) => setState(() {}), //
         prefixIcon: Icon(Icons.calendar_month_outlined),
+        onChanged: (v) {
+          stay_days = v;
+          setState(() {});
+        },
       ),
 
-      // stay duration hours
       Select_Dynamic(
-        controller: c_d_hour,
-        leading: "Stay Duration (Hours):",
+        lead: "Stay Duration (Hours):",
+        initial: stay_hours,
         options: [0, 3, 6, 9, 12, 15, 18, 21],
-        onChanged: (v) => setState(() {}), //
         prefixIcon: Icon(Icons.access_time_outlined),
+        onChanged: (v) {
+          stay_hours = v;
+          setState(() {});
+        },
       ),
 
-      Divider(color: Colors.black),
-
-      // * បង្ហាញតម្លៃបន្ទប់ដែលគណនាដោយស្វ័យប្រវត្តិ
-      Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
-            "Room Price: ", //
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-
-          Text(
-            "${room_price.toStringAsFixed(2)} \$", //
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
-          ),
-        ],
+      Input_Text(
+        init: note, //
+        lead: "Note:", //
+        maxLines: 4, //
+        onChanged: (v) {
+          note = v;
+          setState(() {});
+        },
       ),
 
-      // note
-      TextField(
-        controller: c_note,
-        maxLines: 4,
-        decoration: InputDecoration(
-          labelText: "Note:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(Icons.note_alt_outlined), //
+      Divider(height: 1, color: Colors.black),
+
+      if (kDebugMode)
+        Show_Text(
+          leading: "Room Price:", //
+          value: room_price.toStringAsFixed(2),
         ),
-        onChanged: (v) => setState(() {}), //
-      ),
 
-      // additional information
       OutlinedButton.icon(
         icon: Icon(Icons.login_outlined), //
         label: Text("Check In"), //
@@ -232,47 +188,32 @@ class _Main_State extends State<Main_> {
 
   // * គណនាតម្លៃបន្ទប់ (ថ្ងៃ x តម្លៃថ្ងៃ + ម៉ោង x តម្លៃ 3 ម៉ោង)
   double get room_price {
-    int stay_days = int.tryParse(c_d_day.text) ?? 0;
-    int stay_hours = int.tryParse(c_d_hour.text) ?? 0;
-    double price_day = double.tryParse(sm_room.data[sm_room.USD_PER_DAY]?["value"].toString() ?? "") ?? 0;
-    double price_3hours = double.tryParse(sm_room.data[sm_room.USD_PER_3H]?["value"].toString() ?? "") ?? 0;
-    return (price_day * stay_days) + (price_3hours * stay_hours / 3);
+    return (price_per_day! * stay_days!) + (price_per_3hours! * stay_hours! / 3);
   }
 
   bool get can_check_in {
-    int n_guest = int.tryParse(c_n_o_guest.text) ?? 0;
-    int n_day = int.tryParse(c_d_day.text) ?? 0;
-    int n_hour = int.tryParse(c_d_hour.text) ?? 0;
-
-    if (n_guest <= 0) //
-      return false;
-
-    if (n_day <= 0 && n_hour <= 0) //
-      return false;
-
+    if (number_of_guest! <= 0) return false;
+    if (stay_days! <= 0 && stay_hours! <= 0) return false;
     return true;
   }
 
   void on_check_in() async {
     try {
-      double room_price = this.room_price;
-
       //
       tmp = await dio.post(
-        endpoint.FRONT_DESK_FORM_CHECK_IN, // create
+        endpoint.FRONT_DESK_CHECK_IN, // create
         data: {
           sm_front_desk.ROOM_ID: widget.room_id, //
-          sm_front_desk.GUEST_ID: sm_front_desk.data[sm_front_desk.GUEST_ID]?["value"],
-          sm_front_desk.STAY_N_GUEST: int.tryParse(c_n_o_guest.text),
-          sm_front_desk.STAY_DAY: int.tryParse(c_d_day.text),
-          sm_front_desk.STAY_HOUR: int.tryParse(c_d_hour.text),
-          sm_front_desk.CHECK_IN_NOTE: c_note.text,
-          sm_front_desk.ROOM_PRICE: room_price,
+          sm_front_desk.GUEST_ID: guest_id, //
+          sm_front_desk.CHECK_IN_NUMBER: number_of_guest, //
+          sm_front_desk.CHECK_IN_DAY: stay_days, //
+          sm_front_desk.CHECK_IN_HOUR: stay_hours, //
+          sm_front_desk.CHECK_IN_NOTE: note, //
         },
       );
 
       await dio.post(
-        endpoint.ROOM_UPDATE, //
+        endpoint.ROOM_CRUD_UPDATE, //
         data: {
           sm_room.ID: widget.room_id, //
           sm_room.STATUS: "Pending Pay", //
@@ -317,7 +258,9 @@ void main() {
     MaterialApp(
       title: "Check In", //
       theme: theme_data, //
-      home: Main_(), //
+      home: Main_(
+        room_id: "6a6ec9d7599d64fa5d293fb9", //
+      ), //
       debugShowCheckedModeBanner: false,
     ),
   );

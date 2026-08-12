@@ -9,7 +9,7 @@ import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 
-import "package:speanmeas/features/database/nationality/form/create.dart" as nation_create;
+import "package:speanmeas/features/database/nationality/form/create.dart" as create_nationality;
 
 class _Search_NationalityState extends State<Search_Nationality> {
   //
@@ -67,7 +67,6 @@ class _Search_NationalityState extends State<Search_Nationality> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      spacing: 8,
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
@@ -167,7 +166,7 @@ class _Search_NationalityState extends State<Search_Nationality> {
                 final v = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => nation_create.Main_(), //
+                    builder: (context) => create_nationality.Main_(), //
                   ),
                 );
                 if (v == null) return;

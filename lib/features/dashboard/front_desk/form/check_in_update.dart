@@ -91,7 +91,7 @@ class _Main_State extends State<Main_> {
       // number of guests
       Select_Dynamic(
         controller: c_n_o_guest,
-        leading: "Number of Guests:",
+        lead: "Number of Guests:",
         options: List.generate(10, (index) => index + 1),
         onChanged: (v) => setState(() {}), //
         prefixIcon: Icon(Icons.people_outline), //
@@ -100,7 +100,7 @@ class _Main_State extends State<Main_> {
       // stay duration days
       Select_Dynamic(
         controller: c_d_day,
-        leading: "Stay Duration (Days):",
+        lead: "Stay Duration (Days):",
         options: List.generate(365, (index) => index),
         onChanged: (v) => setState(() {}), //
         prefixIcon: Icon(Icons.calendar_month_outlined),
@@ -109,7 +109,7 @@ class _Main_State extends State<Main_> {
       // stay duration hours
       Select_Dynamic(
         controller: c_d_hour,
-        leading: "Stay Duration (Hours):",
+        lead: "Stay Duration (Hours):",
         options: [0, 3, 6, 9, 12, 15, 18, 21],
         onChanged: (v) => setState(() {}), //
         prefixIcon: Icon(Icons.access_time_outlined),

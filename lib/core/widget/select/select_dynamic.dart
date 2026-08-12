@@ -10,7 +10,6 @@ class _Select_DynamicState extends State<Select_Dynamic> {
     super.initState();
     if (widget.initial != null) {
       controller.text = widget.initial.toString();
-      widget.onChanged?.call(widget.initial);
     }
   }
 
@@ -19,14 +18,14 @@ class _Select_DynamicState extends State<Select_Dynamic> {
     return TypeAheadField<dynamic>(
       controller: controller,
       itemBuilder: (context, i) => ListTile(title: Text(i.toString())),
-      suggestionsCallback: (q) => widget.options?.toList(),
+      suggestionsCallback: (q) => widget.options?.toList() ?? <dynamic>[],
       builder: (context, controller, focusNode) {
         return TextField(
           readOnly: true,
           controller: controller,
           focusNode: focusNode,
           decoration: InputDecoration(
-            labelText: widget.leading,
+            labelText: widget.lead,
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             prefixIcon: widget.prefixIcon,
@@ -56,12 +55,12 @@ class Select_Dynamic extends StatefulWidget {
     super.key, //
     required this.options,
     required this.onChanged,
-    this.leading,
+    this.lead,
     this.initial,
     this.prefixIcon,
   });
 
-  final String? leading;
+  final String? lead;
   final dynamic initial;
   final List<dynamic>? options;
   final Function(dynamic)? onChanged;
@@ -78,7 +77,7 @@ void main() {
       home: Scaffold(
         body: Center(
           child: Select_Dynamic(
-            leading: "Number of Guests:",
+            lead: "Number of Guests:",
             initial: 5,
             options: List.generate(100, (index) => index),
             prefixIcon: Icon(Icons.people_alt_outlined), //

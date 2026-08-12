@@ -59,6 +59,10 @@ class _Main_State extends State<Main_> {
   bool? logic_2;
   String? note;
 
+  void init() async {
+    //
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -140,7 +144,7 @@ class _Main_State extends State<Main_> {
       ),
 
       Input_Text(
-        init: null, //
+        init: note, //
         lead: "Note:", //
         maxLines: 4, //
         onChanged: (v) {
@@ -190,6 +194,12 @@ class _Main_State extends State<Main_> {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
   }
 
   //
