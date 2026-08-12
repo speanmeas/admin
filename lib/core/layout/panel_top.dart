@@ -2,9 +2,11 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
 import "package:speanmeas/core/config.dart";
+import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 
 import "package:speanmeas/features/auth/profile.dart" as profile;
@@ -13,8 +15,21 @@ class _Main_State extends State<Main_> {
   //
   dynamic tmp;
 
+  String? full_name;
+
   void init() async {
     //
+    try {
+      //
+      tmp = await dio.post(endpoint.AUTH_ACCESS_TOKEN);
+
+      full_name = tmp.data[sm_user.FULL_NAME]?["value"] ?? "X";
+
+      setState(() {});
+    } catch (e, st) {
+      print(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
   }
 
   @override
@@ -93,8 +108,8 @@ class _Main_State extends State<Main_> {
                 ),
                 child: Text(
                   (() {
-                    if (sm_user.data[sm_user.FULL_NAME]!["value"] != null) //
-                      return sm_user.data[sm_user.FULL_NAME]!["value"].substring(0, 1).toUpperCase() ?? "X";
+                    if (full_name != null) //
+                      return full_name!.substring(0, 1).toUpperCase();
                     else
                       return "X";
                   })(),

@@ -1,19 +1,13 @@
-import "package:intl/intl.dart";
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
-import "package:flutter_typeahead/flutter_typeahead.dart";
 
-import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/dialog/datetime.dart";
+import "package:speanmeas/core/widget/input/input_password.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/widget/showdata.dart";
-
+import "package:speanmeas/core/widget/input/input_text.dart";
+import "package:speanmeas/core/widget/pick/pick_boolean.dart";
 import "package:speanmeas/core/schema/user.g.dart";
-
-import "../widget/password_input.dart" as p_input;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -52,170 +46,125 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   //
-  dynamic tmp;
+  dynamic tmp; // ignore: unused
 
-  final c_password = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
+  String? username;
+  String? password;
+  String? full_name;
+  String? phone_number;
+  bool? is_admin;
+  bool? is_manager;
+  bool? is_receptionist;
+  bool? is_housekeeper;
+  String? note;
 
   void init() async {
-    sm_user.clear();
+    //
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      for (var e in sm_user.data.entries)
-        (() {
-          // * password input
-          if (e.key == sm_user.PASSWORD) {
-            return p_input.Main_(
-              controller: c_password,
-              onChanged: (v) {
-                e.value["value"] = v;
-                setState(() {});
-              },
-              onCleared: () {
-                e.value["value"] = null;
-                setState(() {});
-              },
-            );
-          }
+      //
+      Input_Text(
+        initial: username, //
+        title: "Username:", //
+        onChanged: (v) {
+          username = v;
+          print(username);
+          setState(() {});
+        },
+      ),
 
-          // * lock
-          if (e.value["lock"] == true) {
-            String value = "";
-            if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
-            return Show_Data(
-              title: e.value["title"], //
-              value: value,
-            );
-          }
+      //
+      Input_Password(
+        initial: password, //
+        onChanged: (v) {
+          password = v;
+          print(password);
+          setState(() {});
+        },
+      ),
 
-          // * អក្សរ
-          if (e.value["type"] == "string") {
-            String value = "";
-            if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
-            return TextField(
-              controller: TextEditingController(text: value.trim()),
-              maxLines: e.key.contains("note") ? 4 : 1,
-              decoration: InputDecoration(
-                labelText: e.value["title"] + ":", //
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              onChanged: (v) {
-                e.value["value"] = v.isEmpty ? null : v.trim(); //
-              },
-            );
-          }
+      //
+      Input_Text(
+        initial: full_name, //
+        title: "Full Name:", //
+        onChanged: (v) {
+          full_name = v;
+          print(full_name);
+          setState(() {});
+        },
+      ),
 
-          // * លេខ
-          if (e.value["type"] == "number") {
-            String value = "";
-            if (e.value["value"] != null && e.value["value"] != 0) {
-              value = e.value["value"].toStringAsFixed(2);
-            }
-            return TextField(
-              controller: TextEditingController(text: value.trim()),
-              decoration: InputDecoration(
-                labelText: e.value["title"] + ":", //
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
-              onChanged: (v) {
-                e.value["value"] = double.tryParse(v);
-              },
-            );
-          }
+      //
+      Input_Text(
+        initial: phone_number, //
+        title: "Phone Number:", //
+        onChanged: (v) {
+          phone_number = v;
+          print(phone_number);
+          setState(() {});
+        },
+      ),
 
-          // * ថ្ងៃខែឆ្នាំ និង ម៉ោង
-          if (e.value["type"] == "date-time") {
-            final tmp = DateTime.tryParse(e.value["value"]?.toString() ?? "");
-            final value = tmp != null ? DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal()) : "";
-            final init = tmp ?? DateTime.now();
-            return TextField(
-              controller: TextEditingController(text: value),
-              readOnly: true,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(), //
-                labelText: e.value["title"] + ":", //
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                suffixIcon: Padding(
-                  padding: EdgeInsets.only(right: 4),
-                  child: IconButton(
-                    icon: Icon(Icons.clear, color: Colors.red),
-                    onPressed: () async {
-                      e.value["value"] = null;
-                      setState(() {});
-                    },
-                  ), //
-                ),
-              ),
-              onTap: () async {
-                DateTime? datetime = await datetime_picker(context, initial_datetime: init);
-                if (datetime == null) return;
-                e.value["value"] = datetime.toIso8601String();
-                setState(() {});
-              }, //,
-            );
-          }
+      //
+      Picker_Boolean(
+        initial: is_admin, //
+        title: "Is Admin:", //
+        onChanged: (v) {
+          is_admin = v;
+          print(is_admin);
+          setState(() {});
+        },
+      ),
 
-          // * តក្កវិទ្យា
-          if (e.value["type"] == "boolean") {
-            String? value;
-            if (e.value["value"] != null) {
-              if (e.value["value"] == true) value = "Yes";
-              if (e.value["value"] == false) value = "No";
-            }
-            final controller_search = TextEditingController(text: value ?? "");
-            return TypeAheadField<String>(
-              controller: controller_search,
-              suggestionsCallback: (query) => ["Yes", "No"],
-              builder: (context, controller, focusNode) {
-                return TextField(
-                  controller: controller,
-                  focusNode: focusNode,
-                  decoration: InputDecoration(
-                    labelText: e.value["title"] + ":", //
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    suffixIcon: Padding(
-                      padding: EdgeInsets.only(right: 4),
-                      child: IconButton(
-                        icon: Icon(Icons.clear, color: Colors.red),
-                        onPressed: () async {
-                          e.value["value"] = null;
-                          setState(() {});
-                        },
-                      ), //
-                    ),
-                  ),
-                );
-              },
-              itemBuilder: (context, item) => ListTile(title: Text(item)),
-              onSelected: (v) {
-                controller_search.text = v;
-                if (v == "Yes") e.value["value"] = true;
-                if (v == "No") e.value["value"] = false;
-                setState(() {});
-              },
-            );
-          }
+      //
+      Picker_Boolean(
+        initial: is_manager, //
+        title: "Is Manager:", //
+        onChanged: (v) {
+          is_manager = v;
+          print(is_manager);
+          setState(() {});
+        },
+      ),
 
-          //
-          return SizedBox();
-        })(),
+      //
+      Picker_Boolean(
+        initial: is_receptionist, //
+        title: "Is Receptionist:", //
+        onChanged: (v) {
+          is_receptionist = v;
+          print(is_receptionist);
+          setState(() {});
+        },
+      ),
 
-      // button create
+      //
+      Picker_Boolean(
+        initial: is_housekeeper, //
+        title: "Is Housekeeper:", //
+        onChanged: (v) {
+          is_housekeeper = v;
+          print(is_housekeeper);
+          setState(() {});
+        },
+      ),
+
+      Input_Text(
+        initial: note, //
+        title: "Note:", //
+        maxLines: 4, //
+        onChanged: (v) {
+          note = v ?? "";
+          print(note);
+          setState(() {});
+        },
+      ),
+
+      //
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Create"),
@@ -230,12 +179,20 @@ class _Main_State extends State<Main_> {
   void on_create() async {
     try {
       //
-      var payload = {};
-      for (var e in sm_user.data.entries) //
-        payload[e.key] = e.value["value"];
-
-      // request
-      tmp = await dio.post(endpoint.USER_CREATE, data: payload);
+      tmp = await dio.post(
+        endpoint.USER_CRUD_CREATE, //
+        data: {
+          sm_user.USERNAME: username,
+          sm_user.PASSWORD: password,
+          sm_user.FULL_NAME: full_name,
+          sm_user.PHONE_NUMBER: phone_number,
+          sm_user.IS_ADMIN: is_admin,
+          sm_user.IS_MANAGER: is_manager,
+          sm_user.IS_RECEPTIONIST: is_receptionist,
+          sm_user.IS_HOUSEKEEPER: is_housekeeper,
+          sm_user.NOTE: note, //
+        },
+      );
 
       //
       Navigator.pop(context, tmp.data[0]);
@@ -249,6 +206,14 @@ class _Main_State extends State<Main_> {
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  //
 }
 
 class Main_ extends StatefulWidget {

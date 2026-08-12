@@ -25,7 +25,7 @@ class _Picker_BooleanState extends State<Picker_Boolean> {
           controller: controller,
           focusNode: focusNode,
           decoration: InputDecoration(
-            labelText: "Logic 1:", //
+            labelText: widget.title ?? "Logic 1:", //
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             prefixIcon: Icon(controller.text == "Yes" ? Icons.toggle_on : Icons.toggle_off_outlined),

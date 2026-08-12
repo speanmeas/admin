@@ -24,7 +24,7 @@ class _Input_TextState extends State<Input_Text> {
         labelText: widget.title,
         labelStyle: TextStyle(fontWeight: FontWeight.bold),
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        prefixIcon: Icon(Icons.text_fields), //
+        prefixIcon: Icon(widget.prefixIcon ?? Icons.text_fields), //
         suffixIcon: ExcludeFocus(
           child: Padding(
             padding: EdgeInsets.only(right: 4),
@@ -60,12 +60,14 @@ class Input_Text extends StatefulWidget {
     this.title,
     this.onChanged,
     this.maxLines,
+    this.prefixIcon,
   });
 
   final String? initial;
   final String? title;
   final Function(String?)? onChanged;
   final int? maxLines;
+  final IconData? prefixIcon;
 
   @override
   State<Input_Text> createState() => _Input_TextState();

@@ -1,20 +1,15 @@
-import "package:intl/intl.dart";
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
-import "package:flutter_typeahead/flutter_typeahead.dart";
 
-import "package:speanmeas/core/config.dart";
-import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/dialog/datetime.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/widget/showdata.dart";
-
+import "package:speanmeas/core/widget/input/input_text.dart";
+import "package:speanmeas/core/widget/input/input_number.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
-import "../widget/status_select.dart" as s_select;
 import "../widget/kind_select.dart" as k_select;
+import "../widget/status_select.dart" as s_select;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -53,34 +48,34 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   //
-  dynamic tmp;
+  dynamic tmp; // ignore: unused
+  dynamic data;
 
-  final c_status = TextEditingController();
-  final c_kind = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
+  String? number;
+  double? usd_per_day;
+  double? usd_per_3h;
+  String? kind;
+  String? status;
+  String? note;
 
   void init() async {
+    //
     try {
-      sm_room.clear();
-
+      //
       tmp = await dio.post(
-        endpoint.ROOM_READ_ID, //
+        endpoint.ROOM_CRUD_READ_ID, //
         data: {sm_room.ID: widget.id},
       );
-      for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
+      data = tmp.data[0];
 
-      if (sm_room.data[sm_room.STATUS]!["value"] != null) //
-        c_status.text = sm_room.data[sm_room.STATUS]!["value"];
-      if (sm_room.data[sm_room.KIND]!["value"] != null) //
-        c_kind.text = sm_room.data[sm_room.KIND]!["value"];
+      number = data[sm_room.NUMBER];
+      usd_per_day = data[sm_room.USD_PER_DAY];
+      usd_per_3h = data[sm_room.USD_PER_3H];
+      kind = data[sm_room.KIND];
+      status = data[sm_room.STATUS];
+      note = data[sm_room.NOTE];
 
       setState(() {});
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -90,192 +85,98 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    if (data == null) return Center(child: CircularProgressIndicator());
     return _layout([
-      for (var e in sm_room.data.entries)
-        (() {
-          // * select status
-          if (e.key == sm_room.STATUS) {
-            return s_select.Main_(
-              controller: c_status,
-              onChanged: (v) {
-                e.value["value"] = v;
-                setState(() {});
-              },
-              onCleared: () {
-                e.value["value"] = null;
-                setState(() {});
-              },
-            );
-          }
+      //
+      Input_Text(
+        initial: number, //
+        title: "Number:", //
+        onChanged: (v) {
+          number = v;
+          print(number);
+          setState(() {});
+        },
+      ),
 
-          // * select kind
-          if (e.key == sm_room.KIND) {
-            return k_select.Main_(
-              controller: c_kind,
-              onChanged: (v) {
-                e.value["value"] = v;
-                setState(() {});
-              },
-              onCleared: () {
-                e.value["value"] = null;
-                setState(() {});
-              },
-            );
-          }
+      //
+      Input_Number(
+        initial: usd_per_day, //
+        title: "USD/Day:", //
+        onChanged: (v) {
+          usd_per_day = v;
+          print(usd_per_day);
+          setState(() {});
+        },
+      ),
 
-          // * lock
-          if (e.value["lock"] == true) {
-            String value = "";
-            if (e.value["value"] != null) //
-              value = e.value["value"].toString();
-            return Show_Data(
-              title: e.value["title"], //
-              value: value,
-            );
-          }
+      //
+      Input_Number(
+        initial: usd_per_3h, //
+        title: "USD/3H:", //
+        onChanged: (v) {
+          usd_per_3h = v;
+          print(usd_per_3h);
+          setState(() {});
+        },
+      ),
 
-          // * អក្សរ
-          if (e.value["type"] == "string") {
-            String value = "";
-            if (e.value["value"] != null) //
-              value = e.value["value"].toString();
-            if (e.key == "password") //
-              value = "";
-            return TextField(
-              controller: TextEditingController(text: value.trim()),
-              maxLines: e.key.contains("note") ? 4 : 1,
-              decoration: InputDecoration(
-                hintText: e.key == "password" ? "New Password" : null, //
-                labelText: e.value["title"] + ":", //
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              onChanged: (v) {
-                e.value["value"] = v.isEmpty ? null : v.trim();
-              },
-            );
-          }
+      //
+      k_select.Main_(
+        initial: kind, //
+        onChanged: (v) {
+          kind = v;
+          print(kind);
+          setState(() {});
+        },
+      ),
 
-          // * លេខ
-          if (e.value["type"] == "number") {
-            String value = "";
-            if (e.value["value"] != null && e.value["value"] != 0) //
-              value = e.value["value"].toStringAsFixed(2);
-            return TextField(
-              controller: TextEditingController(text: value.trim()),
-              decoration: InputDecoration(
-                labelText: e.value["title"] + ":", //
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
-              onChanged: (v) {
-                e.value["value"] = double.tryParse(v);
-              },
-            );
-          }
+      //
+      s_select.Main_(
+        initial: status, //
+        onChanged: (v) {
+          status = v;
+          print(status);
+          setState(() {});
+        },
+      ),
 
-          // * ថ្ងៃខែឆ្នាំ និង ម៉ោង
-          if (e.value["type"] == "date-time") {
-            final tmp = DateTime.tryParse(e.value["value"]?.toString() ?? "");
-            final value = tmp != null ? DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal()) : "";
-            final init = tmp ?? DateTime.now();
-            return TextField(
-              controller: TextEditingController(text: value),
-              readOnly: true,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(), //
-                labelText: e.value["title"] + ":", //
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                suffixIcon: Padding(
-                  padding: EdgeInsets.only(right: 4),
-                  child: IconButton(
-                    icon: Icon(Icons.clear, color: Colors.red),
-                    onPressed: () async {
-                      e.value["value"] = null;
-                      setState(() {});
-                    },
-                  ), //
-                ),
-              ),
-              onTap: () async {
-                DateTime? datetime = await datetime_picker(context, initial_datetime: init);
-                if (datetime == null) return;
-                e.value["value"] = datetime.toIso8601String();
-                setState(() {});
-              }, //,
-            );
-          }
+      Input_Text(
+        initial: note, //
+        title: "Note:", //
+        maxLines: 4, //
+        onChanged: (v) {
+          note = v ?? "";
+          print(note);
+          setState(() {});
+        },
+      ),
 
-          // * តក្កវិទ្យា
-          if (e.value["type"] == "boolean") {
-            String? value;
-            if (e.value["value"] != null) {
-              if (e.value["value"] == true) value = "Yes";
-              if (e.value["value"] == false) value = "No";
-            }
-            final controller_search = TextEditingController(text: value ?? "");
-            return TypeAheadField<String>(
-              controller: controller_search,
-              suggestionsCallback: (query) => ["Yes", "No"],
-              builder: (context, controller, focusNode) {
-                return TextField(
-                  controller: controller,
-                  focusNode: focusNode,
-                  decoration: InputDecoration(
-                    labelText: e.value["title"] + ":", //
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    suffixIcon: Padding(
-                      padding: EdgeInsets.only(right: 4),
-                      child: IconButton(
-                        icon: Icon(Icons.clear, color: Colors.red),
-                        onPressed: () async {
-                          e.value["value"] = null;
-                          setState(() {});
-                        },
-                      ), //
-                    ),
-                  ),
-                );
-              },
-              itemBuilder: (context, item) => ListTile(title: Text(item)),
-              onSelected: (v) {
-                controller_search.text = v;
-                if (v == "Yes") e.value["value"] = true;
-                if (v == "No") e.value["value"] = false;
-                setState(() {});
-              },
-            );
-          }
-
-          //
-          return SizedBox();
-        })(),
-
-      // button update
+      //
       OutlinedButton.icon(
-        icon: Icon(Icons.check), //
+        icon: Icon(Icons.check),
         label: Text("Update"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
         onPressed: on_update,
       ),
-
       SizedBox(height: height - 100),
     ]);
   }
 
   void on_update() async {
     try {
-      // * រៀបចំ payload
-      var payload = {};
-      for (var e in sm_room.data.entries) //
-        payload[e.key] = e.value["value"];
-
       //
-      tmp = await dio.post(endpoint.ROOM_UPDATE, data: payload);
+      tmp = await dio.post(
+        endpoint.ROOM_CRUD_UPDATE, //
+        data: {
+          sm_room.ID: widget.id,
+          sm_room.NUMBER: number,
+          sm_room.USD_PER_DAY: usd_per_day,
+          sm_room.USD_PER_3H: usd_per_3h,
+          sm_room.KIND: kind,
+          sm_room.STATUS: status,
+          sm_room.NOTE: note, //
+        },
+      );
 
       //
       Navigator.pop(context, tmp.data[0]);
@@ -289,6 +190,14 @@ class _Main_State extends State<Main_> {
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  //
 }
 
 class Main_ extends StatefulWidget {

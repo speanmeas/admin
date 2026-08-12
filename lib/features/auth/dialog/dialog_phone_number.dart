@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
@@ -11,8 +12,8 @@ class _Dialog_State extends State<Dialog_> {
   //
   dynamic tmp;
 
-  final title = "Update Username"; //
-  final label = "Username:";
+  final title = "Update Phone Number"; //
+  final label = "Phone Number:";
 
   late final controller = TextEditingController(text: widget.input ?? "");
 
@@ -41,6 +42,8 @@ class _Dialog_State extends State<Dialog_> {
           TextField(
             autofocus: true,
             controller: controller,
+            keyboardType: TextInputType.numberWithOptions(decimal: false),
+            inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9+]"))],
             decoration: InputDecoration(
               labelText: label, //
               labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -79,15 +82,14 @@ class _Dialog_State extends State<Dialog_> {
   void on_okay() async {
     try {
       tmp = await dio.post(
-        endpoint.USER_UPDATE, //
+        endpoint.USER_CRUD_UPDATE, //
         data: {
           "_id": await secure_storage.read(key: "_id"), //
-          sm_user.USERNAME: controller.text, //
+          sm_user.PHONE_NUMBER: controller.text, //
         },
       );
       if (tmp == null) throw "Failed";
 
-      //
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
     } catch (e, st) {
@@ -109,7 +111,7 @@ class Dialog_ extends StatefulWidget {
     this.input,
   });
 
-  final String? input;
+  final dynamic input;
 
   @override
   State<Dialog_> createState() => _Dialog_State();
@@ -117,7 +119,7 @@ class Dialog_ extends StatefulWidget {
 
 Future<dynamic> view({
   required BuildContext context, //
-  String? input, //
+  dynamic input, //
 }) {
   return showDialog<dynamic>(
     context: context,

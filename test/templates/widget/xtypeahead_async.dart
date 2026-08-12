@@ -1,4 +1,4 @@
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart";
 import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:speanmeas/core/schema/nationality.g.dart";
@@ -55,7 +55,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       final r = await dio.post(
-        "/nationality/read_string", //
+        endpoint.NATIONALITY_CRUD_READ_STRING, //
         data: {
           "key": sm_nationality.NAME, //
           "query": q, //
@@ -84,7 +84,7 @@ class _Main_State extends State<Main_> {
               try {
                 //
                 final r = await dio.post(
-                  "/nationality/read_string", //
+                  endpoint.NATIONALITY_CRUD_READ_STRING, //
                   data: {
                     "key": sm_nationality.NAME, //
                     "query": q, //

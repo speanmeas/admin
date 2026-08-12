@@ -141,6 +141,7 @@ class EndPoint {
 	final USER_CLIENT_CRUD_READ_NUMBER = "/user_client/crud/read_number";
 	final USER_CLIENT_CRUD_READ_STRING = "/user_client/crud/read_string";
 	final USER_CLIENT_CRUD_UPDATE = "/user_client/crud/update";
+	final WS_ACTION = "/ws/action";
 }
 
 EndPoint endpoint = EndPoint();

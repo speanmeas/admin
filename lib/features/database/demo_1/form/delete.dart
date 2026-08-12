@@ -1,7 +1,7 @@
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 

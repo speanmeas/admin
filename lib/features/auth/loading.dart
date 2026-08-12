@@ -1,13 +1,12 @@
 import "package:flutter/material.dart";
 import "package:speanmeas/core/global.dart";
 
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/layout/layout.dart" as layout;
-import "package:speanmeas/core/schema/user.g.dart";
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
+import "package:speanmeas/core/layout/layout.dart" as layout;
 
 import "sign_in.dart" as form_si;
 
@@ -54,10 +53,12 @@ class _Main_State extends State<Main_> {
         data: {"access_token": ac_tk},
       );
       if (tmp == null) throw Exception("Invalid Access Token");
-      for (var e in sm_user.data.entries) e.value["value"] = tmp.data[0][e.key];
 
       //
-      dio.options.headers["Authorization"] = "Bearer ${await secure_storage.read(key: "access_token")}";
+      dio.options.headers["Authorization"] =
+          "Bearer ${await secure_storage.read(
+            key: "access_token", //
+          )}";
 
       //
       snackbar(ct: context, ms: "Success", cl: Colors.green);

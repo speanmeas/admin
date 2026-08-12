@@ -1,9 +1,8 @@
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
 
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart";
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
@@ -12,8 +11,8 @@ class _Dialog_State extends State<Dialog_> {
   //
   dynamic tmp;
 
-  final title = "Update Phone Number"; //
-  final label = "Phone Number:";
+  final title = "Update Full Name"; //
+  final label = "Full Name:";
 
   late final controller = TextEditingController(text: widget.input ?? "");
 
@@ -40,10 +39,7 @@ class _Dialog_State extends State<Dialog_> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
-            autofocus: true,
             controller: controller,
-            keyboardType: TextInputType.numberWithOptions(decimal: false),
-            inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9+]"))],
             decoration: InputDecoration(
               labelText: label, //
               labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -58,6 +54,7 @@ class _Dialog_State extends State<Dialog_> {
                 ),
               ),
             ),
+            autofocus: true,
             onChanged: (v) => setState(() {}),
             onSubmitted: (v) => on_okay(),
           ),
@@ -82,16 +79,18 @@ class _Dialog_State extends State<Dialog_> {
   void on_okay() async {
     try {
       tmp = await dio.post(
-        endpoint.USER_UPDATE, //
+        endpoint.USER_CRUD_UPDATE, //
         data: {
           "_id": await secure_storage.read(key: "_id"), //
-          sm_user.PHONE_NUMBER: controller.text, //
+          sm_user.FULL_NAME: controller.text, //
         },
       );
+
       if (tmp == null) throw "Failed";
 
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
+      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -141,7 +140,7 @@ class _Main_State extends State<Main_> {
           onPressed: () async {
             final v = await view(
               context: context, //
-              input: "0123456789", //
+              input: "John Doe",
             );
             print("value: $v");
           },

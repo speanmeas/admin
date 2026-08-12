@@ -117,18 +117,13 @@ class _Main_State extends State<Main_> {
       if (tmp == null) throw Exception("Invalid Username or Password");
 
       //
-      await secure_storage.write(key: "access_token", value: tmp.data["access_token"]);
       await secure_storage.write(key: "_id", value: tmp.data["_id"]);
+      await secure_storage.write(key: "access_token", value: tmp.data["access_token"]);
       dio.options.headers["Authorization"] = "Bearer ${tmp.data["access_token"]}";
 
       //
-      for (var e in sm_user.data.entries) sm_user.data[e.key]!["value"] = tmp.data[e.key];
-
-      //
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-
-      //
       await glob.init();
+      snackbar(ct: context, ms: "Success", cl: Colors.green);
 
       //
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));

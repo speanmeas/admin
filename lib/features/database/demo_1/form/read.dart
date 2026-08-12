@@ -1,14 +1,14 @@
 import "package:flutter/material.dart";
-import "package:speanmeas/core/endpoint.g.dart";
-import "package:speanmeas/core/schema/demo_1.g.dart";
 
+import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/widget/show_boolean.dart";
-import "package:speanmeas/core/widget/show_datetime.dart";
-import "package:speanmeas/core/widget/show_number.dart";
-import "package:speanmeas/core/widget/show_text.dart";
+import "package:speanmeas/core/widget/show/show_boolean.dart";
+import "package:speanmeas/core/widget/show/show_datetime.dart";
+import "package:speanmeas/core/widget/show/show_number.dart";
+import "package:speanmeas/core/widget/show/show_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/schema/demo_1.g.dart";
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -48,7 +48,18 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-  dynamic data;
+  bool is_loading = true;
+
+  String? text_1;
+  String? text_2;
+  double? number_1;
+  double? number_2;
+  DateTime? datetime_1;
+  DateTime? datetime_2;
+  bool? logic_1;
+  bool? logic_2;
+  String? note;
+  String? nationality_id;
 
   void init() async {
     try {
@@ -57,9 +68,17 @@ class _Main_State extends State<Main_> {
         data: {sm_demo_1.ID: widget.id},
       );
 
-      data = tmp.data[0];
+      text_1 = tmp.data[0][sm_demo_1.TEXT_1];
+      text_2 = tmp.data[0][sm_demo_1.TEXT_2];
+      number_1 = tmp.data[0][sm_demo_1.NUMBER_1];
+      number_2 = tmp.data[0][sm_demo_1.NUMBER_2];
+      datetime_1 = DateTime.parse(tmp.data[0][sm_demo_1.DATETIME_1]);
+      datetime_2 = DateTime.parse(tmp.data[0][sm_demo_1.DATETIME_2]);
+      logic_1 = tmp.data[0][sm_demo_1.LOGIC_1];
+      logic_2 = tmp.data[0][sm_demo_1.LOGIC_2];
+      note = tmp.data[0][sm_demo_1.NOTE];
 
-      setState(() {});
+      setState(() => is_loading = false);
       //
     } catch (e, st) {
       print(st);
@@ -70,69 +89,69 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    if (data == null) return Center(child: CircularProgressIndicator());
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       //
       Show_Text(
         prefixIcon: Icons.text_fields,
         leading: "Text 1:", //
-        value: data[sm_demo_1.TEXT_1] ?? "",
+        value: text_1,
       ),
 
       //
       Show_Text(
         prefixIcon: Icons.text_fields,
         leading: "Text 2:", //
-        value: data[sm_demo_1.TEXT_2] ?? "",
+        value: text_2,
       ),
 
       //
       Show_Number(
         prefixIcon: Icons.numbers,
         leading: "Number 1:", //
-        value: data[sm_demo_1.NUMBER_1] ?? "",
+        value: number_1,
       ),
 
       //
       Show_Number(
         prefixIcon: Icons.numbers,
         leading: "Number 2:", //
-        value: data[sm_demo_1.NUMBER_2] ?? "",
+        value: number_2,
       ),
 
       //
       Show_Datetime(
         prefixIcon: Icons.calendar_month,
         leading: "Datetime 1:", //
-        value: DateTime.tryParse(data[sm_demo_1.DATETIME_1]),
+        value: datetime_1,
       ),
 
       //
       Show_Datetime(
         prefixIcon: Icons.calendar_month,
         leading: "Datetime 2:", //
-        value: DateTime.tryParse(data[sm_demo_1.DATETIME_2]),
+        value: datetime_2,
       ),
 
       //
       Show_Boolean(
         prefixIcon: Icons.toggle_on,
         leading: "Boolean:", //
-        value: data[sm_demo_1.LOGIC_1],
+        value: logic_1,
       ),
 
       //
       Show_Boolean(
         prefixIcon: Icons.toggle_on,
         leading: "Boolean 2:", //
-        value: data[sm_demo_1.LOGIC_2],
+        value: logic_2,
       ),
 
       //
       Show_Text(
-        prefixIcon: Icons.note,
+        prefixIcon: Icons.note_alt_outlined,
         leading: "Note:", //
-        value: data[sm_demo_1.NOTE],
+        value: note,
         maxLines: 4,
       ),
 

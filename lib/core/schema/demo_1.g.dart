@@ -12,6 +12,7 @@ class Demo_1 {
 	final LOGIC_1 = "logic_1";
 	final LOGIC_2 = "logic_2";
 	final NOTE = "note";
+	final NATIONALITY_ID = "nationality_id";
 	final CREATED_AT = "created_at";
 	final CREATED_BY = "created_by";
 	final UPDATED_AT = "updated_at";

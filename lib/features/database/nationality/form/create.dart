@@ -1,16 +1,10 @@
-import "package:intl/intl.dart";
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
-import "package:flutter_typeahead/flutter_typeahead.dart";
 
-import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/dialog/datetime.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/widget/showdata.dart";
-
+import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/schema/nationality.g.dart";
 
 Widget _layout(List<Widget> children) {
@@ -50,153 +44,43 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   //
-  dynamic tmp;
+  dynamic tmp; // ignore: unused
 
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
+  String? name;
+  String? note;
 
   void init() async {
-    sm_nationality.clear();
+    //
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      for (var e in sm_nationality.data.entries)
-        (() {
-          // * lock
-          if (e.value["lock"] == true) {
-            String value = "";
-            if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
-            return Show_Data(
-              title: e.value["title"], //
-              value: value,
-            );
-          }
+      //
+      Input_Text(
+        initial: name, //
+        title: "Name:", //
+        onChanged: (v) {
+          name = v;
+          print(name);
+          setState(() {});
+        },
+      ),
 
-          // * អក្សរ
-          if (e.value["type"] == "string") {
-            String value = "";
-            if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
-            return TextField(
-              controller: TextEditingController(text: value.trim()),
-              maxLines: e.key.contains("note") ? 4 : 1,
-              decoration: InputDecoration(
-                labelText: e.value["title"] + ":", //
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              onChanged: (v) {
-                e.value["value"] = v.isEmpty ? null : v.trim(); //
-              },
-            );
-          }
+      Input_Text(
+        initial: null, //
+        title: "Note:", //
+        prefixIcon: Icons.note_alt_outlined, //
+        maxLines: 4, //
+        onChanged: (v) {
+          note = v ?? "";
+          print(note);
+          setState(() {});
+        },
+      ),
 
-          // * លេខ
-          if (e.value["type"] == "number") {
-            String value = "";
-            if (e.value["value"] != null && e.value["value"] != 0) {
-              value = e.value["value"].toStringAsFixed(2);
-            }
-            return TextField(
-              controller: TextEditingController(text: value.trim()),
-              decoration: InputDecoration(
-                labelText: e.value["title"] + ":", //
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
-              onChanged: (v) {
-                e.value["value"] = double.tryParse(v);
-              },
-            );
-          }
-
-          // * ថ្ងៃខែឆ្នាំ និង ម៉ោង
-          if (e.value["type"] == "date-time") {
-            final tmp = DateTime.tryParse(e.value["value"]?.toString() ?? "");
-            final value = tmp != null ? DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal()) : "";
-            final init = tmp ?? DateTime.now();
-            return TextField(
-              controller: TextEditingController(text: value),
-              readOnly: true,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(), //
-                labelText: e.value["title"] + ":", //
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                suffixIcon: Padding(
-                  padding: EdgeInsets.only(right: 4),
-                  child: IconButton(
-                    icon: Icon(Icons.clear, color: Colors.red),
-                    onPressed: () async {
-                      e.value["value"] = null;
-                      setState(() {});
-                    },
-                  ), //
-                ),
-              ),
-              onTap: () async {
-                DateTime? datetime = await datetime_picker(context, initial_datetime: init);
-                if (datetime == null) return;
-                e.value["value"] = datetime.toIso8601String();
-                setState(() {});
-              }, //,
-            );
-          }
-
-          // * តក្កវិទ្យា
-          if (e.value["type"] == "boolean") {
-            String? value;
-            if (e.value["value"] != null) {
-              if (e.value["value"] == true) value = "Yes";
-              if (e.value["value"] == false) value = "No";
-            }
-            final controller_search = TextEditingController(text: value ?? "");
-            return TypeAheadField<String>(
-              controller: controller_search,
-              suggestionsCallback: (query) => ["Yes", "No"],
-              builder: (context, controller, focusNode) {
-                return TextField(
-                  controller: controller,
-                  focusNode: focusNode,
-                  decoration: InputDecoration(
-                    labelText: e.value["title"] + ":", //
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    suffixIcon: Padding(
-                      padding: EdgeInsets.only(right: 4),
-                      child: IconButton(
-                        icon: Icon(Icons.clear, color: Colors.red),
-                        onPressed: () async {
-                          e.value["value"] = null;
-                          setState(() {});
-                        },
-                      ), //
-                    ),
-                  ),
-                );
-              },
-              itemBuilder: (context, item) => ListTile(title: Text(item)),
-              onSelected: (v) {
-                controller_search.text = v;
-                if (v == "Yes") e.value["value"] = true;
-                if (v == "No") e.value["value"] = false;
-                setState(() {});
-              },
-            );
-          }
-
-          //
-          return SizedBox();
-        })(),
-
-      // button create
+      //
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Create"),
@@ -211,12 +95,13 @@ class _Main_State extends State<Main_> {
   void on_create() async {
     try {
       //
-      var payload = {};
-      for (var e in sm_nationality.data.entries) //
-        payload[e.key] = e.value["value"];
-
-      // request
-      tmp = await dio.post(endpoint.NATIONALITY_CREATE, data: payload);
+      tmp = await dio.post(
+        endpoint.NATIONALITY_CRUD_CREATE, //
+        data: {
+          sm_nationality.NAME: name,
+          sm_nationality.NOTE: note, //
+        },
+      );
 
       //
       Navigator.pop(context, tmp.data[0]);
@@ -230,6 +115,14 @@ class _Main_State extends State<Main_> {
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  //
 }
 
 class Main_ extends StatefulWidget {

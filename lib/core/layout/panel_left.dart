@@ -1,9 +1,12 @@
 import "package:flutter/material.dart";
 
 import "package:speanmeas/core/config.dart";
+import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/utility/dio.dart";
+import "package:speanmeas/core/widget/snackbar.dart";
 
 class _Main_State extends State<Main_> {
   //
@@ -15,13 +18,26 @@ class _Main_State extends State<Main_> {
   bool is_recept = false;
   bool is_cleaner = false;
 
+  void init() async {
+    try {
+      tmp = await dio.post(endpoint.AUTH_ACCESS_TOKEN);
+
+      if (tmp.data[sm_user.IS_ADMIN]?["value"] == true) is_admin = true;
+      if (tmp.data[sm_user.IS_MANAGER]?["value"] == true) is_manager = true;
+      if (tmp.data[sm_user.IS_RECEPTIONIST]?["value"] == true) is_recept = true;
+      if (tmp.data[sm_user.IS_HOUSEKEEPER]?["value"] == true) is_cleaner = true;
+
+      setState(() {});
+    } catch (e, st) {
+      print(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
-    is_admin = sm_user.data[sm_user.IS_ADMIN]?["value"] == true;
-    is_manager = sm_user.data[sm_user.IS_MANAGER]?["value"] == true;
-    is_recept = sm_user.data[sm_user.IS_RECEPTIONIST]?["value"] == true;
-    is_cleaner = sm_user.data[sm_user.IS_HOUSEKEEPER]?["value"] == true;
+
     return Column(
       children: [
         Expanded(
@@ -153,6 +169,14 @@ class _Main_State extends State<Main_> {
       },
     );
   }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  //
 }
 
 class Main_ extends StatefulWidget {

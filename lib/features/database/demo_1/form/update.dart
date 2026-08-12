@@ -1,13 +1,13 @@
 import "package:flutter/material.dart";
 
-import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/widget/picker_boolean.dart";
-import "package:speanmeas/core/widget/picker_datetime.dart";
-import "package:speanmeas/core/widget/input_text.dart";
-import "package:speanmeas/core/widget/input_number.dart";
+import "package:speanmeas/core/widget/pick/pick_boolean.dart";
+import "package:speanmeas/core/widget/pick/pick_datetime.dart";
+import "package:speanmeas/core/widget/input/input_text.dart";
+import "package:speanmeas/core/widget/input/input_number.dart";
 import "package:speanmeas/core/schema/demo_1.g.dart";
 
 Widget _layout(List<Widget> children) {
@@ -48,7 +48,7 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp; // ignore: unused
-  dynamic data;
+  bool is_loading = true;
 
   String? text_1;
   String? text_2;
@@ -59,28 +59,26 @@ class _Main_State extends State<Main_> {
   bool? logic_1;
   bool? logic_2;
   String? note;
+  String? nationality_id;
 
   void init() async {
-    //
     try {
-      //
       tmp = await dio.post(
         endpoint.DEMO_1_CRUD_READ_ID, //
         data: {sm_demo_1.ID: widget.id},
       );
-      data = tmp.data[0];
 
-      text_1 = data[sm_demo_1.TEXT_1];
-      text_2 = data[sm_demo_1.TEXT_2];
-      number_1 = data[sm_demo_1.NUMBER_1];
-      number_2 = data[sm_demo_1.NUMBER_2];
-      datetime_1 = data[sm_demo_1.DATETIME_1] != null ? DateTime.parse(data[sm_demo_1.DATETIME_1]) : null;
-      datetime_2 = data[sm_demo_1.DATETIME_2] != null ? DateTime.parse(data[sm_demo_1.DATETIME_2]) : null;
-      logic_1 = data[sm_demo_1.LOGIC_1];
-      logic_2 = data[sm_demo_1.LOGIC_2];
-      note = data[sm_demo_1.NOTE];
+      text_1 = tmp.data[0][sm_demo_1.TEXT_1];
+      text_2 = tmp.data[0][sm_demo_1.TEXT_2];
+      number_1 = tmp.data[0][sm_demo_1.NUMBER_1];
+      number_2 = tmp.data[0][sm_demo_1.NUMBER_2];
+      datetime_1 = tmp.data[0][sm_demo_1.DATETIME_1] != null ? DateTime.parse(tmp.data[0][sm_demo_1.DATETIME_1]) : null;
+      datetime_2 = tmp.data[0][sm_demo_1.DATETIME_2] != null ? DateTime.parse(tmp.data[0][sm_demo_1.DATETIME_2]) : null;
+      logic_1 = tmp.data[0][sm_demo_1.LOGIC_1];
+      logic_2 = tmp.data[0][sm_demo_1.LOGIC_2];
+      note = tmp.data[0][sm_demo_1.NOTE];
 
-      setState(() {});
+      setState(() => is_loading = false);
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -90,7 +88,7 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    if (data == null) return Center(child: CircularProgressIndicator());
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       //
       Input_Text(
@@ -98,7 +96,6 @@ class _Main_State extends State<Main_> {
         title: "Text 1:", //
         onChanged: (v) {
           text_1 = v;
-          print(text_1);
           setState(() {});
         },
       ),
@@ -109,7 +106,6 @@ class _Main_State extends State<Main_> {
         title: "Text 2:", //
         onChanged: (v) {
           text_2 = v;
-          print(text_2);
           setState(() {});
         },
       ),
@@ -120,7 +116,6 @@ class _Main_State extends State<Main_> {
         title: "Number 1:", //
         onChanged: (v) {
           number_1 = v;
-          print(number_1);
           setState(() {});
         },
       ),
@@ -131,58 +126,57 @@ class _Main_State extends State<Main_> {
         title: "Number 2:", //
         onChanged: (v) {
           number_2 = v;
-          print(number_2);
           setState(() {});
         },
       ),
 
+      //
       Picker_Datetime(
         initial: datetime_1, //
         title: "Datetime 1:", //
         onChanged: (v) {
           datetime_1 = v;
-          print(datetime_1);
           setState(() {});
         },
       ),
 
+      //
       Picker_Datetime(
         initial: datetime_2, //
         title: "Datetime 2:", //
         onChanged: (v) {
           datetime_2 = v;
-          print(datetime_2);
           setState(() {});
         },
       ),
 
+      //
       Picker_Boolean(
         initial: logic_1, //
         title: "Logic 1:", //
         onChanged: (v) {
           logic_1 = v;
-          print(logic_1);
           setState(() {});
         },
       ),
 
+      //
       Picker_Boolean(
         initial: logic_2, //
         title: "Logic 2:", //
         onChanged: (v) {
           logic_2 = v;
-          print(logic_2);
           setState(() {});
         },
       ),
 
+      //
       Input_Text(
-        initial: null, //
+        initial: note, //
         title: "Note:", //
         maxLines: 4, //
         onChanged: (v) {
           note = v ?? "";
-          print(note);
           setState(() {});
         },
       ),
@@ -209,11 +203,12 @@ class _Main_State extends State<Main_> {
           sm_demo_1.TEXT_2: text_2,
           sm_demo_1.NUMBER_1: number_1,
           sm_demo_1.NUMBER_2: number_2,
-          sm_demo_1.DATETIME_1: datetime_1,
-          sm_demo_1.DATETIME_2: datetime_2,
+          sm_demo_1.DATETIME_1: datetime_1?.toIso8601String(),
+          sm_demo_1.DATETIME_2: datetime_2?.toIso8601String(),
           sm_demo_1.LOGIC_1: logic_1,
           sm_demo_1.LOGIC_2: logic_2,
-          sm_demo_1.NOTE: note, //
+          sm_demo_1.NOTE: note,
+          sm_demo_1.NATIONALITY_ID: nationality_id, //
         },
       );
 

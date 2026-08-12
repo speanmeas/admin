@@ -46,13 +46,13 @@ class _Main_State extends State<Main_> {
     try {
       map_fd.clear();
       list_r.clear();
-      sm_room.clear();
-      sm_guest.clear();
-      sm_front_desk.clear();
+      // sm_room.clear();
+      // sm_guest.clear();
+      // sm_front_desk.clear();
 
       // * ទាញយកទិន្នន័យបន្ទប់ទាំងអស់ពី Server
       tmp = await dio.post(
-        endpoint.ROOM_READ,
+        endpoint.ROOM_CRUD_READ,
         data: {
           "key": sm_room.NUMBER, //
           "order": 1, //
@@ -83,15 +83,15 @@ class _Main_State extends State<Main_> {
       }
 
       // * ទាញយកបញ្ជីទំនិញ mini bar (catalog) ពី Server
-      tmp = await dio.post(
-        endpoint.MINI_BAR_READ, //
-        data: {
-          "key": DEFAULT_KEY, //
-          "order": DEFAULT_ORDER, //
-          "offset": 0, //
-          "limit": DEFAULT_LIMIT_ROW,
-        },
-      );
+      // tmp = await dio.post(
+      //   endpoint.MINI_BAR_READ, //
+      //   data: {
+      //     "key": DEFAULT_KEY, //
+      //     "order": DEFAULT_ORDER, //
+      //     "offset": 0, //
+      //     "limit": DEFAULT_LIMIT_ROW,
+      //   },
+      // );
       list_mb = List<Map<String, dynamic>>.from(tmp.data);
 
       setState(() {});
@@ -376,8 +376,8 @@ class _Main_State extends State<Main_> {
                       if (!"${r[sm_room.STATUS]}".contains("Pending Fix"))
                         (() {
                           final fd = map_fd[r[sm_room.FRONT_DESK_ID]];
-                          final guest_name = fd?[sm_front_desk.GUEST_FULL_NAME] ?? "N/A";
-                          final guest_phone = fd?[sm_front_desk.GUEST_PHONE_NUMBER] ?? "N/A";
+                          final guest_name = fd?[sm_front_desk.GUEST_ID]["full_name"] ?? "N/A";
+                          final guest_phone = fd?[sm_front_desk.GUEST_ID]["phone_number"] ?? "N/A";
                           return Row(
                             spacing: 4,
                             children: [
@@ -407,9 +407,9 @@ class _Main_State extends State<Main_> {
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
                           final fd = map_fd[r[sm_room.FRONT_DESK_ID]];
-                          final stay_n_guest = fd?[sm_front_desk.STAY_N_GUEST] ?? "0";
-                          final stay_day = fd?[sm_front_desk.STAY_DAY] ?? "0";
-                          final stay_hour = fd?[sm_front_desk.STAY_HOUR] ?? "0";
+                          final stay_n_guest = fd?[sm_front_desk.CHECK_IN_NUMBER] ?? "0";
+                          final stay_day = fd?[sm_front_desk.CHECK_IN_DAY] ?? "0";
+                          final stay_hour = fd?[sm_front_desk.CHECK_IN_HOUR] ?? "0";
                           return Row(
                             spacing: 4,
                             children: [
@@ -600,7 +600,7 @@ class _Main_State extends State<Main_> {
                       if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
                           String due = "";
-                          final stay_due = map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.STAY_DUE];
+                          final stay_due = map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.CHECK_IN_DUE];
                           if (stay_due != null) {
                             tmp = DateTime.parse(stay_due);
                             due = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
@@ -793,7 +793,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  // * សម្អាត
+  //
   void on_clean(dynamic r) async {
     try {
       //

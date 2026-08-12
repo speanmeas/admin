@@ -4,7 +4,7 @@ import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/widget/select_dynamic.dart";
+import "package:speanmeas/core/widget/select/select_dynamic.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
@@ -83,9 +83,9 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     return _layout([
       //
-      SelectDynamic(
+      Select_Dynamic(
         controller: c_to_room,
-        title: "New Room Number:", //
+        leading: "New Room Number:", //
         options: (() {
           var options = [];
           for (var r in rooms) {

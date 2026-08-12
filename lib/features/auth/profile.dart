@@ -7,10 +7,10 @@ import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 
-import "dialog/update_full_name.dart" as dialog_fn;
-import "dialog/update_phone_number.dart" as dialog_pn;
-import "dialog/update_username.dart" as dialog_un;
-import "dialog/update_password.dart" as dialog_pw;
+import "dialog/dialog_full_name.dart" as dialog_fn;
+import "dialog/dialog_phone_number.dart" as dialog_pn;
+import "dialog/dialog_username.dart" as dialog_un;
+import "dialog/dialog_password.dart" as dialog_pw;
 
 import "sign_in.dart" as sign_in;
 
@@ -49,6 +49,17 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
+  dynamic map_data;
+
+  String? full_name;
+  String? phone_number;
+  String? username;
+  String? password;
+
+  bool? is_admin;
+  bool? is_manager;
+  bool? is_receptionist;
+  bool? is_housekeeper;
 
   void init() async {
     try {
@@ -57,13 +68,27 @@ class _Main_State extends State<Main_> {
         endpoint.AUTH_ACCESS_TOKEN, //
         data: {"access_token": await secure_storage.read(key: "access_token")},
       );
-      if (tmp != null) for (var e in sm_user.data.entries) e.value["value"] = tmp.data[0][e.key];
+      // if (tmp != null) for (var e in sm_user.data.entries) e.value["value"] = tmp.data[0][e.key];
+      if (tmp == null) throw Exception("Invalid Access Token");
+      // map_data = tmp.data[0];
+
+      full_name = map_data[sm_user.FULL_NAME];
+      phone_number = map_data[sm_user.PHONE_NUMBER];
+      username = map_data[sm_user.USERNAME];
+      password = map_data[sm_user.PASSWORD];
+
+      is_admin = map_data[sm_user.IS_ADMIN];
+      is_manager = map_data[sm_user.IS_MANAGER];
+      is_receptionist = map_data[sm_user.IS_RECEPTIONIST];
+      is_housekeeper = map_data[sm_user.IS_HOUSEKEEPER];
+
+      setState(() {});
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => sign_in.Main_()));
     }
 
-    setState(() {});
     //
   }
 
@@ -74,10 +99,10 @@ class _Main_State extends State<Main_> {
       // Position
       (() {
         String value = "N/A";
-        if (sm_user.data[sm_user.IS_ADMIN]!["value"] == true) value = "Administrator";
-        if (sm_user.data[sm_user.IS_MANAGER]!["value"] == true) value = "Manager";
-        if (sm_user.data[sm_user.IS_RECEPTIONIST]!["value"] == true) value = "Receptionist";
-        if (sm_user.data[sm_user.IS_HOUSEKEEPER]!["value"] == true) value = "Housekeeper";
+        if (is_admin == true) value = "Administrator";
+        if (is_manager == true) value = "Manager";
+        if (is_receptionist == true) value = "Receptionist";
+        if (is_housekeeper == true) value = "Housekeeper";
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -93,8 +118,8 @@ class _Main_State extends State<Main_> {
 
       (() {
         String value = "N/A";
-        if (sm_user.data[sm_user.FULL_NAME]!["value"] != null) //
-          value = sm_user.data[sm_user.FULL_NAME]!["value"].toString();
+        if (full_name != null) //
+          value = full_name!;
         return Row(
           spacing: 4,
           children: [
@@ -115,8 +140,8 @@ class _Main_State extends State<Main_> {
       // phone number
       (() {
         String value = "N/A";
-        if (sm_user.data[sm_user.PHONE_NUMBER]!["value"] != null) //
-          value = sm_user.data[sm_user.PHONE_NUMBER]!["value"].toString();
+        if (phone_number != null) //
+          value = phone_number!;
         return Row(
           spacing: 4,
           children: [
@@ -137,8 +162,8 @@ class _Main_State extends State<Main_> {
       // username
       (() {
         String value = "N/A";
-        if (sm_user.data[sm_user.USERNAME]!["value"] != null) //
-          value = sm_user.data[sm_user.USERNAME]!["value"].toString();
+        if (username != null) //
+          value = username!;
         return Row(
           spacing: 4,
           children: [
@@ -192,15 +217,12 @@ class _Main_State extends State<Main_> {
   void on_sign_out() async {
     try {
       //
-      sm_user.clear();
       await dio.options.headers.remove("Authorization");
       await secure_storage.delete(key: "access_token");
       await secure_storage.delete(key: "_id");
 
       // goto to sign in
-      Navigator.pop(context);
-      Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (_) => sign_in.Main_()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => sign_in.Main_()));
 
       //
       snackbar(ct: context, ms: "Success", cl: Colors.green);

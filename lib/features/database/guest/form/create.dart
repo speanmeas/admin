@@ -1,21 +1,13 @@
-import "package:intl/intl.dart";
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
-import "package:flutter_typeahead/flutter_typeahead.dart";
 
-import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/dialog/datetime.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/widget/showdata.dart";
-
+import "package:speanmeas/core/widget/input/input_text.dart";
+import "package:speanmeas/core/widget/select/select_dynamic.dart";
+import "package:speanmeas/core/widget/search/search_nationality.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
-
-import "package:speanmeas/core/schema/nationality.g.dart";
-import "../widget/nationality_search.dart" as n_search;
-import "../widget/gender_select.dart" as g_select;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -54,196 +46,101 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   //
-  dynamic tmp;
+  dynamic tmp; // ignore: unused
 
-  final c_nationality = TextEditingController();
-  final c_gender = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
+  String? full_name;
+  String? phone_number;
+  String? gender;
+  String? nationality_id;
+  String? id_number;
+  String? passport_number;
+  String? note;
 
   void init() async {
-    sm_guest.clear();
-
-    sm_guest.data[sm_guest.NATIONALITY]!["value"] = "Cambodian";
-    sm_guest.data[sm_guest.GENDER]!["value"] = "Male";
-
-    if (sm_guest.data[sm_guest.NATIONALITY]!["value"] != null) //
-      c_nationality.text = sm_guest.data[sm_guest.NATIONALITY]!["value"];
-    if (sm_guest.data[sm_guest.GENDER]!["value"] != null) //
-      c_gender.text = sm_guest.data[sm_guest.GENDER]!["value"];
+    //
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      for (var e in sm_guest.data.entries)
-        (() {
-          // * search nationality
-          if (e.key == sm_guest.NATIONALITY_ID) {
-            return n_search.Main_(
-              controller: c_nationality,
-              onChanged: (v) {
-                e.value["value"] = v[sm_nationality.ID];
-                sm_guest.data[sm_guest.NATIONALITY]!["value"] = v[sm_nationality.NAME];
-                setState(() {});
-              },
-              onCleared: () {
-                e.value["value"] = null;
-                sm_guest.data[sm_guest.NATIONALITY]!["value"] = null;
-                setState(() {});
-              },
-            );
-          }
+      //
+      Input_Text(
+        initial: full_name, //
+        title: "Full Name:", //
+        onChanged: (v) {
+          full_name = v;
+          print(full_name);
+          setState(() {});
+        },
+      ),
 
-          // * select gender
-          if (e.key == sm_guest.GENDER) {
-            return g_select.Main_(
-              controller: c_gender,
-              onChanged: (v) {
-                e.value["value"] = v;
-                setState(() {});
-              },
-              onCleared: () {
-                e.value["value"] = null;
-                setState(() {});
-              },
-            );
-          }
+      //
+      Input_Text(
+        initial: phone_number, //
+        title: "Phone Number:", //
+        onChanged: (v) {
+          phone_number = v;
+          print(phone_number);
+          setState(() {});
+        },
+      ),
 
-          // * lock
-          if (e.value["lock"] == true) {
-            String value = "";
-            if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
-            return Show_Data(
-              title: e.value["title"], //
-              value: value,
-            );
-          }
+      //
+      Select_Dynamic(
+        prefixIcon: Icon(Icons.wc),
+        options: ["Male", "Female", "Other"], //
+        onChanged: (v) {
+          gender = v;
+          print(gender);
+          setState(() {});
+        },
+      ),
 
-          // * អក្សរ
-          if (e.value["type"] == "string") {
-            String value = "";
-            if (e.value["value"] != null) value = e.value["value"]?.toString() ?? "";
-            return TextField(
-              controller: TextEditingController(text: value.trim()),
-              maxLines: e.key.contains("note") ? 4 : 1,
-              decoration: InputDecoration(
-                labelText: e.value["title"] + ":", //
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              onChanged: (v) {
-                e.value["value"] = v.isEmpty ? null : v.trim(); //
-              },
-            );
-          }
+      //
+      Search_Nationality(
+        initial: "Cambodian", //
+        onChanged: (v) {
+          nationality_id = v;
+          print(nationality_id);
+          setState(() {});
+        },
+      ),
 
-          // * លេខ
-          if (e.value["type"] == "number") {
-            String value = "";
-            if (e.value["value"] != null && e.value["value"] != 0) {
-              value = e.value["value"].toStringAsFixed(2);
-            }
-            return TextField(
-              controller: TextEditingController(text: value.trim()),
-              decoration: InputDecoration(
-                labelText: e.value["title"] + ":", //
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
-              onChanged: (v) {
-                e.value["value"] = double.tryParse(v);
-              },
-            );
-          }
+      //
+      Input_Text(
+        initial: id_number, //
+        title: "National ID Number:", //
+        onChanged: (v) {
+          id_number = v;
+          print(id_number);
+          setState(() {});
+        },
+      ),
 
-          // * ថ្ងៃខែឆ្នាំ និង ម៉ោង
-          if (e.value["type"] == "date-time") {
-            final tmp = DateTime.tryParse(e.value["value"]?.toString() ?? "");
-            final value = tmp != null ? DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal()) : "";
-            final init = tmp ?? DateTime.now();
-            return TextField(
-              controller: TextEditingController(text: value),
-              readOnly: true,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(), //
-                labelText: e.value["title"] + ":", //
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                suffixIcon: Padding(
-                  padding: EdgeInsets.only(right: 4),
-                  child: IconButton(
-                    icon: Icon(Icons.clear, color: Colors.red),
-                    onPressed: () async {
-                      e.value["value"] = null;
-                      setState(() {});
-                    },
-                  ), //
-                ),
-              ),
-              onTap: () async {
-                DateTime? datetime = await datetime_picker(context, initial_datetime: init);
-                if (datetime == null) return;
-                e.value["value"] = datetime.toIso8601String();
-                setState(() {});
-              }, //,
-            );
-          }
+      //
+      Input_Text(
+        initial: passport_number, //
+        title: "Passport Number:", //
+        onChanged: (v) {
+          passport_number = v;
+          print(passport_number);
+          setState(() {});
+        },
+      ),
 
-          // * តក្កវិទ្យា
-          if (e.value["type"] == "boolean") {
-            String? value;
-            if (e.value["value"] != null) {
-              if (e.value["value"] == true) value = "Yes";
-              if (e.value["value"] == false) value = "No";
-            }
-            final controller_search = TextEditingController(text: value ?? "");
-            return TypeAheadField<String>(
-              controller: controller_search,
-              suggestionsCallback: (query) => ["Yes", "No"],
-              builder: (context, controller, focusNode) {
-                return TextField(
-                  controller: controller,
-                  focusNode: focusNode,
-                  decoration: InputDecoration(
-                    labelText: e.value["title"] + ":", //
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    suffixIcon: Padding(
-                      padding: EdgeInsets.only(right: 4),
-                      child: IconButton(
-                        icon: Icon(Icons.clear, color: Colors.red),
-                        onPressed: () async {
-                          e.value["value"] = null;
-                          setState(() {});
-                        },
-                      ), //
-                    ),
-                  ),
-                );
-              },
-              itemBuilder: (context, item) => ListTile(title: Text(item)),
-              onSelected: (v) {
-                controller_search.text = v;
-                if (v == "Yes") e.value["value"] = true;
-                if (v == "No") e.value["value"] = false;
-                setState(() {});
-              },
-            );
-          }
+      Input_Text(
+        initial: note, //
+        title: "Note:", //
+        maxLines: 4, //
+        onChanged: (v) {
+          note = v ?? "";
+          print(note);
+          setState(() {});
+        },
+      ),
 
-          //
-          return SizedBox();
-        })(),
-
-      // button create
+      //
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Create"),
@@ -258,12 +155,18 @@ class _Main_State extends State<Main_> {
   void on_create() async {
     try {
       //
-      var payload = {};
-      for (var e in sm_guest.data.entries) //
-        payload[e.key] = e.value["value"];
-
-      // request
-      tmp = await dio.post(endpoint.GUEST_CREATE, data: payload);
+      tmp = await dio.post(
+        endpoint.GUEST_CRUD_CREATE, //
+        data: {
+          sm_guest.FULL_NAME: full_name,
+          sm_guest.PHONE_NUMBER: phone_number,
+          sm_guest.GENDER: gender,
+          sm_guest.NATIONALITY_ID: nationality_id,
+          sm_guest.ID_NUMBER: id_number,
+          sm_guest.PASSPORT_NUMBER: passport_number,
+          sm_guest.NOTE: note, //
+        },
+      );
 
       //
       Navigator.pop(context, tmp.data[0]);
@@ -277,6 +180,14 @@ class _Main_State extends State<Main_> {
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  //
 }
 
 class Main_ extends StatefulWidget {

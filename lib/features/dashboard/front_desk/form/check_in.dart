@@ -2,16 +2,13 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/widget/select_dynamic.dart";
+import "package:speanmeas/core/widget/select/select_dynamic.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/widget/showdata.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
-
-import "../widget/guest_search.dart" as g_search;
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -56,10 +53,7 @@ class _Main_State extends State<Main_> {
   final c_note = TextEditingController();
 
   void init() async {
-    sm_front_desk.clear();
-    sm_room.clear();
-
-    tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_front_desk.ID: widget.room_id});
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_front_desk.ID: widget.room_id});
     for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
 
     c_g_search.text = sm_guest.data[sm_guest.PHONE_NUMBER]?["value"]?.toString() ?? "";
@@ -168,27 +162,27 @@ class _Main_State extends State<Main_> {
       ),
 
       // number of guests
-      SelectDynamic(
+      Select_Dynamic(
         controller: c_n_o_guest,
-        title: "Number of Guests:",
+        leading: "Number of Guests:",
         options: List.generate(10, (index) => index + 1),
         onChanged: (v) => setState(() {}), //
         prefixIcon: Icon(Icons.people_outline), //
       ),
 
       // stay duration days
-      SelectDynamic(
+      Select_Dynamic(
         controller: c_d_day,
-        title: "Stay Duration (Days):",
+        leading: "Stay Duration (Days):",
         options: List.generate(365, (index) => index),
         onChanged: (v) => setState(() {}), //
         prefixIcon: Icon(Icons.calendar_month_outlined),
       ),
 
       // stay duration hours
-      SelectDynamic(
+      Select_Dynamic(
         controller: c_d_hour,
-        title: "Stay Duration (Hours):",
+        leading: "Stay Duration (Hours):",
         options: [0, 3, 6, 9, 12, 15, 18, 21],
         onChanged: (v) => setState(() {}), //
         prefixIcon: Icon(Icons.access_time_outlined),

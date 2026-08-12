@@ -1,62 +1,74 @@
 import "package:flutter/material.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
+
+import "package:speanmeas/core/theme/theme_data.dart";
 
 class _Main_State extends State<Main_> {
   //
-  dynamic tmp;
+  final controller = TextEditingController();
+
+  void init() {
+    if (widget.initial != null) {
+      controller.text = widget.initial!;
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return TypeAheadField<String>(
-      controller: widget.controller,
-      itemBuilder: (context, item) => ListTile(title: Text(item)),
-      suggestionsCallback: (q) async {
-        return ["Single", "Double", "VIP"];
-      },
+      controller: controller,
+      suggestionsCallback: (query) => ["Single", "Double", "VIP"],
       builder: (context, controller, focusNode) {
         return TextField(
           controller: controller,
           focusNode: focusNode,
-          readOnly: true,
           decoration: InputDecoration(
-            labelText: "Select Type:",
+            labelText: "Select Type:", //
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             prefixIcon: Icon(Icons.king_bed_outlined, color: Colors.blue),
-            suffixIcon: Padding(
-              padding: EdgeInsets.only(right: 4),
-              child: IconButton(
-                icon: Icon(Icons.clear, color: Colors.red),
-                onPressed: () {
-                  widget.controller.clear();
-                  widget.onCleared.call();
-                  widget.onChanged.call(null);
-                },
-              ), //
+            suffixIcon: ExcludeFocus(
+              child: Padding(
+                padding: EdgeInsets.only(right: 4),
+                child: IconButton(
+                  icon: Icon(Icons.clear, color: Colors.red),
+                  onPressed: () {
+                    controller.clear();
+                    widget.onChanged?.call(null);
+                    setState(() {});
+                  },
+                ), //
+              ),
             ),
           ),
         );
       },
+      itemBuilder: (context, item) => ListTile(title: Text(item)),
       onSelected: (v) {
-        widget.controller.text = v;
-        widget.onChanged.call(v);
+        controller.text = v;
+        widget.onChanged?.call(v);
+        setState(() {});
       },
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
   }
 }
 
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
-    required this.controller,
-    required this.onChanged,
-    required this.onCleared,
+    this.initial,
+    this.onChanged,
   });
 
-  final TextEditingController controller;
-  final ValueChanged<String?> onChanged;
-  final VoidCallback onCleared;
+  final String? initial;
+  final ValueChanged<String?>? onChanged;
 
   @override
   State<Main_> createState() => _Main_State();
@@ -69,12 +81,9 @@ void main() {
       home: Scaffold(
         body: Center(
           child: Main_(
-            controller: TextEditingController(text: "Single"),
-            onChanged: (data) {
-              print("Selected Data: $data");
-            },
-            onCleared: () {
-              print("Field cleared");
+            initial: "Single",
+            onChanged: (v) {
+              print("Changed: $v");
             },
           ),
         ),

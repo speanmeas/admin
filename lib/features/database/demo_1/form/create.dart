@@ -4,10 +4,10 @@ import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/widget/picker_boolean.dart";
-import "package:speanmeas/core/widget/picker_datetime.dart";
-import "package:speanmeas/core/widget/input_text.dart";
-import "package:speanmeas/core/widget/input_number.dart";
+import "package:speanmeas/core/widget/pick/pick_boolean.dart";
+import "package:speanmeas/core/widget/pick/pick_datetime.dart";
+import "package:speanmeas/core/widget/input/input_text.dart";
+import "package:speanmeas/core/widget/input/input_number.dart";
 import "package:speanmeas/core/schema/demo_1.g.dart";
 
 Widget _layout(List<Widget> children) {
@@ -59,10 +59,6 @@ class _Main_State extends State<Main_> {
   bool? logic_2;
   String? note;
 
-  void init() async {
-    //
-  }
-
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -73,7 +69,6 @@ class _Main_State extends State<Main_> {
         title: "Text 1:", //
         onChanged: (v) {
           text_1 = v;
-          print(text_1);
           setState(() {});
         },
       ),
@@ -84,7 +79,6 @@ class _Main_State extends State<Main_> {
         title: "Text 2:", //
         onChanged: (v) {
           text_2 = v;
-          print(text_2);
           setState(() {});
         },
       ),
@@ -95,7 +89,6 @@ class _Main_State extends State<Main_> {
         title: "Number 1:", //
         onChanged: (v) {
           number_1 = v;
-          print(number_1);
           setState(() {});
         },
       ),
@@ -106,7 +99,6 @@ class _Main_State extends State<Main_> {
         title: "Number 2:", //
         onChanged: (v) {
           number_2 = v;
-          print(number_2);
           setState(() {});
         },
       ),
@@ -116,7 +108,6 @@ class _Main_State extends State<Main_> {
         title: "Datetime 1:", //
         onChanged: (v) {
           datetime_1 = v;
-          print(datetime_1);
           setState(() {});
         },
       ),
@@ -126,7 +117,6 @@ class _Main_State extends State<Main_> {
         title: "Datetime 2:", //
         onChanged: (v) {
           datetime_2 = v;
-          print(datetime_2);
           setState(() {});
         },
       ),
@@ -136,7 +126,6 @@ class _Main_State extends State<Main_> {
         title: "Logic 1:", //
         onChanged: (v) {
           logic_1 = v;
-          print(logic_1);
           setState(() {});
         },
       ),
@@ -146,7 +135,6 @@ class _Main_State extends State<Main_> {
         title: "Logic 2:", //
         onChanged: (v) {
           logic_2 = v;
-          print(logic_2);
           setState(() {});
         },
       ),
@@ -157,7 +145,6 @@ class _Main_State extends State<Main_> {
         maxLines: 4, //
         onChanged: (v) {
           note = v ?? "";
-          print(note);
           setState(() {});
         },
       ),
@@ -180,14 +167,14 @@ class _Main_State extends State<Main_> {
       tmp = await dio.post(
         endpoint.DEMO_1_CRUD_CREATE, //
         data: {
-          sm_demo_1.TEXT_1: text_1,
-          sm_demo_1.TEXT_2: text_2,
-          sm_demo_1.NUMBER_1: number_1,
-          sm_demo_1.NUMBER_2: number_2,
-          sm_demo_1.DATETIME_1: datetime_1?.toIso8601String(),
-          sm_demo_1.DATETIME_2: datetime_2?.toIso8601String(),
-          sm_demo_1.LOGIC_1: logic_1,
-          sm_demo_1.LOGIC_2: logic_2,
+          sm_demo_1.TEXT_1: text_1, //
+          sm_demo_1.TEXT_2: text_2, //
+          sm_demo_1.NUMBER_1: number_1, //
+          sm_demo_1.NUMBER_2: number_2, //
+          sm_demo_1.DATETIME_1: datetime_1?.toIso8601String(), //
+          sm_demo_1.DATETIME_2: datetime_2?.toIso8601String(), //
+          sm_demo_1.LOGIC_1: logic_1, //
+          sm_demo_1.LOGIC_2: logic_2, //
           sm_demo_1.NOTE: note, //
         },
       );
@@ -203,12 +190,6 @@ class _Main_State extends State<Main_> {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    init();
   }
 
   //

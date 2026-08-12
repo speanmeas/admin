@@ -2,11 +2,22 @@ import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
 
-class _SelectDynamicState extends State<SelectDynamic> {
+class _Select_DynamicState extends State<Select_Dynamic> {
+  final controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initial != null) {
+      controller.text = widget.initial.toString();
+      widget.onChanged?.call(widget.initial);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return TypeAheadField<dynamic>(
-      controller: widget.controller,
+      controller: controller,
       itemBuilder: (context, i) => ListTile(title: Text(i.toString())),
       suggestionsCallback: (q) => widget.options?.toList(),
       builder: (context, controller, focusNode) {
@@ -15,7 +26,7 @@ class _SelectDynamicState extends State<SelectDynamic> {
           controller: controller,
           focusNode: focusNode,
           decoration: InputDecoration(
-            labelText: widget.title,
+            labelText: widget.leading,
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             prefixIcon: widget.prefixIcon,
@@ -24,7 +35,7 @@ class _SelectDynamicState extends State<SelectDynamic> {
               child: IconButton(
                 icon: Icon(Icons.clear, color: Colors.red),
                 onPressed: () {
-                  widget.controller.clear();
+                  controller.clear();
                   widget.onChanged?.call(null);
                 },
               ), //
@@ -33,31 +44,31 @@ class _SelectDynamicState extends State<SelectDynamic> {
         );
       },
       onSelected: (value) {
-        widget.controller.text = value.toString();
+        controller.text = value.toString();
         widget.onChanged?.call(value);
       },
     );
   }
 }
 
-class SelectDynamic extends StatefulWidget {
-  const SelectDynamic({
+class Select_Dynamic extends StatefulWidget {
+  const Select_Dynamic({
     super.key, //
-    required this.controller,
-    this.title,
-    this.options,
-    this.onChanged,
+    required this.options,
+    required this.onChanged,
+    this.leading,
+    this.initial,
     this.prefixIcon,
   });
 
-  final TextEditingController controller;
-  final String? title;
+  final String? leading;
+  final dynamic initial;
   final List<dynamic>? options;
   final Function(dynamic)? onChanged;
   final Widget? prefixIcon;
 
   @override
-  State<SelectDynamic> createState() => _SelectDynamicState();
+  State<Select_Dynamic> createState() => _Select_DynamicState();
 }
 
 void main() {
@@ -66,10 +77,11 @@ void main() {
       theme: theme_data, //
       home: Scaffold(
         body: Center(
-          child: SelectDynamic(
-            controller: TextEditingController(text: "1"),
-            title: "Number of Guests:",
+          child: Select_Dynamic(
+            leading: "Number of Guests:",
+            initial: 5,
             options: List.generate(100, (index) => index),
+            prefixIcon: Icon(Icons.people_alt_outlined), //
             onChanged: (value) {
               print("Selected value: $value");
             },

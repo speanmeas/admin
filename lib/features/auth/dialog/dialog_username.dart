@@ -11,15 +11,10 @@ class _Dialog_State extends State<Dialog_> {
   //
   dynamic tmp;
 
-  final title = "Update Password"; //
-  final label_pw = "New Password:";
-  final label_cf_pw = "Confirm New Password:";
+  final title = "Update Username"; //
+  final label = "Username:";
 
-  final controller_pw = TextEditingController();
-  final controller_cf_pw = TextEditingController();
-
-  bool is_obscure_pw = true;
-  bool is_obscure_cf_pw = true;
+  late final controller = TextEditingController(text: widget.input ?? "");
 
   void init() async {
     //
@@ -44,52 +39,24 @@ class _Dialog_State extends State<Dialog_> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
-            controller: controller_pw,
-            decoration: InputDecoration(
-              labelText: label_pw, //
-              labelStyle: TextStyle(fontWeight: FontWeight.bold),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              suffixIcon: ExcludeFocus(
-                child: Padding(
-                  padding: EdgeInsets.only(right: 4),
-                  child: IconButton(
-                    icon: Icon(is_obscure_pw ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () {
-                      is_obscure_pw = !is_obscure_pw;
-                      setState(() {});
-                    },
-                  ), //
-                ),
-              ),
-            ),
-            obscureText: is_obscure_pw, //
             autofocus: true,
-            onChanged: (v) => setState(() {}),
-            onSubmitted: (v) => can_okay() ? on_okay() : null,
-          ),
-
-          TextField(
-            controller: controller_cf_pw,
+            controller: controller,
             decoration: InputDecoration(
-              labelText: label_cf_pw, //
+              labelText: label, //
               labelStyle: TextStyle(fontWeight: FontWeight.bold),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               suffixIcon: ExcludeFocus(
                 child: Padding(
                   padding: EdgeInsets.only(right: 4),
                   child: IconButton(
-                    icon: Icon(is_obscure_cf_pw ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () {
-                      is_obscure_cf_pw = !is_obscure_cf_pw;
-                      setState(() {});
-                    },
+                    icon: Icon(Icons.clear, color: Colors.red),
+                    onPressed: controller.clear,
                   ), //
                 ),
               ),
             ),
-            obscureText: is_obscure_cf_pw, //
             onChanged: (v) => setState(() {}),
-            onSubmitted: (v) => can_okay() ? on_okay() : null,
+            onSubmitted: (v) => on_okay(),
           ),
         ],
       ),
@@ -102,27 +69,20 @@ class _Dialog_State extends State<Dialog_> {
           child: Text("Cancel"), //
         ),
         OutlinedButton(
-          onPressed: can_okay() ? on_okay : null,
+          onPressed: on_okay, //
           child: Text("Okay"), //
         ),
       ],
     );
   }
 
-  bool can_okay() {
-    if (controller_pw.text.isEmpty) return false;
-    if (controller_cf_pw.text.isEmpty) return false;
-    if (controller_pw.text != controller_cf_pw.text) return false;
-    return true;
-  }
-
   void on_okay() async {
     try {
       tmp = await dio.post(
-        endpoint.USER_UPDATE, //
+        endpoint.USER_CRUD_UPDATE, //
         data: {
           "_id": await secure_storage.read(key: "_id"), //
-          sm_user.PASSWORD: controller_pw.text, //
+          sm_user.USERNAME: controller.text, //
         },
       );
       if (tmp == null) throw "Failed";
@@ -144,17 +104,25 @@ class _Dialog_State extends State<Dialog_> {
 }
 
 class Dialog_ extends StatefulWidget {
-  const Dialog_({super.key});
+  const Dialog_({
+    super.key, //
+    this.input,
+  });
+
+  final String? input;
 
   @override
   State<Dialog_> createState() => _Dialog_State();
 }
 
-Future<dynamic> view({required BuildContext context}) {
+Future<dynamic> view({
+  required BuildContext context, //
+  String? input, //
+}) {
   return showDialog<dynamic>(
     context: context,
     builder: (context) {
-      return Dialog_(); //
+      return Dialog_(input: input); //
     },
   );
 }
@@ -169,7 +137,10 @@ class _Main_State extends State<Main_> {
       body: Center(
         child: OutlinedButton(
           onPressed: () async {
-            final v = await view(context: context);
+            final v = await view(
+              context: context, //
+              input: "0123456789", //
+            );
             print("value: $v");
           },
           child: const Text("Show Dialog"),

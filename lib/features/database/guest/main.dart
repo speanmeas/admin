@@ -1,15 +1,17 @@
-import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:flutter/foundation.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/config.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/schema/guest.g.dart";
+import "package:speanmeas/core/widget/button/menu_button_icon.dart";
+import "package:speanmeas/core/widget/button/menu_button_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/dialog/select_page.dart";
+import "package:speanmeas/core/widget/dialog/dialog_page.dart";
+import "package:speanmeas/core/schema/guest.g.dart";
 
 import "form/create.dart" as create;
 import "form/read.dart" as read;
@@ -27,13 +29,12 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
-  PlutoGridStateManager? state_manager;
   int page = 1;
   int row_total = 0;
   bool is_loading = true;
   bool is_filter = false;
   int load_request_id = 0;
-  int get total_pages => row_total == 0 ? 1 : (row_total + DEFAULT_LIMIT_ROW - 1) ~/ DEFAULT_LIMIT_ROW;
+  PlutoGridStateManager? state_manager;
 
   @override
   void initState() {
@@ -45,11 +46,11 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       //
-      final r = await dio.post(
-        endpoint.GUEST_READ_COUNT, //
+      tmp = await dio.post(
+        endpoint.GUEST_CRUD_READ_COUNT, //
         data: {"count": true},
       );
-      row_total = int.parse(r.data.toString());
+      row_total = int.parse(tmp.data.toString());
 
       //
       load_page(page);
@@ -66,7 +67,7 @@ class _Main_State extends State<Main_> {
     try {
       //
       final r = await dio.post(
-        endpoint.GUEST_READ_COUNT, //
+        endpoint.GUEST_CRUD_READ_COUNT, //
         data: {"count": true},
       );
       row_total = int.parse(r.data.toString());
@@ -87,7 +88,6 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
   void load_page(int p) async {
     final request_id = ++load_request_id;
 
@@ -98,8 +98,8 @@ class _Main_State extends State<Main_> {
       setState(() {});
 
       //
-      final r = await dio.post(
-        endpoint.GUEST_READ, //
+      tmp = await dio.post(
+        endpoint.GUEST_CRUD_READ, //
         data: {
           "key": DEFAULT_KEY, //
           "order": DEFAULT_ORDER, //
@@ -107,7 +107,7 @@ class _Main_State extends State<Main_> {
           "limit": DEFAULT_LIMIT_ROW,
         },
       );
-      final data = List<Map<String, dynamic>>.from(r.data);
+      final data = List<Map<String, dynamic>>.from(tmp.data);
 
       // Ignore a response from an earlier page request.
       if (!mounted || request_id != load_request_id) return;
@@ -122,12 +122,14 @@ class _Main_State extends State<Main_> {
         for (var d in data)
           PlutoRow(
             cells: {
-              for (var e in sm_guest.data.entries) //
-                e.key: PlutoCell(
-                  value: e.key.contains("password")
-                      ? "**********" //
-                      : data_to_cell(data: d[e.key], type: e.value["type"]),
-                ),
+              "index": PlutoCell(value: data.indexOf(d) + 1),
+              sm_guest.ID: PlutoCell(value: d[sm_guest.ID] ?? ""),
+              sm_guest.FULL_NAME: PlutoCell(value: d[sm_guest.FULL_NAME] ?? ""),
+              sm_guest.PHONE_NUMBER: PlutoCell(value: d[sm_guest.PHONE_NUMBER] ?? ""),
+              sm_guest.GENDER: PlutoCell(value: d[sm_guest.GENDER] ?? ""),
+              sm_guest.ID_NUMBER: PlutoCell(value: d[sm_guest.ID_NUMBER] ?? ""),
+              sm_guest.PASSPORT_NUMBER: PlutoCell(value: d[sm_guest.PASSPORT_NUMBER] ?? ""),
+              sm_guest.NOTE: PlutoCell(value: d[sm_guest.NOTE] ?? ""),
             },
           ),
       ]);
@@ -154,179 +156,83 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     return _layout([
       // menu
-      (() {
-        return Container(
-          height: 40, //
-          padding: EdgeInsets.all(1),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Create
-              Tooltip(
-                message: "បង្កើតថ្មី", //
-                child: InkWell(
-                  onTap: on_create,
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.add, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ),
-                ),
+      Container(
+        height: 40, //
+        padding: EdgeInsets.all(1),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // create
+            Menu_Button_Icon(
+              tip: t("Create"), //
+              icon: Icons.add,
+              onPressed: on_create,
+            ),
+
+            // read
+            Menu_Button_Icon(
+              tip: t("Read"), //
+              icon: Icons.visibility_outlined,
+              onPressed: on_read,
+            ),
+
+            // update
+            Menu_Button_Icon(
+              tip: t("Update"), //
+              icon: Icons.edit_outlined,
+              onPressed: on_update,
+            ),
+
+            // delete
+            Menu_Button_Icon(
+              tip: t("Delete"), //
+              icon: Icons.delete_outline,
+              onPressed: on_delete,
+              color: Colors.red,
+            ),
+
+            Spacer(),
+
+            // filter
+            Menu_Button_Icon(
+              tip: is_filter ? t("Close Filter") : t("Open Filter"), //
+              icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
+              onPressed: () {
+                is_filter = !is_filter;
+                state_manager?.setShowColumnFilter(is_filter);
+                if (!is_filter) state_manager?.setFilterWithFilterRows([]);
+                setState(() {});
+              },
+            ),
+
+            // search
+            if (kDebugMode)
+              Menu_Button_Icon(
+                tip: "Search", //
+                icon: Icons.search,
+                onPressed: () {
+                  snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
+                },
               ),
 
-              // Read
-              Tooltip(
-                message: "មើល", //
-                child: InkWell(
-                  onTap: on_read,
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.visibility_outlined, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ),
-                ),
-              ),
-
-              // Update
-              Tooltip(
-                message: "កែ", //
-                child: InkWell(
-                  onTap: on_update,
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.edit_outlined, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ),
-                ),
-              ),
-
-              // Delete
-              Tooltip(
-                message: "លុប", //
-                child: InkWell(
-                  onTap: on_delete,
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.delete_outline, //
-                      size: 30,
-                      color: Colors.red,
-                    ), //
-                  ),
-                ),
-              ),
-
-              Spacer(),
-
-              // filter
-              Tooltip(
-                message: is_filter ? "បិទច្រោះ" : "បើកច្រោះ", //
-                child: InkWell(
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ), //
-                  onTap: () {
-                    is_filter = !is_filter;
-                    state_manager?.setShowColumnFilter(is_filter);
-
-                    // * លុប filter ពេលលាក់
-                    if (!is_filter) {
-                      state_manager?.setFilterWithFilterRows([]);
-                    }
-
-                    setState(() {});
-                  },
-                ),
-              ),
-
-              // search
-              if (kDebugMode)
-                Tooltip(
-                  message: "ស្វែងរក", //
-                  child: InkWell(
-                    child: Container(
-                      width: 38,
-                      height: 38,
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.search, //
-                        size: 30,
-                        color: Colors.blue,
-                      ), //
-                    ), //
-                    onTap: () {
-                      snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
-                    },
-                  ),
-                ),
-
-              // refresh
-              Tooltip(
-                message: "មើលទិន្នន័យថ្មី", //
-                child: InkWell(
-                  onTap: on_refresh,
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.refresh, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      })(),
+            // refresh
+            Menu_Button_Icon(
+              tip: t("Refresh"), //
+              icon: Icons.refresh,
+              onPressed: on_refresh,
+            ),
+          ],
+        ),
+      ),
 
       if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
       // pluto table
       Expanded(
         child: PlutoGrid(
-          rows: [],
-          columns: [
-            for (var e in sm_guest.data.entries)
-              PlutoColumn(
-                field: e.key, //
-                title: e.value["title"]!,
-                type: e.value["type"] == "number"
-                    ? PlutoColumnType.number(format: "#,##0.00") //
-                    : PlutoColumnType.text(),
-                hide: e.value["hide"]!,
-                width: 160,
-                enableEditingMode: false,
-              ),
-          ], //
-          //
+          rows: [], //
+          columns: columns, //
           configuration: PlutoGridConfiguration(
             scrollbar: PlutoGridScrollbarConfig(
               scrollbarThickness: 12, //
@@ -349,174 +255,106 @@ class _Main_State extends State<Main_> {
       ),
 
       // footer
-      (() {
-        return Container(
-          height: 40, //
-          alignment: Alignment.topCenter,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(width: 100),
+      Container(
+        height: 40, //
+        alignment: Alignment.topCenter,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: 120),
 
-              Spacer(),
+            Spacer(),
 
-              // * ត្រលប់ទៅទំព័រដំបូង
-              Tooltip(
-                message: "ទៅទំព័រដំបូង", //
-                child: InkWell(
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.first_page, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ), //
-                  onTap: () {
-                    if (page == 1) return;
-                    page = 1;
-                    load_page(page);
-                  },
+            // * ត្រលប់ទៅទំព័រដំបូង
+            Menu_Button_Icon(
+              tip: t("First Page"), //
+              icon: Icons.first_page,
+              onPressed: () {
+                if (page == 1) return;
+                page = 1;
+                load_page(page);
+              },
+            ),
+
+            // previous page
+            Menu_Button_Icon(
+              tip: t("Previous Page"), //
+              icon: Icons.navigate_before,
+              onPressed: () {
+                if (page == 1) return;
+                page = page - 1;
+                load_page(page);
+              },
+            ),
+
+            // select page
+            Menu_Button_Text(
+              tip: t("Select Page"), //
+              text: "$page / $total_pages", //
+              onPressed: () async {
+                final v = await select_page(
+                  context, //
+                  page: page,
+                  row_total: row_total,
+                  limit: DEFAULT_LIMIT_ROW,
+                );
+                if (v == null) return;
+                page = v;
+                load_page(page);
+              },
+            ),
+
+            // next page
+            Menu_Button_Icon(
+              tip: t("Next Page"), //
+              icon: Icons.navigate_next,
+              onPressed: () {
+                if (page == total_pages) return;
+                page = page + 1;
+                load_page(page);
+              },
+            ),
+
+            // last page
+            Menu_Button_Icon(
+              tip: t("Last Page"), //
+              icon: Icons.last_page,
+              onPressed: () {
+                if (page == total_pages) return;
+                page = total_pages;
+                load_page(page);
+              },
+            ),
+
+            Spacer(),
+
+            // total row
+            Container(
+              height: 40,
+              padding: EdgeInsets.only(right: 16),
+              alignment: Alignment.center,
+              child: Text(
+                "${state_manager?.rows.length} Rows", //
+                style: TextStyle(
+                  fontSize: 18, //
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-              ),
+              ), //
+            ),
 
-              // previous page
-              Tooltip(
-                message: "ទៅទំព័រមុន", //
-                child: InkWell(
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.navigate_before, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ), //
-                  onTap: () {
-                    if (page == 1) return;
-                    page = page - 1;
-                    load_page(page);
-                  },
-                ),
-              ),
-
-              // select page
-              Tooltip(
-                message: "ជ្រើសទំព័រ", //
-                child: InkWell(
-                  child: Container(
-                    height: 38,
-                    padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    alignment: Alignment.center,
-                    child: Text(
-                      "$page / $total_pages", //
-                      style: TextStyle(
-                        fontSize: 18, //
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ), //
-                  ), //
-                  onTap: () async {
-                    final v = await select_page(
-                      context, //
-                      page: page,
-                      row_total: row_total,
-                      limit: DEFAULT_LIMIT_ROW,
-                    );
-                    if (v == null) return;
-                    page = v;
-                    load_page(page);
-                  }, //
-                ),
-              ),
-
-              // next page
-              Tooltip(
-                message: "ទៅទំព័របន្ទាប់",
-                child: InkWell(
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.navigate_next, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ), //
-                  onTap: () {
-                    if (page == total_pages) return;
-                    page = page + 1;
-                    load_page(page);
-                  },
-                ),
-              ),
-
-              // last page
-              Tooltip(
-                message: "ទៅទំព័រចុងក្រោយ",
-                child: InkWell(
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.last_page, //
-                      size: 30,
-                      color: Colors.blue,
-                    ), //
-                  ), //
-                  onTap: () {
-                    if (page == total_pages) return;
-                    page = total_pages;
-                    load_page(page);
-                  },
-                ),
-              ),
-
-              Spacer(),
-
-              // total row
-              Container(
-                height: 40,
-                padding: EdgeInsets.only(right: 8),
-                alignment: Alignment.center,
-                child: Text(
-                  "${state_manager?.rows.length} Rows", //
-                  style: TextStyle(
-                    fontSize: 18, //
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ), //
-              ),
-
-              SizedBox(width: 4),
-            ],
-          ),
-        );
-      })(),
+            SizedBox(width: 4),
+          ],
+        ),
+      ),
     ]);
   }
 
-  //
   void on_create() async {
     try {
       //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => create.Main_(
-            //
-          ),
-        ),
-      );
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
       if (tmp == null) return;
 
       // * លុប sort + filter
@@ -538,7 +376,6 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
   void on_read() async {
     try {
       //
@@ -565,7 +402,6 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
   void on_update() async {
     try {
       //
@@ -596,7 +432,6 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
   void on_delete() async {
     try {
       //
@@ -618,8 +453,7 @@ class _Main_State extends State<Main_> {
       if (tmp == null) return;
 
       //
-      row_total = row_total - 1;
-      state_manager?.removeCurrentRow();
+      load_page(page);
 
       //
     } catch (e, st) {
@@ -628,86 +462,148 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
-  dynamic cell_to_data({
-    dynamic data, //
-    String? type, //
-  }) {
-    //
-    if (type == "id") {
-      if (data == "") return null;
-      if (data != "") return data.toString();
-    }
-
-    //
-    if (type == "string") {
-      if (data == "") return null;
-      if (data != "") return data.toString();
-    }
-
-    //
-    if (type == "number") {
-      if (data == "") return null;
-      if (data != "") return double.tryParse(data.toString());
-    }
-
-    //
-    if (type == "date-time") {
-      if (data == "") return null;
-      if (data != "") {
-        final tmp = DateFormat(DEFAULT_DATE_FORMAT).tryParse(data.toString());
-        if (tmp != null) return tmp.toIso8601String();
-      }
-    }
-
-    if (type == "boolean") {
-      if (data == "") return null;
-      if (data == "Yes") return true;
-      if (data == "No") return false;
-    }
-
-    return null;
+  int get total_pages {
+    if (row_total == 0) return 1;
+    return (row_total + DEFAULT_LIMIT_ROW - 1) ~/ DEFAULT_LIMIT_ROW;
   }
 
   //
-  String data_to_cell({
-    dynamic data, //
-    String? type, //
-  }) {
-    //
-    if (type == "id") {
-      if (data != null) return data.toString();
-    }
-
-    //
-    if (type == "string") {
-      if (data != null) return data.toString();
-    }
-
-    //
-    if (type == "number") {
-      if (data != null) return data.toString();
-    }
-
-    //
-    if (type == "date-time") {
-      if (data != null) {
-        final tmp = DateTime.tryParse(data.toString());
-        if (tmp != null) return DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
-      }
-    }
-
-    //
-    if (type == "boolean") {
-      if (data != null) {
-        if (data == true) return "Yes";
-        if (data == false) return "No";
-      }
-    }
-
-    return "";
-  }
 }
+
+const double WIDTH = 120;
+
+final columns = [
+  PlutoColumn(
+    field: "index", //
+    title: "No.",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          rc.cell.value.toString(), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_guest.ID, //
+    title: "ID",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    enableEditingMode: false,
+    hide: true, //
+  ),
+  PlutoColumn(
+    field: sm_guest.FULL_NAME, //
+    title: "Full Name",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          rc.cell.value.toString(), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_guest.PHONE_NUMBER, //
+    title: "Phone",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) value = rc.cell.value.toString();
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_guest.GENDER, //
+    title: "Gender",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) value = rc.cell.value.toString();
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_guest.ID_NUMBER, //
+    title: "ID Number",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) value = rc.cell.value.toString();
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_guest.PASSPORT_NUMBER, //
+    title: "Passport",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) value = rc.cell.value.toString();
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  PlutoColumn(
+    field: sm_guest.NOTE, //
+    title: "Note",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      String value = "";
+      if (rc.cell.value != null) value = rc.cell.value.toString();
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          value, //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+];
 
 class Main_ extends StatefulWidget {
   const Main_({super.key});

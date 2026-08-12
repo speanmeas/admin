@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
@@ -11,10 +11,15 @@ class _Dialog_State extends State<Dialog_> {
   //
   dynamic tmp;
 
-  final title = "Update Full Name"; //
-  final label = "Full Name:";
+  final title = "Update Password"; //
+  final label_pw = "New Password:";
+  final label_cf_pw = "Confirm New Password:";
 
-  late final controller = TextEditingController(text: widget.input ?? "");
+  final controller_pw = TextEditingController();
+  final controller_cf_pw = TextEditingController();
+
+  bool is_obscure_pw = true;
+  bool is_obscure_cf_pw = true;
 
   void init() async {
     //
@@ -39,24 +44,52 @@ class _Dialog_State extends State<Dialog_> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
-            controller: controller,
+            controller: controller_pw,
             decoration: InputDecoration(
-              labelText: label, //
+              labelText: label_pw, //
               labelStyle: TextStyle(fontWeight: FontWeight.bold),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               suffixIcon: ExcludeFocus(
                 child: Padding(
                   padding: EdgeInsets.only(right: 4),
                   child: IconButton(
-                    icon: Icon(Icons.clear, color: Colors.red),
-                    onPressed: controller.clear,
+                    icon: Icon(is_obscure_pw ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () {
+                      is_obscure_pw = !is_obscure_pw;
+                      setState(() {});
+                    },
                   ), //
                 ),
               ),
             ),
+            obscureText: is_obscure_pw, //
             autofocus: true,
             onChanged: (v) => setState(() {}),
-            onSubmitted: (v) => on_okay(),
+            onSubmitted: (v) => can_okay() ? on_okay() : null,
+          ),
+
+          TextField(
+            controller: controller_cf_pw,
+            decoration: InputDecoration(
+              labelText: label_cf_pw, //
+              labelStyle: TextStyle(fontWeight: FontWeight.bold),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              suffixIcon: ExcludeFocus(
+                child: Padding(
+                  padding: EdgeInsets.only(right: 4),
+                  child: IconButton(
+                    icon: Icon(is_obscure_cf_pw ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () {
+                      is_obscure_cf_pw = !is_obscure_cf_pw;
+                      setState(() {});
+                    },
+                  ), //
+                ),
+              ),
+            ),
+            obscureText: is_obscure_cf_pw, //
+            onChanged: (v) => setState(() {}),
+            onSubmitted: (v) => can_okay() ? on_okay() : null,
           ),
         ],
       ),
@@ -69,28 +102,34 @@ class _Dialog_State extends State<Dialog_> {
           child: Text("Cancel"), //
         ),
         OutlinedButton(
-          onPressed: on_okay, //
+          onPressed: can_okay() ? on_okay : null,
           child: Text("Okay"), //
         ),
       ],
     );
   }
 
+  bool can_okay() {
+    if (controller_pw.text.isEmpty) return false;
+    if (controller_cf_pw.text.isEmpty) return false;
+    if (controller_pw.text != controller_cf_pw.text) return false;
+    return true;
+  }
+
   void on_okay() async {
     try {
       tmp = await dio.post(
-        endpoint.USER_UPDATE, //
+        endpoint.USER_CRUD_UPDATE, //
         data: {
           "_id": await secure_storage.read(key: "_id"), //
-          sm_user.FULL_NAME: controller.text, //
+          sm_user.PASSWORD: controller_pw.text, //
         },
       );
-
       if (tmp == null) throw "Failed";
 
+      //
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -105,25 +144,17 @@ class _Dialog_State extends State<Dialog_> {
 }
 
 class Dialog_ extends StatefulWidget {
-  const Dialog_({
-    super.key, //
-    this.input,
-  });
-
-  final dynamic input;
+  const Dialog_({super.key});
 
   @override
   State<Dialog_> createState() => _Dialog_State();
 }
 
-Future<dynamic> view({
-  required BuildContext context, //
-  dynamic input, //
-}) {
+Future<dynamic> view({required BuildContext context}) {
   return showDialog<dynamic>(
     context: context,
     builder: (context) {
-      return Dialog_(input: input); //
+      return Dialog_(); //
     },
   );
 }
@@ -138,10 +169,7 @@ class _Main_State extends State<Main_> {
       body: Center(
         child: OutlinedButton(
           onPressed: () async {
-            final v = await view(
-              context: context, //
-              input: "John Doe",
-            );
+            final v = await view(context: context);
             print("value: $v");
           },
           child: const Text("Show Dialog"),
