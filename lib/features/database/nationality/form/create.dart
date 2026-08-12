@@ -44,7 +44,7 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   //
-  dynamic tmp; // ignore: unused
+  dynamic tmp;
 
   String? name;
   String? note;
@@ -57,14 +57,10 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      //
       Input_Text(
         init: name, //
         lead: "Name:", //
-        onChanged: (v) {
-          name = v;
-          setState(() {});
-        },
+        onChanged: (v) => name = v,
       ),
 
       Input_Text(
@@ -72,13 +68,9 @@ class _Main_State extends State<Main_> {
         lead: "Note:", //
         prefixIcon: Icons.note_alt_outlined, //
         maxLines: 4, //
-        onChanged: (v) {
-          note = v ?? "";
-          setState(() {});
-        },
+        onChanged: (v) => note = v ?? "",
       ),
 
-      //
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Create"),
@@ -92,7 +84,6 @@ class _Main_State extends State<Main_> {
 
   void on_create() async {
     try {
-      //
       tmp = await dio.post(
         endpoint.NATIONALITY_CRUD_CREATE, //
         data: {
@@ -101,13 +92,9 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      //
       Navigator.pop(context, tmp.data[0]);
 
-      //
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

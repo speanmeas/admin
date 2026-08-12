@@ -73,8 +73,8 @@ class _Main_State extends State<Main_> {
       is_housekeeper = tmp.data[0][sm_user.IS_HOUSEKEEPER];
       note = tmp.data[0][sm_user.NOTE];
 
-      setState(() => is_loading = false);
-      //
+      is_loading = false;
+      setState(() {});
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -86,63 +86,54 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      //
       Show_Text(
         prefixIcon: Icons.person_outline,
         leading: "Username:", //
         value: username,
       ),
 
-      //
       Show_Text(
         prefixIcon: Icons.lock_outline,
         leading: "Password:", //
         value: "**********",
       ),
 
-      //
       Show_Text(
         prefixIcon: Icons.badge_outlined,
         leading: "Full Name:", //
         value: full_name,
       ),
 
-      //
       Show_Text(
         prefixIcon: Icons.phone_outlined,
         leading: "Phone Number:", //
         value: phone_number,
       ),
 
-      //
       Show_Boolean(
         prefixIcon: Icons.admin_panel_settings_outlined,
         leading: "Is Admin:", //
         value: is_admin,
       ),
 
-      //
       Show_Boolean(
         prefixIcon: Icons.manage_accounts_outlined,
         leading: "Is Manager:", //
         value: is_manager,
       ),
 
-      //
       Show_Boolean(
         prefixIcon: Icons.support_agent_outlined,
         leading: "Is Receptionist:", //
         value: is_receptionist,
       ),
 
-      //
       Show_Boolean(
         prefixIcon: Icons.cleaning_services_outlined,
         leading: "Is Housekeeper:", //
         value: is_housekeeper,
       ),
 
-      //
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
         leading: "Note:", //
@@ -150,7 +141,6 @@ class _Main_State extends State<Main_> {
         maxLines: 4,
       ),
 
-      //
       SizedBox(height: height - 100),
     ]);
   }

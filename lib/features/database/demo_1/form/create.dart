@@ -47,7 +47,7 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   //
-  dynamic tmp; // ignore: unused
+  dynamic tmp;
 
   String? text_1;
   String? text_2;
@@ -67,93 +67,61 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      //
       Input_Text(
         init: text_1, //
         lead: "Text 1:", //
-        onChanged: (v) {
-          text_1 = v;
-          setState(() {});
-        },
+        onChanged: (v) => text_1 = v,
       ),
 
-      //
       Input_Text(
         init: text_2, //
         lead: "Text 2:", //
-        onChanged: (v) {
-          text_2 = v;
-          setState(() {});
-        },
+        onChanged: (v) => text_2 = v,
       ),
 
-      //
       Input_Number(
         initial: number_1, //
         title: "Number 1:", //
-        onChanged: (v) {
-          number_1 = v;
-          setState(() {});
-        },
+        onChanged: (v) => number_1 = v,
       ),
 
-      //
       Input_Number(
         initial: number_2, //
         title: "Number 2:", //
-        onChanged: (v) {
-          number_2 = v;
-          setState(() {});
-        },
+        onChanged: (v) => number_2 = v,
       ),
 
       Picker_Datetime(
         initial: datetime_1, //
         title: "Datetime 1:", //
-        onChanged: (v) {
-          datetime_1 = v;
-          setState(() {});
-        },
+        onChanged: (v) => datetime_1 = v,
       ),
 
       Picker_Datetime(
         initial: datetime_2, //
         title: "Datetime 2:", //
-        onChanged: (v) {
-          datetime_2 = v;
-          setState(() {});
-        },
+        onChanged: (v) => datetime_2 = v,
       ),
 
       Picker_Boolean(
         initial: logic_1, //
         title: "Logic 1:", //
-        onChanged: (v) {
-          logic_1 = v;
-          setState(() {});
-        },
+        onChanged: (v) => logic_1 = v,
       ),
 
       Picker_Boolean(
         initial: logic_2, //
         title: "Logic 2:", //
-        onChanged: (v) {
-          logic_2 = v;
-          setState(() {});
-        },
+        onChanged: (v) => logic_2 = v,
       ),
 
       Input_Text(
         init: note, //
         lead: "Note:", //
         maxLines: 4, //
-        onChanged: (v) {
-          note = v ?? "";
-          setState(() {});
-        },
+        onChanged: (v) => note = v ?? "",
       ),
 
-      //
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Create"),
@@ -167,7 +135,6 @@ class _Main_State extends State<Main_> {
 
   void on_create() async {
     try {
-      //
       tmp = await dio.post(
         endpoint.DEMO_1_CRUD_CREATE, //
         data: {
@@ -183,13 +150,9 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      //
       Navigator.pop(context, tmp.data[0]);
 
-      //
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

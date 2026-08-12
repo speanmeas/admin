@@ -47,7 +47,7 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   //
-  dynamic tmp; // ignore: unused
+  dynamic tmp;
   bool is_loading = true;
 
   String? text_1;
@@ -57,9 +57,7 @@ class _Main_State extends State<Main_> {
   String? note;
 
   void init() async {
-    //
     try {
-      //
       tmp = await dio.post(
         endpoint.DEMO_2_CRUD_READ_ID, //
         data: {sm_demo_2.ID: widget.id},
@@ -71,7 +69,8 @@ class _Main_State extends State<Main_> {
       logic_1 = tmp.data[0][sm_demo_2.LOGIC_1];
       note = tmp.data[0][sm_demo_2.NOTE];
 
-      setState(() => is_loading = false);
+      is_loading = false;
+      setState(() {});
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -83,55 +82,37 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      //
       Input_Text(
         init: text_1, //
         lead: "Text 1:", //
-        onChanged: (v) {
-          text_1 = v;
-          setState(() {});
-        },
+        onChanged: (v) => text_1 = v,
       ),
 
-      //
       Input_Number(
         initial: number_1, //
         title: "Number 1:", //
-        onChanged: (v) {
-          number_1 = v;
-          setState(() {});
-        },
+        onChanged: (v) => number_1 = v,
       ),
 
       Picker_Datetime(
         initial: datetime_1, //
         title: "Datetime 1:", //
-        onChanged: (v) {
-          datetime_1 = v;
-          setState(() {});
-        },
+        onChanged: (v) => datetime_1 = v,
       ),
 
       Picker_Boolean(
         initial: logic_1, //
         title: "Logic 1:", //
-        onChanged: (v) {
-          logic_1 = v;
-          setState(() {});
-        },
+        onChanged: (v) => logic_1 = v,
       ),
 
       Input_Text(
         init: note, //
         lead: "Note:", //
         maxLines: 4, //
-        onChanged: (v) {
-          note = v ?? "";
-          setState(() {});
-        },
+        onChanged: (v) => note = v ?? "",
       ),
 
-      //
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Update"),
@@ -144,7 +125,6 @@ class _Main_State extends State<Main_> {
 
   void on_update() async {
     try {
-      //
       tmp = await dio.post(
         endpoint.DEMO_2_CRUD_UPDATE, //
         data: {
@@ -157,13 +137,9 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      //
       Navigator.pop(context, tmp.data[0]);
 
-      //
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

@@ -69,8 +69,8 @@ class _Main_State extends State<Main_> {
       logic_1 = tmp.data[0][sm_demo_2.LOGIC_1];
       note = tmp.data[0][sm_demo_2.NOTE];
 
-      setState(() => is_loading = false);
-      //
+      is_loading = false;
+      setState(() {});
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -82,35 +82,30 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      //
       Show_Text(
         prefixIcon: Icons.text_fields,
         leading: "Text 1:", //
         value: text_1,
       ),
 
-      //
       Show_Number(
         prefixIcon: Icons.numbers,
         leading: "Number 1:", //
         value: number_1,
       ),
 
-      //
       Show_Datetime(
         prefixIcon: Icons.calendar_month,
         leading: "Datetime 1:", //
         value: datetime_1,
       ),
 
-      //
       Show_Boolean(
         prefixIcon: Icons.toggle_on,
         leading: "Boolean:", //
         value: logic_1,
       ),
 
-      //
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
         leading: "Note:", //
@@ -118,7 +113,6 @@ class _Main_State extends State<Main_> {
         maxLines: 4,
       ),
 
-      //
       SizedBox(height: height - 100),
     ]);
   }

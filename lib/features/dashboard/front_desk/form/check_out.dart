@@ -42,6 +42,7 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
+  bool is_loading = true;
 
   String? front_desk_id;
   String? note;
@@ -62,6 +63,7 @@ class _Main_State extends State<Main_> {
         );
       }
 
+      is_loading = false;
       setState(() {});
     } catch (e, st) {
       print(st);
@@ -72,6 +74,7 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       Input_Text(
         init: note, //

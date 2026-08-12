@@ -46,7 +46,7 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   //
-  dynamic tmp; // ignore: unused
+  dynamic tmp;
   bool is_loading = true;
 
   String? username;
@@ -60,9 +60,7 @@ class _Main_State extends State<Main_> {
   String? note;
 
   void init() async {
-    //
     try {
-      //
       tmp = await dio.post(
         endpoint.USER_CRUD_READ_ID, //
         data: {sm_user.ID: widget.id},
@@ -77,7 +75,8 @@ class _Main_State extends State<Main_> {
       is_housekeeper = tmp.data[0][sm_user.IS_HOUSEKEEPER];
       note = tmp.data[0][sm_user.NOTE];
 
-      setState(() => is_loading = false);
+      is_loading = false;
+      setState(() {});
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -89,97 +88,61 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      //
       Input_Text(
         init: username, //
         lead: "Username:", //
-        onChanged: (v) {
-          username = v;
-          setState(() {});
-        },
+        onChanged: (v) => username = v,
       ),
 
-      //
       Input_Password(
         initial: password, //
         hint: "New Password", //
-        onChanged: (v) {
-          password = v;
-          setState(() {});
-        },
+        onChanged: (v) => password = v,
       ),
 
-      //
       Input_Text(
         init: full_name, //
         lead: "Full Name:", //
-        onChanged: (v) {
-          full_name = v;
-          setState(() {});
-        },
+        onChanged: (v) => full_name = v,
       ),
 
-      //
       Input_Text(
         init: phone_number, //
         lead: "Phone Number:", //
-        onChanged: (v) {
-          phone_number = v;
-          setState(() {});
-        },
+        onChanged: (v) => phone_number = v,
       ),
 
-      //
       Picker_Boolean(
         initial: is_admin, //
         title: "Is Admin:", //
-        onChanged: (v) {
-          is_admin = v;
-          setState(() {});
-        },
+        onChanged: (v) => is_admin = v,
       ),
 
-      //
       Picker_Boolean(
         initial: is_manager, //
         title: "Is Manager:", //
-        onChanged: (v) {
-          is_manager = v;
-          setState(() {});
-        },
+        onChanged: (v) => is_manager = v,
       ),
 
-      //
       Picker_Boolean(
         initial: is_receptionist, //
         title: "Is Receptionist:", //
-        onChanged: (v) {
-          is_receptionist = v;
-          setState(() {});
-        },
+        onChanged: (v) => is_receptionist = v,
       ),
 
-      //
       Picker_Boolean(
         initial: is_housekeeper, //
         title: "Is Housekeeper:", //
-        onChanged: (v) {
-          is_housekeeper = v;
-          setState(() {});
-        },
+        onChanged: (v) => is_housekeeper = v,
       ),
 
       Input_Text(
         init: note, //
         lead: "Note:", //
         maxLines: 4, //
-        onChanged: (v) {
-          note = v ?? "";
-          setState(() {});
-        },
+        onChanged: (v) => note = v ?? "",
       ),
 
-      //
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Update"),
@@ -192,7 +155,6 @@ class _Main_State extends State<Main_> {
 
   void on_update() async {
     try {
-      //
       tmp = await dio.post(
         endpoint.USER_CRUD_UPDATE, //
         data: {
@@ -209,13 +171,9 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      //
       Navigator.pop(context, tmp.data[0]);
 
-      //
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

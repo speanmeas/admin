@@ -44,16 +44,14 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   //
-  dynamic tmp; // ignore: unused
+  dynamic tmp;
   bool is_loading = true;
 
   String? name;
   String? note;
 
   void init() async {
-    //
     try {
-      //
       tmp = await dio.post(
         endpoint.NATIONALITY_CRUD_READ_ID, //
         data: {sm_nationality.ID: widget.id},
@@ -62,7 +60,8 @@ class _Main_State extends State<Main_> {
       name = tmp.data[0][sm_nationality.NAME];
       note = tmp.data[0][sm_nationality.NOTE];
 
-      setState(() => is_loading = false);
+      is_loading = false;
+      setState(() {});
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -74,14 +73,10 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      //
       Input_Text(
         init: name, //
         lead: "Name:", //
-        onChanged: (v) {
-          name = v;
-          setState(() {});
-        },
+        onChanged: (v) => name = v,
       ),
 
       Input_Text(
@@ -89,13 +84,9 @@ class _Main_State extends State<Main_> {
         lead: "Note:", //
         maxLines: 4, //
         prefixIcon: Icons.note_alt_outlined, //
-        onChanged: (v) {
-          note = v ?? "";
-          setState(() {});
-        },
+        onChanged: (v) => note = v ?? "",
       ),
 
-      //
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Update"),
@@ -108,7 +99,6 @@ class _Main_State extends State<Main_> {
 
   void on_update() async {
     try {
-      //
       tmp = await dio.post(
         endpoint.NATIONALITY_CRUD_UPDATE, //
         data: {
@@ -118,13 +108,9 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      //
       Navigator.pop(context, tmp.data[0]);
 
-      //
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

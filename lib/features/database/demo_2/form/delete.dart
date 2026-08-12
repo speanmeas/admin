@@ -52,20 +52,17 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      // * បញ្ជាក់
       Text(
         "Confirm to delete?", //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
-      // * ប៊ូតុង Delete
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.delete_outlined),
         label: Text("Delete"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
         onPressed: on_delete,
-        // style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
       ),
 
       SizedBox(height: height - 100),

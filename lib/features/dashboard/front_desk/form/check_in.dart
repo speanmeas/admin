@@ -47,8 +47,8 @@ Widget _layout(List<Widget> children) {
 }
 
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
+  bool is_loading = true;
 
   String? room_number;
   double? price_per_day;
@@ -76,12 +76,14 @@ class _Main_State extends State<Main_> {
     stay_days = 0;
     stay_hours = 0;
 
+    is_loading = false;
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -183,7 +185,6 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
-  // * គណនាតម្លៃបន្ទប់ (ថ្ងៃ x តម្លៃថ្ងៃ + ម៉ោង x តម្លៃ 3 ម៉ោង)
   double get room_price {
     return (price_per_day! * stay_days!) + (price_per_3hours! * stay_hours! / 3);
   }
@@ -196,7 +197,6 @@ class _Main_State extends State<Main_> {
 
   void on_check_in() async {
     try {
-      //
       tmp = await dio.post(
         endpoint.FRONT_DESK_CHECK_IN, // create
         data: {
@@ -220,7 +220,6 @@ class _Main_State extends State<Main_> {
 
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -239,8 +238,8 @@ class _Main_State extends State<Main_> {
 //
 class Main_ extends StatefulWidget {
   const Main_({
-    super.key,
-    this.room_id, //
+    super.key, //
+    this.room_id,
   });
 
   final String? room_id;
@@ -257,7 +256,7 @@ void main() {
       theme: theme_data, //
       home: Main_(
         room_id: "6a6ec9d7599d64fa5d293fb9", //
-      ), //
+      ),
       debugShowCheckedModeBanner: false,
     ),
   );

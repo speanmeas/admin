@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
@@ -41,27 +42,30 @@ Widget _layout(List<Widget> children) {
 }
 
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
+  bool is_loading = true;
 
-  final c_note = TextEditingController();
+  String? front_desk_id;
+  String? note;
 
   void init() async {
     try {
-      sm_front_desk.clear();
-      sm_room.clear();
+      tmp = await dio.post(
+        endpoint.ROOM_CRUD_READ_ID, //
+        data: {sm_room.ID: widget.room_id},
+      );
+      front_desk_id = tmp.data[0][sm_room.FRONT_DESK_ID];
 
-      tmp = await dio.post(endpoint.ROOM_READ_ID, data: {sm_front_desk.ID: widget.room_id});
-      for (var e in sm_room.data.entries) e.value["value"] = tmp.data[0][e.key];
-
-      if (sm_room.data[sm_room.FRONT_DESK_ID]!["value"] != null) {
-        tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: sm_room.data[sm_room.FRONT_DESK_ID]!["value"]});
-        for (var e in sm_front_desk.data.entries) e.value["value"] = tmp.data[0][e.key];
+      if (front_desk_id != null) {
+        tmp = await dio.post(
+          endpoint.FRONT_DESK_READ_ID, //
+          data: {sm_front_desk.ID: front_desk_id},
+        );
+        note = tmp.data[0][sm_front_desk.CLEAN_NOTE]?.toString() ?? "";
       }
 
-      c_note.text = sm_front_desk.data[sm_front_desk.CLEAN_NOTE]?["value"]?.toString() ?? "";
+      is_loading = false;
       setState(() {});
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -71,21 +75,19 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      // note
-      TextField(
-        controller: c_note,
+      Input_Text(
+        init: note, //
+        lead: "Note:", //
         maxLines: 4,
-        decoration: InputDecoration(
-          labelText: "Note:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(Icons.note_alt_outlined), //
-        ),
-        onChanged: (v) => setState(() {}), //
+        prefixIcon: Icons.note_alt_outlined, //
+        onChanged: (v) {
+          note = v;
+          setState(() {});
+        },
       ),
 
-      // additional information
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.cleaning_services), //
@@ -99,29 +101,26 @@ class _Main_State extends State<Main_> {
 
   void on_clean() async {
     try {
-      //
-
       await dio.post(
-        endpoint.ROOM_UPDATE, //
+        endpoint.ROOM_CRUD_UPDATE, //
         data: {
-          sm_room.ID: sm_room.data[sm_room.ID]!["value"], //
+          sm_room.ID: widget.room_id, //
           sm_room.STATUS: "Available", //
           sm_room.FRONT_DESK_ID: null, //
         },
       );
 
-      if (sm_room.data[sm_room.FRONT_DESK_ID]!["value"] != null)
+      if (front_desk_id != null)
         await dio.post(
-          endpoint.FRONT_DESK_FORM_CLEAN,
+          endpoint.FRONT_DESK_CLEAN,
           data: {
-            sm_front_desk.ID: sm_front_desk.data[sm_front_desk.ID]!["value"], //
-            sm_front_desk.CLEAN_NOTE: c_note.text, //
+            sm_front_desk.ID: front_desk_id, //
+            sm_front_desk.CLEAN_NOTE: note, //
           },
         );
 
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -156,7 +155,9 @@ void main() {
     MaterialApp(
       title: "Development", //
       theme: theme_data, //
-      home: Main_(), //
+      home: Main_(
+        room_id: "6a6ec9d7599d64fa5d293fb9", //
+      ), //
       debugShowCheckedModeBanner: false,
     ),
   );

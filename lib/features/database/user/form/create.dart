@@ -46,7 +46,7 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   //
-  dynamic tmp; // ignore: unused
+  dynamic tmp;
 
   String? username;
   String? password;
@@ -66,96 +66,60 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      //
       Input_Text(
         init: username, //
         lead: "Username:", //
-        onChanged: (v) {
-          username = v;
-          setState(() {});
-        },
+        onChanged: (v) => username = v,
       ),
 
-      //
       Input_Password(
         initial: password, //
-        onChanged: (v) {
-          password = v;
-          setState(() {});
-        },
+        onChanged: (v) => password = v,
       ),
 
-      //
       Input_Text(
         init: full_name, //
         lead: "Full Name:", //
-        onChanged: (v) {
-          full_name = v;
-          setState(() {});
-        },
+        onChanged: (v) => full_name = v,
       ),
 
-      //
       Input_Text(
         init: phone_number, //
         lead: "Phone Number:", //
-        onChanged: (v) {
-          phone_number = v;
-          setState(() {});
-        },
+        onChanged: (v) => phone_number = v,
       ),
 
-      //
       Picker_Boolean(
         initial: is_admin, //
         title: "Is Admin:", //
-        onChanged: (v) {
-          is_admin = v;
-          setState(() {});
-        },
+        onChanged: (v) => is_admin = v,
       ),
 
-      //
       Picker_Boolean(
         initial: is_manager, //
         title: "Is Manager:", //
-        onChanged: (v) {
-          is_manager = v;
-          setState(() {});
-        },
+        onChanged: (v) => is_manager = v,
       ),
 
-      //
       Picker_Boolean(
         initial: is_receptionist, //
         title: "Is Receptionist:", //
-        onChanged: (v) {
-          is_receptionist = v;
-          setState(() {});
-        },
+        onChanged: (v) => is_receptionist = v,
       ),
 
-      //
       Picker_Boolean(
         initial: is_housekeeper, //
         title: "Is Housekeeper:", //
-        onChanged: (v) {
-          is_housekeeper = v;
-          setState(() {});
-        },
+        onChanged: (v) => is_housekeeper = v,
       ),
 
       Input_Text(
         init: note, //
         lead: "Note:", //
         maxLines: 4, //
-        onChanged: (v) {
-          note = v ?? "";
-          setState(() {});
-        },
+        onChanged: (v) => note = v ?? "",
       ),
 
-      //
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Create"),
@@ -169,7 +133,6 @@ class _Main_State extends State<Main_> {
 
   void on_create() async {
     try {
-      //
       tmp = await dio.post(
         endpoint.USER_CRUD_CREATE, //
         data: {
@@ -185,13 +148,9 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      //
       Navigator.pop(context, tmp.data[0]);
 
-      //
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

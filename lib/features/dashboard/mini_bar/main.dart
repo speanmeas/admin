@@ -35,7 +35,7 @@ class _Main_State extends State<Main_> {
     try {
       // * ទាញយកទិន្នន័យបន្ទប់ទាំងអស់ពី Server
       tmp = await dio.post(
-        endpoint.ROOM_READ, //
+        endpoint.ROOM_CRUD_READ, //
         data: {
           "key": sm_room.NUMBER, //
           "order": 1, //
@@ -67,7 +67,7 @@ class _Main_State extends State<Main_> {
 
       // * ទាញយកបញ្ជីទំនិញ mini bar (catalog) ពី Server
       tmp = await dio.post(
-        endpoint.MINI_BAR_READ, //
+        endpoint.MINI_BAR_CRUD_READ, //
         data: {
           "key": DEFAULT_KEY, //
           "order": DEFAULT_ORDER, //
@@ -285,8 +285,8 @@ class _Main_State extends State<Main_> {
                       // guest info
                       if (!"${r[sm_room.STATUS]}".contains("Pending Fix"))
                         (() {
-                          final guest_name = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.GUEST_FULL_NAME] ?? "N/A";
-                          final guest_phone = map_fd[r[sm_room.FRONT_DESK_ID]][sm_front_desk.GUEST_PHONE_NUMBER] ?? "N/A";
+                          final guest_name = "N/A";
+                          final guest_phone = "N/A";
                           return Row(
                             spacing: 4,
                             children: [

@@ -60,8 +60,8 @@ class _Main_State extends State<Main_> {
       name = tmp.data[0][sm_nationality.NAME];
       note = tmp.data[0][sm_nationality.NOTE];
 
-      setState(() => is_loading = false);
-      //
+      is_loading = false;
+      setState(() {});
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -73,14 +73,12 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      //
       Show_Text(
         prefixIcon: Icons.text_fields,
         leading: "Name:", //
         value: name,
       ),
 
-      //
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
         leading: "Note:", //
@@ -88,7 +86,6 @@ class _Main_State extends State<Main_> {
         maxLines: 4,
       ),
 
-      //
       SizedBox(height: height - 100),
     ]);
   }

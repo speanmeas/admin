@@ -37,12 +37,6 @@ class _Main_State extends State<Main_> {
   int load_request_id = 0;
   PlutoGridStateManager? state_manager;
 
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
   //
   void init() async {
     try {
@@ -465,6 +459,13 @@ class _Main_State extends State<Main_> {
   int get total_pages {
     if (row_total == 0) return 1;
     return (row_total + DEFAULT_LIMIT_ROW - 1) ~/ DEFAULT_LIMIT_ROW;
+  }
+
+  //
+  @override
+  void initState() {
+    super.initState();
+    init();
   }
 
   //

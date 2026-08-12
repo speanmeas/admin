@@ -48,7 +48,7 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   //
-  dynamic tmp; // ignore: unused
+  dynamic tmp;
   bool is_loading = true;
 
   String? number;
@@ -59,9 +59,7 @@ class _Main_State extends State<Main_> {
   String? note;
 
   void init() async {
-    //
     try {
-      //
       tmp = await dio.post(
         endpoint.ROOM_CRUD_READ_ID, //
         data: {sm_room.ID: widget.id},
@@ -74,7 +72,8 @@ class _Main_State extends State<Main_> {
       status = tmp.data[0][sm_room.STATUS];
       note = tmp.data[0][sm_room.NOTE];
 
-      setState(() => is_loading = false);
+      is_loading = false;
+      setState(() {});
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -86,65 +85,41 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      //
       Input_Text(
         init: number, //
         lead: "Number:", //
-        onChanged: (v) {
-          number = v;
-          setState(() {});
-        },
+        onChanged: (v) => number = v,
       ),
 
-      //
       Input_Number(
         initial: usd_per_day, //
         title: "USD/Day:", //
-        onChanged: (v) {
-          usd_per_day = v;
-          setState(() {});
-        },
+        onChanged: (v) => usd_per_day = v,
       ),
 
-      //
       Input_Number(
         initial: usd_per_3h, //
         title: "USD/3H:", //
-        onChanged: (v) {
-          usd_per_3h = v;
-          setState(() {});
-        },
+        onChanged: (v) => usd_per_3h = v,
       ),
 
-      //
       k_select.Main_(
         initial: kind, //
-        onChanged: (v) {
-          kind = v;
-          setState(() {});
-        },
+        onChanged: (v) => kind = v,
       ),
 
-      //
       s_select.Main_(
         initial: status, //
-        onChanged: (v) {
-          status = v;
-          setState(() {});
-        },
+        onChanged: (v) => status = v,
       ),
 
       Input_Text(
         init: note, //
         lead: "Note:", //
         maxLines: 4, //
-        onChanged: (v) {
-          note = v ?? "";
-          setState(() {});
-        },
+        onChanged: (v) => note = v ?? "",
       ),
 
-      //
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Update"),
@@ -157,7 +132,6 @@ class _Main_State extends State<Main_> {
 
   void on_update() async {
     try {
-      //
       tmp = await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
         data: {
@@ -171,13 +145,9 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      //
       Navigator.pop(context, tmp.data[0]);
 
-      //
       snackbar(ct: context, ms: "Success", cl: Colors.green);
-
-      //
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

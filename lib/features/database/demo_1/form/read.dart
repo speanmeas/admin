@@ -59,7 +59,6 @@ class _Main_State extends State<Main_> {
   bool? logic_1;
   bool? logic_2;
   String? note;
-  String? nationality_id;
 
   void init() async {
     try {
@@ -78,8 +77,8 @@ class _Main_State extends State<Main_> {
       logic_2 = tmp.data[0][sm_demo_1.LOGIC_2];
       note = tmp.data[0][sm_demo_1.NOTE];
 
-      setState(() => is_loading = false);
-      //
+      is_loading = false;
+      setState(() {});
     } catch (e, st) {
       print(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -91,63 +90,54 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      //
       Show_Text(
         prefixIcon: Icons.text_fields,
         leading: "Text 1:", //
         value: text_1,
       ),
 
-      //
       Show_Text(
         prefixIcon: Icons.text_fields,
         leading: "Text 2:", //
         value: text_2,
       ),
 
-      //
       Show_Number(
         prefixIcon: Icons.numbers,
         leading: "Number 1:", //
         value: number_1,
       ),
 
-      //
       Show_Number(
         prefixIcon: Icons.numbers,
         leading: "Number 2:", //
         value: number_2,
       ),
 
-      //
       Show_Datetime(
         prefixIcon: Icons.calendar_month,
         leading: "Datetime 1:", //
         value: datetime_1,
       ),
 
-      //
       Show_Datetime(
         prefixIcon: Icons.calendar_month,
         leading: "Datetime 2:", //
         value: datetime_2,
       ),
 
-      //
       Show_Boolean(
         prefixIcon: Icons.toggle_on,
         leading: "Boolean:", //
         value: logic_1,
       ),
 
-      //
       Show_Boolean(
         prefixIcon: Icons.toggle_on,
         leading: "Boolean 2:", //
         value: logic_2,
       ),
 
-      //
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
         leading: "Note:", //
@@ -155,7 +145,6 @@ class _Main_State extends State<Main_> {
         maxLines: 4,
       ),
 
-      //
       SizedBox(height: height - 100),
     ]);
   }
