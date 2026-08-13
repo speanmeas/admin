@@ -63,7 +63,7 @@ class _Main_State extends State<Main_> {
 
   DateTime? check_in_at;
 
-  double? pay_price;
+  double? cancel_price;
 
   String? room_status;
 
@@ -80,7 +80,6 @@ class _Main_State extends State<Main_> {
     room_number = map_r[sm_room.NUMBER];
 
     tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
-    if (tmp.isNotEmpty) pay_price = double.tryParse(tmp.last["pay_price"].toString()) ?? 0;
     for (var l in tmp) {
       last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
       last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
@@ -114,10 +113,10 @@ class _Main_State extends State<Main_> {
       Divider(height: 1, color: Colors.black),
 
       Input_Number(
-        init: pay_price, //
-        lead: "Cancel Room Price:", //
+        init: cancel_price, //
+        lead: "Cancel Price:", //
         onChanged: (v) {
-          pay_price = v;
+          cancel_price = v;
           setState(() {});
         },
       ),
@@ -236,7 +235,7 @@ class _Main_State extends State<Main_> {
     temp = temp + (pay_cash ?? 0);
     temp = temp + (pay_bank ?? 0);
     temp = temp - (pay_return ?? 0);
-    temp = temp - (pay_price ?? 0);
+    temp = temp - (cancel_price ?? 0);
 
     return temp;
   }
@@ -251,14 +250,24 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
-        data: {
-          sm_room.ID: widget.room_id, //
-          sm_room.STATUS: "Available", //
-          sm_room.FRONT_DESK_ID: null, //
-        },
-      );
+      if (room_status == "Available") {
+        await dio.post(
+          endpoint.ROOM_CRUD_UPDATE, //
+          data: {
+            sm_room.ID: widget.room_id, //
+            sm_room.STATUS: room_status, //
+            sm_room.FRONT_DESK_ID: null, //
+          },
+        );
+      } else if (room_status == "Pending Clean") {
+        await dio.post(
+          endpoint.ROOM_CRUD_UPDATE, //
+          data: {
+            sm_room.ID: widget.room_id, //
+            sm_room.STATUS: room_status, //
+          },
+        );
+      }
 
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
