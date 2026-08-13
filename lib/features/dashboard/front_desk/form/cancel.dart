@@ -5,6 +5,7 @@ import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_number.dart";
+import "package:speanmeas/core/widget/select/select_dynamic.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_text.dart";
@@ -50,10 +51,6 @@ class _Main_State extends State<Main_> {
   dynamic map_fd;
   bool is_loading = true;
 
-  // final c_pay_cash = TextEditingController();
-  // final c_pay_bank = TextEditingController();
-  // final c_return = TextEditingController();
-
   double? pay_cash;
   double? pay_bank;
   double? pay_return;
@@ -68,11 +65,13 @@ class _Main_State extends State<Main_> {
 
   double? pay_price;
 
+  String? room_status;
+
   void init() async {
     tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
     map_r = tmp.data[0] as Map<String, dynamic>;
 
-    if (map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID] != null) throw Exception("Front desk ID is null");
+    if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
 
     tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
     map_fd = tmp.data[0] as Map<String, dynamic>;
@@ -89,6 +88,8 @@ class _Main_State extends State<Main_> {
     }
 
     note = map_fd[sm_front_desk.CANCEL_NOTE]?.toString() ?? "";
+
+    room_status = "Available";
 
     is_loading = false;
     setState(() {});
@@ -162,6 +163,17 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      Select_Dynamic(
+        lead: "Room Status:", //
+        init: room_status, //
+        options: ["Available", "Pending Clean"], //
+        prefixIcon: Icons.calendar_month_outlined, //
+        onChanged: (v) {
+          room_status = v;
+          setState(() {});
+        },
+      ),
+
       Input_Text(
         init: note, //
         lead: "Reason:", //
@@ -218,7 +230,15 @@ class _Main_State extends State<Main_> {
   }
 
   double get balanced {
-    return ((pay_cash ?? 0) + (pay_bank ?? 0)) - (pay_return ?? 0);
+    double temp = 0;
+
+    temp = temp + (last_paid ?? 0);
+    temp = temp + (pay_cash ?? 0);
+    temp = temp + (pay_bank ?? 0);
+    temp = temp - (pay_return ?? 0);
+    temp = temp - (pay_price ?? 0);
+
+    return temp;
   }
 
   void on_cancel() async {
