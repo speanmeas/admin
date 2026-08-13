@@ -64,8 +64,6 @@ class _Main_State extends State<Main_> {
 
   double? last_paid;
 
-  // DateTime? check_in_date;
-
   void init() async {
     tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
     map_r = tmp.data[0] as Map<String, dynamic>;
@@ -84,9 +82,6 @@ class _Main_State extends State<Main_> {
     stay_days = map_fd[sm_front_desk.CHECK_IN_DAY] ?? 0;
     stay_hours = map_fd[sm_front_desk.CHECK_IN_HOUR] ?? 0;
     note = map_fd[sm_front_desk.CHECK_IN_NOTE] ?? "";
-
-    // check_in_date = DateTime.tryParse(map_fd[sm_front_desk.CHECK_IN_AT]?.toString() ?? "");
-    // pprint(check_in_date);
 
     tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
     for (var l in tmp) {

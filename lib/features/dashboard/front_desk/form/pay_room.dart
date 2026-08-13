@@ -1,12 +1,12 @@
 // * OK
 
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
+
 import "package:speanmeas/core/widget/input/input_number.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
@@ -55,12 +55,12 @@ class _Main_State extends State<Main_> {
   String? front_desk_id;
   String? room_number;
 
-  double? price;
+  double? pay_price;
   double? last_paid;
   double? pay_cash;
   double? pay_bank;
-  double? change;
-  String? note;
+  double? pay_return;
+  String? pay_note;
 
   void init() async {
     tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
@@ -77,9 +77,10 @@ class _Main_State extends State<Main_> {
     room_number = map_r[sm_room.NUMBER];
 
     tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
-    if (tmp.isNotEmpty) price = double.tryParse(tmp.last["pay_price"].toString()) ?? 0;
+    if (tmp.isNotEmpty) pay_price = double.tryParse(tmp.last["pay_price"].toString()) ?? 0;
     for (var l in tmp) {
-      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
+      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
+      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
       last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
     }
 
@@ -106,10 +107,10 @@ class _Main_State extends State<Main_> {
       Divider(height: 1, color: Colors.black),
 
       Input_Number(
-        init: price, //
+        init: pay_price, //
         lead: "Room Price:", //
         onChanged: (v) {
-          price = v;
+          pay_price = v;
           setState(() {});
         },
       ),
@@ -117,7 +118,7 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text("Last Paid: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          Text("Last Payment: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           Text(
             "${last_paid?.toStringAsFixed(2) ?? '0.00'} \$",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
@@ -146,22 +147,22 @@ class _Main_State extends State<Main_> {
       ),
 
       Input_Number(
-        init: change, //
+        init: pay_return, //
         lead: "Return:", //
         prefixIcon: Icons.currency_exchange_outlined, //
         onChanged: (v) {
-          change = v;
+          pay_return = v;
           setState(() {});
         },
       ),
 
       Input_Text(
-        init: note, //
+        init: pay_note, //
         lead: "Note:", //
         prefixIcon: Icons.note_alt_outlined, //
         maxLines: 4,
         onChanged: (v) {
-          note = v;
+          pay_note = v;
           setState(() {});
         },
       ),
@@ -200,31 +201,26 @@ class _Main_State extends State<Main_> {
   }
 
   bool get can_pay {
-    if ((price ?? 0) <= 0) return false;
+    if ((pay_price ?? 0) <= 0) return false;
     if (balanced != 0) return false;
     return true;
   }
 
   double get balanced {
-    return (pay_cash ?? 0) + (pay_bank ?? 0) + (last_paid ?? 0) - (price ?? 0) - (change ?? 0);
+    return (pay_cash ?? 0) + (pay_bank ?? 0) + (last_paid ?? 0) - (pay_price ?? 0) - (pay_return ?? 0);
   }
 
   void on_pay() async {
     try {
-      // double price = double.tryParse(c_price.text) ?? 0;
-      // double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
-      // double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
-      // double change = double.tryParse(c_change.text) ?? 0;
-
       await dio.post(
         endpoint.FRONT_DESK_ADD_PAY_ROOM,
         data: {
           sm_front_desk.ID: front_desk_id, //
-          "pay_price": price ?? 0, //
+          "pay_price": pay_price ?? 0, //
           "pay_cash": pay_cash ?? 0, //
           "pay_bank": pay_bank ?? 0, //
-          "pay_return": change ?? 0, //
-          "pay_note": note ?? "", //
+          "pay_return": pay_return ?? 0, //
+          "pay_note": pay_note ?? "", //
         },
       );
 
