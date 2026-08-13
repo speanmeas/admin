@@ -9,6 +9,7 @@ import "package:speanmeas/core/config.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 
@@ -18,20 +19,20 @@ import "package:speanmeas/core/schema/room.g.dart";
 // import "package:speanmeas/core/schema/guest.g.dart";
 // import "package:speanmeas/core/schema/mini_bar.g.dart";
 
-import "form/check_in.dart" as check_in;
-import "form/pay_room.dart" as pay_room;
-import "form/check_out.dart" as check_out;
-import "form/clean.dart" as clean;
-import "form/broke.dart" as broke;
-import "form/fix.dart" as fix;
+import "form/check_in.dart" as check_in; // 1
+import "form/pay_room.dart" as pay_room; // 2
+import "form/check_out.dart" as check_out; // 3
+import "form/clean.dart" as clean; // 4
+import "form/broke.dart" as broke; // 5
+import "form/fix.dart" as fix; // 6
 
 import "form/detail.dart" as detail;
-import "form/update_guest.dart" as update_guest;
-
 import "form/update_stay.dart" as update_stay;
+import "form/update_guest.dart" as update_guest;
 import "form/update_pay_room.dart" as update_pay_room;
+
+import "form/cancel.dart" as cancel;
 // import "form/add_pay_other.dart" as pay_other;
-// import "form/cancel.dart" as cancel;
 // import "form/change_room.dart" as change_room;
 // import "form/add_pay mini_bar_a.dart" as charge;
 
@@ -39,7 +40,9 @@ class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
   Timer? _debounce; // * ពន្យាពេល rebuild ពេលវាយស្វែងរក
-  final c_search = TextEditingController();
+  // final c_search = TextEditingController();
+
+  String? search;
 
   double? room_price;
   double? room_pay;
@@ -50,6 +53,7 @@ class _Main_State extends State<Main_> {
 
   dynamic list_r = [];
   dynamic map_fd = {};
+
   void init() async {
     try {
       tmp = await dio.post(endpoint.ROOM_CRUD_READ, data: {"key": sm_room.NUMBER, "order": 1});
@@ -81,16 +85,11 @@ class _Main_State extends State<Main_> {
         children: [
           Row(
             children: [
-              SizedBox(width: 38),
-
-              Spacer(),
-
               Container(
                 width: 200,
                 height: 40,
                 padding: EdgeInsets.only(top: 8), //
                 child: TextField(
-                  controller: c_search,
                   decoration: InputDecoration(
                     isDense: true, //
                     labelText: t("Search"), //
@@ -102,9 +101,10 @@ class _Main_State extends State<Main_> {
                     prefixIcon: Icon(Icons.search, size: 20), //
                   ),
                   onChanged: (v) {
-                    // * រង់ចាំអ្នកប្រើឈប់វាយ 500ms ទើប rebuild
+                    // * រង់ចាំអ្នកប្រើឈប់វាយទើប rebuild
                     _debounce?.cancel();
-                    _debounce = Timer(const Duration(milliseconds: 500), () {
+                    _debounce = Timer(const Duration(milliseconds: 200), () {
+                      search = v;
                       setState(() {});
                     });
                   },
@@ -113,17 +113,10 @@ class _Main_State extends State<Main_> {
 
               Spacer(),
 
-              Tooltip(
-                message: "Refresh",
-                child: InkWell(
-                  onTap: init,
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    child: Icon(Icons.refresh, size: 30, color: Colors.blue), //
-                  ),
-                ),
+              Menu_Button_Icon(
+                tip: "Refresh", //
+                icon: Icons.refresh, //
+                onPressed: init, //
               ),
             ],
           ),
@@ -146,7 +139,7 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      for (var r in list_r)
+      for (var r in _list_show)
         Container(
           width: 600,
           margin: EdgeInsets.all(2),
@@ -238,8 +231,8 @@ class _Main_State extends State<Main_> {
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
                                         child: Text(t("Cancel"), style: TextStyle(color: Colors.red)),
-                                        // onPressed: () => on_cancel(r), //
-                                        onPressed: () {},
+                                        onPressed: () => on_cancel(r), //
+                                        // onPressed: () {},
                                       ),
                                   ],
                                 ),
@@ -557,27 +550,15 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //   void on_cancel(dynamic r) async {
-  //     try {
-  //       //
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => cancel.Main_(
-  //             room_id: r[sm_room.ID], //
-  //           ), //
-  //         ),
-  //       );
-
-  //       //
-  //       if (tmp != null) init();
-
-  //       //
-  //     } catch (e, st) {
-  //       pprint(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
+  void on_cancel(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => cancel.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
   void on_fix(dynamic r) async {
     try {
@@ -784,9 +765,9 @@ class _Main_State extends State<Main_> {
   //   }
 
   // * Filter rooms by search query (room number, status, or kind)
-  List<Map<String, dynamic>> get _list_show {
-    final q = c_search.text.trim().toLowerCase();
-    if (q.isEmpty) return list_r;
+  List<dynamic> get _list_show {
+    final q = search?.trim().toLowerCase();
+    if (q == null || q.isEmpty) return list_r;
     return list_r.where((r) {
       final room_number = '${r[sm_room.NUMBER]}'.toLowerCase();
       final room_status = '${r[sm_room.STATUS]}'.toLowerCase();
