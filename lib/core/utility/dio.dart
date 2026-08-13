@@ -6,6 +6,7 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
+
 Dio dio_ = Dio(
   BaseOptions(
     baseUrl: API_HOST, //
@@ -21,5 +22,6 @@ Dio dio_ = Dio(
 
 Dio get dio {
   if (kIsWeb) (dio_.httpClientAdapter as dynamic).enableCORSWarning = false;
+  if (kDebugMode) dio.options.headers["Authorization"] = "Bearer 01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567";
   return dio_;
 }

@@ -5,6 +5,7 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/widget/show/show_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/room.g.dart";
@@ -46,8 +47,8 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_r;
-  dynamic map_fd;
+  dynamic map_r = {};
+  dynamic map_fd = {};
   bool is_loading = true;
 
   String? front_desk_id;
@@ -61,10 +62,10 @@ class _Main_State extends State<Main_> {
       map_r = tmp.data[0] as Map<String, dynamic>;
       // pprint(map_r);
 
-      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
-
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-      map_fd = tmp.data[0] as Map<String, dynamic>;
+      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] != null) {
+        tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
+        map_fd = tmp.data[0] as Map<String, dynamic>;
+      }
       // pprint(map_fd);
 
       front_desk_id = map_fd[sm_front_desk.ID];
@@ -96,16 +97,23 @@ class _Main_State extends State<Main_> {
 
       Divider(height: 1, color: Colors.black),
 
-      Input_Text(
-        init: note, //
-        lead: "Note:", //
-        maxLines: 4,
-        prefixIcon: Icons.note_alt_outlined, //
-        onChanged: (v) {
-          note = v;
-          setState(() {});
-        },
-      ),
+      if (front_desk_id == null)
+        Show_Text(
+          lead: "Note:", //
+          value: "Guest has changed from this room.", //
+        ),
+
+      if (front_desk_id != null)
+        Input_Text(
+          init: note, //
+          lead: "Note:", //
+          maxLines: 4,
+          prefixIcon: Icons.note_alt_outlined, //
+          onChanged: (v) {
+            note = v;
+            setState(() {});
+          },
+        ),
 
       OutlinedButton.icon(
         autofocus: true,
@@ -129,6 +137,7 @@ class _Main_State extends State<Main_> {
         },
       );
 
+      // bug here
       if (front_desk_id != null)
         await dio.post(
           endpoint.FRONT_DESK_CLEAN,

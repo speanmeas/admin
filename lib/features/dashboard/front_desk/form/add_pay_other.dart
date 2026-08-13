@@ -1,15 +1,15 @@
-// TODO: manual update
-
 import "package:flutter/material.dart";
+
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
+
+import "package:speanmeas/core/widget/input/input_bank_auto.dart";
+import "package:speanmeas/core/widget/input/input_number.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
-
-import "../../../../core/widget/input/input_bank_auto.dart";
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -49,16 +49,16 @@ class _Main_State extends State<Main_> {
   dynamic map_fd;
   bool is_loading = true;
 
-  final c_price = TextEditingController();
-  final c_pay_cash = TextEditingController();
-  final c_pay_bank = TextEditingController();
-  final c_change = TextEditingController();
-  final c_note = TextEditingController();
-
   String? front_desk_id;
+  String? room_id;
   String? room_number;
-  double last_paid = 0;
-  double last_price = 0;
+
+  double? pay_price;
+  double? last_paid;
+  double? pay_cash;
+  double? pay_bank;
+  double? pay_return;
+  String? pay_note;
 
   void init() async {
     tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
@@ -72,27 +72,13 @@ class _Main_State extends State<Main_> {
     front_desk_id = map_fd[sm_front_desk.ID];
     room_number = map_r[sm_room.NUMBER];
 
-    double total_cash = 0, total_bank = 0, total_return = 0;
-    String? last_note;
-    for (var l in (map_fd["pay_other"] ?? [])) {
-      last_paid += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
-      last_paid += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
-      last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
-      total_cash += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
-      total_bank += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
-      total_return += double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
-      if (l["pay_note"] != null) last_note = l["pay_note"].toString();
+    tmp = map_fd[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
+    if (tmp.isNotEmpty) pay_price = double.tryParse(tmp.last["pay_price"].toString()) ?? 0;
+    for (var l in tmp) {
+      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
+      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
+      last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
     }
-
-    final price_other_list = map_fd["price_other"];
-    if (price_other_list is List && price_other_list.isNotEmpty) {
-      c_price.text = (double.tryParse(price_other_list.last["price"]?.toString() ?? "0") ?? 0).toString();
-    }
-    last_price = double.tryParse(c_price.text) ?? 0;
-    c_pay_cash.text = total_cash.toString();
-    c_pay_bank.text = total_bank.toString();
-    c_change.text = total_return.toString();
-    c_note.text = last_note ?? "";
 
     is_loading = false;
     setState(() {});
@@ -106,9 +92,9 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Room: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text("Room ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
-            room_number ?? "Unknown",
+            room_number ?? "",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
@@ -116,16 +102,13 @@ class _Main_State extends State<Main_> {
 
       Divider(height: 1, color: Colors.black),
 
-      TextField(
-        autofocus: true,
-        controller: c_price,
-        decoration: InputDecoration(
-          labelText: "Revenue Price:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(Icons.attach_money_outlined), //
-        ),
-        onChanged: (v) => setState(() {}), //
+      Input_Number(
+        init: pay_price, //
+        lead: "Other Price:", //
+        onChanged: (v) {
+          pay_price = v;
+          setState(() {});
+        },
       ),
 
       Row(
@@ -133,50 +116,51 @@ class _Main_State extends State<Main_> {
         children: [
           Text("Last Payment: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           Text(
-            "${last_paid.toStringAsFixed(2)} \$",
+            "${last_paid?.toStringAsFixed(2) ?? '0.00'} \$",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
       ),
 
-      TextField(
-        controller: c_pay_cash,
-        decoration: InputDecoration(
-          labelText: "Cash Payment:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(Icons.payments_outlined), //
-        ),
-        onChanged: (v) => setState(() {}), //
+      Input_Number(
+        init: pay_cash, //
+        lead: "Cash Payment:", //
+        prefixIcon: Icons.payments_outlined, //
+        onChanged: (v) {
+          pay_cash = v;
+          setState(() {});
+        },
       ),
 
-      TextField(
-        controller: c_pay_bank,
-        decoration: InputDecoration(
-          labelText: "Bank Payment:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(Icons.account_balance_outlined),
-        ),
-        onChanged: (v) => setState(() {}), //
+      Input_Number(
+        init: pay_bank, //
+        lead: "Bank Payment:", //
+        prefixIcon: Icons.account_balance_outlined, //
+        onChanged: (v) {
+          pay_bank = v;
+          setState(() {});
+        },
       ),
 
-      TextField(
-        controller: c_change,
-        decoration: InputDecoration(
-          labelText: "Return:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(Icons.currency_exchange_outlined),
-        ),
-        onChanged: (v) => setState(() {}), //
+      Input_Number(
+        init: pay_return, //
+        lead: "Return:", //
+        prefixIcon: Icons.currency_exchange_outlined, //
+        onChanged: (v) {
+          pay_return = v;
+          setState(() {});
+        },
       ),
 
       Input_Bank_Auto(
-        onChanged: (v) => setState(() {}), //
+        init: pay_note, //
+        onChanged: (v) {
+          pay_note = v;
+          setState(() {});
+        },
       ),
 
-      Divider(color: Colors.black),
+      Divider(height: 1, color: Colors.black),
 
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -204,29 +188,28 @@ class _Main_State extends State<Main_> {
   }
 
   double get balanced {
-    double price = double.tryParse(c_price.text) ?? 0;
-    double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
-    double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
-    double change = double.tryParse(c_change.text) ?? 0;
-    return (pay_cash + pay_bank + last_paid) - price - change;
+    double temp = 0;
+
+    temp = temp + (pay_cash ?? 0);
+    temp = temp + (pay_bank ?? 0);
+    temp = temp + (last_paid ?? 0);
+    temp = temp - (pay_price ?? 0);
+    temp = temp - (pay_return ?? 0);
+
+    return temp;
   }
 
   void on_pay() async {
     try {
-      double price = double.tryParse(c_price.text) ?? 0;
-      double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
-      double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
-      double change = double.tryParse(c_change.text) ?? 0;
-
       await dio.post(
         endpoint.FRONT_DESK_ADD_PAY_OTHER,
         data: {
           sm_front_desk.ID: front_desk_id, //
-          "pay_price": price, //
-          "pay_cash": pay_cash, //
-          "pay_bank": pay_bank, //
-          "pay_return": change, //
-          "pay_note": c_note.text, //
+          "pay_price": pay_price ?? 0, //
+          "pay_cash": pay_cash ?? 0, //
+          "pay_bank": pay_bank ?? 0, //
+          "pay_return": pay_return ?? 0, //
+          "pay_note": pay_note ?? "", //
         },
       );
 
@@ -243,11 +226,8 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
-//
 class Main_ extends StatefulWidget {
   const Main_({
     super.key,
@@ -260,7 +240,6 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-//
 void main() {
   runApp(
     MaterialApp(

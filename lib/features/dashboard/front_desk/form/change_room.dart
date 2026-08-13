@@ -49,10 +49,14 @@ class _Main_State extends State<Main_> {
 
   String? front_desk_id;
   String? room_number;
-  String? note;
-  String? to_room_number;
 
-  List<Map<String, dynamic>> rooms = [];
+  String? to_room_number;
+  String? change_note;
+
+  String? to_room_id; // * សម្រាប់រក្សា ID បន្ទប់ថ្មី
+
+  // List<Map<String, dynamic>> rooms = [];
+  dynamic list_r = []; // * សម្រាប់រក្សាពត៏មានបន្ទប់ទាំងអស់
 
   void init() async {
     tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
@@ -63,12 +67,11 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
     map_fd = tmp.data[0] as Map<String, dynamic>;
 
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ);
+    list_r = tmp.data as List<dynamic>;
+
     front_desk_id = map_fd[sm_front_desk.ID];
     room_number = map_r[sm_room.NUMBER];
-    note = map_fd[sm_front_desk.CHANGE_NOTE]?.toString() ?? "";
-
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ);
-    rooms = List<Map<String, dynamic>>.from(tmp.data);
 
     is_loading = false;
     setState(() {});
@@ -82,7 +85,7 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Room: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text("Room ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
             room_number ?? "Unknown",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
@@ -94,9 +97,10 @@ class _Main_State extends State<Main_> {
 
       Select_Dynamic(
         lead: "New Room Number:", //
+        prefixIcon: Icons.hotel_outlined, //
         options: (() {
           var options = [];
-          for (var r in rooms) {
+          for (var r in list_r) {
             if (r[sm_room.STATUS] == "Available") {
               options.add(r[sm_room.NUMBER]?.toString() ?? "");
             }
@@ -105,17 +109,24 @@ class _Main_State extends State<Main_> {
         })(),
         onChanged: (v) {
           to_room_number = v;
+
+          for (var r in list_r) {
+            if (r[sm_room.NUMBER]?.toString() == v) {
+              to_room_id = r[sm_room.ID]?.toString();
+              break;
+            }
+          }
+
           setState(() {});
         },
-        prefixIcon: Icons.hotel_outlined, //
       ),
 
       Input_Text(
-        init: note, //
+        init: change_note, //
         lead: "Note:", //
         maxLines: 4,
         onChanged: (v) {
-          note = v;
+          change_note = v;
           setState(() {});
         },
       ),
@@ -131,22 +142,12 @@ class _Main_State extends State<Main_> {
   }
 
   bool get can_change {
-    if (to_room_number == null || to_room_number!.isEmpty) return false;
+    if (to_room_id == null || to_room_id!.isEmpty) return false;
     return true;
   }
 
   void on_change_room() async {
     try {
-      String? to_room_id;
-      for (var r in rooms) {
-        if (r[sm_room.NUMBER]?.toString() == to_room_number) {
-          to_room_id = r[sm_room.ID]!.toString();
-          break;
-        }
-      }
-
-      if (to_room_id == null) throw "To Room ID is null";
-
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
         data: {
@@ -170,7 +171,7 @@ class _Main_State extends State<Main_> {
         data: {
           sm_front_desk.ID: front_desk_id, //
           sm_front_desk.ROOM_ID: to_room_id, //
-          sm_front_desk.CHANGE_NOTE: note, //
+          sm_front_desk.CHANGE_NOTE: change_note, //
         },
       );
 
@@ -187,11 +188,8 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
-//
 class Main_ extends StatefulWidget {
   const Main_({
     super.key,
@@ -204,7 +202,6 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-//
 void main() {
   runApp(
     MaterialApp(

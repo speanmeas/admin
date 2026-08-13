@@ -9,15 +9,13 @@ import "package:speanmeas/core/config.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 
+import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
-// import "package:speanmeas/core/schema/guest.g.dart";
-// import "package:speanmeas/core/schema/mini_bar.g.dart";
 
 import "form/check_in.dart" as check_in; // 1
 import "form/pay_room.dart" as pay_room; // 2
@@ -32,44 +30,32 @@ import "form/update_guest.dart" as update_guest;
 import "form/update_pay_room.dart" as update_pay_room;
 
 import "form/cancel.dart" as cancel;
-// import "form/add_pay_other.dart" as pay_other;
-// import "form/change_room.dart" as change_room;
-// import "form/add_pay mini_bar_a.dart" as charge;
+import "form/add_pay_other.dart" as pay_other;
+import "form/change_room.dart" as change_room;
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
-  Timer? _debounce; // * ពន្យាពេល rebuild ពេលវាយស្វែងរក
-  // final c_search = TextEditingController();
+
+  dynamic list_r = []; // * សម្រាប់រក្សាពត៏មានបន្ទប់ទាំងអស់
+  dynamic map_fd = {}; // * សម្រាប់រក្សាពត៏មាន front desk ទាំងអស់
 
   String? search;
-
-  double? room_price;
-  double? room_pay;
-  double? room_return;
-  double? other_price;
-  double? other_pay;
-  double? other_return;
-
-  dynamic list_r = [];
-  dynamic map_fd = {};
+  Timer? _debounce; // * ពន្យាពេល rebuild សម្រាប់ការស្វែងរក
 
   void init() async {
     try {
       tmp = await dio.post(endpoint.ROOM_CRUD_READ, data: {"key": sm_room.NUMBER, "order": 1});
-      list_r = tmp.data;
+      list_r = tmp.data as List<dynamic>;
 
-      for (var r in list_r) {
+      for (var r in list_r) //
         if (r[sm_room.FRONT_DESK_ID] != null) {
           tmp = await dio.post(
             endpoint.FRONT_DESK_READ_ID, //
-            data: {
-              sm_front_desk.ID: r[sm_room.FRONT_DESK_ID][sm_front_desk.ID], //
-            },
+            data: {sm_front_desk.ID: r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]},
           );
           map_fd[r[sm_room.ID]] = tmp.data[0];
         }
-      }
 
       is_loading = false;
       setState(() {});
@@ -224,7 +210,7 @@ class _Main_State extends State<Main_> {
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.swap_horiz_outlined, color: Colors.blue),
                                         child: Text(t("Change Room"), style: TextStyle(color: Colors.blue)),
-                                        // onPressed: () => on_change_room(r), //
+                                        onPressed: () => on_change_room(r), //
                                       ),
 
                                     if (["Pending Pay", "Pending Leave"].contains(r[sm_room.STATUS]))
@@ -244,7 +230,7 @@ class _Main_State extends State<Main_> {
                     ),
 
                     (() {
-                      String kind = r[sm_room.KIND] ?? "N/A";
+                      String kind = r[sm_room.KIND] ?? t("N/A");
                       double usd_per_3h = (r[sm_room.USD_PER_3H] as num?)?.toDouble() ?? 0;
                       double usd_per_day = (r[sm_room.USD_PER_DAY] as num?)?.toDouble() ?? 0;
                       return Row(
@@ -336,9 +322,9 @@ class _Main_State extends State<Main_> {
                           double change = 0;
                           if (tmp.isNotEmpty) price = double.parse(tmp.last["pay_price"]?.toString() ?? "0");
                           for (var l in tmp) {
-                            pay += double.parse(l["pay_cash"]?.toString() ?? "0");
-                            pay += double.parse(l["pay_bank"]?.toString() ?? "0");
-                            change += double.parse(l["pay_return"]?.toString() ?? "0");
+                            pay = pay + double.parse(l["pay_cash"]?.toString() ?? "0");
+                            pay = pay + double.parse(l["pay_bank"]?.toString() ?? "0");
+                            change = change + double.parse(l["pay_return"]?.toString() ?? "0");
                           }
                           return Row(
                             spacing: 4,
@@ -366,7 +352,7 @@ class _Main_State extends State<Main_> {
                                   message: t("Edit Room Payment"),
                                   child: InkWell(
                                     child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
-                                    onTap: () => on_update_rp(r),
+                                    onTap: () => on_update_room_payment(r),
                                     // onTap: () {},
                                   ),
                                 ),
@@ -378,14 +364,15 @@ class _Main_State extends State<Main_> {
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
                           tmp = map_fd[r[sm_room.ID]][sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
+                          // pprint(tmp);
                           double price = 0;
                           double pay = 0;
                           double change = 0;
                           if (tmp.isNotEmpty) price = double.parse(tmp.last["pay_price"]?.toString() ?? "0");
                           for (var l in tmp) {
-                            pay += double.parse(l["pay_cash"]?.toString() ?? "0");
-                            pay += double.parse(l["pay_bank"]?.toString() ?? "0");
-                            change += double.parse(l["pay_return"]?.toString() ?? "0");
+                            pay = pay + double.parse(l["pay_cash"]?.toString() ?? "0");
+                            pay = pay + double.parse(l["pay_bank"]?.toString() ?? "0");
+                            change = change + double.parse(l["pay_return"]?.toString() ?? "0");
                           }
                           return Row(
                             spacing: 4,
@@ -413,8 +400,8 @@ class _Main_State extends State<Main_> {
                                   message: t("Edit Other Payment"),
                                   child: InkWell(
                                     child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
-                                    // onTap: () => on_update_ot(r),
-                                    onTap: () {},
+                                    onTap: () => on_pay_other(r),
+                                    // onTap: () {},
                                   ),
                                 ),
                             ],
@@ -497,8 +484,8 @@ class _Main_State extends State<Main_> {
                           );
                         })(),
                     ],
+
                     Row(
-                      spacing: 4,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         if (r[sm_room.STATUS] == "Available") //
@@ -540,6 +527,66 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  void on_check_in(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_in.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
+
+  void on_payment(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => pay_room.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
+
+  void on_check_out(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_out.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
+
+  void on_clean(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => clean.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
+
+  void on_broke(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => broke.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
+
+  void on_fix(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => fix.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
+
   void on_detail(dynamic r) async {
     try {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => detail.Main_(room_id: r[sm_room.ID])));
@@ -560,97 +607,15 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  void on_fix(dynamic r) async {
+  void on_change_room(dynamic r) async {
     try {
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => fix.Main_(room_id: r[sm_room.ID])));
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => change_room.Main_(room_id: r[sm_room.ID])));
       if (tmp != null) init();
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
-
-  void on_broke(dynamic r) async {
-    try {
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => broke.Main_(room_id: r[sm_room.ID])));
-      if (tmp != null) init();
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
-
-  void on_clean(dynamic r) async {
-    try {
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => clean.Main_(room_id: r[sm_room.ID])));
-      if (tmp != null) init();
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
-
-  void on_check_out(dynamic r) async {
-    try {
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_out.Main_(room_id: r[sm_room.ID])));
-      if (tmp != null) init();
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
-
-  void on_payment(dynamic r) async {
-    try {
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => pay_room.Main_(room_id: r[sm_room.ID])));
-      if (tmp != null) init();
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
-
-  void on_update_rp(dynamic r) async {
-    try {
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update_pay_room.Main_(room_id: r[sm_room.ID])));
-      if (tmp != null) init();
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
-
-  void on_check_in(dynamic r) async {
-    try {
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_in.Main_(room_id: r[sm_room.ID])));
-      if (tmp != null) init();
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
-
-  //   void on_change_room(dynamic r) async {
-  //     try {
-  //       //
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => change_room.Main_(
-  //             room_id: r[sm_room.ID], //
-  //           ),
-  //         ),
-  //       );
-
-  //       //
-  //       if (tmp != null) init();
-
-  //       //
-  //     } catch (e, st) {
-  //       pprint(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
 
   void on_update_stay(dynamic r) async {
     try {
@@ -672,97 +637,25 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //   void on_update_mnb(dynamic r) async {
-  //     try {
-  //       //
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => charge.Charge_(
-  //             room: r, //
-  //             catalog: list_mb, //
-  //           ), //
-  //         ),
-  //       );
+  void on_update_room_payment(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update_pay_room.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
-  //       //
-  //       if (tmp != null) init();
-
-  //       //
-  //     } catch (e, st) {
-  //       pprint(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
-
-  //   void on_update_ot(dynamic r) async {
-  //     try {
-  //       //
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => pay_other.Main_(
-  //             room_id: r[sm_room.ID], //
-  //           ), //
-  //         ),
-  //       );
-
-  //       //
-  //       if (tmp != null) init();
-
-  //       //
-  //     } catch (e, st) {
-  //       pprint(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
-
-  //   void on_walkin() async {
-  //     try {
-  //       // * គណនាចំនួនដែលបានលក់រួចហើយ (walk-in)
-  //       final sold = <dynamic, int>{};
-  //       for (var line in list_walkin) {
-  //         final id = line[sm_mini_bar.ID];
-  //         if (id != null) sold[id] = (sold[id] ?? 0) + (line["qty"] as int);
-  //       }
-
-  //       //
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => charge.Charge_(
-  //             room: null, //
-  //             catalog: list_mb, //
-  //             sold: sold, //
-  //           ), //
-  //         ),
-  //       );
-
-  //       //
-  //       if (tmp != null) {
-  //         list_walkin.addAll(List<Map<String, dynamic>>.from(tmp));
-  //         setState(() {});
-  //       }
-
-  //       //
-  //     } catch (e, st) {
-  //       pprint(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
-
-  //   void on_clear_walkin() {
-  //     list_walkin.clear();
-  //     setState(() {});
-  //   }
-
-  //   double get _walkin_total {
-  //     var total = 0.0;
-  //     for (var line in list_walkin) {
-  //       total += (line["total"] as num).toDouble();
-  //     }
-  //     return total;
-  //   }
+  void on_pay_other(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => pay_other.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
   // * Filter rooms by search query (room number, status, or kind)
   List<dynamic> get _list_show {

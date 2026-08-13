@@ -92,7 +92,7 @@ class _Main_State extends State<Main_> {
       last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
     }
 
-    pprint(last_paid);
+    // pprint(last_paid);
 
     is_loading = false;
     setState(() {});

@@ -196,7 +196,15 @@ class _Main_State extends State<Main_> {
 
   // * គណនាបានប្រាក់សំណើរ
   double get balanced {
-    return ((pay_cash ?? 0) + (pay_bank ?? 0) + (last_paid ?? 0)) - (pay_price ?? 0) - (pay_return ?? 0);
+    double temp = 0;
+
+    temp = temp + (pay_cash ?? 0);
+    temp = temp + (pay_bank ?? 0);
+    temp = temp + (last_paid ?? 0);
+    temp = temp - (pay_price ?? 0);
+    temp = temp - (pay_return ?? 0);
+
+    return temp;
   }
 
   void on_update() async {
