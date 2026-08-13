@@ -14,14 +14,23 @@ class _Show_TextState extends State<Show_Text> {
   @override
   void initState() {
     super.initState();
+    value = _format(widget.value);
+  }
 
-    if (widget.value != null) {
-      if (widget.value is String) value = widget.value;
-      if (widget.value is int) value = widget.value.toString();
-      if (widget.value is double) value = widget.value.toString();
-      if (widget.value is bool) value = widget.value ? "Yes" : "No";
-      if (widget.value is DateTime) value = DateFormat(DEFAULT_DATE_FORMAT).format(widget.value);
-    }
+  @override
+  void didUpdateWidget(covariant Show_Text oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value) value = _format(widget.value);
+  }
+
+  String _format(dynamic v) {
+    if (v == null) return "";
+    if (v is String) return v;
+    if (v is int) return v.toString();
+    if (v is double) return v.toString();
+    if (v is bool) return v ? "Yes" : "No";
+    if (v is DateTime) return DateFormat(DEFAULT_DATE_FORMAT).format(v);
+    return "";
   }
 
   @override

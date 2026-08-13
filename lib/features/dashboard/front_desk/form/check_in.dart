@@ -1,4 +1,5 @@
-import "package:flutter/foundation.dart";
+// * OK
+
 import "package:flutter/material.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
@@ -8,7 +9,6 @@ import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/search/search_guest.dart";
 import "package:speanmeas/core/widget/select/select_dynamic.dart";
-import "package:speanmeas/core/widget/show/show_text.dart";
 
 import "package:speanmeas/core/schema/front_desk.g.dart";
 // import "package:speanmeas/core/schema/guest.g.dart";
@@ -66,7 +66,7 @@ class _Main_State extends State<Main_> {
     map_r = tmp.data[0] as Map<String, dynamic>;
     // pprint(map_r);
 
-    room_number = map_r[sm_room.NUMBER] ?? "Unknown";
+    room_number = map_r[sm_room.NUMBER] ?? "";
     price_per_day = map_r[sm_room.USD_PER_DAY] ?? 0;
     price_per_3hours = map_r[sm_room.USD_PER_3H] ?? 0;
 
@@ -157,12 +157,12 @@ class _Main_State extends State<Main_> {
   }
 
   double get room_price {
-    return (price_per_day! * stay_days!) + (price_per_3hours! * stay_hours! / 3);
+    return ((price_per_day ?? 0) * (stay_days ?? 0)) + ((price_per_3hours ?? 0) * (stay_hours ?? 0) / 3);
   }
 
   bool get can_check_in {
-    if (number_of_guest! <= 0) return false;
-    if (stay_days! <= 0 && stay_hours! <= 0) return false;
+    if ((number_of_guest ?? 0) <= 0) return false;
+    if ((stay_days ?? 0) <= 0 && (stay_hours ?? 0) <= 0) return false;
     return true;
   }
 
@@ -187,10 +187,6 @@ class _Main_State extends State<Main_> {
         data: {
           sm_front_desk.ID: front_desk_id, //
           "pay_price": room_price, //
-          // "pay_cash": 0,
-          // "pay_bank": 0,
-          // "pay_return": 0,
-          // "pay_note": "",
         },
       );
 

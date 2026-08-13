@@ -1,15 +1,16 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
-import "package:speanmeas/core/schema/nationality.g.dart";
 
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/show/show_text.dart";
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/features/database/nationality/form/create.dart" as create_nationality;
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
+
+import "package:speanmeas/core/widget/show/show_text.dart";
+import "package:speanmeas/core/schema/nationality.g.dart";
+import "package:speanmeas/features/database/nationality/form/create.dart" as create_nationality;
 
 class _Search_NationalityState extends State<Search_Nationality> {
   //

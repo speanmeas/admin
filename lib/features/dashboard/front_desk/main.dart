@@ -1,18 +1,18 @@
+// TODO: Add notification when overtime.
+
+import "dart:async";
+import "package:intl/intl.dart";
+import "package:flutter/material.dart";
+
+import "package:speanmeas/core/i18n.dart"; // ignore: unused_import
+import "package:speanmeas/core/config.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 
-// TODO: Add notification when overtime.
-
-import "dart:async";
-
-import "package:flutter/material.dart";
-import "package:intl/intl.dart";
-import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
-import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 // import "package:speanmeas/core/schema/guest.g.dart";
@@ -26,13 +26,13 @@ import "form/broke.dart" as broke;
 import "form/fix.dart" as fix;
 
 import "form/detail.dart" as detail;
+import "form/update_guest.dart" as update_guest;
 
-// import "form/add_pay_room.dart" as pay_room_update;
+import "form/update_stay.dart" as update_stay;
+import "form/update_pay_room.dart" as update_pay_room;
 // import "form/add_pay_other.dart" as pay_other;
 // import "form/cancel.dart" as cancel;
 // import "form/change_room.dart" as change_room;
-// import "form/guest_update.dart" as update_guest;
-// import "form/check_in_update.dart" as update_stay;
 // import "form/add_pay mini_bar_a.dart" as charge;
 
 class _Main_State extends State<Main_> {
@@ -148,7 +148,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       for (var r in list_r)
         Container(
-          width: 500,
+          width: 600,
           margin: EdgeInsets.all(2),
           padding: EdgeInsets.all(4),
           decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1)),
@@ -276,7 +276,7 @@ class _Main_State extends State<Main_> {
                           return Row(
                             spacing: 4,
                             children: [
-                              Icon(Icons.person, size: 24), //
+                              Icon(Icons.person_2_outlined, size: 24), //
                               Text(t("Guest:"), style: TextStyle(fontWeight: FontWeight.bold)),
                               //
                               SizedBox(width: 2), //
@@ -291,15 +291,14 @@ class _Main_State extends State<Main_> {
                                 message: t("Edit Guest Info"),
                                 child: InkWell(
                                   child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
-                                  //   onTap: () => on_update_guest(r),
-                                  onTap: () {},
+                                  onTap: () => on_update_guest(r),
+                                  // onTap: () {},
                                 ),
                               ),
                             ],
                           );
                         })(),
 
-                      // * stay info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
                           tmp = map_fd[r[sm_room.ID]] as Map<String, dynamic>? ?? {};
@@ -328,15 +327,14 @@ class _Main_State extends State<Main_> {
                                   message: t("Edit Stay Info"),
                                   child: InkWell(
                                     child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
-                                    // onTap: () => on_update_stay(r),
-                                    onTap: () {},
+                                    onTap: () => on_update_stay(r),
+                                    // onTap: () {},
                                   ),
                                 ),
                             ],
                           );
                         })(),
 
-                      // payment room info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
                           tmp = map_fd[r[sm_room.ID]][sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
@@ -375,8 +373,8 @@ class _Main_State extends State<Main_> {
                                   message: t("Edit Room Payment"),
                                   child: InkWell(
                                     child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
-                                    // onTap: () => on_update_rp(r),
-                                    onTap: () {},
+                                    onTap: () => on_update_rp(r),
+                                    // onTap: () {},
                                   ),
                                 ),
                             ],
@@ -631,26 +629,15 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //   void on_update_rp(dynamic r) async {
-  //     try {
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => pay_room_update.Main_(
-  //             room_id: r[sm_room.ID], //
-  //           ), //
-  //         ),
-  //       );
-
-  //       //
-  //       if (tmp != null) init();
-
-  //       //
-  //     } catch (e, st) {
-  //       pprint(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
+  void on_update_rp(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update_pay_room.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
   void on_check_in(dynamic r) async {
     try {
@@ -684,49 +671,25 @@ class _Main_State extends State<Main_> {
   //     }
   //   }
 
-  //   void on_update_stay(dynamic r) async {
-  //     try {
-  //       //
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => update_stay.Main_(
-  //             room_id: r[sm_room.ID], //
-  //           ), //
-  //         ),
-  //       );
+  void on_update_stay(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update_stay.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
-  //       //
-  //       if (tmp != null) init();
-
-  //       //
-  //     } catch (e, st) {
-  //       pprint(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
-
-  //   void on_update_guest(dynamic r) async {
-  //     try {
-  //       //
-  //       tmp = await Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => update_guest.Main_(
-  //             room_id: r[sm_room.ID], //
-  //           ),
-  //         ),
-  //       );
-
-  //       //
-  //       if (tmp != null) init();
-
-  //       //
-  //     } catch (e, st) {
-  //       pprint(st);
-  //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-  //     }
-  //   }
+  void on_update_guest(dynamic r) async {
+    try {
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update_guest.Main_(room_id: r[sm_room.ID])));
+      if (tmp != null) init();
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    }
+  }
 
   //   void on_update_mnb(dynamic r) async {
   //     try {

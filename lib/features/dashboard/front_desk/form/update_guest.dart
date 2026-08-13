@@ -1,15 +1,17 @@
+// * OK
+
 import "package:flutter/material.dart";
+
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/search/search_guest.dart";
-import "package:speanmeas/core/widget/show/show_text.dart";
 
-import "package:speanmeas/core/schema/front_desk.g.dart";
-import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
+import "package:speanmeas/core/schema/guest.g.dart";
+import "package:speanmeas/core/schema/front_desk.g.dart";
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -49,63 +51,36 @@ class _Main_State extends State<Main_> {
   dynamic map_fd;
   bool is_loading = true;
 
-  String? front_desk_id;
   String? room_number;
   String? guest_id;
-  String? guest_full_name;
-  String? guest_phone_number;
-  String? guest_gender;
-  String? guest_nationality;
+  String? front_desk_id;
+
+  // String? front_desk_id;
+  // String? room_number;
+  // String? guest_full_name;
+  // String? guest_phone_number;
+  // String? guest_gender;
+  // String? guest_nationality;
 
   void init() async {
     try {
       tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
       map_r = tmp.data[0] as Map<String, dynamic>;
 
-      if (map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID] != null) {
-        tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-        map_fd = tmp.data[0] as Map<String, dynamic>;
-      }
+      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
+      map_fd = tmp.data[0] as Map<String, dynamic>;
 
       front_desk_id = map_fd[sm_front_desk.ID];
+      guest_id = map_fd[sm_front_desk.GUEST_ID]?[sm_guest.ID]?.toString();
+
       room_number = map_r[sm_room.NUMBER];
 
-      guest_id = map_fd[sm_front_desk.GUEST_ID]?.toString();
-      guest_full_name = map_fd["guest_full_name"]?.toString();
-      guest_phone_number = map_fd["guest_phone_number"]?.toString();
-      guest_gender = map_fd["guest_gender"]?.toString();
-      guest_nationality = map_fd["guest_nationality"]?.toString();
+      // guest_full_name = map_fd["guest_full_name"]?.toString();
+      // guest_phone_number = map_fd["guest_phone_number"]?.toString();
+      // guest_gender = map_fd["guest_gender"]?.toString();
+      // guest_nationality = map_fd["guest_nationality"]?.toString();
 
       is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
-
-  void _on_guest_selected(String? id) async {
-    if (id == null) {
-      guest_id = null;
-      guest_full_name = null;
-      guest_phone_number = null;
-      guest_gender = null;
-      guest_nationality = null;
-      setState(() {});
-      return;
-    }
-
-    try {
-      tmp = await dio.post(
-        endpoint.GUEST_CRUD_READ_ID, //
-        data: {sm_guest.ID: id},
-      );
-
-      guest_id = id;
-      guest_full_name = tmp.data[0][sm_guest.FULL_NAME]?.toString();
-      guest_phone_number = tmp.data[0][sm_guest.PHONE_NUMBER]?.toString();
-      guest_gender = tmp.data[0][sm_guest.GENDER]?.toString();
-      guest_nationality = tmp.data[0][sm_guest.NATIONALITY_ID]?["name"]?.toString();
       setState(() {});
     } catch (e, st) {
       pprint(st);
@@ -132,15 +107,17 @@ class _Main_State extends State<Main_> {
       Divider(height: 1, color: Colors.black),
 
       Search_Guest(
-        initial: guest_full_name, //
-        onChanged: _on_guest_selected,
+        init: guest_id, //
+        onChanged: (v) {
+          guest_id = v;
+          setState(() {});
+        },
       ),
 
-      Show_Text(lead: "Name:", value: guest_full_name ?? ""),
-      Show_Text(lead: "Phone:", value: guest_phone_number ?? ""),
-      Show_Text(lead: "Gender:", value: guest_gender ?? ""),
-      Show_Text(lead: "Nationality:", value: guest_nationality ?? ""),
-
+      // Show_Text(lead: "Name:", value: guest_full_name ?? ""),
+      // Show_Text(lead: "Phone:", value: guest_phone_number ?? ""),
+      // Show_Text(lead: "Gender:", value: guest_gender ?? ""),
+      // Show_Text(lead: "Nationality:", value: guest_nationality ?? ""),
       OutlinedButton.icon(
         icon: Icon(Icons.check), //
         label: Text("Update"), //
@@ -162,7 +139,7 @@ class _Main_State extends State<Main_> {
       );
 
       Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Update Successful", cl: Colors.green);
+      snackbar(ct: context, ms: "Success", cl: Colors.green);
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

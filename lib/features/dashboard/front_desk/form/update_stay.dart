@@ -44,40 +44,56 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_r;
-  dynamic map_fd;
   bool is_loading = true;
 
-  final c_n_o_guest = TextEditingController();
-  final c_d_day = TextEditingController();
-  final c_d_hour = TextEditingController();
-  final c_note = TextEditingController();
+  dynamic map_r;
+  dynamic map_fd;
 
   String? front_desk_id;
   String? room_number;
-  double last_price = 0;
+
+  int? number_of_guest;
+  int? stay_days;
+  int? stay_hours;
+  String? note;
+
+  double? price_per_day;
+  double? price_per_3hours;
+
+  double? last_paid;
+
+  // DateTime? check_in_date;
 
   void init() async {
     tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
     map_r = tmp.data[0] as Map<String, dynamic>;
 
-    if (map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID] != null) {
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-      map_fd = tmp.data[0] as Map<String, dynamic>;
-    }
+    tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
+    map_fd = tmp.data[0] as Map<String, dynamic>;
 
     front_desk_id = map_fd[sm_front_desk.ID];
     room_number = map_r[sm_room.NUMBER];
 
-    c_n_o_guest.text = map_fd[sm_front_desk.CHECK_IN_NUMBER]?.toString() ?? "";
-    c_d_day.text = map_fd[sm_front_desk.CHECK_IN_DAY]?.toString() ?? "";
-    c_d_hour.text = map_fd[sm_front_desk.CHECK_IN_HOUR]?.toString() ?? "";
-    c_note.text = map_fd[sm_front_desk.CHECK_IN_NOTE]?.toString() ?? "";
+    room_number = map_r[sm_room.NUMBER] ?? "";
+    price_per_day = map_r[sm_room.USD_PER_DAY] ?? 0;
+    price_per_3hours = map_r[sm_room.USD_PER_3H] ?? 0;
 
-    final price_room_list = map_fd["price_room"];
-    if (price_room_list is List && price_room_list.isNotEmpty) {
-      last_price = double.tryParse(price_room_list.last["price"]?.toString() ?? "0") ?? 0;
+    number_of_guest = map_fd[sm_front_desk.CHECK_IN_NUMBER] ?? 1;
+    stay_days = map_fd[sm_front_desk.CHECK_IN_DAY] ?? 0;
+    stay_hours = map_fd[sm_front_desk.CHECK_IN_HOUR] ?? 0;
+    note = map_fd[sm_front_desk.CHECK_IN_NOTE] ?? "";
+
+    // check_in_date = DateTime.tryParse(map_fd[sm_front_desk.CHECK_IN_AT]?.toString() ?? "");
+    // pprint(check_in_date);
+
+    tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
+    for (var l in tmp) {
+      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
+      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
+      last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
     }
+
+    pprint(last_paid);
 
     is_loading = false;
     setState(() {});
@@ -91,9 +107,9 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Room: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text("Room ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
-            room_number ?? "Unknown",
+            room_number ?? "",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
@@ -102,35 +118,47 @@ class _Main_State extends State<Main_> {
       Divider(height: 1, color: Colors.black),
 
       Select_Dynamic(
-        init: int.tryParse(c_n_o_guest.text),
+        init: number_of_guest ?? 0, //
         lead: "Number of Guests:",
         options: List.generate(10, (index) => index + 1),
-        onChanged: (v) => setState(() {}), //
         prefixIcon: Icons.people_outline, //
+        onChanged: (v) {
+          number_of_guest = v;
+          setState(() {});
+        },
       ),
 
       Select_Dynamic(
-        init: int.tryParse(c_d_day.text),
+        init: stay_days ?? 0, //
         lead: "Stay Duration (Days):",
         options: List.generate(365, (index) => index),
-        onChanged: (v) => setState(() {}), //
         prefixIcon: Icons.calendar_month_outlined,
+        onChanged: (v) {
+          stay_days = v;
+          setState(() {});
+        },
       ),
 
       Select_Dynamic(
-        init: int.tryParse(c_d_hour.text),
+        init: stay_hours ?? 0, //
         lead: "Stay Duration (Hours):",
         options: [0, 3, 6, 9, 12, 15, 18, 21],
-        onChanged: (v) => setState(() {}), //
         prefixIcon: Icons.access_time_outlined,
+        onChanged: (v) {
+          stay_hours = v;
+          setState(() {});
+        },
       ),
 
       Input_Text(
-        init: c_note.text, //
+        init: note ?? "", //
         lead: "Note:", //
         prefixIcon: Icons.note_alt_outlined, //
         maxLines: 4, //
-        onChanged: (v) => setState(() {}), //
+        onChanged: (v) {
+          note = v;
+          setState(() {});
+        },
       ),
 
       OutlinedButton.icon(
@@ -144,14 +172,14 @@ class _Main_State extends State<Main_> {
   }
 
   bool get can_update {
-    int n_guest = int.tryParse(c_n_o_guest.text) ?? 0;
-    int n_day = int.tryParse(c_d_day.text) ?? 0;
-    int n_hour = int.tryParse(c_d_hour.text) ?? 0;
-
-    if (n_guest <= 0) return false;
-    if (n_day <= 0 && n_hour <= 0) return false;
+    if ((number_of_guest ?? 0) <= 0) return false;
+    if ((stay_days ?? 0) <= 0 && (stay_hours ?? 0) <= 0) return false;
 
     return true;
+  }
+
+  double get room_price {
+    return ((price_per_day ?? 0) * (stay_days ?? 0)) + ((price_per_3hours ?? 0) * (stay_hours ?? 0) / 3);
   }
 
   void on_update() async {
@@ -160,15 +188,42 @@ class _Main_State extends State<Main_> {
         endpoint.FRONT_DESK_UPDATE_CHECK_IN, //
         data: {
           sm_front_desk.ID: front_desk_id, //
-          sm_front_desk.CHECK_IN_NUMBER: int.tryParse(c_n_o_guest.text), //
-          sm_front_desk.CHECK_IN_DAY: int.tryParse(c_d_day.text), //
-          sm_front_desk.CHECK_IN_HOUR: int.tryParse(c_d_hour.text), //
-          sm_front_desk.CHECK_IN_NOTE: c_note.text, //
+          sm_front_desk.CHECK_IN_NUMBER: number_of_guest, //
+          sm_front_desk.CHECK_IN_DAY: stay_days, //
+          sm_front_desk.CHECK_IN_HOUR: stay_hours, //
+          sm_front_desk.CHECK_IN_NOTE: note, //
         },
       );
 
+      pprint("room_price: $room_price");
+
+      await dio.post(
+        endpoint.FRONT_DESK_ADD_PAY_ROOM, // update
+        data: {
+          sm_front_desk.ID: front_desk_id, //
+          "pay_price": room_price, //
+        },
+      );
+
+      if (last_paid == room_price)
+        await dio.post(
+          endpoint.ROOM_CRUD_UPDATE, //
+          data: {
+            sm_room.ID: widget.room_id, //
+            sm_room.STATUS: "Pending Leave", //
+          },
+        );
+      else
+        await dio.post(
+          endpoint.ROOM_CRUD_UPDATE, //
+          data: {
+            sm_room.ID: widget.room_id, //
+            sm_room.STATUS: "Pending Pay", //
+          },
+        );
+
       Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Update Successful", cl: Colors.green);
+      snackbar(ct: context, ms: "Success", cl: Colors.green);
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
