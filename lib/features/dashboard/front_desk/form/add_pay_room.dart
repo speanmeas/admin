@@ -1,11 +1,10 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-
-import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/endpoint.g.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/widget/snackbar.dart";
-
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
@@ -45,6 +44,8 @@ Widget _layout(List<Widget> children) {
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
+  dynamic map_r;
+  dynamic map_fd;
   bool is_loading = true;
 
   final c_price = TextEditingController();
@@ -54,44 +55,43 @@ class _Main_State extends State<Main_> {
   final c_note = TextEditingController();
 
   String? front_desk_id;
+  String? room_number;
   double last_paid = 0;
   double last_price = 0;
 
   void init() async {
-    tmp = await dio.post(
-      endpoint.ROOM_CRUD_READ_ID, //
-      data: {sm_room.ID: widget.room_id},
-    );
-    front_desk_id = tmp.data[0][sm_room.FRONT_DESK_ID];
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    map_r = tmp.data[0] as Map<String, dynamic>;
 
-    if (front_desk_id != null) {
-      tmp = await dio.post(
-        endpoint.FRONT_DESK_READ_ID, //
-        data: {sm_front_desk.ID: front_desk_id},
-      );
-
-      double total_cash = 0, total_bank = 0, total_return = 0;
-      String? last_note;
-      for (var l in (tmp.data[0]["pay_room"] ?? [])) {
-        last_paid += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
-        last_paid += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
-        last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
-        total_cash += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
-        total_bank += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
-        total_return += double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
-        if (l["pay_note"] != null) last_note = l["pay_note"].toString();
-      }
-
-      final price_room_list = tmp.data[0]["price_room"];
-      if (price_room_list is List && price_room_list.isNotEmpty) {
-        c_price.text = (double.tryParse(price_room_list.last["price"]?.toString() ?? "0") ?? 0).toString();
-      }
-      last_price = double.tryParse(c_price.text) ?? 0;
-      c_pay_cash.text = total_cash.toString();
-      c_pay_bank.text = total_bank.toString();
-      c_change.text = total_return.toString();
-      c_note.text = last_note ?? "";
+    if (map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID] != null) {
+      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
+      map_fd = tmp.data[0] as Map<String, dynamic>;
     }
+
+    front_desk_id = map_fd[sm_front_desk.ID];
+    room_number = map_r[sm_room.NUMBER];
+
+    double total_cash = 0, total_bank = 0, total_return = 0;
+    String? last_note;
+    for (var l in (map_fd["pay_room"] ?? [])) {
+      last_paid += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
+      last_paid += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
+      last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+      total_cash += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
+      total_bank += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
+      total_return += double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+      if (l["pay_note"] != null) last_note = l["pay_note"].toString();
+    }
+
+    final price_room_list = map_fd["price_room"];
+    if (price_room_list is List && price_room_list.isNotEmpty) {
+      c_price.text = (double.tryParse(price_room_list.last["price"]?.toString() ?? "0") ?? 0).toString();
+    }
+    last_price = double.tryParse(c_price.text) ?? 0;
+    c_pay_cash.text = total_cash.toString();
+    c_pay_bank.text = total_bank.toString();
+    c_change.text = total_return.toString();
+    c_note.text = last_note ?? "";
 
     is_loading = false;
     setState(() {});
@@ -102,6 +102,19 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Room: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text(
+            room_number ?? "Unknown",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+          ),
+        ],
+      ),
+
+      Divider(height: 1, color: Colors.black),
+
       TextField(
         controller: c_price,
         keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -255,7 +268,7 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }

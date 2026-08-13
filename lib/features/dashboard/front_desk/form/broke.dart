@@ -1,10 +1,10 @@
 import "package:flutter/material.dart";
-
-import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/endpoint.g.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_text.dart";
-import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
@@ -44,7 +44,6 @@ class _Main_State extends State<Main_> {
   dynamic map_fd;
   bool is_loading = true;
 
-  String? front_desk_id;
   String? room_number;
   String? note;
 
@@ -53,19 +52,12 @@ class _Main_State extends State<Main_> {
       tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
       map_r = tmp.data[0] as Map<String, dynamic>;
 
-      if (map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID] != null) {
-        tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-        map_fd = tmp.data[0] as Map<String, dynamic>;
-      }
-
-      front_desk_id = map_fd[sm_front_desk.ID];
       room_number = map_r[sm_room.NUMBER];
-      note = map_fd[sm_front_desk.BROKE_NOTE]?.toString() ?? "";
 
       is_loading = false;
       setState(() {});
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -112,27 +104,27 @@ class _Main_State extends State<Main_> {
 
   void on_broke() async {
     try {
+      tmp = await dio.post(
+        endpoint.FRONT_DESK_BROKE,
+        data: {
+          sm_front_desk.BROKE_NOTE: note, //
+        },
+      );
+      var front_desk_id = tmp.data[0][sm_front_desk.ID];
+
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
         data: {
           sm_room.ID: widget.room_id, //
           sm_room.STATUS: "Pending Fix", //
+          sm_room.FRONT_DESK_ID: front_desk_id, //
         },
       );
-
-      if (front_desk_id != null)
-        await dio.post(
-          endpoint.FRONT_DESK_BROKE,
-          data: {
-            sm_front_desk.ID: front_desk_id, //
-            sm_front_desk.BROKE_NOTE: note, //
-          },
-        );
 
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }

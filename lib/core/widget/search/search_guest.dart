@@ -2,14 +2,15 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
-import "package:speanmeas/core/endpoint.g.dart";
-import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/show/show_text.dart";
-import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/guest.g.dart";
 
 import "package:speanmeas/features/database/guest/form/create.dart" as create_guest;
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 class _Search_GuestState extends State<Search_Guest> {
   //
@@ -64,7 +65,7 @@ class _Search_GuestState extends State<Search_Guest> {
       widget.onChanged?.call(id);
       setState(() {});
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -101,7 +102,7 @@ class _Search_GuestState extends State<Search_Guest> {
                     return options;
                     //
                   } catch (e, st) {
-                    print(st);
+                    pprint(st);
                     snackbar(ct: context, ms: e.toString(), cl: Colors.red);
                     return [];
                   }

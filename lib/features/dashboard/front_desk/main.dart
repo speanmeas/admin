@@ -1,3 +1,9 @@
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
+
 // TODO: Add notification when overtime.
 
 import "dart:async";
@@ -6,14 +12,8 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
-
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
-import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/endpoint.g.dart";
-import "package:speanmeas/core/utility/pprint.dart";
-import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 // import "package:speanmeas/core/schema/guest.g.dart";
 // import "package:speanmeas/core/schema/mini_bar.g.dart";
@@ -26,6 +26,7 @@ import "form/broke.dart" as broke;
 import "form/fix.dart" as fix;
 
 import "form/detail.dart" as detail;
+
 // import "form/add_pay_room.dart" as pay_room_update;
 // import "form/add_pay_other.dart" as pay_other;
 // import "form/cancel.dart" as cancel;
@@ -69,7 +70,7 @@ class _Main_State extends State<Main_> {
       is_loading = false;
       setState(() {});
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -489,11 +490,11 @@ class _Main_State extends State<Main_> {
                       // broke info
                       if (r[sm_room.STATUS] == "Pending Fix")
                         (() {
+                          tmp = map_fd[r[sm_room.ID]] as Map<String, dynamic>? ?? {};
                           String broke_date = "";
-                          final broke_at = map_fd[r[sm_room.FRONT_DESK_ID]]?[sm_front_desk.BROKE_AT];
-                          if (broke_at != null) {
-                            tmp = DateTime.parse(broke_at);
-                            broke_date = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
+                          if (tmp[sm_front_desk.BROKE_AT] != null) {
+                            final dt = DateTime.parse(tmp[sm_front_desk.BROKE_AT]);
+                            broke_date = DateFormat(DEFAULT_DATE_FORMAT).format(dt);
                           }
                           return Row(
                             spacing: 4,
@@ -553,7 +554,7 @@ class _Main_State extends State<Main_> {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => detail.Main_(room_id: r[sm_room.ID])));
       if (tmp != null) init();
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -575,7 +576,7 @@ class _Main_State extends State<Main_> {
 
   //       //
   //     } catch (e, st) {
-  //       print(st);
+  //       pprint(st);
   //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
   //     }
   //   }
@@ -585,7 +586,7 @@ class _Main_State extends State<Main_> {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => fix.Main_(room_id: r[sm_room.ID])));
       if (tmp != null) init();
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -595,7 +596,7 @@ class _Main_State extends State<Main_> {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => broke.Main_(room_id: r[sm_room.ID])));
       if (tmp != null) init();
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -605,7 +606,7 @@ class _Main_State extends State<Main_> {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => clean.Main_(room_id: r[sm_room.ID])));
       if (tmp != null) init();
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -615,7 +616,7 @@ class _Main_State extends State<Main_> {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_out.Main_(room_id: r[sm_room.ID])));
       if (tmp != null) init();
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -625,7 +626,7 @@ class _Main_State extends State<Main_> {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => pay_room.Main_(room_id: r[sm_room.ID])));
       if (tmp != null) init();
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -646,7 +647,7 @@ class _Main_State extends State<Main_> {
 
   //       //
   //     } catch (e, st) {
-  //       print(st);
+  //       pprint(st);
   //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
   //     }
   //   }
@@ -656,7 +657,7 @@ class _Main_State extends State<Main_> {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_in.Main_(room_id: r[sm_room.ID])));
       if (tmp != null) init();
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -678,7 +679,7 @@ class _Main_State extends State<Main_> {
 
   //       //
   //     } catch (e, st) {
-  //       print(st);
+  //       pprint(st);
   //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
   //     }
   //   }
@@ -700,7 +701,7 @@ class _Main_State extends State<Main_> {
 
   //       //
   //     } catch (e, st) {
-  //       print(st);
+  //       pprint(st);
   //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
   //     }
   //   }
@@ -722,7 +723,7 @@ class _Main_State extends State<Main_> {
 
   //       //
   //     } catch (e, st) {
-  //       print(st);
+  //       pprint(st);
   //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
   //     }
   //   }
@@ -745,7 +746,7 @@ class _Main_State extends State<Main_> {
 
   //       //
   //     } catch (e, st) {
-  //       print(st);
+  //       pprint(st);
   //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
   //     }
   //   }
@@ -767,7 +768,7 @@ class _Main_State extends State<Main_> {
 
   //       //
   //     } catch (e, st) {
-  //       print(st);
+  //       pprint(st);
   //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
   //     }
   //   }
@@ -801,7 +802,7 @@ class _Main_State extends State<Main_> {
 
   //       //
   //     } catch (e, st) {
-  //       print(st);
+  //       pprint(st);
   //       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
   //     }
   //   }

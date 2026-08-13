@@ -2,17 +2,17 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart";
-import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/user.g.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
-
+import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 import "dialog/dialog_full_name.dart" as dialog_fn;
 import "dialog/dialog_phone_number.dart" as dialog_pn;
 import "dialog/dialog_username.dart" as dialog_un;
 import "dialog/dialog_password.dart" as dialog_pw;
 
 import "sign_in.dart" as sign_in;
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -84,7 +84,7 @@ class _Main_State extends State<Main_> {
 
       setState(() {});
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => sign_in.Main_()));
     }
@@ -227,7 +227,7 @@ class _Main_State extends State<Main_> {
       //
       snackbar(ct: context, ms: "Success", cl: Colors.green);
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }

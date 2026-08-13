@@ -5,12 +5,13 @@ import "package:pluto_grid/pluto_grid.dart";
 import "package:flutter_svg/flutter_svg.dart";
 
 import "package:speanmeas/core/config.dart";
-import "package:speanmeas/core/endpoint.g.dart";
-import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/widget/select/select_datetime.dart";
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
@@ -90,7 +91,7 @@ class _Main_State extends State<Main_> {
 
       setState(() {});
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     } finally {
       setState(() => is_loading = false);

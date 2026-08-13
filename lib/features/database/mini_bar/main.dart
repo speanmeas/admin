@@ -4,12 +4,12 @@ import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/i18n.dart";
-import "package:speanmeas/core/endpoint.g.dart";
-import "package:speanmeas/core/utility/dio.dart";
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/button/menu_button_text.dart";
-import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/dialog/dialog_page.dart";
 import "package:speanmeas/core/schema/mini_bar.g.dart";
 
@@ -17,6 +17,7 @@ import "form/create.dart" as create;
 import "form/read.dart" as read;
 import "form/update.dart" as update;
 import "form/delete.dart" as delete;
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -57,7 +58,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -83,7 +84,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -141,7 +142,7 @@ class _Main_State extends State<Main_> {
 
       setState(() {});
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
       if (request_id == load_request_id && mounted) {
         is_loading = false;
@@ -369,7 +370,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -395,7 +396,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -425,7 +426,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
@@ -455,7 +456,7 @@ class _Main_State extends State<Main_> {
 
       //
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }

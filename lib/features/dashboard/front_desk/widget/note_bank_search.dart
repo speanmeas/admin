@@ -1,23 +1,28 @@
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
 class _NoteBankSearchState extends State<NoteBankSearch> {
+  dynamic tmp;
+  dynamic data;
+
   List<String> options = [];
 
   void init() async {
     try {
-      final raw = await rootBundle.loadString("assets/data/banks.md");
+      tmp = await dio.post(endpoint.BANK_CRUD_READ);
+      data = tmp.data as List<dynamic>;
+
       for (var to in [" to ABA Bank", " to ACLEDA Bank"])
-        for (var line in raw.split("\n")) {
-          String from = line.trim();
+        for (var from in data.map((e) => e["name"])) //
           if (from.isNotEmpty) options.add("$from$to");
-        }
     } catch (e, st) {
-      print(st);
-      options = [];
+      pprint(st);
     }
   }
 
@@ -30,7 +35,8 @@ class _NoteBankSearchState extends State<NoteBankSearch> {
         List<dynamic> opts = [];
         for (var e in options) {
           final tmp = e.split(" to ")[0];
-          if (tmp.toLowerCase().contains(q.toLowerCase())) opts.add(e);
+          if (tmp.toLowerCase().contains(q.toLowerCase())) //
+            opts.add(e);
         }
         return opts;
       },

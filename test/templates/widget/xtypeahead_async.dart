@@ -1,15 +1,15 @@
-import "package:speanmeas/core/endpoint.g.dart";
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:flutter/material.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:speanmeas/core/schema/nationality.g.dart";
 
 //
-import "package:speanmeas/core/utility/dio.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
-import "package:speanmeas/core/widget/snackbar.dart";
-
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 //
 import "package:speanmeas/features/database/nationality/form/create.dart" as n_f_create;
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 class _Main_State extends State<Main_> {
   //
@@ -65,7 +65,7 @@ class _Main_State extends State<Main_> {
       if (request_id != selection_request_id || !mounted) return;
       widget.onChanged?.call(List<Map<String, dynamic>>.from(r.data).first);
     } catch (e, st) {
-      print(st);
+      pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
       clear_field();
     }
@@ -104,7 +104,7 @@ class _Main_State extends State<Main_> {
                 return options;
                 //
               } catch (e, st) {
-                print(st);
+                pprint(st);
                 snackbar(ct: context, ms: e.toString(), cl: Colors.red);
                 return [];
               }

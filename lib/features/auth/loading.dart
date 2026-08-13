@@ -1,14 +1,15 @@
 import "package:flutter/material.dart";
 import "package:speanmeas/core/global.dart";
 
-import "package:speanmeas/core/endpoint.g.dart";
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart";
-import "package:speanmeas/core/theme/theme_data.dart";
+import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/layout/layout.dart" as layout;
 
 import "sign_in.dart" as form_si;
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 class _Main_State extends State<Main_> {
   //
@@ -67,7 +68,7 @@ class _Main_State extends State<Main_> {
       await glob.init();
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
     } catch (e, st) {
-      print(st);
+      pprint(st);
       await secure_storage.delete(key: "access_token");
       await secure_storage.delete(key: "_id");
       Navigator.pushReplacement(
