@@ -5,7 +5,7 @@ import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/schema/user.g.dart";
-import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/features/auth/profile.dart" as profile;

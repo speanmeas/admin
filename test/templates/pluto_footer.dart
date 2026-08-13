@@ -2,7 +2,7 @@ import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme_data.dart"; // ignore: unused_import
 
 import 'dart:math';
 
@@ -123,13 +123,7 @@ class _ColumnFooterScreenState extends State<ColumnFooterScreen> {
         field: 'column6',
         type: PlutoColumnType.select(['Android', 'iOS', 'Windows', 'Linux']),
         footerRenderer: (rendererContext) {
-          return PlutoAggregateColumnFooter(
-            rendererContext: rendererContext,
-            type: PlutoAggregateColumnType.count,
-            filter: (cell) => cell.value == 'Android',
-            format: 'Android : #,###',
-            alignment: Alignment.center,
-          );
+          return PlutoAggregateColumnFooter(rendererContext: rendererContext, type: PlutoAggregateColumnType.count, filter: (cell) => cell.value == 'Android', format: 'Android : #,###', alignment: Alignment.center);
         },
       ),
     ];

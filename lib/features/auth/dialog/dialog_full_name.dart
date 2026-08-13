@@ -5,7 +5,7 @@ import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_i
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/user.g.dart";
-import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 class _Dialog_State extends State<Dialog_> {

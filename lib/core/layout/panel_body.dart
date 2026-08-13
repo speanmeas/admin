@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme_data.dart"; // ignore: unused_import
 // dashboard
 import "package:speanmeas/features/dashboard/front_desk/main.dart" as d_front_desk;
 import "package:speanmeas/features/dashboard/mini_bar/main.dart" as d_mini_bar;

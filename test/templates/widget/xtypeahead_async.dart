@@ -5,7 +5,7 @@ import "package:speanmeas/core/schema/nationality.g.dart";
 
 //
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 //
 import "package:speanmeas/features/database/nationality/form/create.dart" as n_f_create;

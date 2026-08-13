@@ -4,7 +4,7 @@ import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme_data.dart"; // ignore: unused_import
 
 //
 // Input dialog — Single text field, returns the entered string or null.
@@ -20,15 +20,7 @@ import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 //   if (name == null) return;
 //
 
-Future<String?> input(
-  BuildContext context, {
-  String title = "Input",
-  String hint = "",
-  String cancelText = "Cancel",
-  String confirmText = "OK",
-  TextInputType keyboardType = TextInputType.text,
-  List<TextInputFormatter>? inputFormatters,
-}) async {
+Future<String?> input(BuildContext context, {String title = "Input", String hint = "", String cancelText = "Cancel", String confirmText = "OK", TextInputType keyboardType = TextInputType.text, List<TextInputFormatter>? inputFormatters}) async {
   //
 
   final controller = TextEditingController();
