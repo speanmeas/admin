@@ -1,18 +1,17 @@
 // * OK
 
 import "package:flutter/material.dart";
+
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 
+import "package:speanmeas/core/widget/input/input_bank_auto.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
-import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
-
-// import "../widget/note_bank_search.dart"; // TODO: later
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -156,11 +155,8 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      Input_Text(
+      Input_Bank_Auto(
         init: pay_note, //
-        lead: "Note:", //
-        prefixIcon: Icons.note_alt_outlined, //
-        maxLines: 4,
         onChanged: (v) {
           pay_note = v;
           setState(() {});

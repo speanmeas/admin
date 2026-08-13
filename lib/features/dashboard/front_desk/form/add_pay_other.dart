@@ -9,7 +9,7 @@ import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
-import "../widget/note_bank_search.dart";
+import "../../../../core/widget/input/input_bank_auto.dart";
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -172,8 +172,7 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => setState(() {}), //
       ),
 
-      NoteBankSearch(
-        controller: c_note, //
+      Input_Bank_Auto(
         onChanged: (v) => setState(() {}), //
       ),
 
