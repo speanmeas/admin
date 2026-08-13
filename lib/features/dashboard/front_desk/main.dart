@@ -783,6 +783,7 @@ class _Main_State extends State<Main_> {
   //     return total;
   //   }
 
+  // * Filter rooms by search query (room number, status, or kind)
   List<Map<String, dynamic>> get _list_show {
     final q = c_search.text.trim().toLowerCase();
     if (q.isEmpty) return list_r;

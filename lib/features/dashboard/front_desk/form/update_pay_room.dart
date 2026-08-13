@@ -1,3 +1,5 @@
+// TODO: manual update
+
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
@@ -48,11 +50,11 @@ class _Main_State extends State<Main_> {
   dynamic map_fd;
   bool is_loading = true;
 
-  final c_price = TextEditingController();
-  final c_pay_cash = TextEditingController();
-  final c_pay_bank = TextEditingController();
-  final c_change = TextEditingController();
-  final c_note = TextEditingController();
+  // final c_price = TextEditingController();
+  // final c_pay_cash = TextEditingController();
+  // final c_pay_bank = TextEditingController();
+  // final c_change = TextEditingController();
+  // final c_note = TextEditingController();
 
   String? front_desk_id;
   String? room_number;
@@ -60,38 +62,38 @@ class _Main_State extends State<Main_> {
   double last_price = 0;
 
   void init() async {
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
-    map_r = tmp.data[0] as Map<String, dynamic>;
+    // tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    // map_r = tmp.data[0] as Map<String, dynamic>;
 
-    if (map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID] != null) {
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-      map_fd = tmp.data[0] as Map<String, dynamic>;
-    }
+    // if (map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID] != null) {
+    //   tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
+    //   map_fd = tmp.data[0] as Map<String, dynamic>;
+    // }
 
-    front_desk_id = map_fd[sm_front_desk.ID];
-    room_number = map_r[sm_room.NUMBER];
+    // front_desk_id = map_fd[sm_front_desk.ID];
+    // room_number = map_r[sm_room.NUMBER];
 
-    double total_cash = 0, total_bank = 0, total_return = 0;
-    String? last_note;
-    for (var l in (map_fd["pay_room"] ?? [])) {
-      last_paid += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
-      last_paid += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
-      last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
-      total_cash += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
-      total_bank += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
-      total_return += double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
-      if (l["pay_note"] != null) last_note = l["pay_note"].toString();
-    }
+    // double total_cash = 0, total_bank = 0, total_return = 0;
+    // String? last_note;
+    // for (var l in (map_fd["pay_room"] ?? [])) {
+    //   last_paid += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
+    //   last_paid += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
+    //   last_paid -= double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+    //   total_cash += double.tryParse(l["pay_cash"]?.toString() ?? "0") ?? 0;
+    //   total_bank += double.tryParse(l["pay_bank"]?.toString() ?? "0") ?? 0;
+    //   total_return += double.tryParse(l["pay_return"]?.toString() ?? "0") ?? 0;
+    //   if (l["pay_note"] != null) last_note = l["pay_note"].toString();
+    // }
 
-    final price_room_list = map_fd["price_room"];
-    if (price_room_list is List && price_room_list.isNotEmpty) {
-      c_price.text = (double.tryParse(price_room_list.last["price"]?.toString() ?? "0") ?? 0).toString();
-    }
-    last_price = double.tryParse(c_price.text) ?? 0;
-    c_pay_cash.text = total_cash.toString();
-    c_pay_bank.text = total_bank.toString();
-    c_change.text = total_return.toString();
-    c_note.text = last_note ?? "";
+    // final price_room_list = map_fd["price_room"];
+    // if (price_room_list is List && price_room_list.isNotEmpty) {
+    //   c_price.text = (double.tryParse(price_room_list.last["price"]?.toString() ?? "0") ?? 0).toString();
+    // }
+    // last_price = double.tryParse(c_price.text) ?? 0;
+    // c_pay_cash.text = total_cash.toString();
+    // c_pay_bank.text = total_bank.toString();
+    // c_change.text = total_return.toString();
+    // c_note.text = last_note ?? "";
 
     is_loading = false;
     setState(() {});
@@ -115,20 +117,19 @@ class _Main_State extends State<Main_> {
 
       Divider(height: 1, color: Colors.black),
 
-      TextField(
-        controller: c_price,
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
-        decoration: InputDecoration(
-          labelText: "Room Price:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(Icons.attach_money_outlined), //
-        ),
-        onChanged: (v) => setState(() {}), //
-        onSubmitted: (v) => on_update(), //
-      ),
-
+      // TextField(
+      //   controller: c_price,
+      //   keyboardType: TextInputType.numberWithOptions(decimal: true),
+      //   inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
+      //   decoration: InputDecoration(
+      //     labelText: "Room Price:", //
+      //     labelStyle: TextStyle(fontWeight: FontWeight.bold),
+      //     floatingLabelBehavior: FloatingLabelBehavior.always,
+      //     prefixIcon: Icon(Icons.attach_money_outlined), //
+      //   ),
+      //   onChanged: (v) => setState(() {}), //
+      //   onSubmitted: (v) => on_update(), //
+      // ),
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -140,53 +141,52 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
-      TextField(
-        controller: c_pay_cash,
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
-        decoration: InputDecoration(
-          labelText: "Cash Payment:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(Icons.payments_outlined), //
-        ),
-        onChanged: (v) => setState(() {}), //
-        onSubmitted: (v) => on_update(), //
-      ),
+      // TextField(
+      //   controller: c_pay_cash,
+      //   keyboardType: TextInputType.numberWithOptions(decimal: true),
+      //   inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
+      //   decoration: InputDecoration(
+      //     labelText: "Cash Payment:", //
+      //     labelStyle: TextStyle(fontWeight: FontWeight.bold),
+      //     floatingLabelBehavior: FloatingLabelBehavior.always,
+      //     prefixIcon: Icon(Icons.payments_outlined), //
+      //   ),
+      //   onChanged: (v) => setState(() {}), //
+      //   onSubmitted: (v) => on_update(), //
+      // ),
 
-      TextField(
-        controller: c_pay_bank,
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
-        decoration: InputDecoration(
-          labelText: "Bank Payment:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(Icons.account_balance_outlined),
-        ),
-        onChanged: (v) => setState(() {}), //
-        onSubmitted: (v) => on_update(), //
-      ),
+      // TextField(
+      //   controller: c_pay_bank,
+      //   keyboardType: TextInputType.numberWithOptions(decimal: true),
+      //   inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
+      //   decoration: InputDecoration(
+      //     labelText: "Bank Payment:", //
+      //     labelStyle: TextStyle(fontWeight: FontWeight.bold),
+      //     floatingLabelBehavior: FloatingLabelBehavior.always,
+      //     prefixIcon: Icon(Icons.account_balance_outlined),
+      //   ),
+      //   onChanged: (v) => setState(() {}), //
+      //   onSubmitted: (v) => on_update(), //
+      // ),
 
-      TextField(
-        controller: c_change,
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
-        decoration: InputDecoration(
-          labelText: "Return:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(Icons.currency_exchange_outlined),
-        ),
-        onChanged: (v) => setState(() {}), //
-        onSubmitted: (v) => on_update(), //
-      ),
+      // TextField(
+      //   controller: c_change,
+      //   keyboardType: TextInputType.numberWithOptions(decimal: true),
+      //   inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
+      //   decoration: InputDecoration(
+      //     labelText: "Return:", //
+      //     labelStyle: TextStyle(fontWeight: FontWeight.bold),
+      //     floatingLabelBehavior: FloatingLabelBehavior.always,
+      //     prefixIcon: Icon(Icons.currency_exchange_outlined),
+      //   ),
+      //   onChanged: (v) => setState(() {}), //
+      //   onSubmitted: (v) => on_update(), //
+      // ),
 
-      NoteBankSearch(
-        controller: c_note, //
-        onChanged: (v) => setState(() {}), //
-      ),
-
+      // NoteBankSearch(
+      //   controller: c_note, //
+      //   onChanged: (v) => setState(() {}), //
+      // ),
       Divider(color: Colors.black),
 
       Row(
@@ -222,48 +222,49 @@ class _Main_State extends State<Main_> {
 
   // * គណនាបានប្រាក់សំណើរ
   double get balanced {
-    double price = double.tryParse(c_price.text) ?? 0;
-    double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
-    double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
-    double change = double.tryParse(c_change.text) ?? 0;
-    return (pay_cash + pay_bank + last_paid) - price - change;
+    // double price = double.tryParse(c_price.text) ?? 0;
+    // double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
+    // double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
+    // double change = double.tryParse(c_change.text) ?? 0;
+    // return (pay_cash + pay_bank + last_paid) - price - change;
+    return 0;
   }
 
   void on_update() async {
     try {
-      double price = double.tryParse(c_price.text) ?? 0;
-      double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
-      double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
-      double change = double.tryParse(c_change.text) ?? 0;
+      // double price = double.tryParse(c_price.text) ?? 0;
+      // double pay_cash = double.tryParse(c_pay_cash.text) ?? 0;
+      // double pay_bank = double.tryParse(c_pay_bank.text) ?? 0;
+      // double change = double.tryParse(c_change.text) ?? 0;
 
-      await dio.post(
-        endpoint.FRONT_DESK_ADD_PAY_ROOM,
-        data: {
-          sm_front_desk.ID: front_desk_id, //
-          "pay_price": price, //
-          "pay_cash": pay_cash, //
-          "pay_bank": pay_bank, //
-          "pay_return": change, //
-          "pay_note": c_note.text, //
-        },
-      );
+      // await dio.post(
+      //   endpoint.FRONT_DESK_ADD_PAY_ROOM,
+      //   data: {
+      //     sm_front_desk.ID: front_desk_id, //
+      //     "pay_price": price, //
+      //     "pay_cash": pay_cash, //
+      //     "pay_bank": pay_bank, //
+      //     "pay_return": change, //
+      //     "pay_note": c_note.text, //
+      //   },
+      // );
 
-      if (pay_cash + pay_bank + last_paid == price + change)
-        await dio.post(
-          endpoint.ROOM_CRUD_UPDATE, //
-          data: {
-            sm_room.ID: widget.room_id, //
-            sm_room.STATUS: "Pending Leave", //
-          },
-        );
-      else
-        await dio.post(
-          endpoint.ROOM_CRUD_UPDATE, //
-          data: {
-            sm_room.ID: widget.room_id, //
-            sm_room.STATUS: "Pending Pay", //
-          },
-        );
+      // if (pay_cash + pay_bank + last_paid == price + change)
+      //   await dio.post(
+      //     endpoint.ROOM_CRUD_UPDATE, //
+      //     data: {
+      //       sm_room.ID: widget.room_id, //
+      //       sm_room.STATUS: "Pending Leave", //
+      //     },
+      //   );
+      // else
+      //   await dio.post(
+      //     endpoint.ROOM_CRUD_UPDATE, //
+      //     data: {
+      //       sm_room.ID: widget.room_id, //
+      //       sm_room.STATUS: "Pending Pay", //
+      //     },
+      //   );
 
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
