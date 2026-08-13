@@ -45,6 +45,7 @@ class _Main_State extends State<Main_> {
   dynamic map_r;
   dynamic map_fd;
   bool is_loading = true;
+  bool is_submitting = false;
 
   String? room_number;
   String? note;
@@ -96,8 +97,8 @@ class _Main_State extends State<Main_> {
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.bug_report_outlined), //
-        label: Text("Broke"), //
-        onPressed: on_broke, //
+        label: Text(is_submitting ? "Processing..." : "Broke"), //
+        onPressed: is_submitting ? null : on_broke, //
       ),
 
       SizedBox(height: height - 100),
@@ -105,6 +106,11 @@ class _Main_State extends State<Main_> {
   }
 
   void on_broke() async {
+    if (is_submitting) return; // double-submit guard
+    is_submitting = true;
+    setState(() {});
+
+    dynamic front_desk_id; // track created record for rollback
     try {
       tmp = await dio.post(
         endpoint.FRONT_DESK_BROKE,
@@ -112,7 +118,7 @@ class _Main_State extends State<Main_> {
           sm_front_desk.BROKE_NOTE: note, //
         },
       );
-      var front_desk_id = tmp.data[0][sm_front_desk.ID];
+      front_desk_id = tmp.data[0][sm_front_desk.ID];
 
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
@@ -126,8 +132,24 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
     } catch (e, st) {
+      // compensating rollback: undo the created front_desk record
+      if (front_desk_id != null) {
+        try {
+          await dio.post(
+            endpoint.FRONT_DESK_DELETE,
+            data: {
+              sm_front_desk.ID: front_desk_id, //
+            },
+          );
+        } catch (e2, st2) {
+          pprint(st2);
+        }
+      }
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    } finally {
+      is_submitting = false;
+      if (mounted) setState(() {});
     }
   }
 

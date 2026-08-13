@@ -48,6 +48,7 @@ class _Main_State extends State<Main_> {
   dynamic map_r;
   dynamic map_fd;
   bool is_loading = true;
+  bool is_submitting = false;
 
   String? front_desk_id;
   String? room_number;
@@ -109,8 +110,8 @@ class _Main_State extends State<Main_> {
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.logout), //
-        label: Text("Check Out"), //
-        onPressed: on_check_out, //
+        label: Text(is_submitting ? "Checking Out..." : "Check Out"), //
+        onPressed: is_submitting ? null : on_check_out, //
       ),
 
       SizedBox(height: height - 100),
@@ -118,15 +119,14 @@ class _Main_State extends State<Main_> {
   }
 
   void on_check_out() async {
-    try {
-      await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
-        data: {
-          sm_room.ID: widget.room_id, //
-          sm_room.STATUS: "Pending Clean", //
-        },
-      );
+    if (is_submitting) return; // double-submit guard
+    is_submitting = true;
+    setState(() {});
 
+    try {
+      // * Close the front-desk record first, then mark the room clean.
+      // * If the check-out write fails, the room stays in its current state
+      // * instead of being left as "Pending Clean" with an open record.
       await dio.post(
         endpoint.FRONT_DESK_CHECK_OUT, //
         data: {
@@ -135,11 +135,22 @@ class _Main_State extends State<Main_> {
         },
       );
 
+      await dio.post(
+        endpoint.ROOM_CRUD_UPDATE, //
+        data: {
+          sm_room.ID: widget.room_id, //
+          sm_room.STATUS: "Pending Clean", //
+        },
+      );
+
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    } finally {
+      is_submitting = false;
+      if (mounted) setState(() {});
     }
   }
 

@@ -50,6 +50,7 @@ class _Main_State extends State<Main_> {
   dynamic map_r;
   dynamic map_fd;
   bool is_loading = true;
+  bool is_submitting = false;
 
   double? pay_cash;
   double? pay_bank;
@@ -214,9 +215,9 @@ class _Main_State extends State<Main_> {
 
       OutlinedButton.icon(
         icon: Icon(Icons.cancel_outlined), //
-        label: Text("Cancel"), //
+        label: Text(is_submitting ? "Cancelling..." : "Cancel"), //
         style: OutlinedButton.styleFrom(foregroundColor: Colors.red), //
-        onPressed: can_cancel ? on_cancel : null, //
+        onPressed: (can_cancel && !is_submitting) ? on_cancel : null, //
       ),
 
       SizedBox(height: height - 100),
@@ -241,6 +242,10 @@ class _Main_State extends State<Main_> {
   }
 
   void on_cancel() async {
+    if (is_submitting) return; // double-submit guard
+    is_submitting = true;
+    setState(() {});
+
     try {
       await dio.post(
         endpoint.FRONT_DESK_CANCEL,
@@ -274,6 +279,9 @@ class _Main_State extends State<Main_> {
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: "Your can't cancel within 1 hour after check-in.", cl: Colors.red);
+    } finally {
+      is_submitting = false;
+      if (mounted) setState(() {});
     }
   }
 

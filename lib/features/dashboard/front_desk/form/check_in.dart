@@ -50,6 +50,7 @@ class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic map_r;
   bool is_loading = true;
+  bool is_submitting = false;
 
   String? room_number;
   double? price_per_day;
@@ -148,8 +149,8 @@ class _Main_State extends State<Main_> {
 
       OutlinedButton.icon(
         icon: Icon(Icons.login_outlined), //
-        label: Text("Check In"), //
-        onPressed: can_check_in ? on_check_in : null, //
+        label: Text(is_submitting ? "Checking In..." : "Check In"), //
+        onPressed: (can_check_in && !is_submitting) ? on_check_in : null, //
       ),
 
       SizedBox(height: height - 100),
@@ -167,6 +168,11 @@ class _Main_State extends State<Main_> {
   }
 
   void on_check_in() async {
+    if (is_submitting) return; // double-submit guard
+    is_submitting = true;
+    setState(() {});
+
+    dynamic front_desk_id; // track created record for rollback
     try {
       tmp = await dio.post(
         endpoint.FRONT_DESK_CHECK_IN, // create
@@ -180,7 +186,7 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      var front_desk_id = tmp.data[0][sm_front_desk.ID];
+      front_desk_id = tmp.data[0][sm_front_desk.ID];
 
       await dio.post(
         endpoint.FRONT_DESK_ADD_PAY_ROOM, // update
@@ -202,8 +208,24 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
     } catch (e, st) {
+      // compensating rollback: undo the created front_desk record
+      if (front_desk_id != null) {
+        try {
+          await dio.post(
+            endpoint.FRONT_DESK_DELETE,
+            data: {
+              sm_front_desk.ID: front_desk_id, //
+            },
+          );
+        } catch (e2, st2) {
+          pprint(st2);
+        }
+      }
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    } finally {
+      is_submitting = false;
+      if (mounted) setState(() {});
     }
   }
 

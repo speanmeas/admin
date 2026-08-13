@@ -47,6 +47,7 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
+  bool is_submitting = false;
 
   dynamic map_r;
   dynamic map_fd;
@@ -162,8 +163,8 @@ class _Main_State extends State<Main_> {
 
       OutlinedButton.icon(
         icon: Icon(Icons.check), //
-        label: Text("Update"), //
-        onPressed: can_update ? on_update : null, //
+        label: Text(is_submitting ? "Updating..." : "Update"), //
+        onPressed: (can_update && !is_submitting) ? on_update : null, //
       ),
 
       SizedBox(height: height - 100),
@@ -182,6 +183,10 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update() async {
+    if (is_submitting) return; // double-submit guard
+    is_submitting = true;
+    setState(() {});
+
     try {
       await dio.post(
         endpoint.FRONT_DESK_UPDATE_CHECK_IN, //
@@ -204,7 +209,11 @@ class _Main_State extends State<Main_> {
         },
       );
 
-      if (last_paid == room_price)
+      // * Compare in cents to avoid floating-point precision issues
+      final paid_cents = ((last_paid ?? 0) * 100).round();
+      final price_cents = (room_price * 100).round();
+
+      if (paid_cents == price_cents)
         await dio.post(
           endpoint.ROOM_CRUD_UPDATE, //
           data: {
@@ -226,6 +235,9 @@ class _Main_State extends State<Main_> {
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    } finally {
+      is_submitting = false;
+      if (mounted) setState(() {});
     }
   }
 

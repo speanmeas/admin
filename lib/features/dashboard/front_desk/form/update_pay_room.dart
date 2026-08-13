@@ -48,6 +48,7 @@ class _Main_State extends State<Main_> {
   dynamic map_r;
   dynamic map_fd;
   bool is_loading = true;
+  bool is_submitting = false;
 
   String? front_desk_id;
   String? room_number;
@@ -186,8 +187,8 @@ class _Main_State extends State<Main_> {
 
       OutlinedButton.icon(
         icon: Icon(Icons.add), //
-        label: Text("Add Payment"), //
-        onPressed: on_update, //
+        label: Text(is_submitting ? "Processing..." : "Add Payment"), //
+        onPressed: is_submitting ? null : on_update, //
       ),
 
       SizedBox(height: height - 100),
@@ -208,6 +209,10 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update() async {
+    if (is_submitting) return; // double-submit guard
+    is_submitting = true;
+    setState(() {});
+
     try {
       await dio.post(
         endpoint.FRONT_DESK_ADD_PAY_ROOM,
@@ -243,6 +248,9 @@ class _Main_State extends State<Main_> {
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    } finally {
+      is_submitting = false;
+      if (mounted) setState(() {});
     }
   }
 

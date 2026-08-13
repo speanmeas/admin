@@ -50,6 +50,7 @@ class _Main_State extends State<Main_> {
   dynamic map_r;
   dynamic map_fd;
   bool is_loading = true;
+  bool is_submitting = false;
 
   String? room_number;
   String? guest_id;
@@ -116,14 +117,10 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      // Show_Text(lead: "Name:", value: guest_full_name ?? ""),
-      // Show_Text(lead: "Phone:", value: guest_phone_number ?? ""),
-      // Show_Text(lead: "Gender:", value: guest_gender ?? ""),
-      // Show_Text(lead: "Nationality:", value: guest_nationality ?? ""),
       OutlinedButton.icon(
         icon: Icon(Icons.check), //
-        label: Text("Update"), //
-        onPressed: on_update, //
+        label: Text(is_submitting ? "Updating..." : "Update"), //
+        onPressed: is_submitting ? null : on_update, //
       ),
 
       SizedBox(height: height - 100),
@@ -131,6 +128,10 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update() async {
+    if (is_submitting) return; // double-submit guard
+    is_submitting = true;
+    setState(() {});
+
     try {
       await dio.post(
         endpoint.FRONT_DESK_UPDATE_GUEST, //
@@ -145,6 +146,9 @@ class _Main_State extends State<Main_> {
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    } finally {
+      is_submitting = false;
+      if (mounted) setState(() {});
     }
   }
 

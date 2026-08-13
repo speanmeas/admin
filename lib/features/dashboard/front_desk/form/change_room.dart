@@ -46,6 +46,7 @@ class _Main_State extends State<Main_> {
   dynamic map_r;
   dynamic map_fd;
   bool is_loading = true;
+  bool is_submitting = false;
 
   String? front_desk_id;
   String? room_number;
@@ -133,8 +134,8 @@ class _Main_State extends State<Main_> {
 
       OutlinedButton.icon(
         icon: Icon(Icons.swap_horiz_outlined), //
-        label: Text("Change"), //
-        onPressed: can_change ? on_change_room : null, //
+        label: Text(is_submitting ? "Changing..." : "Change"), //
+        onPressed: (can_change && !is_submitting) ? on_change_room : null, //
       ),
 
       SizedBox(height: height - 100),
@@ -147,6 +148,11 @@ class _Main_State extends State<Main_> {
   }
 
   void on_change_room() async {
+    if (is_submitting) return; // double-submit guard
+    is_submitting = true;
+    setState(() {});
+
+    bool new_room_set = false; // * track whether the new room was already updated
     try {
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
@@ -165,6 +171,7 @@ class _Main_State extends State<Main_> {
           sm_room.FRONT_DESK_ID: front_desk_id, //
         },
       );
+      new_room_set = true;
 
       await dio.post(
         endpoint.FRONT_DESK_UPDATE_ROOM,
@@ -178,8 +185,41 @@ class _Main_State extends State<Main_> {
       Navigator.pop(context, true);
       snackbar(ct: context, ms: "Success", cl: Colors.green);
     } catch (e, st) {
+      // compensating rollback: restore the old room's occupied state
+      try {
+        await dio.post(
+          endpoint.ROOM_CRUD_UPDATE, //
+          data: {
+            sm_room.ID: widget.room_id, //
+            sm_room.STATUS: "Pending Pay", //
+            sm_room.FRONT_DESK_ID: front_desk_id, //
+          },
+        );
+      } catch (e2, st2) {
+        pprint(st2);
+      }
+
+      // * if the new room was already marked occupied, free it again
+      if (new_room_set) {
+        try {
+          await dio.post(
+            endpoint.ROOM_CRUD_UPDATE, //
+            data: {
+              sm_room.ID: to_room_id, //
+              sm_room.STATUS: "Available", //
+              sm_room.FRONT_DESK_ID: null, //
+            },
+          );
+        } catch (e2, st2) {
+          pprint(st2);
+        }
+      }
+
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    } finally {
+      is_submitting = false;
+      if (mounted) setState(() {});
     }
   }
 

@@ -28,7 +28,6 @@ import "form/detail.dart" as detail;
 import "form/update_stay.dart" as update_stay;
 import "form/update_guest.dart" as update_guest;
 import "form/update_pay_room.dart" as update_pay_room;
-
 import "form/cancel.dart" as cancel;
 import "form/add_pay_other.dart" as pay_other;
 import "form/change_room.dart" as change_room;
@@ -48,14 +47,21 @@ class _Main_State extends State<Main_> {
       tmp = await dio.post(endpoint.ROOM_CRUD_READ, data: {"key": sm_room.NUMBER, "order": 1});
       list_r = tmp.data as List<dynamic>;
 
-      for (var r in list_r) //
-        if (r[sm_room.FRONT_DESK_ID] != null) {
-          tmp = await dio.post(
+      // * Fetch all front-desk records in parallel (avoids N+1 sequential queries)
+      final occupied = list_r.where((r) => r[sm_room.FRONT_DESK_ID] != null).toList();
+      final results = await Future.wait(
+        occupied.map(
+          (r) => dio.post(
             endpoint.FRONT_DESK_READ_ID, //
             data: {sm_front_desk.ID: r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]},
-          );
-          map_fd[r[sm_room.ID]] = tmp.data[0];
-        }
+          ),
+        ),
+      );
+
+      map_fd = {};
+      for (var i = 0; i < occupied.length; i++) {
+        map_fd[occupied[i][sm_room.ID]] = results[i].data[0];
+      }
 
       is_loading = false;
       setState(() {});
@@ -71,6 +77,8 @@ class _Main_State extends State<Main_> {
         children: [
           Row(
             children: [
+              SizedBox(width: 8), //
+
               Container(
                 width: 200,
                 height: 40,
@@ -78,7 +86,7 @@ class _Main_State extends State<Main_> {
                 child: TextField(
                   decoration: InputDecoration(
                     isDense: true, //
-                    labelText: t("Search"), //
+                    labelText: t("Search:"), //
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
@@ -104,6 +112,8 @@ class _Main_State extends State<Main_> {
                 icon: Icons.refresh, //
                 onPressed: init, //
               ),
+
+              SizedBox(width: 8), //
             ],
           ),
 
@@ -657,7 +667,6 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  // * Filter rooms by search query (room number, status, or kind)
   List<dynamic> get _list_show {
     final q = search?.trim().toLowerCase();
     if (q == null || q.isEmpty) return list_r;
@@ -676,14 +685,12 @@ class _Main_State extends State<Main_> {
   }
 }
 
-//
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
 
-//
 void main() {
   runApp(
     MaterialApp(
