@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/widget/input/input_number.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme/theme_data.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_text.dart";
@@ -49,29 +50,44 @@ class _Main_State extends State<Main_> {
   dynamic map_fd;
   bool is_loading = true;
 
-  final c_pay_cash = TextEditingController();
-  final c_pay_bank = TextEditingController();
-  final c_return = TextEditingController();
+  // final c_pay_cash = TextEditingController();
+  // final c_pay_bank = TextEditingController();
+  // final c_return = TextEditingController();
+
+  double? pay_cash;
+  double? pay_bank;
+  double? pay_return;
 
   String? front_desk_id;
   String? room_number;
   String? note;
 
+  double? last_paid;
+
+  DateTime? check_in_at;
+
+  double? pay_price;
+
   void init() async {
     tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
     map_r = tmp.data[0] as Map<String, dynamic>;
 
-    if (map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID] != null) {
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-      map_fd = tmp.data[0] as Map<String, dynamic>;
-    }
+    if (map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID] != null) throw Exception("Front desk ID is null");
+
+    tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
+    map_fd = tmp.data[0] as Map<String, dynamic>;
 
     front_desk_id = map_fd[sm_front_desk.ID];
     room_number = map_r[sm_room.NUMBER];
 
-    c_pay_cash.text = map_fd["room_pay_cash"]?.toString() ?? "";
-    c_pay_bank.text = map_fd["room_pay_bank"]?.toString() ?? "";
-    c_return.text = map_fd["room_return"]?.toString() ?? "";
+    tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
+    if (tmp.isNotEmpty) pay_price = double.tryParse(tmp.last["pay_price"].toString()) ?? 0;
+    for (var l in tmp) {
+      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
+      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
+      last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
+    }
+
     note = map_fd[sm_front_desk.CANCEL_NOTE]?.toString() ?? "";
 
     is_loading = false;
@@ -96,37 +112,54 @@ class _Main_State extends State<Main_> {
 
       Divider(height: 1, color: Colors.black),
 
-      TextField(
-        controller: c_pay_cash,
-        decoration: InputDecoration(
-          labelText: "Cash Payment:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixText: "\$ ",
-        ),
-        onChanged: (v) => setState(() {}), //
+      Input_Number(
+        init: pay_price, //
+        lead: "Cancel Room Price:", //
+        onChanged: (v) {
+          pay_price = v;
+          setState(() {});
+        },
       ),
 
-      TextField(
-        controller: c_pay_bank,
-        decoration: InputDecoration(
-          labelText: "Bank Payment:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixText: "\$ ",
-        ),
-        onChanged: (v) => setState(() {}), //
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text("Last Payment: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(
+            "${last_paid?.toStringAsFixed(2) ?? '0.00'} \$",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+          ),
+        ],
       ),
 
-      TextField(
-        controller: c_return,
-        decoration: InputDecoration(
-          labelText: "Return:", //
-          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixText: "\$ ",
-        ),
-        onChanged: (v) => setState(() {}), //
+      Input_Number(
+        init: pay_cash, //
+        lead: "Cash Payment:", //
+        prefixIcon: Icons.payments_outlined, //
+        onChanged: (v) {
+          pay_cash = v;
+          setState(() {});
+        },
+      ),
+
+      Input_Number(
+        init: pay_bank, //
+        lead: "Bank Payment:", //
+        prefixIcon: Icons.account_balance_outlined, //
+        onChanged: (v) {
+          pay_bank = v;
+          setState(() {});
+        },
+      ),
+
+      Input_Number(
+        init: pay_return, //
+        lead: "Return:", //
+        prefixIcon: Icons.currency_exchange_outlined, //
+        onChanged: (v) {
+          pay_return = v;
+          setState(() {});
+        },
       ),
 
       Input_Text(
@@ -139,14 +172,14 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      Divider(color: Colors.black),
+      Divider(height: 1, color: Colors.black),
 
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text("Balanced: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
-            "$balanced \$",
+            "${balanced.toStringAsFixed(2)} \$",
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold, //
@@ -169,9 +202,9 @@ class _Main_State extends State<Main_> {
       ),
 
       OutlinedButton.icon(
-        style: OutlinedButton.styleFrom(foregroundColor: Colors.red), //
         icon: Icon(Icons.cancel_outlined), //
         label: Text("Cancel"), //
+        style: OutlinedButton.styleFrom(foregroundColor: Colors.red), //
         onPressed: can_cancel ? on_cancel : null, //
       ),
 
@@ -185,10 +218,7 @@ class _Main_State extends State<Main_> {
   }
 
   double get balanced {
-    double cash = double.tryParse(c_pay_cash.text) ?? 0;
-    double bank = double.tryParse(c_pay_bank.text) ?? 0;
-    double ret = double.tryParse(c_return.text) ?? 0;
-    return (cash + bank) - ret;
+    return ((pay_cash ?? 0) + (pay_bank ?? 0)) - (pay_return ?? 0);
   }
 
   void on_cancel() async {

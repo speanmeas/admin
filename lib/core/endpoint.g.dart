@@ -52,7 +52,6 @@ class EndPoint {
 	final DEMO_3_CRUD_READ_NUMBER = "/demo_3/crud/read_number";
 	final DEMO_3_CRUD_READ_STRING = "/demo_3/crud/read_string";
 	final DEMO_3_CRUD_UPDATE = "/demo_3/crud/update";
-	final FRONT_DESK_ADD_PAY_MINI_BAR = "/front_desk/add_pay_mini_bar";
 	final FRONT_DESK_ADD_PAY_OTHER = "/front_desk/add_pay_other";
 	final FRONT_DESK_ADD_PAY_ROOM = "/front_desk/add_pay_room";
 	final FRONT_DESK_BROKE = "/front_desk/broke";
