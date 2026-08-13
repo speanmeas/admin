@@ -69,30 +69,39 @@ class _Main_State extends State<Main_> {
   String? room_status;
 
   void init() async {
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
-    map_r = tmp.data[0] as Map<String, dynamic>;
+    try {
+      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+      map_r = tmp.data[0] as Map<String, dynamic>;
 
-    if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
+      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
 
-    tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-    map_fd = tmp.data[0] as Map<String, dynamic>;
+      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
+      map_fd = tmp.data[0] as Map<String, dynamic>;
 
-    front_desk_id = map_fd[sm_front_desk.ID];
-    room_number = map_r[sm_room.NUMBER];
+      front_desk_id = map_fd[sm_front_desk.ID];
+      room_number = map_r[sm_room.NUMBER];
 
-    tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
-    for (var l in tmp) {
-      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
-      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
-      last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
+      tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
+      for (var l in tmp) {
+        last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
+        last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
+        last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
+      }
+
+      note = map_fd[sm_front_desk.CANCEL_NOTE]?.toString() ?? "";
+
+      check_in_at = map_fd[sm_front_desk.CHECK_IN_AT] != null ? DateTime.tryParse(map_fd[sm_front_desk.CHECK_IN_AT].toString()) : null;
+
+      room_status = "Available";
+
+      is_loading = false;
+      setState(() {});
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+      is_loading = false;
+      if (mounted) setState(() {});
     }
-
-    note = map_fd[sm_front_desk.CANCEL_NOTE]?.toString() ?? "";
-
-    room_status = "Available";
-
-    is_loading = false;
-    setState(() {});
   }
 
   @override
@@ -226,6 +235,8 @@ class _Main_State extends State<Main_> {
 
   bool get can_cancel {
     if (balanced != 0) return false;
+    // * Client-side 1-hour rule: cannot cancel within 1 hour after check-in
+    if (check_in_at != null && DateTime.now().difference(check_in_at!).inMinutes < 60) return false;
     return true;
   }
 

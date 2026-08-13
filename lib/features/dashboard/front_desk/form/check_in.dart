@@ -63,20 +63,27 @@ class _Main_State extends State<Main_> {
   String? note;
 
   void init() async {
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
-    map_r = tmp.data[0] as Map<String, dynamic>;
-    // pprint(map_r);
+    try {
+      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+      map_r = tmp.data[0] as Map<String, dynamic>;
+      // pprint(map_r);
 
-    room_number = map_r[sm_room.NUMBER] ?? "";
-    price_per_day = map_r[sm_room.USD_PER_DAY] ?? 0;
-    price_per_3hours = map_r[sm_room.USD_PER_3H] ?? 0;
+      room_number = map_r[sm_room.NUMBER] ?? "";
+      price_per_day = map_r[sm_room.USD_PER_DAY] ?? 0;
+      price_per_3hours = map_r[sm_room.USD_PER_3H] ?? 0;
 
-    number_of_guest = 1;
-    stay_days = 0;
-    stay_hours = 0;
+      number_of_guest = 1;
+      stay_days = 0;
+      stay_hours = 0;
 
-    is_loading = false;
-    setState(() {});
+      is_loading = false;
+      setState(() {});
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+      is_loading = false;
+      if (mounted) setState(() {});
+    }
   }
 
   @override

@@ -66,37 +66,44 @@ class _Main_State extends State<Main_> {
   double? last_paid;
 
   void init() async {
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
-    map_r = tmp.data[0] as Map<String, dynamic>;
+    try {
+      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+      map_r = tmp.data[0] as Map<String, dynamic>;
 
-    if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
+      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
 
-    tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-    map_fd = tmp.data[0] as Map<String, dynamic>;
+      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
+      map_fd = tmp.data[0] as Map<String, dynamic>;
 
-    front_desk_id = map_fd[sm_front_desk.ID];
-    room_number = map_r[sm_room.NUMBER];
+      front_desk_id = map_fd[sm_front_desk.ID];
+      room_number = map_r[sm_room.NUMBER];
 
-    room_number = map_r[sm_room.NUMBER] ?? "";
-    price_per_day = map_r[sm_room.USD_PER_DAY] ?? 0;
-    price_per_3hours = map_r[sm_room.USD_PER_3H] ?? 0;
+      room_number = map_r[sm_room.NUMBER] ?? "";
+      price_per_day = map_r[sm_room.USD_PER_DAY] ?? 0;
+      price_per_3hours = map_r[sm_room.USD_PER_3H] ?? 0;
 
-    number_of_guest = map_fd[sm_front_desk.CHECK_IN_NUMBER] ?? 1;
-    stay_days = map_fd[sm_front_desk.CHECK_IN_DAY] ?? 0;
-    stay_hours = map_fd[sm_front_desk.CHECK_IN_HOUR] ?? 0;
-    note = map_fd[sm_front_desk.CHECK_IN_NOTE] ?? "";
+      number_of_guest = map_fd[sm_front_desk.CHECK_IN_NUMBER] ?? 1;
+      stay_days = map_fd[sm_front_desk.CHECK_IN_DAY] ?? 0;
+      stay_hours = map_fd[sm_front_desk.CHECK_IN_HOUR] ?? 0;
+      note = map_fd[sm_front_desk.CHECK_IN_NOTE] ?? "";
 
-    tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
-    for (var l in tmp) {
-      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
-      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
-      last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
+      tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
+      for (var l in tmp) {
+        last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
+        last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
+        last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
+      }
+
+      // pprint(last_paid);
+
+      is_loading = false;
+      setState(() {});
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+      is_loading = false;
+      if (mounted) setState(() {});
     }
-
-    // pprint(last_paid);
-
-    is_loading = false;
-    setState(() {});
   }
 
   @override

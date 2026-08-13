@@ -63,29 +63,36 @@ class _Main_State extends State<Main_> {
   String? pay_note;
 
   void init() async {
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
-    map_r = tmp.data[0] as Map<String, dynamic>;
-    // pprint(map_r);
+    try {
+      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+      map_r = tmp.data[0] as Map<String, dynamic>;
+      // pprint(map_r);
 
-    if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
+      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
 
-    tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-    map_fd = tmp.data[0] as Map<String, dynamic>;
-    // pprint(map_fd);
+      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
+      map_fd = tmp.data[0] as Map<String, dynamic>;
+      // pprint(map_fd);
 
-    front_desk_id = map_fd[sm_front_desk.ID];
-    room_number = map_r[sm_room.NUMBER];
+      front_desk_id = map_fd[sm_front_desk.ID];
+      room_number = map_r[sm_room.NUMBER];
 
-    tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
-    if (tmp.isNotEmpty) pay_price = double.tryParse(tmp.last["pay_price"].toString()) ?? 0;
-    for (var l in tmp) {
-      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
-      last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
-      last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
+      tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
+      if (tmp.isNotEmpty) pay_price = double.tryParse(tmp.last["pay_price"].toString()) ?? 0;
+      for (var l in tmp) {
+        last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
+        last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
+        last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
+      }
+
+      is_loading = false;
+      setState(() {});
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+      is_loading = false;
+      if (mounted) setState(() {});
     }
-
-    is_loading = false;
-    setState(() {});
   }
 
   @override

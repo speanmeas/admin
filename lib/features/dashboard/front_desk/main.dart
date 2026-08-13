@@ -60,7 +60,8 @@ class _Main_State extends State<Main_> {
 
       map_fd = {};
       for (var i = 0; i < occupied.length; i++) {
-        map_fd[occupied[i][sm_room.ID]] = results[i].data[0];
+        final fd = results[i].data[0];
+        if (fd != null) map_fd[occupied[i][sm_room.ID]] = fd;
       }
 
       is_loading = false;
@@ -259,7 +260,7 @@ class _Main_State extends State<Main_> {
                     if (r[sm_room.FRONT_DESK_ID] != null) ...[
                       if (!"${r[sm_room.STATUS]}".contains("Pending Fix"))
                         (() {
-                          tmp = map_fd[r[sm_room.ID]][sm_front_desk.GUEST_ID] as Map<String, dynamic>? ?? {};
+                          tmp = _fd(r)[sm_front_desk.GUEST_ID] as Map<String, dynamic>? ?? {};
                           final guest_name = tmp[sm_guest.FULL_NAME] ?? "N/A";
                           final guest_phone = tmp[sm_guest.PHONE_NUMBER] ?? "N/A";
                           return Row(
@@ -290,7 +291,7 @@ class _Main_State extends State<Main_> {
 
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          tmp = map_fd[r[sm_room.ID]] as Map<String, dynamic>? ?? {};
+                          tmp = _fd(r);
                           final stay_n_guest = tmp[sm_front_desk.CHECK_IN_NUMBER] ?? "0";
                           final stay_day = tmp[sm_front_desk.CHECK_IN_DAY] ?? "0";
                           final stay_hour = tmp[sm_front_desk.CHECK_IN_HOUR] ?? "0";
@@ -326,7 +327,7 @@ class _Main_State extends State<Main_> {
 
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          tmp = map_fd[r[sm_room.ID]][sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
+                          tmp = _fd(r)[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
                           double price = 0;
                           double pay = 0;
                           double change = 0;
@@ -373,7 +374,7 @@ class _Main_State extends State<Main_> {
                       // payment other info
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
-                          tmp = map_fd[r[sm_room.ID]][sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
+                          tmp = _fd(r)[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
                           // pprint(tmp);
                           double price = 0;
                           double pay = 0;
@@ -421,7 +422,7 @@ class _Main_State extends State<Main_> {
                       // check in, due to, check out info
                       if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
-                          tmp = map_fd[r[sm_room.ID]] as Map<String, dynamic>? ?? {};
+                          tmp = _fd(r);
                           String check_in = "";
                           if (tmp[sm_front_desk.CHECK_IN_AT] != null) {
                             final dt = DateTime.parse(tmp[sm_front_desk.CHECK_IN_AT]);
@@ -440,7 +441,7 @@ class _Main_State extends State<Main_> {
                       // due to info
                       if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
-                          tmp = map_fd[r[sm_room.ID]] as Map<String, dynamic>? ?? {};
+                          tmp = _fd(r);
                           String due = "";
                           if (tmp[sm_front_desk.CHECK_IN_DUE] != null) {
                             final dt = DateTime.parse(tmp[sm_front_desk.CHECK_IN_DUE]);
@@ -459,7 +460,7 @@ class _Main_State extends State<Main_> {
                       //
                       if (r[sm_room.STATUS] != "Pending Fix")
                         (() {
-                          tmp = map_fd[r[sm_room.ID]] as Map<String, dynamic>? ?? {};
+                          tmp = _fd(r);
                           String check_out = "";
                           if (tmp[sm_front_desk.CHECK_OUT_AT] != null) {
                             final dt = DateTime.parse(tmp[sm_front_desk.CHECK_OUT_AT]);
@@ -478,7 +479,7 @@ class _Main_State extends State<Main_> {
                       // broke info
                       if (r[sm_room.STATUS] == "Pending Fix")
                         (() {
-                          tmp = map_fd[r[sm_room.ID]] as Map<String, dynamic>? ?? {};
+                          tmp = _fd(r);
                           String broke_date = "";
                           if (tmp[sm_front_desk.BROKE_AT] != null) {
                             final dt = DateTime.parse(tmp[sm_front_desk.BROKE_AT]);
@@ -666,6 +667,9 @@ class _Main_State extends State<Main_> {
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
+
+  // * Safe lookup into map_fd; returns {} if the room's front-desk fetch failed/missing
+  Map<String, dynamic> _fd(dynamic r) => map_fd[r[sm_room.ID]] as Map<String, dynamic>? ?? {};
 
   List<dynamic> get _list_show {
     final q = search?.trim().toLowerCase();
