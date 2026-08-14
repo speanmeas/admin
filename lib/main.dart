@@ -4,7 +4,7 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n.dart";
-import "package:speanmeas/core/theme_data.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "features/auth/loading.dart" as loading;
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import

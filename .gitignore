@@ -66,10 +66,9 @@ todo.md
 test_*
 
 
-AGENTS.md
+copilot-instructions.md
 update_cloudflare.py
 update_github.py
-
 
 # wrangler files
 .wrangler

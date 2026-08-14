@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:speanmeas/core/config.dart";
-import "package:speanmeas/core/theme_data.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "panel_body.dart" as body;
 import "panel_left.dart" as left;
 import "panel_top.dart" as top;

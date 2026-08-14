@@ -2,17 +2,18 @@ import "dart:async";
 import "package:flutter/material.dart";
 
 import "package:speanmeas/core/config.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme_data.dart"; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart";
+import "package:speanmeas/core/utility/dio.dart";
+import "package:speanmeas/core/utility/pprint.dart";
+import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 
 import "package:speanmeas/core/schema/room.g.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
+import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/mini_bar.g.dart";
 
-// import "../front_desk/form/add_pay mini_bar_a.dart" as charge;
+import "form/charge.dart" as charge;
 
 class _Main_State extends State<Main_> {
   //
@@ -52,18 +53,20 @@ class _Main_State extends State<Main_> {
         if (fd_id != null && !ids.contains(fd_id)) ids.add(fd_id);
       }
 
+      // * ទាញយក front desk នីមួយៗដោយ id របស់វា
       final futures = [
         for (var fd_id in ids)
           dio.post(
             endpoint.FRONT_DESK_READ_ID, //
             data: {
-              // sm_front_desk.ID: fd_id, //
+              sm_front_desk.ID: fd_id, //
             },
           ),
       ];
       final results = await Future.wait(futures);
       for (var i = 0; i < ids.length; i++) {
-        map_fd[ids[i]] = results[i].data[0];
+        final fd = results[i].data[0];
+        if (fd != null) map_fd[ids[i]] = fd;
       }
 
       // * ទាញយកបញ្ជីទំនិញ mini bar (catalog) ពី Server
@@ -286,8 +289,9 @@ class _Main_State extends State<Main_> {
                       // guest info
                       if (!"${r[sm_room.STATUS]}".contains("Pending Fix"))
                         (() {
-                          final guest_name = "N/A";
-                          final guest_phone = "N/A";
+                          final guest = _fd(r)[sm_front_desk.GUEST_ID] as Map<String, dynamic>? ?? {};
+                          final guest_name = guest[sm_guest.FULL_NAME] ?? "N/A";
+                          final guest_phone = guest[sm_guest.PHONE_NUMBER] ?? "N/A";
                           return Row(
                             spacing: 4,
                             children: [
@@ -335,7 +339,7 @@ class _Main_State extends State<Main_> {
                       children: [
                         if (["Pending Pay", "Pending Leave"].contains(r[sm_room.STATUS])) //
                           OutlinedButton.icon(
-                            onPressed: () => on_charge(r), //
+                            onPressed: list_mb.isEmpty ? null : () => on_charge(r), //
                             icon: Icon(Icons.local_bar_outlined),
                             label: Text("Charge"),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.blue)),
@@ -385,15 +389,15 @@ class _Main_State extends State<Main_> {
 
       //
       // tmp = await Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => charge.Charge_(
-      //       room: r, //
-      //       catalog: list_mb, //
-      //       sold: sold, //
-      //     ), //
-      //   ),
-      // );
+        context,
+        MaterialPageRoute(
+          builder: (context) => charge.Charge_(
+            room: r, //
+            catalog: list_mb, //
+            sold: sold, //
+          ), //
+        ),
+      );
 
       //
       if (tmp != null) {
@@ -428,15 +432,15 @@ class _Main_State extends State<Main_> {
 
       //
       // tmp = await Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => charge.Charge_(
-      //       room: null, //
-      //       catalog: list_mb, //
-      //       sold: sold, //
-      //     ), //
-      //   ),
-      // );
+        context,
+        MaterialPageRoute(
+          builder: (context) => charge.Charge_(
+            room: null, //
+            catalog: list_mb, //
+            sold: sold, //
+          ), //
+        ),
+      );
 
       //
       if (tmp != null) {
@@ -477,6 +481,10 @@ class _Main_State extends State<Main_> {
     }
     return total;
   }
+
+  //
+  // * ស្វែងរក front desk របស់បន្ទប់ដោយសុវត្ថិភាព (បើគ្មាន ត្រឡប់ {})
+  Map<String, dynamic> _fd(dynamic r) => map_fd[r[sm_room.FRONT_DESK_ID]] as Map<String, dynamic>? ?? {};
 
   //
   @override

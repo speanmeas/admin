@@ -3,7 +3,7 @@ import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/demo_2.g.dart";
 
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme_data.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/show/show_boolean.dart";
 import "package:speanmeas/core/widget/show/show_datetime.dart";
 import "package:speanmeas/core/widget/show/show_number.dart";

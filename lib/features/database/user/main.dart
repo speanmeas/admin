@@ -9,7 +9,7 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/button/menu_button_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme_data.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/dialog/dialog_page.dart";
 import "package:speanmeas/core/schema/user.g.dart";
 
