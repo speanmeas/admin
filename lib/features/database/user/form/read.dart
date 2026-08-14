@@ -1,3 +1,5 @@
+// * ទំព័រអានព័ត៌មានអ្នកប្រើប្រាស់ (Read User)
+
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -12,6 +14,7 @@ import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
+// * បង្កើត layout មេរបស់ទំព័រអានអ្នកប្រើប្រាស់
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -47,6 +50,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការអានព័ត៌មានអ្នកប្រើប្រាស់
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
@@ -61,8 +65,10 @@ class _Main_State extends State<Main_> {
   bool? is_housekeeper;
   String? note;
 
+  // * ផ្ទុកព័ត៌មានអ្នកប្រើប្រាស់តាម ID
   void init() async {
     try {
+      // * អានព័ត៌មានអ្នកប្រើប្រាស់តាម ID
       tmp = await dio.post(
         endpoint.USER_CRUD_READ_ID, //
         data: {sm_user.ID: widget.id},
@@ -77,6 +83,7 @@ class _Main_State extends State<Main_> {
       }
       final row = data[0];
 
+      // * ផ្ទុកតម្លៃពីជួរដេក
       username = row[sm_user.USERNAME]?.toString();
       full_name = row[sm_user.FULL_NAME]?.toString();
       phone_number = row[sm_user.PHONE_NUMBER]?.toString();
@@ -103,54 +110,63 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * បង្ហាញឈ្មោះអ្នកប្រើប្រាស់
       Show_Text(
         prefixIcon: Icons.person_outline,
         lead: "Username:", //
         value: username,
       ),
 
+      // * បង្ហាញពាក្យសម្ងាត់ (លាក់)
       Show_Text(
         prefixIcon: Icons.lock_outline,
         lead: "Password:", //
         value: "**********",
       ),
 
+      // * បង្ហាញឈ្មោះពេញ
       Show_Text(
         prefixIcon: Icons.badge_outlined,
         lead: "Full Name:", //
         value: full_name,
       ),
 
+      // * បង្ហាញលេខទូរស័ព្ទ
       Show_Text(
         prefixIcon: Icons.phone_outlined,
         lead: "Phone Number:", //
         value: phone_number,
       ),
 
+      // * បង្ហាញតួនាទីជាអ្នកគ្រប់គ្រងប្រព័ន្ធ
       Show_Boolean(
         prefixIcon: Icons.admin_panel_settings_outlined,
         leading: "Is Admin:", //
         value: is_admin,
       ),
 
+      // * បង្ហាញតួនាទីជាអ្នកគ្រប់គ្រង
       Show_Boolean(
         prefixIcon: Icons.manage_accounts_outlined,
         leading: "Is Manager:", //
         value: is_manager,
       ),
 
+      // * បង្ហាញតួនាទីជាអ្នកទទួលភ្ញៀវ
       Show_Boolean(
         prefixIcon: Icons.support_agent_outlined,
         leading: "Is Receptionist:", //
         value: is_receptionist,
       ),
 
+      // * បង្ហាញតួនាទីជាអ្នកសម្អាត
       Show_Boolean(
         prefixIcon: Icons.cleaning_services_outlined,
         leading: "Is Housekeeper:", //
         value: is_housekeeper,
       ),
 
+      // * បង្ហាញកំណត់ចំណាំ
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
         lead: "Note:", //
@@ -169,6 +185,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
+// * ថ្នាក់ Main_ ជាទំព័រអានអ្នកប្រើប្រាស់
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
@@ -181,6 +198,7 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

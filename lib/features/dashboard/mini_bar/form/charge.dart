@@ -1,3 +1,5 @@
+// * ទំព័រ Mini Bar Charge សម្រាប់គិតថ្លៃទំនិញ mini bar
+
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -7,6 +9,7 @@ import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/mini_bar.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
+// * បង្កើត layout មេរបស់ទំព័រគិតថ្លៃ mini bar
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -39,6 +42,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Charge_ គ្រប់គ្រងការជ្រើសរើសទំនិញ mini bar
 class _Charge_State extends State<Charge_> {
   // * ចំនួនដែលជ្រើសរើសក្នុងមួយទំនិញ (key = item id)
   final Map<dynamic, int> _qty = {};
@@ -173,6 +177,7 @@ class _Charge_State extends State<Charge_> {
   }
 }
 
+// * ថ្នាក់ Charge_ ជាទំព័រគិតថ្លៃ mini bar
 class Charge_ extends StatefulWidget {
   const Charge_({super.key, this.room, this.catalog = const [], this.sold = const {}});
 
@@ -184,6 +189,7 @@ class Charge_ extends StatefulWidget {
   State<Charge_> createState() => _Charge_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

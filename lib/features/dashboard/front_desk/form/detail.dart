@@ -1,4 +1,5 @@
 // TODO: add more details here
+// * ទំព័រ Detail សម្រាប់បង្ហាញព័ត៌មានលម្អិតនៃការស្នាក់នៅ
 
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
@@ -18,6 +19,7 @@ import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
+// * បង្កើត layout មេរបស់ទំព័រលម្អិត
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -50,20 +52,24 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការបង្ហាញព័ត៌មានលម្អិត
 class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic map_r;
   dynamic map_fd;
   bool is_loading = true;
 
+  // * ផ្ទុកព័ត៌មានបន្ទប់ និង front desk ពី server
   void init() async {
     try {
+      // * អានព័ត៌មានបន្ទប់តាម id
       tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
       map_r = tmp.data[0] as Map<String, dynamic>;
       // pprint(map_r);
 
       if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
 
+      // * អានព័ត៌មាន front desk
       tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
       map_fd = tmp.data[0] as Map<String, dynamic>;
       // pprint(map_fd);
@@ -79,8 +85,10 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * បង្ហាញព័ត៌មានបន្ទប់ និងតម្លៃ
       (() {
         String room_number = map_fd?[sm_front_desk.ROOM_ID]?[sm_room.NUMBER]?.toString() ?? "";
         String room_type = map_fd?[sm_front_desk.ROOM_ID]?[sm_room.KIND]?.toString() ?? "";
@@ -109,6 +117,7 @@ class _Main_State extends State<Main_> {
         );
       })(),
 
+      // * បង្ហាញព័ត៌មានភ្ញៀវ
       (() {
         String name = map_fd?[sm_front_desk.GUEST_ID]?[sm_guest.FULL_NAME]?.toString() ?? "N/A";
         String gender = map_fd?[sm_front_desk.GUEST_ID]?[sm_guest.GENDER]?.toString() ?? "N/A";
@@ -139,6 +148,7 @@ class _Main_State extends State<Main_> {
         );
       })(),
 
+      // * បង្ហាញព័ត៌មានការស្នាក់នៅ
       (() {
         String day = map_fd?[sm_front_desk.CHECK_IN_DAY]?.toString() ?? "";
         String hour = map_fd?[sm_front_desk.CHECK_IN_HOUR]?.toString() ?? "";
@@ -170,6 +180,7 @@ class _Main_State extends State<Main_> {
         );
       })(),
 
+      // * បង្ហាញតម្លៃបន្ទប់សរុប
       (() {
         String value = "0.00";
         final pay_room = map_fd?[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
@@ -191,6 +202,7 @@ class _Main_State extends State<Main_> {
         );
       })(),
 
+      // * បង្ហាញប្រវត្តិការទូទាត់បន្ទប់នីមួយៗ
       for (var m in map_fd?[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [])
         (() {
           String dt = "";
@@ -226,6 +238,7 @@ class _Main_State extends State<Main_> {
           );
         })(),
 
+      // * បង្ហាញតម្លៃផ្សេងៗសរុប
       (() {
         String value = "0.00";
         final pay_other = map_fd?[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
@@ -247,6 +260,7 @@ class _Main_State extends State<Main_> {
         );
       })(),
 
+      // * បង្ហាញប្រវត្តិការទូទាត់ផ្សេងៗនីមួយៗ
       for (var m in map_fd?[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [])
         (() {
           String dt = "";
@@ -281,6 +295,7 @@ class _Main_State extends State<Main_> {
           );
         })(),
 
+      // * បង្ហាញព័ត៌មាន check in
       (() {
         String note = map_fd?[sm_front_desk.CHECK_IN_NOTE]?.toString() ?? "N/A";
         String by = map_fd?[sm_front_desk.CHECK_IN_BY]?[sm_user.FULL_NAME]?.toString() ?? "N/A";
@@ -311,6 +326,7 @@ class _Main_State extends State<Main_> {
         );
       })(),
 
+      // * បង្ហាញព័ត៌មាន check out
       (() {
         String note = map_fd?[sm_front_desk.CHECK_OUT_NOTE]?.toString() ?? "N/A";
         String by = map_fd?[sm_front_desk.CHECK_OUT_BY]?[sm_user.FULL_NAME]?.toString() ?? "N/A";
@@ -341,6 +357,7 @@ class _Main_State extends State<Main_> {
         );
       })(),
 
+      // * បង្ហាញព័ត៌មានការសម្អាត
       (() {
         String note = map_fd?[sm_front_desk.CLEAN_NOTE]?.toString() ?? "N/A";
         String by = map_fd?[sm_front_desk.CLEAN_BY]?[sm_user.FULL_NAME]?.toString() ?? "N/A";
@@ -374,6 +391,7 @@ class _Main_State extends State<Main_> {
       // TODO: add more details here
 
       //
+      // * ប៊ូតុង OK ដើម្បីបិទទំព័រ
       OutlinedButton.icon(
         autofocus: true,
         label: Text(t("OK")),
@@ -392,6 +410,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
+// * ថ្នាក់ Main_ ជាទំព័របង្ហាញព័ត៌មានលម្អិត
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
@@ -404,6 +423,7 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

@@ -1,3 +1,5 @@
+// * ទំព័ររបាយការណ៍ចំណូល (Report)
+
 // TODO: add field manually
 
 import "package:intl/intl.dart";
@@ -23,6 +25,7 @@ import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការស្វែងរក និងបង្ហាញរបាយការណ៍
 class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic list_fd = [];
@@ -37,6 +40,7 @@ class _Main_State extends State<Main_> {
 
   List<String> list_c = columns.map((c) => c.field).toList();
 
+  // * ផ្ទុកទិន្នន័យដំបូង (ក្នុងរបៀប debug កំណត់កាលបរិច្ឆេទស្វែងរកស្វ័យប្រវត្តិ)
   void init() async {
     if (kDebugMode) start = DateTime.now().subtract(Duration(days: 30));
     if (kDebugMode) stop = DateTime.now();
@@ -46,6 +50,7 @@ class _Main_State extends State<Main_> {
     setState(() {});
   }
 
+  // * ស្វែងរករបាយការណ៍តាមកាលបរិច្ឆេទ
   void on_search() async {
     if (start == null) {
       snackbar(ct: context, ms: "Please select start date", cl: Colors.red);
@@ -66,6 +71,7 @@ class _Main_State extends State<Main_> {
     setState(() {});
 
     try {
+      // * ផ្ញើសំណើស្វែងរករបាយការណ៍
       tmp = await dio.post(
         endpoint.REPORT,
         data: {
@@ -80,6 +86,7 @@ class _Main_State extends State<Main_> {
 
       // pprint(list_c);
 
+      // * បំពេញជួរដេកទៅក្នុងតារាង
       state_manager?.removeAllRows();
       state_manager?.appendRows([
         for (var fd in list_fd)
@@ -145,10 +152,12 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បង្កើត layout មេរបស់ទំព័ររបាយការណ៍
   Widget _layout(Widget child) {
     return Scaffold(
       body: Column(
         children: [
+          // * របារឧបករណ៍ស្វែងរក និងច្រោះ
           Container(
             height: 40, //
             padding: EdgeInsets.all(1),
@@ -156,6 +165,7 @@ class _Main_State extends State<Main_> {
               spacing: 2,
               children: [
                 SizedBox(width: 4),
+                // * ជ្រើសរើសកាលបរិច្ឆេទចាប់ផ្តើម
                 SizedBox(
                   width: 160,
                   child: Select_Date_Time(
@@ -167,6 +177,7 @@ class _Main_State extends State<Main_> {
                   ),
                 ),
 
+                // * ជ្រើសរើសកាលបរិច្ឆេទបញ្ចប់
                 SizedBox(
                   width: 160,
                   child: Select_Date_Time(
@@ -178,6 +189,7 @@ class _Main_State extends State<Main_> {
                   ),
                 ),
 
+                // * ប៊ូតុងស្វែងរក
                 Menu_Button_Icon(
                   tip: "ស្វែងរក", //
                   icon: Icons.search, //
@@ -186,6 +198,7 @@ class _Main_State extends State<Main_> {
 
                 Spacer(),
 
+                // * ប៊ូតុងបើក/បិទការច្រោះជួរឈរ
                 Menu_Button_Icon(
                   tip: is_filter ? "បិទច្រោះ" : "បើកច្រោះ", //
                   icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //,
@@ -202,10 +215,12 @@ class _Main_State extends State<Main_> {
             ),
           ),
 
+          // * បន្ទាត់រីកចម្រើនពេលកំពុងផ្ទុក
           if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
           Expanded(child: child),
 
+          // * របារបាតបង្ហាញចំណូលសរុប និងប៊ូតុងបញ្ចេញឯកសារ
           Container(
             height: 40, //
             padding: EdgeInsets.all(1),
@@ -232,6 +247,7 @@ class _Main_State extends State<Main_> {
 
                 Spacer(),
 
+                // * ប៊ូតុងបញ្ចេញជា PDF
                 Tooltip(
                   message: "បញ្ចេញជា PDF",
                   child: InkWell(
@@ -252,6 +268,7 @@ class _Main_State extends State<Main_> {
                   ),
                 ),
 
+                // * ប៊ូតុងបញ្ចេញជា Excel
                 Tooltip(
                   message: "បញ្ចេញជា Excel",
                   child: InkWell(
@@ -285,6 +302,7 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout(
+      // * តារាងទិន្នន័យរបាយការណ៍
       PlutoGrid(
         rows: [], //
         columns: columns, //
@@ -325,7 +343,9 @@ class _Main_State extends State<Main_> {
 
 final WIDTH = 140.0; // * ទទឹងស្តង់ដាររបស់ជួរឈរទិន្នន័យ
 
+// * និយមន័យជួរឈររបស់តារាងរបាយការណ៍
 final columns = [
+  // * ជួរឈរលេខរៀង
   PlutoColumn(
     field: "index", //
     title: "ល.រ.",
@@ -342,6 +362,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរ ID (លាក់)
   PlutoColumn(
     field: sm_front_desk.ID, //
     title: "ID",
@@ -349,6 +370,7 @@ final columns = [
     hide: true, //
   ),
 
+  // * ជួរឈរលេខបន្ទប់
   PlutoColumn(
     field: sm_front_desk.ROOM_ID + sm_room.NUMBER, //
     title: "បន្ទប់",
@@ -365,6 +387,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរឈ្មោះភ្ញៀវ
   PlutoColumn(
     field: sm_front_desk.GUEST_ID + sm_guest.FULL_NAME, //
     title: "ឈ្មោះភ្ញៀវ",
@@ -383,6 +406,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរចំនួនភ្ញៀវ
   PlutoColumn(
     field: sm_front_desk.CHECK_IN_NUMBER, //
     title: "ចំនួនភ្ញៀវ",
@@ -399,6 +423,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរពេលចូល
   PlutoColumn(
     field: sm_front_desk.CHECK_IN_AT, //
     title: "ពេលចូល",
@@ -420,6 +445,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរពេលចេញ
   PlutoColumn(
     field: sm_front_desk.CHECK_OUT_AT, //
     title: "ពេលចេញ",
@@ -441,6 +467,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរចំនួនថ្ងៃស្នាក់នៅ
   PlutoColumn(
     field: sm_front_desk.CHECK_IN_DAY, //
     title: "ចំនួនថ្ងៃ",
@@ -457,6 +484,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរចំនួនម៉ោងស្នាក់នៅ
   PlutoColumn(
     field: sm_front_desk.CHECK_IN_HOUR, //
     title: "ចំនួនម៉ោង",
@@ -473,6 +501,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរថ្លៃបន្ទប់
   PlutoColumn(
     field: sm_front_desk.PAY_ROOM + "add_price", //
     title: "ថ្លៃបន្ទប់",
@@ -509,6 +538,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរសាច់ប្រាក់ (បន្ទប់)
   PlutoColumn(
     field: sm_front_desk.PAY_ROOM + "pay_cash", //
     title: "សាច់ប្រាក់",
@@ -545,6 +575,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរបង់ប្រាក់តាមធនាគារ (បន្ទប់)
   PlutoColumn(
     field: sm_front_desk.PAY_ROOM + "pay_bank", //
     title: "ធនាគារ",
@@ -581,6 +612,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរប្រាក់អាប់ (បន្ទប់)
   PlutoColumn(
     field: sm_front_desk.PAY_ROOM + "pay_return", //
     title: "ប្រាក់អាប់",
@@ -617,6 +649,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរថ្លៃផ្សេងៗ
   PlutoColumn(
     field: sm_front_desk.PAY_OTHER + "add_price", //
     title: "ថ្លៃផ្សេងៗ",
@@ -653,6 +686,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរសាច់ប្រាក់ (ផ្សេងៗ)
   PlutoColumn(
     field: sm_front_desk.PAY_OTHER + "pay_cash", //
     title: "សាច់ប្រាក់",
@@ -689,6 +723,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរបង់ប្រាក់តាមធនាគារ (ផ្សេងៗ)
   PlutoColumn(
     field: sm_front_desk.PAY_OTHER + "pay_bank", //
     title: "ធនាគារ",
@@ -725,6 +760,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរប្រាក់អាប់ (ផ្សេងៗ)
   PlutoColumn(
     field: sm_front_desk.PAY_OTHER + "pay_return", //
     title: "ប្រាក់អាប់",
@@ -761,6 +797,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរអ្នកឲចូល
   PlutoColumn(
     field: sm_front_desk.CHECK_IN_BY + sm_user.FULL_NAME, //
     title: "ឲចូលដោយ",
@@ -779,6 +816,7 @@ final columns = [
     },
   ),
 
+  // * ជួរឈរអ្នកទទួលប្រាក់
   PlutoColumn(
     field: sm_front_desk.PAY_ROOM + "created_by" + sm_user.FULL_NAME, //
     title: "ទទួលប្រាក់ដោយ",
@@ -797,6 +835,7 @@ final columns = [
     },
   ),
   //
+  // * ជួរឈរអ្នកឲចេញ
   PlutoColumn(
     field: sm_front_desk.CHECK_OUT_BY + sm_user.FULL_NAME, //
     title: "ឲចេញដោយ",
@@ -819,6 +858,7 @@ final columns = [
   //
 ];
 
+// * ថ្នាក់ Main_ ជាទំព័ររបាយការណ៍ចំណូល
 class Main_ extends StatefulWidget {
   const Main_({super.key});
 
@@ -826,6 +866,7 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

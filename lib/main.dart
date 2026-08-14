@@ -1,6 +1,8 @@
+// * នាំចូលបណ្ណាល័យ Flutter សម្រាប់ UI និង Provider សម្រាប់ state management
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
+// * នាំចូលឯកសារកំណត់រចនាសម្ព័ន្ធ និងធនធានរបស់កម្មវិធី
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
@@ -11,14 +13,19 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
+// * ចំណុចចាប់ផ្តើមសំខាន់របស់កម្មវិធី
 void main() async {
+  // * ធានាថា Flutter binding ត្រូវបានចាប់ផ្តើមមុនពេលប្រើប្រាស់
   WidgetsFlutterBinding.ensureInitialized();
+  // * ចាប់ផ្តើម global state និង language
   glob.init();
   lang.init();
   //
+  // * បង្កើត root widget ជាមួយ MultiProvider សម្រាប់ផ្តល់ state ដល់កម្មវិធី
   runApp(
     MultiProvider(
       providers: [
+        // * ផ្តល់ global state និង language state
         ChangeNotifierProvider.value(value: glob),
         ChangeNotifierProvider.value(value: lang),
       ],
@@ -27,11 +34,13 @@ void main() async {
   );
 }
 
+// * ថ្នាក់ Main ជា root widget របស់កម្មវិធី
 class Main extends StatelessWidget {
   const Main({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // * បង្កើត MaterialApp ជាមួយ theme និង home page
     return MaterialApp(
       title: "$TITLE Admin", //
       theme: theme_data, //

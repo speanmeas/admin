@@ -1,3 +1,4 @@
+// * នាំចូល Flutter material និង services សម្រាប់បញ្ចូលលេខ
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:provider/provider.dart";
@@ -10,13 +11,16 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
+// * ថ្នាក់ state របស់ Input_Number គ្រប់គ្រងការបញ្ចូលលេខ
 class _Input_NumberState extends State<Input_Number> {
   //
   final controller = TextEditingController();
   final focusNode = FocusNode();
 
+  // * កំណត់ថាតើតម្លៃមិនត្រឹមត្រូវឬអត់
   bool is_error = false;
 
+  // * ចាប់ផ្តើមតម្លៃដំបូង
   void init() {
     if (widget.init != null) {
       controller.text = widget.init!.toStringAsFixed(2);
@@ -26,10 +30,12 @@ class _Input_NumberState extends State<Input_Number> {
 
   @override
   Widget build(BuildContext context) {
+    // * បង្កើត TextField សម្រាប់បញ្ចូលលេខ
     return TextField(
       controller: controller,
       focusNode: focusNode,
       keyboardType: TextInputType.numberWithOptions(decimal: true),
+      // * អនុញ្ញាតតែលេខ និងចំណុចទសភាគ
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9.]"))],
       decoration: InputDecoration(
         labelText: widget.lead,
@@ -37,6 +43,7 @@ class _Input_NumberState extends State<Input_Number> {
         floatingLabelBehavior: FloatingLabelBehavior.always,
         errorText: is_error ? "Invalid number" : null,
         prefixIcon: Icon(widget.prefixIcon ?? Icons.onetwothree), //
+        // * ប៊ូតុងសម្អាតតម្លៃ
         suffixIcon: ExcludeFocus(
           child: Padding(
             padding: EdgeInsets.only(right: 4),
@@ -55,6 +62,7 @@ class _Input_NumberState extends State<Input_Number> {
       ),
 
       onChanged: (v) {
+        // * បំប្លែងអត្ថបទទៅជាលេខ និងពិនិត្យកំហុស
         final double? value = double.tryParse(v);
         is_error = value == null;
         widget.onChanged?.call(value);
@@ -77,6 +85,7 @@ class _Input_NumberState extends State<Input_Number> {
   }
 }
 
+// * ថ្នាក់ Input_Number ជា widget សម្រាប់បញ្ចូលលេខ
 class Input_Number extends StatefulWidget {
   const Input_Number({
     super.key, //

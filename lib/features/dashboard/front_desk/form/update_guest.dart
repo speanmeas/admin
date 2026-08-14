@@ -1,4 +1,5 @@
 // * OK
+// * ទំព័រ Update Guest សម្រាប់ធ្វើបច្ចុប្បន្នភាពភ្ញៀវរបស់បន្ទប់
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -16,6 +17,7 @@ import "package:speanmeas/core/schema/room.g.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 
+// * បង្កើត layout មេរបស់ទំព័រធ្វើបច្ចុប្បន្នភាពភ្ញៀវ
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -48,6 +50,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់ធ្វើបច្ចុប្បន្នភាពភ្ញៀវ
 class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic map_r;
@@ -66,13 +69,16 @@ class _Main_State extends State<Main_> {
   // String? guest_gender;
   // String? guest_nationality;
 
+  // * ផ្ទុកព័ត៌មានបន្ទប់ និងភ្ញៀវបច្ចុប្បន្ន
   void init() async {
     try {
+      // * អានព័ត៌មានបន្ទប់តាម id
       tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
       map_r = tmp.data[0] as Map<String, dynamic>;
 
       if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
 
+      // * អានព័ត៌មាន front desk
       tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
       map_fd = tmp.data[0] as Map<String, dynamic>;
 
@@ -97,8 +103,10 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * បង្ហាញលេខបន្ទប់
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -112,6 +120,7 @@ class _Main_State extends State<Main_> {
 
       Divider(height: 1, color: Colors.black),
 
+      // * ស្វែងរក និងជ្រើសរើសភ្ញៀវថ្មី
       Search_Guest(
         init: guest_id, //
         onChanged: (v) {
@@ -120,6 +129,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * ប៊ូតុងបញ្ជូនការធ្វើបច្ចុប្បន្នភាព
       OutlinedButton.icon(
         icon: Icon(Icons.check), //
         label: Text(is_submitting ? t("Updating...") : t("Update")), //
@@ -130,12 +140,14 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * អនុវត្តការធ្វើបច្ចុប្បន្នភាពភ្ញៀវ
   void on_update() async {
     if (is_submitting) return; // double-submit guard
     is_submitting = true;
     setState(() {});
 
     try {
+      // * ធ្វើបច្ចុប្បន្នភាពភ្ញៀវរបស់ front desk
       await dio.post(
         endpoint.FRONT_DESK_UPDATE_GUEST, //
         data: {
@@ -165,6 +177,7 @@ class _Main_State extends State<Main_> {
 }
 
 //
+// * ថ្នាក់ Main_ ជាទំព័រធ្វើបច្ចុប្បន្នភាពភ្ញៀវ
 class Main_ extends StatefulWidget {
   const Main_({
     super.key,
@@ -178,6 +191,7 @@ class Main_ extends StatefulWidget {
 }
 
 //
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

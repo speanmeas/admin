@@ -1,3 +1,4 @@
+// * នាំចូល Flutter material និង flutter_typeahead សម្រាប់ autocomplete
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -9,12 +10,15 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
+// * ថ្នាក់ state របស់ Select_Dynamic គ្រប់គ្រងការជ្រើសរើសតម្លៃ
 class _Select_DynamicState extends State<Select_Dynamic> {
+  // * controller សម្រាប់អត្ថបទ
   final controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    // * កំណត់តម្លៃដំបូង
     if (widget.init != null) {
       controller.text = widget.init.toString();
     }
@@ -22,6 +26,7 @@ class _Select_DynamicState extends State<Select_Dynamic> {
 
   @override
   Widget build(BuildContext context) {
+    // * បង្កើត TypeAheadField សម្រាប់ជ្រើសរើស
     return TypeAheadField<dynamic>(
       controller: controller,
       itemBuilder: (context, i) => ListTile(title: Text(i.toString())),
@@ -36,6 +41,7 @@ class _Select_DynamicState extends State<Select_Dynamic> {
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             prefixIcon: Icon(widget.prefixIcon),
+            // * ប៊ូតុងសម្អាតតម្លៃ
             suffixIcon: Padding(
               padding: EdgeInsets.only(right: 4),
               child: IconButton(
@@ -50,6 +56,7 @@ class _Select_DynamicState extends State<Select_Dynamic> {
         );
       },
       onSelected: (value) {
+        // * កំណត់តម្លៃដែលបានជ្រើសរើស
         controller.text = value.toString();
         widget.onChanged?.call(value);
       },
@@ -57,6 +64,7 @@ class _Select_DynamicState extends State<Select_Dynamic> {
   }
 }
 
+// * ថ្នាក់ Select_Dynamic ជា widget សម្រាប់ជ្រើសរើសតម្លៃថាមវន្ត
 class Select_Dynamic extends StatefulWidget {
   const Select_Dynamic({
     super.key, //

@@ -1,3 +1,4 @@
+// * នាំចូល Flutter foundation និង flutter_typeahead សម្រាប់ autocomplete
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -15,14 +16,17 @@ import "package:speanmeas/core/widget/show/show_text.dart";
 import "package:speanmeas/core/schema/nationality.g.dart";
 import "package:speanmeas/features/database/nationality/form/create.dart" as create_nationality;
 
+// * ថ្នាក់ state របស់ Search_Nationality គ្រប់គ្រងការស្វែងរកសញ្ជាតិ
 class _Search_NationalityState extends State<Search_Nationality> {
   //
+  // * កំណត់ថាតើបានជ្រើសរើសហើយឬអត់
   bool is_selected = false;
   FocusNode focusNode = FocusNode();
   FocusNode clear_focus = FocusNode();
 
   final controller = TextEditingController();
 
+  // * ព័ត៌មានសញ្ជាតិដែលបានជ្រើសរើស
   String? id;
   String? nationality;
   String? note;
@@ -30,8 +34,10 @@ class _Search_NationalityState extends State<Search_Nationality> {
   dynamic tmp;
   dynamic data;
 
+  // * ចាប់ផ្តើមស្វែងរក
   void init() async {
     //
+    // * សម្អាតតម្លៃនៅពេលបាត់បង់ focus
     focusNode.addListener(() {
       if (!focusNode.hasFocus && !clear_focus.hasFocus && !is_selected && controller.text.isNotEmpty) {
         controller.clear();
@@ -41,9 +47,11 @@ class _Search_NationalityState extends State<Search_Nationality> {
       }
     });
 
+    // * បើគ្មានតម្លៃដំបូង ឈប់
     if (widget.init == null || widget.init!.isEmpty) return;
 
     try {
+      // * ទាញយកព័ត៌មានសញ្ជាតិតាមឈ្មោះ
       tmp = await dio.post(
         endpoint.NATIONALITY_CRUD_READ_STRING, //
         data: {
@@ -55,6 +63,7 @@ class _Search_NationalityState extends State<Search_Nationality> {
 
       final list = List<Map<String, dynamic>>.from(tmp.data);
 
+      // * កំណត់ព័ត៌មានសញ្ជាតិ
       id = list.first[sm_nationality.ID]?.toString();
       nationality = list.first[sm_nationality.NAME]?.toString();
       note = list.first[sm_nationality.NOTE]?.toString();
@@ -63,6 +72,7 @@ class _Search_NationalityState extends State<Search_Nationality> {
       widget.onChanged?.call(id);
       setState(() {});
     } catch (e, st) {
+      // * បង្ហាញកំហុសប្រសិនបើមាន
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
@@ -76,10 +86,12 @@ class _Search_NationalityState extends State<Search_Nationality> {
         Row(
           children: [
             Expanded(
+              // * បង្កើត TypeAheadField សម្រាប់ស្វែងរកសញ្ជាតិ
               child: TypeAheadField<String>(
                 controller: controller,
                 focusNode: focusNode,
                 itemBuilder: (context, item) => ListTile(title: Text(item)),
+                // * ស្វែងរកសញ្ជាតិពី server
                 suggestionsCallback: (q) async {
                   try {
                     //
@@ -95,7 +107,7 @@ class _Search_NationalityState extends State<Search_Nationality> {
 
                     data = List<Map<String, dynamic>>.from(tmp.data);
 
-                    //
+                    // * បង្កើតបញ្ជីជម្រើសដោយគ្មានឈ្មោះស្ទួន
                     final options = <String>[];
                     for (var d in data) {
                       final name = d[sm_nationality.NAME]?.toString() ?? "";
@@ -121,6 +133,7 @@ class _Search_NationalityState extends State<Search_Nationality> {
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: Icon(Icons.search, color: Colors.blue),
+                      // * ប៊ូតុងសម្អាតតម្លៃ
                       suffixIcon: ExcludeFocus(
                         child: Padding(
                           padding: EdgeInsets.only(right: 4),
@@ -143,6 +156,7 @@ class _Search_NationalityState extends State<Search_Nationality> {
                 onSelected: (v) {
                   is_selected = true;
                   controller.text = v;
+                  // * កំណត់ព័ត៌មានសញ្ជាតិដែលបានជ្រើសរើស
                   for (final d in data) {
                     if (d[sm_nationality.NAME]?.toString() == v) {
                       id = d[sm_nationality.ID]?.toString();

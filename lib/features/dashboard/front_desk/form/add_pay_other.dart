@@ -1,3 +1,5 @@
+// * ទំព័រ Add Other Payment សម្រាប់បន្ថែមការទូទាត់ផ្សេងៗ
+
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -15,6 +17,7 @@ import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/payment_other.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
+// * បង្កើត layout មេរបស់ទំព័របន្ថែមការទូទាត់ផ្សេងៗ
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -47,6 +50,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បន្ថែមការទូទាត់ផ្សេងៗ
 class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic map_r;
@@ -66,19 +70,23 @@ class _Main_State extends State<Main_> {
   double? pay_return;
   String? pay_note;
 
+  // * ផ្ទុកព័ត៌មានបន្ទប់ និងប្រវត្តិការទូទាត់ផ្សេងៗ
   void init() async {
     try {
+      // * អានព័ត៌មានបន្ទប់តាម id
       tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
       map_r = tmp.data[0] as Map<String, dynamic>;
 
       if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
 
+      // * អានព័ត៌មាន front desk
       tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
       map_fd = tmp.data[0] as Map<String, dynamic>;
 
       front_desk_id = map_fd[sm_front_desk.ID];
       room_number = map_r[sm_room.NUMBER];
 
+      // * គណនាតម្លៃចាស់ និងប្រាក់ដែលបានទទួលរួច
       tmp = map_fd[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
       for (var l in tmp) {
         // * តម្លៃសរុប = ផលបូកនៃ add_price ដក sub_price ទាំងអស់
@@ -104,8 +112,10 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * បង្ហាញលេខបន្ទប់
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -119,6 +129,7 @@ class _Main_State extends State<Main_> {
 
       Divider(height: 1, color: Colors.black),
 
+      // * បញ្ចូលតម្លៃផ្សេងៗ
       Input_Number(
         init: other_price, //
         lead: '${t("Other Price")}:', //
@@ -128,6 +139,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * បង្ហាញការទូទាត់ចុងក្រោយ
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -139,6 +151,7 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
+      // * បញ្ចូលការទូទាត់ជាសាច់ប្រាក់
       Input_Number(
         init: pay_cash, //
         lead: '${t("Cash Payment")}:', //
@@ -149,6 +162,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * បញ្ចូលការទូទាត់តាមធនាគារ
       Input_Number(
         init: pay_bank, //
         lead: '${t("Bank Payment")}:', //
@@ -159,6 +173,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * បញ្ចូលប្រាក់អាប់
       Input_Number(
         init: pay_return, //
         lead: '${t("Return")}:', //
@@ -169,6 +184,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * បញ្ចូលកំណត់ចំណាំការទូទាត់
       Input_Bank_Auto(
         init: pay_note, //
         onChanged: (v) {
@@ -179,6 +195,7 @@ class _Main_State extends State<Main_> {
 
       Divider(height: 1, color: Colors.black),
 
+      // * បង្ហាញសមតុល្យ
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -194,6 +211,7 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
+      // * ប៊ូតុងបន្ថែមការទូទាត់
       OutlinedButton.icon(
         icon: Icon(Icons.add), //
         label: Text(is_submitting ? t("Processing...") : t("Add Payment")), //
@@ -226,12 +244,14 @@ class _Main_State extends State<Main_> {
     return temp;
   }
 
+  // * អនុវត្តការបន្ថែមការទូទាត់ផ្សេងៗ
   void on_pay() async {
     if (is_submitting) return; // double-submit guard
     is_submitting = true;
     setState(() {});
 
     try {
+      // * កត់ត្រាការទូទាត់ផ្សេងៗ
       await dio.post(
         endpoint.FRONT_DESK_ADD_PAY_OTHER,
         data: {
@@ -263,6 +283,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
+// * ថ្នាក់ Main_ ជាទំព័របន្ថែមការទូទាត់ផ្សេងៗ
 class Main_ extends StatefulWidget {
   const Main_({
     super.key,
@@ -275,6 +296,7 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

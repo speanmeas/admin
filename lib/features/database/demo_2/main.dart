@@ -1,3 +1,5 @@
+// * ទំព័រគ្រប់គ្រងឧទាហរណ៍ (Demo 2) សម្រាប់បង្កើត អាន កែ និងលុប
+
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:flutter/foundation.dart";
@@ -22,6 +24,7 @@ import "form/update.dart" as update;
 import "form/delete.dart" as delete;
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
+// * បង្កើត layout មេរបស់ទំព័រគ្រប់គ្រងឧទាហរណ៍
 Widget _layout(List<Widget> children) {
   return Scaffold(
     body: Column(
@@ -30,6 +33,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទិន្នន័យឧទាហរណ៍
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
@@ -40,10 +44,10 @@ class _Main_State extends State<Main_> {
   int load_request_id = 0;
   PlutoGridStateManager? state_manager;
 
-  //
+  // * ផ្ទុកចំនួនជួរដេកសរុប និងទំព័រដំបូង
   void init() async {
     try {
-      //
+      // * អានចំនួនជួរដេកសរុប
       tmp = await dio.post(
         endpoint.DEMO_2_CRUD_READ_COUNT, //
         data: {"count": true},
@@ -60,10 +64,10 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  //
+  // * ធ្វើឱ្យទិន្នន័យស្រស់ឡើងវិញ
   void on_refresh() async {
     try {
-      //
+      // * អានចំនួនជួរដេកសរុបឡើងវិញ
       final r = await dio.post(
         endpoint.DEMO_2_CRUD_READ_COUNT, //
         data: {"count": true},
@@ -86,6 +90,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * ផ្ទុកទិន្នន័យតាមទំព័រ
   void load_page(int p) async {
     final request_id = ++load_request_id;
 
@@ -95,7 +100,7 @@ class _Main_State extends State<Main_> {
 
       setState(() {});
 
-      //
+      // * អានទិន្នន័យឧទាហរណ៍តាម offset និង limit
       tmp = await dio.post(
         endpoint.DEMO_2_CRUD_READ, //
         data: {
@@ -107,14 +112,14 @@ class _Main_State extends State<Main_> {
       );
       final data = List<Map<String, dynamic>>.from(tmp.data ?? const []);
 
-      // Ignore a response from an earlier page request.
+      // * មិនអើពើការឆ្លើយតបពីសំណើទំព័រមុន
       if (!mounted || request_id != load_request_id) return;
 
-      // keep sort + filter
+      // * រក្សាទុក sort និង filter មុនពេលផ្ទុកឡើងវិញ
       final sorted_column = state_manager?.getSortedColumn;
       final filter_rows = List<PlutoRow>.from(state_manager?.filterRows ?? const <PlutoRow>[]);
 
-      // add data to row
+      // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
       state_manager?.removeAllRows();
       state_manager?.appendRows([
         for (var d in data)
@@ -131,7 +136,7 @@ class _Main_State extends State<Main_> {
           ),
       ]);
 
-      // reuse sort + filter
+      // * អនុវត្ត sort និង filter ឡើងវិញ
       if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
       state_manager?.setFilterWithFilterRows(filter_rows);
 
@@ -152,7 +157,7 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     return _layout([
-      // menu
+      // * របារម៉ឺនុយសកម្មភាព
       Container(
         height: 40, //
         padding: EdgeInsets.all(1),
@@ -160,28 +165,28 @@ class _Main_State extends State<Main_> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // create
+            // * ប៊ូតុងបង្កើត
             Menu_Button_Icon(
               tip: t("Create"), //
               icon: Icons.add,
               onPressed: on_create,
             ),
 
-            // read
+            // * ប៊ូតុងអាន
             Menu_Button_Icon(
               tip: t("Read"), //
               icon: Icons.visibility_outlined,
               onPressed: on_read,
             ),
 
-            // update
+            // * ប៊ូតុងកែប្រែ
             Menu_Button_Icon(
               tip: t("Update"), //
               icon: Icons.edit_outlined,
               onPressed: on_update,
             ),
 
-            // delete
+            // * ប៊ូតុងលុប
             Menu_Button_Icon(
               tip: t("Delete"), //
               icon: Icons.delete_outline,
@@ -191,7 +196,7 @@ class _Main_State extends State<Main_> {
 
             Spacer(),
 
-            // filter
+            // * ប៊ូតុងបើក/បិទ filter
             Menu_Button_Icon(
               tip: is_filter ? t("Close Filter") : t("Open Filter"), //
               icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
@@ -203,7 +208,7 @@ class _Main_State extends State<Main_> {
               },
             ),
 
-            // search
+            // * ប៊ូតុងស្វែងរក (តែក្នុង debug mode)
             if (kDebugMode)
               Menu_Button_Icon(
                 tip: "Search", //
@@ -213,7 +218,7 @@ class _Main_State extends State<Main_> {
                 },
               ),
 
-            // refresh
+            // * ប៊ូតុងធ្វើឱ្យស្រស់
             Menu_Button_Icon(
               tip: t("Refresh"), //
               icon: Icons.refresh,
@@ -223,9 +228,10 @@ class _Main_State extends State<Main_> {
         ),
       ),
 
+      // * បង្ហាញ progress bar ពេលកំពុងផ្ទុក
       if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
-      // pluto table
+      // * តារាងទិន្នន័យ
       Expanded(
         child: PlutoGrid(
           rows: [], //
@@ -251,7 +257,7 @@ class _Main_State extends State<Main_> {
         ),
       ),
 
-      // footer
+      // * របារប្តូរទំព័រ
       Container(
         height: 40, //
         alignment: Alignment.topCenter,
@@ -274,7 +280,7 @@ class _Main_State extends State<Main_> {
               },
             ),
 
-            // previous page
+            // * ប៊ូតុងទៅទំព័រមុន
             Menu_Button_Icon(
               tip: t("Previous Page"), //
               icon: Icons.navigate_before,
@@ -285,7 +291,7 @@ class _Main_State extends State<Main_> {
               },
             ),
 
-            // select page
+            // * ប៊ូតុងជ្រើសរើសទំព័រ
             Menu_Button_Text(
               tip: t("Select Page"), //
               text: "$page / $total_pages", //
@@ -302,7 +308,7 @@ class _Main_State extends State<Main_> {
               },
             ),
 
-            // next page
+            // * ប៊ូតុងទៅទំព័របន្ទាប់
             Menu_Button_Icon(
               tip: t("Next Page"), //
               icon: Icons.navigate_next,
@@ -313,7 +319,7 @@ class _Main_State extends State<Main_> {
               },
             ),
 
-            // last page
+            // * ប៊ូតុងទៅទំព័រចុងក្រោយ
             Menu_Button_Icon(
               tip: t("Last Page"), //
               icon: Icons.last_page,
@@ -326,7 +332,7 @@ class _Main_State extends State<Main_> {
 
             Spacer(),
 
-            // total row
+            // * បង្ហាញចំនួនជួរដេក
             Container(
               height: 40,
               padding: EdgeInsets.only(right: 16),
@@ -348,6 +354,7 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * បើកទំព័របង្កើតឧទាហរណ៍ថ្មី
   void on_create() async {
     try {
       //
@@ -373,6 +380,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័រអានព័ត៌មានឧទាហរណ៍
   void on_read() async {
     try {
       //
@@ -400,6 +408,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័រកែប្រែឧទាហរណ៍
   void on_update() async {
     try {
       //
@@ -431,6 +440,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័រលុបឧទាហរណ៍
   void on_delete() async {
     try {
       //
@@ -462,6 +472,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * គណនាចំនួនទំព័រសរុប
   int get total_pages {
     if (row_total == 0) return 1;
     return (row_total + DEFAULT_LIMIT_ROW - 1) ~/ DEFAULT_LIMIT_ROW;
@@ -479,6 +490,7 @@ class _Main_State extends State<Main_> {
 
 const double WIDTH = 120;
 
+// * និយមន័យជួរឈររបស់តារាង
 final columns = [
   PlutoColumn(
     field: "index", //
@@ -598,12 +610,14 @@ final columns = [
   ),
 ];
 
+// * ថ្នាក់ Main_ ជាទំព័រគ្រប់គ្រងឧទាហរណ៍
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

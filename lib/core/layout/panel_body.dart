@@ -1,14 +1,15 @@
+// * នាំចូល Flutter material និង Provider សម្រាប់ state management
 import "package:flutter/material.dart";
 import "package:speanmeas/core/i18n/main.dart";
 import "package:provider/provider.dart";
 
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-// dashboard
+// * dashboard
 import "package:speanmeas/features/dashboard/front_desk/main.dart" as d_front_desk;
 import "package:speanmeas/features/dashboard/mini_bar/main.dart" as d_mini_bar;
 
-// database
+// * database
 // import "package:speanmeas/features/database/.front_desk/main.dart" as front_desk;
 import "package:speanmeas/features/database/guest/main.dart" as guest;
 import "package:speanmeas/features/database/room/main.dart" as room;
@@ -16,24 +17,26 @@ import "package:speanmeas/features/database/user/main.dart" as user;
 import "package:speanmeas/features/database/nationality/main.dart" as nationality;
 import "package:speanmeas/features/database/mini_bar/main.dart" as mini_bar;
 
-// report
+// * report
 import "package:speanmeas/features/report/main.dart" as report;
 
 import "package:speanmeas/features/database/demo_1/main.dart" as demo_1;
 import "package:speanmeas/features/database/demo_2/main.dart" as demo_2;
 
-// setting
+// * setting
 import "package:speanmeas/features/setting/main.dart" as setting;
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
+// * ថ្នាក់ state របស់ Panel_Body គ្រប់គ្រងការបង្ហាញ panel នីមួយៗ
 class _Panel_BodyState extends State<Panel_Body> {
   //
   dynamic tmp;
 
   //
+  // * បញ្ជី panel ទាំងអស់របស់កម្មវិធី
   List<Map<String, dynamic>> panels = [
     {"name": "", "panel": Text("This page is under development..")},
     //
@@ -61,8 +64,10 @@ class _Panel_BodyState extends State<Panel_Body> {
 
   @override
   Widget build(BuildContext context) {
+    // * ទទួលបាន body បច្ចុប្បន្នពី global state
     String body = context.watch<Global>().body;
 
+    // * ស្វែងរក index នៃ panel ដែលត្រូវបង្ហាញ
     int index = 0;
     for (int i = 0; i < panels.length; i++) {
       if (panels[i]["name"] == body) {
@@ -71,16 +76,19 @@ class _Panel_BodyState extends State<Panel_Body> {
       }
     }
 
+    // * បង្ហាញ panel ដែលបានជ្រើសរើស
     return IndexedStack(index: index, children: [for (var p in panels) p["panel"]]);
   }
 }
 
+// * ថ្នាក់ Panel_Body ជា widget សម្រាប់បង្ហាញខ្លឹមសារ
 class Panel_Body extends StatefulWidget {
   const Panel_Body({super.key});
   @override
   State<Panel_Body> createState() => _Panel_BodyState();
 }
 
+// * ចំណុចចាប់ផ្តើមសម្រាប់ការអភិវឌ្ឍន៍
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

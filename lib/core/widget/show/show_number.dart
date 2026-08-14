@@ -1,3 +1,4 @@
+// * នាំចូល Flutter material និង Provider សម្រាប់ state management
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -9,22 +10,27 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
+// * ថ្នាក់ state របស់ Show_Number គ្រប់គ្រងការបង្ហាញលេខ
 class _Show_NumberState extends State<Show_Number> {
   @override
   Widget build(BuildContext context) {
     return Row(
       spacing: 4,
       children: [
+        // * រូបតំណាងមុន
         if (widget.prefixIcon != null) Icon(widget.prefixIcon!, color: Colors.blue),
+        // * អត្ថបទមុន
         if (widget.prefixText != null)
           Text(
             widget.prefixText ?? "", //
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
           ),
+        // * អត្ថបទដឹកនាំ
         Text(
           widget.leading ?? "", //
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        // * តម្លៃលេខដែលបានបង្ហាញ
         Expanded(
           child: Text(
             '${widget.value?.toStringAsFixed(2) ?? ""} ${widget.suffixText ?? ""}',
@@ -38,6 +44,7 @@ class _Show_NumberState extends State<Show_Number> {
   }
 }
 
+// * ថ្នាក់ Show_Number ជា widget សម្រាប់បង្ហាញលេខ
 class Show_Number extends StatefulWidget {
   const Show_Number({
     super.key, //

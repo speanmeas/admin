@@ -18,6 +18,7 @@ import "package:speanmeas/core/schema/mini_bar.g.dart";
 
 import "form/charge.dart" as charge;
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការគិតប្រាក់ mini bar តាមបន្ទប់
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
@@ -508,6 +509,7 @@ class _Main_State extends State<Main_> {
 }
 
 //
+// * ថ្នាក់ Main_ ជាទំព័រមេ mini bar
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override
@@ -515,6 +517,7 @@ class Main_ extends StatefulWidget {
 }
 
 //
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

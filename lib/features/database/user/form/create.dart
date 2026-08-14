@@ -1,3 +1,5 @@
+// * ទំព័របង្កើតអ្នកប្រើប្រាស់ថ្មី (Create User)
+
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -13,6 +15,7 @@ import "package:speanmeas/core/widget/pick/pick_boolean.dart";
 import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
+// * បង្កើត layout មេរបស់ទំព័របង្កើតអ្នកប្រើប្រាស់
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -48,6 +51,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បង្កើតអ្នកប្រើប្រាស់
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
@@ -62,6 +66,7 @@ class _Main_State extends State<Main_> {
   bool? is_housekeeper;
   String? note;
 
+  // * ផ្ទុកទិន្នន័យដំបូង
   void init() async {
     //
   }
@@ -70,53 +75,62 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
+      // * បញ្ចូលឈ្មោះអ្នកប្រើប្រាស់
       Input_Text(
         init: username, //
         lead: "Username:", //
         onChanged: (v) => username = v,
       ),
 
+      // * បញ្ចូលពាក្យសម្ងាត់
       Input_Password(
         initial: password, //
         onChanged: (v) => password = v,
       ),
 
+      // * បញ្ចូលឈ្មោះពេញ
       Input_Text(
         init: full_name, //
         lead: "Full Name:", //
         onChanged: (v) => full_name = v,
       ),
 
+      // * បញ្ចូលលេខទូរស័ព្ទ
       Input_Text(
         init: phone_number, //
         lead: "Phone Number:", //
         onChanged: (v) => phone_number = v,
       ),
 
+      // * ជ្រើសរើសតួនាទីជាអ្នកគ្រប់គ្រងប្រព័ន្ធ
       Picker_Boolean(
         initial: is_admin, //
         title: "Is Admin:", //
         onChanged: (v) => is_admin = v,
       ),
 
+      // * ជ្រើសរើសតួនាទីជាអ្នកគ្រប់គ្រង
       Picker_Boolean(
         initial: is_manager, //
         title: "Is Manager:", //
         onChanged: (v) => is_manager = v,
       ),
 
+      // * ជ្រើសរើសតួនាទីជាអ្នកទទួលភ្ញៀវ
       Picker_Boolean(
         initial: is_receptionist, //
         title: "Is Receptionist:", //
         onChanged: (v) => is_receptionist = v,
       ),
 
+      // * ជ្រើសរើសតួនាទីជាអ្នកសម្អាត
       Picker_Boolean(
         initial: is_housekeeper, //
         title: "Is Housekeeper:", //
         onChanged: (v) => is_housekeeper = v,
       ),
 
+      // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: note, //
         lead: "Note:", //
@@ -124,6 +138,7 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => note = v ?? "",
       ),
 
+      // * ប៊ូតុងបង្កើតអ្នកប្រើប្រាស់
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Create"),
@@ -135,8 +150,10 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * បង្កើតអ្នកប្រើប្រាស់ថ្មីតាមរយៈ API
   void on_create() async {
     try {
+      // * ផ្ញើសំណើបង្កើតអ្នកប្រើប្រាស់
       tmp = await dio.post(
         endpoint.USER_CRUD_CREATE, //
         data: {
@@ -152,6 +169,7 @@ class _Main_State extends State<Main_> {
         },
       );
 
+      // * ត្រលប់ទៅទំព័រមុនជាមួយទិន្នន័យដែលបានបង្កើត
       Navigator.pop(context, tmp.data[0]);
 
       snackbar(ct: context, ms: "Success", cl: Colors.green);
@@ -170,12 +188,14 @@ class _Main_State extends State<Main_> {
   //
 }
 
+// * ថ្នាក់ Main_ ជាទំព័របង្កើតអ្នកប្រើប្រាស់
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

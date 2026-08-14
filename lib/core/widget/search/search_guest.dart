@@ -1,3 +1,4 @@
+// * នាំចូល Flutter foundation និង flutter_typeahead សម្រាប់ autocomplete
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -17,13 +18,16 @@ import "package:speanmeas/core/widget/show/show_text.dart";
 
 import "package:speanmeas/features/database/guest/form/create.dart" as create_guest;
 
+// * ថ្នាក់ state របស់ Search_Guest គ្រប់គ្រងការស្វែងរកភ្ញៀវ
 class _Search_GuestState extends State<Search_Guest> {
   dynamic tmp;
   String? note;
+  // * កំណត់ថាតើបានជ្រើសរើសហើយឬអត់
   bool is_selected = false;
   FocusNode focusNode = FocusNode();
   FocusNode clear_focus = FocusNode();
 
+  // * ព័ត៌មានភ្ញៀវដែលបានជ្រើសរើស
   String? id;
   String? full_name;
   String? phone_number;
@@ -33,7 +37,9 @@ class _Search_GuestState extends State<Search_Guest> {
   final controller = TextEditingController();
   dynamic data;
 
+  // * ចាប់ផ្តើមស្វែងរក
   void init() async {
+    // * សម្អាតតម្លៃនៅពេលបាត់បង់ focus
     focusNode.addListener(() {
       if (!focusNode.hasFocus && !clear_focus.hasFocus && !is_selected && controller.text.isNotEmpty) {
         id = null;
@@ -48,15 +54,18 @@ class _Search_GuestState extends State<Search_Guest> {
       }
     });
 
+    // * បើគ្មានតម្លៃដំបូង ឈប់
     if (widget.init == null || widget.init!.isEmpty) return;
 
     try {
+      // * ទាញយកព័ត៌មានភ្ញៀវតាម id
       tmp = await dio.post(
         endpoint.GUEST_CRUD_READ_ID, //
         data: {sm_guest.ID: widget.init},
       );
       if (tmp.data.isEmpty) return;
 
+      // * កំណត់ព័ត៌មានភ្ញៀវ
       id = tmp.data[0][sm_guest.ID]?.toString();
       full_name = tmp.data[0][sm_guest.FULL_NAME]?.toString();
       phone_number = tmp.data[0][sm_guest.PHONE_NUMBER]?.toString();
@@ -68,6 +77,7 @@ class _Search_GuestState extends State<Search_Guest> {
       widget.onChanged?.call(id);
       setState(() {});
     } catch (e, st) {
+      // * បង្ហាញកំហុសប្រសិនបើមាន
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
@@ -81,15 +91,18 @@ class _Search_GuestState extends State<Search_Guest> {
         Row(
           children: [
             Expanded(
+              // * បង្កើត TypeAheadField សម្រាប់ស្វែងរកភ្ញៀវ
               child: TypeAheadField<String>(
                 controller: controller,
                 focusNode: focusNode,
                 itemBuilder: (context, item) => ListTile(title: Text(item)),
+                // * ស្វែងរកភ្ញៀវពី server
                 suggestionsCallback: (q) async {
                   try {
                     tmp = await dio.post(endpoint.GUEST_SEARCH, data: {"query": q});
                     data = tmp.data;
 
+                    // * បង្កើតបញ្ជីជម្រើស
                     final options = <String>[];
                     for (var d in data) {
                       final text = "${d[sm_guest.FULL_NAME] ?? ""} (${d[sm_guest.PHONE_NUMBER] ?? "N/A"})";
@@ -112,6 +125,7 @@ class _Search_GuestState extends State<Search_Guest> {
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: Icon(Icons.search, color: Colors.blue),
+                      // * ប៊ូតុងសម្អាតតម្លៃ
                       suffixIcon: ExcludeFocus(
                         child: Padding(
                           padding: EdgeInsets.only(right: 4),
@@ -140,6 +154,7 @@ class _Search_GuestState extends State<Search_Guest> {
                   is_selected = true;
                   controller.text = v;
 
+                  // * ស្វែងរកទិន្នន័យដែលត្រូវគ្នា
                   Map<String, dynamic> d = {};
                   for (var e in data) {
                     if ("${e[sm_guest.FULL_NAME] ?? ""} (${e[sm_guest.PHONE_NUMBER] ?? "N/A"})" == v) {
@@ -148,6 +163,7 @@ class _Search_GuestState extends State<Search_Guest> {
                     }
                   }
 
+                  // * កំណត់ព័ត៌មានភ្ញៀវដែលបានជ្រើសរើស
                   if (d.isNotEmpty) {
                     id = d[sm_guest.ID]?.toString();
                     full_name = d[sm_guest.FULL_NAME]?.toString();

@@ -1,4 +1,5 @@
 // TODO: Add notification when overtime.
+// * ទំព័រ Front Desk សម្រាប់គ្រប់គ្រងបន្ទប់ និងការស្នាក់នៅ
 
 import "dart:async";
 import "package:intl/intl.dart";
@@ -19,6 +20,7 @@ import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 
+// * នាំចូលទំព័រទម្រង់ផ្សេងៗរបស់ front desk
 import "form/add_pay_other.dart" as pay_other;
 import "form/broke.dart" as broke;
 import "form/cancel.dart" as cancel;
@@ -33,6 +35,7 @@ import "form/update_guest.dart" as update_guest;
 import "form/update_pay_room.dart" as update_pay_room;
 import "form/update_stay.dart" as update_stay;
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការបង្ហាញបន្ទប់ទាំងអស់
 class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
@@ -43,11 +46,14 @@ class _Main_State extends State<Main_> {
   String? search;
   Timer? _debounce; // * ពន្យាពេល rebuild សម្រាប់ការស្វែងរក
 
+  // * ផ្ទុកទិន្នន័យបន្ទប់ និង front desk ពី server
   void init() async {
     try {
+      // * អានបញ្ជីបន្ទប់ទាំងអស់
       tmp = await dio.post(endpoint.ROOM_CRUD_READ, data: {"key": sm_room.NUMBER, "order": 1});
       list_r = tmp.data as List<dynamic>;
 
+      // * ផ្ទុក front desk សម្រាប់បន្ទប់នីមួយៗដែលមានភ្ញៀវ
       for (var r in list_r) //
         if (r[sm_room.FRONT_DESK_ID] != null) {
           tmp = await dio.post(
@@ -65,6 +71,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បង្កើត layout មេដែលមានប្រអប់ស្វែងរក និងប៊ូតុង refresh
   Widget _layout(List<Widget> children) {
     return Scaffold(
       body: Column(
@@ -73,6 +80,7 @@ class _Main_State extends State<Main_> {
             children: [
               SizedBox(width: 8), //
 
+              // * ប្រអប់ស្វែងរកបន្ទប់
               Container(
                 width: 200,
                 height: 40,
@@ -101,6 +109,7 @@ class _Main_State extends State<Main_> {
 
               Spacer(),
 
+              // * ប៊ូតុង refresh ទិន្នន័យ
               Menu_Button_Icon(
                 tip: "Refresh", //
                 icon: Icons.refresh, //
@@ -111,6 +120,7 @@ class _Main_State extends State<Main_> {
             ],
           ),
 
+          // * តំបន់បង្ហាញបញ្ជីបន្ទប់
           Expanded(
             child: SingleChildScrollView(
               child: Center(
@@ -127,6 +137,7 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុកទិន្នន័យ
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       for (var r in _list_show)
@@ -531,6 +542,7 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * បើកទំព័រ check in សម្រាប់បន្ទប់
   void on_check_in(dynamic r) async {
     try {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_in.Main_(room_id: r[sm_room.ID])));
@@ -541,6 +553,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័រទូទាត់បន្ទប់
   void on_payment(dynamic r) async {
     try {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => pay_room.Main_(room_id: r[sm_room.ID])));
@@ -551,6 +564,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័រ check out សម្រាប់បន្ទប់
   void on_check_out(dynamic r) async {
     try {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => check_out.Main_(room_id: r[sm_room.ID])));
@@ -561,6 +575,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័រសម្អាតបន្ទប់
   void on_clean(dynamic r) async {
     try {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => clean.Main_(room_id: r[sm_room.ID])));
@@ -571,6 +586,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័រកំណត់បន្ទប់ខូច
   void on_broke(dynamic r) async {
     try {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => broke.Main_(room_id: r[sm_room.ID])));
@@ -581,6 +597,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័រកំណត់បន្ទប់ជួសជុលរួច
   void on_fix(dynamic r) async {
     try {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => fix.Main_(room_id: r[sm_room.ID])));
@@ -591,6 +608,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័រមើលព័ត៌មានលម្អិតបន្ទប់
   void on_detail(dynamic r) async {
     try {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => detail.Main_(room_id: r[sm_room.ID])));
@@ -601,6 +619,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័របោះបង់ការស្នាក់នៅ
   void on_cancel(dynamic r) async {
     try {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => cancel.Main_(room_id: r[sm_room.ID])));
@@ -611,6 +630,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័រប្តូរបន្ទប់
   void on_change_room(dynamic r) async {
     try {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => change_room.Main_(room_id: r[sm_room.ID])));
@@ -621,6 +641,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័រកែព័ត៌មានស្នាក់នៅ
   void on_update_stay(dynamic r) async {
     try {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update_stay.Main_(room_id: r[sm_room.ID])));
@@ -631,6 +652,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័រកែព័ត៌មានភ្ញៀវ
   void on_update_guest(dynamic r) async {
     try {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update_guest.Main_(room_id: r[sm_room.ID])));
@@ -641,6 +663,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័រកែការទូទាត់បន្ទប់
   void on_update_room_payment(dynamic r) async {
     try {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update_pay_room.Main_(room_id: r[sm_room.ID])));
@@ -651,6 +674,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  // * បើកទំព័រទូទាត់ផ្សេងៗ
   void on_pay_other(dynamic r) async {
     try {
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => pay_other.Main_(room_id: r[sm_room.ID])));
@@ -664,6 +688,7 @@ class _Main_State extends State<Main_> {
   // * Safe lookup into map_fd; returns {} if the room's front-desk fetch failed/missing
   Map<String, dynamic> _fd(dynamic r) => map_fd[r[sm_room.ID]] as Map<String, dynamic>? ?? {};
 
+  // * ត្រងបញ្ជីបន្ទប់តាមលក្ខខណ្ឌស្វែងរក
   List<dynamic> get _list_show {
     final q = search?.trim().toLowerCase();
     if (q == null || q.isEmpty) return list_r;
@@ -682,12 +707,14 @@ class _Main_State extends State<Main_> {
   }
 }
 
+// * ថ្នាក់ Main_ ជាទំព័រមេ front desk
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

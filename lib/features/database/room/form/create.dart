@@ -1,3 +1,5 @@
+// * ទំព័របង្កើតបន្ទប់ថ្មី (Create Room)
+
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -15,6 +17,7 @@ import "../widget/kind_select.dart" as k_select;
 import "../widget/status_select.dart" as s_select;
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
+// * បង្កើត layout មេរបស់ទំព័របង្កើតបន្ទប់
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -50,6 +53,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បង្កើតបន្ទប់
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
@@ -61,6 +65,7 @@ class _Main_State extends State<Main_> {
   String? status;
   String? note;
 
+  // * ផ្ទុកទិន្នន័យដំបូង
   void init() async {
     //
   }
@@ -69,34 +74,40 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
+      // * បញ្ចូលលេខបន្ទប់
       Input_Text(
         init: number, //
         lead: "Number:", //
         onChanged: (v) => number = v,
       ),
 
+      // * បញ្ចូលតម្លៃក្នុងមួយថ្ងៃ
       Input_Number(
         init: usd_per_day, //
         lead: "USD/Day:", //
         onChanged: (v) => usd_per_day = v,
       ),
 
+      // * បញ្ចូលតម្លៃក្នុងមួយ 3 ម៉ោង
       Input_Number(
         init: usd_per_3h, //
         lead: "USD/3H:", //
         onChanged: (v) => usd_per_3h = v,
       ),
 
+      // * ជ្រើសរើសប្រភេទបន្ទប់
       k_select.Main_(
         initial: kind, //
         onChanged: (v) => kind = v,
       ),
 
+      // * ជ្រើសរើសស្ថានភាពបន្ទប់
       s_select.Main_(
         initial: status, //
         onChanged: (v) => status = v,
       ),
 
+      // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: note, //
         lead: "Note:", //
@@ -104,6 +115,7 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => note = v ?? "",
       ),
 
+      // * ប៊ូតុងបង្កើតបន្ទប់
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Create"),
@@ -115,8 +127,10 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * បង្កើតបន្ទប់ថ្មីតាមរយៈ API
   void on_create() async {
     try {
+      // * ផ្ញើសំណើបង្កើតបន្ទប់
       tmp = await dio.post(
         endpoint.ROOM_CRUD_CREATE, //
         data: {
@@ -129,6 +143,7 @@ class _Main_State extends State<Main_> {
         },
       );
 
+      // * ត្រលប់ទៅទំព័រមុនជាមួយទិន្នន័យដែលបានបង្កើត
       Navigator.pop(context, tmp.data[0]);
 
       snackbar(ct: context, ms: "Success", cl: Colors.green);
@@ -147,12 +162,14 @@ class _Main_State extends State<Main_> {
   //
 }
 
+// * ថ្នាក់ Main_ ជាទំព័របង្កើតបន្ទប់
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

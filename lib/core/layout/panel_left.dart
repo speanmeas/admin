@@ -1,3 +1,4 @@
+// * នាំចូល Flutter material និង Provider សម្រាប់ state management
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/i18n/main.dart";
@@ -11,20 +12,26 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
+// * ថ្នាក់ state របស់ Panel_Left គ្រប់គ្រង menu ខាងឆ្វេង
 class _Panel_LeftState extends State<Panel_Left> {
   //
   dynamic tmp;
 
+  // * កំណត់របៀបបង្ហាញ
   bool is_mobile = false;
+  // * តួនាទីរបស់អ្នកប្រើប្រាស់
   bool is_admin = false;
   bool is_manager = false;
   bool is_recept = false;
   bool is_cleaner = false;
 
+  // * ចាប់ផ្តើមផ្ទុកតួនាទីរបស់អ្នកប្រើប្រាស់
   void init() async {
     try {
+      // * ទទួលបានព័ត៌មានអ្នកប្រើប្រាស់ពី server
       tmp = await dio.post(endpoint.AUTH_ACCESS_TOKEN);
 
+      // * កំណត់តួនាទីពីទិន្នន័យដែលបានទទួល
       if (tmp.data[sm_user.IS_ADMIN]?["value"] == true) is_admin = true;
       if (tmp.data[sm_user.IS_MANAGER]?["value"] == true) is_manager = true;
       if (tmp.data[sm_user.IS_RECEPTIONIST]?["value"] == true) is_recept = true;
@@ -32,6 +39,7 @@ class _Panel_LeftState extends State<Panel_Left> {
 
       setState(() {});
     } catch (e, st) {
+      // * បង្ហាញកំហុសប្រសិនបើមាន
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
@@ -39,6 +47,7 @@ class _Panel_LeftState extends State<Panel_Left> {
 
   @override
   Widget build(BuildContext context) {
+    // * ពិនិត្យទទឹងអេក្រង់
     is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
 
     return Column(
@@ -46,6 +55,7 @@ class _Panel_LeftState extends State<Panel_Left> {
         Expanded(
           child: ListView(
             children: [
+              // * បង្ហាញ Front Desk សម្រាប់អ្នកប្រើប្រាស់ដែលមានសិទ្ធិ
               if (is_admin || is_manager || is_recept || is_cleaner) //
                 list_tile_l1(name: "Front Desk", icon: Icons.table_bar_outlined),
 
@@ -53,39 +63,39 @@ class _Panel_LeftState extends State<Panel_Left> {
               // if (is_admin || is_manager || is_recept) //
               //   list_tile_l1(name: "Mini Bar", icon: Icons.local_bar_outlined),
 
-              // data
+              // * ផ្នែក Database
               ExpansionTile(
                 leading: Icon(Icons.storage_outlined), //
                 title: Text("Database"),
                 initiallyExpanded: true,
                 children: [
-                  // front desk
+                  // * front desk
                   if (is_admin || is_manager || is_recept || is_cleaner) //
                     list_tile_l2(prefix: "Data", name: "Front Desk", icon: Icons.table_bar_outlined),
 
-                  // guest
+                  // * guest
                   if (is_admin || is_manager || is_recept) //
                     list_tile_l2(prefix: "Data", name: "Guest", icon: Icons.people_outline),
 
-                  // room
+                  // * room
                   if (is_admin || is_manager || is_recept) //
                     list_tile_l2(prefix: "Data", name: "Room", icon: Icons.hotel_outlined),
 
-                  // nationality
+                  // * nationality
                   if (is_admin || is_manager || is_recept) //
                     list_tile_l2(prefix: "Data", name: "Nationality", icon: Icons.flag_outlined),
 
-                  // user
+                  // * user
                   if (is_admin || is_manager) //
                     list_tile_l2(prefix: "Data", name: "User", icon: Icons.person_outline),
 
-                  // mini bar
+                  // * mini bar
                   if (is_admin || is_manager || is_recept) //
                     list_tile_l2(prefix: "Data", name: "Mini Bar", icon: Icons.local_bar_outlined),
                 ],
               ),
 
-              // Reports
+              // * ផ្នែក Reports
               if (is_admin | is_manager | is_recept)
                 ExpansionTile(
                   leading: Icon(Icons.assessment_outlined), //
@@ -99,7 +109,7 @@ class _Panel_LeftState extends State<Panel_Left> {
                   ],
                 ),
 
-              // Demos
+              // * ផ្នែក Demos
               if (is_admin)
                 ExpansionTile(
                   leading: Icon(Icons.model_training_outlined), //
@@ -115,9 +125,11 @@ class _Panel_LeftState extends State<Panel_Left> {
         ),
 
         //
+        // * ប៊ូតុង Setting
         list_tile_l1(name: "Setting", icon: Icons.settings_outlined),
 
         //
+        // * ផ្នែកខាងក្រោម
         Container(
           height: 32,
           alignment: .topCenter,
@@ -135,6 +147,7 @@ class _Panel_LeftState extends State<Panel_Left> {
     );
   }
 
+  // * បង្កើត ListTile កម្រិតទី 1
   Widget list_tile_l1({
     required String name, //
     required IconData icon,
@@ -145,6 +158,7 @@ class _Panel_LeftState extends State<Panel_Left> {
       selected: glob.body == name,
       selectedColor: Colors.blue,
       onTap: () {
+        // * ផ្លាស់ប្តូរ body បច្ចុប្បន្ន
         glob.body = name;
         glob.notify();
         if (is_mobile) Navigator.pop(context);
@@ -153,6 +167,7 @@ class _Panel_LeftState extends State<Panel_Left> {
     );
   }
 
+  // * បង្កើត ListTile កម្រិតទី 2
   Widget list_tile_l2({
     required String prefix, //
     required String name, //
@@ -165,6 +180,7 @@ class _Panel_LeftState extends State<Panel_Left> {
       selectedColor: Colors.blue,
       contentPadding: EdgeInsets.only(left: 40),
       onTap: () {
+        // * ផ្លាស់ប្តូរ body បច្ចុប្បន្នជាមួយ prefix
         glob.body = "$prefix $name";
         glob.notify();
         if (is_mobile) Navigator.pop(context);
@@ -182,12 +198,14 @@ class _Panel_LeftState extends State<Panel_Left> {
   //
 }
 
+// * ថ្នាក់ Panel_Left ជា widget សម្រាប់ menu ខាងឆ្វេង
 class Panel_Left extends StatefulWidget {
   const Panel_Left({super.key});
   @override
   State<Panel_Left> createState() => _Panel_LeftState();
 }
 
+// * ចំណុចចាប់ផ្តើមសម្រាប់ការអភិវឌ្ឍន៍
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

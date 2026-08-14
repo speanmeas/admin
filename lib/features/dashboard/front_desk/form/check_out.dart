@@ -1,4 +1,5 @@
 // * OK
+// * ទំព័រ Check Out សម្រាប់បញ្ចប់ការស្នាក់នៅរបស់ភ្ញៀវ
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -14,6 +15,7 @@ import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
+// * បង្កើត layout មេរបស់ទំព័រ check out
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -46,6 +48,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់ check out
 class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic map_r;
@@ -58,14 +61,17 @@ class _Main_State extends State<Main_> {
 
   String? note;
 
+  // * ផ្ទុកព័ត៌មានបន្ទប់ និង front desk ពី server
   void init() async {
     try {
+      // * អានព័ត៌មានបន្ទប់តាម id
       tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
       map_r = tmp.data[0] as Map<String, dynamic>;
       // pprint(map_r);
 
       if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
 
+      // * អានព័ត៌មាន front desk របស់បន្ទប់
       tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
       map_fd = tmp.data[0] as Map<String, dynamic>;
       // pprint(map_fd);
@@ -84,8 +90,10 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * បង្ហាញលេខបន្ទប់
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -99,6 +107,7 @@ class _Main_State extends State<Main_> {
 
       Divider(height: 1, color: Colors.black),
 
+      // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: note, //
         lead: '${t("Note")}:', //
@@ -110,6 +119,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * ប៊ូតុងបញ្ជូន check out
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.logout), //
@@ -121,6 +131,7 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * អនុវត្តការ check out ភ្ញៀវ
   void on_check_out() async {
     if (is_submitting) return; // double-submit guard
     is_submitting = true;
@@ -130,6 +141,7 @@ class _Main_State extends State<Main_> {
       // * Close the front-desk record first, then mark the room clean.
       // * If the check-out write fails, the room stays in its current state
       // * instead of being left as "Pending Clean" with an open record.
+      // * បិទកំណត់ត្រា front desk ជាមុន បន្ទាប់មកកំណត់បន្ទប់ជា Pending Clean
       await dio.post(
         endpoint.FRONT_DESK_CHECK_OUT, //
         data: {
@@ -138,6 +150,7 @@ class _Main_State extends State<Main_> {
         },
       );
 
+      // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Pending Clean
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
         data: {
@@ -167,6 +180,7 @@ class _Main_State extends State<Main_> {
 }
 
 //
+// * ថ្នាក់ Main_ ជាទំព័រ check out
 class Main_ extends StatefulWidget {
   const Main_({
     super.key,
@@ -180,6 +194,7 @@ class Main_ extends StatefulWidget {
 }
 
 //
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

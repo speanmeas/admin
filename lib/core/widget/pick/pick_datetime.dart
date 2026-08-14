@@ -1,3 +1,4 @@
+// * នាំចូល intl និង Flutter material សម្រាប់ UI
 import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -11,10 +12,13 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
+// * ថ្នាក់ state របស់ Picker_Datetime គ្រប់គ្រងការជ្រើសរើសកាលបរិច្ឆេទ
 class _Picker_DatetimeState extends State<Picker_Datetime> {
   //
+  // * controller សម្រាប់អត្ថបទ
   final controller = TextEditingController();
 
+  // * ចាប់ផ្តើមតម្លៃដំបូង
   void init() {
     if (widget.initial != null) {
       controller.text = DateFormat(DEFAULT_DATE_FORMAT).format(widget.initial!);
@@ -32,6 +36,7 @@ class _Picker_DatetimeState extends State<Picker_Datetime> {
         labelStyle: TextStyle(fontWeight: FontWeight.bold),
         floatingLabelBehavior: FloatingLabelBehavior.always,
         prefixIcon: Icon(Icons.calendar_month_outlined), //
+        // * ប៊ូតុងសម្អាតតម្លៃ
         suffixIcon: ExcludeFocus(
           child: Padding(
             padding: EdgeInsets.only(right: 4),
@@ -46,6 +51,7 @@ class _Picker_DatetimeState extends State<Picker_Datetime> {
           ), //
         ),
       ),
+      // * បើក picker នៅពេលចុច
       onTap: () async {
         final v = await picker(context);
         if (v == null) return;
@@ -56,11 +62,13 @@ class _Picker_DatetimeState extends State<Picker_Datetime> {
     );
   }
 
+  // * បើក picker សម្រាប់ជ្រើសរើសកាលបរិច្ឆេទ និងពេលវេលា
   Future<DateTime?>? picker(BuildContext context) async {
+    // * កំណត់កាលបរិច្ឆេទដំបូង
     DateTime init = DateTime.now();
     if (widget.initial != null) init = widget.initial!;
 
-    // select date
+    // * ជ្រើសរើសកាលបរិច្ឆេទ
     final DateTime? picked_date = await showDatePicker(
       context: context, //
       initialDate: init, //
@@ -70,7 +78,7 @@ class _Picker_DatetimeState extends State<Picker_Datetime> {
 
     if (picked_date == null) return null;
 
-    // select time
+    // * ជ្រើសរើសពេលវេលា
     TimeOfDay initial_time = TimeOfDay(hour: 0, minute: 0);
     if (widget.initial != null) initial_time = TimeOfDay.fromDateTime(widget.initial!);
     final TimeOfDay? picked_time = await showTimePicker(
@@ -80,7 +88,7 @@ class _Picker_DatetimeState extends State<Picker_Datetime> {
 
     if (picked_time == null) return null;
 
-    // combine date + time
+    // * ផ្សំកាលបរិច្ឆេទ និងពេលវេលា
     final DateTime picked_datetime = DateTime(
       picked_date.year, //
       picked_date.month,
@@ -99,6 +107,7 @@ class _Picker_DatetimeState extends State<Picker_Datetime> {
   }
 }
 
+// * ថ្នាក់ Picker_Datetime ជា widget សម្រាប់ជ្រើសរើសកាលបរិច្ឆេទ
 class Picker_Datetime extends StatefulWidget {
   const Picker_Datetime({
     super.key, //

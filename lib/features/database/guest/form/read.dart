@@ -1,3 +1,5 @@
+// * ទំព័រអានព័ត៌មានភ្ញៀវ
+
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -11,6 +13,7 @@ import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
+// * បង្កើត layout មេរបស់ទំព័រអានភ្ញៀវ
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -46,6 +49,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់អានភ្ញៀវ
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
@@ -60,14 +64,17 @@ class _Main_State extends State<Main_> {
   String? passport_number;
   String? note;
 
+  // * ផ្ទុកព័ត៌មានភ្ញៀវតាម id
   void init() async {
     try {
+      // * អានព័ត៌មានភ្ញៀវតាម id
       tmp = await dio.post(
         endpoint.GUEST_CRUD_READ_ID, //
         data: {sm_guest.ID: widget.id},
       );
 
       final data = tmp.data;
+      // * បើគ្មានទិន្នន័យ បង្ហាញសារព្រមាន
       if (data == null || data.isEmpty) {
         snackbar(ct: context, ms: "No data found.", cl: Colors.red);
         is_loading = false;
@@ -76,6 +83,7 @@ class _Main_State extends State<Main_> {
       }
       final row = data[0];
 
+      // * ផ្ទុកតម្លៃទៅក្នុងអថេរ
       id = row[sm_guest.ID]?.toString();
       full_name = row[sm_guest.FULL_NAME]?.toString();
       phone_number = row[sm_guest.PHONE_NUMBER]?.toString();
@@ -98,42 +106,49 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * បង្ហាញឈ្មោះពេញ
       Show_Text(
         prefixIcon: Icons.person_outline,
         lead: "Full Name:", //
         value: full_name,
       ),
 
+      // * បង្ហាញលេខទូរស័ព្ទ
       Show_Text(
         prefixIcon: Icons.phone_outlined,
         lead: "Phone Number:", //
         value: phone_number,
       ),
 
+      // * បង្ហាញភេទ
       Show_Text(
         prefixIcon: Icons.wc_outlined,
         lead: "Gender:", //
         value: gender,
       ),
 
+      // * បង្ហាញសញ្ជាតិ
       Show_Text(
         prefixIcon: Icons.flag_outlined,
         lead: "Nationality:", //
         value: nationality_id,
       ),
 
+      // * បង្ហាញលេខអត្តសញ្ញាណប័ណ្ណ
       Show_Text(
         prefixIcon: Icons.badge_outlined,
         lead: "ID Number:", //
         value: id_number,
       ),
 
+      // * បង្ហាញលេខលិខិតឆ្លងដែន
       Show_Text(
         prefixIcon: Icons.book_outlined,
         lead: "Passport Number:", //
         value: passport_number,
       ),
 
+      // * បង្ហាញកំណត់ចំណាំ
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
         lead: "Note:", //
@@ -152,6 +167,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
+// * ថ្នាក់ Main_ ជាទំព័រអានភ្ញៀវ
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
@@ -164,6 +180,7 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

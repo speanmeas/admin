@@ -1,3 +1,5 @@
+// * ទំព័រអានព័ត៌មានធនាគារ
+
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -11,6 +13,7 @@ import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/bank.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
+// * បង្កើត layout មេរបស់ទំព័រអានព័ត៌មានធនាគារ
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -46,6 +49,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការអានព័ត៌មានធនាគារ
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
@@ -54,8 +58,10 @@ class _Main_State extends State<Main_> {
   String? name;
   String? note;
 
+  // * ផ្ទុកព័ត៌មានធនាគារតាម id
   void init() async {
     try {
+      // * អានទិន្នន័យធនាគារតាម id
       tmp = await dio.post(
         endpoint.BANK_CRUD_READ_ID, //
         data: {sm_bank.ID: widget.id},
@@ -84,14 +90,17 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * បង្ហាញឈ្មោះធនាគារ
       Show_Text(
         prefixIcon: Icons.account_balance_outlined,
         lead: "Name:", //
         value: name,
       ),
 
+      // * បង្ហាញកំណត់ចំណាំ
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
         lead: "Note:", //
@@ -110,6 +119,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
+// * ថ្នាក់ Main_ ជាទំព័រអានព័ត៌មានធនាគារ
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
@@ -122,6 +132,7 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

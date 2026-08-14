@@ -1,4 +1,5 @@
 // * OK
+// * ទំព័រ Fix សម្រាប់កំណត់បន្ទប់ថាជួសជុលរួច
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -13,6 +14,7 @@ import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
+// * បង្កើត layout មេរបស់ទំព័រ fix
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -45,6 +47,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់ជួសជុលបន្ទប់
 class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic map_r;
@@ -56,13 +59,16 @@ class _Main_State extends State<Main_> {
   String? room_number;
   String? note;
 
+  // * ផ្ទុកព័ត៌មានបន្ទប់ និង front desk ពី server
   void init() async {
     try {
+      // * អានព័ត៌មានបន្ទប់តាម id
       tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
       map_r = tmp.data[0] as Map<String, dynamic>;
 
       if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
 
+      // * អានព័ត៌មាន front desk របស់បន្ទប់
       tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
       map_fd = tmp.data[0] as Map<String, dynamic>;
 
@@ -81,8 +87,10 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * បង្ហាញលេខបន្ទប់
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -96,6 +104,7 @@ class _Main_State extends State<Main_> {
 
       Divider(height: 1, color: Colors.black),
 
+      // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: note, //
         lead: '${t("Note")}:', //
@@ -107,6 +116,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * ប៊ូតុងបញ្ជូនជួសជុល
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.build_outlined), //
@@ -118,12 +128,14 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * អនុវត្តការជួសជុលបន្ទប់
   void on_fix() async {
     if (is_submitting) return; // double-submit guard
     is_submitting = true;
     setState(() {});
 
     try {
+      // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Available
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
         data: {
@@ -133,6 +145,7 @@ class _Main_State extends State<Main_> {
         },
       );
 
+      // * កត់ត្រាការជួសជុលទៅ front desk
       if (front_desk_id != null)
         await dio.post(
           endpoint.FRONT_DESK_FIX,
@@ -163,6 +176,7 @@ class _Main_State extends State<Main_> {
 }
 
 //
+// * ថ្នាក់ Main_ ជាទំព័រជួសជុលបន្ទប់
 class Main_ extends StatefulWidget {
   const Main_({
     super.key,
@@ -176,6 +190,7 @@ class Main_ extends StatefulWidget {
 }
 
 //
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

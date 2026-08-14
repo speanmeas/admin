@@ -1,3 +1,5 @@
+// * ទំព័របង្កើតសញ្ជាតិថ្មី
+
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -11,6 +13,7 @@ import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/schema/nationality.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
+// * បង្កើត layout មេរបស់ទំព័របង្កើតសញ្ជាតិ
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -46,6 +49,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បង្កើតសញ្ជាតិ
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
@@ -61,12 +65,14 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
+      // * បញ្ចូលឈ្មោះសញ្ជាតិ
       Input_Text(
         init: name, //
         lead: "Name:", //
         onChanged: (v) => name = v,
       ),
 
+      // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: null, //
         lead: "Note:", //
@@ -75,6 +81,7 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => note = v ?? "",
       ),
 
+      // * ប៊ូតុងបង្កើត
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Create"),
@@ -86,8 +93,10 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * អនុវត្តការបង្កើតសញ្ជាតិ
   void on_create() async {
     try {
+      // * ផ្ញើសំណើបង្កើតសញ្ជាតិ
       tmp = await dio.post(
         endpoint.NATIONALITY_CRUD_CREATE, //
         data: {
@@ -114,12 +123,14 @@ class _Main_State extends State<Main_> {
   //
 }
 
+// * ថ្នាក់ Main_ ជាទំព័របង្កើតសញ្ជាតិ
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

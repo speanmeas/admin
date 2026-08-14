@@ -1,3 +1,4 @@
+// * នាំចូល Flutter material និង intl សម្រាប់ទម្រង់កាលបរិច្ឆេទ
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -11,7 +12,9 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
+// * ថ្នាក់ state របស់ Show_Text គ្រប់គ្រងការបង្ហាញអត្ថបទ
 class _Show_TextState extends State<Show_Text> {
+  // * តម្លៃដែលបានធ្វើទ្រង់ទ្រាយ
   String value = "";
 
   @override
@@ -23,9 +26,11 @@ class _Show_TextState extends State<Show_Text> {
   @override
   void didUpdateWidget(covariant Show_Text oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // * ធ្វើបច្ចុប្បន្នភាពតម្លៃនៅពេល widget ផ្លាស់ប្តូរ
     if (oldWidget.value != widget.value) value = _format(widget.value);
   }
 
+  // * ធ្វើទ្រង់ទ្រាយតម្លៃទៅជាអត្ថបទ
   String _format(dynamic v) {
     if (v == null) return "";
     if (v is String) return v;
@@ -41,16 +46,20 @@ class _Show_TextState extends State<Show_Text> {
     return Row(
       spacing: 4,
       children: [
+        // * រូបតំណាងមុន
         if (widget.prefixIcon != null) Icon(widget.prefixIcon!, color: Colors.blue),
+        // * អត្ថបទមុន
         if (widget.prefixText != null)
           Text(
             widget.prefixText ?? "", //
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
           ),
+        // * អត្ថបទដឹកនាំ
         Text(
           widget.lead ?? "", //
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        // * តម្លៃដែលបានបង្ហាញ
         Expanded(
           child: Text(
             value,
@@ -65,6 +74,7 @@ class _Show_TextState extends State<Show_Text> {
   }
 }
 
+// * ថ្នាក់ Show_Text ជា widget សម្រាប់បង្ហាញអត្ថបទ
 class Show_Text extends StatefulWidget {
   const Show_Text({
     super.key, //

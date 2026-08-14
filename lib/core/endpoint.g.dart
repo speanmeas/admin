@@ -143,6 +143,9 @@ class EndPoint {
 	final PAYMENT_ROOM_CRUD_READ_STRING = "/payment_room/crud/read_string";
 	final PAYMENT_ROOM_CRUD_UPDATE = "/payment_room/crud/update";
 	final REPORT = "/report";
+	final REPORT_OCCUPANCY = "/report/occupancy";
+	final REPORT_PAYMENT_METHOD = "/report/payment_method";
+	final REPORT_REVENUE = "/report/revenue";
 	final ROOM_CRUD_CREATE = "/room/crud/create";
 	final ROOM_CRUD_DELETE = "/room/crud/delete";
 	final ROOM_CRUD_DELETE_HARD = "/room/crud/delete_hard";

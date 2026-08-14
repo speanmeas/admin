@@ -1,3 +1,5 @@
+// * ទំព័រកែប្រែភ្ញៀវ
+
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -13,6 +15,7 @@ import "package:speanmeas/core/widget/search/search_nationality.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
+// * បង្កើត layout មេរបស់ទំព័រកែប្រែភ្ញៀវ
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -48,6 +51,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់កែប្រែភ្ញៀវ
 class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
@@ -60,14 +64,17 @@ class _Main_State extends State<Main_> {
   String? passport_number;
   String? note;
 
+  // * ផ្ទុកព័ត៌មានភ្ញៀវតាម id សម្រាប់កែប្រែ
   void init() async {
     try {
+      // * អានព័ត៌មានភ្ញៀវតាម id
       tmp = await dio.post(
         endpoint.GUEST_CRUD_READ_ID, //
         data: {sm_guest.ID: widget.id},
       );
 
       final data = tmp.data;
+      // * បើគ្មានទិន្នន័យ បង្ហាញសារព្រមាន
       if (data == null || data.isEmpty) {
         snackbar(ct: context, ms: "No data found.", cl: Colors.red);
         is_loading = false;
@@ -76,6 +83,7 @@ class _Main_State extends State<Main_> {
       }
       final row = data[0];
 
+      // * ផ្ទុកតម្លៃទៅក្នុងអថេរ
       full_name = row[sm_guest.FULL_NAME]?.toString();
       phone_number = row[sm_guest.PHONE_NUMBER]?.toString();
       gender = row[sm_guest.GENDER]?.toString();
@@ -97,6 +105,7 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * កែប្រែឈ្មោះពេញ
       Input_Text(
         init: full_name, //
         lead: "Full Name:",
@@ -106,6 +115,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * កែប្រែលេខទូរស័ព្ទ
       Input_Text(
         init: phone_number, //
         lead: "Phone Number:",
@@ -115,6 +125,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * កែប្រែភេទ
       Select_Dynamic(
         init: gender, //
         lead: "Gender:", //
@@ -126,6 +137,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * កែប្រែសញ្ជាតិ
       Search_Nationality(
         init: nationality_id, //
         onChanged: (v) {
@@ -134,6 +146,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * កែប្រែលេខអត្តសញ្ញាណប័ណ្ណ
       Input_Text(
         init: id_number, //
         lead: "ID Number:",
@@ -143,6 +156,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * កែប្រែលេខលិខិតឆ្លងដែន
       Input_Text(
         init: passport_number, //
         lead: "Passport Number:",
@@ -152,6 +166,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * កែប្រែកំណត់ចំណាំ
       Input_Text(
         init: note, //
         lead: "Note:",
@@ -161,6 +176,7 @@ class _Main_State extends State<Main_> {
           setState(() {});
         },
       ),
+      // * ប៊ូតុងកែប្រែ
       OutlinedButton.icon(
         icon: Icon(Icons.check), //
         label: Text("Update"),
@@ -171,8 +187,10 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * អនុវត្តការកែប្រែភ្ញៀវ
   void on_update() async {
     try {
+      // * ផ្ញើសំណើកែប្រែភ្ញៀវ
       tmp = await dio.post(
         endpoint.GUEST_CRUD_UPDATE, //
         data: {
@@ -203,6 +221,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
+// * ថ្នាក់ Main_ ជាទំព័រកែប្រែភ្ញៀវ
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
@@ -215,6 +234,7 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

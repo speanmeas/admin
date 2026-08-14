@@ -1,4 +1,4 @@
-// * OK
+// * ទំព័រ Update Stay សម្រាប់ធ្វើបច្ចុប្បន្នភាពការស្នាក់នៅ
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -15,6 +15,7 @@ import "package:speanmeas/core/schema/room.g.dart";
 
 import "package:speanmeas/core/widget/input/input_text.dart";
 
+// * បង្កើត layout មេរបស់ទំព័រធ្វើបច្ចុប្បន្នភាពការស្នាក់នៅ
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -47,6 +48,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់ធ្វើបច្ចុប្បន្នភាពការស្នាក់នៅ
 class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
@@ -68,13 +70,16 @@ class _Main_State extends State<Main_> {
 
   double? last_paid;
 
+  // * ផ្ទុកព័ត៌មានបន្ទប់ និងការស្នាក់នៅបច្ចុប្បន្ន
   void init() async {
     try {
+      // * អានព័ត៌មានបន្ទប់តាម id
       tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
       map_r = tmp.data[0] as Map<String, dynamic>;
 
       if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
 
+      // * អានព័ត៌មាន front desk
       tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
       map_fd = tmp.data[0] as Map<String, dynamic>;
 
@@ -85,11 +90,13 @@ class _Main_State extends State<Main_> {
       price_per_day = map_r[sm_room.USD_PER_DAY] ?? 0;
       price_per_3hours = map_r[sm_room.USD_PER_3H] ?? 0;
 
+      // * ផ្ទុកចំនួនភ្ញៀវ រយៈពេលស្នាក់ និងកំណត់ចំណាំ
       number_of_guest = map_fd[sm_front_desk.CHECK_IN_NUMBER] ?? 1;
       stay_days = map_fd[sm_front_desk.CHECK_IN_DAY] ?? 0;
       stay_hours = map_fd[sm_front_desk.CHECK_IN_HOUR] ?? 0;
       note = map_fd[sm_front_desk.CHECK_IN_NOTE] ?? "";
 
+      // * គណនាប្រាក់ដែលបានទទួលរួច
       tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
       for (var l in tmp) {
         last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
@@ -112,8 +119,10 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * បង្ហាញលេខបន្ទប់
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -127,6 +136,7 @@ class _Main_State extends State<Main_> {
 
       Divider(height: 1, color: Colors.black),
 
+      // * ជ្រើសរើសចំនួនភ្ញៀវ
       Select_Dynamic(
         init: number_of_guest ?? 0, //
         lead: '${t("Number of Guests")}:',
@@ -138,6 +148,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * ជ្រើសរើសរយៈពេលស្នាក់ (ថ្ងៃ)
       Select_Dynamic(
         init: stay_days ?? 0, //
         lead: '${t("Stay Duration (Days)")}:',
@@ -149,6 +160,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * ជ្រើសរើសរយៈពេលស្នាក់ (ម៉ោង)
       Select_Dynamic(
         init: stay_hours ?? 0, //
         lead: '${t("Stay Duration (Hours)")}:',
@@ -160,6 +172,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: note ?? "", //
         lead: '${t("Note")}:', //
@@ -171,6 +184,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * ប៊ូតុងធ្វើបច្ចុប្បន្នភាព
       OutlinedButton.icon(
         icon: Icon(Icons.check), //
         label: Text(is_submitting ? t("Updating...") : t("Update")), //
@@ -181,6 +195,7 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * ពិនិត្យថាអាចធ្វើបច្ចុប្បន្នភាពបានឬអត់
   bool get can_update {
     if ((number_of_guest ?? 0) <= 0) return false;
     if ((stay_days ?? 0) <= 0 && (stay_hours ?? 0) <= 0) return false;
@@ -188,16 +203,19 @@ class _Main_State extends State<Main_> {
     return true;
   }
 
+  // * គណនាតម្លៃបន្ទប់ពីរយៈពេលស្នាក់
   double get room_price {
     return ((price_per_day ?? 0) * (stay_days ?? 0)) + ((price_per_3hours ?? 0) * (stay_hours ?? 0) / 3);
   }
 
+  // * អនុវត្តការធ្វើបច្ចុប្បន្នភាពការស្នាក់នៅ
   void on_update() async {
     if (is_submitting) return; // double-submit guard
     is_submitting = true;
     setState(() {});
 
     try {
+      // * ធ្វើបច្ចុប្បន្នភាពព័ត៌មាន check-in
       await dio.post(
         endpoint.FRONT_DESK_UPDATE_CHECK_IN, //
         data: {
@@ -211,6 +229,7 @@ class _Main_State extends State<Main_> {
 
       pprint("room_price: $room_price");
 
+      // * កត់ត្រាតម្លៃបន្ទប់ថ្មី
       await dio.post(
         endpoint.FRONT_DESK_ADD_PAY_ROOM, // update
         data: {
@@ -220,9 +239,11 @@ class _Main_State extends State<Main_> {
       );
 
       // * Compare in cents to avoid floating-point precision issues
+      // * ប្រៀបធៀបជា cents ដើម្បីចៀសវាងបញ្ហាភាពជាក់លាក់នៃចំនួនទសភាគ
       final paid_cents = ((last_paid ?? 0) * 100).round();
       final price_cents = (room_price * 100).round();
 
+      // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់តាមការប្រៀបធៀប
       if (paid_cents == price_cents)
         await dio.post(
           endpoint.ROOM_CRUD_UPDATE, //
@@ -261,6 +282,7 @@ class _Main_State extends State<Main_> {
 }
 
 //
+// * ថ្នាក់ Main_ ជាទំព័រធ្វើបច្ចុប្បន្នភាពការស្នាក់នៅ
 class Main_ extends StatefulWidget {
   const Main_({
     super.key,
@@ -274,6 +296,7 @@ class Main_ extends StatefulWidget {
 }
 
 //
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

@@ -1,3 +1,5 @@
+// * ទំព័រកែប្រែព័ត៌មានធនាគារ
+
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -11,6 +13,7 @@ import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/schema/bank.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
+// * បង្កើត layout មេរបស់ទំព័រកែប្រែធនាគារ
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -46,6 +49,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់កែប្រែធនាគារ
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
@@ -54,8 +58,10 @@ class _Main_State extends State<Main_> {
   String? name;
   String? note;
 
+  // * ផ្ទុកព័ត៌មានធនាគារបច្ចុប្បន្ន
   void init() async {
     try {
+      // * អានទិន្នន័យធនាគារតាម id
       tmp = await dio.post(
         endpoint.BANK_CRUD_READ_ID, //
         data: {sm_bank.ID: widget.id},
@@ -84,14 +90,17 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * បញ្ចូលឈ្មោះធនាគារ
       Input_Text(
         init: name, //
         lead: "Name:", //
         onChanged: (v) => name = v,
       ),
 
+      // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: note, //
         lead: "Note:", //
@@ -99,6 +108,7 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => note = v ?? "",
       ),
 
+      // * ប៊ូតុងកែប្រែ
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Update"),
@@ -109,8 +119,10 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * អនុវត្តការកែប្រែធនាគារ
   void on_update() async {
     try {
+      // * ផ្ញើសំណើកែប្រែធនាគារ
       tmp = await dio.post(
         endpoint.BANK_CRUD_UPDATE, //
         data: {
@@ -138,6 +150,7 @@ class _Main_State extends State<Main_> {
   //
 }
 
+// * ថ្នាក់ Main_ ជាទំព័រកែប្រែធនាគារ
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
@@ -150,6 +163,7 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

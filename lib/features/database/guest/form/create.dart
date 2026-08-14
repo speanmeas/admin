@@ -1,3 +1,5 @@
+// * ទំព័របង្កើតភ្ញៀវថ្មី
+
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -13,6 +15,7 @@ import "package:speanmeas/core/widget/search/search_nationality.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
+// * បង្កើត layout មេរបស់ទំព័របង្កើតភ្ញៀវ
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -48,6 +51,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បង្កើតភ្ញៀវ
 class _Main_State extends State<Main_> {
   dynamic tmp;
 
@@ -67,41 +71,48 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
+      // * បញ្ចូលឈ្មោះពេញ
       Input_Text(
         init: full_name, //
         lead: "Full Name:", //
         onChanged: (v) => full_name = v,
       ),
 
+      // * បញ្ចូលលេខទូរស័ព្ទ
       Input_Text(
         init: phone_number, //
         lead: "Phone Number:", //
         onChanged: (v) => phone_number = v,
       ),
 
+      // * ជ្រើសរើសភេទ
       Select_Dynamic(
         prefixIcon: Icons.wc,
         options: ["Male", "Female", "Other"], //
         onChanged: (v) => gender = v,
       ),
 
+      // * ស្វែងរកសញ្ជាតិ
       Search_Nationality(
         init: "Cambodian", //
         onChanged: (v) => nationality_id = v,
       ),
 
+      // * បញ្ចូលលេខអត្តសញ្ញាណប័ណ្ណ
       Input_Text(
         init: id_number, //
         lead: "National ID Number:", //
         onChanged: (v) => id_number = v,
       ),
 
+      // * បញ្ចូលលេខលិខិតឆ្លងដែន
       Input_Text(
         init: passport_number, //
         lead: "Passport Number:", //
         onChanged: (v) => passport_number = v,
       ),
 
+      // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: note, //
         lead: "Note:", //
@@ -109,6 +120,7 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => note = v ?? "",
       ),
 
+      // * ប៊ូតុងបង្កើត
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Create"),
@@ -120,8 +132,10 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * អនុវត្តការបង្កើតភ្ញៀវ
   void on_create() async {
     try {
+      // * ផ្ញើសំណើបង្កើតភ្ញៀវ
       tmp = await dio.post(
         endpoint.GUEST_CRUD_CREATE, //
         data: {
@@ -151,12 +165,14 @@ class _Main_State extends State<Main_> {
   }
 }
 
+// * ថ្នាក់ Main_ ជាទំព័របង្កើតភ្ញៀវ
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

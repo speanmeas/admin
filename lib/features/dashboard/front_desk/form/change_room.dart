@@ -1,3 +1,5 @@
+// * ទំព័រ Change Room សម្រាប់ប្តូរបន្ទប់របស់ភ្ញៀវ
+
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -12,6 +14,7 @@ import "package:speanmeas/core/widget/select/select_dynamic.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
+// * បង្កើត layout មេរបស់ទំព័រប្តូរបន្ទប់
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -44,6 +47,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់ប្តូរបន្ទប់
 class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic map_r;
@@ -62,16 +66,20 @@ class _Main_State extends State<Main_> {
   // List<Map<String, dynamic>> rooms = [];
   dynamic list_r = []; // * សម្រាប់រក្សាពត៏មានបន្ទប់ទាំងអស់
 
+  // * ផ្ទុកព័ត៌មានបន្ទប់ និងបញ្ជីបន្ទប់ទំនេរ
   void init() async {
     try {
+      // * អានព័ត៌មានបន្ទប់បច្ចុប្បន្ន
       tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
       map_r = tmp.data[0] as Map<String, dynamic>;
 
       if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
 
+      // * អានព័ត៌មាន front desk
       tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
       map_fd = tmp.data[0] as Map<String, dynamic>;
 
+      // * អានបញ្ជីបន្ទប់ទាំងអស់
       tmp = await dio.post(endpoint.ROOM_CRUD_READ);
       list_r = tmp.data as List<dynamic>;
 
@@ -91,8 +99,10 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * បង្ហាញលេខបន្ទប់បច្ចុប្បន្ន
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -106,6 +116,7 @@ class _Main_State extends State<Main_> {
 
       Divider(height: 1, color: Colors.black),
 
+      // * ជ្រើសរើសលេខបន្ទប់ថ្មីដែលទំនេរ
       Select_Dynamic(
         lead: '${t("New Room Number")}:', //
         prefixIcon: Icons.hotel_outlined, //
@@ -121,6 +132,7 @@ class _Main_State extends State<Main_> {
         onChanged: (v) {
           to_room_number = v;
 
+          // * ស្វែងរក id នៃបន្ទប់ថ្មីដែលបានជ្រើសរើស
           for (var r in list_r) {
             if (r[sm_room.NUMBER]?.toString() == v) {
               to_room_id = r[sm_room.ID]?.toString();
@@ -132,6 +144,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: change_note, //
         lead: '${t("Note")}:', //
@@ -142,6 +155,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * ប៊ូតុងបញ្ជូនការប្តូរបន្ទប់
       OutlinedButton.icon(
         icon: Icon(Icons.swap_horiz_outlined), //
         label: Text(is_submitting ? t("Changing...") : t("Change")), //
@@ -152,11 +166,13 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * ពិនិត្យថាអាចប្តូរបន្ទប់បានឬអត់
   bool get can_change {
     if (to_room_id == null || to_room_id!.isEmpty) return false;
     return true;
   }
 
+  // * អនុវត្តការប្តូរបន្ទប់
   void on_change_room() async {
     if (is_submitting) return; // double-submit guard
     is_submitting = true;
@@ -164,6 +180,7 @@ class _Main_State extends State<Main_> {
 
     bool new_room_set = false; // * track whether the new room was already updated
     try {
+      // * ដោះលែងបន្ទប់ចាស់
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
         data: {
@@ -173,6 +190,7 @@ class _Main_State extends State<Main_> {
         },
       );
 
+      // * កំណត់បន្ទប់ថ្មីជាបន្ទប់កំពុងស្នាក់នៅ
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
         data: {
@@ -183,6 +201,7 @@ class _Main_State extends State<Main_> {
       );
       new_room_set = true;
 
+      // * ធ្វើបច្ចុប្បន្នភាព front desk ទៅបន្ទប់ថ្មី
       await dio.post(
         endpoint.FRONT_DESK_UPDATE_ROOM,
         data: {
@@ -196,6 +215,7 @@ class _Main_State extends State<Main_> {
       snackbar(ct: context, ms: t("Success"), cl: Colors.green);
     } catch (e, st) {
       // compensating rollback: restore the old room's occupied state
+      // * បញ្ច្រាសការផ្លាស់ប្តូរ៖ ស្តារស្ថានភាពបន្ទប់ចាស់វិញ
       try {
         await dio.post(
           endpoint.ROOM_CRUD_UPDATE, //
@@ -210,6 +230,7 @@ class _Main_State extends State<Main_> {
       }
 
       // * if the new room was already marked occupied, free it again
+      // * ប្រសិនបើបន្ទប់ថ្មីត្រូវបានកំណត់រួច សូមដោះលែងវាវិញ
       if (new_room_set) {
         try {
           await dio.post(
@@ -240,6 +261,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
+// * ថ្នាក់ Main_ ជាទំព័រប្តូរបន្ទប់
 class Main_ extends StatefulWidget {
   const Main_({
     super.key,
@@ -252,6 +274,7 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

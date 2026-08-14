@@ -1,3 +1,5 @@
+// * ទំព័រកែប្រែព័ត៌មានឧទាហរណ៍
+
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -14,6 +16,7 @@ import "package:speanmeas/core/widget/input/input_number.dart";
 import "package:speanmeas/core/schema/demo_1.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
+// * បង្កើត layout មេរបស់ទំព័រកែប្រែឧទាហរណ៍
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -49,6 +52,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់កែប្រែឧទាហរណ៍
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
@@ -64,8 +68,10 @@ class _Main_State extends State<Main_> {
   bool? logic_2;
   String? note;
 
+  // * ផ្ទុកព័ត៌មានឧទាហរណ៍បច្ចុប្បន្ន
   void init() async {
     try {
+      // * អានទិន្នន័យឧទាហរណ៍តាម id
       tmp = await dio.post(
         endpoint.DEMO_1_CRUD_READ_ID, //
         data: {sm_demo_1.ID: widget.id},
@@ -105,56 +111,66 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * បញ្ចូលអត្ថបទ 1
       Input_Text(
         init: text_1, //
         lead: "Text 1:", //
         onChanged: (v) => text_1 = v,
       ),
 
+      // * បញ្ចូលអត្ថបទ 2
       Input_Text(
         init: text_2, //
         lead: "Text 2:", //
         onChanged: (v) => text_2 = v,
       ),
 
+      // * បញ្ចូលលេខ 1
       Input_Number(
         init: number_1, //
         lead: "Number 1:", //
         onChanged: (v) => number_1 = v,
       ),
 
+      // * បញ្ចូលលេខ 2
       Input_Number(
         init: number_2, //
         lead: "Number 2:", //
         onChanged: (v) => number_2 = v,
       ),
 
+      // * ជ្រើសរើសកាលបរិច្ឆេទ 1
       Picker_Datetime(
         initial: datetime_1, //
         title: "Datetime 1:", //
         onChanged: (v) => datetime_1 = v,
       ),
 
+      // * ជ្រើសរើសកាលបរិច្ឆេទ 2
       Picker_Datetime(
         initial: datetime_2, //
         title: "Datetime 2:", //
         onChanged: (v) => datetime_2 = v,
       ),
 
+      // * ជ្រើសរើសតម្លៃប៊ូលីន 1
       Picker_Boolean(
         initial: logic_1, //
         title: "Logic 1:", //
         onChanged: (v) => logic_1 = v,
       ),
 
+      // * ជ្រើសរើសតម្លៃប៊ូលីន 2
       Picker_Boolean(
         initial: logic_2, //
         title: "Logic 2:", //
         onChanged: (v) => logic_2 = v,
       ),
 
+      // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: note, //
         lead: "Note:", //
@@ -162,6 +178,7 @@ class _Main_State extends State<Main_> {
         onChanged: (v) => note = v ?? "",
       ),
 
+      // * ប៊ូតុងកែប្រែ
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Update"),
@@ -172,8 +189,10 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * អនុវត្តការកែប្រែឧទាហរណ៍
   void on_update() async {
     try {
+      // * ផ្ញើសំណើកែប្រែឧទាហរណ៍
       tmp = await dio.post(
         endpoint.DEMO_1_CRUD_UPDATE, //
         data: {
@@ -208,6 +227,7 @@ class _Main_State extends State<Main_> {
   //
 }
 
+// * ថ្នាក់ Main_ ជាទំព័រកែប្រែឧទាហរណ៍
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
@@ -220,6 +240,7 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

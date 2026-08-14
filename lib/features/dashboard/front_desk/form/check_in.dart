@@ -1,4 +1,5 @@
 // * OK
+// * ទំព័រ Check In សម្រាប់ចុះឈ្មោះភ្ញៀវចូលស្នាក់នៅបន្ទប់
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -17,6 +18,7 @@ import "package:speanmeas/core/schema/front_desk.g.dart";
 // import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
+// * បង្កើត layout មេរបស់ទំព័រ check in
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -49,6 +51,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់ check in
 class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic map_r;
@@ -65,8 +68,10 @@ class _Main_State extends State<Main_> {
   int? stay_hours;
   String? note;
 
+  // * ផ្ទុកព័ត៌មានបន្ទប់ពី server
   void init() async {
     try {
+      // * អានព័ត៌មានបន្ទប់តាម id
       tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
       map_r = tmp.data[0] as Map<String, dynamic>;
       // pprint(map_r);
@@ -92,8 +97,10 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * បង្ហាញលេខបន្ទប់
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -107,6 +114,7 @@ class _Main_State extends State<Main_> {
 
       Divider(height: 1, color: Colors.black),
 
+      // * ជ្រើសរើសចំនួនភ្ញៀវ
       Select_Dynamic(
         lead: '${t("Number of Guests")}:',
         init: number_of_guest, //
@@ -118,6 +126,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * ជ្រើសរើសរយៈពេលស្នាក់នៅ (ថ្ងៃ)
       Select_Dynamic(
         lead: '${t("Stay Duration (Days)")}:',
         init: stay_days, //
@@ -129,6 +138,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * ជ្រើសរើសរយៈពេលស្នាក់នៅ (ម៉ោង)
       Select_Dynamic(
         lead: '${t("Stay Duration (Hours)")}:',
         init: stay_hours,
@@ -140,6 +150,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: note, //
         lead: '${t("Note")}:', //
@@ -150,6 +161,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * ស្វែងរក និងជ្រើសរើសភ្ញៀវ
       Search_Guest(
         onChanged: (v) {
           guest_id = v;
@@ -157,6 +169,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * ប៊ូតុងបញ្ជូន check in
       OutlinedButton.icon(
         icon: Icon(Icons.login_outlined), //
         label: Text(is_submitting ? t("Checking In...") : t("Check In")), //
@@ -167,16 +180,19 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * គណនាតម្លៃបន្ទប់សរុប
   double get room_price {
     return ((price_per_day ?? 0) * (stay_days ?? 0)) + ((price_per_3hours ?? 0) * (stay_hours ?? 0) / 3);
   }
 
+  // * ពិនិត្យថាអាច check in បានឬអត់
   bool get can_check_in {
     if ((number_of_guest ?? 0) <= 0) return false;
     if ((stay_days ?? 0) <= 0 && (stay_hours ?? 0) <= 0) return false;
     return true;
   }
 
+  // * អនុវត្តការ check in ភ្ញៀវ
   void on_check_in() async {
     if (is_submitting) return; // double-submit guard
     is_submitting = true;
@@ -184,6 +200,7 @@ class _Main_State extends State<Main_> {
 
     dynamic front_desk_id; // track created record for rollback
     try {
+      // * បង្កើតកំណត់ត្រា front desk
       tmp = await dio.post(
         endpoint.FRONT_DESK_CHECK_IN, // create
         data: {
@@ -198,6 +215,7 @@ class _Main_State extends State<Main_> {
 
       front_desk_id = tmp.data[0][sm_front_desk.ID];
 
+      // * បន្ថែមតម្លៃបន្ទប់ទៅការទូទាត់
       await dio.post(
         endpoint.FRONT_DESK_ADD_PAY_ROOM, // update
         data: {
@@ -206,6 +224,7 @@ class _Main_State extends State<Main_> {
         },
       );
 
+      // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Pending Pay
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
         data: {
@@ -219,6 +238,7 @@ class _Main_State extends State<Main_> {
       snackbar(ct: context, ms: t("Success"), cl: Colors.green);
     } catch (e, st) {
       // compensating rollback: undo the created front_desk record
+      // * បើមានកំហុស លុបកំណត់ត្រាដែលបានបង្កើតវិញ
       if (front_desk_id != null) {
         try {
           await dio.post(
@@ -249,6 +269,7 @@ class _Main_State extends State<Main_> {
 }
 
 //
+// * ថ្នាក់ Main_ ជាទំព័រ check in
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
@@ -262,6 +283,7 @@ class Main_ extends StatefulWidget {
 }
 
 //
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

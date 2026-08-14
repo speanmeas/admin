@@ -1,3 +1,5 @@
+// * ទំព័រលុបភ្ញៀវ
+
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
@@ -9,6 +11,7 @@ import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
+// * បង្កើត layout មេរបស់ទំព័រលុបភ្ញៀវ
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -44,6 +47,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់លុបភ្ញៀវ
 class _Main_State extends State<Main_> {
   dynamic tmp;
 
@@ -55,11 +59,13 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
+      // * សារបញ្ជាក់ការលុប
       Text(
         "Confirm to delete?", //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
+      // * ប៊ូតុងលុប
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.delete_outlined),
@@ -72,8 +78,10 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * អនុវត្តការលុបភ្ញៀវ
   void on_delete() async {
     try {
+      // * ផ្ញើសំណើលុបភ្ញៀវ
       tmp = await dio.post(
         endpoint.GUEST_CRUD_DELETE, //
         data: {"_id": widget.id},
@@ -95,6 +103,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
+// * ថ្នាក់ Main_ ជាទំព័រលុបភ្ញៀវ
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
@@ -107,6 +116,7 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

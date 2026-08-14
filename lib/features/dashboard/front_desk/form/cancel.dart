@@ -1,4 +1,5 @@
 // * OK
+// * ទំព័រ Cancel សម្រាប់បោះបង់ការស្នាក់នៅរបស់ភ្ញៀវ
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -17,6 +18,7 @@ import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
 import "package:speanmeas/core/widget/select/select_dynamic.dart";
 
+// * បង្កើត layout មេរបស់ទំព័រ cancel
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -49,6 +51,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បោះបង់ការស្នាក់នៅ
 class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic map_r;
@@ -72,19 +75,23 @@ class _Main_State extends State<Main_> {
 
   String? room_status;
 
+  // * ផ្ទុកព័ត៌មានបន្ទប់ និង front desk ពី server
   void init() async {
     try {
+      // * អានព័ត៌មានបន្ទប់តាម id
       tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
       map_r = tmp.data[0] as Map<String, dynamic>;
 
       if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
 
+      // * អានព័ត៌មាន front desk របស់បន្ទប់
       tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
       map_fd = tmp.data[0] as Map<String, dynamic>;
 
       front_desk_id = map_fd[sm_front_desk.ID];
       room_number = map_r[sm_room.NUMBER];
 
+      // * គណនាចំនួនទឹកប្រាក់ដែលបានបង់រួច
       tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
       for (var l in tmp) {
         last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
@@ -111,8 +118,10 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      // * បង្ហាញលេខបន្ទប់
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -126,6 +135,7 @@ class _Main_State extends State<Main_> {
 
       Divider(height: 1, color: Colors.black),
 
+      // * បញ្ចូលតម្លៃបោះបង់
       Input_Number(
         init: cancel_price, //
         lead: '${t("Cancel Price")}:', //
@@ -135,6 +145,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * បង្ហាញការទូទាត់ចុងក្រោយ
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -146,6 +157,7 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
+      // * បញ្ចូលការទូទាត់ជាសាច់ប្រាក់
       Input_Number(
         init: pay_cash, //
         lead: '${t("Cash Payment")}:', //
@@ -156,6 +168,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * បញ្ចូលការទូទាត់តាមធនាគារ
       Input_Number(
         init: pay_bank, //
         lead: '${t("Bank Payment")}:', //
@@ -166,6 +179,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * បញ្ចូលប្រាក់អាប់
       Input_Number(
         init: pay_return, //
         lead: '${t("Return")}:', //
@@ -176,6 +190,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * ជ្រើសរើសស្ថានភាពបន្ទប់បន្ទាប់ពីបោះបង់
       Select_Dynamic(
         lead: '${t("Room Status")}:', //
         init: room_status, //
@@ -187,6 +202,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
+      // * បញ្ចូលហេតុផល
       Input_Text(
         init: note, //
         lead: '${t("Reason")}:', //
@@ -199,6 +215,7 @@ class _Main_State extends State<Main_> {
 
       Divider(height: 1, color: Colors.black),
 
+      // * បង្ហាញចំនួនសមតុល្យ
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -214,6 +231,7 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
+      // * ព័ត៌មានអំពីការកំណត់ពេលបោះបង់
       Row(
         spacing: 4,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -226,6 +244,7 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
+      // * ប៊ូតុងបញ្ជូនបោះបង់
       OutlinedButton.icon(
         icon: Icon(Icons.cancel_outlined), //
         label: Text(is_submitting ? t("Cancelling...") : t("Cancel")), //
@@ -237,13 +256,16 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * ពិនិត្យថាអាចបោះបង់បានឬអត់
   bool get can_cancel {
     if (balanced != 0) return false;
     // * Client-side 1-hour rule: cannot cancel within 1 hour after check-in
+    // * ក្បួន 1 ម៉ោង៖ មិនអាចបោះបង់ក្នុងរយៈពេល 1 ម៉ោងបន្ទាប់ពី check in
     if (check_in_at != null && DateTime.now().difference(check_in_at!).inMinutes < 60) return false;
     return true;
   }
 
+  // * គណនាសមតុល្យសរុប
   double get balanced {
     double temp = 0;
 
@@ -256,12 +278,14 @@ class _Main_State extends State<Main_> {
     return temp;
   }
 
+  // * អនុវត្តការបោះបង់ការស្នាក់នៅ
   void on_cancel() async {
     if (is_submitting) return; // double-submit guard
     is_submitting = true;
     setState(() {});
 
     try {
+      // * កត់ត្រាការបោះបង់ទៅ front desk
       await dio.post(
         endpoint.FRONT_DESK_CANCEL,
         data: {
@@ -270,6 +294,7 @@ class _Main_State extends State<Main_> {
         },
       );
 
+      // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់
       if (room_status == "Available") {
         await dio.post(
           endpoint.ROOM_CRUD_UPDATE, //
@@ -310,6 +335,7 @@ class _Main_State extends State<Main_> {
 }
 
 //
+// * ថ្នាក់ Main_ ជាទំព័របោះបង់ការស្នាក់នៅ
 class Main_ extends StatefulWidget {
   const Main_({
     super.key,
@@ -323,6 +349,7 @@ class Main_ extends StatefulWidget {
 }
 
 //
+// * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
