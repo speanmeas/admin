@@ -57,6 +57,7 @@ app.*.map.json
 !.github/
 !.gitignore
 
+AGENTS.md
 todo.md
 
 
@@ -66,7 +67,6 @@ todo.md
 test_*
 
 
-copilot-instructions.md
 update_cloudflare.py
 update_github.py
 
