@@ -60,7 +60,7 @@ class _Main_State extends State<Main_> {
       final futures = [
         for (var fd_id in ids)
           dio.post(
-            endpoint.FRONT_DESK_READ_ID, //
+            endpoint.FRONT_DESK_CRUD_READ_ID, //
             data: {
               sm_front_desk.ID: fd_id, //
             },

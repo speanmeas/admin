@@ -139,7 +139,7 @@ class _Main_State extends State<Main_> {
       if (front_desk_id != null) {
         try {
           await dio.post(
-            endpoint.FRONT_DESK_DELETE,
+            endpoint.FRONT_DESK_CRUD_DELETE,
             data: {
               sm_front_desk.ID: front_desk_id, //
             },
