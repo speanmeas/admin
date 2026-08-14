@@ -679,7 +679,12 @@ void main() async {
         ChangeNotifierProvider.value(value: glob),
         ChangeNotifierProvider.value(value: lang),
       ],
-      child: const Main_(),
+      child: MaterialApp(
+        home: const Main_(), //
+        theme: theme_data, //
+        title: "Development", //
+        debugShowCheckedModeBanner: false, //
+      ),
     ),
   );
 }

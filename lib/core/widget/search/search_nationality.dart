@@ -245,15 +245,20 @@ void main() async {
         ChangeNotifierProvider.value(value: glob),
         ChangeNotifierProvider.value(value: lang),
       ],
-      child: Scaffold(
-        body: Center(
-          child: Search_Nationality(
-            init: "Cambodian",
-            onChanged: (v) {
-              print("Changed: $v");
-            },
+      child: MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Search_Nationality(
+              init: "Cambodian",
+              onChanged: (v) {
+                print("Changed: $v");
+              },
+            ),
           ),
         ),
+        theme: theme_data, //
+        title: "Development", //
+        debugShowCheckedModeBanner: false, //
       ),
     ),
   );

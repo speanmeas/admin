@@ -415,8 +415,13 @@ void main() async {
         ChangeNotifierProvider.value(value: glob),
         ChangeNotifierProvider.value(value: lang),
       ],
-      child: Main_(
-        room_id: "6a71dc186c013023294f6742", //
+      child: MaterialApp(
+        home: Main_(
+          room_id: "6a71dc186c013023294f6742", //
+        ), //
+        theme: theme_data, //
+        title: "Development", //
+        debugShowCheckedModeBanner: false, //
       ),
     ),
   );

@@ -195,7 +195,12 @@ void main() async {
         ChangeNotifierProvider.value(value: glob),
         ChangeNotifierProvider.value(value: lang),
       ],
-      child: Charge_(),
+      child: MaterialApp(
+        home: Charge_(), //
+        theme: theme_data, //
+        title: "Development", //
+        debugShowCheckedModeBanner: false, //
+      ),
     ),
   );
 }

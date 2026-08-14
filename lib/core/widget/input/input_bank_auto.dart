@@ -121,14 +121,19 @@ void main() async {
         ChangeNotifierProvider.value(value: glob),
         ChangeNotifierProvider.value(value: lang),
       ],
-      child: Scaffold(
-        body: Center(
-          child: Input_Bank_Auto(
-            onChanged: (data) {
-              print("Selected Data: $data");
-            },
+      child: MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Input_Bank_Auto(
+              onChanged: (data) {
+                print("Selected Data: $data");
+              },
+            ),
           ),
         ),
+        theme: theme_data, //
+        title: "Development", //
+        debugShowCheckedModeBanner: false, //
       ),
     ),
   );

@@ -12,7 +12,7 @@ import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/features/auth/profile.dart" as profile;
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
-class _Main_State extends State<Main_> {
+class _Panel_TopState extends State<Panel_Top> {
   //
   dynamic tmp;
 
@@ -137,10 +137,10 @@ class _Main_State extends State<Main_> {
   }
 }
 
-class Main_ extends StatefulWidget {
-  const Main_({super.key});
+class Panel_Top extends StatefulWidget {
+  const Panel_Top({super.key});
   @override
-  State<Main_> createState() => _Main_State();
+  State<Panel_Top> createState() => _Panel_TopState();
 }
 
 void main() async {
@@ -154,7 +154,12 @@ void main() async {
         ChangeNotifierProvider.value(value: glob),
         ChangeNotifierProvider.value(value: lang),
       ],
-      child: Main_(),
+      child: MaterialApp(
+        home: Panel_Top(), //
+        theme: theme_data, //
+        title: "Development", //
+        debugShowCheckedModeBanner: false, //
+      ),
     ),
   );
 }

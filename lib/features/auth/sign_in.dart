@@ -126,7 +126,7 @@ class _Main_State extends State<Main_> {
       await glob.init();
       snackbar(ct: context, ms: "Success", cl: Colors.green);
 
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Layout()));
 
       //
     } catch (e, st) {
@@ -158,7 +158,12 @@ void main() async {
         ChangeNotifierProvider.value(value: glob),
         ChangeNotifierProvider.value(value: lang),
       ],
-      child: Main_(),
+      child: MaterialApp(
+        home: Main_(), //
+        theme: theme_data, //
+        title: "Development", //
+        debugShowCheckedModeBanner: false, //
+      ),
     ),
   );
 }

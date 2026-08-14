@@ -12,7 +12,7 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
-class _Main_State extends State<Main_> {
+class _LayoutState extends State<Layout> {
   //
   dynamic tmp;
 
@@ -23,7 +23,7 @@ class _Main_State extends State<Main_> {
     is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
     return Scaffold(
       appBar: AppBar(
-        title: top.Main_(), //
+        title: top.Panel_Top(), //
         titleSpacing: 0,
         toolbarHeight: 48,
         centerTitle: false,
@@ -42,12 +42,12 @@ class _Main_State extends State<Main_> {
                   Container(
                     width: 250,
                     decoration: BoxDecoration(border: Border(right: BorderSide())), //
-                    child: left.Main_(), //
+                    child: left.Panel_Left(), //
                   ),
 
                 // panel body
                 Expanded(
-                  child: body.Main_(), //
+                  child: body.Panel_Body(), //
                 ),
               ],
             ),
@@ -56,15 +56,15 @@ class _Main_State extends State<Main_> {
       ),
 
       // drawer
-      drawer: is_mobile ? Drawer(child: left.Main_()) : null,
+      drawer: is_mobile ? Drawer(child: left.Panel_Left()) : null,
     );
   }
 }
 
-class Main_ extends StatefulWidget {
-  const Main_({super.key});
+class Layout extends StatefulWidget {
+  const Layout({super.key});
   @override
-  State<Main_> createState() => _Main_State();
+  State<Layout> createState() => _LayoutState();
 }
 
 void main() async {
@@ -78,7 +78,12 @@ void main() async {
         ChangeNotifierProvider.value(value: glob),
         ChangeNotifierProvider.value(value: lang),
       ],
-      child: Main_(),
+      child: MaterialApp(
+        home: Layout(), //
+        theme: theme_data, //
+        title: "Development", //
+        debugShowCheckedModeBanner: false, //
+      ),
     ),
   );
 }

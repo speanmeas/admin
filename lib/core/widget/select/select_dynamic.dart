@@ -88,18 +88,23 @@ void main() async {
         ChangeNotifierProvider.value(value: glob),
         ChangeNotifierProvider.value(value: lang),
       ],
-      child: Scaffold(
-        body: Center(
-          child: Select_Dynamic(
-            lead: "Number of Guests:",
-            init: 5,
-            options: List.generate(100, (index) => index),
-            prefixIcon: Icons.people_alt_outlined, //
-            onChanged: (value) {
-              print("Selected value: $value");
-            },
+      child: MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Select_Dynamic(
+              lead: "Number of Guests:",
+              init: 5,
+              options: List.generate(100, (index) => index),
+              prefixIcon: Icons.people_alt_outlined, //
+              onChanged: (value) {
+                print("Selected value: $value");
+              },
+            ),
           ),
         ),
+        theme: theme_data, //
+        title: "Development", //
+        debugShowCheckedModeBanner: false, //
       ),
     ),
   );

@@ -68,7 +68,7 @@ class _Main_State extends State<Main_> {
 
       //
       await glob.init();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Layout()));
     } catch (e, st) {
       pprint(st);
       await secure.delete(key: "access_token");
@@ -100,7 +100,12 @@ void main() async {
         ChangeNotifierProvider.value(value: glob),
         ChangeNotifierProvider.value(value: lang),
       ],
-      child: Main_(),
+      child: MaterialApp(
+        home: Main_(), //
+        theme: theme_data, //
+        title: "Development", //
+        debugShowCheckedModeBanner: false, //
+      ),
     ),
   );
 }

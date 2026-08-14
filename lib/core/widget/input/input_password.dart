@@ -85,15 +85,20 @@ void main() async {
         ChangeNotifierProvider.value(value: glob),
         ChangeNotifierProvider.value(value: lang),
       ],
-      child: Scaffold(
-        body: Center(
-          child: Input_Password(
-            hint: "Enter a new password",
-            onChanged: (v) {
-              print("Changed: $v");
-            },
+      child: MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Input_Password(
+              hint: "Enter a new password",
+              onChanged: (v) {
+                print("Changed: $v");
+              },
+            ),
           ),
         ),
+        theme: theme_data, //
+        title: "Development", //
+        debugShowCheckedModeBanner: false, //
       ),
     ),
   );

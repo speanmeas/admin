@@ -126,19 +126,24 @@ void main() async {
         ChangeNotifierProvider.value(value: glob),
         ChangeNotifierProvider.value(value: lang),
       ],
-      child: Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Picker_Datetime(
-              title: "Datetime Start:",
-              initial: DateTime.tryParse("2023-01-01 12:00"),
-              onChanged: (DateTime? value) {
-                print("Selected datetime: $value");
-              },
-            ),
-          ],
+      child: MaterialApp(
+        home: Scaffold(
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Picker_Datetime(
+                title: "Datetime Start:",
+                initial: DateTime.tryParse("2023-01-01 12:00"),
+                onChanged: (DateTime? value) {
+                  print("Selected datetime: $value");
+                },
+              ),
+            ],
+          ),
         ),
+        theme: theme_data, //
+        title: "Development", //
+        debugShowCheckedModeBanner: false, //
       ),
     ),
   );
