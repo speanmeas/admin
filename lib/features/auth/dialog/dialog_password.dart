@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
@@ -39,10 +39,7 @@ class _Dialog_State extends State<Dialog_> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            title,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ), //
+          Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
         ],
       ),
 
@@ -60,9 +57,7 @@ class _Dialog_State extends State<Dialog_> {
                 child: Padding(
                   padding: EdgeInsets.only(right: 4),
                   child: IconButton(
-                    icon: Icon(
-                      is_obscure_pw ? Icons.visibility_off : Icons.visibility,
-                    ),
+                    icon: Icon(is_obscure_pw ? Icons.visibility_off : Icons.visibility),
                     onPressed: () {
                       is_obscure_pw = !is_obscure_pw;
                       setState(() {});
@@ -87,11 +82,7 @@ class _Dialog_State extends State<Dialog_> {
                 child: Padding(
                   padding: EdgeInsets.only(right: 4),
                   child: IconButton(
-                    icon: Icon(
-                      is_obscure_cf_pw
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    ),
+                    icon: Icon(is_obscure_cf_pw ? Icons.visibility_off : Icons.visibility),
                     onPressed: () {
                       is_obscure_cf_pw = !is_obscure_cf_pw;
                       setState(() {});

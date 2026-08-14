@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 import "package:provider/provider.dart";
 
 import "package:speanmeas/core/global.dart";
@@ -51,11 +51,7 @@ class _Main_State extends State<Main_> {
                 alignment: Alignment.center,
                 child: Text(
                   VERSION,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
-                  ),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blue),
                 ), //
               ), //
 
@@ -86,11 +82,7 @@ class _Main_State extends State<Main_> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     suffixIcon: InkWell(
                       onTap: password_visibility_toggle,
-                      child: Icon(
-                        !is_password_visible
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                      ), //
+                      child: Icon(!is_password_visible ? Icons.visibility_outlined : Icons.visibility_off_outlined), //
                     ),
                   ),
                   obscureText: !is_password_visible,
@@ -128,20 +120,13 @@ class _Main_State extends State<Main_> {
       if (tmp == null) throw Exception("Invalid Username or Password");
 
       await secure_storage.write(key: "_id", value: tmp.data["_id"]);
-      await secure_storage.write(
-        key: "access_token",
-        value: tmp.data["access_token"],
-      );
-      dio.options.headers["Authorization"] =
-          "Bearer ${tmp.data["access_token"]}";
+      await secure_storage.write(key: "access_token", value: tmp.data["access_token"]);
+      dio.options.headers["Authorization"] = "Bearer ${tmp.data["access_token"]}";
 
       await glob.init();
       snackbar(ct: context, ms: "Success", cl: Colors.green);
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => layout.Main_()),
-      );
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
 
       //
     } catch (e, st) {

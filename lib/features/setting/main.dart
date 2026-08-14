@@ -9,7 +9,7 @@ import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 
 class _Main_State extends State<Main_> {
   //

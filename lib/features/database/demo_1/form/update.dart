@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
@@ -75,12 +75,8 @@ class _Main_State extends State<Main_> {
       text_2 = tmp.data[0][sm_demo_1.TEXT_2];
       number_1 = tmp.data[0][sm_demo_1.NUMBER_1];
       number_2 = tmp.data[0][sm_demo_1.NUMBER_2];
-      datetime_1 = tmp.data[0][sm_demo_1.DATETIME_1] != null
-          ? DateTime.parse(tmp.data[0][sm_demo_1.DATETIME_1])
-          : null;
-      datetime_2 = tmp.data[0][sm_demo_1.DATETIME_2] != null
-          ? DateTime.parse(tmp.data[0][sm_demo_1.DATETIME_2])
-          : null;
+      datetime_1 = tmp.data[0][sm_demo_1.DATETIME_1] != null ? DateTime.parse(tmp.data[0][sm_demo_1.DATETIME_1]) : null;
+      datetime_2 = tmp.data[0][sm_demo_1.DATETIME_2] != null ? DateTime.parse(tmp.data[0][sm_demo_1.DATETIME_2]) : null;
       logic_1 = tmp.data[0][sm_demo_1.LOGIC_1];
       logic_2 = tmp.data[0][sm_demo_1.LOGIC_2];
       note = tmp.data[0][sm_demo_1.NOTE];

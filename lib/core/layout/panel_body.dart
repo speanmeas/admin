@@ -1,12 +1,11 @@
 import "package:flutter/material.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 import "package:provider/provider.dart";
 
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 // dashboard
-import "package:speanmeas/features/dashboard/front_desk/main.dart"
-    as d_front_desk;
+import "package:speanmeas/features/dashboard/front_desk/main.dart" as d_front_desk;
 import "package:speanmeas/features/dashboard/mini_bar/main.dart" as d_mini_bar;
 
 // database
@@ -14,8 +13,7 @@ import "package:speanmeas/features/dashboard/mini_bar/main.dart" as d_mini_bar;
 import "package:speanmeas/features/database/guest/main.dart" as guest;
 import "package:speanmeas/features/database/room/main.dart" as room;
 import "package:speanmeas/features/database/user/main.dart" as user;
-import "package:speanmeas/features/database/nationality/main.dart"
-    as nationality;
+import "package:speanmeas/features/database/nationality/main.dart" as nationality;
 import "package:speanmeas/features/database/mini_bar/main.dart" as mini_bar;
 
 // report
@@ -73,10 +71,7 @@ class _Main_State extends State<Main_> {
       }
     }
 
-    return IndexedStack(
-      index: index,
-      children: [for (var p in panels) p["panel"]],
-    );
+    return IndexedStack(index: index, children: [for (var p in panels) p["panel"]]);
   }
 }
 

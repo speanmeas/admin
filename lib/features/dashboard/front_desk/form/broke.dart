@@ -3,7 +3,7 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
@@ -55,10 +55,7 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     try {
-      tmp = await dio.post(
-        endpoint.ROOM_CRUD_READ_ID,
-        data: {sm_room.ID: widget.room_id},
-      );
+      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
       map_r = tmp.data[0] as Map<String, dynamic>;
 
       room_number = map_r[sm_room.NUMBER];
@@ -79,17 +76,10 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            "Room: ",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+          Text("Room: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
             room_number ?? "Unknown",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue,
-            ),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
       ),

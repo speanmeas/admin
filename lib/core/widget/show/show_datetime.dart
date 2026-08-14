@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 import "package:intl/intl.dart";
 import "package:speanmeas/core/config.dart";
 
@@ -22,8 +22,7 @@ class _Show_DatetimeState extends State<Show_Datetime> {
     return Row(
       spacing: 4,
       children: [
-        if (widget.prefixIcon != null)
-          Icon(widget.prefixIcon!, color: Colors.blue),
+        if (widget.prefixIcon != null) Icon(widget.prefixIcon!, color: Colors.blue),
         if (widget.prefixText != null)
           Text(
             widget.prefixText ?? "", //
@@ -77,9 +76,7 @@ void main() async {
       child: Scaffold(
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Show_Datetime(leading: "Text Value:", value: DateTime.now()),
-          ],
+          children: [Show_Datetime(leading: "Text Value:", value: DateTime.now())],
         ),
       ),
     ),

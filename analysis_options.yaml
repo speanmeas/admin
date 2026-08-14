@@ -1,5 +1,6 @@
 analyzer:
   errors:
+    file_names: ignore
     avoid_print: ignore
     camel_case_types: ignore
     constant_identifier_names: ignore

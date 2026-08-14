@@ -1,4 +1,4 @@
-{
+const Map<String, String> km_KH = {
   "Spean Meas": "ស្ពានមាស",
   "Hello": "សួស្តី",
   "Price": "តម្លៃ",
@@ -24,6 +24,10 @@
   "Edit Mini Bar Payment": "កែព័ត៌មានបង់ប្រាក់មីនីបារ",
   "Other Payment:": "បង់ថ្លៃផ្សេងៗ:",
   "Edit Other Payment": "កែព័ត៌មានបង់ប្រាក់ផ្សេងៗ",
+  "Check In": "ពេលចូល",
+  "Check Out": "ពេលចេញ",
+  "Clean": "សម្អាត",
+  "Note": "ចំណាំ",
   "Time In:": "ពេលចូល:",
   "Due:": "ពេលត្រូវចេញ:",
   "Time Out:": "ពេលចេញ:",
@@ -33,5 +37,5 @@
   "Clear": "សម្អាត",
   "No Items": "គ្មានទំនិញ",
   "Create": "បង្កើត",
-  "N/A": "គ្មាន"
-}
+  "N/A": "គ្មាន",
+};

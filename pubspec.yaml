@@ -37,9 +37,7 @@ flutter:
 
   assets:
     - assets/
-    - assets/data/
     - assets/icon/
-    - assets/i18n/
 
   fonts:
     - family: Nokora

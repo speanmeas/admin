@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 import "package:intl/intl.dart";
 import "package:speanmeas/core/config.dart";
 
@@ -41,8 +41,7 @@ class _Show_TextState extends State<Show_Text> {
     return Row(
       spacing: 4,
       children: [
-        if (widget.prefixIcon != null)
-          Icon(widget.prefixIcon!, color: Colors.blue),
+        if (widget.prefixIcon != null) Icon(widget.prefixIcon!, color: Colors.blue),
         if (widget.prefixText != null)
           Text(
             widget.prefixText ?? "", //

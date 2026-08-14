@@ -2,7 +2,7 @@ import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
@@ -72,8 +72,7 @@ class _Picker_DatetimeState extends State<Picker_Datetime> {
 
     // select time
     TimeOfDay initial_time = TimeOfDay(hour: 0, minute: 0);
-    if (widget.initial != null)
-      initial_time = TimeOfDay.fromDateTime(widget.initial!);
+    if (widget.initial != null) initial_time = TimeOfDay.fromDateTime(widget.initial!);
     final TimeOfDay? picked_time = await showTimePicker(
       context: context, //
       initialTime: initial_time,

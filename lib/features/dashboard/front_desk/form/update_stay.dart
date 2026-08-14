@@ -3,7 +3,7 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
@@ -70,21 +70,12 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     try {
-      tmp = await dio.post(
-        endpoint.ROOM_CRUD_READ_ID,
-        data: {sm_room.ID: widget.room_id},
-      );
+      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
       map_r = tmp.data[0] as Map<String, dynamic>;
 
-      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null)
-        throw Exception("Front desk ID is null");
+      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
 
-      tmp = await dio.post(
-        endpoint.FRONT_DESK_READ_ID,
-        data: {
-          sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID],
-        },
-      );
+      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
       map_fd = tmp.data[0] as Map<String, dynamic>;
 
       front_desk_id = map_fd[sm_front_desk.ID];
@@ -101,13 +92,9 @@ class _Main_State extends State<Main_> {
 
       tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
       for (var l in tmp) {
-        last_paid =
-            (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
-        last_paid =
-            (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
-        last_paid =
-            (last_paid ?? 0) -
-            (double.tryParse(l["pay_return"].toString()) ?? 0);
+        last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
+        last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
+        last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
       }
 
       // pprint(last_paid);
@@ -130,17 +117,10 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            "Room ",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+          Text("Room ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
             room_number ?? "",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue,
-            ),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
       ),
@@ -209,8 +189,7 @@ class _Main_State extends State<Main_> {
   }
 
   double get room_price {
-    return ((price_per_day ?? 0) * (stay_days ?? 0)) +
-        ((price_per_3hours ?? 0) * (stay_hours ?? 0) / 3);
+    return ((price_per_day ?? 0) * (stay_days ?? 0)) + ((price_per_3hours ?? 0) * (stay_hours ?? 0) / 3);
   }
 
   void on_update() async {

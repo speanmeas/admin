@@ -5,7 +5,7 @@ import "package:speanmeas/core/global.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/config.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";

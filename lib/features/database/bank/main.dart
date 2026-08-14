@@ -4,7 +4,7 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
-import "package:speanmeas/core/i18n.dart"; // ignore: unused_import
+import "package:speanmeas/core/i18n/main.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/config.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
@@ -42,10 +42,7 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     try {
-      tmp = await dio.post(
-        endpoint.BANK_CRUD_READ_COUNT,
-        data: {"count": true},
-      );
+      tmp = await dio.post(endpoint.BANK_CRUD_READ_COUNT, data: {"count": true});
       row_total = int.parse(tmp.data.toString());
 
       load_page(page);
@@ -58,10 +55,7 @@ class _Main_State extends State<Main_> {
   //
   void on_refresh() async {
     try {
-      final r = await dio.post(
-        endpoint.BANK_CRUD_READ_COUNT,
-        data: {"count": true},
-      );
+      final r = await dio.post(endpoint.BANK_CRUD_READ_COUNT, data: {"count": true});
       row_total = int.parse(r.data.toString());
 
       if (page > total_pages) page = total_pages;
@@ -97,9 +91,7 @@ class _Main_State extends State<Main_> {
       if (!mounted || request_id != load_request_id) return;
 
       final sorted_column = state_manager?.getSortedColumn;
-      final filter_rows = List<PlutoRow>.from(
-        state_manager?.filterRows ?? const <PlutoRow>[],
-      );
+      final filter_rows = List<PlutoRow>.from(state_manager?.filterRows ?? const <PlutoRow>[]);
 
       state_manager?.removeAllRows();
       state_manager?.appendRows([
@@ -170,9 +162,7 @@ class _Main_State extends State<Main_> {
 
             Menu_Button_Icon(
               tip: is_filter ? t("Close Filter") : t("Open Filter"), //
-              icon: is_filter
-                  ? Icons.filter_alt_off_outlined
-                  : Icons.filter_alt_outlined,
+              icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
               onPressed: () {
                 is_filter = !is_filter;
                 state_manager?.setShowColumnFilter(is_filter);
@@ -186,11 +176,7 @@ class _Main_State extends State<Main_> {
                 tip: "Search", //
                 icon: Icons.search,
                 onPressed: () {
-                  snackbar(
-                    ct: context,
-                    ms: "កំពុងអភិវឌ្ឍន៍...",
-                    cl: Colors.blue,
-                  );
+                  snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
                 },
               ),
 
@@ -322,10 +308,7 @@ class _Main_State extends State<Main_> {
 
   void on_create() async {
     try {
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => create.Main_()),
-      );
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
       if (tmp == null) return;
 
       // * លុប sort + filter

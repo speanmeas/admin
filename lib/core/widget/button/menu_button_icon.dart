@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
@@ -20,11 +20,7 @@ class _Menu_Button_IconState extends State<Menu_Button_Icon> {
           height: 38,
           width: 38,
           alignment: Alignment.center,
-          child: Icon(
-            widget.icon,
-            size: 30,
-            color: widget.color ?? Colors.blue,
-          ), //
+          child: Icon(widget.icon, size: 30, color: widget.color ?? Colors.blue), //
         ),
       ),
     );

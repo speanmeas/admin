@@ -2,19 +2,20 @@ import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:flutter/foundation.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:flutter_svg/flutter_svg.dart";
 
+import "package:speanmeas/core/i18n/main.dart";
+import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema/front_desk.g.dart";
-import "package:speanmeas/core/widget/select/select_datetime.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+
+import "package:speanmeas/core/widget/select/select_datetime.dart";
+import "package:speanmeas/core/schema/front_desk.g.dart";
 
 class _Main_State extends State<Main_> {
   dynamic tmp;
@@ -46,11 +47,7 @@ class _Main_State extends State<Main_> {
 
     // check if start is after stop
     if (start!.isAfter(stop!)) {
-      snackbar(
-        ct: context,
-        ms: "Start date must be before stop date",
-        cl: Colors.red,
-      );
+      snackbar(ct: context, ms: "Start date must be before stop date", cl: Colors.red);
       return;
     }
 
@@ -162,9 +159,7 @@ class _Main_State extends State<Main_> {
                       height: 38,
                       alignment: Alignment.center,
                       child: Icon(
-                        is_filter
-                            ? Icons.filter_alt_off_outlined
-                            : Icons.filter_alt_outlined, //
+                        is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, //
                         size: 30,
                         color: Colors.blue,
                       ), //
@@ -172,8 +167,7 @@ class _Main_State extends State<Main_> {
                     onTap: () {
                       is_filter = !is_filter; // *
                       state_manager?.setShowColumnFilter(is_filter);
-                      if (!is_filter)
-                        state_manager?.setFilterWithFilterRows([]);
+                      if (!is_filter) state_manager?.setFilterWithFilterRows([]);
                       setState(() {});
                     },
                   ),
@@ -182,8 +176,7 @@ class _Main_State extends State<Main_> {
             ),
           ),
 
-          if (is_loading)
-            LinearProgressIndicator(minHeight: 4, color: Colors.blue),
+          if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
           // body
           Expanded(child: child),
@@ -221,11 +214,7 @@ class _Main_State extends State<Main_> {
                   message: "បញ្ចេញជា PDF",
                   child: InkWell(
                     onTap: () {
-                      snackbar(
-                        ct: context,
-                        ms: "កំពុងអភិវឌ្ឍន៍...",
-                        cl: Colors.blue,
-                      );
+                      snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
                     },
                     child: Container(
                       width: 38,
@@ -235,10 +224,7 @@ class _Main_State extends State<Main_> {
                         "assets/icon/pdf.svg", //
                         width: 30,
                         height: 30,
-                        colorFilter: ColorFilter.mode(
-                          Colors.blue,
-                          BlendMode.srcIn,
-                        ),
+                        colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
                       ),
                     ),
                   ),
@@ -250,11 +236,7 @@ class _Main_State extends State<Main_> {
                   message: "បញ្ចេញជា Excel",
                   child: InkWell(
                     onTap: () {
-                      snackbar(
-                        ct: context,
-                        ms: "កំពុងអភិវឌ្ឍន៍...",
-                        cl: Colors.blue,
-                      );
+                      snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
                     },
                     child: Container(
                       width: 38,
@@ -264,10 +246,7 @@ class _Main_State extends State<Main_> {
                         "assets/icon/excel.svg", //
                         width: 30,
                         height: 30,
-                        colorFilter: ColorFilter.mode(
-                          Colors.blue,
-                          BlendMode.srcIn,
-                        ),
+                        colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
                       ),
                     ),
                   ),
@@ -382,8 +361,7 @@ class _Main_State extends State<Main_> {
     if (type == "date-time") {
       if (data != null) {
         final tmp = DateTime.tryParse(data.toString());
-        if (tmp != null)
-          return DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
+        if (tmp != null) return DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
       }
     }
 
@@ -489,8 +467,7 @@ final columns = [
       String value = "";
       if (rc.cell.value != null) {
         final tmp = DateTime.tryParse(rc.cell.value.toString());
-        if (tmp != null)
-          value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
+        if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
       }
       return Align(
         alignment: Alignment.center, //
@@ -511,8 +488,7 @@ final columns = [
       String value = "";
       if (rc.cell.value != null) {
         final tmp = DateTime.tryParse(rc.cell.value.toString());
-        if (tmp != null)
-          value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
+        if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
       }
       return Align(
         alignment: Alignment.center, //

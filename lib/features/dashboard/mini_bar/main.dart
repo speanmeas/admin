@@ -2,7 +2,7 @@ import "dart:async";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 
 import "package:speanmeas/core/config.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart";
@@ -105,9 +105,7 @@ class _Main_State extends State<Main_> {
                 onPressed: list_mb.isEmpty ? null : on_walkin, //
                 icon: Icon(Icons.person_add_outlined),
                 label: Text("Walk-in"),
-                style: ButtonStyle(
-                  foregroundColor: WidgetStatePropertyAll(Colors.purple),
-                ),
+                style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.purple)),
               ), //
 
               Spacer(),
@@ -123,12 +121,8 @@ class _Main_State extends State<Main_> {
                     labelText: "ស្វែងរក", //
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue),
-                    ),
+                    border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
                     contentPadding: EdgeInsets.fromLTRB(4, 8, 4, 8),
                     prefixIcon: Icon(Icons.search, size: 20), //
                   ),
@@ -182,9 +176,7 @@ class _Main_State extends State<Main_> {
           width: 500,
           margin: EdgeInsets.all(2),
           padding: EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.purple, width: 1),
-          ),
+          decoration: BoxDecoration(border: Border.all(color: Colors.purple, width: 1)),
           child: Row(
             children: [
               // info
@@ -197,22 +189,12 @@ class _Main_State extends State<Main_> {
                     Row(
                       spacing: 4,
                       children: [
-                        Icon(
-                          Icons.person_add_outlined,
-                          size: 24,
-                          color: Colors.purple,
-                        ), //
-                        Text(
-                          "Walk-in Mini Bar:",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ), //
+                        Icon(Icons.person_add_outlined, size: 24, color: Colors.purple), //
+                        Text("Walk-in Mini Bar:", style: TextStyle(fontWeight: FontWeight.bold)), //
                         //
                         SizedBox(width: 4), //
                         Icon(Icons.circle, size: 6), //
-                        Text(
-                          "$_walkin_total \$",
-                          style: TextStyle(color: Colors.purple),
-                        ), //
+                        Text("$_walkin_total \$", style: TextStyle(color: Colors.purple)), //
                       ],
                     ),
 
@@ -221,18 +203,9 @@ class _Main_State extends State<Main_> {
                       Row(
                         spacing: 4,
                         children: [
-                          Text(
-                            "${line[sm_mini_bar.NAME]}",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ), //
-                          Text(
-                            "x${line["qty"]}",
-                            style: TextStyle(color: Colors.grey),
-                          ), //
-                          Text(
-                            "${line["total"]} \$",
-                            style: TextStyle(color: Colors.blue),
-                          ), //
+                          Text("${line[sm_mini_bar.NAME]}", style: TextStyle(fontWeight: FontWeight.bold)), //
+                          Text("x${line["qty"]}", style: TextStyle(color: Colors.grey)), //
+                          Text("${line["total"]} \$", style: TextStyle(color: Colors.blue)), //
                         ],
                       ),
                   ],
@@ -244,9 +217,7 @@ class _Main_State extends State<Main_> {
                 onPressed: on_clear_walkin, //
                 icon: Icon(Icons.delete_outline),
                 label: Text("Clear"),
-                style: ButtonStyle(
-                  foregroundColor: WidgetStatePropertyAll(Colors.red),
-                ),
+                style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.red)),
               ),
             ],
           ),
@@ -258,9 +229,7 @@ class _Main_State extends State<Main_> {
           width: 500,
           margin: EdgeInsets.all(2),
           padding: EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey, width: 1),
-          ),
+          decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1)),
           child: Row(
             children: [
               // info.
@@ -279,11 +248,7 @@ class _Main_State extends State<Main_> {
                           children: [
                             Text(
                               "បន្ទប់ ${r[sm_room.NUMBER]}",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                             ),
                           ],
                         ),
@@ -291,26 +256,18 @@ class _Main_State extends State<Main_> {
                         // * ស្ថានភាពបន្ទប់នៅខាងស្តាំ
                         (() {
                           var color = Colors.black; // Default color
-                          if (["Available"].contains(r[sm_room.STATUS]))
-                            color = Colors.green;
-                          if (["Pending Pay"].contains(r[sm_room.STATUS]))
-                            color = Colors.orange;
-                          if (["Pending Leave"].contains(r[sm_room.STATUS]))
-                            color = Colors.blue;
-                          if (["Pending Clean"].contains(r[sm_room.STATUS]))
-                            color = Colors.grey;
-                          if (["Pending Fix"].contains(r[sm_room.STATUS]))
-                            color = Colors.red;
+                          if (["Available"].contains(r[sm_room.STATUS])) color = Colors.green;
+                          if (["Pending Pay"].contains(r[sm_room.STATUS])) color = Colors.orange;
+                          if (["Pending Leave"].contains(r[sm_room.STATUS])) color = Colors.blue;
+                          if (["Pending Clean"].contains(r[sm_room.STATUS])) color = Colors.grey;
+                          if (["Pending Fix"].contains(r[sm_room.STATUS])) color = Colors.red;
 
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Icon(Icons.circle, size: 10, color: color),
                               SizedBox(width: 4),
-                              Text(
-                                "${r[sm_room.STATUS]}",
-                                style: TextStyle(fontSize: 14, color: color),
-                              ),
+                              Text("${r[sm_room.STATUS]}", style: TextStyle(fontSize: 14, color: color)),
                             ],
                           );
                         })(),
@@ -322,29 +279,11 @@ class _Main_State extends State<Main_> {
                       spacing: 4,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          "${r[sm_room.KIND]}",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        Text("${r[sm_room.KIND]}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                         Text("-"), //
-                        Text(
-                          "${r[sm_room.USD_PER_3H]} \$ / 3 ម៉ោង",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ), //
+                        Text("${r[sm_room.USD_PER_3H]} \$ / 3 ម៉ោង", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)), //
                         Text("-"), //
-                        Text(
-                          "${r[sm_room.USD_PER_DAY]} \$ / 1 ថ្ងៃ",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        Text("${r[sm_room.USD_PER_DAY]} \$ / 1 ថ្ងៃ", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                       ],
                     ),
 
@@ -353,35 +292,22 @@ class _Main_State extends State<Main_> {
                       // guest info
                       if (!"${r[sm_room.STATUS]}".contains("Pending Fix"))
                         (() {
-                          final guest =
-                              _fd(r)[sm_front_desk.GUEST_ID]
-                                  as Map<String, dynamic>? ??
-                              {};
+                          final guest = _fd(r)[sm_front_desk.GUEST_ID] as Map<String, dynamic>? ?? {};
                           final guest_name = guest[sm_guest.FULL_NAME] ?? "N/A";
-                          final guest_phone =
-                              guest[sm_guest.PHONE_NUMBER] ?? "N/A";
+                          final guest_phone = guest[sm_guest.PHONE_NUMBER] ?? "N/A";
                           return Row(
                             spacing: 4,
                             children: [
                               Icon(Icons.person, size: 24), //
-                              Text(
-                                "អតិថិជន:",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
+                              Text("អតិថិជន:", style: TextStyle(fontWeight: FontWeight.bold)),
                               //
                               SizedBox(width: 2), //
                               Icon(Icons.circle, size: 6), //
-                              Text(
-                                guest_name,
-                                style: TextStyle(color: Colors.blue),
-                              ), //
+                              Text(guest_name, style: TextStyle(color: Colors.blue)), //
                               //
                               SizedBox(width: 2), //
                               Icon(Icons.circle, size: 6), //
-                              Text(
-                                guest_phone,
-                                style: TextStyle(color: Colors.blue),
-                              ), //
+                              Text(guest_phone, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
                         })(),
@@ -396,24 +322,15 @@ class _Main_State extends State<Main_> {
                         spacing: 4,
                         children: [
                           Icon(Icons.local_bar_outlined, size: 24), //
-                          Text(
-                            "Mini Bar:",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ), //
+                          Text("Mini Bar:", style: TextStyle(fontWeight: FontWeight.bold)), //
                           //
                           SizedBox(width: 4), //
                           Icon(Icons.circle, size: 6), //
-                          Text(
-                            "$total \$",
-                            style: TextStyle(color: Colors.blue),
-                          ), //
+                          Text("$total \$", style: TextStyle(color: Colors.blue)), //
                           //
                           SizedBox(width: 4), //
                           Icon(Icons.circle, size: 6), //
-                          Text(
-                            "${lines.length} Items",
-                            style: TextStyle(color: Colors.blue),
-                          ), //
+                          Text("${lines.length} Items", style: TextStyle(color: Colors.blue)), //
                         ],
                       );
                     })(),
@@ -423,34 +340,20 @@ class _Main_State extends State<Main_> {
                       spacing: 4,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if ([
-                          "Pending Pay",
-                          "Pending Leave",
-                        ].contains(r[sm_room.STATUS])) //
+                        if (["Pending Pay", "Pending Leave"].contains(r[sm_room.STATUS])) //
                           OutlinedButton.icon(
-                            onPressed: list_mb.isEmpty
-                                ? null
-                                : () => on_charge(r), //
+                            onPressed: list_mb.isEmpty ? null : () => on_charge(r), //
                             icon: Icon(Icons.local_bar_outlined),
                             label: Text("Charge"),
-                            style: ButtonStyle(
-                              foregroundColor: WidgetStatePropertyAll(
-                                Colors.blue,
-                              ),
-                            ),
+                            style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.blue)),
                           ), //
 
-                        if ((map_charge["${r[sm_room.ID]}"] ?? [])
-                            .isNotEmpty) //
+                        if ((map_charge["${r[sm_room.ID]}"] ?? []).isNotEmpty) //
                           OutlinedButton.icon(
                             onPressed: () => on_clear(r), //
                             icon: Icon(Icons.delete_outline),
                             label: Text("Clear"),
-                            style: ButtonStyle(
-                              foregroundColor: WidgetStatePropertyAll(
-                                Colors.red,
-                              ),
-                            ),
+                            style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.red)),
                           ), //
                       ],
                     ),
@@ -472,9 +375,7 @@ class _Main_State extends State<Main_> {
       final room_number = "${r[sm_room.NUMBER]}".toLowerCase();
       final room_status = "${r[sm_room.STATUS]}".toLowerCase();
       final room_kind = "${r[sm_room.KIND]}".toLowerCase();
-      return room_number.contains(q) ||
-          room_status.contains(q) ||
-          room_kind.contains(q);
+      return room_number.contains(q) || room_status.contains(q) || room_kind.contains(q);
     }).toList();
   }
 
@@ -586,8 +487,7 @@ class _Main_State extends State<Main_> {
 
   //
   // * ស្វែងរក front desk របស់បន្ទប់ដោយសុវត្ថិភាព (បើគ្មាន ត្រឡប់ {})
-  Map<String, dynamic> _fd(dynamic r) =>
-      map_fd[r[sm_room.FRONT_DESK_ID]] as Map<String, dynamic>? ?? {};
+  Map<String, dynamic> _fd(dynamic r) => map_fd[r[sm_room.FRONT_DESK_ID]] as Map<String, dynamic>? ?? {};
 
   //
   @override

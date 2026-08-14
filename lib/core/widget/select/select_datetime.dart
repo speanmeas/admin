@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 import "package:intl/intl.dart";
 
 import "package:speanmeas/core/config.dart";
@@ -55,8 +55,7 @@ class _SelectDateTimeState extends State<SelectDateTime> {
   Future<DateTime?>? select_page(BuildContext context) async {
     DateTime init = DateTime.now();
     if (widget.initial != null) init = widget.initial!;
-    if (controller.text.isNotEmpty)
-      init = DateTime.tryParse(controller.text)?.toLocal() ?? DateTime.now();
+    if (controller.text.isNotEmpty) init = DateTime.tryParse(controller.text)?.toLocal() ?? DateTime.now();
 
     // Select Date
     final DateTime? picked_date = await showDatePicker(

@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
@@ -57,10 +57,7 @@ class _Input_Bank_AutoState extends State<Input_Bank_Auto> {
             labelText: "Note:", //
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
             floatingLabelBehavior: FloatingLabelBehavior.always,
-            prefixIcon: Icon(
-              widget.prefixIcon ?? Icons.note_alt_outlined,
-              color: Colors.blue,
-            ),
+            prefixIcon: Icon(widget.prefixIcon ?? Icons.note_alt_outlined, color: Colors.blue),
             suffixIcon: ExcludeFocus(
               child: Padding(
                 padding: EdgeInsets.only(right: 4),

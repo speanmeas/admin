@@ -1,20 +1,21 @@
-import "dart:convert";
-
 import "package:flutter/foundation.dart";
-import "package:flutter/services.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-
-final ENGLISH = "en_EN";
-final KHMER = "km_KH";
+import "package:speanmeas/core/i18n/en_EN.dart";
+import "package:speanmeas/core/i18n/km_KH.dart";
 
 class I18N extends ChangeNotifier {
   // singleton
   static final I18N instance = I18N._();
   I18N._();
+
+  Map<String, String> data = {};
+
+  final ENGLISH = "en_EN";
+  final KHMER = "km_KH";
 
   void init() async {
     print("I18N initialized.");
@@ -22,19 +23,10 @@ class I18N extends ChangeNotifier {
     await set_locale(KHMER);
   }
 
-  Map<String, String> data = {};
-
   Future<void> set_locale(String locale) async {
-    final String path = "assets/i18n/$locale.json";
+    if (locale == ENGLISH) data = en_EN;
+    if (locale == KHMER) data = km_KH;
 
-    try {
-      final json = await rootBundle.loadString(path);
-      final map = jsonDecode(json) as Map<String, dynamic>;
-      data = map.map((k, v) => MapEntry(k, v.toString()));
-    } catch (e, st) {
-      pprint(st);
-      data = {};
-    }
     notifyListeners();
   }
 

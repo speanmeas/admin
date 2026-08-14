@@ -5,7 +5,7 @@ import "package:speanmeas/core/global.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/config.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
@@ -111,9 +111,7 @@ class _Main_State extends State<Main_> {
 
       // keep sort + filter
       final sorted_column = state_manager?.getSortedColumn;
-      final filter_rows = List<PlutoRow>.from(
-        state_manager?.filterRows ?? const <PlutoRow>[],
-      );
+      final filter_rows = List<PlutoRow>.from(state_manager?.filterRows ?? const <PlutoRow>[]);
 
       // add data to row
       state_manager?.removeAllRows();
@@ -124,9 +122,7 @@ class _Main_State extends State<Main_> {
               "index": PlutoCell(value: data.indexOf(d) + 1),
               sm_room.ID: PlutoCell(value: d[sm_room.ID] ?? ""),
               sm_room.NUMBER: PlutoCell(value: d[sm_room.NUMBER] ?? ""),
-              sm_room.USD_PER_DAY: PlutoCell(
-                value: d[sm_room.USD_PER_DAY] ?? "",
-              ),
+              sm_room.USD_PER_DAY: PlutoCell(value: d[sm_room.USD_PER_DAY] ?? ""),
               sm_room.USD_PER_3H: PlutoCell(value: d[sm_room.USD_PER_3H] ?? ""),
               sm_room.KIND: PlutoCell(value: d[sm_room.KIND] ?? ""),
               sm_room.STATUS: PlutoCell(value: d[sm_room.STATUS] ?? ""),
@@ -198,9 +194,7 @@ class _Main_State extends State<Main_> {
             // filter
             Menu_Button_Icon(
               tip: is_filter ? t("Close Filter") : t("Open Filter"), //
-              icon: is_filter
-                  ? Icons.filter_alt_off_outlined
-                  : Icons.filter_alt_outlined,
+              icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
               onPressed: () {
                 is_filter = !is_filter;
                 state_manager?.setShowColumnFilter(is_filter);
@@ -215,11 +209,7 @@ class _Main_State extends State<Main_> {
                 tip: "Search", //
                 icon: Icons.search,
                 onPressed: () {
-                  snackbar(
-                    ct: context,
-                    ms: "កំពុងអភិវឌ្ឍន៍...",
-                    cl: Colors.blue,
-                  );
+                  snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
                 },
               ),
 
@@ -361,10 +351,7 @@ class _Main_State extends State<Main_> {
   void on_create() async {
     try {
       //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => create.Main_()),
-      );
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
       if (tmp == null) return;
 
       // * លុប sort + filter

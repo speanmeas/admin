@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n/main.dart";
 
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
@@ -35,10 +35,7 @@ class _Dialog_State extends State<Dialog_> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            title,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ), //
+          Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
         ],
       ),
 
@@ -50,9 +47,7 @@ class _Dialog_State extends State<Dialog_> {
             autofocus: true,
             controller: controller,
             keyboardType: TextInputType.numberWithOptions(decimal: false),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp("[0-9+]")),
-            ],
+            inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9+]"))],
             decoration: InputDecoration(
               labelText: label, //
               labelStyle: TextStyle(fontWeight: FontWeight.bold),
