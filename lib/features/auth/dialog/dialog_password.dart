@@ -4,7 +4,7 @@ import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/secure.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/user.g.dart";
@@ -125,7 +125,7 @@ class _Dialog_State extends State<Dialog_> {
       tmp = await dio.post(
         endpoint.USER_CRUD_UPDATE, //
         data: {
-          "_id": await secure_storage.read(key: "_id"), //
+          "_id": await secure.read(key: "_id"), //
           sm_user.PASSWORD: controller_pw.text, //
         },
       );

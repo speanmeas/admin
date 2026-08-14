@@ -5,34 +5,33 @@ import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/global.dart"; // ignore: unused_import
 import "package:speanmeas/core/config.dart"; // ignore: unused_import
-import "package:speanmeas/core/i18n/main.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/global.dart"; // ignore: unused_import
+import "package:speanmeas/core/i18n/main.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
-import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
+import "package:speanmeas/core/widget/button/menu_button_icon.dart";
+import "package:speanmeas/core/widget/snackbar.dart";
 
+import "form/add_pay_other.dart" as pay_other;
+import "form/broke.dart" as broke;
+import "form/cancel.dart" as cancel;
+import "form/change_room.dart" as change_room;
 import "form/check_in.dart" as check_in; // 1
-import "form/pay_room.dart" as pay_room; // 2
 import "form/check_out.dart" as check_out; // 3
 import "form/clean.dart" as clean; // 4
-import "form/broke.dart" as broke; // 5
-import "form/fix.dart" as fix; // 6
-
 import "form/detail.dart" as detail;
-import "form/update_stay.dart" as update_stay;
+import "form/fix.dart" as fix; // 6
+import "form/pay_room.dart" as pay_room; // 2
 import "form/update_guest.dart" as update_guest;
 import "form/update_pay_room.dart" as update_pay_room;
-import "form/cancel.dart" as cancel;
-import "form/add_pay_other.dart" as pay_other;
-import "form/change_room.dart" as change_room;
+import "form/update_stay.dart" as update_stay;
 
 class _Main_State extends State<Main_> {
   dynamic tmp;

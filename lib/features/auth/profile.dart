@@ -4,7 +4,7 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/secure.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/user.g.dart";
@@ -69,7 +69,7 @@ class _Main_State extends State<Main_> {
       //
       tmp = await dio.post(
         endpoint.AUTH_ACCESS_TOKEN, //
-        data: {"access_token": await secure_storage.read(key: "access_token")},
+        data: {"access_token": await secure.read(key: "access_token")},
       );
       // if (tmp != null) for (var e in sm_user.data.entries) e.value["value"] = tmp.data[0][e.key];
       if (tmp == null) throw Exception("Invalid Access Token");
@@ -221,8 +221,8 @@ class _Main_State extends State<Main_> {
     try {
       //
       await dio.options.headers.remove("Authorization");
-      await secure_storage.delete(key: "access_token");
-      await secure_storage.delete(key: "_id");
+      await secure.delete(key: "access_token");
+      await secure.delete(key: "_id");
 
       // goto to sign in
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => sign_in.Main_()));
