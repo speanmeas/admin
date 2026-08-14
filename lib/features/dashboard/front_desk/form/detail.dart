@@ -101,9 +101,9 @@ class _Main_State extends State<Main_> {
               Icon(Icons.circle, size: 6),
               Text(room_type, style: TextStyle(color: Colors.blue)),
               Icon(Icons.circle, size: 6),
-              Text("$price_per_day \$ / Day", style: TextStyle(color: Colors.blue)),
+              Text("$price_per_day \$ / ${t("Day")}", style: TextStyle(color: Colors.blue)),
               Icon(Icons.circle, size: 6),
-              Text("$price_per_3hours \$ / 3H", style: TextStyle(color: Colors.blue)),
+              Text("$price_per_3hours \$ / ${t("Hour")}", style: TextStyle(color: Colors.blue)),
             ],
           ),
         );

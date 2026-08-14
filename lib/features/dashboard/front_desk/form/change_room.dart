@@ -16,7 +16,7 @@ Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Change Room", //
+        t("Change Room"), //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -96,9 +96,9 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Room ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text('${t("Room")} ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
-            room_number ?? "Unknown",
+            room_number ?? t("Unknown"),
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
@@ -107,7 +107,7 @@ class _Main_State extends State<Main_> {
       Divider(height: 1, color: Colors.black),
 
       Select_Dynamic(
-        lead: "New Room Number:", //
+        lead: '${t("New Room Number")}:', //
         prefixIcon: Icons.hotel_outlined, //
         options: (() {
           var options = [];
@@ -134,7 +134,7 @@ class _Main_State extends State<Main_> {
 
       Input_Text(
         init: change_note, //
-        lead: "Note:", //
+        lead: '${t("Note")}:', //
         maxLines: 4,
         onChanged: (v) {
           change_note = v;
@@ -144,7 +144,7 @@ class _Main_State extends State<Main_> {
 
       OutlinedButton.icon(
         icon: Icon(Icons.swap_horiz_outlined), //
-        label: Text(is_submitting ? "Changing..." : "Change"), //
+        label: Text(is_submitting ? t("Changing...") : t("Change")), //
         onPressed: (can_change && !is_submitting) ? on_change_room : null, //
       ),
 
@@ -193,7 +193,7 @@ class _Main_State extends State<Main_> {
       );
 
       Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
     } catch (e, st) {
       // compensating rollback: restore the old room's occupied state
       try {

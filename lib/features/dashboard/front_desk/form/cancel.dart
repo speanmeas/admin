@@ -7,20 +7,21 @@ import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/input/input_number.dart";
-import "package:speanmeas/core/widget/select/select_dynamic.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/input/input_text.dart";
-import "package:speanmeas/core/schema/front_desk.g.dart";
-import "package:speanmeas/core/schema/room.g.dart";
 
-//
+import "package:speanmeas/core/schema/room.g.dart";
+import "package:speanmeas/core/schema/front_desk.g.dart";
+
+import "package:speanmeas/core/widget/input/input_text.dart";
+import "package:speanmeas/core/widget/input/input_number.dart";
+import "package:speanmeas/core/widget/select/select_dynamic.dart";
+
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Cancel", //
+        t("Cancel"), //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -115,9 +116,9 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Room: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text('${t("Room")}: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
-            room_number ?? "Unknown",
+            room_number ?? t("Unknown"),
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
@@ -127,7 +128,7 @@ class _Main_State extends State<Main_> {
 
       Input_Number(
         init: cancel_price, //
-        lead: "Cancel Price:", //
+        lead: '${t("Cancel Price")}:', //
         onChanged: (v) {
           cancel_price = v;
           setState(() {});
@@ -137,7 +138,7 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text("Last Payment: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          Text('${t("Last Payment")}: ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           Text(
             "${last_paid?.toStringAsFixed(2) ?? '0.00'} \$",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
@@ -147,7 +148,7 @@ class _Main_State extends State<Main_> {
 
       Input_Number(
         init: pay_cash, //
-        lead: "Cash Payment:", //
+        lead: '${t("Cash Payment")}:', //
         prefixIcon: Icons.payments_outlined, //
         onChanged: (v) {
           pay_cash = v;
@@ -157,7 +158,7 @@ class _Main_State extends State<Main_> {
 
       Input_Number(
         init: pay_bank, //
-        lead: "Bank Payment:", //
+        lead: '${t("Bank Payment")}:', //
         prefixIcon: Icons.account_balance_outlined, //
         onChanged: (v) {
           pay_bank = v;
@@ -167,7 +168,7 @@ class _Main_State extends State<Main_> {
 
       Input_Number(
         init: pay_return, //
-        lead: "Return:", //
+        lead: '${t("Return")}:', //
         prefixIcon: Icons.currency_exchange_outlined, //
         onChanged: (v) {
           pay_return = v;
@@ -176,7 +177,7 @@ class _Main_State extends State<Main_> {
       ),
 
       Select_Dynamic(
-        lead: "Room Status:", //
+        lead: '${t("Room Status")}:', //
         init: room_status, //
         options: ["Available", "Pending Clean"], //
         prefixIcon: Icons.calendar_month_outlined, //
@@ -188,7 +189,7 @@ class _Main_State extends State<Main_> {
 
       Input_Text(
         init: note, //
-        lead: "Reason:", //
+        lead: '${t("Reason")}:', //
         maxLines: 4,
         onChanged: (v) {
           note = v;
@@ -201,7 +202,7 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text("Balanced: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text('${t("Balanced")}: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
             "${balanced.toStringAsFixed(2)} \$",
             style: TextStyle(
@@ -219,7 +220,7 @@ class _Main_State extends State<Main_> {
         children: [
           Icon(Icons.info_outline, color: Colors.blue),
           Text(
-            "You can't cancel within 1 hour after check-in.", //
+            t("You can't cancel within 1 hour after check-in."), //
             style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
           ),
         ],
@@ -227,7 +228,7 @@ class _Main_State extends State<Main_> {
 
       OutlinedButton.icon(
         icon: Icon(Icons.cancel_outlined), //
-        label: Text(is_submitting ? "Cancelling..." : "Cancel"), //
+        label: Text(is_submitting ? t("Cancelling...") : t("Cancel")), //
         style: OutlinedButton.styleFrom(foregroundColor: Colors.red), //
         onPressed: (can_cancel && !is_submitting) ? on_cancel : null, //
       ),
@@ -289,10 +290,10 @@ class _Main_State extends State<Main_> {
       }
 
       Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
     } catch (e, st) {
       pprint(st);
-      snackbar(ct: context, ms: "Your can't cancel within 1 hour after check-in.", cl: Colors.red);
+      snackbar(ct: context, ms: t("Your can't cancel within 1 hour after check-in."), cl: Colors.red);
     } finally {
       is_submitting = false;
       if (mounted) setState(() {});

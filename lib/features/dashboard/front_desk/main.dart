@@ -81,7 +81,7 @@ class _Main_State extends State<Main_> {
                 child: TextField(
                   decoration: InputDecoration(
                     isDense: true, //
-                    labelText: t("Search:"), //
+                    labelText: '${t("Search")}:', //
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
@@ -172,7 +172,7 @@ class _Main_State extends State<Main_> {
                               Text("${r[sm_room.STATUS]}", style: TextStyle(fontSize: 14, color: color)),
 
                               Tooltip(
-                                message: "Menu",
+                                message: t("Menu"),
                                 child: MenuAnchor(
                                   style: MenuStyle(padding: WidgetStatePropertyAll(EdgeInsets.all(0))),
                                   builder: (context, controller, child) {
@@ -261,7 +261,7 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.person_2_outlined, size: 24), //
-                              Text(t("Guest:"), style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text('${t("Guest")}:', style: TextStyle(fontWeight: FontWeight.bold)),
                               //
                               SizedBox(width: 2), //
                               Icon(Icons.circle, size: 6), //
@@ -293,7 +293,7 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.calendar_month, size: 24), //
-                              Text(t("Stay:"), style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text('${t("Stay")}:', style: TextStyle(fontWeight: FontWeight.bold)),
                               //
                               SizedBox(width: 2), //
                               Icon(Icons.circle, size: 6), //
@@ -335,7 +335,7 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.receipt_outlined, size: 24), //
-                              Text(t("Room Payment:"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text('${t("Room Payment")}:', style: TextStyle(fontWeight: FontWeight.bold)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
@@ -383,7 +383,7 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.receipt_outlined, size: 24), //
-                              Text(t("Other Payment:"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text('${t("Other Payment")}:', style: TextStyle(fontWeight: FontWeight.bold)), //
                               //
                               SizedBox(width: 4), //
                               Icon(Icons.circle, size: 6), //
@@ -426,7 +426,7 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.login, size: 24), //
-                              Text(t("Check In:"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text('${t("Check In")}:', style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(check_in, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
@@ -445,7 +445,7 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.time_to_leave_outlined, size: 24), //
-                              Text(t("Due:"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text('${t("Stay Due")}:', style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(due, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
@@ -464,7 +464,7 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.logout, size: 24), //
-                              Text(t("Check Out:"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text('${t("Check Out")}:', style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(check_out, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
@@ -483,7 +483,7 @@ class _Main_State extends State<Main_> {
                             spacing: 4,
                             children: [
                               Icon(Icons.bug_report_outlined, size: 24), //
-                              Text(t("Broken Date:"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                              Text('${t("Broken Date")}:', style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text(broke_date, style: TextStyle(color: Colors.blue)), //
                             ],
                           );
@@ -496,28 +496,28 @@ class _Main_State extends State<Main_> {
                         if (r[sm_room.STATUS] == "Available") //
                           OutlinedButton.icon(
                             icon: Icon(Icons.login),
-                            label: Text("Check In"),
+                            label: Text(t("Check In")),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.green)),
                             onPressed: () => on_check_in(r), //
                           ), //
                         if (r[sm_room.STATUS] == "Pending Pay") //
                           OutlinedButton.icon(
                             icon: Icon(Icons.payment),
-                            label: Text("Payment"),
+                            label: Text(t("Payment")),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.orange)),
                             onPressed: () => on_payment(r), //
                           ), //
                         if (r[sm_room.STATUS] == "Pending Leave") //
                           OutlinedButton.icon(
                             icon: Icon(Icons.logout),
-                            label: Text("Check Out"),
+                            label: Text(t("Check Out")),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.blue)),
                             onPressed: () => on_check_out(r), //
                           ), //
                         if (r[sm_room.STATUS] == "Pending Clean") //
                           OutlinedButton.icon(
                             icon: Icon(Icons.cleaning_services),
-                            label: Text("Clean"),
+                            label: Text(t("Clean")),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.grey)),
                             onPressed: () => on_clean(r), //
                           ), //

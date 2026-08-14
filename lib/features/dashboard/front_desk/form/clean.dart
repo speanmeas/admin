@@ -19,7 +19,7 @@ Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Clean", //
+        t("Clean"), //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -91,9 +91,9 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Room: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text('${t("Room")}: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
-            room_number ?? "Unknown",
+            room_number ?? t("Unknown"),
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
@@ -103,14 +103,14 @@ class _Main_State extends State<Main_> {
 
       if (front_desk_id == null)
         Show_Text(
-          lead: "Note:", //
-          value: "Guest has changed from this room.", //
+          lead: '${t("Note")}:', //
+          value: t("Guest has changed from this room."), //
         ),
 
       if (front_desk_id != null)
         Input_Text(
           init: note, //
-          lead: "Note:", //
+          lead: '${t("Note")}:', //
           maxLines: 4,
           prefixIcon: Icons.note_alt_outlined, //
           onChanged: (v) {
@@ -122,7 +122,7 @@ class _Main_State extends State<Main_> {
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.cleaning_services), //
-        label: Text(is_submitting ? "Cleaning..." : "Clean"), //
+        label: Text(is_submitting ? t("Cleaning...") : t("Clean")), //
         onPressed: is_submitting ? null : on_clean, //
       ),
 
@@ -156,7 +156,7 @@ class _Main_State extends State<Main_> {
         );
 
       Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

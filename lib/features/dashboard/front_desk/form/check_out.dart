@@ -18,7 +18,7 @@ Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Check Out", //
+        t("Check Out"), //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -89,9 +89,9 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Room: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text('${t("Room")}: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
-            room_number ?? "Unknown",
+            room_number ?? t("Unknown"),
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
@@ -101,7 +101,7 @@ class _Main_State extends State<Main_> {
 
       Input_Text(
         init: note, //
-        lead: "Note:", //
+        lead: '${t("Note")}:', //
         maxLines: 4,
         prefixIcon: Icons.note_alt_outlined, //
         onChanged: (v) {
@@ -113,7 +113,7 @@ class _Main_State extends State<Main_> {
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.logout), //
-        label: Text(is_submitting ? "Checking Out..." : "Check Out"), //
+        label: Text(is_submitting ? t("Checking Out...") : t("Check Out")), //
         onPressed: is_submitting ? null : on_check_out, //
       ),
 
@@ -147,7 +147,7 @@ class _Main_State extends State<Main_> {
       );
 
       Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

@@ -20,7 +20,7 @@ Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Update Guest", //
+        t("Update Guest"), //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -102,9 +102,9 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Room: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text('${t("Room")}: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
-            room_number ?? "Unknown",
+            room_number ?? t("Unknown"),
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
@@ -122,7 +122,7 @@ class _Main_State extends State<Main_> {
 
       OutlinedButton.icon(
         icon: Icon(Icons.check), //
-        label: Text(is_submitting ? "Updating..." : "Update"), //
+        label: Text(is_submitting ? t("Updating...") : t("Update")), //
         onPressed: is_submitting ? null : on_update, //
       ),
 
@@ -145,7 +145,7 @@ class _Main_State extends State<Main_> {
       );
 
       Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

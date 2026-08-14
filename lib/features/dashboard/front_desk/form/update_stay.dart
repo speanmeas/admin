@@ -19,7 +19,7 @@ Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Update Stay", //
+        t("Update Stay"), //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -117,7 +117,7 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Room ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text('${t("Room")} ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
             room_number ?? "",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
@@ -129,7 +129,7 @@ class _Main_State extends State<Main_> {
 
       Select_Dynamic(
         init: number_of_guest ?? 0, //
-        lead: "Number of Guests:",
+        lead: '${t("Number of Guests")}:',
         options: List.generate(10, (index) => index + 1),
         prefixIcon: Icons.people_outline, //
         onChanged: (v) {
@@ -140,7 +140,7 @@ class _Main_State extends State<Main_> {
 
       Select_Dynamic(
         init: stay_days ?? 0, //
-        lead: "Stay Duration (Days):",
+        lead: '${t("Stay Duration (Days)")}:',
         options: List.generate(365, (index) => index),
         prefixIcon: Icons.calendar_month_outlined,
         onChanged: (v) {
@@ -151,7 +151,7 @@ class _Main_State extends State<Main_> {
 
       Select_Dynamic(
         init: stay_hours ?? 0, //
-        lead: "Stay Duration (Hours):",
+        lead: '${t("Stay Duration (Hours)")}:',
         options: [0, 3, 6, 9, 12, 15, 18, 21],
         prefixIcon: Icons.access_time_outlined,
         onChanged: (v) {
@@ -162,7 +162,7 @@ class _Main_State extends State<Main_> {
 
       Input_Text(
         init: note ?? "", //
-        lead: "Note:", //
+        lead: '${t("Note")}:', //
         prefixIcon: Icons.note_alt_outlined, //
         maxLines: 4, //
         onChanged: (v) {
@@ -173,7 +173,7 @@ class _Main_State extends State<Main_> {
 
       OutlinedButton.icon(
         icon: Icon(Icons.check), //
-        label: Text(is_submitting ? "Updating..." : "Update"), //
+        label: Text(is_submitting ? t("Updating...") : t("Update")), //
         onPressed: (can_update && !is_submitting) ? on_update : null, //
       ),
 
@@ -241,7 +241,7 @@ class _Main_State extends State<Main_> {
         );
 
       Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);

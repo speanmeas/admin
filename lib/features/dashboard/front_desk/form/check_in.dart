@@ -21,7 +21,7 @@ Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Check In", //
+        t("Check In"), //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -97,9 +97,9 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Room: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text('${t("Room")}: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
-            room_number ?? "Unknown",
+            room_number ?? t("Unknown"),
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
@@ -108,7 +108,7 @@ class _Main_State extends State<Main_> {
       Divider(height: 1, color: Colors.black),
 
       Select_Dynamic(
-        lead: "Number of Guests:",
+        lead: '${t("Number of Guests")}:',
         init: number_of_guest, //
         options: List.generate(10, (index) => index + 1),
         prefixIcon: Icons.people_outline, //
@@ -119,7 +119,7 @@ class _Main_State extends State<Main_> {
       ),
 
       Select_Dynamic(
-        lead: "Stay Duration (Days):",
+        lead: '${t("Stay Duration (Days)")}:',
         init: stay_days, //
         options: List.generate(365, (index) => index),
         prefixIcon: Icons.calendar_month_outlined,
@@ -130,7 +130,7 @@ class _Main_State extends State<Main_> {
       ),
 
       Select_Dynamic(
-        lead: "Stay Duration (Hours):",
+        lead: '${t("Stay Duration (Hours)")}:',
         init: stay_hours,
         options: [0, 3, 6, 9, 12, 15, 18, 21],
         prefixIcon: Icons.access_time_outlined,
@@ -142,7 +142,7 @@ class _Main_State extends State<Main_> {
 
       Input_Text(
         init: note, //
-        lead: "Note:", //
+        lead: '${t("Note")}:', //
         maxLines: 4, //
         onChanged: (v) {
           note = v;
@@ -159,7 +159,7 @@ class _Main_State extends State<Main_> {
 
       OutlinedButton.icon(
         icon: Icon(Icons.login_outlined), //
-        label: Text(is_submitting ? "Checking In..." : "Check In"), //
+        label: Text(is_submitting ? t("Checking In...") : t("Check In")), //
         onPressed: (can_check_in && !is_submitting) ? on_check_in : null, //
       ),
 
@@ -216,7 +216,7 @@ class _Main_State extends State<Main_> {
       );
 
       Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
     } catch (e, st) {
       // compensating rollback: undo the created front_desk record
       if (front_desk_id != null) {

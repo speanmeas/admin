@@ -19,8 +19,8 @@ class I18N extends ChangeNotifier {
 
   void init() async {
     print("I18N initialized.");
-    // await set_locale(ENGLISH);
-    await set_locale(KHMER);
+    await set_locale(ENGLISH);
+    // await set_locale(KHMER);
   }
 
   Future<void> set_locale(String locale) async {

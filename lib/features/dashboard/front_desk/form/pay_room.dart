@@ -20,7 +20,7 @@ Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Room Payment", //
+        t("Room Payment"), //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -106,9 +106,9 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Room: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text('${t("Room")}: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
-            room_number ?? "Unknown",
+            room_number ?? t("Unknown"),
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ],
@@ -118,7 +118,7 @@ class _Main_State extends State<Main_> {
 
       Input_Number(
         init: pay_price, //
-        lead: "Room Price:", //
+        lead: '${t("Room Price")}:', //
         onChanged: (v) {
           pay_price = v;
           setState(() {});
@@ -128,7 +128,7 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text("Last Payment: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          Text('${t("Last Payment")}: ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           Text(
             "${last_paid?.toStringAsFixed(2) ?? '0.00'} \$",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
@@ -138,7 +138,7 @@ class _Main_State extends State<Main_> {
 
       Input_Number(
         init: pay_cash, //
-        lead: "Cash Payment:", //
+        lead: '${t("Cash Payment")}:', //
         prefixIcon: Icons.payments_outlined, //
         onChanged: (v) {
           pay_cash = v;
@@ -148,7 +148,7 @@ class _Main_State extends State<Main_> {
 
       Input_Number(
         init: pay_bank, //
-        lead: "Bank Payment:", //
+        lead: '${t("Bank Payment")}:', //
         prefixIcon: Icons.account_balance_outlined, //
         onChanged: (v) {
           pay_bank = v;
@@ -158,7 +158,7 @@ class _Main_State extends State<Main_> {
 
       Input_Number(
         init: pay_return, //
-        lead: "Return:", //
+        lead: '${t("Return")}:', //
         prefixIcon: Icons.currency_exchange_outlined, //
         onChanged: (v) {
           pay_return = v;
@@ -180,7 +180,7 @@ class _Main_State extends State<Main_> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text(
-            "Balanced: ",
+            '${t("Balanced")}: ',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold, //
@@ -199,7 +199,7 @@ class _Main_State extends State<Main_> {
 
       OutlinedButton.icon(
         icon: Icon(Icons.payments_outlined), //
-        label: Text(is_submitting ? "Processing..." : "Complete Payment"), //
+        label: Text(is_submitting ? t("Processing...") : t("Complete Payment")), //
         onPressed: (can_pay && !is_submitting) ? on_pay : null, //
       ),
 
@@ -252,7 +252,7 @@ class _Main_State extends State<Main_> {
       );
 
       Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
+      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
