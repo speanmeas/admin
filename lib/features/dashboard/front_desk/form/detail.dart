@@ -66,7 +66,7 @@ class _Main_State extends State<Main_> {
 
       tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
       map_fd = tmp.data[0] as Map<String, dynamic>;
-      pprint(map_fd);
+      // pprint(map_fd);
 
       is_loading = false;
       setState(() {});
@@ -202,6 +202,7 @@ class _Main_State extends State<Main_> {
           String bank = tmp.toStringAsFixed(2);
           tmp = double.tryParse(m["pay_return"]?.toString() ?? "0") ?? 0;
           String change = tmp.toStringAsFixed(2);
+          if (cash == "0.00" && bank == "0.00" && change == "0.00") return SizedBox.shrink();
           return Align(
             alignment: Alignment.centerLeft,
             child: Wrap(

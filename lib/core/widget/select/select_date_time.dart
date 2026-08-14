@@ -13,14 +13,14 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
-class _SelectDateTimeState extends State<SelectDateTime> {
+class _Select_Date_TimeState extends State<Select_Date_Time> {
   //
   dynamic tmp;
   final controller = TextEditingController();
 
   void init() {
-    if (widget.initial != null) {
-      controller.text = DateFormat(DEFAULT_DATE_FORMAT).format(widget.initial!);
+    if (widget.init != null) {
+      controller.text = DateFormat(DEFAULT_DATE_FORMAT).format(widget.init!);
       setState(() {});
     }
   }
@@ -35,7 +35,7 @@ class _SelectDateTimeState extends State<SelectDateTime> {
         textAlignVertical: TextAlignVertical.center,
         decoration: InputDecoration(
           isDense: true,
-          labelText: widget.title,
+          labelText: widget.lead,
           labelStyle: TextStyle(fontWeight: FontWeight.bold),
           floatingLabelBehavior: FloatingLabelBehavior.always,
           contentPadding: EdgeInsets.fromLTRB(4, 8, 4, 8),
@@ -54,7 +54,7 @@ class _SelectDateTimeState extends State<SelectDateTime> {
 
   Future<DateTime?>? select_page(BuildContext context) async {
     DateTime init = DateTime.now();
-    if (widget.initial != null) init = widget.initial!;
+    if (widget.init != null) init = widget.init!;
     if (controller.text.isNotEmpty) init = DateTime.tryParse(controller.text)?.toLocal() ?? DateTime.now();
 
     // Select Date
@@ -94,22 +94,22 @@ class _SelectDateTimeState extends State<SelectDateTime> {
   }
 }
 
-class SelectDateTime extends StatefulWidget {
-  const SelectDateTime({
+class Select_Date_Time extends StatefulWidget {
+  const Select_Date_Time({
     super.key, //
-    this.initial,
-    this.title, //
+    this.init,
+    this.lead, //
     this.onChanged,
     // required this.controller,
   });
 
-  final DateTime? initial;
-  final String? title;
+  final DateTime? init;
+  final String? lead;
   final Function(DateTime?)? onChanged;
   // final TextEditingController controller;
 
   @override
-  State<SelectDateTime> createState() => _SelectDateTimeState();
+  State<Select_Date_Time> createState() => _Select_Date_TimeState();
 }
 
 void main() async {
@@ -127,9 +127,9 @@ void main() async {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SelectDateTime(
-              title: "Datetime Start:",
-              initial: DateTime.tryParse("2023-01-01 12:00"),
+            Select_Date_Time(
+              lead: "Datetime Start:",
+              init: DateTime.tryParse("2023-01-01 12:00"),
               onChanged: (DateTime? value) {
                 print("Selected datetime: $value");
               },
