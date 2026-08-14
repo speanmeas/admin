@@ -43,7 +43,7 @@ class _Main_State extends State<Main_> {
   void init() async {
     try {
       tmp = await dio.post(endpoint.BANK_CRUD_READ_COUNT, data: {"count": true});
-      row_total = int.parse(tmp.data.toString());
+      row_total = int.tryParse(tmp.data?.toString() ?? "0") ?? 0;
 
       load_page(page);
     } catch (e, st) {
@@ -56,7 +56,7 @@ class _Main_State extends State<Main_> {
   void on_refresh() async {
     try {
       final r = await dio.post(endpoint.BANK_CRUD_READ_COUNT, data: {"count": true});
-      row_total = int.parse(r.data.toString());
+      row_total = int.tryParse(r.data?.toString() ?? "0") ?? 0;
 
       if (page > total_pages) page = total_pages;
       if (page < 1) page = 1;
@@ -86,7 +86,7 @@ class _Main_State extends State<Main_> {
           "limit": DEFAULT_LIMIT_ROW,
         },
       );
-      final data = List<Map<String, dynamic>>.from(tmp.data);
+      final data = List<Map<String, dynamic>>.from(tmp.data ?? const []);
 
       if (!mounted || request_id != load_request_id) return;
 
@@ -331,7 +331,8 @@ class _Main_State extends State<Main_> {
   void on_read() async {
     try {
       final row = state_manager?.currentRow;
-      if (row == null) {
+      final id = row?.cells[sm_bank.ID]?.value?.toString() ?? "";
+      if (row == null || id.isEmpty) {
         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
@@ -340,7 +341,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => read.Main_(
-            id: row.cells[sm_bank.ID]!.value.toString(), //
+            id: id, //
           ),
         ),
       );
@@ -353,7 +354,8 @@ class _Main_State extends State<Main_> {
   void on_update() async {
     try {
       final row = state_manager?.currentRow;
-      if (row == null) {
+      final id = row?.cells[sm_bank.ID]?.value?.toString() ?? "";
+      if (row == null || id.isEmpty) {
         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
@@ -362,7 +364,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => update.Main_(
-            id: row.cells[sm_bank.ID]!.value.toString(), //
+            id: id, //
           ),
         ),
       );
@@ -378,7 +380,8 @@ class _Main_State extends State<Main_> {
   void on_delete() async {
     try {
       final row = state_manager?.currentRow;
-      if (row == null) {
+      final id = row?.cells[sm_bank.ID]?.value?.toString() ?? "";
+      if (row == null || id.isEmpty) {
         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
@@ -387,7 +390,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => delete.Main_(
-            id: row.cells[sm_bank.ID]!.value.toString(), //
+            id: id, //
           ),
         ),
       );

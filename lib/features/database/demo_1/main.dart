@@ -32,7 +32,6 @@ Widget _layout(List<Widget> children) {
 }
 
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
 
   int page = 1;
@@ -42,46 +41,29 @@ class _Main_State extends State<Main_> {
   int load_request_id = 0;
   PlutoGridStateManager? state_manager;
 
-  //
   void init() async {
     try {
-      //
-      tmp = await dio.post(
-        endpoint.DEMO_1_CRUD_READ_COUNT, //
-        data: {"count": true},
-      );
-      row_total = int.parse(tmp.data.toString());
+      tmp = await dio.post(endpoint.DEMO_1_CRUD_READ_COUNT, data: {"count": true});
+      row_total = int.tryParse(tmp.data?.toString() ?? "0") ?? 0;
 
-      //
       load_page(page);
-
-      //
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
   }
 
-  //
   void on_refresh() async {
     try {
-      //
-      final r = await dio.post(
-        endpoint.DEMO_1_CRUD_READ_COUNT, //
-        data: {"count": true},
-      );
-      row_total = int.parse(r.data.toString());
+      final r = await dio.post(endpoint.DEMO_1_CRUD_READ_COUNT, data: {"count": true});
+      row_total = int.tryParse(r.data?.toString() ?? "0") ?? 0;
 
-      //
       if (page > total_pages) page = total_pages;
       if (page < 1) page = 1;
 
-      //
       load_page(page);
 
       snackbar(ct: context, ms: "Refresh completed.", cl: Colors.green);
-
-      //
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -92,12 +74,10 @@ class _Main_State extends State<Main_> {
     final request_id = ++load_request_id;
 
     try {
-      //
       is_loading = true;
 
       setState(() {});
 
-      //
       tmp = await dio.post(
         endpoint.DEMO_1_CRUD_READ, //
         data: {
@@ -107,7 +87,7 @@ class _Main_State extends State<Main_> {
           "limit": DEFAULT_LIMIT_ROW,
         },
       );
-      final data = List<Map<String, dynamic>>.from(tmp.data);
+      final data = List<Map<String, dynamic>>.from(tmp.data ?? const []);
 
       // Ignore a response from an earlier page request.
       if (!mounted || request_id != load_request_id) return;
@@ -141,9 +121,7 @@ class _Main_State extends State<Main_> {
       if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
       state_manager?.setFilterWithFilterRows(filter_rows);
 
-      //
       is_loading = false;
-
       setState(() {});
     } catch (e, st) {
       pprint(st);
@@ -356,7 +334,6 @@ class _Main_State extends State<Main_> {
 
   void on_create() async {
     try {
-      //
       tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
       if (tmp == null) return;
 
@@ -365,14 +342,11 @@ class _Main_State extends State<Main_> {
       if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
       state_manager?.setFilterWithFilterRows([]);
 
-      //
       row_total = row_total + 1;
       page = 1;
       load_page(page);
 
       state_manager?.scroll.vertical?.jumpTo(0);
-
-      //
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -381,24 +355,21 @@ class _Main_State extends State<Main_> {
 
   void on_read() async {
     try {
-      //
       final row = state_manager?.currentRow;
-      if (row == null) {
+      final id = row?.cells[sm_demo_1.ID]?.value?.toString() ?? "";
+      if (row == null || id.isEmpty) {
         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
-      //
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => read.Main_(
-            id: row.cells[sm_demo_1.ID]!.value.toString(), //
+            id: id, //
           ),
         ),
       );
-
-      //
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -407,28 +378,17 @@ class _Main_State extends State<Main_> {
 
   void on_update() async {
     try {
-      //
       final row = state_manager?.currentRow;
-      if (row == null) {
+      final id = row?.cells[sm_demo_1.ID]?.value?.toString() ?? "";
+      if (row == null || id.isEmpty) {
         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => update.Main_(
-            id: row.cells[sm_demo_1.ID]!.value.toString(), //
-          ),
-        ),
-      );
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_(id: id)));
       if (tmp == null) return;
 
-      //
       load_page(page);
-
-      //
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -437,28 +397,17 @@ class _Main_State extends State<Main_> {
 
   void on_delete() async {
     try {
-      //
       final row = state_manager?.currentRow;
-      if (row == null) {
+      final id = row?.cells[sm_demo_1.ID]?.value?.toString() ?? "";
+      if (row == null || id.isEmpty) {
         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
-      //
-      tmp = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => delete.Main_(
-            id: row.cells[sm_demo_1.ID]!.value.toString(), //
-          ),
-        ),
-      );
+      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_(id: id)));
       if (tmp == null) return;
 
-      //
       load_page(page);
-
-      //
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -470,7 +419,6 @@ class _Main_State extends State<Main_> {
     return (row_total + DEFAULT_LIMIT_ROW - 1) ~/ DEFAULT_LIMIT_ROW;
   }
 
-  //
   @override
   void initState() {
     super.initState();

@@ -67,14 +67,23 @@ class _Main_State extends State<Main_> {
         data: {sm_guest.ID: widget.id},
       );
 
-      id = tmp.data[0][sm_guest.ID];
-      full_name = tmp.data[0][sm_guest.FULL_NAME];
-      phone_number = tmp.data[0][sm_guest.PHONE_NUMBER];
-      gender = tmp.data[0][sm_guest.GENDER];
-      nationality_id = tmp.data[0][sm_guest.NATIONALITY_ID]["name"];
-      id_number = tmp.data[0][sm_guest.ID_NUMBER];
-      passport_number = tmp.data[0][sm_guest.PASSPORT_NUMBER];
-      note = tmp.data[0][sm_guest.NOTE];
+      final data = tmp.data;
+      if (data == null || data.isEmpty) {
+        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
+        is_loading = false;
+        setState(() {});
+        return;
+      }
+      final row = data[0];
+
+      id = row[sm_guest.ID]?.toString();
+      full_name = row[sm_guest.FULL_NAME]?.toString();
+      phone_number = row[sm_guest.PHONE_NUMBER]?.toString();
+      gender = row[sm_guest.GENDER]?.toString();
+      nationality_id = row[sm_guest.NATIONALITY_ID]?["name"]?.toString();
+      id_number = row[sm_guest.ID_NUMBER]?.toString();
+      passport_number = row[sm_guest.PASSPORT_NUMBER]?.toString();
+      note = row[sm_guest.NOTE]?.toString();
 
       is_loading = false;
       setState(() {});

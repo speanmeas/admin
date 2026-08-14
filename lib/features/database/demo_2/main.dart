@@ -48,7 +48,7 @@ class _Main_State extends State<Main_> {
         endpoint.DEMO_2_CRUD_READ_COUNT, //
         data: {"count": true},
       );
-      row_total = int.parse(tmp.data.toString());
+      row_total = int.tryParse(tmp.data?.toString() ?? "0") ?? 0;
 
       //
       load_page(page);
@@ -68,7 +68,7 @@ class _Main_State extends State<Main_> {
         endpoint.DEMO_2_CRUD_READ_COUNT, //
         data: {"count": true},
       );
-      row_total = int.parse(r.data.toString());
+      row_total = int.tryParse(r.data?.toString() ?? "0") ?? 0;
 
       //
       if (page > total_pages) page = total_pages;
@@ -105,7 +105,7 @@ class _Main_State extends State<Main_> {
           "limit": DEFAULT_LIMIT_ROW,
         },
       );
-      final data = List<Map<String, dynamic>>.from(tmp.data);
+      final data = List<Map<String, dynamic>>.from(tmp.data ?? const []);
 
       // Ignore a response from an earlier page request.
       if (!mounted || request_id != load_request_id) return;
@@ -377,7 +377,8 @@ class _Main_State extends State<Main_> {
     try {
       //
       final row = state_manager?.currentRow;
-      if (row == null) {
+      final id = row?.cells[sm_demo_2.ID]?.value?.toString() ?? "";
+      if (row == null || id.isEmpty) {
         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
@@ -387,7 +388,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => read.Main_(
-            id: row.cells[sm_demo_2.ID]!.value.toString(), //
+            id: id, //
           ),
         ),
       );
@@ -403,7 +404,8 @@ class _Main_State extends State<Main_> {
     try {
       //
       final row = state_manager?.currentRow;
-      if (row == null) {
+      final id = row?.cells[sm_demo_2.ID]?.value?.toString() ?? "";
+      if (row == null || id.isEmpty) {
         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
@@ -413,7 +415,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => update.Main_(
-            id: row.cells[sm_demo_2.ID]!.value.toString(), //
+            id: id, //
           ),
         ),
       );
@@ -433,7 +435,8 @@ class _Main_State extends State<Main_> {
     try {
       //
       final row = state_manager?.currentRow;
-      if (row == null) {
+      final id = row?.cells[sm_demo_2.ID]?.value?.toString() ?? "";
+      if (row == null || id.isEmpty) {
         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
@@ -443,7 +446,7 @@ class _Main_State extends State<Main_> {
         context,
         MaterialPageRoute(
           builder: (context) => delete.Main_(
-            id: row.cells[sm_demo_2.ID]!.value.toString(), //
+            id: id, //
           ),
         ),
       );

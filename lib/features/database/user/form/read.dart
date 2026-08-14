@@ -68,14 +68,27 @@ class _Main_State extends State<Main_> {
         data: {sm_user.ID: widget.id},
       );
 
-      username = tmp.data[0][sm_user.USERNAME];
-      full_name = tmp.data[0][sm_user.FULL_NAME];
-      phone_number = tmp.data[0][sm_user.PHONE_NUMBER];
-      is_admin = tmp.data[0][sm_user.IS_ADMIN];
-      is_manager = tmp.data[0][sm_user.IS_MANAGER];
-      is_receptionist = tmp.data[0][sm_user.IS_RECEPTIONIST];
-      is_housekeeper = tmp.data[0][sm_user.IS_HOUSEKEEPER];
-      note = tmp.data[0][sm_user.NOTE];
+      final data = tmp.data;
+      if (data == null || data.isEmpty) {
+        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
+        is_loading = false;
+        setState(() {});
+        return;
+      }
+      final row = data[0];
+
+      username = row[sm_user.USERNAME]?.toString();
+      full_name = row[sm_user.FULL_NAME]?.toString();
+      phone_number = row[sm_user.PHONE_NUMBER]?.toString();
+      final a = row[sm_user.IS_ADMIN];
+      is_admin = a is bool ? a : null;
+      final m = row[sm_user.IS_MANAGER];
+      is_manager = m is bool ? m : null;
+      final r = row[sm_user.IS_RECEPTIONIST];
+      is_receptionist = r is bool ? r : null;
+      final h = row[sm_user.IS_HOUSEKEEPER];
+      is_housekeeper = h is bool ? h : null;
+      note = row[sm_user.NOTE]?.toString();
 
       is_loading = false;
       setState(() {});

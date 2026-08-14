@@ -66,12 +66,21 @@ class _Main_State extends State<Main_> {
         data: {sm_room.ID: widget.id},
       );
 
-      number = tmp.data[0][sm_room.NUMBER];
-      usd_per_day = tmp.data[0][sm_room.USD_PER_DAY];
-      usd_per_3h = tmp.data[0][sm_room.USD_PER_3H];
-      kind = tmp.data[0][sm_room.KIND];
-      status = tmp.data[0][sm_room.STATUS];
-      note = tmp.data[0][sm_room.NOTE];
+      final data = tmp.data;
+      if (data == null || data.isEmpty) {
+        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
+        is_loading = false;
+        setState(() {});
+        return;
+      }
+      final row = data[0];
+
+      number = row[sm_room.NUMBER]?.toString();
+      usd_per_day = double.tryParse(row[sm_room.USD_PER_DAY]?.toString() ?? "");
+      usd_per_3h = double.tryParse(row[sm_room.USD_PER_3H]?.toString() ?? "");
+      kind = row[sm_room.KIND]?.toString();
+      status = row[sm_room.STATUS]?.toString();
+      note = row[sm_room.NOTE]?.toString();
 
       is_loading = false;
       setState(() {});

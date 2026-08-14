@@ -71,15 +71,28 @@ class _Main_State extends State<Main_> {
         data: {sm_demo_1.ID: widget.id},
       );
 
-      text_1 = tmp.data[0][sm_demo_1.TEXT_1];
-      text_2 = tmp.data[0][sm_demo_1.TEXT_2];
-      number_1 = tmp.data[0][sm_demo_1.NUMBER_1];
-      number_2 = tmp.data[0][sm_demo_1.NUMBER_2];
-      datetime_1 = DateTime.parse(tmp.data[0][sm_demo_1.DATETIME_1]);
-      datetime_2 = DateTime.parse(tmp.data[0][sm_demo_1.DATETIME_2]);
-      logic_1 = tmp.data[0][sm_demo_1.LOGIC_1];
-      logic_2 = tmp.data[0][sm_demo_1.LOGIC_2];
-      note = tmp.data[0][sm_demo_1.NOTE];
+      final data = tmp.data;
+      if (data == null || data.isEmpty) {
+        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
+        is_loading = false;
+        setState(() {});
+        return;
+      }
+
+      final row = data[0];
+      text_1 = row[sm_demo_1.TEXT_1]?.toString();
+      text_2 = row[sm_demo_1.TEXT_2]?.toString();
+      number_1 = double.tryParse(row[sm_demo_1.NUMBER_1]?.toString() ?? "");
+      number_2 = double.tryParse(row[sm_demo_1.NUMBER_2]?.toString() ?? "");
+      final dt_1 = DateTime.tryParse(row[sm_demo_1.DATETIME_1]?.toString() ?? "");
+      if (dt_1 != null) datetime_1 = dt_1;
+      final dt_2 = DateTime.tryParse(row[sm_demo_1.DATETIME_2]?.toString() ?? "");
+      if (dt_2 != null) datetime_2 = dt_2;
+      final l_1 = row[sm_demo_1.LOGIC_1];
+      logic_1 = l_1 is bool ? l_1 : null;
+      final l_2 = row[sm_demo_1.LOGIC_2];
+      logic_2 = l_2 is bool ? l_2 : null;
+      note = row[sm_demo_1.NOTE]?.toString();
 
       is_loading = false;
       setState(() {});

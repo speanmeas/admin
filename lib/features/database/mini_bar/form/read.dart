@@ -64,10 +64,18 @@ class _Main_State extends State<Main_> {
         data: {sm_mini_bar.ID: widget.id},
       );
 
-      name = tmp.data[0][sm_mini_bar.NAME];
-      price = tmp.data[0][sm_mini_bar.PRICE];
-      stock = tmp.data[0][sm_mini_bar.STOCK];
-      note = tmp.data[0][sm_mini_bar.NOTE];
+      final data = tmp.data;
+      if (data == null || data.isEmpty) {
+        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
+        setState(() => is_loading = false);
+        return;
+      }
+      final row = data[0];
+
+      name = row[sm_mini_bar.NAME]?.toString();
+      price = double.tryParse(row[sm_mini_bar.PRICE]?.toString() ?? "");
+      stock = double.tryParse(row[sm_mini_bar.STOCK]?.toString() ?? "");
+      note = row[sm_mini_bar.NOTE]?.toString();
 
       setState(() => is_loading = false);
       //

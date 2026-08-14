@@ -61,8 +61,17 @@ class _Main_State extends State<Main_> {
         data: {sm_bank.ID: widget.id},
       );
 
-      name = tmp.data[0][sm_bank.NAME];
-      note = tmp.data[0][sm_bank.NOTE];
+      final data = tmp.data;
+      if (data == null || data.isEmpty) {
+        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
+        is_loading = false;
+        setState(() {});
+        return;
+      }
+      final row = data[0];
+
+      name = row[sm_bank.NAME]?.toString();
+      note = row[sm_bank.NOTE]?.toString();
 
       is_loading = false;
       setState(() {});
