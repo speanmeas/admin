@@ -12,6 +12,7 @@ import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_bank_auto.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
+import "package:speanmeas/core/schema/payment_other.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
 Widget _layout(List<Widget> children) {
@@ -57,7 +58,8 @@ class _Main_State extends State<Main_> {
   String? room_id;
   String? room_number;
 
-  double? pay_price;
+  double? other_price;
+  double? old_price;
   double? last_paid;
   double? pay_cash;
   double? pay_bank;
@@ -78,12 +80,16 @@ class _Main_State extends State<Main_> {
       room_number = map_r[sm_room.NUMBER];
 
       tmp = map_fd[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
-      if (tmp.isNotEmpty) pay_price = double.tryParse(tmp.last["pay_price"].toString()) ?? 0;
       for (var l in tmp) {
+        // * តម្លៃសរុប = ផលបូកនៃ add_price ដក sub_price ទាំងអស់
+        old_price = (old_price ?? 0) + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
+        old_price = (old_price ?? 0) - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
+        // * ប្រាក់ដែលបានទទួលសរុប
         last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
         last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
         last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
       }
+      other_price = old_price;
 
       is_loading = false;
       setState(() {});
@@ -114,10 +120,10 @@ class _Main_State extends State<Main_> {
       Divider(height: 1, color: Colors.black),
 
       Input_Number(
-        init: pay_price, //
+        init: other_price, //
         lead: '${t("Other Price")}:', //
         onChanged: (v) {
-          pay_price = v;
+          other_price = v;
           setState(() {});
         },
       ),
@@ -198,13 +204,23 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
+  // * ភាពខុសគ្នារវាងតម្លៃថ្មី និងតម្លៃចាស់
+  double get _diff => (other_price ?? 0) - (old_price ?? 0);
+
+  // * បើតម្លៃថ្មីខ្ពស់ជាង បញ្ចូលទៅ add_price
+  double get _add_price => _diff > 0 ? _diff : 0;
+
+  // * បើតម្លៃថ្មីទាបជាង បញ្ចូលទៅ sub_price
+  double get _sub_price => _diff < 0 ? -_diff : 0;
+
+  // * គណនាបានប្រាក់សំណើរ = ប្រាក់ទទួលសរុប - តម្លៃថ្មីសរុប
   double get balanced {
     double temp = 0;
 
     temp = temp + (pay_cash ?? 0);
     temp = temp + (pay_bank ?? 0);
     temp = temp + (last_paid ?? 0);
-    temp = temp - (pay_price ?? 0);
+    temp = temp - (other_price ?? 0);
     temp = temp - (pay_return ?? 0);
 
     return temp;
@@ -220,11 +236,12 @@ class _Main_State extends State<Main_> {
         endpoint.FRONT_DESK_ADD_PAY_OTHER,
         data: {
           sm_front_desk.ID: front_desk_id, //
-          "pay_price": pay_price ?? 0, //
-          "pay_cash": pay_cash ?? 0, //
-          "pay_bank": pay_bank ?? 0, //
-          "pay_return": pay_return ?? 0, //
-          "pay_note": pay_note ?? "", //
+          sm_payment_other.ADD_PRICE: _add_price, //
+          sm_payment_other.SUB_PRICE: _sub_price, //
+          sm_payment_other.PAY_CASH: pay_cash ?? 0, //
+          sm_payment_other.PAY_BANK: pay_bank ?? 0, //
+          sm_payment_other.PAY_RETURN: pay_return ?? 0, //
+          sm_payment_other.PAY_NOTE: pay_note ?? "", //
         },
       );
 

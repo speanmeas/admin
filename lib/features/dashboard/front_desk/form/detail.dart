@@ -174,7 +174,7 @@ class _Main_State extends State<Main_> {
         String value = "0.00";
         final pay_room = map_fd?[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
         if (pay_room.isNotEmpty) {
-          tmp = double.tryParse(pay_room.last["pay_price"]?.toString() ?? "0") ?? 0;
+          tmp = double.tryParse(pay_room.last["add_price"]?.toString() ?? "0") ?? 0;
           value = tmp.toStringAsFixed(2);
         }
         return Align(
@@ -194,7 +194,7 @@ class _Main_State extends State<Main_> {
       for (var m in map_fd?[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [])
         (() {
           String dt = "";
-          tmp = DateTime.tryParse(m["pay_at"]?.toString() ?? "");
+          tmp = DateTime.tryParse(m["created_at"]?.toString() ?? "");
           if (tmp != null) dt = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
           tmp = double.tryParse(m["pay_cash"]?.toString() ?? "0") ?? 0;
           String cash = tmp.toStringAsFixed(2);
@@ -230,7 +230,7 @@ class _Main_State extends State<Main_> {
         String value = "0.00";
         final pay_other = map_fd?[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
         if (pay_other.isNotEmpty) {
-          tmp = double.tryParse(pay_other.last["pay_price"]?.toString() ?? "0") ?? 0;
+          tmp = double.tryParse(pay_other.last["add_price"]?.toString() ?? "0") ?? 0;
           value = tmp.toStringAsFixed(2);
         }
         return Align(
@@ -250,7 +250,7 @@ class _Main_State extends State<Main_> {
       for (var m in map_fd?[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [])
         (() {
           String dt = "";
-          tmp = DateTime.tryParse(m["pay_at"]?.toString() ?? "");
+          tmp = DateTime.tryParse(m["created_at"]?.toString() ?? "");
           if (tmp != null) dt = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
           tmp = double.tryParse(m["pay_cash"]?.toString() ?? "0") ?? 0;
           String cash = tmp.toStringAsFixed(2);

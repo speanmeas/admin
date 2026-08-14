@@ -13,11 +13,11 @@ import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
-import "package:speanmeas/core/schema/front_desk.g.dart";
-import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
-import "package:speanmeas/core/widget/button/menu_button_icon.dart";
+import "package:speanmeas/core/schema/guest.g.dart";
+import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/widget/snackbar.dart";
+import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 
 import "form/add_pay_other.dart" as pay_other;
 import "form/broke.dart" as broke;
@@ -324,7 +324,7 @@ class _Main_State extends State<Main_> {
                           double price = 0;
                           double pay = 0;
                           double change = 0;
-                          if (tmp.isNotEmpty) price = double.parse(tmp.last["pay_price"]?.toString() ?? "0");
+                          if (tmp.isNotEmpty) price = double.parse(tmp.last["add_price"]?.toString() ?? "0");
                           for (var l in tmp) {
                             pay = pay + double.parse(l["pay_cash"]?.toString() ?? "0");
                             pay = pay + double.parse(l["pay_bank"]?.toString() ?? "0");
@@ -372,7 +372,7 @@ class _Main_State extends State<Main_> {
                           double price = 0;
                           double pay = 0;
                           double change = 0;
-                          if (tmp.isNotEmpty) price = double.parse(tmp.last["pay_price"]?.toString() ?? "0");
+                          if (tmp.isNotEmpty) price = double.parse(tmp.last["add_price"]?.toString() ?? "0");
                           for (var l in tmp) {
                             pay = pay + double.parse(l["pay_cash"]?.toString() ?? "0");
                             pay = pay + double.parse(l["pay_bank"]?.toString() ?? "0");

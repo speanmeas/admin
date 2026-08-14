@@ -202,7 +202,7 @@ class _Main_State extends State<Main_> {
         endpoint.FRONT_DESK_ADD_PAY_ROOM, // update
         data: {
           sm_front_desk.ID: front_desk_id, //
-          "pay_price": room_price, //
+          "add_price": room_price, //
         },
       );
 

@@ -6,7 +6,8 @@ class Payment_mini_bar {
 	final FRONT_DESK_ID = "front_desk_id";
 	final ITEM_ID = "item_id";
 	final ITEM_QUANTITY = "item_quantity";
-	final PAY_PRICE = "pay_price";
+	final ADD_PRICE = "add_price";
+	final SUB_PRICE = "sub_price";
 	final PAY_CASH = "pay_cash";
 	final PAY_BANK = "pay_bank";
 	final PAY_RETURN = "pay_return";
