@@ -8,6 +8,9 @@ analyzer:
     unnecessary_string_interpolations: ignore
     curly_braces_in_flow_control_structures: ignore
 
+formatter:
+  page_width: 1000
+
 include: package:flutter_lints/flutter.yaml
 
 linter:

@@ -1,4 +1,7 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
@@ -78,11 +81,18 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      theme: theme_data, //
-      home: Scaffold(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Scaffold(
         body: Center(
           child: Main_(
             initial: "Single",
@@ -92,7 +102,6 @@ void main() {
           ),
         ),
       ),
-      debugShowCheckedModeBanner: false,
     ),
   );
 }

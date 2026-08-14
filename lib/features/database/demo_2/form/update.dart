@@ -1,4 +1,7 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
@@ -66,7 +69,9 @@ class _Main_State extends State<Main_> {
 
       text_1 = tmp.data[0][sm_demo_2.TEXT_1];
       number_1 = tmp.data[0][sm_demo_2.NUMBER_1];
-      datetime_1 = tmp.data[0][sm_demo_2.DATETIME_1] != null ? DateTime.parse(tmp.data[0][sm_demo_2.DATETIME_1]) : null;
+      datetime_1 = tmp.data[0][sm_demo_2.DATETIME_1] != null
+          ? DateTime.parse(tmp.data[0][sm_demo_2.DATETIME_1])
+          : null;
       logic_1 = tmp.data[0][sm_demo_2.LOGIC_1];
       note = tmp.data[0][sm_demo_2.NOTE];
 
@@ -168,13 +173,18 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      title: "Development", //
-      theme: theme_data, //
-      home: Main_(id: "1"),
-      debugShowCheckedModeBanner: false,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Main_(id: "1"),
     ),
   );
 }

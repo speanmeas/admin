@@ -1,4 +1,7 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
@@ -32,7 +35,11 @@ class _Picker_BooleanState extends State<Picker_Boolean> {
             labelText: widget.title ?? "Logic 1:", //
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
             floatingLabelBehavior: FloatingLabelBehavior.always,
-            prefixIcon: Icon(controller.text == "Yes" ? Icons.toggle_on : Icons.toggle_off_outlined),
+            prefixIcon: Icon(
+              controller.text == "Yes"
+                  ? Icons.toggle_on
+                  : Icons.toggle_off_outlined,
+            ),
             suffixIcon: ExcludeFocus(
               child: Padding(
                 padding: EdgeInsets.only(right: 4),
@@ -82,11 +89,18 @@ class Picker_Boolean extends StatefulWidget {
   State<Picker_Boolean> createState() => _Picker_BooleanState();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      theme: theme_data, //
-      home: Scaffold(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Scaffold(
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -100,7 +114,6 @@ void main() {
           ],
         ),
       ),
-      debugShowCheckedModeBanner: false,
     ),
   );
 }

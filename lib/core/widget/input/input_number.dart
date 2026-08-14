@@ -1,5 +1,8 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
@@ -92,11 +95,18 @@ class Input_Number extends StatefulWidget {
   State<Input_Number> createState() => _Input_NumberState();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      theme: theme_data, //
-      home: Scaffold(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Scaffold(
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -110,7 +120,6 @@ void main() {
           ],
         ),
       ),
-      debugShowCheckedModeBanner: false,
     ),
   );
 }

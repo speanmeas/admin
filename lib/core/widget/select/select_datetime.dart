@@ -1,4 +1,7 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:intl/intl.dart";
 
 import "package:speanmeas/core/config.dart";
@@ -52,7 +55,8 @@ class _SelectDateTimeState extends State<SelectDateTime> {
   Future<DateTime?>? select_page(BuildContext context) async {
     DateTime init = DateTime.now();
     if (widget.initial != null) init = widget.initial!;
-    if (controller.text.isNotEmpty) init = DateTime.tryParse(controller.text)?.toLocal() ?? DateTime.now();
+    if (controller.text.isNotEmpty)
+      init = DateTime.tryParse(controller.text)?.toLocal() ?? DateTime.now();
 
     // Select Date
     final DateTime? picked_date = await showDatePicker(
@@ -109,11 +113,18 @@ class SelectDateTime extends StatefulWidget {
   State<SelectDateTime> createState() => _SelectDateTimeState();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      theme: theme_data, //
-      home: Scaffold(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Scaffold(
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -127,7 +138,6 @@ void main() {
           ],
         ),
       ),
-      debugShowCheckedModeBanner: false,
     ),
   );
 }

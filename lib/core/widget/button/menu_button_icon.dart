@@ -1,4 +1,7 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
@@ -17,7 +20,11 @@ class _Menu_Button_IconState extends State<Menu_Button_Icon> {
           height: 38,
           width: 38,
           alignment: Alignment.center,
-          child: Icon(widget.icon, size: 30, color: widget.color ?? Colors.blue), //
+          child: Icon(
+            widget.icon,
+            size: 30,
+            color: widget.color ?? Colors.blue,
+          ), //
         ),
       ),
     );
@@ -42,11 +49,18 @@ class Menu_Button_Icon extends StatefulWidget {
   State<Menu_Button_Icon> createState() => _Menu_Button_IconState();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      theme: theme_data, //
-      home: Scaffold(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Scaffold(
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -60,7 +74,6 @@ void main() {
           ],
         ),
       ),
-      debugShowCheckedModeBanner: false,
     ),
   );
 }

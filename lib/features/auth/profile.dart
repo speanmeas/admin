@@ -1,5 +1,8 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
@@ -246,13 +249,18 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      title: "Development", //
-      theme: theme_data, //
-      home: const Main_(),
-      debugShowCheckedModeBanner: false,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: const Main_(),
     ),
   );
 }

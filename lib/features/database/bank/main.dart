@@ -1,15 +1,19 @@
 import "package:flutter/material.dart";
 import "package:flutter/foundation.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
-import "package:speanmeas/core/config.dart";
-import "package:speanmeas/core/i18n.dart";
+import "package:speanmeas/core/i18n.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/config.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/button/menu_button_text.dart";
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/dialog/dialog_page.dart";
 import "package:speanmeas/core/schema/bank.g.dart";
 
@@ -17,7 +21,6 @@ import "form/create.dart" as create;
 import "form/read.dart" as read;
 import "form/update.dart" as update;
 import "form/delete.dart" as delete;
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 Widget _layout(List<Widget> children) {
   return Scaffold(
@@ -28,8 +31,8 @@ Widget _layout(List<Widget> children) {
 }
 
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
+
   int page = 1;
   int row_total = 0;
   bool is_loading = true;
@@ -37,20 +40,15 @@ class _Main_State extends State<Main_> {
   int load_request_id = 0;
   PlutoGridStateManager? state_manager;
 
-  //
   void init() async {
     try {
-      //
       tmp = await dio.post(
-        endpoint.BANK_CRUD_READ_COUNT, //
+        endpoint.BANK_CRUD_READ_COUNT,
         data: {"count": true},
       );
       row_total = int.parse(tmp.data.toString());
 
-      //
       load_page(page);
-
-      //
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -60,23 +58,18 @@ class _Main_State extends State<Main_> {
   //
   void on_refresh() async {
     try {
-      //
       final r = await dio.post(
-        endpoint.BANK_CRUD_READ_COUNT, //
+        endpoint.BANK_CRUD_READ_COUNT,
         data: {"count": true},
       );
       row_total = int.parse(r.data.toString());
 
-      //
       if (page > total_pages) page = total_pages;
       if (page < 1) page = 1;
 
-      //
       load_page(page);
 
       snackbar(ct: context, ms: "Refresh completed.", cl: Colors.green);
-
-      //
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -87,12 +80,9 @@ class _Main_State extends State<Main_> {
     final request_id = ++load_request_id;
 
     try {
-      //
       is_loading = true;
-
       setState(() {});
 
-      //
       tmp = await dio.post(
         endpoint.BANK_CRUD_READ, //
         data: {
@@ -104,14 +94,13 @@ class _Main_State extends State<Main_> {
       );
       final data = List<Map<String, dynamic>>.from(tmp.data);
 
-      // Ignore a response from an earlier page request.
       if (!mounted || request_id != load_request_id) return;
 
-      // keep sort + filter
       final sorted_column = state_manager?.getSortedColumn;
-      final filter_rows = List<PlutoRow>.from(state_manager?.filterRows ?? const <PlutoRow>[]);
+      final filter_rows = List<PlutoRow>.from(
+        state_manager?.filterRows ?? const <PlutoRow>[],
+      );
 
-      // add data to row
       state_manager?.removeAllRows();
       state_manager?.appendRows([
         for (var d in data)
@@ -125,11 +114,9 @@ class _Main_State extends State<Main_> {
           ),
       ]);
 
-      // reuse sort + filter
       if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
       state_manager?.setFilterWithFilterRows(filter_rows);
 
-      //
       is_loading = false;
 
       setState(() {});
@@ -154,28 +141,24 @@ class _Main_State extends State<Main_> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // create
             Menu_Button_Icon(
               tip: t("Create"), //
               icon: Icons.add,
               onPressed: on_create,
             ),
 
-            // read
             Menu_Button_Icon(
               tip: t("Read"), //
               icon: Icons.visibility_outlined,
               onPressed: on_read,
             ),
 
-            // update
             Menu_Button_Icon(
               tip: t("Update"), //
               icon: Icons.edit_outlined,
               onPressed: on_update,
             ),
 
-            // delete
             Menu_Button_Icon(
               tip: t("Delete"), //
               icon: Icons.delete_outline,
@@ -185,10 +168,11 @@ class _Main_State extends State<Main_> {
 
             Spacer(),
 
-            // filter
             Menu_Button_Icon(
               tip: is_filter ? t("Close Filter") : t("Open Filter"), //
-              icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
+              icon: is_filter
+                  ? Icons.filter_alt_off_outlined
+                  : Icons.filter_alt_outlined,
               onPressed: () {
                 is_filter = !is_filter;
                 state_manager?.setShowColumnFilter(is_filter);
@@ -197,17 +181,19 @@ class _Main_State extends State<Main_> {
               },
             ),
 
-            // search
             if (kDebugMode)
               Menu_Button_Icon(
                 tip: "Search", //
                 icon: Icons.search,
                 onPressed: () {
-                  snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
+                  snackbar(
+                    ct: context,
+                    ms: "កំពុងអភិវឌ្ឍន៍...",
+                    cl: Colors.blue,
+                  );
                 },
               ),
 
-            // refresh
             Menu_Button_Icon(
               tip: t("Refresh"), //
               icon: Icons.refresh,
@@ -219,7 +205,6 @@ class _Main_State extends State<Main_> {
 
       if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
-      // pluto table
       Expanded(
         child: PlutoGrid(
           rows: [], //
@@ -245,7 +230,6 @@ class _Main_State extends State<Main_> {
         ),
       ),
 
-      // footer
       Container(
         height: 40, //
         alignment: Alignment.topCenter,
@@ -257,7 +241,6 @@ class _Main_State extends State<Main_> {
 
             Spacer(),
 
-            // * ត្រលប់ទៅទំព័រដំបូង
             Menu_Button_Icon(
               tip: t("First Page"), //
               icon: Icons.first_page,
@@ -268,7 +251,6 @@ class _Main_State extends State<Main_> {
               },
             ),
 
-            // previous page
             Menu_Button_Icon(
               tip: t("Previous Page"), //
               icon: Icons.navigate_before,
@@ -279,7 +261,6 @@ class _Main_State extends State<Main_> {
               },
             ),
 
-            // select page
             Menu_Button_Text(
               tip: t("Select Page"), //
               text: "$page / $total_pages", //
@@ -296,7 +277,6 @@ class _Main_State extends State<Main_> {
               },
             ),
 
-            // next page
             Menu_Button_Icon(
               tip: t("Next Page"), //
               icon: Icons.navigate_next,
@@ -307,7 +287,6 @@ class _Main_State extends State<Main_> {
               },
             ),
 
-            // last page
             Menu_Button_Icon(
               tip: t("Last Page"), //
               icon: Icons.last_page,
@@ -320,7 +299,6 @@ class _Main_State extends State<Main_> {
 
             Spacer(),
 
-            // total row
             Container(
               height: 40,
               padding: EdgeInsets.only(right: 16),
@@ -344,8 +322,10 @@ class _Main_State extends State<Main_> {
 
   void on_create() async {
     try {
-      //
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
+      tmp = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => create.Main_()),
+      );
       if (tmp == null) return;
 
       // * លុប sort + filter
@@ -359,8 +339,6 @@ class _Main_State extends State<Main_> {
       load_page(page);
 
       state_manager?.scroll.vertical?.jumpTo(0);
-
-      //
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -369,14 +347,12 @@ class _Main_State extends State<Main_> {
 
   void on_read() async {
     try {
-      //
       final row = state_manager?.currentRow;
       if (row == null) {
         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
-      //
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -385,8 +361,6 @@ class _Main_State extends State<Main_> {
           ),
         ),
       );
-
-      //
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -395,14 +369,12 @@ class _Main_State extends State<Main_> {
 
   void on_update() async {
     try {
-      //
       final row = state_manager?.currentRow;
       if (row == null) {
         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
-      //
       tmp = await Navigator.push(
         context,
         MaterialPageRoute(
@@ -413,10 +385,7 @@ class _Main_State extends State<Main_> {
       );
       if (tmp == null) return;
 
-      //
       load_page(page);
-
-      //
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -425,14 +394,12 @@ class _Main_State extends State<Main_> {
 
   void on_delete() async {
     try {
-      //
       final row = state_manager?.currentRow;
       if (row == null) {
         snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
         return;
       }
 
-      //
       tmp = await Navigator.push(
         context,
         MaterialPageRoute(
@@ -443,10 +410,7 @@ class _Main_State extends State<Main_> {
       );
       if (tmp == null) return;
 
-      //
       load_page(page);
-
-      //
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -458,14 +422,11 @@ class _Main_State extends State<Main_> {
     return (row_total + DEFAULT_LIMIT_ROW - 1) ~/ DEFAULT_LIMIT_ROW;
   }
 
-  //
   @override
   void initState() {
     super.initState();
     init();
   }
-
-  //
 }
 
 const double WIDTH = 120;
@@ -537,13 +498,18 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      title: "Development", //
-      theme: theme_data, //
-      home: const Main_(),
-      debugShowCheckedModeBanner: false,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: const Main_(),
     ),
   );
 }

@@ -1,5 +1,8 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure_storage.dart"; // ignore: unused_import
@@ -32,7 +35,10 @@ class _Dialog_State extends State<Dialog_> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
+          Text(
+            title,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ), //
         ],
       ),
 
@@ -44,7 +50,9 @@ class _Dialog_State extends State<Dialog_> {
             autofocus: true,
             controller: controller,
             keyboardType: TextInputType.numberWithOptions(decimal: false),
-            inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9+]"))],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp("[0-9+]")),
+            ],
             decoration: InputDecoration(
               labelText: label, //
               labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -159,13 +167,18 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      title: "Development", //
-      theme: theme_data, //
-      home: Main_(),
-      debugShowCheckedModeBanner: false,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Main_(),
     ),
   );
 }

@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:provider/provider.dart";
 
 import "package:speanmeas/core/config.dart";
@@ -83,7 +84,11 @@ class _Main_State extends State<Main_> {
               child: IconButton(
                 icon: Icon(Icons.notifications_outlined, size: 30),
                 onPressed: () {
-                  snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
+                  snackbar(
+                    ct: context,
+                    ms: "កំពុងអភិវឌ្ឍន៍...",
+                    cl: Colors.blue,
+                  );
                   // Handle notification tap
                   // Navigator.push(context, MaterialPageRoute(builder: (_) => noti.Main_()));
                 },
@@ -113,11 +118,18 @@ class _Main_State extends State<Main_> {
                     else
                       return "X";
                   })(),
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
                 ),
               ),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => profile.Main_()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => profile.Main_()),
+                );
                 init();
               },
             ),
@@ -142,13 +154,18 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      title: "Development", //
-      theme: theme_data, //
-      home: Main_(),
-      debugShowCheckedModeBanner: false,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Main_(),
     ),
   );
 }

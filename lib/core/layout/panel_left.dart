@@ -1,4 +1,6 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/i18n.dart";
 
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
@@ -45,7 +47,10 @@ class _Main_State extends State<Main_> {
           child: ListView(
             children: [
               if (is_admin || is_manager || is_recept || is_cleaner) //
-                list_tile_l1(name: "Front Desk", icon: Icons.table_bar_outlined),
+                list_tile_l1(
+                  name: "Front Desk",
+                  icon: Icons.table_bar_outlined,
+                ),
 
               // mini bar
               // if (is_admin || is_manager || is_recept) //
@@ -59,27 +64,51 @@ class _Main_State extends State<Main_> {
                 children: [
                   // front desk
                   if (is_admin || is_manager || is_recept || is_cleaner) //
-                    list_tile_l2(prefix: "Data", name: "Front Desk", icon: Icons.table_bar_outlined),
+                    list_tile_l2(
+                      prefix: "Data",
+                      name: "Front Desk",
+                      icon: Icons.table_bar_outlined,
+                    ),
 
                   // guest
                   if (is_admin || is_manager || is_recept) //
-                    list_tile_l2(prefix: "Data", name: "Guest", icon: Icons.people_outline),
+                    list_tile_l2(
+                      prefix: "Data",
+                      name: "Guest",
+                      icon: Icons.people_outline,
+                    ),
 
                   // room
                   if (is_admin || is_manager || is_recept) //
-                    list_tile_l2(prefix: "Data", name: "Room", icon: Icons.hotel_outlined),
+                    list_tile_l2(
+                      prefix: "Data",
+                      name: "Room",
+                      icon: Icons.hotel_outlined,
+                    ),
 
                   // nationality
                   if (is_admin || is_manager || is_recept) //
-                    list_tile_l2(prefix: "Data", name: "Nationality", icon: Icons.flag_outlined),
+                    list_tile_l2(
+                      prefix: "Data",
+                      name: "Nationality",
+                      icon: Icons.flag_outlined,
+                    ),
 
                   // user
                   if (is_admin || is_manager) //
-                    list_tile_l2(prefix: "Data", name: "User", icon: Icons.person_outline),
+                    list_tile_l2(
+                      prefix: "Data",
+                      name: "User",
+                      icon: Icons.person_outline,
+                    ),
 
                   // mini bar
                   if (is_admin || is_manager || is_recept) //
-                    list_tile_l2(prefix: "Data", name: "Mini Bar", icon: Icons.local_bar_outlined),
+                    list_tile_l2(
+                      prefix: "Data",
+                      name: "Mini Bar",
+                      icon: Icons.local_bar_outlined,
+                    ),
                 ],
               ),
 
@@ -90,7 +119,11 @@ class _Main_State extends State<Main_> {
                   title: Text("Report"),
                   initiallyExpanded: true,
                   children: [
-                    list_tile_l2(prefix: "Report", name: "Income", icon: Icons.today_outlined),
+                    list_tile_l2(
+                      prefix: "Report",
+                      name: "Income",
+                      icon: Icons.today_outlined,
+                    ),
                     // list_tile_l2(prefix: "Report", name: "Weekly", icon: Icons.date_range_outlined),
                     // list_tile_l2(prefix: "Report", name: "Monthly", icon: Icons.calendar_month_outlined),
                     // list_tile_l2(prefix: "Report", name: "Yearly", icon: Icons.event_note_outlined),
@@ -104,8 +137,16 @@ class _Main_State extends State<Main_> {
                   title: Text("Demo"),
                   initiallyExpanded: true,
                   children: [
-                    list_tile_l2(prefix: "Demo", name: "001", icon: Icons.model_training_outlined), //
-                    list_tile_l2(prefix: "Demo", name: "002", icon: Icons.model_training_outlined), //
+                    list_tile_l2(
+                      prefix: "Demo",
+                      name: "001",
+                      icon: Icons.model_training_outlined,
+                    ), //
+                    list_tile_l2(
+                      prefix: "Demo",
+                      name: "002",
+                      icon: Icons.model_training_outlined,
+                    ), //
                   ],
                 ),
             ],
@@ -186,13 +227,18 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      title: "Development", //
-      theme: theme_data, //
-      home: Main_(),
-      debugShowCheckedModeBanner: false,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Main_(),
     ),
   );
 }

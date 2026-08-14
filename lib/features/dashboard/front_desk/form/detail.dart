@@ -1,6 +1,9 @@
 // TODO: add more details here
 
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
@@ -53,13 +56,22 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     try {
-      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+      tmp = await dio.post(
+        endpoint.ROOM_CRUD_READ_ID,
+        data: {sm_room.ID: widget.room_id},
+      );
       map_r = tmp.data[0] as Map<String, dynamic>;
       // pprint(map_r);
 
-      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
+      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null)
+        throw Exception("Front desk ID is null");
 
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
+      tmp = await dio.post(
+        endpoint.FRONT_DESK_READ_ID,
+        data: {
+          sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID],
+        },
+      );
       map_fd = tmp.data[0] as Map<String, dynamic>;
       pprint(map_fd);
 
@@ -86,23 +98,33 @@ class _Main_State extends State<Main_> {
       ),
       Show_Text(
         lead: "Room Price Per Day:", //
-        value: map_fd[sm_front_desk.ROOM_ID]?[sm_room.USD_PER_DAY]?.toString() ?? "",
+        value:
+            map_fd[sm_front_desk.ROOM_ID]?[sm_room.USD_PER_DAY]?.toString() ??
+            "",
       ),
       Show_Text(
         lead: "Room Price Per 3H:", //
-        value: map_fd[sm_front_desk.ROOM_ID]?[sm_room.USD_PER_3H]?.toString() ?? "",
+        value:
+            map_fd[sm_front_desk.ROOM_ID]?[sm_room.USD_PER_3H]?.toString() ??
+            "",
       ),
       Show_Text(
         lead: "Guest Name:", //
-        value: map_fd[sm_front_desk.GUEST_ID]?[sm_guest.FULL_NAME]?.toString() ?? "",
+        value:
+            map_fd[sm_front_desk.GUEST_ID]?[sm_guest.FULL_NAME]?.toString() ??
+            "",
       ),
       Show_Text(
         lead: "Guest Gender:", //
-        value: map_fd[sm_front_desk.GUEST_ID]?[sm_guest.GENDER]?.toString() ?? "",
+        value:
+            map_fd[sm_front_desk.GUEST_ID]?[sm_guest.GENDER]?.toString() ?? "",
       ),
       Show_Text(
         lead: "Guest Phone Number:", //
-        value: map_fd[sm_front_desk.GUEST_ID]?[sm_guest.PHONE_NUMBER]?.toString() ?? "",
+        value:
+            map_fd[sm_front_desk.GUEST_ID]?[sm_guest.PHONE_NUMBER]
+                ?.toString() ??
+            "",
       ),
       Show_Text(
         lead: "Number Of Guests:", //
@@ -118,7 +140,9 @@ class _Main_State extends State<Main_> {
       ),
       Show_Text(
         lead: "Stay Due To:", //
-        value: DateTime.tryParse(map_fd[sm_front_desk.CHECK_IN_DUE]?.toString() ?? ""),
+        value: DateTime.tryParse(
+          map_fd[sm_front_desk.CHECK_IN_DUE]?.toString() ?? "",
+        ),
       ),
       Show_Text(
         lead: "Check In Note:", //
@@ -126,11 +150,15 @@ class _Main_State extends State<Main_> {
       ),
       Show_Text(
         lead: "Check In By:", //
-        value: map_fd[sm_front_desk.CHECK_IN_BY]?[sm_user.FULL_NAME]?.toString() ?? "",
+        value:
+            map_fd[sm_front_desk.CHECK_IN_BY]?[sm_user.FULL_NAME]?.toString() ??
+            "",
       ),
       Show_Text(
         lead: "Check In At:", //
-        value: DateTime.tryParse(map_fd[sm_front_desk.CHECK_IN_AT]?.toString() ?? ""),
+        value: DateTime.tryParse(
+          map_fd[sm_front_desk.CHECK_IN_AT]?.toString() ?? "",
+        ),
       ),
       Show_Text(
         lead: "Check Out Note:", //
@@ -138,11 +166,16 @@ class _Main_State extends State<Main_> {
       ),
       Show_Text(
         lead: "Check Out By:", //
-        value: map_fd[sm_front_desk.CHECK_OUT_BY]?[sm_user.FULL_NAME]?.toString() ?? "",
+        value:
+            map_fd[sm_front_desk.CHECK_OUT_BY]?[sm_user.FULL_NAME]
+                ?.toString() ??
+            "",
       ),
       Show_Text(
         lead: "Check Out At:", //
-        value: DateTime.tryParse(map_fd[sm_front_desk.CHECK_OUT_AT]?.toString() ?? ""),
+        value: DateTime.tryParse(
+          map_fd[sm_front_desk.CHECK_OUT_AT]?.toString() ?? "",
+        ),
       ),
       Show_Text(
         lead: "Clean Note:", //
@@ -150,11 +183,15 @@ class _Main_State extends State<Main_> {
       ),
       Show_Text(
         lead: "Clean By:", //
-        value: map_fd[sm_front_desk.CLEAN_BY]?[sm_user.FULL_NAME]?.toString() ?? "",
+        value:
+            map_fd[sm_front_desk.CLEAN_BY]?[sm_user.FULL_NAME]?.toString() ??
+            "",
       ),
       Show_Text(
         lead: "Clean At:", //
-        value: DateTime.tryParse(map_fd[sm_front_desk.CLEAN_AT]?.toString() ?? ""),
+        value: DateTime.tryParse(
+          map_fd[sm_front_desk.CLEAN_AT]?.toString() ?? "",
+        ),
       ),
 
       // TODO: add more details here
@@ -190,14 +227,20 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      theme: theme_data, //
-      home: Main_(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Main_(
         room_id: "6a71dc186c013023294f6742", //
       ),
-      debugShowCheckedModeBanner: false,
     ),
   );
 }

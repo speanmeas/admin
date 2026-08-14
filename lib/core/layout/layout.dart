@@ -1,4 +1,7 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "panel_body.dart" as body;
@@ -38,7 +41,9 @@ class _Main_State extends State<Main_> {
                 if (!is_mobile)
                   Container(
                     width: 250,
-                    decoration: BoxDecoration(border: Border(right: BorderSide())), //
+                    decoration: BoxDecoration(
+                      border: Border(right: BorderSide()),
+                    ), //
                     child: left.Main_(), //
                   ),
 
@@ -64,13 +69,18 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      title: "Development", //
-      theme: theme_data, //
-      home: Main_(),
-      debugShowCheckedModeBanner: false,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Main_(),
     ),
   );
 }

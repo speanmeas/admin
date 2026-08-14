@@ -1,4 +1,7 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
@@ -61,12 +64,21 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     try {
-      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+      tmp = await dio.post(
+        endpoint.ROOM_CRUD_READ_ID,
+        data: {sm_room.ID: widget.room_id},
+      );
       map_r = tmp.data[0] as Map<String, dynamic>;
 
-      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
+      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null)
+        throw Exception("Front desk ID is null");
 
-      tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
+      tmp = await dio.post(
+        endpoint.FRONT_DESK_READ_ID,
+        data: {
+          sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID],
+        },
+      );
       map_fd = tmp.data[0] as Map<String, dynamic>;
 
       tmp = await dio.post(endpoint.ROOM_CRUD_READ);
@@ -93,10 +105,17 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Room ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text(
+            "Room ",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
           Text(
             room_number ?? "Unknown",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
+            ),
           ),
         ],
       ),
@@ -159,7 +178,8 @@ class _Main_State extends State<Main_> {
     is_submitting = true;
     setState(() {});
 
-    bool new_room_set = false; // * track whether the new room was already updated
+    bool new_room_set =
+        false; // * track whether the new room was already updated
     try {
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
@@ -249,13 +269,18 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      title: "Development", //
-      theme: theme_data, //
-      home: Main_(), //
-      debugShowCheckedModeBanner: false,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Main_(),
     ),
   );
 }

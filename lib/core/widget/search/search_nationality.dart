@@ -1,5 +1,8 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
@@ -10,7 +13,8 @@ import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 
 import "package:speanmeas/core/widget/show/show_text.dart";
 import "package:speanmeas/core/schema/nationality.g.dart";
-import "package:speanmeas/features/database/nationality/form/create.dart" as create_nationality;
+import "package:speanmeas/features/database/nationality/form/create.dart"
+    as create_nationality;
 
 class _Search_NationalityState extends State<Search_Nationality> {
   //
@@ -30,7 +34,10 @@ class _Search_NationalityState extends State<Search_Nationality> {
   void init() async {
     //
     focusNode.addListener(() {
-      if (!focusNode.hasFocus && !clear_focus.hasFocus && !is_selected && controller.text.isNotEmpty) {
+      if (!focusNode.hasFocus &&
+          !clear_focus.hasFocus &&
+          !is_selected &&
+          controller.text.isNotEmpty) {
         controller.clear();
         id = nationality = note = null;
         widget.onChanged?.call(id);
@@ -231,11 +238,18 @@ class Search_Nationality extends StatefulWidget {
   State<Search_Nationality> createState() => _Search_NationalityState();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      theme: theme_data, //
-      home: Scaffold(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Scaffold(
         body: Center(
           child: Search_Nationality(
             init: "Cambodian",
@@ -245,7 +259,6 @@ void main() {
           ),
         ),
       ),
-      debugShowCheckedModeBanner: false,
     ),
   );
 }

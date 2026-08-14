@@ -1,4 +1,7 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:intl/intl.dart";
 import "package:speanmeas/core/config.dart";
 
@@ -19,7 +22,8 @@ class _Show_DatetimeState extends State<Show_Datetime> {
     return Row(
       spacing: 4,
       children: [
-        if (widget.prefixIcon != null) Icon(widget.prefixIcon!, color: Colors.blue),
+        if (widget.prefixIcon != null)
+          Icon(widget.prefixIcon!, color: Colors.blue),
         if (widget.prefixText != null)
           Text(
             widget.prefixText ?? "", //
@@ -59,17 +63,25 @@ class Show_Datetime extends StatefulWidget {
   State<Show_Datetime> createState() => _Show_DatetimeState();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      theme: theme_data, //
-      home: Scaffold(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Scaffold(
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Show_Datetime(leading: "Text Value:", value: DateTime.now())],
+          children: [
+            Show_Datetime(leading: "Text Value:", value: DateTime.now()),
+          ],
         ),
       ),
-      debugShowCheckedModeBanner: false,
     ),
   );
 }

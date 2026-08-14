@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter/foundation.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/config.dart";
@@ -639,13 +641,18 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      title: "Development", //
-      theme: theme_data, //
-      home: const Main_(),
-      debugShowCheckedModeBanner: false,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: const Main_(),
     ),
   );
 }

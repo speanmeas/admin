@@ -1,4 +1,6 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:speanmeas/core/global.dart";
 
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
@@ -66,7 +68,10 @@ class _Main_State extends State<Main_> {
 
       //
       await glob.init();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Main_()));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => layout.Main_()),
+      );
     } catch (e, st) {
       pprint(st);
       await secure_storage.delete(key: "access_token");
@@ -87,13 +92,18 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      title: "Development", //
-      theme: theme_data, //
-      home: Main_(),
-      debugShowCheckedModeBanner: false,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Main_(),
     ),
   );
 }

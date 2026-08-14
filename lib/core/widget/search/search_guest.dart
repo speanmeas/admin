@@ -1,5 +1,8 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
@@ -12,7 +15,8 @@ import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/nationality.g.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
 
-import "package:speanmeas/features/database/guest/form/create.dart" as create_guest;
+import "package:speanmeas/features/database/guest/form/create.dart"
+    as create_guest;
 
 class _Search_GuestState extends State<Search_Guest> {
   dynamic tmp;
@@ -32,7 +36,10 @@ class _Search_GuestState extends State<Search_Guest> {
 
   void init() async {
     focusNode.addListener(() {
-      if (!focusNode.hasFocus && !clear_focus.hasFocus && !is_selected && controller.text.isNotEmpty) {
+      if (!focusNode.hasFocus &&
+          !clear_focus.hasFocus &&
+          !is_selected &&
+          controller.text.isNotEmpty) {
         id = null;
         full_name = null;
         phone_number = null;
@@ -58,7 +65,8 @@ class _Search_GuestState extends State<Search_Guest> {
       full_name = tmp.data[0][sm_guest.FULL_NAME]?.toString();
       phone_number = tmp.data[0][sm_guest.PHONE_NUMBER]?.toString();
       gender = tmp.data[0][sm_guest.GENDER]?.toString();
-      nationality = tmp.data[0][sm_guest.NATIONALITY_ID]?[sm_nationality.NAME]?.toString();
+      nationality = tmp.data[0][sm_guest.NATIONALITY_ID]?[sm_nationality.NAME]
+          ?.toString();
       note = tmp.data[0][sm_guest.NOTE]?.toString();
 
       controller.text = "$full_name (${phone_number ?? 'N/A'})";
@@ -84,12 +92,16 @@ class _Search_GuestState extends State<Search_Guest> {
                 itemBuilder: (context, item) => ListTile(title: Text(item)),
                 suggestionsCallback: (q) async {
                   try {
-                    tmp = await dio.post(endpoint.GUEST_SEARCH, data: {"query": q});
+                    tmp = await dio.post(
+                      endpoint.GUEST_SEARCH,
+                      data: {"query": q},
+                    );
                     data = tmp.data;
 
                     final options = <String>[];
                     for (var d in data) {
-                      final text = "${d[sm_guest.FULL_NAME] ?? ""} (${d[sm_guest.PHONE_NUMBER] ?? "N/A"})";
+                      final text =
+                          "${d[sm_guest.FULL_NAME] ?? ""} (${d[sm_guest.PHONE_NUMBER] ?? "N/A"})";
                       options.add(text);
                     }
 
@@ -139,7 +151,8 @@ class _Search_GuestState extends State<Search_Guest> {
 
                   Map<String, dynamic> d = {};
                   for (var e in data) {
-                    if ("${e[sm_guest.FULL_NAME] ?? ""} (${e[sm_guest.PHONE_NUMBER] ?? "N/A"})" == v) {
+                    if ("${e[sm_guest.FULL_NAME] ?? ""} (${e[sm_guest.PHONE_NUMBER] ?? "N/A"})" ==
+                        v) {
                       d = e;
                       break;
                     }
@@ -150,7 +163,9 @@ class _Search_GuestState extends State<Search_Guest> {
                     full_name = d[sm_guest.FULL_NAME]?.toString();
                     phone_number = d[sm_guest.PHONE_NUMBER]?.toString();
                     gender = d[sm_guest.GENDER]?.toString();
-                    nationality = d[sm_guest.NATIONALITY_ID]?[sm_nationality.NAME]?.toString();
+                    nationality =
+                        d[sm_guest.NATIONALITY_ID]?[sm_nationality.NAME]
+                            ?.toString();
                     note = d[sm_guest.NOTE]?.toString();
 
                     widget.onChanged?.call(id);
@@ -172,7 +187,10 @@ class _Search_GuestState extends State<Search_Guest> {
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
               onPressed: () async {
                 // * បើកទម្រង់បង្កើតសញ្ជាតិថ្មី
-                final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => create_guest.Main_()));
+                final v = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => create_guest.Main_()),
+                );
                 if (v == null) return;
 
                 // * បង្ហាញឈ្មោះសញ្ជាតិថ្មី និងជ្រើសរើសភ្លាមៗ
@@ -180,7 +198,10 @@ class _Search_GuestState extends State<Search_Guest> {
                 full_name = v[sm_guest.FULL_NAME]?.toString();
                 phone_number = v[sm_guest.PHONE_NUMBER]?.toString();
                 gender = v[sm_guest.GENDER]?.toString();
-                nationality = (v[sm_guest.NATIONALITY_ID] as Map<String, dynamic>?)?["name"]?.toString();
+                nationality =
+                    (v[sm_guest.NATIONALITY_ID]
+                            as Map<String, dynamic>?)?["name"]
+                        ?.toString();
                 note = v[sm_guest.NOTE]?.toString();
 
                 controller.text = full_name ?? "";
@@ -255,11 +276,18 @@ class Search_Guest extends StatefulWidget {
   State<Search_Guest> createState() => _Search_GuestState();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      theme: theme_data, //
-      home: Scaffold(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Scaffold(
         body: Center(
           child: Search_Guest(
             init: "6a61bba1315df99f851bbf74",
@@ -269,7 +297,6 @@ void main() {
           ),
         ),
       ),
-      debugShowCheckedModeBanner: false,
     ),
   );
 }

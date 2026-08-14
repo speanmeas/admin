@@ -1,4 +1,7 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n.dart";
 
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/mini_bar.g.dart";
@@ -82,7 +85,13 @@ class _Charge_State extends State<Charge_> {
       final qty = _qty[item[sm_mini_bar.ID]] ?? 0;
       if (qty > 0) {
         final price = (item[sm_mini_bar.PRICE] as num?)?.toDouble() ?? 0;
-        lines.add({sm_mini_bar.ID: item[sm_mini_bar.ID], sm_mini_bar.NAME: item[sm_mini_bar.NAME], "price": price, "qty": qty, "total": price * qty});
+        lines.add({
+          sm_mini_bar.ID: item[sm_mini_bar.ID],
+          sm_mini_bar.NAME: item[sm_mini_bar.NAME],
+          "price": price,
+          "qty": qty,
+          "total": price * qty,
+        });
       }
     }
     Navigator.pop(context, lines);
@@ -96,10 +105,17 @@ class _Charge_State extends State<Charge_> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Room ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(
+              "Room ",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             Text(
               "${widget.room[sm_room.NUMBER]}",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
             ),
           ],
         )
@@ -111,7 +127,11 @@ class _Charge_State extends State<Charge_> {
             SizedBox(width: 4),
             Text(
               "Walk-in",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.purple),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.purple,
+              ),
             ),
           ],
         ),
@@ -122,26 +142,41 @@ class _Charge_State extends State<Charge_> {
       for (var item in widget.catalog)
         Container(
           padding: EdgeInsets.all(4),
-          decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1)),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey, width: 1),
+          ),
           child: Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("${item[sm_mini_bar.NAME]}", style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text("${(item[sm_mini_bar.PRICE] as num?)?.toDouble() ?? 0} \$  (stock: ${_stock(item)})", style: TextStyle(color: Colors.blue)),
+                    Text(
+                      "${item[sm_mini_bar.NAME]}",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      "${(item[sm_mini_bar.PRICE] as num?)?.toDouble() ?? 0} \$  (stock: ${_stock(item)})",
+                      style: TextStyle(color: Colors.blue),
+                    ),
                   ],
                 ),
               ),
               IconButton(
                 icon: Icon(Icons.remove_circle_outline, color: Colors.red),
-                onPressed: (_qty[item[sm_mini_bar.ID]] ?? 0) > 0 ? () => _sub(item) : null,
+                onPressed: (_qty[item[sm_mini_bar.ID]] ?? 0) > 0
+                    ? () => _sub(item)
+                    : null,
               ),
-              Text("${_qty[item[sm_mini_bar.ID]] ?? 0}", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(
+                "${_qty[item[sm_mini_bar.ID]] ?? 0}",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               IconButton(
                 icon: Icon(Icons.add_circle_outline, color: Colors.green),
-                onPressed: (_qty[item[sm_mini_bar.ID]] ?? 0) < _stock(item) ? () => _add(item) : null,
+                onPressed: (_qty[item[sm_mini_bar.ID]] ?? 0) < _stock(item)
+                    ? () => _add(item)
+                    : null,
               ),
             ],
           ),
@@ -153,10 +188,17 @@ class _Charge_State extends State<Charge_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text("Total: ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text(
+            "Total: ",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
           Text(
             "${_total.toStringAsFixed(2)} \$",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
+            ),
           ),
         ],
       ),
@@ -171,23 +213,33 @@ class _Charge_State extends State<Charge_> {
 }
 
 class Charge_ extends StatefulWidget {
-  const Charge_({super.key, this.room, this.catalog, this.sold});
+  const Charge_({
+    super.key,
+    this.room,
+    this.catalog = const [],
+    this.sold = const {},
+  });
 
   final dynamic room; // * បន្ទប់ (null = walk-in)
-  final List<Map<String, dynamic>>? catalog; // * បញ្ជីទំនិញ mini bar
-  final Map<dynamic, int>? sold; // * ចំនួនដែលបានលក់រួចហើយ
+  final List<Map<String, dynamic>> catalog; // * បញ្ជីទំនិញ mini bar
+  final Map<dynamic, int> sold; // * ចំនួនដែលបានលក់រួចហើយ
 
   @override
   State<Charge_> createState() => _Charge_State();
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  glob.init();
+  lang.init();
+  //
   runApp(
-    MaterialApp(
-      title: "Development", //
-      theme: theme_data, //
-      home: Charge_(), //
-      debugShowCheckedModeBanner: false,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: glob),
+        ChangeNotifierProvider.value(value: lang),
+      ],
+      child: Charge_(),
     ),
   );
 }
