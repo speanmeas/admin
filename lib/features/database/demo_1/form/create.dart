@@ -5,16 +5,17 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+
+import "package:speanmeas/core/schema/demo_1.g.dart";
+import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/pick/pick_boolean.dart";
 import "package:speanmeas/core/widget/pick/pick_datetime.dart";
-import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
-import "package:speanmeas/core/schema/demo_1.g.dart";
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * បង្កើត layout មេរបស់ទំព័របង្កើតឧទាហរណ៍
 Widget _layout(List<Widget> children) {
@@ -56,6 +57,7 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
+  bool is_loading = true;
 
   String? text_1;
   String? text_2;
@@ -68,7 +70,7 @@ class _Main_State extends State<Main_> {
   String? note;
 
   void init() async {
-    //
+    setState(() => is_loading = false);
   }
 
   @override
@@ -79,56 +81,80 @@ class _Main_State extends State<Main_> {
       Input_Text(
         init: text_1, //
         lead: "Text 1:", //
-        onChanged: (v) => text_1 = v,
+        onChanged: (v) {
+          text_1 = v;
+          setState(() {});
+        },
       ),
 
       // * បញ្ចូលអត្ថបទ 2
       Input_Text(
         init: text_2, //
         lead: "Text 2:", //
-        onChanged: (v) => text_2 = v,
+        onChanged: (v) {
+          text_2 = v;
+          setState(() {});
+        },
       ),
 
       // * បញ្ចូលលេខ 1
       Input_Number(
         init: number_1, //
         lead: "Number 1:", //
-        onChanged: (v) => number_1 = v,
+        onChanged: (v) {
+          number_1 = v;
+          setState(() {});
+        },
       ),
 
       // * បញ្ចូលលេខ 2
       Input_Number(
         init: number_2, //
         lead: "Number 2:", //
-        onChanged: (v) => number_2 = v,
+        onChanged: (v) {
+          number_2 = v;
+          setState(() {});
+        },
       ),
 
       // * ជ្រើសរើសកាលបរិច្ឆេទ 1
       Picker_Datetime(
         initial: datetime_1, //
         title: "Datetime 1:", //
-        onChanged: (v) => datetime_1 = v,
+        onChanged: (v) {
+          datetime_1 = v;
+          setState(() {});
+        },
       ),
 
       // * ជ្រើសរើសកាលបរិច្ឆេទ 2
       Picker_Datetime(
         initial: datetime_2, //
         title: "Datetime 2:", //
-        onChanged: (v) => datetime_2 = v,
+        onChanged: (v) {
+          datetime_2 = v;
+          setState(() {});
+        },
       ),
 
       // * ជ្រើសរើសតម្លៃប៊ូលីន 1
       Picker_Boolean(
         initial: logic_1, //
         title: "Logic 1:", //
-        onChanged: (v) => logic_1 = v,
+        onChanged: (v) {
+          logic_1 = v;
+          setState(() {});
+        },
       ),
 
       // * ជ្រើសរើសតម្លៃប៊ូលីន 2
       Picker_Boolean(
         initial: logic_2, //
         title: "Logic 2:", //
-        onChanged: (v) => logic_2 = v,
+        onChanged: (v) {
+          logic_2 = v;
+          setState(() {});
+        },
       ),
 
       // * បញ្ចូលកំណត់ចំណាំ
@@ -136,7 +162,10 @@ class _Main_State extends State<Main_> {
         init: note, //
         lead: "Note:", //
         maxLines: 4, //
-        onChanged: (v) => note = v ?? "",
+        onChanged: (v) {
+          note = v ?? "";
+          setState(() {});
+        },
       ),
 
       // * ប៊ូតុងបង្កើត
@@ -144,7 +173,7 @@ class _Main_State extends State<Main_> {
         icon: Icon(Icons.check),
         label: Text("Create"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-        onPressed: on_create,
+        onPressed: is_loading ? null : on_create,
       ),
 
       SizedBox(height: height - 100),
@@ -153,30 +182,28 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការបង្កើតឧទាហរណ៍
   void on_create() async {
-    try {
-      // * ផ្ញើសំណើបង្កើតឧទាហរណ៍
-      tmp = await dio.post(
-        endpoint.DEMO_1_CRUD_CREATE, //
-        data: {
-          sm_demo_1.TEXT_1: text_1, //
-          sm_demo_1.TEXT_2: text_2, //
-          sm_demo_1.NUMBER_1: number_1, //
-          sm_demo_1.NUMBER_2: number_2, //
-          sm_demo_1.DATETIME_1: datetime_1?.toIso8601String(), //
-          sm_demo_1.DATETIME_2: datetime_2?.toIso8601String(), //
-          sm_demo_1.LOGIC_1: logic_1, //
-          sm_demo_1.LOGIC_2: logic_2, //
-          sm_demo_1.NOTE: note, //
-        },
-      );
+    // * ផ្ញើសំណើបង្កើតឧទាហរណ៍
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.DEMO_1_CRUD_CREATE, //
+      data: {
+        sm_demo_1.TEXT_1: text_1, //
+        sm_demo_1.TEXT_2: text_2, //
+        sm_demo_1.NUMBER_1: number_1, //
+        sm_demo_1.NUMBER_2: number_2, //
+        sm_demo_1.DATETIME_1: datetime_1?.toIso8601String(), //
+        sm_demo_1.DATETIME_2: datetime_2?.toIso8601String(), //
+        sm_demo_1.LOGIC_1: logic_1, //
+        sm_demo_1.LOGIC_2: logic_2, //
+        sm_demo_1.NOTE: note, //
+      },
+    );
+    setState(() => is_loading = false);
 
-      Navigator.pop(context, tmp.data[0]);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_CREATE}", cl: Colors.red);
 
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data[0]);
   }
 
   @override
@@ -184,8 +211,6 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
 // * ថ្នាក់ Main_ ជាទំព័របង្កើតឧទាហរណ៍
@@ -200,7 +225,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

@@ -30,7 +30,7 @@ class _Panel_TopState extends State<Panel_Top> {
       tmp = await dio.post(endpoint.AUTH_ACCESS_TOKEN);
 
       // * កំណត់ឈ្មោះពេញ
-      full_name = tmp.data[sm_user.FULL_NAME]?["value"] ?? "X";
+      full_name = tmp?.data?[sm_user.FULL_NAME]?["value"] ?? "X";
 
       setState(() {});
     } catch (e, st) {

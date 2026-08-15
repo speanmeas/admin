@@ -8,6 +8,7 @@ import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/widget/show/show_boolean.dart";
 import "package:speanmeas/core/widget/show/show_datetime.dart";
 import "package:speanmeas/core/widget/show/show_number.dart";
@@ -54,7 +55,6 @@ Widget _layout(List<Widget> children) {
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការអានព័ត៌មានឧទាហរណ៍
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
   bool is_loading = true;
 
@@ -70,42 +70,25 @@ class _Main_State extends State<Main_> {
 
   // * ផ្ទុកព័ត៌មានឧទាហរណ៍តាម id
   void init() async {
-    try {
-      // * អានទិន្នន័យឧទាហរណ៍តាម id
-      tmp = await dio.post(
-        endpoint.DEMO_1_CRUD_READ_ID, //
-        data: {sm_demo_1.ID: widget.id},
-      );
+    // * អានទិន្នន័យឧទាហរណ៍តាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.DEMO_1_CRUD_READ_ID, data: {sm_demo_1.ID: widget.id});
+    setState(() => is_loading = false);
 
-      final data = tmp.data;
-      if (data == null || data.isEmpty) {
-        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
-        is_loading = false;
-        setState(() {});
-        return;
-      }
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-      final row = data[0];
-      text_1 = row[sm_demo_1.TEXT_1]?.toString();
-      text_2 = row[sm_demo_1.TEXT_2]?.toString();
-      number_1 = double.tryParse(row[sm_demo_1.NUMBER_1]?.toString() ?? "");
-      number_2 = double.tryParse(row[sm_demo_1.NUMBER_2]?.toString() ?? "");
-      final dt_1 = DateTime.tryParse(row[sm_demo_1.DATETIME_1]?.toString() ?? "");
-      if (dt_1 != null) datetime_1 = dt_1;
-      final dt_2 = DateTime.tryParse(row[sm_demo_1.DATETIME_2]?.toString() ?? "");
-      if (dt_2 != null) datetime_2 = dt_2;
-      final l_1 = row[sm_demo_1.LOGIC_1];
-      logic_1 = l_1 is bool ? l_1 : null;
-      final l_2 = row[sm_demo_1.LOGIC_2];
-      logic_2 = l_2 is bool ? l_2 : null;
-      note = row[sm_demo_1.NOTE]?.toString();
+    text_1 = parse_string(tmp.data[0][sm_demo_1.TEXT_1]);
+    text_2 = parse_string(tmp.data[0][sm_demo_1.TEXT_2]);
+    number_1 = parse_double(tmp.data[0][sm_demo_1.NUMBER_1]);
+    number_2 = parse_double(tmp.data[0][sm_demo_1.NUMBER_2]);
+    datetime_1 = parse_datetime(tmp.data[0][sm_demo_1.DATETIME_1]);
+    datetime_2 = parse_datetime(tmp.data[0][sm_demo_1.DATETIME_2]);
+    logic_1 = parse_bool(tmp.data[0][sm_demo_1.LOGIC_1]);
+    logic_2 = parse_bool(tmp.data[0][sm_demo_1.LOGIC_2]);
+    note = parse_string(tmp.data[0][sm_demo_1.NOTE]);
 
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override
@@ -178,6 +161,13 @@ class _Main_State extends State<Main_> {
         maxLines: 4,
       ),
 
+      // * ប៊ូតុងបិទ
+      OutlinedButton.icon(
+        icon: Icon(Icons.check), //
+        label: Text("Close"),
+        onPressed: () => Navigator.pop(context),
+      ),
+
       SizedBox(height: height - 100),
     ]);
   }
@@ -207,7 +197,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

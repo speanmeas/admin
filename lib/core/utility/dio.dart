@@ -6,7 +6,7 @@ import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure.dart"; // ignore: unused_import
 
 // * ការកំណត់ Dio client ជាមួយ base URL និង headers
-Dio dio_ = Dio(
+Dio tmpe = Dio(
   BaseOptions(
     baseUrl: API_HOST, //
     // connectTimeout: Duration(seconds: 10),
@@ -26,10 +26,10 @@ Dio dio_ = Dio(
 );
 
 // * ទទួលបាន Dio instance សម្រាប់ប្រើប្រាស់
-Dio get dio_old {
+Dio get dio_ {
   // * បិទ CORS warning នៅលើ web
-  if (kIsWeb) (dio_.httpClientAdapter as dynamic).enableCORSWarning = false;
-  return dio_;
+  if (kIsWeb) (tmpe.httpClientAdapter as dynamic).enableCORSWarning = false;
+  return tmpe;
 }
 
 // * ថ្នាក់ DioUtil គ្រប់គ្រង HTTP requests ដោយសុវត្ថិភាព
@@ -40,27 +40,27 @@ class DioUtil {
   DioUtil._();
 
   // * ទទួលបាន Dio instance
-  Dio get client => dio_old;
+  Dio get client => dio_;
 
   // * កំណត់ Authorization token
   void setToken(String? token) {
-    dio_old.options.headers["Authorization"] = token == null ? "" : "Bearer $token";
+    dio_.options.headers["Authorization"] = token == null ? "" : "Bearer $token";
   }
 
   // * លុប Authorization token
   void clearToken() {
-    dio_old.options.headers["Authorization"] = "";
+    dio_.options.headers["Authorization"] = "";
   }
 
   // * លុប Authorization header ចេញទាំងស្រុង
   void delToken() {
-    dio_old.options.headers.remove("Authorization");
+    dio_.options.headers.remove("Authorization");
   }
 
   // * ផ្ញើ GET request
   Future<Response<dynamic>?> get(String path, {Map<String, dynamic>? query, Options? options}) async {
     try {
-      return await dio_old.get(path, queryParameters: query, options: options);
+      return await dio_.get(path, queryParameters: query, options: options);
     } catch (e) {
       _logError("GET", path, e);
       return null;
@@ -70,7 +70,7 @@ class DioUtil {
   // * ផ្ញើ POST request
   Future<Response<dynamic>?> post(String path, {dynamic data, Map<String, dynamic>? query, Options? options}) async {
     try {
-      return await dio_old.post(path, data: data, queryParameters: query, options: options);
+      return await dio_.post(path, data: data, queryParameters: query, options: options);
     } catch (e) {
       _logError("POST", path, e);
       return null;
@@ -80,7 +80,7 @@ class DioUtil {
   // * ផ្ញើ PUT request
   Future<Response<dynamic>?> put(String path, {dynamic data, Map<String, dynamic>? query, Options? options}) async {
     try {
-      return await dio_old.put(path, data: data, queryParameters: query, options: options);
+      return await dio_.put(path, data: data, queryParameters: query, options: options);
     } catch (e) {
       _logError("PUT", path, e);
       return null;
@@ -90,7 +90,7 @@ class DioUtil {
   // * ផ្ញើ DELETE request
   Future<Response<dynamic>?> delete(String path, {dynamic data, Map<String, dynamic>? query, Options? options}) async {
     try {
-      return await dio_old.delete(path, data: data, queryParameters: query, options: options);
+      return await dio_.delete(path, data: data, queryParameters: query, options: options);
     } catch (e) {
       _logError("DELETE", path, e);
       return null;
@@ -100,7 +100,7 @@ class DioUtil {
   // * ផ្ញើ PATCH request
   Future<Response<dynamic>?> patch(String path, {dynamic data, Map<String, dynamic>? query, Options? options}) async {
     try {
-      return await dio_old.patch(path, data: data, queryParameters: query, options: options);
+      return await dio_.patch(path, data: data, queryParameters: query, options: options);
     } catch (e) {
       _logError("PATCH", path, e);
       return null;

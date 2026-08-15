@@ -1,29 +1,29 @@
 // * ទំព័រគ្រប់គ្រងឧទាហរណ៍ (Demo 1) សម្រាប់បង្កើត អាន កែ និងលុប
 
-import "package:intl/intl.dart";
 import "package:flutter/material.dart";
 import "package:flutter/foundation.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
-import "package:speanmeas/core/i18n/main.dart";
-import "package:speanmeas/core/config.dart";
+import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/config.dart"; // ignore: unused_import
+import "package:speanmeas/core/i18n/main.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/parse.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+
 import "package:speanmeas/core/widget/dialog/dialog_page.dart";
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/button/menu_button_text.dart";
-
 import "package:speanmeas/core/schema/demo_1.g.dart";
 
 import "form/create.dart" as create;
 import "form/read.dart" as read;
 import "form/update.dart" as update;
 import "form/delete.dart" as delete;
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * បង្កើត layout មេរបស់ទំព័រគ្រប់គ្រងឧទាហរណ៍
 Widget _layout(List<Widget> children) {
@@ -37,108 +37,109 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទិន្នន័យឧទាហរណ៍
 class _Main_State extends State<Main_> {
   dynamic tmp;
+  dynamic data;
+  bool is_loading = true;
+  List<String> list_c = columns.map((c) => c.field).toList();
 
+  bool is_filter = false;
   int page = 1;
   int row_total = 0;
-  bool is_loading = true;
-  bool is_filter = false;
-  int load_request_id = 0;
   PlutoGridStateManager? state_manager;
 
   // * ផ្ទុកចំនួនជួរដេកសរុប និងទំព័រដំបូង
   void init() async {
-    try {
-      tmp = await dio.post(endpoint.DEMO_1_CRUD_READ_COUNT, data: {"count": true});
-      row_total = int.tryParse(tmp.data?.toString() ?? "0") ?? 0;
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.DEMO_1_CRUD_READ_COUNT, data: {"count": true});
+    setState(() => is_loading = false);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_READ_COUNT}", cl: Colors.red);
 
-      load_page(page);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    row_total = parse_int(tmp.data) ?? 0;
+    load_page(page);
   }
 
   // * ធ្វើឱ្យទិន្នន័យស្រស់ឡើងវិញ
   void on_refresh() async {
-    try {
-      final r = await dio.post(endpoint.DEMO_1_CRUD_READ_COUNT, data: {"count": true});
-      row_total = int.tryParse(r?.data?.toString() ?? "0") ?? 0;
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.DEMO_1_CRUD_READ_COUNT, data: {"count": true});
+    setState(() => is_loading = false);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_READ_COUNT}", cl: Colors.red);
 
-      if (page > total_pages) page = total_pages;
-      if (page < 1) page = 1;
+    row_total = parse_int(tmp.data) ?? 0;
 
-      load_page(page);
+    if (page > total_pages) page = total_pages;
+    if (page < 1) page = 1;
 
-      snackbar(ct: context, ms: "Refresh completed.", cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    load_page(page);
   }
 
   // * ផ្ទុកទិន្នន័យតាមទំព័រ
   void load_page(int p) async {
-    final request_id = ++load_request_id;
+    // * អានទិន្នន័យឧទាហរណ៍តាម offset និង limit
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.DEMO_1_CRUD_READ, //
+      data: {
+        "key": DEFAULT_KEY, //
+        "order": DEFAULT_ORDER, //
+        "offset": (p - 1) * DEFAULT_LIMIT_ROW, //
+        "limit": DEFAULT_LIMIT_ROW,
+      },
+    );
+    setState(() => is_loading = false);
 
-    try {
-      is_loading = true;
+    // * dio ត្រឡប់ null ពេល request បរាជ័យ
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_READ}", cl: Colors.red);
+    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-      setState(() {});
+    // * រក្សាទុក sort និង filter មុនពេលផ្ទុកឡើងវិញ
+    final sorted_column = state_manager?.getSortedColumn;
+    final filter_rows = List<PlutoRow>.from(state_manager?.filterRows ?? const <PlutoRow>[]);
 
-      // * អានទិន្នន័យឧទាហរណ៍តាម offset និង limit
-      tmp = await dio.post(
-        endpoint.DEMO_1_CRUD_READ, //
-        data: {
-          "key": DEFAULT_KEY, //
-          "order": DEFAULT_ORDER, //
-          "offset": (p - 1) * DEFAULT_LIMIT_ROW, //
-          "limit": DEFAULT_LIMIT_ROW,
-        },
-      );
-      final data = List<Map<String, dynamic>>.from(tmp.data ?? const []);
+    // * បម្លែងទិន្នន័យទៅជា List<dynamic> ដើម្បីបង្កើត PlutoRow
+    data = List<dynamic>.from(tmp.data ?? const []);
 
-      // * មិនអើពើការឆ្លើយតបពីសំណើទំព័រមុន
-      if (!mounted || request_id != load_request_id) return;
+    // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
+    state_manager?.removeAllRows();
+    state_manager?.appendRows([
+      for (var d in data)
+        PlutoRow(
+          cells: {
+            for (var c in list_c) //
+              c: (() {
+                if (c == "index") //
+                  return PlutoCell(value: data.indexOf(d) + 1);
+                if (c == sm_demo_1.ID) //
+                  return PlutoCell(value: parse_string(d[sm_demo_1.ID]));
+                if (c == sm_demo_1.TEXT_1) //
+                  return PlutoCell(value: parse_string(d[sm_demo_1.TEXT_1]));
+                if (c == sm_demo_1.TEXT_2) //
+                  return PlutoCell(value: parse_string(d[sm_demo_1.TEXT_2]));
+                if (c == sm_demo_1.NUMBER_1) //
+                  return PlutoCell(value: parse_double(d[sm_demo_1.NUMBER_1]));
+                if (c == sm_demo_1.NUMBER_2) //
+                  return PlutoCell(value: parse_double(d[sm_demo_1.NUMBER_2]));
+                if (c == sm_demo_1.DATETIME_1) //
+                  return PlutoCell(value: parse_datetime(d[sm_demo_1.DATETIME_1]));
+                if (c == sm_demo_1.DATETIME_2) //
+                  return PlutoCell(value: parse_datetime(d[sm_demo_1.DATETIME_2]));
+                if (c == sm_demo_1.LOGIC_1) //
+                  return PlutoCell(value: parse_bool(d[sm_demo_1.LOGIC_1]));
+                if (c == sm_demo_1.LOGIC_2) //
+                  return PlutoCell(value: parse_bool(d[sm_demo_1.LOGIC_2]));
+                if (c == sm_demo_1.NOTE) //
+                  return PlutoCell(value: parse_string(d[sm_demo_1.NOTE]));
 
-      // * រក្សាទុក sort និង filter មុនពេលផ្ទុកឡើងវិញ
-      final sorted_column = state_manager?.getSortedColumn;
-      final filter_rows = List<PlutoRow>.from(state_manager?.filterRows ?? const <PlutoRow>[]);
+                return PlutoCell(value: null);
+              })(),
+          },
+        ),
+    ]);
 
-      // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
-      state_manager?.removeAllRows();
-      state_manager?.appendRows([
-        for (var d in data)
-          PlutoRow(
-            cells: {
-              "index": PlutoCell(value: data.indexOf(d) + 1),
-              sm_demo_1.ID: PlutoCell(value: d[sm_demo_1.ID] ?? ""),
-              sm_demo_1.TEXT_1: PlutoCell(value: d[sm_demo_1.TEXT_1] ?? ""),
-              sm_demo_1.TEXT_2: PlutoCell(value: d[sm_demo_1.TEXT_2] ?? ""),
-              sm_demo_1.NUMBER_1: PlutoCell(value: d[sm_demo_1.NUMBER_1] ?? ""),
-              sm_demo_1.NUMBER_2: PlutoCell(value: d[sm_demo_1.NUMBER_2] ?? ""),
-              sm_demo_1.DATETIME_1: PlutoCell(value: d[sm_demo_1.DATETIME_1] ?? ""),
-              sm_demo_1.DATETIME_2: PlutoCell(value: d[sm_demo_1.DATETIME_2] ?? ""),
-              sm_demo_1.LOGIC_1: PlutoCell(value: d[sm_demo_1.LOGIC_1] ?? ""),
-              sm_demo_1.LOGIC_2: PlutoCell(value: d[sm_demo_1.LOGIC_2] ?? ""),
-              sm_demo_1.NOTE: PlutoCell(value: d[sm_demo_1.NOTE] ?? ""),
-            },
-          ),
-      ]);
+    // * អនុវត្ត sort និង filter ឡើងវិញ
+    if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
+    state_manager?.setFilterWithFilterRows(filter_rows);
 
-      // * អនុវត្ត sort និង filter ឡើងវិញ
-      if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
-      state_manager?.setFilterWithFilterRows(filter_rows);
-
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-      if (request_id == load_request_id && mounted) {
-        is_loading = false;
-        setState(() {});
-      }
-    }
+    setState(() {});
   }
 
   @override
@@ -156,28 +157,28 @@ class _Main_State extends State<Main_> {
             Menu_Button_Icon(
               tip: t("Create"), //
               icon: Icons.add,
-              onPressed: on_create,
+              onPressed: is_loading ? null : on_create,
             ),
 
             // * ប៊ូតុងអាន
             Menu_Button_Icon(
               tip: t("Read"), //
               icon: Icons.visibility_outlined,
-              onPressed: on_read,
+              onPressed: is_loading ? null : on_read,
             ),
 
             // * ប៊ូតុងកែប្រែ
             Menu_Button_Icon(
               tip: t("Update"), //
               icon: Icons.edit_outlined,
-              onPressed: on_update,
+              onPressed: is_loading ? null : on_update,
             ),
 
             // * ប៊ូតុងលុប
             Menu_Button_Icon(
               tip: t("Delete"), //
               icon: Icons.delete_outline,
-              onPressed: on_delete,
+              onPressed: is_loading ? null : on_delete,
               color: Colors.red,
             ),
 
@@ -209,7 +210,7 @@ class _Main_State extends State<Main_> {
             Menu_Button_Icon(
               tip: t("Refresh"), //
               icon: Icons.refresh,
-              onPressed: on_refresh,
+              onPressed: is_loading ? null : on_refresh,
             ),
           ],
         ),
@@ -260,61 +261,35 @@ class _Main_State extends State<Main_> {
             Menu_Button_Icon(
               tip: t("First Page"), //
               icon: Icons.first_page,
-              onPressed: () {
-                if (page == 1) return;
-                page = 1;
-                load_page(page);
-              },
+              onPressed: is_loading ? null : goto_first_page,
             ),
 
             // * ប៊ូតុងទៅទំព័រមុន
             Menu_Button_Icon(
               tip: t("Previous Page"), //
               icon: Icons.navigate_before,
-              onPressed: () {
-                if (page == 1) return;
-                page = page - 1;
-                load_page(page);
-              },
+              onPressed: is_loading ? null : goto_previous_page,
             ),
 
             // * ប៊ូតុងជ្រើសរើសទំព័រ
             Menu_Button_Text(
               tip: t("Select Page"), //
               text: "$page / $total_pages", //
-              onPressed: () async {
-                final v = await select_page(
-                  context, //
-                  page: page,
-                  row_total: row_total,
-                  limit: DEFAULT_LIMIT_ROW,
-                );
-                if (v == null) return;
-                page = v;
-                load_page(page);
-              },
+              onPressed: is_loading ? null : goto_page,
             ),
 
             // * ប៊ូតុងទៅទំព័របន្ទាប់
             Menu_Button_Icon(
               tip: t("Next Page"), //
               icon: Icons.navigate_next,
-              onPressed: () {
-                if (page == total_pages) return;
-                page = page + 1;
-                load_page(page);
-              },
+              onPressed: is_loading ? null : goto_next_page,
             ),
 
             // * ប៊ូតុងទៅទំព័រចុងក្រោយ
             Menu_Button_Icon(
               tip: t("Last Page"), //
               icon: Icons.last_page,
-              onPressed: () {
-                if (page == total_pages) return;
-                page = total_pages;
-                load_page(page);
-              },
+              onPressed: is_loading ? null : goto_last_page,
             ),
 
             Spacer(),
@@ -325,7 +300,7 @@ class _Main_State extends State<Main_> {
               padding: EdgeInsets.only(right: 16),
               alignment: Alignment.center,
               child: Text(
-                "${state_manager?.rows.length} Rows", //
+                "${state_manager?.rows.length ?? 0} Rows", //
                 style: TextStyle(
                   fontSize: 18, //
                   fontWeight: FontWeight.bold,
@@ -334,103 +309,108 @@ class _Main_State extends State<Main_> {
               ), //
             ),
 
-            SizedBox(width: 4),
+            SizedBox(width: 8),
           ],
         ),
       ),
     ]);
   }
 
+  // * ត្រលប់ទៅទំព័រដំបូង
+  void goto_first_page() {
+    if (page == 1) return;
+    page = 1;
+    load_page(page);
+  }
+
+  // * ទៅទំព័រមុន
+  void goto_previous_page() {
+    if (page == 1) return;
+    page = page - 1;
+    load_page(page);
+  }
+
+  // * ជ្រើសរើសទំព័រតាមចំនួនដែលអ្នកប្រើបញ្ចូល
+  void goto_page() async {
+    final v = await select_page(
+      context, //
+      page: page,
+      row_total: row_total,
+      limit: DEFAULT_LIMIT_ROW,
+    );
+    if (v == null) return;
+    page = v;
+    load_page(page);
+  }
+
+  // * ទៅទំព័របន្ទាប់
+  void goto_next_page() {
+    if (page == total_pages) return;
+    page = page + 1;
+    load_page(page);
+  }
+
+  // * ទៅទំព័រចុងក្រោយ
+  void goto_last_page() {
+    if (page == total_pages) return;
+    page = total_pages;
+    load_page(page);
+  }
+
   // * បើកទំព័របង្កើតឧទាហរណ៍ថ្មី
   void on_create() async {
-    try {
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
-      if (tmp == null) return;
+    tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
+    if (tmp == null) return;
 
-      // * លុប sort + filter
-      final sorted_column = state_manager?.getSortedColumn;
-      if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
-      state_manager?.setFilterWithFilterRows([]);
+    // * លុប sort + filter
+    final sorted_column = state_manager?.getSortedColumn;
+    if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
+    state_manager?.setFilterWithFilterRows([]);
 
-      row_total = row_total + 1;
-      page = 1;
-      load_page(page);
-
-      state_manager?.scroll.vertical?.jumpTo(0);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    load_page(page);
+    state_manager?.scroll.vertical?.jumpTo(0);
   }
 
   // * បើកទំព័រអានព័ត៌មានឧទាហរណ៍
   void on_read() async {
-    try {
-      final row = state_manager?.currentRow;
-      final id = row?.cells[sm_demo_1.ID]?.value?.toString() ?? "";
-      if (row == null || id.isEmpty) {
-        snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
-        return;
-      }
+    final row = state_manager?.currentRow;
+    final id = row?.cells[sm_demo_1.ID]?.value?.toString() ?? "";
+    if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => read.Main_(
-            id: id, //
-          ),
-        ),
-      );
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    Navigator.push(context, MaterialPageRoute(builder: (context) => read.Main_(id: id)));
   }
 
   // * បើកទំព័រកែប្រែឧទាហរណ៍
   void on_update() async {
-    try {
-      final row = state_manager?.currentRow;
-      final id = row?.cells[sm_demo_1.ID]?.value?.toString() ?? "";
-      if (row == null || id.isEmpty) {
-        snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
-        return;
-      }
+    final row = state_manager?.currentRow;
+    final id = row?.cells[sm_demo_1.ID]?.value?.toString() ?? "";
+    if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
 
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_(id: id)));
-      if (tmp == null) return;
+    tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_(id: id)));
+    if (tmp == null) return;
 
-      load_page(page);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    load_page(page);
   }
 
   // * បើកទំព័រលុបឧទាហរណ៍
   void on_delete() async {
-    try {
-      final row = state_manager?.currentRow;
-      final id = row?.cells[sm_demo_1.ID]?.value?.toString() ?? "";
-      if (row == null || id.isEmpty) {
-        snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
-        return;
-      }
-
-      tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_(id: id)));
-      if (tmp == null) return;
-
-      load_page(page);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
+    final row = state_manager?.currentRow;
+    final id = row?.cells[sm_demo_1.ID]?.value?.toString() ?? "";
+    if (row == null || id.isEmpty) {
+      snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
+      return;
     }
+
+    tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_(id: id)));
+    if (tmp == null) return;
+
+    load_page(page);
   }
 
-  // * គណនាចំនួនទំព័រសរុប
+  // * គណនាចំនួនទំព័រសរុប (បង្គត់ឡើង)
   int get total_pages {
     if (row_total == 0) return 1;
-    return (row_total + DEFAULT_LIMIT_ROW - 1) ~/ DEFAULT_LIMIT_ROW;
+    return (row_total / DEFAULT_LIMIT_ROW).ceil();
   }
 
   @override
@@ -438,30 +418,31 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
-const double WIDTH = 120;
+const double WIDTH = 140;
 
 // * និយមន័យជួរឈររបស់តារាង
 final columns = [
+  // * ជួរឈរលេខរៀង (No.)
   PlutoColumn(
     field: "index", //
     title: "No.",
     type: PlutoColumnType.number(),
-    width: WIDTH,
+    width: 80,
     enableEditingMode: false,
     renderer: (rc) {
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          rc.cell.value.toString(), //
+          format_int(rc.cell.value), //
           overflow: TextOverflow.ellipsis,
         ),
       );
     },
   ),
+
+  // * ជួរឈរ ID (លាក់)
   PlutoColumn(
     field: sm_demo_1.ID, //
     title: "ID",
@@ -470,6 +451,8 @@ final columns = [
     enableEditingMode: false,
     hide: true, //
   ),
+
+  // * ជួរឈរអត្ថបទទី 1
   PlutoColumn(
     field: sm_demo_1.TEXT_1, //
     title: "Text 1",
@@ -480,12 +463,14 @@ final columns = [
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          rc.cell.value.toString(), //
+          format_string(rc.cell.value), //
           overflow: TextOverflow.ellipsis,
         ),
       );
     },
   ),
+
+  // * ជួរឈរអត្ថបទទី 2
   PlutoColumn(
     field: sm_demo_1.TEXT_2, //
     title: "Text 2",
@@ -493,17 +478,17 @@ final columns = [
     enableEditingMode: false,
     width: WIDTH,
     renderer: (rc) {
-      String value = "";
-      if (rc.cell.value != null) value = rc.cell.value.toString();
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          value, //
+          format_string(rc.cell.value), //
           overflow: TextOverflow.ellipsis,
         ),
       );
     },
   ),
+
+  // * ជួរឈរលេខទី 1
   PlutoColumn(
     field: sm_demo_1.NUMBER_1, //
     title: "Number 1",
@@ -514,12 +499,14 @@ final columns = [
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          rc.cell.value.toString(), //
+          format_double(rc.cell.value, digits: 2), //
           overflow: TextOverflow.ellipsis,
         ),
       );
     },
   ),
+
+  // * ជួរឈរលេខទី 2
   PlutoColumn(
     field: sm_demo_1.NUMBER_2, //
     title: "Number 2",
@@ -530,12 +517,14 @@ final columns = [
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          rc.cell.value.toString(), //
+          format_double(rc.cell.value, digits: 2), //
           overflow: TextOverflow.ellipsis,
         ),
       );
     },
   ),
+
+  // * ជួរឈរកាលបរិច្ឆេទទី 1
   PlutoColumn(
     enableEditingMode: false,
     field: sm_demo_1.DATETIME_1, //
@@ -543,20 +532,17 @@ final columns = [
     type: PlutoColumnType.text(),
     width: WIDTH,
     renderer: (rc) {
-      String value = "";
-      if (rc.cell.value != null) {
-        final tmp = DateTime.tryParse(rc.cell.value.toString());
-        if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
-      }
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          value, //
+          format_datetime(rc.cell.value), //
           overflow: TextOverflow.ellipsis,
         ),
       );
     },
   ),
+
+  // * ជួរឈរកាលបរិច្ឆេទទី 2
   PlutoColumn(
     field: sm_demo_1.DATETIME_2, //
     title: "Date Time 2",
@@ -564,21 +550,17 @@ final columns = [
     width: WIDTH,
     enableEditingMode: false,
     renderer: (rc) {
-      String value = "";
-      if (rc.cell.value != null) {
-        final tmp = DateTime.tryParse(rc.cell.value.toString());
-        if (tmp != null) value = DateFormat(DEFAULT_DATE_FORMAT).format(tmp.toLocal());
-      }
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          value, //
+          format_datetime(rc.cell.value), //
           overflow: TextOverflow.ellipsis,
         ),
       );
     },
   ),
 
+  // * ជួរឈរតក្កវិជ្ជា (បាទ/ទេ) ទី 1
   PlutoColumn(
     field: sm_demo_1.LOGIC_1, //
     title: "Logic 1",
@@ -586,20 +568,17 @@ final columns = [
     width: WIDTH,
     enableEditingMode: false,
     renderer: (rc) {
-      String value = "";
-      if (rc.cell.value != null) {
-        if (rc.cell.value == true) value = "Yes";
-        if (rc.cell.value == false) value = "No";
-      }
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          value, //
+          format_bool(rc.cell.value), //
           overflow: TextOverflow.ellipsis,
         ),
       );
     },
   ),
+
+  // * ជួរឈរតក្កវិជ្ជា (បាទ/ទេ) ទី 2
   PlutoColumn(
     field: sm_demo_1.LOGIC_2, //
     title: "Logic 2",
@@ -607,20 +586,17 @@ final columns = [
     width: WIDTH,
     enableEditingMode: false,
     renderer: (rc) {
-      String value = "";
-      if (rc.cell.value != null) {
-        if (rc.cell.value == true) value = "Yes";
-        if (rc.cell.value == false) value = "No";
-      }
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          value, //
+          format_bool(rc.cell.value), //
           overflow: TextOverflow.ellipsis,
         ),
       );
     },
   ),
+
+  // * ជួរឈរកំណត់ចំណាំ
   PlutoColumn(
     field: sm_demo_1.NOTE, //
     title: "Note",
@@ -628,12 +604,10 @@ final columns = [
     width: WIDTH,
     enableEditingMode: false,
     renderer: (rc) {
-      String value = "";
-      if (rc.cell.value != null) value = rc.cell.value.toString();
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          value, //
+          format_string(rc.cell.value), //
           overflow: TextOverflow.ellipsis,
         ),
       );
@@ -653,7 +627,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

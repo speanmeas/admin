@@ -119,37 +119,29 @@ class _Main_State extends State<Main_> {
 
   // * ដំណើរការចូលប្រព័ន្ធ
   void on_sign_in() async {
-    try {
-      // * ផ្ញើសំណើចូលប្រព័ន្ធទៅ server
-      tmp = await dio.post(
-        endpoint.AUTH_SIGN_IN, //
-        data: {
-          "username": c_username.text, //
-          "password": c_password.text,
-        },
-      );
-      if (tmp == null) throw Exception("Invalid Username or Password");
+    // * ផ្ញើសំណើចូលប្រព័ន្ធទៅ server
+    tmp = await dio.post(
+      endpoint.AUTH_SIGN_IN, //
+      data: {
+        "username": c_username.text, //
+        "password": c_password.text,
+      },
+    );
+    if (tmp == null) snackbar(ct: context, ms: "Error: ${endpoint.AUTH_SIGN_IN}", cl: Colors.red);
 
-      // * រក្សាទុក token និង id អ្នកប្រើ
-      final data = tmp.data;
-      final id = data?["_id"]?.toString() ?? "";
-      final token = data?["access_token"]?.toString() ?? "";
-      await secure.write(key: "_id", value: id);
-      await secure.write(key: "access_token", value: token);
-      dio.setToken(token);
+    // * រក្សាទុក token និង id អ្នកប្រើ
+    final data = tmp.data;
+    final id = data?["_id"]?.toString() ?? "";
+    final token = data?["access_token"]?.toString() ?? "";
+    await secure.write(key: "_id", value: id);
+    await secure.write(key: "access_token", value: token);
+    dio.setToken(token);
 
-      await glob.init();
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
+    await glob.init();
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
 
-      // * ប្តូរទៅទំព័រមេ
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Layout()));
-
-      //
-    } catch (e, st) {
-      // * បង្ហាញកំហុសប្រសិនបើមាន
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    // * ប្តូរទៅទំព័រមេ
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Layout()));
   }
 
   // * ប្តូរការបង្ហាញពាក្យសម្ងាត់

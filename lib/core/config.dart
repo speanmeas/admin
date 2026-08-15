@@ -7,24 +7,25 @@ import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 
 // * ចំណងជើងរបស់កម្មវិធី
-final TITLE = "Spean Meas";
+const TITLE = "Spean Meas";
 
 // * ទទឹងអេក្រង់សម្រាប់ឧបករណ៍ចល័ត
-final MOBILE_SCREEN_WIDTH = 1000;
+const MOBILE_SCREEN_WIDTH = 1000;
 
 // * ទម្រង់កាលបរិច្ឆេទលំនាំដើម
 // final DEFAULT_DATE_FORMAT = "EEEE dd-MM-yyyy h:mm a";
-final DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm";
+const DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm";
+
 // * ចំនួនជួរដេកលំនាំដើមសម្រាប់ការទាញទិន្នន័យ
-final DEFAULT_LIMIT_ROW = 1000;
+const DEFAULT_LIMIT_ROW = 1000;
 // * ឈ្នះដែលប្រើសម្រាប់តម្រៀបលំនាំដើម
-final DEFAULT_KEY = "created_at";
+const DEFAULT_KEY = "created_at";
 // * លំដាប់តម្រៀបលំនាំដើម (ចុះ)
-final DEFAULT_ORDER = -1;
+const DEFAULT_ORDER = -1;
 
 // * ការកំណត់បរិស្ថាន
-final is_local = false;
-final is_github = false;
+const is_local = false;
+const is_github = false;
 
 // * ទទួលបាន API host អាស្រ័យលើបរិស្ថាន
 String get_api_host() {
