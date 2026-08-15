@@ -40,7 +40,7 @@ dynamic _lastOf(dynamic list, String key) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការស្វែងរក និងបង្ហាញរបាយការណ៍
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic list_fd = [];
+  dynamic data = [];
   bool is_loading = true;
 
   bool is_filter = false;
@@ -80,140 +80,109 @@ class _Main_State extends State<Main_> {
       return;
     }
 
-    is_loading = true;
+    // * ផ្ញើសំណើស្វែងរករបាយការណ៍
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.REPORT, //
+      data: {"start": start?.toIso8601String(), "stop": stop?.toIso8601String()},
+    );
+    setState(() => is_loading = false);
+
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.REPORT}", cl: Colors.red);
+
+    data = List<dynamic>.from(tmp.data ?? []);
+
+    // * បំពេញជួរដេកទៅក្នុងតារាង
+    state_manager?.removeAllRows();
+    state_manager?.appendRows([
+      for (var fd in data)
+        PlutoRow(
+          cells: {
+            for (var c in list_c) //
+              c: (() {
+                if (c == "index") //
+                  return PlutoCell(value: data.indexOf(fd) + 1);
+                if (c == sm_front_desk.ID) //
+                  return PlutoCell(value: fd[sm_front_desk.ID]);
+                if (c == sm_front_desk.ROOM_ID + sm_room.NUMBER) //
+                  return PlutoCell(value: fd[sm_front_desk.ROOM_ID]?[sm_room.NUMBER]);
+                // if (c == sm_front_desk.GUEST_ID + sm_guest.FULL_NAME) //
+                //   return PlutoCell(value: fd[sm_front_desk.GUEST_ID]?[sm_guest.FULL_NAME]);
+                // if (c == sm_front_desk.CHECK_IN_NUMBER) //
+                //   return PlutoCell(value: fd[sm_front_desk.CHECK_IN_NUMBER]);
+                // if (c == sm_front_desk.CHECK_IN_AT) //
+                //   return PlutoCell(value: fd[sm_front_desk.CHECK_IN_AT]);
+                // if (c == sm_front_desk.CHECK_OUT_AT) //
+                //   return PlutoCell(value: fd[sm_front_desk.CHECK_OUT_AT]);
+                // if (c == sm_front_desk.CHECK_IN_DAY) //
+                //   return PlutoCell(value: fd[sm_front_desk.CHECK_IN_DAY]);
+                // if (c == sm_front_desk.CHECK_IN_HOUR) //
+                //   return PlutoCell(value: fd[sm_front_desk.CHECK_IN_HOUR]);
+                // if (c == sm_front_desk.PAY_ROOM + "add_price") //
+                //   return PlutoCell(
+                //     value: (() {
+                //       double total = 0;
+                //       for (var l in fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? []) {
+                //         total = total + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
+                //         total = total - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
+                //       }
+                //       return total;
+                //     })(),
+                //   );
+                // if (c == sm_front_desk.PAY_ROOM + "pay_cash") //
+                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_ROOM], "pay_cash"));
+                // if (c == sm_front_desk.PAY_ROOM + "pay_bank") //
+                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_ROOM], "pay_bank"));
+                // if (c == sm_front_desk.PAY_ROOM + "pay_return") //
+                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_ROOM], "pay_return"));
+                // if (c == sm_front_desk.PAY_MINI_BAR + "add_price") //
+                //   return PlutoCell(
+                //     value: (() {
+                //       double total = 0;
+                //       for (var l in fd[sm_front_desk.PAY_MINI_BAR] as List<dynamic>? ?? []) {
+                //         total = total + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
+                //         total = total - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
+                //       }
+                //       return total;
+                //     })(),
+                //   );
+                // if (c == sm_front_desk.PAY_MINI_BAR + "pay_cash") //
+                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_MINI_BAR], "pay_cash"));
+                // if (c == sm_front_desk.PAY_MINI_BAR + "pay_bank") //
+                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_MINI_BAR], "pay_bank"));
+                // if (c == sm_front_desk.PAY_MINI_BAR + "pay_return") //
+                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_MINI_BAR], "pay_return"));
+                // if (c == sm_front_desk.PAY_OTHER + "add_price") //
+                //   return PlutoCell(
+                //     value: (() {
+                //       double total = 0;
+                //       for (var l in fd[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? []) {
+                //         total = total + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
+                //         total = total - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
+                //       }
+                //       return total;
+                //     })(),
+                //   );
+                // if (c == sm_front_desk.PAY_OTHER + "pay_cash") //
+                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_OTHER], "pay_cash"));
+                // if (c == sm_front_desk.PAY_OTHER + "pay_bank") //
+                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_OTHER], "pay_bank"));
+                // if (c == sm_front_desk.PAY_OTHER + "pay_return") //
+                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_OTHER], "pay_return"));
+                // if (c == sm_front_desk.CHECK_IN_BY + sm_user.FULL_NAME) //
+                //   return PlutoCell(value: fd[sm_front_desk.CHECK_IN_BY]?[sm_user.FULL_NAME]);
+                // if (c == sm_front_desk.PAY_ROOM + "created_by" + sm_user.FULL_NAME) //
+                //   return PlutoCell(value: _lastOf(fd[sm_front_desk.PAY_ROOM], "created_by")?[sm_user.FULL_NAME]);
+                // if (c == sm_front_desk.CHECK_OUT_BY + sm_user.FULL_NAME) //
+                //   return PlutoCell(value: fd[sm_front_desk.CHECK_OUT_BY]?[sm_user.FULL_NAME]);
+
+                return PlutoCell(value: null);
+              })(),
+          },
+        ),
+    ]);
+
     setState(() {});
-
-    try {
-      // * ផ្ញើសំណើស្វែងរករបាយការណ៍
-      tmp = await dio.post(
-        endpoint.REPORT,
-        data: {
-          // "key": "check_in_at", //
-          "start": start?.toIso8601String(),
-          "stop": stop?.toIso8601String(),
-          // "limit": 10000, //
-        },
-      );
-      // * គ្រប់គ្រងទម្រង់លទ្ធផលផ្សេងៗពី backend
-      // * - ជោគជ័យមានទិន្នន័យ: {"models": [...], "total_income": ..., "total_revenue": ...}
-      // * - គ្មានទិន្នន័យ: [] (បញ្ជីទទេ)
-      // * - កំហុស: string
-      if (tmp.data is Map) {
-        list_fd = tmp.data["models"] as List<dynamic>? ?? [];
-        total_income = double.tryParse(tmp.data["total_income"]?.toString() ?? "0") ?? 0;
-        total_revenue = double.tryParse(tmp.data["total_revenue"]?.toString() ?? "0") ?? 0;
-      } else if (tmp.data is List) {
-        list_fd = tmp.data as List<dynamic>;
-        total_income = 0;
-        total_revenue = 0;
-      } else {
-        list_fd = [];
-        total_income = 0;
-        total_revenue = 0;
-      }
-      pprint(list_fd);
-
-      // pprint(list_c);
-
-      // * បំពេញជួរដេកទៅក្នុងតារាង
-      state_manager?.removeAllRows();
-      state_manager?.appendRows([
-        for (var fd in list_fd)
-          PlutoRow(
-            cells: {
-              for (var c in list_c) //
-                c: (() {
-                  if (c == "index") //
-                    return PlutoCell(value: list_fd.indexOf(fd) + 1);
-                  if (c == sm_front_desk.ID) //
-                    return PlutoCell(value: fd[sm_front_desk.ID]);
-                  if (c == sm_front_desk.ROOM_ID + sm_room.NUMBER) //
-                    return PlutoCell(value: fd[sm_front_desk.ROOM_ID]?[sm_room.NUMBER]);
-                  if (c == sm_front_desk.GUEST_ID + sm_guest.FULL_NAME) //
-                    return PlutoCell(value: fd[sm_front_desk.GUEST_ID]?[sm_guest.FULL_NAME]);
-                  if (c == sm_front_desk.CHECK_IN_NUMBER) //
-                    return PlutoCell(value: fd[sm_front_desk.CHECK_IN_NUMBER]);
-                  if (c == sm_front_desk.CHECK_IN_AT) //
-                    return PlutoCell(value: fd[sm_front_desk.CHECK_IN_AT]);
-                  if (c == sm_front_desk.CHECK_OUT_AT) //
-                    return PlutoCell(value: fd[sm_front_desk.CHECK_OUT_AT]);
-                  if (c == sm_front_desk.CHECK_IN_DAY) //
-                    return PlutoCell(value: fd[sm_front_desk.CHECK_IN_DAY]);
-                  if (c == sm_front_desk.CHECK_IN_HOUR) //
-                    return PlutoCell(value: fd[sm_front_desk.CHECK_IN_HOUR]);
-                  if (c == sm_front_desk.PAY_ROOM + "add_price") //
-                    return PlutoCell(
-                      value: (() {
-                        double total = 0;
-                        for (var l in fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? []) {
-                          total = total + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
-                          total = total - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
-                        }
-                        return total;
-                      })(),
-                    );
-                  if (c == sm_front_desk.PAY_ROOM + "pay_cash") //
-                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_ROOM], "pay_cash"));
-                  if (c == sm_front_desk.PAY_ROOM + "pay_bank") //
-                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_ROOM], "pay_bank"));
-                  if (c == sm_front_desk.PAY_ROOM + "pay_return") //
-                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_ROOM], "pay_return"));
-                  if (c == sm_front_desk.PAY_MINI_BAR + "add_price") //
-                    return PlutoCell(
-                      value: (() {
-                        double total = 0;
-                        for (var l in fd[sm_front_desk.PAY_MINI_BAR] as List<dynamic>? ?? []) {
-                          total = total + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
-                          total = total - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
-                        }
-                        return total;
-                      })(),
-                    );
-                  if (c == sm_front_desk.PAY_MINI_BAR + "pay_cash") //
-                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_MINI_BAR], "pay_cash"));
-                  if (c == sm_front_desk.PAY_MINI_BAR + "pay_bank") //
-                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_MINI_BAR], "pay_bank"));
-                  if (c == sm_front_desk.PAY_MINI_BAR + "pay_return") //
-                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_MINI_BAR], "pay_return"));
-                  if (c == sm_front_desk.PAY_OTHER + "add_price") //
-                    return PlutoCell(
-                      value: (() {
-                        double total = 0;
-                        for (var l in fd[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? []) {
-                          total = total + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
-                          total = total - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
-                        }
-                        return total;
-                      })(),
-                    );
-                  if (c == sm_front_desk.PAY_OTHER + "pay_cash") //
-                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_OTHER], "pay_cash"));
-                  if (c == sm_front_desk.PAY_OTHER + "pay_bank") //
-                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_OTHER], "pay_bank"));
-                  if (c == sm_front_desk.PAY_OTHER + "pay_return") //
-                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_OTHER], "pay_return"));
-                  if (c == sm_front_desk.CHECK_IN_BY + sm_user.FULL_NAME) //
-                    return PlutoCell(value: fd[sm_front_desk.CHECK_IN_BY]?[sm_user.FULL_NAME]);
-                  if (c == sm_front_desk.PAY_ROOM + "created_by" + sm_user.FULL_NAME) //
-                    return PlutoCell(value: _lastOf(fd[sm_front_desk.PAY_ROOM], "created_by")?[sm_user.FULL_NAME]);
-                  if (c == sm_front_desk.CHECK_OUT_BY + sm_user.FULL_NAME) //
-                    return PlutoCell(value: fd[sm_front_desk.CHECK_OUT_BY]?[sm_user.FULL_NAME]);
-
-                  return PlutoCell(value: null);
-                })(),
-            },
-          ),
-      ]);
-
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    } finally {
-      // pprint("Hi");
-      setState(() => is_loading = false);
-    }
   }
 
   // * បង្កើត layout មេរបស់ទំព័ររបាយការណ៍

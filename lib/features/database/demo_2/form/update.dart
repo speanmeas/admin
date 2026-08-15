@@ -5,9 +5,10 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/pick/pick_boolean.dart";
 import "package:speanmeas/core/widget/pick/pick_datetime.dart";
@@ -66,36 +67,21 @@ class _Main_State extends State<Main_> {
 
   // * ផ្ទុកព័ត៌មានឧទាហរណ៍បច្ចុប្បន្ន
   void init() async {
-    try {
-      // * អានទិន្នន័យឧទាហរណ៍តាម id
-      tmp = await dio.post(
-        endpoint.DEMO_2_CRUD_READ_ID, //
-        data: {sm_demo_2.ID: widget.id},
-      );
+    // * អានទិន្នន័យឧទាហរណ៍តាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.DEMO_2_CRUD_READ_ID, data: {sm_demo_2.ID: widget.id});
+    setState(() => is_loading = false);
 
-      final data = tmp.data;
-      if (data == null || data.isEmpty) {
-        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
-        is_loading = false;
-        setState(() {});
-        return;
-      }
-      final row = data[0];
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-      text_1 = row[sm_demo_2.TEXT_1]?.toString();
-      number_1 = double.tryParse(row[sm_demo_2.NUMBER_1]?.toString() ?? "");
-      final dt_1 = DateTime.tryParse(row[sm_demo_2.DATETIME_1]?.toString() ?? "");
-      if (dt_1 != null) datetime_1 = dt_1;
-      final l_1 = row[sm_demo_2.LOGIC_1];
-      logic_1 = l_1 is bool ? l_1 : null;
-      note = row[sm_demo_2.NOTE]?.toString();
+    text_1 = parse_string(tmp.data[0][sm_demo_2.TEXT_1]);
+    number_1 = parse_double(tmp.data[0][sm_demo_2.NUMBER_1]);
+    datetime_1 = parse_datetime(tmp.data[0][sm_demo_2.DATETIME_1]);
+    logic_1 = parse_bool(tmp.data[0][sm_demo_2.LOGIC_1]);
+    note = parse_string(tmp.data[0][sm_demo_2.NOTE]);
 
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override
@@ -108,28 +94,40 @@ class _Main_State extends State<Main_> {
       Input_Text(
         init: text_1, //
         lead: "Text 1:", //
-        onChanged: (v) => text_1 = v,
+        onChanged: (v) {
+          text_1 = v;
+          setState(() {});
+        },
       ),
 
       // * បញ្ចូលលេខ 1
       Input_Number(
         init: number_1, //
         lead: "Number 1:", //
-        onChanged: (v) => number_1 = v,
+        onChanged: (v) {
+          number_1 = v;
+          setState(() {});
+        },
       ),
 
       // * ជ្រើសរើសកាលបរិច្ឆេទ 1
       Picker_Datetime(
         initial: datetime_1, //
         title: "Datetime 1:", //
-        onChanged: (v) => datetime_1 = v,
+        onChanged: (v) {
+          datetime_1 = v;
+          setState(() {});
+        },
       ),
 
       // * ជ្រើសរើសតម្លៃប៊ូលីន 1
       Picker_Boolean(
         initial: logic_1, //
         title: "Logic 1:", //
-        onChanged: (v) => logic_1 = v,
+        onChanged: (v) {
+          logic_1 = v;
+          setState(() {});
+        },
       ),
 
       // * បញ្ចូលកំណត់ចំណាំ
@@ -137,7 +135,10 @@ class _Main_State extends State<Main_> {
         init: note, //
         lead: "Note:", //
         maxLines: 4, //
-        onChanged: (v) => note = v ?? "",
+        onChanged: (v) {
+          note = v ?? "";
+          setState(() {});
+        },
       ),
 
       // * ប៊ូតុងកែប្រែ
@@ -145,7 +146,7 @@ class _Main_State extends State<Main_> {
         icon: Icon(Icons.check),
         label: Text("Update"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-        onPressed: on_update,
+        onPressed: is_loading ? null : on_update,
       ),
       SizedBox(height: height - 100),
     ]);
@@ -153,27 +154,25 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការកែប្រែឧទាហរណ៍
   void on_update() async {
-    try {
-      // * ផ្ញើសំណើកែប្រែឧទាហរណ៍
-      tmp = await dio.post(
-        endpoint.DEMO_2_CRUD_UPDATE, //
-        data: {
-          sm_demo_2.ID: widget.id,
-          sm_demo_2.TEXT_1: text_1,
-          sm_demo_2.NUMBER_1: number_1,
-          sm_demo_2.DATETIME_1: datetime_1?.toIso8601String(),
-          sm_demo_2.LOGIC_1: logic_1,
-          sm_demo_2.NOTE: note, //
-        },
-      );
+    // * ផ្ញើសំណើកែប្រែឧទាហរណ៍
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.DEMO_2_CRUD_UPDATE, //
+      data: {
+        sm_demo_2.ID: widget.id,
+        sm_demo_2.TEXT_1: text_1,
+        sm_demo_2.NUMBER_1: number_1,
+        sm_demo_2.DATETIME_1: datetime_1?.toIso8601String(),
+        sm_demo_2.LOGIC_1: logic_1,
+        sm_demo_2.NOTE: note, //
+      },
+    );
+    setState(() => is_loading = false);
 
-      Navigator.pop(context, tmp.data[0]);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_CRUD_UPDATE}", cl: Colors.red);
 
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data[0]);
   }
 
   @override
@@ -181,8 +180,6 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
 // * ថ្នាក់ Main_ ជាទំព័រកែប្រែឧទាហរណ៍
@@ -203,7 +200,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [
