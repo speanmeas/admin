@@ -78,20 +78,19 @@ class _Main_State extends State<Main_> {
         endpoint.AUTH_ACCESS_TOKEN, //
         data: {"access_token": await secure.read(key: "access_token")},
       );
-      // if (tmp != null) for (var e in sm_user.data.entries) e.value["value"] = tmp.data[0][e.key];
       if (tmp == null) throw Exception("Invalid Access Token");
-      // map_data = tmp.data[0];
+      map_data = tmp.data[0];
 
       // * កំណត់ព័ត៌មានអ្នកប្រើ
-      full_name = map_data[sm_user.FULL_NAME];
-      phone_number = map_data[sm_user.PHONE_NUMBER];
-      username = map_data[sm_user.USERNAME];
-      password = map_data[sm_user.PASSWORD];
+      full_name = map_data?[sm_user.FULL_NAME]?.toString();
+      phone_number = map_data?[sm_user.PHONE_NUMBER]?.toString();
+      username = map_data?[sm_user.USERNAME]?.toString();
+      password = map_data?[sm_user.PASSWORD]?.toString();
 
-      is_admin = map_data[sm_user.IS_ADMIN];
-      is_manager = map_data[sm_user.IS_MANAGER];
-      is_receptionist = map_data[sm_user.IS_RECEPTIONIST];
-      is_housekeeper = map_data[sm_user.IS_HOUSEKEEPER];
+      is_admin = map_data?[sm_user.IS_ADMIN] == true;
+      is_manager = map_data?[sm_user.IS_MANAGER] == true;
+      is_receptionist = map_data?[sm_user.IS_RECEPTIONIST] == true;
+      is_housekeeper = map_data?[sm_user.IS_HOUSEKEEPER] == true;
 
       setState(() {});
     } catch (e, st) {
@@ -233,7 +232,8 @@ class _Main_State extends State<Main_> {
     try {
       //
       // * លុប token និងព័ត៌មានចូលប្រព័ន្ធ
-      await dio.options.headers.remove("Authorization");
+      // await dio.options.headers.remove("Authorization");
+      dio.delToken();
       await secure.delete(key: "access_token");
       await secure.delete(key: "_id");
 

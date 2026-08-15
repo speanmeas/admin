@@ -64,10 +64,8 @@ class _Main_State extends State<Main_> {
       if (tmp == null) throw Exception("Invalid Access Token");
 
       // * កំណត់ Authorization header
-      dio.options.headers["Authorization"] =
-          "Bearer ${await secure.read(
-            key: "access_token", //
-          )}";
+      // dio.options.headers["Authorization"] = "Bearer $ac_tk";
+      dio.setToken(ac_tk);
 
       //
       snackbar(ct: context, ms: "Success", cl: Colors.green);

@@ -77,7 +77,7 @@ class _Main_State extends State<Main_> {
         endpoint.MINI_BAR_CRUD_READ_COUNT, //
         data: {"count": true},
       );
-      row_total = int.tryParse(r.data?.toString() ?? "0") ?? 0;
+      row_total = int.tryParse(r?.data?.toString() ?? "0") ?? 0;
 
       //
       if (page > total_pages) page = total_pages;

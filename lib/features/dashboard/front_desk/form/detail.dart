@@ -184,10 +184,12 @@ class _Main_State extends State<Main_> {
       (() {
         String value = "0.00";
         final pay_room = map_fd?[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
-        if (pay_room.isNotEmpty) {
-          tmp = double.tryParse(pay_room.last["add_price"]?.toString() ?? "0") ?? 0;
-          value = tmp.toStringAsFixed(2);
+        double total = 0;
+        for (var l in pay_room) {
+          total = total + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
+          total = total - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
         }
+        value = total.toStringAsFixed(2);
         return Align(
           alignment: Alignment.centerLeft,
           child: Wrap(
@@ -242,10 +244,12 @@ class _Main_State extends State<Main_> {
       (() {
         String value = "0.00";
         final pay_other = map_fd?[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
-        if (pay_other.isNotEmpty) {
-          tmp = double.tryParse(pay_other.last["add_price"]?.toString() ?? "0") ?? 0;
-          value = tmp.toStringAsFixed(2);
+        double total = 0;
+        for (var l in pay_other) {
+          total = total + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
+          total = total - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
         }
+        value = total.toStringAsFixed(2);
         return Align(
           alignment: Alignment.centerLeft,
           child: Wrap(

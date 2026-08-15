@@ -69,7 +69,7 @@ class _Main_State extends State<Main_> {
       ];
       final results = await Future.wait(futures);
       for (var i = 0; i < ids.length; i++) {
-        final fd = results[i].data[0];
+        final fd = results[i]?.data[0];
         if (fd != null) map_fd[ids[i]] = fd;
       }
 

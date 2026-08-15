@@ -60,7 +60,6 @@ class _Main_State extends State<Main_> {
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blue),
                 ), //
               ), //
-
               // * ប្រអប់បញ្ចូលឈ្មោះអ្នកប្រើ
               Container(
                 width: 600,
@@ -132,9 +131,12 @@ class _Main_State extends State<Main_> {
       if (tmp == null) throw Exception("Invalid Username or Password");
 
       // * រក្សាទុក token និង id អ្នកប្រើ
-      await secure.write(key: "_id", value: tmp.data["_id"]);
-      await secure.write(key: "access_token", value: tmp.data["access_token"]);
-      dio.options.headers["Authorization"] = "Bearer ${tmp.data["access_token"]}";
+      final data = tmp.data;
+      final id = data?["_id"]?.toString() ?? "";
+      final token = data?["access_token"]?.toString() ?? "";
+      await secure.write(key: "_id", value: id);
+      await secure.write(key: "access_token", value: token);
+      dio.setToken(token);
 
       await glob.init();
       snackbar(ct: context, ms: "Success", cl: Colors.green);

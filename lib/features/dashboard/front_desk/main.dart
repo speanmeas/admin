@@ -79,7 +79,6 @@ class _Main_State extends State<Main_> {
           Row(
             children: [
               SizedBox(width: 8), //
-
               // * ប្រអប់ស្វែងរកបន្ទប់
               Container(
                 width: 200,
@@ -335,8 +334,9 @@ class _Main_State extends State<Main_> {
                           double price = 0;
                           double pay = 0;
                           double change = 0;
-                          if (tmp.isNotEmpty) price = double.parse(tmp.last["add_price"]?.toString() ?? "0");
                           for (var l in tmp) {
+                            price = price + double.parse(l["add_price"]?.toString() ?? "0");
+                            price = price - double.parse(l["sub_price"]?.toString() ?? "0");
                             pay = pay + double.parse(l["pay_cash"]?.toString() ?? "0");
                             pay = pay + double.parse(l["pay_bank"]?.toString() ?? "0");
                             change = change + double.parse(l["pay_return"]?.toString() ?? "0");
@@ -383,8 +383,9 @@ class _Main_State extends State<Main_> {
                           double price = 0;
                           double pay = 0;
                           double change = 0;
-                          if (tmp.isNotEmpty) price = double.parse(tmp.last["add_price"]?.toString() ?? "0");
                           for (var l in tmp) {
+                            price = price + double.parse(l["add_price"]?.toString() ?? "0");
+                            price = price - double.parse(l["sub_price"]?.toString() ?? "0");
                             pay = pay + double.parse(l["pay_cash"]?.toString() ?? "0");
                             pay = pay + double.parse(l["pay_bank"]?.toString() ?? "0");
                             change = change + double.parse(l["pay_return"]?.toString() ?? "0");

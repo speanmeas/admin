@@ -65,7 +65,6 @@ class _Panel_TopState extends State<Panel_Top> {
           ),
 
           SizedBox(width: 4), //
-
           // * បង្ហាញ body និង version
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

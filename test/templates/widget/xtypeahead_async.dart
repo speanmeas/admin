@@ -63,7 +63,7 @@ class _Main_State extends State<Main_> {
       );
 
       if (request_id != selection_request_id || !mounted) return;
-      widget.onChanged?.call(List<Map<String, dynamic>>.from(r.data).first);
+      widget.onChanged?.call(List<Map<String, dynamic>>.from(r?.data).first);
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
@@ -95,7 +95,7 @@ class _Main_State extends State<Main_> {
 
                 //
                 List<String> options = [];
-                for (var d in r.data) {
+                for (var d in r?.data) {
                   if (d[sm_nationality.NAME] == null) continue;
                   options.add(d[sm_nationality.NAME] ?? "");
                 }

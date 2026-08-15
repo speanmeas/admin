@@ -2,11 +2,8 @@
 import "package:dio/dio.dart";
 import "package:flutter/foundation.dart";
 import "package:speanmeas/core/config.dart";
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/secure.dart"; // ignore: unused_import
 
 // * ការកំណត់ Dio client ជាមួយ base URL និង headers
 Dio dio_ = Dio(
@@ -29,8 +26,117 @@ Dio dio_ = Dio(
 );
 
 // * ទទួលបាន Dio instance សម្រាប់ប្រើប្រាស់
-Dio get dio {
+Dio get dio_old {
   // * បិទ CORS warning នៅលើ web
   if (kIsWeb) (dio_.httpClientAdapter as dynamic).enableCORSWarning = false;
   return dio_;
 }
+
+// * ថ្នាក់ DioUtil គ្រប់គ្រង HTTP requests ដោយសុវត្ថិភាព
+// * ចាប់កំហុស DioException ដើម្បីកុំឲ្យកម្មវិធី crash
+class DioUtil {
+  // * singleton instance
+  static final DioUtil instance = DioUtil._();
+  DioUtil._();
+
+  // * ទទួលបាន Dio instance
+  Dio get client => dio_old;
+
+  // * កំណត់ Authorization token
+  void setToken(String? token) {
+    dio_old.options.headers["Authorization"] = token == null ? "" : "Bearer $token";
+  }
+
+  // * លុប Authorization token
+  void clearToken() {
+    dio_old.options.headers["Authorization"] = "";
+  }
+
+  // * លុប Authorization header ចេញទាំងស្រុង
+  void delToken() {
+    dio_old.options.headers.remove("Authorization");
+  }
+
+  // * ផ្ញើ GET request
+  Future<Response<dynamic>?> get(String path, {Map<String, dynamic>? query, Options? options}) async {
+    try {
+      return await dio_old.get(path, queryParameters: query, options: options);
+    } catch (e) {
+      _logError("GET", path, e);
+      return null;
+    }
+  }
+
+  // * ផ្ញើ POST request
+  Future<Response<dynamic>?> post(String path, {dynamic data, Map<String, dynamic>? query, Options? options}) async {
+    try {
+      return await dio_old.post(path, data: data, queryParameters: query, options: options);
+    } catch (e) {
+      _logError("POST", path, e);
+      return null;
+    }
+  }
+
+  // * ផ្ញើ PUT request
+  Future<Response<dynamic>?> put(String path, {dynamic data, Map<String, dynamic>? query, Options? options}) async {
+    try {
+      return await dio_old.put(path, data: data, queryParameters: query, options: options);
+    } catch (e) {
+      _logError("PUT", path, e);
+      return null;
+    }
+  }
+
+  // * ផ្ញើ DELETE request
+  Future<Response<dynamic>?> delete(String path, {dynamic data, Map<String, dynamic>? query, Options? options}) async {
+    try {
+      return await dio_old.delete(path, data: data, queryParameters: query, options: options);
+    } catch (e) {
+      _logError("DELETE", path, e);
+      return null;
+    }
+  }
+
+  // * ផ្ញើ PATCH request
+  Future<Response<dynamic>?> patch(String path, {dynamic data, Map<String, dynamic>? query, Options? options}) async {
+    try {
+      return await dio_old.patch(path, data: data, queryParameters: query, options: options);
+    } catch (e) {
+      _logError("PATCH", path, e);
+      return null;
+    }
+  }
+
+  // * ទទួលបាន data ពី response (null បើ request បរាជ័យ)
+  Future<dynamic> getData(String path, {dynamic data, Map<String, dynamic>? query, Options? options}) async {
+    final res = await post(path, data: data, query: query, options: options);
+    return res?.data;
+  }
+
+  // * ទទួលបាន data ជា List
+  Future<List<dynamic>?> getList(String path, {dynamic data, Map<String, dynamic>? query, Options? options}) async {
+    final d = await getData(path, data: data, query: query, options: options);
+    return d is List ? d : null;
+  }
+
+  // * ទទួលបាន data ជា Map
+  Future<Map<String, dynamic>?> getMap(String path, {dynamic data, Map<String, dynamic>? query, Options? options}) async {
+    final d = await getData(path, data: data, query: query, options: options);
+    return d is Map<String, dynamic> ? d : null;
+  }
+
+  // * បោះពុម្ពកំហុស DioException
+  void _logError(String method, String path, Object e) {
+    if (e is DioException) {
+      final status = e.response?.statusCode;
+      final body = e.response?.data;
+      debugPrint("Dio $method $path failed (status: $status): ${e.message}");
+      if (body != null) pprint(body, label: "Response body");
+    } else {
+      debugPrint("Dio $method $path failed: $e");
+    }
+  }
+}
+
+// * instance សកលរបស់ DioUtil
+DioUtil dio = DioUtil.instance;

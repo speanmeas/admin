@@ -25,6 +25,18 @@ import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
+// * យកតម្លៃពីធាតុដំបូងនៃបញ្ជីដោយសុវត្ថិភាព (បញ្ជីទទេត្រឡប់ null)
+dynamic _firstOf(dynamic list, String key) {
+  if (list is List && list.isNotEmpty) return list.first[key];
+  return null;
+}
+
+// * យកតម្លៃពីធាតុចុងក្រោយនៃបញ្ជីដោយសុវត្ថិភាព (បញ្ជីទទេត្រឡប់ null)
+dynamic _lastOf(dynamic list, String key) {
+  if (list is List && list.isNotEmpty) return list.last[key];
+  return null;
+}
+
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការស្វែងរក និងបង្ហាញរបាយការណ៍
 class _Main_State extends State<Main_> {
   dynamic tmp;
@@ -36,6 +48,7 @@ class _Main_State extends State<Main_> {
   DateTime? stop;
 
   double total_income = 0.0;
+  double total_revenue = 0.0;
   PlutoGridStateManager? state_manager;
 
   List<String> list_c = columns.map((c) => c.field).toList();
@@ -81,7 +94,23 @@ class _Main_State extends State<Main_> {
           // "limit": 10000, //
         },
       );
-      list_fd = tmp.data as List<dynamic>? ?? [];
+      // * គ្រប់គ្រងទម្រង់លទ្ធផលផ្សេងៗពី backend
+      // * - ជោគជ័យមានទិន្នន័យ: {"models": [...], "total_income": ..., "total_revenue": ...}
+      // * - គ្មានទិន្នន័យ: [] (បញ្ជីទទេ)
+      // * - កំហុស: string
+      if (tmp.data is Map) {
+        list_fd = tmp.data["models"] as List<dynamic>? ?? [];
+        total_income = double.tryParse(tmp.data["total_income"]?.toString() ?? "0") ?? 0;
+        total_revenue = double.tryParse(tmp.data["total_revenue"]?.toString() ?? "0") ?? 0;
+      } else if (tmp.data is List) {
+        list_fd = tmp.data as List<dynamic>;
+        total_income = 0;
+        total_revenue = 0;
+      } else {
+        list_fd = [];
+        total_income = 0;
+        total_revenue = 0;
+      }
       pprint(list_fd);
 
       // pprint(list_c);
@@ -95,7 +124,7 @@ class _Main_State extends State<Main_> {
               for (var c in list_c) //
                 c: (() {
                   if (c == "index") //
-                    return PlutoCell(value: tmp.data.indexOf(fd) + 1);
+                    return PlutoCell(value: list_fd.indexOf(fd) + 1);
                   if (c == sm_front_desk.ID) //
                     return PlutoCell(value: fd[sm_front_desk.ID]);
                   if (c == sm_front_desk.ROOM_ID + sm_room.NUMBER) //
@@ -113,25 +142,60 @@ class _Main_State extends State<Main_> {
                   if (c == sm_front_desk.CHECK_IN_HOUR) //
                     return PlutoCell(value: fd[sm_front_desk.CHECK_IN_HOUR]);
                   if (c == sm_front_desk.PAY_ROOM + "add_price") //
-                    return PlutoCell(value: fd[sm_front_desk.PAY_ROOM]?.first?["add_price"]);
+                    return PlutoCell(
+                      value: (() {
+                        double total = 0;
+                        for (var l in fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? []) {
+                          total = total + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
+                          total = total - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
+                        }
+                        return total;
+                      })(),
+                    );
                   if (c == sm_front_desk.PAY_ROOM + "pay_cash") //
-                    return PlutoCell(value: fd[sm_front_desk.PAY_ROOM]?.first?["pay_cash"]);
+                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_ROOM], "pay_cash"));
                   if (c == sm_front_desk.PAY_ROOM + "pay_bank") //
-                    return PlutoCell(value: fd[sm_front_desk.PAY_ROOM]?.first?["pay_bank"]);
+                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_ROOM], "pay_bank"));
                   if (c == sm_front_desk.PAY_ROOM + "pay_return") //
-                    return PlutoCell(value: fd[sm_front_desk.PAY_ROOM]?.first?["pay_return"]);
+                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_ROOM], "pay_return"));
+                  if (c == sm_front_desk.PAY_MINI_BAR + "add_price") //
+                    return PlutoCell(
+                      value: (() {
+                        double total = 0;
+                        for (var l in fd[sm_front_desk.PAY_MINI_BAR] as List<dynamic>? ?? []) {
+                          total = total + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
+                          total = total - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
+                        }
+                        return total;
+                      })(),
+                    );
+                  if (c == sm_front_desk.PAY_MINI_BAR + "pay_cash") //
+                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_MINI_BAR], "pay_cash"));
+                  if (c == sm_front_desk.PAY_MINI_BAR + "pay_bank") //
+                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_MINI_BAR], "pay_bank"));
+                  if (c == sm_front_desk.PAY_MINI_BAR + "pay_return") //
+                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_MINI_BAR], "pay_return"));
                   if (c == sm_front_desk.PAY_OTHER + "add_price") //
-                    return PlutoCell(value: fd[sm_front_desk.PAY_OTHER]?.first?["add_price"]);
+                    return PlutoCell(
+                      value: (() {
+                        double total = 0;
+                        for (var l in fd[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? []) {
+                          total = total + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
+                          total = total - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
+                        }
+                        return total;
+                      })(),
+                    );
                   if (c == sm_front_desk.PAY_OTHER + "pay_cash") //
-                    return PlutoCell(value: fd[sm_front_desk.PAY_OTHER]?.first?["pay_cash"]);
+                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_OTHER], "pay_cash"));
                   if (c == sm_front_desk.PAY_OTHER + "pay_bank") //
-                    return PlutoCell(value: fd[sm_front_desk.PAY_OTHER]?.first?["pay_bank"]);
+                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_OTHER], "pay_bank"));
                   if (c == sm_front_desk.PAY_OTHER + "pay_return") //
-                    return PlutoCell(value: fd[sm_front_desk.PAY_OTHER]?.first?["pay_return"]);
+                    return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_OTHER], "pay_return"));
                   if (c == sm_front_desk.CHECK_IN_BY + sm_user.FULL_NAME) //
                     return PlutoCell(value: fd[sm_front_desk.CHECK_IN_BY]?[sm_user.FULL_NAME]);
                   if (c == sm_front_desk.PAY_ROOM + "created_by" + sm_user.FULL_NAME) //
-                    return PlutoCell(value: fd[sm_front_desk.PAY_ROOM]?.last?["created_by"]?[sm_user.FULL_NAME]);
+                    return PlutoCell(value: _lastOf(fd[sm_front_desk.PAY_ROOM], "created_by")?[sm_user.FULL_NAME]);
                   if (c == sm_front_desk.CHECK_OUT_BY + sm_user.FULL_NAME) //
                     return PlutoCell(value: fd[sm_front_desk.CHECK_OUT_BY]?[sm_user.FULL_NAME]);
 
@@ -242,6 +306,25 @@ class _Main_State extends State<Main_> {
                     fontSize: 18, //
                     fontWeight: FontWeight.bold,
                     color: Colors.green,
+                  ),
+                ),
+
+                SizedBox(width: 24),
+
+                // * ប្រាក់ចំណូលសុទ្ធ (revenue)
+                Text(
+                  "ចំណូលសុទ្ធ: ", //
+                  style: TextStyle(
+                    fontSize: 20, //
+                    fontWeight: FontWeight.bold,
+                  ),
+                ), //
+                Text(
+                  "${total_revenue.toStringAsFixed(2)} \$",
+                  style: TextStyle(
+                    fontSize: 18, //
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
                   ),
                 ),
 
@@ -631,6 +714,154 @@ final columns = [
       return PlutoAggregateColumnFooter(
         rendererContext: rc, //
         format: "#,##0.00",
+        alignment: Alignment.centerRight,
+        type: PlutoAggregateColumnType.sum,
+        titleSpanBuilder: (value) {
+          return [
+            TextSpan(
+              text: "- $value \$", //
+              style: TextStyle(
+                fontSize: 16, //
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+            ),
+          ];
+        },
+      );
+    },
+  ),
+
+  // * ជួរឈរថ្លៃ mini bar
+  PlutoColumn(
+    field: sm_front_desk.PAY_MINI_BAR + "add_price", //
+    title: "ថ្លៃ Mini Bar",
+    type: PlutoColumnType.number(),
+    width: 100,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          '${rc.cell.value.toStringAsFixed(2)} \$',
+          overflow: TextOverflow.ellipsis, //
+        ),
+      );
+    },
+    footerRenderer: (rc) {
+      return PlutoAggregateColumnFooter(
+        rendererContext: rc, //
+        format: "#,##0.00", //
+        alignment: Alignment.centerRight,
+        type: PlutoAggregateColumnType.sum,
+        titleSpanBuilder: (value) {
+          return [
+            TextSpan(
+              text: "$value \$", //
+              style: TextStyle(
+                fontSize: 16, //
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
+          ];
+        },
+      );
+    },
+  ),
+
+  // * ជួរឈរសាច់ប្រាក់ (mini bar)
+  PlutoColumn(
+    field: sm_front_desk.PAY_MINI_BAR + "pay_cash", //
+    title: "សាច់ប្រាក់",
+    type: PlutoColumnType.number(),
+    width: 100,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          '${rc.cell.value.toStringAsFixed(2)} \$',
+          overflow: TextOverflow.ellipsis, //
+        ),
+      );
+    },
+    footerRenderer: (rc) {
+      return PlutoAggregateColumnFooter(
+        rendererContext: rc, //
+        format: "#,##0.00", //
+        alignment: Alignment.centerRight,
+        type: PlutoAggregateColumnType.sum,
+        titleSpanBuilder: (value) {
+          return [
+            TextSpan(
+              text: "$value \$", //
+              style: TextStyle(
+                fontSize: 16, //
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+          ];
+        },
+      );
+    },
+  ),
+
+  // * ជួរឈរបង់ប្រាក់តាមធនាគារ (mini bar)
+  PlutoColumn(
+    field: sm_front_desk.PAY_MINI_BAR + "pay_bank", //
+    title: "ធនាគារ",
+    type: PlutoColumnType.number(),
+    width: 100,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          '${rc.cell.value.toStringAsFixed(2)} \$',
+          overflow: TextOverflow.ellipsis, //
+        ),
+      );
+    },
+    footerRenderer: (rc) {
+      return PlutoAggregateColumnFooter(
+        rendererContext: rc, //
+        format: "#,##0.00", //
+        alignment: Alignment.centerRight,
+        type: PlutoAggregateColumnType.sum,
+        titleSpanBuilder: (value) {
+          return [
+            TextSpan(
+              text: "$value \$", //
+              style: TextStyle(
+                fontSize: 16, //
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+          ];
+        },
+      );
+    },
+  ),
+
+  // * ជួរឈរប្រាក់អាប់ (mini bar)
+  PlutoColumn(
+    field: sm_front_desk.PAY_MINI_BAR + "pay_return", //
+    title: "ប្រាក់អាប់",
+    type: PlutoColumnType.number(),
+    width: 100,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.centerRight, //
+        child: Text(
+          '${rc.cell.value.toStringAsFixed(2)} \$',
+          overflow: TextOverflow.ellipsis, //
+        ),
+      );
+    },
+    footerRenderer: (rc) {
+      return PlutoAggregateColumnFooter(
+        rendererContext: rc, //
+        format: "#,##0.00", //
         alignment: Alignment.centerRight,
         type: PlutoAggregateColumnType.sum,
         titleSpanBuilder: (value) {
