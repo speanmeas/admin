@@ -8,6 +8,7 @@ import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/bank.g.dart";
@@ -51,7 +52,6 @@ Widget _layout(List<Widget> children) {
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការអានព័ត៌មានធនាគារ
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
   bool is_loading = true;
 
@@ -60,31 +60,18 @@ class _Main_State extends State<Main_> {
 
   // * ផ្ទុកព័ត៌មានធនាគារតាម id
   void init() async {
-    try {
-      // * អានទិន្នន័យធនាគារតាម id
-      tmp = await dio.post(
-        endpoint.BANK_CRUD_READ_ID, //
-        data: {sm_bank.ID: widget.id},
-      );
+    // * អានទិន្នន័យធនាគារតាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.BANK_CRUD_READ_ID, data: {sm_bank.ID: widget.id});
+    setState(() => is_loading = false);
 
-      final data = tmp.data;
-      if (data == null || data.isEmpty) {
-        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
-        is_loading = false;
-        setState(() {});
-        return;
-      }
-      final row = data[0];
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.BANK_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-      name = row[sm_bank.NAME]?.toString();
-      note = row[sm_bank.NOTE]?.toString();
+    name = parse_string(tmp.data[0][sm_bank.NAME]);
+    note = parse_string(tmp.data[0][sm_bank.NOTE]);
 
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override
@@ -106,6 +93,13 @@ class _Main_State extends State<Main_> {
         lead: "Note:", //
         value: note,
         maxLines: 4,
+      ),
+
+      // * ប៊ូតុងបិទ
+      OutlinedButton.icon(
+        icon: Icon(Icons.check), //
+        label: Text("Close"),
+        onPressed: () => Navigator.pop(context),
       ),
 
       SizedBox(height: height - 100),
@@ -137,7 +131,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

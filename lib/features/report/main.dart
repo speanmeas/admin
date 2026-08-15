@@ -86,7 +86,10 @@ class _Main_State extends State<Main_> {
     setState(() => is_loading = true);
     tmp = await dio.post(
       endpoint.REPORT, //
-      data: {"start": start?.toIso8601String(), "stop": stop?.toIso8601String()},
+      data: {
+        "start": start?.toIso8601String(), //
+        "stop": stop?.toIso8601String(), //
+      },
     );
     setState(() => is_loading = false);
 
@@ -105,21 +108,21 @@ class _Main_State extends State<Main_> {
                 if (c == "index") //
                   return PlutoCell(value: data.indexOf(fd) + 1);
                 if (c == sm_front_desk.ID) //
-                  return PlutoCell(value: fd[sm_front_desk.ID]);
+                  return PlutoCell(value: parse_string(fd[sm_front_desk.ID]));
                 if (c == sm_front_desk.ROOM_ID + sm_room.NUMBER) //
-                  return PlutoCell(value: fd[sm_front_desk.ROOM_ID]?[sm_room.NUMBER]);
-                // if (c == sm_front_desk.GUEST_ID + sm_guest.FULL_NAME) //
-                //   return PlutoCell(value: fd[sm_front_desk.GUEST_ID]?[sm_guest.FULL_NAME]);
-                // if (c == sm_front_desk.CHECK_IN_NUMBER) //
-                //   return PlutoCell(value: fd[sm_front_desk.CHECK_IN_NUMBER]);
-                // if (c == sm_front_desk.CHECK_IN_AT) //
-                //   return PlutoCell(value: fd[sm_front_desk.CHECK_IN_AT]);
-                // if (c == sm_front_desk.CHECK_OUT_AT) //
-                //   return PlutoCell(value: fd[sm_front_desk.CHECK_OUT_AT]);
-                // if (c == sm_front_desk.CHECK_IN_DAY) //
-                //   return PlutoCell(value: fd[sm_front_desk.CHECK_IN_DAY]);
-                // if (c == sm_front_desk.CHECK_IN_HOUR) //
-                //   return PlutoCell(value: fd[sm_front_desk.CHECK_IN_HOUR]);
+                  return PlutoCell(value: parse_string(fd[sm_front_desk.ROOM_ID]?[sm_room.NUMBER]));
+                if (c == sm_front_desk.GUEST_ID + sm_guest.FULL_NAME) //
+                  return PlutoCell(value: parse_string(fd[sm_front_desk.GUEST_ID]?[sm_guest.FULL_NAME]));
+                if (c == sm_front_desk.CHECK_IN_NUMBER) //
+                  return PlutoCell(value: parse_double(fd[sm_front_desk.CHECK_IN_NUMBER]));
+                if (c == sm_front_desk.CHECK_IN_AT) //
+                  return PlutoCell(value: parse_datetime(fd[sm_front_desk.CHECK_IN_AT]));
+                if (c == sm_front_desk.CHECK_OUT_AT) //
+                  return PlutoCell(value: parse_datetime(fd[sm_front_desk.CHECK_OUT_AT]));
+                if (c == sm_front_desk.CHECK_IN_DAY) //
+                  return PlutoCell(value: parse_int(fd[sm_front_desk.CHECK_IN_DAY]));
+                if (c == sm_front_desk.CHECK_IN_HOUR) //
+                  return PlutoCell(value: parse_int(fd[sm_front_desk.CHECK_IN_HOUR]));
                 // if (c == sm_front_desk.PAY_ROOM + "add_price") //
                 //   return PlutoCell(
                 //     value: (() {
@@ -177,6 +180,12 @@ class _Main_State extends State<Main_> {
                 //   return PlutoCell(value: _lastOf(fd[sm_front_desk.PAY_ROOM], "created_by")?[sm_user.FULL_NAME]);
                 // if (c == sm_front_desk.CHECK_OUT_BY + sm_user.FULL_NAME) //
                 //   return PlutoCell(value: fd[sm_front_desk.CHECK_OUT_BY]?[sm_user.FULL_NAME]);
+
+                if (c == sm_front_desk.CHECK_IN_BY + sm_user.FULL_NAME) //
+                  return PlutoCell(value: parse_string(fd[sm_front_desk.CHECK_IN_BY]?[sm_user.FULL_NAME]));
+
+                if (c == sm_front_desk.CHECK_OUT_BY + sm_user.FULL_NAME) //
+                  return PlutoCell(value: parse_string(fd[sm_front_desk.CHECK_OUT_BY]?[sm_user.FULL_NAME]));
 
                 return PlutoCell(value: null);
               })(),
@@ -465,10 +474,10 @@ final columns = [
     field: sm_front_desk.CHECK_IN_NUMBER, //
     title: "ចំនួនភ្ញៀវ",
     type: PlutoColumnType.number(),
-    width: 80,
+    width: 100,
     renderer: (rc) {
       return Align(
-        alignment: Alignment.centerRight, //
+        alignment: Alignment.center, //
         child: Text(
           '${rc.cell.value} នាក់', //
           overflow: TextOverflow.ellipsis,
@@ -706,7 +715,7 @@ final columns = [
   // * ជួរឈរថ្លៃ mini bar
   PlutoColumn(
     field: sm_front_desk.PAY_MINI_BAR + "price", //
-    title: "ថ្លៃ Mini Bar",
+    title: "ថ្លៃមីនីបារ",
     type: PlutoColumnType.number(),
     width: 100,
     renderer: (rc) {
@@ -1054,7 +1063,7 @@ final columns = [
     field: "note", //
     title: "ចំណាំ",
     type: PlutoColumnType.text(),
-    width: 2000,
+    width: 200,
     renderer: (rc) {
       return Align(
         alignment: Alignment.center, //

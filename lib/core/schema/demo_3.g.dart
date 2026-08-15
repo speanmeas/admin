@@ -6,7 +6,6 @@ class Demo_3 {
 	final TEXT_1 = "text_1";
 	final NUMBER_1 = "number_1";
 	final NOTE = "note";
-	final PAY_ROOM = "pay_room";
 	final CREATED_AT = "created_at";
 	final CREATED_BY = "created_by";
 	final UPDATED_AT = "updated_at";

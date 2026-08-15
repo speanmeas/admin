@@ -65,7 +65,7 @@ class _Main_State extends State<Main_> {
 
       // * កំណត់ Authorization header
       // dio.options.headers["Authorization"] = "Bearer $ac_tk";
-      dio.setToken(ac_tk);
+      dio.set_token(ac_tk);
 
       //
       snackbar(ct: context, ms: "Success", cl: Colors.green);

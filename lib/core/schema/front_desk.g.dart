@@ -12,12 +12,12 @@ class Front_desk {
 	final CHECK_IN_NOTE = "check_in_note";
 	final CHECK_IN_AT = "check_in_at";
 	final CHECK_IN_BY = "check_in_by";
-	final CANCEL_NOTE = "cancel_note";
-	final CANCEL_AT = "cancel_at";
-	final CANCEL_BY = "cancel_by";
 	final PAY_ROOM = "pay_room";
 	final PAY_MINI_BAR = "pay_mini_bar";
 	final PAY_OTHER = "pay_other";
+	final CANCEL_NOTE = "cancel_note";
+	final CANCEL_AT = "cancel_at";
+	final CANCEL_BY = "cancel_by";
 	final CHANGE_NOTE = "change_note";
 	final CHANGE_AT = "change_at";
 	final CHANGE_BY = "change_by";

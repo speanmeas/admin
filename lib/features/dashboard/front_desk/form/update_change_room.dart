@@ -103,15 +103,9 @@ class _Main_State extends State<Main_> {
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       // * បង្ហាញលេខបន្ទប់បច្ចុប្បន្ន
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('${t("Room")} ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          Text(
-            room_number ?? t("Unknown"),
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
-          ),
-        ],
+      Text(
+        '${t("Room")} ${room_number ?? "N/A"}', //
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
       Divider(height: 1, color: Colors.black),
@@ -203,7 +197,7 @@ class _Main_State extends State<Main_> {
 
       // * ធ្វើបច្ចុប្បន្នភាព front desk ទៅបន្ទប់ថ្មី
       await dio.post(
-        endpoint.FRONT_DESK_UPDATE_ROOM,
+        endpoint.FRONT_DESK_UPDATE_CHANGE_ROOM,
         data: {
           sm_front_desk.ID: front_desk_id, //
           sm_front_desk.ROOM_ID: to_room_id, //

@@ -86,7 +86,7 @@ class HiveBox {
 
   // * បោះពុម្ពទិន្នន័យទាំងអស់ក្នុង box
   void dump({String? label}) {
-    pprint(box.toMap(), label: label ?? "HiveBox '$name'");
+    pprint(box.toMap());
   }
 }
 

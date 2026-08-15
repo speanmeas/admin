@@ -1,12 +1,12 @@
 // * ទំព័រលុបធនាគារ
 
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
@@ -49,11 +49,11 @@ Widget _layout(List<Widget> children) {
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការលុបធនាគារ
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
+  bool is_loading = true;
 
   void init() async {
-    //
+    setState(() => is_loading = false);
   }
 
   @override
@@ -72,7 +72,7 @@ class _Main_State extends State<Main_> {
         icon: Icon(Icons.delete_outlined),
         label: Text("Delete"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-        onPressed: on_delete,
+        onPressed: is_loading ? null : on_delete,
       ),
 
       SizedBox(height: height - 100),
@@ -81,25 +81,14 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការលុបធនាគារ
   void on_delete() async {
-    try {
-      //
-      // * ផ្ញើសំណើលុបធនាគារ
-      tmp = await dio.post(
-        endpoint.BANK_CRUD_DELETE, //
-        data: {"_id": widget.id},
-      );
+    // * ផ្ញើសំណើលុបធនាគារ
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.BANK_CRUD_DELETE, data: {"_id": widget.id});
+    setState(() => is_loading = false);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.BANK_CRUD_DELETE}", cl: Colors.red);
 
-      //
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-
-      //
-      Navigator.pop(context, tmp.data);
-
-      //
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data);
   }
 
   @override
@@ -127,7 +116,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

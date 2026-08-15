@@ -5,9 +5,10 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/schema/bank.g.dart";
@@ -60,31 +61,18 @@ class _Main_State extends State<Main_> {
 
   // * ផ្ទុកព័ត៌មានធនាគារបច្ចុប្បន្ន
   void init() async {
-    try {
-      // * អានទិន្នន័យធនាគារតាម id
-      tmp = await dio.post(
-        endpoint.BANK_CRUD_READ_ID, //
-        data: {sm_bank.ID: widget.id},
-      );
+    // * អានទិន្នន័យធនាគារតាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.BANK_CRUD_READ_ID, data: {sm_bank.ID: widget.id});
+    setState(() => is_loading = false);
 
-      final data = tmp.data;
-      if (data == null || data.isEmpty) {
-        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
-        is_loading = false;
-        setState(() {});
-        return;
-      }
-      final row = data[0];
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.BANK_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-      name = row[sm_bank.NAME]?.toString();
-      note = row[sm_bank.NOTE]?.toString();
+    name = parse_string(tmp.data[0][sm_bank.NAME]);
+    note = parse_string(tmp.data[0][sm_bank.NOTE]);
 
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override
@@ -97,7 +85,10 @@ class _Main_State extends State<Main_> {
       Input_Text(
         init: name, //
         lead: "Name:", //
-        onChanged: (v) => name = v,
+        onChanged: (v) {
+          name = v;
+          setState(() {});
+        },
       ),
 
       // * បញ្ចូលកំណត់ចំណាំ
@@ -105,7 +96,10 @@ class _Main_State extends State<Main_> {
         init: note, //
         lead: "Note:", //
         maxLines: 4, //
-        onChanged: (v) => note = v ?? "",
+        onChanged: (v) {
+          note = v;
+          setState(() {});
+        },
       ),
 
       // * ប៊ូតុងកែប្រែ
@@ -113,7 +107,7 @@ class _Main_State extends State<Main_> {
         icon: Icon(Icons.check),
         label: Text("Update"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-        onPressed: on_update,
+        onPressed: is_loading ? null : on_update,
       ),
       SizedBox(height: height - 100),
     ]);
@@ -121,24 +115,22 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការកែប្រែធនាគារ
   void on_update() async {
-    try {
-      // * ផ្ញើសំណើកែប្រែធនាគារ
-      tmp = await dio.post(
-        endpoint.BANK_CRUD_UPDATE, //
-        data: {
-          sm_bank.ID: widget.id,
-          sm_bank.NAME: name,
-          sm_bank.NOTE: note, //
-        },
-      );
+    // * ផ្ញើសំណើកែប្រែធនាគារ
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.BANK_CRUD_UPDATE, //
+      data: {
+        sm_bank.ID: widget.id,
+        sm_bank.NAME: name,
+        sm_bank.NOTE: note, //
+      },
+    );
+    setState(() => is_loading = false);
 
-      Navigator.pop(context, tmp.data[0]);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.BANK_CRUD_UPDATE}", cl: Colors.red);
 
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data[0]);
   }
 
   @override
@@ -146,8 +138,6 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
 // * ថ្នាក់ Main_ ជាទំព័រកែប្រែធនាគារ
@@ -168,7 +158,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

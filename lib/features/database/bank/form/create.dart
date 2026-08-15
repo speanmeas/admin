@@ -5,13 +5,14 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/input/input_text.dart";
-import "package:speanmeas/core/schema/bank.g.dart";
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+
+import "package:speanmeas/core/schema/bank.g.dart";
+import "package:speanmeas/core/widget/input/input_text.dart";
 
 // * បង្កើត layout មេរបស់ទំព័របង្កើតធនាគារ
 Widget _layout(List<Widget> children) {
@@ -51,13 +52,15 @@ Widget _layout(List<Widget> children) {
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បង្កើតធនាគារ
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
+  bool is_loading = true;
 
   String? name;
   String? note;
 
   void init() async {
-    //
+    setState(() => is_loading = false);
   }
 
   @override
@@ -68,7 +71,10 @@ class _Main_State extends State<Main_> {
       Input_Text(
         init: name, //
         lead: "Name:", //
-        onChanged: (v) => name = v,
+        onChanged: (v) {
+          name = v;
+          setState(() {});
+        },
       ),
 
       // * បញ្ចូលកំណត់ចំណាំ
@@ -76,7 +82,10 @@ class _Main_State extends State<Main_> {
         init: note, //
         lead: "Note:", //
         maxLines: 4, //
-        onChanged: (v) => note = v ?? "",
+        onChanged: (v) {
+          note = v ?? "";
+          setState(() {});
+        },
       ),
 
       // * ប៊ូតុងបង្កើត
@@ -84,7 +93,7 @@ class _Main_State extends State<Main_> {
         icon: Icon(Icons.check),
         label: Text("Create"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-        onPressed: on_create,
+        onPressed: is_loading ? null : on_create,
       ),
 
       SizedBox(height: height - 100),
@@ -93,23 +102,21 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការបង្កើតធនាគារ
   void on_create() async {
-    try {
-      // * ផ្ញើសំណើបង្កើតធនាគារ
-      tmp = await dio.post(
-        endpoint.BANK_CRUD_CREATE, //
-        data: {
-          sm_bank.NAME: name,
-          sm_bank.NOTE: note, //
-        },
-      );
+    // * ផ្ញើសំណើបង្កើតធនាគារ
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.BANK_CRUD_CREATE, //
+      data: {
+        sm_bank.NAME: name, //
+        sm_bank.NOTE: note, //
+      },
+    );
+    setState(() => is_loading = false);
 
-      Navigator.pop(context, tmp.data[0]);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.BANK_CRUD_CREATE}", cl: Colors.red);
 
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data[0]);
   }
 
   @override
@@ -131,7 +138,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

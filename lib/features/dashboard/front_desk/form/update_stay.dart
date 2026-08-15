@@ -119,19 +119,12 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       // * បង្ហាញលេខបន្ទប់
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('${t("Room")} ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          Text(
-            room_number ?? "",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
-          ),
-        ],
+      Text(
+        '${t("Room")} ${room_number ?? ""}', //
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
       Divider(height: 1, color: Colors.black),
@@ -217,7 +210,7 @@ class _Main_State extends State<Main_> {
     try {
       // * ធ្វើបច្ចុប្បន្នភាពព័ត៌មាន check-in
       await dio.post(
-        endpoint.FRONT_DESK_UPDATE_CHECK_IN, //
+        endpoint.FRONT_DESK_UPDATE_STAY, //
         data: {
           sm_front_desk.ID: front_desk_id, //
           sm_front_desk.CHECK_IN_NUMBER: number_of_guest, //
@@ -231,14 +224,13 @@ class _Main_State extends State<Main_> {
 
       // * កត់ត្រាតម្លៃបន្ទប់ថ្មី
       await dio.post(
-        endpoint.FRONT_DESK_ADD_PAY_ROOM, // update
+        endpoint.FRONT_DESK_UPDATE_PAY_ROOM, // update
         data: {
           sm_front_desk.ID: front_desk_id, //
           "add_price": room_price, //
         },
       );
 
-      // * Compare in cents to avoid floating-point precision issues
       // * ប្រៀបធៀបជា cents ដើម្បីចៀសវាងបញ្ហាភាពជាក់លាក់នៃចំនួនទសភាគ
       final paid_cents = ((last_paid ?? 0) * 100).round();
       final price_cents = (room_price * 100).round();

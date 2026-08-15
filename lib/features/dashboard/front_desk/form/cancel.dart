@@ -122,15 +122,9 @@ class _Main_State extends State<Main_> {
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       // * បង្ហាញលេខបន្ទប់
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('${t("Room")}: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          Text(
-            room_number ?? t("Unknown"),
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
-          ),
-        ],
+      Text(
+        '${t("Room")} ${room_number ?? "N/A"}', //
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
       Divider(height: 1, color: Colors.black),

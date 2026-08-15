@@ -233,7 +233,7 @@ class _Main_State extends State<Main_> {
       //
       // * លុប token និងព័ត៌មានចូលប្រព័ន្ធ
       // await dio.options.headers.remove("Authorization");
-      dio.delToken();
+      dio.clear_token();
       await secure.delete(key: "access_token");
       await secure.delete(key: "_id");
 

@@ -6,6 +6,7 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/schema/payment_room.g.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
@@ -54,7 +55,7 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់ check in
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_r;
+  dynamic data;
   bool is_loading = true;
   bool is_submitting = false;
 
@@ -70,47 +71,33 @@ class _Main_State extends State<Main_> {
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ពី server
   void init() async {
-    try {
-      // * អានព័ត៌មានបន្ទប់តាម id
-      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
-      map_r = tmp.data[0] as Map<String, dynamic>;
-      // pprint(map_r);
+    // * អានព័ត៌មានបន្ទប់តាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    setState(() => is_loading = false);
 
-      room_number = map_r[sm_room.NUMBER] ?? "";
-      price_per_day = map_r[sm_room.USD_PER_DAY] ?? 0;
-      price_per_3hours = map_r[sm_room.USD_PER_3H] ?? 0;
+    if (tmp.data == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_READ_ID}", cl: Colors.red);
 
-      number_of_guest = 1;
-      stay_days = 0;
-      stay_hours = 0;
+    data = tmp.data[0] as Map<String, dynamic>? ?? {};
 
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-      is_loading = false;
-      if (mounted) setState(() {});
-    }
+    room_number = data[sm_room.NUMBER] ?? "";
+    price_per_day = data[sm_room.USD_PER_DAY] ?? 0;
+    price_per_3hours = data[sm_room.USD_PER_3H] ?? 0;
+
+    number_of_guest = 1;
+    stay_days = 0;
+    stay_hours = 0;
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       // * បង្ហាញលេខបន្ទប់
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('${t("Room")}: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          Text(
-            room_number ?? t("Unknown"),
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
-          ),
-        ],
-      ),
+      Text('${t("Room")} ${room_number ?? "N/A"}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
 
       Divider(height: 1, color: Colors.black),
 
@@ -181,12 +168,18 @@ class _Main_State extends State<Main_> {
   }
 
   // * គណនាតម្លៃបន្ទប់សរុប
-  double get room_price {
-    return ((price_per_day ?? 0) * (stay_days ?? 0)) + ((price_per_3hours ?? 0) * (stay_hours ?? 0) / 3);
+  double get add_room_price {
+    double temp = 0;
+
+    temp = temp + ((price_per_day ?? 0) * (stay_days ?? 0));
+    temp = temp + ((price_per_3hours ?? 0) * (stay_hours ?? 0) / 3);
+
+    return temp;
   }
 
   // * ពិនិត្យថាអាច check in បានឬអត់
   bool get can_check_in {
+    if (is_loading) return false;
     if ((number_of_guest ?? 0) <= 0) return false;
     if ((stay_days ?? 0) <= 0 && (stay_hours ?? 0) <= 0) return false;
     return true;
@@ -194,69 +187,43 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការ check in ភ្ញៀវ
   void on_check_in() async {
-    if (is_submitting) return; // double-submit guard
-    is_submitting = true;
-    setState(() {});
+    setState(() => is_loading = true);
 
-    dynamic front_desk_id; // track created record for rollback
-    try {
-      // * បង្កើតកំណត់ត្រា front desk
-      tmp = await dio.post(
-        endpoint.FRONT_DESK_CHECK_IN, // create
-        data: {
-          sm_front_desk.ROOM_ID: widget.room_id, //
-          sm_front_desk.GUEST_ID: guest_id, //
-          sm_front_desk.CHECK_IN_NUMBER: number_of_guest, //
-          sm_front_desk.CHECK_IN_DAY: stay_days, //
-          sm_front_desk.CHECK_IN_HOUR: stay_hours, //
-          sm_front_desk.CHECK_IN_NOTE: note, //
-        },
-      );
+    // * បង្កើតកំណត់ត្រា front desk
+    tmp = await dio.post(
+      endpoint.FRONT_DESK_CHECK_IN, // create
+      data: {
+        sm_front_desk.ROOM_ID: widget.room_id, //
+        sm_front_desk.GUEST_ID: guest_id, //
+        sm_front_desk.CHECK_IN_NUMBER: number_of_guest, //
+        sm_front_desk.CHECK_IN_DAY: stay_days, //
+        sm_front_desk.CHECK_IN_HOUR: stay_hours, //
+        sm_front_desk.CHECK_IN_NOTE: note, //
+      },
+    );
 
-      front_desk_id = tmp.data[0][sm_front_desk.ID];
+    // * បន្ថែមតម្លៃបន្ទប់ទៅការទូទាត់
+    await dio.post(
+      endpoint.FRONT_DESK_UPDATE_PAY_ROOM, // update
+      data: {
+        sm_front_desk.ID: tmp.data[0][sm_front_desk.ID], //
+        sm_payment_room.ADD_PRICE: add_room_price,
+      },
+    );
 
-      // * បន្ថែមតម្លៃបន្ទប់ទៅការទូទាត់
-      await dio.post(
-        endpoint.FRONT_DESK_ADD_PAY_ROOM, // update
-        data: {
-          sm_front_desk.ID: front_desk_id, //
-          "add_price": room_price, //
-        },
-      );
+    // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Pending Pay
+    await dio.post(
+      endpoint.ROOM_CRUD_UPDATE, //
+      data: {
+        sm_room.ID: widget.room_id, //
+        sm_room.STATUS: "Pending Pay", //
+        sm_room.FRONT_DESK_ID: tmp.data[0][sm_front_desk.ID], //
+      },
+    );
+    setState(() => is_loading = false);
 
-      // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Pending Pay
-      await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
-        data: {
-          sm_room.ID: widget.room_id, //
-          sm_room.STATUS: "Pending Pay", //
-          sm_room.FRONT_DESK_ID: front_desk_id, //
-        },
-      );
-
-      Navigator.pop(context, true);
-      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
-    } catch (e, st) {
-      // compensating rollback: undo the created front_desk record
-      // * បើមានកំហុស លុបកំណត់ត្រាដែលបានបង្កើតវិញ
-      if (front_desk_id != null) {
-        try {
-          await dio.post(
-            endpoint.FRONT_DESK_CRUD_DELETE,
-            data: {
-              sm_front_desk.ID: front_desk_id, //
-            },
-          );
-        } catch (e2, st2) {
-          pprint(st2);
-        }
-      }
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    } finally {
-      is_submitting = false;
-      if (mounted) setState(() {});
-    }
+    snackbar(ct: context, ms: t("Success"), cl: Colors.green);
+    Navigator.pop(context, true);
   }
 
   @override
@@ -264,11 +231,8 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
-//
 // * ថ្នាក់ Main_ ជាទំព័រ check in
 class Main_ extends StatefulWidget {
   const Main_({
@@ -282,13 +246,12 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-//
 // * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
+
   runApp(
     MultiProvider(
       providers: [
