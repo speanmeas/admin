@@ -102,7 +102,7 @@ class _Main_State extends State<Main_> {
         autofocus: true,
         icon: Icon(Icons.build_outlined), //
         label: Text(t("Fix")), //
-        onPressed: (is_loading) ? null : on_fix, //
+        onPressed: on_fix, //
       ),
 
       SizedBox(height: height - 100),

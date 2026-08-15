@@ -75,9 +75,10 @@ class _Main_State extends State<Main_> {
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
     map_room = tmp.data[0] as Map<String, dynamic>? ?? {};
+    pprint(map_room);
 
     // * គណនាតម្លៃចាស់ និងប្រាក់ដែលបានទទួលរួច
-    tmp = map_room[sm_room.FRONT_DESK_ID] as List<dynamic>? ?? [];
+    tmp = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
     for (var l in tmp) {
       // * តម្លៃសរុប = ផលបូកនៃ add_price ដក sub_price ទាំងអស់
       old_price = (old_price ?? 0) + (parse_double(l[sm_payment_room.ADD_PRICE]) ?? 0);
@@ -209,7 +210,7 @@ class _Main_State extends State<Main_> {
   // * ពិនិត្យថាអាចទូទាត់បានឬអត់
   bool get can_pay {
     if (is_loading) return false;
-    if (map_room[sm_room.FRONT_DESK_ID][sm_front_desk.ID] == null) return false;
+    if (map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) return false;
     if ((new_price ?? 0) <= 0) return false;
     if (balanced != 0) return false;
     return true;
@@ -244,7 +245,7 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.FRONT_DESK_UPDATE_PAY_ROOM,
       data: {
-        sm_front_desk.ID: map_room[sm_room.FRONT_DESK_ID][sm_front_desk.ID], //
+        sm_front_desk.ID: map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
         sm_payment_room.ADD_PRICE: _add_price, //
         sm_payment_room.SUB_PRICE: _sub_price, //
         sm_payment_room.PAY_CASH: pay_cash ?? 0, //

@@ -103,7 +103,7 @@ class _Main_State extends State<Main_> {
               Menu_Button_Icon(
                 tip: "Refresh", //
                 icon: Icons.refresh, //
-                onPressed: is_loading ? null : init, //
+                onPressed: init, //
               ),
 
               SizedBox(width: 8), //

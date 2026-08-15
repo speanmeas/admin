@@ -111,7 +111,7 @@ class _Main_State extends State<Main_> {
         autofocus: true,
         icon: Icon(Icons.cleaning_services), //
         label: Text(t("Clean")), //
-        onPressed: (is_loading) ? null : on_clean, //
+        onPressed: on_clean, //
       ),
 
       SizedBox(height: height - 100),

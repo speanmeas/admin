@@ -192,7 +192,7 @@ class _Main_State extends State<Main_> {
       OutlinedButton.icon(
         icon: Icon(Icons.add), //
         label: Text(t("Add Payment")), //
-        onPressed: (balanced == 0) ? on_pay : null, //
+        onPressed: on_pay, //
       ),
 
       SizedBox(height: height - 100),
@@ -238,6 +238,18 @@ class _Main_State extends State<Main_> {
       },
     );
     setState(() => is_loading = false);
+
+    if (balanced != 0) {
+      setState(() => is_loading = true);
+      await dio.post(
+        endpoint.ROOM_CRUD_UPDATE, //
+        data: {
+          sm_room.ID: map_r[sm_room.ID], //
+          sm_room.STATUS: "Pending Payment", //
+        },
+      );
+      setState(() => is_loading = false);
+    }
 
     snackbar(ct: context, ms: t("Success"), cl: Colors.green);
     Navigator.pop(context, true);

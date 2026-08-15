@@ -101,7 +101,7 @@ class _Main_State extends State<Main_> {
       OutlinedButton.icon(
         icon: Icon(Icons.check), //
         label: Text(t("Update")), //
-        onPressed: (is_loading) ? null : on_update, //
+        onPressed: on_update, //
       ),
 
       SizedBox(height: height - 100),

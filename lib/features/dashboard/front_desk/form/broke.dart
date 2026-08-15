@@ -96,7 +96,7 @@ class _Main_State extends State<Main_> {
         autofocus: true,
         icon: Icon(Icons.bug_report_outlined), //
         label: Text(t("Broke")), //
-        onPressed: (is_loading) ? null : on_broke, //
+        onPressed: on_broke, //
       ),
 
       SizedBox(height: height - 100),

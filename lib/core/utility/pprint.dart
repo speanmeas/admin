@@ -10,7 +10,7 @@ void pprint(dynamic value) {
 
   // * ប្រសិនបើ value គឺជា Map ឬ List, បំលែងវាទៅជា JSON string ដែលមាន indentation
   if (value is Map || value is List) //
-    debugPrint(JsonEncoder.withIndent('  ').convert(value));
+    return debugPrint(JsonEncoder.withIndent('  ').convert(value));
 
   // * ទូទៅ
   debugPrint(value);

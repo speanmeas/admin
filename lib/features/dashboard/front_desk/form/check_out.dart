@@ -101,7 +101,7 @@ class _Main_State extends State<Main_> {
         autofocus: true,
         icon: Icon(Icons.logout), //
         label: Text(t("Check Out")), //
-        onPressed: (is_loading) ? null : on_check_out, //
+        onPressed: on_check_out, //
       ),
 
       SizedBox(height: height - 100),
