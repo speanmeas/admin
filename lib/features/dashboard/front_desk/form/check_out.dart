@@ -52,39 +52,22 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic map_r;
-  dynamic map_fd;
   bool is_loading = true;
-  bool is_submitting = false;
-
-  String? front_desk_id;
-  String? room_number;
 
   String? note;
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ និង front desk ពី server
   void init() async {
-    try {
-      // * អានព័ត៌មានបន្ទប់តាម id
-      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
-      map_r = tmp.data[0] as Map<String, dynamic>;
-      // pprint(map_r);
+    // * អានព័ត៌មានបន្ទប់តាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    setState(() => is_loading = false);
 
-      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
+    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-      // * អានព័ត៌មាន front desk របស់បន្ទប់
-      tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-      map_fd = tmp.data[0] as Map<String, dynamic>;
-      // pprint(map_fd);
+    map_r = tmp.data[0] as Map<String, dynamic>;
 
-      front_desk_id = map_fd[sm_front_desk.ID];
-      room_number = map_r[sm_room.NUMBER];
-
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override
@@ -95,7 +78,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់
       Text(
-        '${t("Room")} ${room_number ?? "N/A"}', //
+        '${t("Room")} ${map_r?[sm_room.NUMBER] ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -117,8 +100,8 @@ class _Main_State extends State<Main_> {
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.logout), //
-        label: Text(is_submitting ? t("Checking Out...") : t("Check Out")), //
-        onPressed: is_submitting ? null : on_check_out, //
+        label: Text(t("Check Out")), //
+        onPressed: (is_loading) ? null : on_check_out, //
       ),
 
       SizedBox(height: height - 100),
@@ -127,41 +110,30 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការ check out ភ្ញៀវ
   void on_check_out() async {
-    if (is_submitting) return; // double-submit guard
-    is_submitting = true;
-    setState(() {});
+    // * បិទកំណត់ត្រា front desk ជាមុន បន្ទាប់មកកំណត់បន្ទប់ជា Pending Clean
+    setState(() => is_loading = true);
+    await dio.post(
+      endpoint.FRONT_DESK_CHECK_OUT, //
+      data: {
+        sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
+        sm_front_desk.CHECK_OUT_NOTE: note, //
+      },
+    );
+    setState(() => is_loading = false);
 
-    try {
-      // * Close the front-desk record first, then mark the room clean.
-      // * If the check-out write fails, the room stays in its current state
-      // * instead of being left as "Pending Clean" with an open record.
-      // * បិទកំណត់ត្រា front desk ជាមុន បន្ទាប់មកកំណត់បន្ទប់ជា Pending Clean
-      await dio.post(
-        endpoint.FRONT_DESK_CHECK_OUT, //
-        data: {
-          sm_front_desk.ID: front_desk_id, //
-          sm_front_desk.CHECK_OUT_NOTE: note, //
-        },
-      );
+    // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Pending Clean
+    setState(() => is_loading = true);
+    await dio.post(
+      endpoint.ROOM_CRUD_UPDATE, //
+      data: {
+        sm_room.ID: widget.room_id, //
+        sm_room.STATUS: "Pending Clean", //
+      },
+    );
+    setState(() => is_loading = false);
 
-      // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Pending Clean
-      await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
-        data: {
-          sm_room.ID: widget.room_id, //
-          sm_room.STATUS: "Pending Clean", //
-        },
-      );
-
-      Navigator.pop(context, true);
-      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    } finally {
-      is_submitting = false;
-      if (mounted) setState(() {});
-    }
+    snackbar(ct: context, ms: t("Success"), cl: Colors.green);
+    Navigator.pop(context, true);
   }
 
   @override

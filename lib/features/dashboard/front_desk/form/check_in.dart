@@ -97,7 +97,10 @@ class _Main_State extends State<Main_> {
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       // * បង្ហាញលេខបន្ទប់
-      Text('${t("Room")} ${room_number ?? "N/A"}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+      Text(
+        '${t("Room")} ${room_number ?? "N/A"}', //
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
 
       Divider(height: 1, color: Colors.black),
 

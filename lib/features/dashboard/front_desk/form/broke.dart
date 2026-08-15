@@ -48,29 +48,21 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់កំណត់បន្ទប់ខូច
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_r;
-  dynamic map_fd;
+  dynamic map_room;
   bool is_loading = true;
-  bool is_submitting = false;
 
-  String? room_number;
   String? note;
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ពី server
   void init() async {
-    try {
-      // * អានព័ត៌មានបន្ទប់តាម id
-      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
-      map_r = tmp.data[0] as Map<String, dynamic>;
+    // * អានព័ត៌មានបន្ទប់តាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    setState(() => is_loading = false);
 
-      room_number = map_r[sm_room.NUMBER];
+    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    map_room = tmp.data[0] as Map<String, dynamic>;
   }
 
   @override
@@ -81,7 +73,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់
       Text(
-        '${t("Room")} ${room_number ?? "N/A"}', //
+        '${t("Room")} ${map_room?[sm_room.NUMBER] ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -103,8 +95,8 @@ class _Main_State extends State<Main_> {
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.bug_report_outlined), //
-        label: Text(is_submitting ? t("Processing...") : t("Broke")), //
-        onPressed: is_submitting ? null : on_broke, //
+        label: Text(t("Broke")), //
+        onPressed: (is_loading) ? null : on_broke, //
       ),
 
       SizedBox(height: height - 100),
@@ -113,54 +105,29 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការកំណត់បន្ទប់ខូច
   void on_broke() async {
-    if (is_submitting) return; // double-submit guard
-    is_submitting = true;
-    setState(() {});
+    // * បង្កើតកំណត់ត្រា front desk សម្រាប់បន្ទប់ខូច
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.FRONT_DESK_BROKE, data: {sm_front_desk.BROKE_NOTE: note});
+    setState(() => is_loading = false);
 
-    dynamic front_desk_id; // track created record for rollback
-    try {
-      // * បង្កើតកំណត់ត្រា front desk សម្រាប់បន្ទប់ខូច
-      tmp = await dio.post(
-        endpoint.FRONT_DESK_BROKE,
-        data: {
-          sm_front_desk.BROKE_NOTE: note, //
-        },
-      );
-      front_desk_id = tmp.data[0][sm_front_desk.ID];
+    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.FRONT_DESK_BROKE}"), cl: Colors.red);
 
-      // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Pending Fix
-      await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
-        data: {
-          sm_room.ID: widget.room_id, //
-          sm_room.STATUS: "Pending Fix", //
-          sm_room.FRONT_DESK_ID: front_desk_id, //
-        },
-      );
+    final front_desk_id = tmp.data[0][sm_front_desk.ID];
 
-      Navigator.pop(context, true);
-      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
-    } catch (e, st) {
-      // compensating rollback: undo the created front_desk record
-      // * បើមានកំហុស លុបកំណត់ត្រាដែលបានបង្កើតវិញ
-      if (front_desk_id != null) {
-        try {
-          await dio.post(
-            endpoint.FRONT_DESK_CRUD_DELETE,
-            data: {
-              sm_front_desk.ID: front_desk_id, //
-            },
-          );
-        } catch (e2, st2) {
-          pprint(st2);
-        }
-      }
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    } finally {
-      is_submitting = false;
-      if (mounted) setState(() {});
-    }
+    // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Pending Fix
+    setState(() => is_loading = true);
+    await dio.post(
+      endpoint.ROOM_CRUD_UPDATE, //
+      data: {
+        sm_room.ID: widget.room_id, //
+        sm_room.STATUS: "Pending Fix", //
+        sm_room.FRONT_DESK_ID: front_desk_id, //
+      },
+    );
+    setState(() => is_loading = false);
+
+    snackbar(ct: context, ms: t("Success"), cl: Colors.green);
+    Navigator.pop(context, true);
   }
 
   @override
@@ -168,8 +135,6 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
 //
@@ -186,13 +151,12 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-//
 // * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
+
   runApp(
     MultiProvider(
       providers: [

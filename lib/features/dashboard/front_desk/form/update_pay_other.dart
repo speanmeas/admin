@@ -7,6 +7,7 @@ import "package:speanmeas/core/i18n/main.dart";
 
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
@@ -54,13 +55,7 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic map_r;
-  dynamic map_fd;
   bool is_loading = true;
-  bool is_submitting = false;
-
-  String? front_desk_id;
-  String? room_id;
-  String? room_number;
 
   double? other_price;
   double? old_price;
@@ -72,41 +67,29 @@ class _Main_State extends State<Main_> {
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ និងប្រវត្តិការទូទាត់ផ្សេងៗ
   void init() async {
-    try {
-      // * អានព័ត៌មានបន្ទប់តាម id
-      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
-      map_r = tmp.data[0] as Map<String, dynamic>;
+    // * អានព័ត៌មានបន្ទប់តាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    setState(() => is_loading = false);
 
-      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
+    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-      // * អានព័ត៌មាន front desk
-      tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-      map_fd = tmp.data[0] as Map<String, dynamic>;
+    map_r = tmp.data[0] as Map<String, dynamic>;
 
-      front_desk_id = map_fd[sm_front_desk.ID];
-      room_number = map_r[sm_room.NUMBER];
-
-      // * គណនាតម្លៃចាស់ និងប្រាក់ដែលបានទទួលរួច
-      tmp = map_fd[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
-      for (var l in tmp) {
-        // * តម្លៃសរុប = ផលបូកនៃ add_price ដក sub_price ទាំងអស់
-        old_price = (old_price ?? 0) + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
-        old_price = (old_price ?? 0) - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
-        // * ប្រាក់ដែលបានទទួលសរុប
-        last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
-        last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
-        last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
-      }
-      other_price = old_price;
-
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-      is_loading = false;
-      if (mounted) setState(() {});
+    // * គណនាតម្លៃចាស់ និងប្រាក់ដែលបានទទួលរួច
+    tmp = map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
+    for (var l in tmp) {
+      // * តម្លៃសរុប = ផលបូកនៃ add_price ដក sub_price ទាំងអស់
+      old_price = (old_price ?? 0) + (parse_double(l[sm_payment_other.ADD_PRICE]) ?? 0);
+      old_price = (old_price ?? 0) - (parse_double(l[sm_payment_other.SUB_PRICE]) ?? 0);
+      // * ប្រាក់ដែលបានទទួលសរុប
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_other.PAY_CASH]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_other.PAY_BANK]) ?? 0);
+      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_other.PAY_RETURN]) ?? 0);
     }
+    other_price = old_price;
+
+    setState(() {});
   }
 
   @override
@@ -117,7 +100,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់
       Text(
-        '${t("Room")} ${room_number ?? "N/A"}', //
+        '${t("Room")} ${map_r?[sm_room.NUMBER] ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -208,8 +191,8 @@ class _Main_State extends State<Main_> {
       // * ប៊ូតុងបន្ថែមការទូទាត់
       OutlinedButton.icon(
         icon: Icon(Icons.add), //
-        label: Text(is_submitting ? t("Processing...") : t("Add Payment")), //
-        onPressed: (balanced == 0 && !is_submitting) ? on_pay : null, //
+        label: Text(t("Add Payment")), //
+        onPressed: (balanced == 0) ? on_pay : null, //
       ),
 
       SizedBox(height: height - 100),
@@ -240,34 +223,24 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការបន្ថែមការទូទាត់ផ្សេងៗ
   void on_pay() async {
-    if (is_submitting) return; // double-submit guard
-    is_submitting = true;
-    setState(() {});
+    // * កត់ត្រាការទូទាត់ផ្សេងៗ
+    setState(() => is_loading = true);
+    await dio.post(
+      endpoint.FRONT_DESK_UPDATE_PAY_OTHER,
+      data: {
+        sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
+        sm_payment_other.ADD_PRICE: _add_price, //
+        sm_payment_other.SUB_PRICE: _sub_price, //
+        sm_payment_other.PAY_CASH: pay_cash ?? 0, //
+        sm_payment_other.PAY_BANK: pay_bank ?? 0, //
+        sm_payment_other.PAY_RETURN: pay_return ?? 0, //
+        sm_payment_other.PAY_NOTE: pay_note ?? "", //
+      },
+    );
+    setState(() => is_loading = false);
 
-    try {
-      // * កត់ត្រាការទូទាត់ផ្សេងៗ
-      await dio.post(
-        endpoint.FRONT_DESK_UPDATE_PAY_OTHER,
-        data: {
-          sm_front_desk.ID: front_desk_id, //
-          sm_payment_other.ADD_PRICE: _add_price, //
-          sm_payment_other.SUB_PRICE: _sub_price, //
-          sm_payment_other.PAY_CASH: pay_cash ?? 0, //
-          sm_payment_other.PAY_BANK: pay_bank ?? 0, //
-          sm_payment_other.PAY_RETURN: pay_return ?? 0, //
-          sm_payment_other.PAY_NOTE: pay_note ?? "", //
-        },
-      );
-
-      Navigator.pop(context, true);
-      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    } finally {
-      is_submitting = false;
-      if (mounted) setState(() {});
-    }
+    snackbar(ct: context, ms: t("Success"), cl: Colors.green);
+    Navigator.pop(context, true);
   }
 
   @override

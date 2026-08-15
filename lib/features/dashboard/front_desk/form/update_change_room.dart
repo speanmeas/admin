@@ -51,49 +51,36 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic map_r;
-  dynamic map_fd;
   bool is_loading = true;
-  bool is_submitting = false;
-
-  String? front_desk_id;
-  String? room_number;
 
   String? to_room_number;
   String? change_note;
 
   String? to_room_id; // * សម្រាប់រក្សា ID បន្ទប់ថ្មី
 
-  // List<Map<String, dynamic>> rooms = [];
   dynamic list_r = []; // * សម្រាប់រក្សាពត៏មានបន្ទប់ទាំងអស់
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ និងបញ្ជីបន្ទប់ទំនេរ
   void init() async {
-    try {
-      // * អានព័ត៌មានបន្ទប់បច្ចុប្បន្ន
-      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
-      map_r = tmp.data[0] as Map<String, dynamic>;
+    // * អានព័ត៌មានបន្ទប់បច្ចុប្បន្ន
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    setState(() => is_loading = false);
 
-      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
+    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-      // * អានព័ត៌មាន front desk
-      tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-      map_fd = tmp.data[0] as Map<String, dynamic>;
+    map_r = tmp.data[0] as Map<String, dynamic>;
 
-      // * អានបញ្ជីបន្ទប់ទាំងអស់
-      tmp = await dio.post(endpoint.ROOM_CRUD_READ);
-      list_r = tmp.data as List<dynamic>;
+    // * អានបញ្ជីបន្ទប់ទាំងអស់
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ);
+    setState(() => is_loading = false);
 
-      front_desk_id = map_fd[sm_front_desk.ID];
-      room_number = map_r[sm_room.NUMBER];
+    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ}"), cl: Colors.red);
 
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-      is_loading = false;
-      if (mounted) setState(() {});
-    }
+    list_r = tmp.data as List<dynamic>;
+
+    setState(() {});
   }
 
   @override
@@ -104,7 +91,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់បច្ចុប្បន្ន
       Text(
-        '${t("Room")} ${room_number ?? "N/A"}', //
+        '${t("Room")} ${map_r?[sm_room.NUMBER] ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -152,8 +139,8 @@ class _Main_State extends State<Main_> {
       // * ប៊ូតុងបញ្ជូនការប្តូរបន្ទប់
       OutlinedButton.icon(
         icon: Icon(Icons.swap_horiz_outlined), //
-        label: Text(is_submitting ? t("Changing...") : t("Change")), //
-        onPressed: (can_change && !is_submitting) ? on_change_room : null, //
+        label: Text(t("Change")), //
+        onPressed: (can_change) ? on_change_room : null, //
       ),
 
       SizedBox(height: height - 100),
@@ -168,84 +155,44 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការប្តូរបន្ទប់
   void on_change_room() async {
-    if (is_submitting) return; // double-submit guard
-    is_submitting = true;
-    setState(() {});
+    // * ដោះលែងបន្ទប់ចាស់
+    setState(() => is_loading = true);
+    await dio.post(
+      endpoint.ROOM_CRUD_UPDATE, //
+      data: {
+        sm_room.ID: widget.room_id, //
+        sm_room.STATUS: "Pending Clean", //
+        sm_room.FRONT_DESK_ID: null, //
+      },
+    );
+    setState(() => is_loading = false);
 
-    bool new_room_set = false; // * track whether the new room was already updated
-    try {
-      // * ដោះលែងបន្ទប់ចាស់
-      await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
-        data: {
-          sm_room.ID: widget.room_id, //
-          sm_room.STATUS: "Pending Clean", //
-          sm_room.FRONT_DESK_ID: null, //
-        },
-      );
+    // * កំណត់បន្ទប់ថ្មីជាបន្ទប់កំពុងស្នាក់នៅ
+    setState(() => is_loading = true);
+    await dio.post(
+      endpoint.ROOM_CRUD_UPDATE, //
+      data: {
+        sm_room.ID: to_room_id, //
+        sm_room.STATUS: "Pending Pay", //
+        sm_room.FRONT_DESK_ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
+      },
+    );
+    setState(() => is_loading = false);
 
-      // * កំណត់បន្ទប់ថ្មីជាបន្ទប់កំពុងស្នាក់នៅ
-      await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
-        data: {
-          sm_room.ID: to_room_id, //
-          sm_room.STATUS: "Pending Pay", //
-          sm_room.FRONT_DESK_ID: front_desk_id, //
-        },
-      );
-      new_room_set = true;
+    // * ធ្វើបច្ចុប្បន្នភាព front desk ទៅបន្ទប់ថ្មី
+    setState(() => is_loading = true);
+    await dio.post(
+      endpoint.FRONT_DESK_UPDATE_CHANGE_ROOM,
+      data: {
+        sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
+        sm_front_desk.ROOM_ID: to_room_id, //
+        sm_front_desk.CHANGE_NOTE: change_note, //
+      },
+    );
+    setState(() => is_loading = false);
 
-      // * ធ្វើបច្ចុប្បន្នភាព front desk ទៅបន្ទប់ថ្មី
-      await dio.post(
-        endpoint.FRONT_DESK_UPDATE_CHANGE_ROOM,
-        data: {
-          sm_front_desk.ID: front_desk_id, //
-          sm_front_desk.ROOM_ID: to_room_id, //
-          sm_front_desk.CHANGE_NOTE: change_note, //
-        },
-      );
-
-      Navigator.pop(context, true);
-      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
-    } catch (e, st) {
-      // compensating rollback: restore the old room's occupied state
-      // * បញ្ច្រាសការផ្លាស់ប្តូរ៖ ស្តារស្ថានភាពបន្ទប់ចាស់វិញ
-      try {
-        await dio.post(
-          endpoint.ROOM_CRUD_UPDATE, //
-          data: {
-            sm_room.ID: widget.room_id, //
-            sm_room.STATUS: "Pending Pay", //
-            sm_room.FRONT_DESK_ID: front_desk_id, //
-          },
-        );
-      } catch (e2, st2) {
-        pprint(st2);
-      }
-
-      // * if the new room was already marked occupied, free it again
-      // * ប្រសិនបើបន្ទប់ថ្មីត្រូវបានកំណត់រួច សូមដោះលែងវាវិញ
-      if (new_room_set) {
-        try {
-          await dio.post(
-            endpoint.ROOM_CRUD_UPDATE, //
-            data: {
-              sm_room.ID: to_room_id, //
-              sm_room.STATUS: "Available", //
-              sm_room.FRONT_DESK_ID: null, //
-            },
-          );
-        } catch (e2, st2) {
-          pprint(st2);
-        }
-      }
-
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    } finally {
-      is_submitting = false;
-      if (mounted) setState(() {});
-    }
+    snackbar(ct: context, ms: t("Success"), cl: Colors.green);
+    Navigator.pop(context, true);
   }
 
   @override

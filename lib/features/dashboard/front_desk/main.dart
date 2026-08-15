@@ -32,6 +32,7 @@ import "form/detail.dart" as detail;
 import "form/fix.dart" as fix; // 6
 import "form/pay_room.dart" as pay_room; // 2
 import "form/update_pay_other.dart" as pay_other;
+import "form/update_pay_mini_bar.dart" as pay_mini_bar;
 import "form/update_guest.dart" as update_guest;
 import "form/update_pay_room.dart" as update_pay_room;
 import "form/update_stay.dart" as update_stay;
@@ -402,9 +403,7 @@ class _Main_State extends State<Main_> {
                                   message: t("Edit Mini Bar Payment"),
                                   child: InkWell(
                                     child: Icon(Icons.edit_outlined, size: 24, color: Colors.blue), //
-                                    // onTap: () => on_update_room_payment(r),
-                                    onTap: () {},
-                                    // onTap: () {},
+                                    onTap: () => on_pay_mini_bar(r),
                                   ),
                                 ),
                             ],
@@ -634,6 +633,12 @@ class _Main_State extends State<Main_> {
   // * បើកទំព័រទូទាត់ផ្សេងៗ
   void on_pay_other(dynamic r) async {
     tmp = await navigator(context, pay_other.Main_(room_id: r[sm_room.ID]));
+    if (tmp != null) init();
+  }
+
+  // * បើកទំព័រទូទាត់ mini bar
+  void on_pay_mini_bar(dynamic r) async {
+    tmp = await navigator(context, pay_mini_bar.Main_(room_id: r[sm_room.ID]));
     if (tmp != null) init();
   }
 

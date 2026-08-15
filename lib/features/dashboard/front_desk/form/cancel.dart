@@ -7,12 +7,14 @@ import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 
 import "package:speanmeas/core/schema/room.g.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
+import "package:speanmeas/core/schema/payment_room.g.dart";
 
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
@@ -54,17 +56,13 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បោះបង់ការស្នាក់នៅ
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_r;
-  dynamic map_fd;
+  dynamic map_room;
   bool is_loading = true;
-  bool is_submitting = false;
 
   double? pay_cash;
   double? pay_bank;
   double? pay_return;
 
-  String? front_desk_id;
-  String? room_number;
   String? note;
 
   double? last_paid;
@@ -77,42 +75,31 @@ class _Main_State extends State<Main_> {
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ និង front desk ពី server
   void init() async {
-    try {
-      // * អានព័ត៌មានបន្ទប់តាម id
-      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
-      map_r = tmp.data[0] as Map<String, dynamic>;
+    // * អានព័ត៌មានបន្ទប់តាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    setState(() => is_loading = false);
 
-      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
+    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-      // * អានព័ត៌មាន front desk របស់បន្ទប់
-      tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-      map_fd = tmp.data[0] as Map<String, dynamic>;
+    map_room = tmp.data[0] as Map<String, dynamic>;
 
-      front_desk_id = map_fd[sm_front_desk.ID];
-      room_number = map_r[sm_room.NUMBER];
-
-      // * គណនាចំនួនទឹកប្រាក់ដែលបានបង់រួច
-      tmp = map_fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
-      for (var l in tmp) {
-        last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_cash"].toString()) ?? 0);
-        last_paid = (last_paid ?? 0) + (double.tryParse(l["pay_bank"].toString()) ?? 0);
-        last_paid = (last_paid ?? 0) - (double.tryParse(l["pay_return"].toString()) ?? 0);
-      }
-
-      note = map_fd[sm_front_desk.CANCEL_NOTE]?.toString() ?? "";
-
-      check_in_at = map_fd[sm_front_desk.CHECK_IN_AT] != null ? DateTime.tryParse(map_fd[sm_front_desk.CHECK_IN_AT].toString()) : null;
-
-      room_status = "Available";
-
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-      is_loading = false;
-      if (mounted) setState(() {});
+    // * គណនាចំនួនទឹកប្រាក់ដែលបានបង់រួច
+    tmp = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
+    for (var l in tmp) {
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.PAY_CASH]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.PAY_BANK]) ?? 0);
+      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_room.PAY_RETURN]) ?? 0);
     }
+
+    note = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CANCEL_NOTE]?.toString() ?? "";
+
+    final tmp_check = DateTime.tryParse(map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_AT]?.toString() ?? "");
+    check_in_at = tmp_check;
+
+    room_status = "Available";
+
+    setState(() {});
   }
 
   @override
@@ -123,7 +110,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់
       Text(
-        '${t("Room")} ${room_number ?? "N/A"}', //
+        '${t("Room")} ${map_room?[sm_room.NUMBER] ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -241,9 +228,9 @@ class _Main_State extends State<Main_> {
       // * ប៊ូតុងបញ្ជូនបោះបង់
       OutlinedButton.icon(
         icon: Icon(Icons.cancel_outlined), //
-        label: Text(is_submitting ? t("Cancelling...") : t("Cancel")), //
+        label: Text(t("Cancel")), //
         style: OutlinedButton.styleFrom(foregroundColor: Colors.red), //
-        onPressed: (can_cancel && !is_submitting) ? on_cancel : null, //
+        onPressed: (can_cancel) ? on_cancel : null, //
       ),
 
       SizedBox(height: height - 100),
@@ -274,49 +261,41 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការបោះបង់ការស្នាក់នៅ
   void on_cancel() async {
-    if (is_submitting) return; // double-submit guard
-    is_submitting = true;
-    setState(() {});
+    // * កត់ត្រាការបោះបង់ទៅ front desk
+    setState(() => is_loading = true);
+    await dio.post(
+      endpoint.FRONT_DESK_CANCEL,
+      data: {
+        sm_front_desk.ID: map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
+        sm_front_desk.CANCEL_NOTE: note, //
+      },
+    );
+    setState(() => is_loading = false);
 
-    try {
-      // * កត់ត្រាការបោះបង់ទៅ front desk
+    // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់
+    setState(() => is_loading = true);
+    if (room_status == "Available") {
       await dio.post(
-        endpoint.FRONT_DESK_CANCEL,
+        endpoint.ROOM_CRUD_UPDATE, //
         data: {
-          sm_front_desk.ID: front_desk_id, //
-          sm_front_desk.CANCEL_NOTE: note, //
+          sm_room.ID: widget.room_id, //
+          sm_room.STATUS: room_status, //
+          sm_room.FRONT_DESK_ID: null, //
         },
       );
-
-      // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់
-      if (room_status == "Available") {
-        await dio.post(
-          endpoint.ROOM_CRUD_UPDATE, //
-          data: {
-            sm_room.ID: widget.room_id, //
-            sm_room.STATUS: room_status, //
-            sm_room.FRONT_DESK_ID: null, //
-          },
-        );
-      } else if (room_status == "Pending Clean") {
-        await dio.post(
-          endpoint.ROOM_CRUD_UPDATE, //
-          data: {
-            sm_room.ID: widget.room_id, //
-            sm_room.STATUS: room_status, //
-          },
-        );
-      }
-
-      Navigator.pop(context, true);
-      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: t("Your can't cancel within 1 hour after check-in."), cl: Colors.red);
-    } finally {
-      is_submitting = false;
-      if (mounted) setState(() {});
+    } else if (room_status == "Pending Clean") {
+      await dio.post(
+        endpoint.ROOM_CRUD_UPDATE, //
+        data: {
+          sm_room.ID: widget.room_id, //
+          sm_room.STATUS: room_status, //
+        },
+      );
     }
+    setState(() => is_loading = false);
+
+    snackbar(ct: context, ms: t("Success"), cl: Colors.green);
+    Navigator.pop(context, true);
   }
 
   @override

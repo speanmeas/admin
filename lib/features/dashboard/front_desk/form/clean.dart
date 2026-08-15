@@ -54,39 +54,22 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic map_r = {};
-  dynamic map_fd = {};
   bool is_loading = true;
-  bool is_submitting = false;
-
-  String? front_desk_id;
-  String? room_number;
 
   String? note;
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ និង front desk ពី server
   void init() async {
-    try {
-      // * អានព័ត៌មានបន្ទប់តាម id
-      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
-      map_r = tmp.data[0] as Map<String, dynamic>;
-      // pprint(map_r);
+    // * អានព័ត៌មានបន្ទប់តាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    setState(() => is_loading = false);
 
-      // * អាន front desk ប្រសិនបើមាន
-      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] != null) {
-        tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-        map_fd = tmp.data[0] as Map<String, dynamic>;
-      }
-      // pprint(map_fd);
+    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-      front_desk_id = map_fd[sm_front_desk.ID];
-      room_number = map_r[sm_room.NUMBER];
+    map_r = tmp.data[0] as Map<String, dynamic>;
 
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override
@@ -97,21 +80,21 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់
       Text(
-        '${t("Room")} ${room_number ?? "N/A"}', //
+        '${t("Room")} ${map_r?[sm_room.NUMBER] ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
       Divider(height: 1, color: Colors.black),
 
       // * បង្ហាញកំណត់ចំណាំប្រសិនបើគ្មាន front desk
-      if (front_desk_id == null)
+      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null)
         Show_Text(
           lead: '${t("Note")}:', //
           value: t("Guest has changed from this room."), //
         ),
 
       // * បញ្ចូលកំណត់ចំណាំប្រសិនបើមាន front desk
-      if (front_desk_id != null)
+      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] != null)
         Input_Text(
           init: note, //
           lead: '${t("Note")}:', //
@@ -127,8 +110,8 @@ class _Main_State extends State<Main_> {
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.cleaning_services), //
-        label: Text(is_submitting ? t("Cleaning...") : t("Clean")), //
-        onPressed: is_submitting ? null : on_clean, //
+        label: Text(t("Clean")), //
+        onPressed: (is_loading) ? null : on_clean, //
       ),
 
       SizedBox(height: height - 100),
@@ -137,41 +120,32 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការសម្អាតបន្ទប់
   void on_clean() async {
-    if (is_submitting) return; // double-submit guard
-    is_submitting = true;
-    setState(() {});
+    // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Available
+    setState(() => is_loading = true);
+    await dio.post(
+      endpoint.ROOM_CRUD_UPDATE, //
+      data: {
+        sm_room.ID: widget.room_id, //
+        sm_room.STATUS: "Available", //
+        sm_room.FRONT_DESK_ID: null, //
+      },
+    );
+    setState(() => is_loading = false);
 
-    try {
-      // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Available
+    // * កត់ត្រាការសម្អាតទៅ front desk
+    setState(() => is_loading = true);
+    if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] != null)
       await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
+        endpoint.FRONT_DESK_CLEAN,
         data: {
-          sm_room.ID: widget.room_id, //
-          sm_room.STATUS: "Available", //
-          sm_room.FRONT_DESK_ID: null, //
+          sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
+          sm_front_desk.CLEAN_NOTE: note, //
         },
       );
+    setState(() => is_loading = false);
 
-      // bug here
-      // * កត់ត្រាការសម្អាតទៅ front desk
-      if (front_desk_id != null)
-        await dio.post(
-          endpoint.FRONT_DESK_CLEAN,
-          data: {
-            sm_front_desk.ID: front_desk_id, //
-            sm_front_desk.CLEAN_NOTE: note, //
-          },
-        );
-
-      Navigator.pop(context, true);
-      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    } finally {
-      is_submitting = false;
-      if (mounted) setState(() {});
-    }
+    snackbar(ct: context, ms: t("Success"), cl: Colors.green);
+    Navigator.pop(context, true);
   }
 
   @override

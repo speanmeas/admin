@@ -1,4 +1,4 @@
-// * ទំព័រ Add Room Payment សម្រាប់បន្ថែមការទូទាត់បន្ទប់
+// * ទំព័រ Add Mini Bar Payment សម្រាប់បន្ថែមការទូទាត់ mini bar
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -15,15 +15,15 @@ import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_bank_auto.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
 import "package:speanmeas/core/schema/front_desk.g.dart";
-import "package:speanmeas/core/schema/payment_room.g.dart";
+import "package:speanmeas/core/schema/payment_mini_bar.g.dart";
 import "package:speanmeas/core/schema/room.g.dart";
 
-// * បង្កើត layout មេរបស់ទំព័របន្ថែមការទូទាត់បន្ទប់
+// * បង្កើត layout មេរបស់ទំព័របន្ថែមការទូទាត់ mini bar
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        t("Add Room Payment"), //
+        t("Add Mini Bar Payment"), //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -51,13 +51,13 @@ Widget _layout(List<Widget> children) {
   );
 }
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បន្ថែមការទូទាត់បន្ទប់
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បន្ថែមការទូទាត់ mini bar
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_room;
+  dynamic map_r;
   bool is_loading = true;
 
-  double? room_price;
+  double? other_price;
   double? old_price;
   double? last_paid;
   double? pay_cash;
@@ -65,7 +65,7 @@ class _Main_State extends State<Main_> {
   double? pay_return;
   String? pay_note;
 
-  // * ផ្ទុកព័ត៌មានបន្ទប់ និងប្រវត្តិការទូទាត់
+  // * ផ្ទុកព័ត៌មានបន្ទប់ និងប្រវត្តិការទូទាត់ mini bar
   void init() async {
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
@@ -74,20 +74,20 @@ class _Main_State extends State<Main_> {
 
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-    map_room = tmp.data[0] as Map<String, dynamic>;
+    map_r = tmp.data[0] as Map<String, dynamic>;
 
     // * គណនាតម្លៃចាស់ និងប្រាក់ដែលបានទទួលរួច
-    tmp = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
+    tmp = map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_MINI_BAR] as List<dynamic>? ?? [];
     for (var l in tmp) {
       // * តម្លៃសរុប = ផលបូកនៃ add_price ដក sub_price ទាំងអស់
-      old_price = (old_price ?? 0) + (parse_double(l[sm_payment_room.ADD_PRICE]) ?? 0);
-      old_price = (old_price ?? 0) - (parse_double(l[sm_payment_room.SUB_PRICE]) ?? 0);
+      old_price = (old_price ?? 0) + (parse_double(l[sm_payment_mini_bar.ADD_PRICE]) ?? 0);
+      old_price = (old_price ?? 0) - (parse_double(l[sm_payment_mini_bar.SUB_PRICE]) ?? 0);
       // * ប្រាក់ដែលបានទទួលសរុប
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.PAY_CASH]) ?? 0);
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.PAY_BANK]) ?? 0);
-      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_room.PAY_RETURN]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_mini_bar.PAY_CASH]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_mini_bar.PAY_BANK]) ?? 0);
+      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_mini_bar.PAY_RETURN]) ?? 0);
     }
-    room_price = old_price;
+    other_price = old_price;
 
     setState(() {});
   }
@@ -100,18 +100,18 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់
       Text(
-        '${t("Room")} ${map_room?[sm_room.NUMBER] ?? "N/A"}', //
+        '${t("Room")} ${map_r?[sm_room.NUMBER] ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
       Divider(height: 1, color: Colors.black),
 
-      // * បញ្ចូលតម្លៃបន្ទប់
+      // * បញ្ចូលតម្លៃផ្សេងៗ
       Input_Number(
-        init: room_price, //
-        lead: '${t("Room Price")}:', //
+        init: other_price, //
+        lead: '${t("Mini Bar Price")}:', //
         onChanged: (v) {
-          room_price = v;
+          other_price = v;
           setState(() {});
         },
       ),
@@ -176,13 +176,7 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text(
-            '${t("Balanced")}: ',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold, //
-            ),
-          ),
+          Text('${t("Balanced")}: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           Text(
             "${balanced.toStringAsFixed(2)} \$",
             style: TextStyle(
@@ -198,22 +192,15 @@ class _Main_State extends State<Main_> {
       OutlinedButton.icon(
         icon: Icon(Icons.add), //
         label: Text(t("Add Payment")), //
-        onPressed: (can_update) ? on_update : null, //
+        onPressed: is_loading ? on_pay : null, //
       ),
 
       SizedBox(height: height - 100),
     ]);
   }
 
-  // * តម្រូវឱ្យមានតម្លៃ។ មិនកំណត់លើ balanced == 0 ទេ ព្រោះ
-  // * លំហូរនេះបន្ថែមការទូទាត់ទៅសមតុល្យ (pay_room ជាលំហូរទូទាត់ពេញ)។
-  bool get can_update {
-    if ((room_price ?? 0) <= 0) return false;
-    return true;
-  }
-
   // * ភាពខុសគ្នារវាងតម្លៃថ្មី និងតម្លៃចាស់
-  double get _diff => (room_price ?? 0) - (old_price ?? 0);
+  double get _diff => (other_price ?? 0) - (old_price ?? 0);
 
   // * បើតម្លៃថ្មីខ្ពស់ជាង បញ្ចូលទៅ add_price
   double get _add_price => _diff > 0 ? _diff : 0;
@@ -228,48 +215,28 @@ class _Main_State extends State<Main_> {
     temp = temp + (pay_cash ?? 0);
     temp = temp + (pay_bank ?? 0);
     temp = temp + (last_paid ?? 0);
-    temp = temp - (room_price ?? 0);
+    temp = temp - (other_price ?? 0);
     temp = temp - (pay_return ?? 0);
 
     return temp;
   }
 
-  // * អនុវត្តការបន្ថែមការទូទាត់បន្ទប់
-  void on_update() async {
-    // * កត់ត្រាការទូទាត់បន្ទប់
+  // * អនុវត្តការបន្ថែមការទូទាត់ mini bar
+  void on_pay() async {
+    // * កត់ត្រាការទូទាត់ mini bar
     setState(() => is_loading = true);
     await dio.post(
-      endpoint.FRONT_DESK_UPDATE_PAY_ROOM,
+      endpoint.FRONT_DESK_UPDATE_PAY_MINI_BAR,
       data: {
-        sm_front_desk.ID: map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
-        sm_payment_room.ADD_PRICE: _add_price, //
-        sm_payment_room.SUB_PRICE: _sub_price, //
-        sm_payment_room.PAY_CASH: pay_cash ?? 0, //
-        sm_payment_room.PAY_BANK: pay_bank ?? 0, //
-        sm_payment_room.PAY_RETURN: pay_return ?? 0, //
-        sm_payment_room.PAY_NOTE: pay_note ?? "", //
+        sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
+        sm_payment_mini_bar.ADD_PRICE: _add_price, //
+        sm_payment_mini_bar.SUB_PRICE: _sub_price, //
+        sm_payment_mini_bar.PAY_CASH: pay_cash ?? 0, //
+        sm_payment_mini_bar.PAY_BANK: pay_bank ?? 0, //
+        sm_payment_mini_bar.PAY_RETURN: pay_return ?? 0, //
+        sm_payment_mini_bar.PAY_NOTE: pay_note ?? "", //
       },
     );
-    setState(() => is_loading = false);
-
-    // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់តាមសមតុល្យ
-    setState(() => is_loading = true);
-    if (balanced == 0)
-      await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
-        data: {
-          sm_room.ID: widget.room_id, //
-          sm_room.STATUS: "Pending Leave", //
-        },
-      );
-    else
-      await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
-        data: {
-          sm_room.ID: widget.room_id, //
-          sm_room.STATUS: "Pending Pay", //
-        },
-      );
     setState(() => is_loading = false);
 
     snackbar(ct: context, ms: t("Success"), cl: Colors.green);
@@ -283,7 +250,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
-// * ថ្នាក់ Main_ ជាទំព័របន្ថែមការទូទាត់បន្ទប់
+// * ថ្នាក់ Main_ ជាទំព័របន្ថែមការទូទាត់ mini bar
 class Main_ extends StatefulWidget {
   const Main_({
     super.key,
@@ -301,7 +268,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-
+  //
   runApp(
     MultiProvider(
       providers: [

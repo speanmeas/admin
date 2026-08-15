@@ -54,50 +54,24 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   dynamic tmp;
   dynamic map_r;
-  dynamic map_fd;
   bool is_loading = true;
-  bool is_submitting = false;
 
-  String? room_number;
   String? guest_id;
-  String? front_desk_id;
-
-  // String? front_desk_id;
-  // String? room_number;
-  // String? guest_full_name;
-  // String? guest_phone_number;
-  // String? guest_gender;
-  // String? guest_nationality;
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ និងភ្ញៀវបច្ចុប្បន្ន
   void init() async {
-    try {
-      // * អានព័ត៌មានបន្ទប់តាម id
-      tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
-      map_r = tmp.data[0] as Map<String, dynamic>;
+    // * អានព័ត៌មានបន្ទប់តាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    setState(() => is_loading = false);
 
-      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null) throw Exception("Front desk ID is null");
+    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-      // * អានព័ត៌មាន front desk
-      tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID][sm_front_desk.ID]});
-      map_fd = tmp.data[0] as Map<String, dynamic>;
+    map_r = tmp.data[0] as Map<String, dynamic>;
 
-      front_desk_id = map_fd[sm_front_desk.ID];
-      guest_id = map_fd[sm_front_desk.GUEST_ID]?[sm_guest.ID]?.toString();
+    guest_id = map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.GUEST_ID]?[sm_guest.ID]?.toString();
 
-      room_number = map_r[sm_room.NUMBER];
-
-      // guest_full_name = map_fd["guest_full_name"]?.toString();
-      // guest_phone_number = map_fd["guest_phone_number"]?.toString();
-      // guest_gender = map_fd["guest_gender"]?.toString();
-      // guest_nationality = map_fd["guest_nationality"]?.toString();
-
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override
@@ -108,7 +82,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់
       Text(
-        '${t("Room")} ${room_number ?? "N/A"}', //
+        '${t("Room")} ${map_r?[sm_room.NUMBER] ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -126,8 +100,8 @@ class _Main_State extends State<Main_> {
       // * ប៊ូតុងបញ្ជូនការធ្វើបច្ចុប្បន្នភាព
       OutlinedButton.icon(
         icon: Icon(Icons.check), //
-        label: Text(is_submitting ? t("Updating...") : t("Update")), //
-        onPressed: is_submitting ? null : on_update, //
+        label: Text(t("Update")), //
+        onPressed: (is_loading) ? null : on_update, //
       ),
 
       SizedBox(height: height - 100),
@@ -136,29 +110,19 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការធ្វើបច្ចុប្បន្នភាពភ្ញៀវ
   void on_update() async {
-    if (is_submitting) return; // double-submit guard
-    is_submitting = true;
-    setState(() {});
+    // * ធ្វើបច្ចុប្បន្នភាពភ្ញៀវរបស់ front desk
+    setState(() => is_loading = true);
+    await dio.post(
+      endpoint.FRONT_DESK_UPDATE_GUEST, //
+      data: {
+        sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
+        sm_front_desk.GUEST_ID: guest_id,
+      },
+    );
+    setState(() => is_loading = false);
 
-    try {
-      // * ធ្វើបច្ចុប្បន្នភាពភ្ញៀវរបស់ front desk
-      await dio.post(
-        endpoint.FRONT_DESK_UPDATE_GUEST, //
-        data: {
-          sm_front_desk.ID: front_desk_id, //
-          sm_front_desk.GUEST_ID: guest_id,
-        },
-      );
-
-      Navigator.pop(context, true);
-      snackbar(ct: context, ms: t("Success"), cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    } finally {
-      is_submitting = false;
-      if (mounted) setState(() {});
-    }
+    snackbar(ct: context, ms: t("Success"), cl: Colors.green);
+    Navigator.pop(context, true);
   }
 
   @override
