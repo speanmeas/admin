@@ -1,17 +1,17 @@
-// * ទំព័រលុប mini bar
+// * ទំព័រលុបmini bar
 
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
-// * បង្កើត layout មេរបស់ទំព័រលុប mini bar
+// * បង្កើត layout មេរបស់ទំព័រលុបmini bar
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -47,59 +47,58 @@ Widget _layout(List<Widget> children) {
   );
 }
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់លុប mini bar
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការលុបmini bar
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
+  bool is_loading = true;
+
+  void init() async {
+    setState(() => is_loading = false);
+  }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      // * បញ្ជាក់
+      // * សារបញ្ជាក់ការលុប
       Text(
         "Confirm to delete?", //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
-      // * ប៊ូតុង Delete
+      // * ប៊ូតុងលុប
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.delete_outlined),
         label: Text("Delete"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-        onPressed: on_delete,
-        // style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+        onPressed: is_loading ? null : on_delete,
       ),
 
       SizedBox(height: height - 100),
     ]);
   }
 
-  // * អនុវត្តការលុប mini bar
+  // * អនុវត្តការលុបmini bar
   void on_delete() async {
-    try {
-      // * ផ្ញើសំណើលុប mini bar
-      tmp = await dio.post(
-        endpoint.MINI_BAR_CRUD_DELETE, //
-        data: {"_id": widget.id},
-      );
+    // * ផ្ញើសំណើលុបmini bar
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.MINI_BAR_CRUD_DELETE, data: {"_id": widget.id});
+    setState(() => is_loading = false);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.MINI_BAR_CRUD_DELETE}", cl: Colors.red);
 
-      //
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data);
+  }
 
-      //
-      Navigator.pop(context, tmp.data);
-
-      //
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+  @override
+  void initState() {
+    super.initState();
+    init();
   }
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រលុប mini bar
+// * ថ្នាក់ Main_ ជាទំព័រលុបmini bar
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
@@ -117,7 +116,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

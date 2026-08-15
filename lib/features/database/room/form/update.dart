@@ -1,4 +1,4 @@
-// * ទំព័រកែប្រែបន្ទប់ (Update Room)
+// * ទំព័រកែប្រែព័ត៌មានបន្ទប់
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -8,13 +8,13 @@ import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
-import "package:speanmeas/core/schema/room.g.dart";
-
 import "../widget/kind_select.dart" as k_select;
 import "../widget/status_select.dart" as s_select;
+import "package:speanmeas/core/schema/room.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * បង្កើត layout មេរបស់ទំព័រកែប្រែបន្ទប់
@@ -66,76 +66,78 @@ class _Main_State extends State<Main_> {
   String? status;
   String? note;
 
-  // * ផ្ទុកព័ត៌មានបន្ទប់តាម ID
+  // * ផ្ទុកព័ត៌មានបន្ទប់បច្ចុប្បន្ន
   void init() async {
-    try {
-      // * អានព័ត៌មានបន្ទប់តាម ID
-      tmp = await dio.post(
-        endpoint.ROOM_CRUD_READ_ID, //
-        data: {sm_room.ID: widget.id},
-      );
+    // * អានទិន្នន័យបន្ទប់តាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.id});
+    setState(() => is_loading = false);
 
-      final data = tmp.data;
-      if (data == null || data.isEmpty) {
-        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
-        is_loading = false;
-        setState(() {});
-        return;
-      }
-      final row = data[0];
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-      // * ផ្ទុកតម្លៃពីជួរដេក
-      number = row[sm_room.NUMBER]?.toString();
-      usd_per_day = double.tryParse(row[sm_room.USD_PER_DAY]?.toString() ?? "");
-      usd_per_3h = double.tryParse(row[sm_room.USD_PER_3H]?.toString() ?? "");
-      kind = row[sm_room.KIND]?.toString();
-      status = row[sm_room.STATUS]?.toString();
-      note = row[sm_room.NOTE]?.toString();
+    number = parse_string(tmp.data[0][sm_room.NUMBER]);
+    usd_per_day = parse_double(tmp.data[0][sm_room.USD_PER_DAY]);
+    usd_per_3h = parse_double(tmp.data[0][sm_room.USD_PER_3H]);
+    kind = parse_string(tmp.data[0][sm_room.KIND]);
+    status = parse_string(tmp.data[0][sm_room.STATUS]);
+    note = parse_string(tmp.data[0][sm_room.NOTE]);
 
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      // * បញ្ចូលលេខបន្ទប់
+      // * បញ្ចូលNumber
       Input_Text(
         init: number, //
         lead: "Number:", //
-        onChanged: (v) => number = v,
+        onChanged: (v) {
+          number = v;
+          setState(() {});
+        },
       ),
 
-      // * បញ្ចូលតម្លៃក្នុងមួយថ្ងៃ
+      // * បញ្ចូលUSD/Day
       Input_Number(
         init: usd_per_day, //
         lead: "USD/Day:", //
-        onChanged: (v) => usd_per_day = v,
+        onChanged: (v) {
+          usd_per_day = v;
+          setState(() {});
+        },
       ),
 
-      // * បញ្ចូលតម្លៃក្នុងមួយ 3 ម៉ោង
+      // * បញ្ចូលUSD/3H
       Input_Number(
         init: usd_per_3h, //
         lead: "USD/3H:", //
-        onChanged: (v) => usd_per_3h = v,
+        onChanged: (v) {
+          usd_per_3h = v;
+          setState(() {});
+        },
       ),
 
       // * ជ្រើសរើសប្រភេទបន្ទប់
       k_select.Main_(
         initial: kind, //
-        onChanged: (v) => kind = v,
+        onChanged: (v) {
+          kind = v;
+          setState(() {});
+        },
       ),
 
       // * ជ្រើសរើសស្ថានភាពបន្ទប់
       s_select.Main_(
         initial: status, //
-        onChanged: (v) => status = v,
+        onChanged: (v) {
+          status = v;
+          setState(() {});
+        },
       ),
 
       // * បញ្ចូលកំណត់ចំណាំ
@@ -143,45 +145,45 @@ class _Main_State extends State<Main_> {
         init: note, //
         lead: "Note:", //
         maxLines: 4, //
-        onChanged: (v) => note = v ?? "",
+        onChanged: (v) {
+          note = v;
+          setState(() {});
+        },
       ),
 
-      // * ប៊ូតុងកែប្រែបន្ទប់
+      // * ប៊ូតុងកែប្រែ
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Update"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-        onPressed: on_update,
+        onPressed: is_loading ? null : on_update,
       ),
       SizedBox(height: height - 100),
     ]);
   }
 
-  // * កែប្រែបន្ទប់តាមរយៈ API
+  // * អនុវត្តការកែប្រែបន្ទប់
   void on_update() async {
-    try {
-      // * ផ្ញើសំណើកែប្រែបន្ទប់
-      tmp = await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
-        data: {
-          sm_room.ID: widget.id,
-          sm_room.NUMBER: number,
-          sm_room.USD_PER_DAY: usd_per_day,
-          sm_room.USD_PER_3H: usd_per_3h,
-          sm_room.KIND: kind,
-          sm_room.STATUS: status,
-          sm_room.NOTE: note, //
-        },
-      );
+    // * ផ្ញើសំណើកែប្រែបន្ទប់
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.ROOM_CRUD_UPDATE, //
+      data: {
+        sm_room.ID: widget.id,
+        sm_room.NUMBER: number,
+        sm_room.USD_PER_DAY: usd_per_day,
+        sm_room.USD_PER_3H: usd_per_3h,
+        sm_room.KIND: kind,
+        sm_room.STATUS: status,
+        sm_room.NOTE: note, //
+      },
+    );
+    setState(() => is_loading = false);
 
-      // * ត្រលប់ទៅទំព័រមុនជាមួយទិន្នន័យដែលបានកែប្រែ
-      Navigator.pop(context, tmp.data[0]);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_UPDATE}", cl: Colors.red);
 
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data[0]);
   }
 
   @override
@@ -189,8 +191,6 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
 // * ថ្នាក់ Main_ ជាទំព័រកែប្រែបន្ទប់
@@ -211,7 +211,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

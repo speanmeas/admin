@@ -47,9 +47,14 @@ Widget _layout(List<Widget> children) {
   );
 }
 
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការលុបសញ្ជាតិ
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
+  bool is_loading = true;
+
+  void init() async {
+    setState(() => is_loading = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +72,7 @@ class _Main_State extends State<Main_> {
         icon: Icon(Icons.delete_outlined),
         label: Text("Delete"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-        onPressed: on_delete,
+        onPressed: is_loading ? null : on_delete,
       ),
 
       SizedBox(height: height - 100),
@@ -76,24 +81,20 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការលុបសញ្ជាតិ
   void on_delete() async {
-    try {
-      // * ផ្ញើសំណើលុបសញ្ជាតិ
-      tmp = await dio.post(
-        endpoint.NATIONALITY_CRUD_DELETE, //
-        data: {"_id": widget.id},
-      );
+    // * ផ្ញើសំណើលុបសញ្ជាតិ
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.NATIONALITY_CRUD_DELETE, data: {"_id": widget.id});
+    setState(() => is_loading = false);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.NATIONALITY_CRUD_DELETE}", cl: Colors.red);
 
-      //
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data);
+  }
 
-      //
-      Navigator.pop(context, tmp.data);
-
-      //
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+  @override
+  void initState() {
+    super.initState();
+    init();
   }
 }
 
@@ -115,7 +116,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

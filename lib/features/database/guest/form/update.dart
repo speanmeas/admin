@@ -1,4 +1,4 @@
-// * ទំព័រកែប្រែភ្ញៀវ
+// * ទំព័រកែប្រែព័ត៌មានភ្ញៀវ
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -8,9 +8,10 @@ import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/select/select_dynamic.dart";
+import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_text.dart";
+import "package:speanmeas/core/widget/select/select_dynamic.dart";
 import "package:speanmeas/core/widget/search/search_nationality.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
@@ -53,6 +54,7 @@ Widget _layout(List<Widget> children) {
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់កែប្រែភ្ញៀវ
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
   bool is_loading = true;
 
@@ -64,68 +66,54 @@ class _Main_State extends State<Main_> {
   String? passport_number;
   String? note;
 
-  // * ផ្ទុកព័ត៌មានភ្ញៀវតាម id សម្រាប់កែប្រែ
+  // * ផ្ទុកព័ត៌មានភ្ញៀវបច្ចុប្បន្ន
   void init() async {
-    try {
-      // * អានព័ត៌មានភ្ញៀវតាម id
-      tmp = await dio.post(
-        endpoint.GUEST_CRUD_READ_ID, //
-        data: {sm_guest.ID: widget.id},
-      );
+    // * អានទិន្នន័យភ្ញៀវតាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.GUEST_CRUD_READ_ID, data: {sm_guest.ID: widget.id});
+    setState(() => is_loading = false);
 
-      final data = tmp.data;
-      // * បើគ្មានទិន្នន័យ បង្ហាញសារព្រមាន
-      if (data == null || data.isEmpty) {
-        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
-        is_loading = false;
-        setState(() {});
-        return;
-      }
-      final row = data[0];
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.GUEST_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-      // * ផ្ទុកតម្លៃទៅក្នុងអថេរ
-      full_name = row[sm_guest.FULL_NAME]?.toString();
-      phone_number = row[sm_guest.PHONE_NUMBER]?.toString();
-      gender = row[sm_guest.GENDER]?.toString();
-      nationality_id = row[sm_guest.NATIONALITY_ID]?["name"]?.toString();
-      id_number = row[sm_guest.ID_NUMBER]?.toString();
-      passport_number = row[sm_guest.PASSPORT_NUMBER]?.toString();
-      note = row[sm_guest.NOTE]?.toString();
+    full_name = parse_string(tmp.data[0][sm_guest.FULL_NAME]);
+    phone_number = parse_string(tmp.data[0][sm_guest.PHONE_NUMBER]);
+    gender = parse_string(tmp.data[0][sm_guest.GENDER]);
+    nationality_id = parse_string(tmp.data[0][sm_guest.NATIONALITY_ID]?['name']);
+    id_number = parse_string(tmp.data[0][sm_guest.ID_NUMBER]);
+    passport_number = parse_string(tmp.data[0][sm_guest.PASSPORT_NUMBER]);
+    note = parse_string(tmp.data[0][sm_guest.NOTE]);
 
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      // * កែប្រែឈ្មោះពេញ
+      // * បញ្ចូលFull Name
       Input_Text(
         init: full_name, //
-        lead: "Full Name:",
+        lead: "Full Name:", //
         onChanged: (v) {
           full_name = v;
           setState(() {});
         },
       ),
 
-      // * កែប្រែលេខទូរស័ព្ទ
+      // * បញ្ចូលPhone Number
       Input_Text(
         init: phone_number, //
-        lead: "Phone Number:",
+        lead: "Phone Number:", //
         onChanged: (v) {
           phone_number = v;
           setState(() {});
         },
       ),
 
-      // * កែប្រែភេទ
+      // * ជ្រើសរើសGender
       Select_Dynamic(
         init: gender, //
         lead: "Gender:", //
@@ -137,7 +125,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      // * កែប្រែសញ្ជាតិ
+      // * ស្វែងរកNationality
       Search_Nationality(
         init: nationality_id, //
         onChanged: (v) {
@@ -146,72 +134,71 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      // * កែប្រែលេខអត្តសញ្ញាណប័ណ្ណ
+      // * បញ្ចូលID Number
       Input_Text(
         init: id_number, //
-        lead: "ID Number:",
+        lead: "ID Number:", //
         onChanged: (v) {
           id_number = v;
           setState(() {});
         },
       ),
 
-      // * កែប្រែលេខលិខិតឆ្លងដែន
+      // * បញ្ចូលPassport Number
       Input_Text(
         init: passport_number, //
-        lead: "Passport Number:",
+        lead: "Passport Number:", //
         onChanged: (v) {
           passport_number = v;
           setState(() {});
         },
       ),
 
-      // * កែប្រែកំណត់ចំណាំ
+      // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: note, //
-        lead: "Note:",
-        maxLines: 4,
+        lead: "Note:", //
+        maxLines: 4, //
         onChanged: (v) {
           note = v;
           setState(() {});
         },
       ),
+
       // * ប៊ូតុងកែប្រែ
       OutlinedButton.icon(
-        icon: Icon(Icons.check), //
+        icon: Icon(Icons.check),
         label: Text("Update"),
-        onPressed: on_update,
+        style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+        onPressed: is_loading ? null : on_update,
       ),
-
-      SizedBox(height: height - 100), //
+      SizedBox(height: height - 100),
     ]);
   }
 
   // * អនុវត្តការកែប្រែភ្ញៀវ
   void on_update() async {
-    try {
-      // * ផ្ញើសំណើកែប្រែភ្ញៀវ
-      tmp = await dio.post(
-        endpoint.GUEST_CRUD_UPDATE, //
-        data: {
-          sm_guest.ID: widget.id, //
-          sm_guest.FULL_NAME: full_name, //
-          sm_guest.PHONE_NUMBER: phone_number, //
-          sm_guest.ID_NUMBER: id_number, //
-          sm_guest.PASSPORT_NUMBER: passport_number, //
-          sm_guest.NOTE: note, //
-          sm_guest.GENDER: gender, //
-          sm_guest.NATIONALITY_ID: nationality_id, //
-        },
-      );
+    // * ផ្ញើសំណើកែប្រែភ្ញៀវ
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.GUEST_CRUD_UPDATE, //
+      data: {
+        sm_guest.ID: widget.id,
+        sm_guest.FULL_NAME: full_name,
+        sm_guest.PHONE_NUMBER: phone_number,
+        sm_guest.GENDER: gender,
+        sm_guest.NATIONALITY_ID: nationality_id,
+        sm_guest.ID_NUMBER: id_number,
+        sm_guest.PASSPORT_NUMBER: passport_number,
+        sm_guest.NOTE: note, //
+      },
+    );
+    setState(() => is_loading = false);
 
-      Navigator.pop(context, tmp.data[0]);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.GUEST_CRUD_UPDATE}", cl: Colors.red);
 
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data[0]);
   }
 
   @override
@@ -225,7 +212,7 @@ class _Main_State extends State<Main_> {
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
-    required this.id,
+    required this.id, //
   });
 
   final String id;
@@ -239,7 +226,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

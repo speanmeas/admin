@@ -8,12 +8,13 @@ import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
-// * បង្កើត layout មេរបស់ទំព័រអានភ្ញៀវ
+// * បង្កើត layout មេរបស់ទំព័រអានព័ត៌មានភ្ញៀវ
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -49,13 +50,11 @@ Widget _layout(List<Widget> children) {
   );
 }
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់អានភ្ញៀវ
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការអានព័ត៌មានភ្ញៀវ
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
   bool is_loading = true;
 
-  String? id;
   String? full_name;
   String? phone_number;
   String? gender;
@@ -66,82 +65,67 @@ class _Main_State extends State<Main_> {
 
   // * ផ្ទុកព័ត៌មានភ្ញៀវតាម id
   void init() async {
-    try {
-      // * អានព័ត៌មានភ្ញៀវតាម id
-      tmp = await dio.post(
-        endpoint.GUEST_CRUD_READ_ID, //
-        data: {sm_guest.ID: widget.id},
-      );
+    // * អានទិន្នន័យភ្ញៀវតាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.GUEST_CRUD_READ_ID, data: {sm_guest.ID: widget.id});
+    setState(() => is_loading = false);
 
-      final data = tmp.data;
-      // * បើគ្មានទិន្នន័យ បង្ហាញសារព្រមាន
-      if (data == null || data.isEmpty) {
-        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
-        is_loading = false;
-        setState(() {});
-        return;
-      }
-      final row = data[0];
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.GUEST_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-      // * ផ្ទុកតម្លៃទៅក្នុងអថេរ
-      id = row[sm_guest.ID]?.toString();
-      full_name = row[sm_guest.FULL_NAME]?.toString();
-      phone_number = row[sm_guest.PHONE_NUMBER]?.toString();
-      gender = row[sm_guest.GENDER]?.toString();
-      nationality_id = row[sm_guest.NATIONALITY_ID]?["name"]?.toString();
-      id_number = row[sm_guest.ID_NUMBER]?.toString();
-      passport_number = row[sm_guest.PASSPORT_NUMBER]?.toString();
-      note = row[sm_guest.NOTE]?.toString();
+    full_name = parse_string(tmp.data[0][sm_guest.FULL_NAME]);
+    phone_number = parse_string(tmp.data[0][sm_guest.PHONE_NUMBER]);
+    gender = parse_string(tmp.data[0][sm_guest.GENDER]);
+    nationality_id = parse_string(tmp.data[0][sm_guest.NATIONALITY_ID]?['name']);
+    id_number = parse_string(tmp.data[0][sm_guest.ID_NUMBER]);
+    passport_number = parse_string(tmp.data[0][sm_guest.PASSPORT_NUMBER]);
+    note = parse_string(tmp.data[0][sm_guest.NOTE]);
 
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      // * បង្ហាញឈ្មោះពេញ
+      // * បង្ហាញFull Name
       Show_Text(
         prefixIcon: Icons.person_outline,
         lead: "Full Name:", //
         value: full_name,
       ),
 
-      // * បង្ហាញលេខទូរស័ព្ទ
+      // * បង្ហាញPhone Number
       Show_Text(
         prefixIcon: Icons.phone_outlined,
         lead: "Phone Number:", //
         value: phone_number,
       ),
 
-      // * បង្ហាញភេទ
+      // * បង្ហាញGender
       Show_Text(
         prefixIcon: Icons.wc_outlined,
         lead: "Gender:", //
         value: gender,
       ),
 
-      // * បង្ហាញសញ្ជាតិ
+      // * បង្ហាញNationality
       Show_Text(
         prefixIcon: Icons.flag_outlined,
         lead: "Nationality:", //
         value: nationality_id,
       ),
 
-      // * បង្ហាញលេខអត្តសញ្ញាណប័ណ្ណ
+      // * បង្ហាញID Number
       Show_Text(
         prefixIcon: Icons.badge_outlined,
         lead: "ID Number:", //
         value: id_number,
       ),
 
-      // * បង្ហាញលេខលិខិតឆ្លងដែន
+      // * បង្ហាញPassport Number
       Show_Text(
         prefixIcon: Icons.book_outlined,
         lead: "Passport Number:", //
@@ -156,6 +140,13 @@ class _Main_State extends State<Main_> {
         maxLines: 4,
       ),
 
+      // * ប៊ូតុងបិទ
+      OutlinedButton.icon(
+        icon: Icon(Icons.check), //
+        label: Text("Close"),
+        onPressed: () => Navigator.pop(context),
+      ),
+
       SizedBox(height: height - 100),
     ]);
   }
@@ -167,7 +158,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រអានភ្ញៀវ
+// * ថ្នាក់ Main_ ជាទំព័រអានព័ត៌មានភ្ញៀវ
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
@@ -185,7 +176,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

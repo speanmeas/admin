@@ -8,6 +8,7 @@ import "package:flutter/foundation.dart";
 import "package:provider/provider.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:flutter_svg/flutter_svg.dart";
+import "package:speanmeas/core/schema/payment_room.g.dart";
 import "package:speanmeas/core/schema/user.g.dart";
 
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
@@ -16,6 +17,7 @@ import "package:speanmeas/core/config.dart"; // ignore: unused_import
 import "package:speanmeas/core/i18n/main.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
@@ -555,7 +557,7 @@ final columns = [
 
   // * ជួរឈរថ្លៃបន្ទប់
   PlutoColumn(
-    field: sm_front_desk.PAY_ROOM + "add_price", //
+    field: sm_front_desk.PAY_ROOM + "price", //
     title: "ថ្លៃបន្ទប់",
     type: PlutoColumnType.number(),
     width: 100,
@@ -563,7 +565,7 @@ final columns = [
       return Align(
         alignment: Alignment.centerRight, //
         child: Text(
-          '${rc.cell.value.toStringAsFixed(2)} \$', //
+          '${format_double(rc.cell.value)} \$', //
           overflow: TextOverflow.ellipsis,
         ),
       );
@@ -592,7 +594,7 @@ final columns = [
 
   // * ជួរឈរសាច់ប្រាក់ (បន្ទប់)
   PlutoColumn(
-    field: sm_front_desk.PAY_ROOM + "pay_cash", //
+    field: sm_front_desk.PAY_ROOM + "cash", //
     title: "សាច់ប្រាក់",
     type: PlutoColumnType.number(),
     width: 100,
@@ -600,7 +602,7 @@ final columns = [
       return Align(
         alignment: Alignment.centerRight, //
         child: Text(
-          '${rc.cell.value.toStringAsFixed(2)} \$', //
+          '${format_double(rc.cell.value)} \$', //
           overflow: TextOverflow.ellipsis,
         ),
       );
@@ -629,7 +631,7 @@ final columns = [
 
   // * ជួរឈរបង់ប្រាក់តាមធនាគារ (បន្ទប់)
   PlutoColumn(
-    field: sm_front_desk.PAY_ROOM + "pay_bank", //
+    field: sm_front_desk.PAY_ROOM + "bank", //
     title: "ធនាគារ",
     type: PlutoColumnType.number(),
     width: 100,
@@ -637,7 +639,7 @@ final columns = [
       return Align(
         alignment: Alignment.centerRight, //
         child: Text(
-          '${rc.cell.value.toStringAsFixed(2)} \$', //
+          '${format_double(rc.cell.value)} \$', //
           overflow: TextOverflow.ellipsis,
         ),
       );
@@ -666,7 +668,7 @@ final columns = [
 
   // * ជួរឈរប្រាក់អាប់ (បន្ទប់)
   PlutoColumn(
-    field: sm_front_desk.PAY_ROOM + "pay_return", //
+    field: sm_front_desk.PAY_ROOM + "return", //
     title: "ប្រាក់អាប់",
     type: PlutoColumnType.number(),
     width: 100,
@@ -674,7 +676,7 @@ final columns = [
       return Align(
         alignment: Alignment.centerRight, //
         child: Text(
-          '${rc.cell.value.toStringAsFixed(2)} \$',
+          '${format_double(rc.cell.value)} \$',
           overflow: TextOverflow.ellipsis, //
         ),
       );
@@ -703,7 +705,7 @@ final columns = [
 
   // * ជួរឈរថ្លៃ mini bar
   PlutoColumn(
-    field: sm_front_desk.PAY_MINI_BAR + "add_price", //
+    field: sm_front_desk.PAY_MINI_BAR + "price", //
     title: "ថ្លៃ Mini Bar",
     type: PlutoColumnType.number(),
     width: 100,
@@ -711,7 +713,7 @@ final columns = [
       return Align(
         alignment: Alignment.centerRight, //
         child: Text(
-          '${rc.cell.value.toStringAsFixed(2)} \$',
+          '${format_double(rc.cell.value)} \$',
           overflow: TextOverflow.ellipsis, //
         ),
       );
@@ -740,7 +742,7 @@ final columns = [
 
   // * ជួរឈរសាច់ប្រាក់ (mini bar)
   PlutoColumn(
-    field: sm_front_desk.PAY_MINI_BAR + "pay_cash", //
+    field: sm_front_desk.PAY_MINI_BAR + "cash", //
     title: "សាច់ប្រាក់",
     type: PlutoColumnType.number(),
     width: 100,
@@ -748,7 +750,7 @@ final columns = [
       return Align(
         alignment: Alignment.centerRight, //
         child: Text(
-          '${rc.cell.value.toStringAsFixed(2)} \$',
+          '${format_double(rc.cell.value)} \$',
           overflow: TextOverflow.ellipsis, //
         ),
       );
@@ -777,7 +779,7 @@ final columns = [
 
   // * ជួរឈរបង់ប្រាក់តាមធនាគារ (mini bar)
   PlutoColumn(
-    field: sm_front_desk.PAY_MINI_BAR + "pay_bank", //
+    field: sm_front_desk.PAY_MINI_BAR + "bank", //
     title: "ធនាគារ",
     type: PlutoColumnType.number(),
     width: 100,
@@ -785,7 +787,7 @@ final columns = [
       return Align(
         alignment: Alignment.centerRight, //
         child: Text(
-          '${rc.cell.value.toStringAsFixed(2)} \$',
+          '${format_double(rc.cell.value)} \$',
           overflow: TextOverflow.ellipsis, //
         ),
       );
@@ -814,7 +816,7 @@ final columns = [
 
   // * ជួរឈរប្រាក់អាប់ (mini bar)
   PlutoColumn(
-    field: sm_front_desk.PAY_MINI_BAR + "pay_return", //
+    field: sm_front_desk.PAY_MINI_BAR + "return", //
     title: "ប្រាក់អាប់",
     type: PlutoColumnType.number(),
     width: 100,
@@ -822,7 +824,7 @@ final columns = [
       return Align(
         alignment: Alignment.centerRight, //
         child: Text(
-          '${rc.cell.value.toStringAsFixed(2)} \$',
+          '${format_double(rc.cell.value)} \$',
           overflow: TextOverflow.ellipsis, //
         ),
       );
@@ -851,7 +853,7 @@ final columns = [
 
   // * ជួរឈរថ្លៃផ្សេងៗ
   PlutoColumn(
-    field: sm_front_desk.PAY_OTHER + "add_price", //
+    field: sm_front_desk.PAY_OTHER + "price", //
     title: "ថ្លៃផ្សេងៗ",
     type: PlutoColumnType.number(),
     width: 100,
@@ -859,7 +861,7 @@ final columns = [
       return Align(
         alignment: Alignment.centerRight, //
         child: Text(
-          '${rc.cell.value.toStringAsFixed(2)} \$',
+          '${format_double(rc.cell.value)} \$',
           overflow: TextOverflow.ellipsis, //
         ),
       );
@@ -888,7 +890,7 @@ final columns = [
 
   // * ជួរឈរសាច់ប្រាក់ (ផ្សេងៗ)
   PlutoColumn(
-    field: sm_front_desk.PAY_OTHER + "pay_cash", //
+    field: sm_front_desk.PAY_OTHER + "cash", //
     title: "សាច់ប្រាក់",
     type: PlutoColumnType.number(),
     width: 100,
@@ -896,7 +898,7 @@ final columns = [
       return Align(
         alignment: Alignment.centerRight, //
         child: Text(
-          '${rc.cell.value.toStringAsFixed(2)} \$',
+          '${format_double(rc.cell.value)} \$',
           overflow: TextOverflow.ellipsis, //
         ),
       );
@@ -925,7 +927,7 @@ final columns = [
 
   // * ជួរឈរបង់ប្រាក់តាមធនាគារ (ផ្សេងៗ)
   PlutoColumn(
-    field: sm_front_desk.PAY_OTHER + "pay_bank", //
+    field: sm_front_desk.PAY_OTHER + "bank", //
     title: "ធនាគារ",
     type: PlutoColumnType.number(),
     width: 100,
@@ -933,7 +935,7 @@ final columns = [
       return Align(
         alignment: Alignment.centerRight, //
         child: Text(
-          '${rc.cell.value.toStringAsFixed(2)} \$',
+          '${format_double(rc.cell.value)} \$',
           overflow: TextOverflow.ellipsis, //
         ),
       );
@@ -962,7 +964,7 @@ final columns = [
 
   // * ជួរឈរប្រាក់អាប់ (ផ្សេងៗ)
   PlutoColumn(
-    field: sm_front_desk.PAY_OTHER + "pay_return", //
+    field: sm_front_desk.PAY_OTHER + "return", //
     title: "ប្រាក់អាប់",
     type: PlutoColumnType.number(),
     width: 100,
@@ -970,7 +972,7 @@ final columns = [
       return Align(
         alignment: Alignment.centerRight, //
         child: Text(
-          '${rc.cell.value.toStringAsFixed(2)} \$',
+          '${format_double(rc.cell.value)} \$',
           overflow: TextOverflow.ellipsis, //
         ),
       );
@@ -1004,12 +1006,10 @@ final columns = [
     type: PlutoColumnType.text(),
     width: 160,
     renderer: (rc) {
-      String value = "";
-      if (rc.cell.value != null) value = rc.cell.value.toString();
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          value,
+          format_string(rc.cell.value),
           overflow: TextOverflow.ellipsis, //
         ),
       );
@@ -1018,17 +1018,15 @@ final columns = [
 
   // * ជួរឈរអ្នកទទួលប្រាក់
   PlutoColumn(
-    field: sm_front_desk.PAY_ROOM + "created_by" + sm_user.FULL_NAME, //
+    field: sm_front_desk.PAY_ROOM + sm_user.FULL_NAME, //
     title: "ទទួលប្រាក់ដោយ",
     type: PlutoColumnType.text(),
     width: 160,
     renderer: (rc) {
-      String value = "";
-      if (rc.cell.value != null) value = rc.cell.value.toString();
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          value,
+          format_string(rc.cell.value),
           overflow: TextOverflow.ellipsis, //
         ),
       );
@@ -1042,17 +1040,32 @@ final columns = [
     type: PlutoColumnType.text(),
     width: 160,
     renderer: (rc) {
-      String value = "";
-      if (rc.cell.value != null) value = rc.cell.value.toString();
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          value,
+          format_string(rc.cell.value),
           overflow: TextOverflow.ellipsis, //
         ),
       );
     },
   ),
+
+  PlutoColumn(
+    field: "note", //
+    title: "ចំណាំ",
+    type: PlutoColumnType.text(),
+    width: 2000,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          format_string(rc.cell.value), //
+          overflow: TextOverflow.ellipsis, //
+        ),
+      );
+    },
+  ),
+
   //
   // TODO: Add all notes together
   //

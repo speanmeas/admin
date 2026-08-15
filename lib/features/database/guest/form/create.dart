@@ -5,15 +5,16 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+
+import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/select/select_dynamic.dart";
 import "package:speanmeas/core/widget/search/search_nationality.dart";
-import "package:speanmeas/core/schema/guest.g.dart";
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * បង្កើត layout មេរបស់ទំព័របង្កើតភ្ញៀវ
 Widget _layout(List<Widget> children) {
@@ -53,7 +54,9 @@ Widget _layout(List<Widget> children) {
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បង្កើតភ្ញៀវ
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
+  bool is_loading = true;
 
   String? full_name;
   String? phone_number;
@@ -64,52 +67,72 @@ class _Main_State extends State<Main_> {
   String? note;
 
   void init() async {
-    //
+    setState(() => is_loading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      // * បញ្ចូលឈ្មោះពេញ
+      // * បញ្ចូលFull Name
       Input_Text(
         init: full_name, //
         lead: "Full Name:", //
-        onChanged: (v) => full_name = v,
+        onChanged: (v) {
+          full_name = v;
+          setState(() {});
+        },
       ),
 
-      // * បញ្ចូលលេខទូរស័ព្ទ
+      // * បញ្ចូលPhone Number
       Input_Text(
         init: phone_number, //
         lead: "Phone Number:", //
-        onChanged: (v) => phone_number = v,
+        onChanged: (v) {
+          phone_number = v;
+          setState(() {});
+        },
       ),
 
-      // * ជ្រើសរើសភេទ
+      // * ជ្រើសរើសGender
       Select_Dynamic(
-        prefixIcon: Icons.wc,
+        init: gender, //
+        lead: "Gender:", //
         options: ["Male", "Female", "Other"], //
-        onChanged: (v) => gender = v,
+        prefixIcon: Icons.wc,
+        onChanged: (v) {
+          gender = v;
+          setState(() {});
+        },
       ),
 
-      // * ស្វែងរកសញ្ជាតិ
+      // * ស្វែងរកNationality
       Search_Nationality(
-        init: "Cambodian", //
-        onChanged: (v) => nationality_id = v,
+        init: nationality_id, //
+        onChanged: (v) {
+          nationality_id = v;
+          setState(() {});
+        },
       ),
 
-      // * បញ្ចូលលេខអត្តសញ្ញាណប័ណ្ណ
+      // * បញ្ចូលID Number
       Input_Text(
         init: id_number, //
-        lead: "National ID Number:", //
-        onChanged: (v) => id_number = v,
+        lead: "ID Number:", //
+        onChanged: (v) {
+          id_number = v;
+          setState(() {});
+        },
       ),
 
-      // * បញ្ចូលលេខលិខិតឆ្លងដែន
+      // * បញ្ចូលPassport Number
       Input_Text(
         init: passport_number, //
         lead: "Passport Number:", //
-        onChanged: (v) => passport_number = v,
+        onChanged: (v) {
+          passport_number = v;
+          setState(() {});
+        },
       ),
 
       // * បញ្ចូលកំណត់ចំណាំ
@@ -117,7 +140,10 @@ class _Main_State extends State<Main_> {
         init: note, //
         lead: "Note:", //
         maxLines: 4, //
-        onChanged: (v) => note = v ?? "",
+        onChanged: (v) {
+          note = v ?? "";
+          setState(() {});
+        },
       ),
 
       // * ប៊ូតុងបង្កើត
@@ -125,7 +151,7 @@ class _Main_State extends State<Main_> {
         icon: Icon(Icons.check),
         label: Text("Create"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-        onPressed: on_create,
+        onPressed: is_loading ? null : on_create,
       ),
 
       SizedBox(height: height - 100),
@@ -134,28 +160,26 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការបង្កើតភ្ញៀវ
   void on_create() async {
-    try {
-      // * ផ្ញើសំណើបង្កើតភ្ញៀវ
-      tmp = await dio.post(
-        endpoint.GUEST_CRUD_CREATE, //
-        data: {
-          sm_guest.FULL_NAME: full_name,
-          sm_guest.PHONE_NUMBER: phone_number,
-          sm_guest.GENDER: gender,
-          sm_guest.NATIONALITY_ID: nationality_id,
-          sm_guest.ID_NUMBER: id_number,
-          sm_guest.PASSPORT_NUMBER: passport_number,
-          sm_guest.NOTE: note, //
-        },
-      );
+    // * ផ្ញើសំណើបង្កើតភ្ញៀវ
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.GUEST_CRUD_CREATE, //
+      data: {
+        sm_guest.FULL_NAME: full_name,
+        sm_guest.PHONE_NUMBER: phone_number,
+        sm_guest.GENDER: gender,
+        sm_guest.NATIONALITY_ID: nationality_id,
+        sm_guest.ID_NUMBER: id_number,
+        sm_guest.PASSPORT_NUMBER: passport_number,
+        sm_guest.NOTE: note, //
+      },
+    );
+    setState(() => is_loading = false);
 
-      Navigator.pop(context, tmp.data[0]);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.GUEST_CRUD_CREATE}", cl: Colors.red);
 
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data[0]);
   }
 
   @override
@@ -177,7 +201,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

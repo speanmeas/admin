@@ -1,21 +1,21 @@
-// * ទំព័របង្កើតបន្ទប់ថ្មី (Create Room)
+// * ទំព័របង្កើតបន្ទប់ថ្មី
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+
+import "package:speanmeas/core/schema/room.g.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
-import "package:speanmeas/core/schema/room.g.dart";
-
 import "../widget/kind_select.dart" as k_select;
 import "../widget/status_select.dart" as s_select;
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * បង្កើត layout មេរបស់ទំព័របង្កើតបន្ទប់
 Widget _layout(List<Widget> children) {
@@ -57,6 +57,7 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
+  bool is_loading = true;
 
   String? number;
   double? usd_per_day;
@@ -65,46 +66,60 @@ class _Main_State extends State<Main_> {
   String? status;
   String? note;
 
-  // * ផ្ទុកទិន្នន័យដំបូង
   void init() async {
-    //
+    setState(() => is_loading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      // * បញ្ចូលលេខបន្ទប់
+      // * បញ្ចូលNumber
       Input_Text(
         init: number, //
         lead: "Number:", //
-        onChanged: (v) => number = v,
+        onChanged: (v) {
+          number = v;
+          setState(() {});
+        },
       ),
 
-      // * បញ្ចូលតម្លៃក្នុងមួយថ្ងៃ
+      // * បញ្ចូលUSD/Day
       Input_Number(
         init: usd_per_day, //
         lead: "USD/Day:", //
-        onChanged: (v) => usd_per_day = v,
+        onChanged: (v) {
+          usd_per_day = v;
+          setState(() {});
+        },
       ),
 
-      // * បញ្ចូលតម្លៃក្នុងមួយ 3 ម៉ោង
+      // * បញ្ចូលUSD/3H
       Input_Number(
         init: usd_per_3h, //
         lead: "USD/3H:", //
-        onChanged: (v) => usd_per_3h = v,
+        onChanged: (v) {
+          usd_per_3h = v;
+          setState(() {});
+        },
       ),
 
       // * ជ្រើសរើសប្រភេទបន្ទប់
       k_select.Main_(
         initial: kind, //
-        onChanged: (v) => kind = v,
+        onChanged: (v) {
+          kind = v;
+          setState(() {});
+        },
       ),
 
       // * ជ្រើសរើសស្ថានភាពបន្ទប់
       s_select.Main_(
         initial: status, //
-        onChanged: (v) => status = v,
+        onChanged: (v) {
+          status = v;
+          setState(() {});
+        },
       ),
 
       // * បញ្ចូលកំណត់ចំណាំ
@@ -112,45 +127,45 @@ class _Main_State extends State<Main_> {
         init: note, //
         lead: "Note:", //
         maxLines: 4, //
-        onChanged: (v) => note = v ?? "",
+        onChanged: (v) {
+          note = v ?? "";
+          setState(() {});
+        },
       ),
 
-      // * ប៊ូតុងបង្កើតបន្ទប់
+      // * ប៊ូតុងបង្កើត
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Create"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-        onPressed: on_create,
+        onPressed: is_loading ? null : on_create,
       ),
 
       SizedBox(height: height - 100),
     ]);
   }
 
-  // * បង្កើតបន្ទប់ថ្មីតាមរយៈ API
+  // * អនុវត្តការបង្កើតបន្ទប់
   void on_create() async {
-    try {
-      // * ផ្ញើសំណើបង្កើតបន្ទប់
-      tmp = await dio.post(
-        endpoint.ROOM_CRUD_CREATE, //
-        data: {
-          sm_room.NUMBER: number,
-          sm_room.USD_PER_DAY: usd_per_day,
-          sm_room.USD_PER_3H: usd_per_3h,
-          sm_room.KIND: kind,
-          sm_room.STATUS: status,
-          sm_room.NOTE: note, //
-        },
-      );
+    // * ផ្ញើសំណើបង្កើតបន្ទប់
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.ROOM_CRUD_CREATE, //
+      data: {
+        sm_room.NUMBER: number,
+        sm_room.USD_PER_DAY: usd_per_day,
+        sm_room.USD_PER_3H: usd_per_3h,
+        sm_room.KIND: kind,
+        sm_room.STATUS: status,
+        sm_room.NOTE: note, //
+      },
+    );
+    setState(() => is_loading = false);
 
-      // * ត្រលប់ទៅទំព័រមុនជាមួយទិន្នន័យដែលបានបង្កើត
-      Navigator.pop(context, tmp.data[0]);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_CREATE}", cl: Colors.red);
 
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data[0]);
   }
 
   @override
@@ -158,8 +173,6 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
 // * ថ្នាក់ Main_ ជាទំព័របង្កើតបន្ទប់
@@ -174,7 +187,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

@@ -1,4 +1,4 @@
-// * ទំព័រអានព័ត៌មានបន្ទប់ (Read Room)
+// * ទំព័រអានព័ត៌មានបន្ទប់
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -8,13 +8,14 @@ import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/show/show_number.dart";
+import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
+import "package:speanmeas/core/widget/show/show_number.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/schema/room.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
-// * បង្កើត layout មេរបស់ទំព័រអានបន្ទប់
+// * បង្កើត layout មេរបស់ទំព័រអានព័ត៌មានបន្ទប់
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -52,7 +53,6 @@ Widget _layout(List<Widget> children) {
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការអានព័ត៌មានបន្ទប់
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
   bool is_loading = true;
 
@@ -63,74 +63,61 @@ class _Main_State extends State<Main_> {
   String? status;
   String? note;
 
-  // * ផ្ទុកព័ត៌មានបន្ទប់តាម ID
+  // * ផ្ទុកព័ត៌មានបន្ទប់តាម id
   void init() async {
-    try {
-      // * អានព័ត៌មានបន្ទប់តាម ID
-      tmp = await dio.post(
-        endpoint.ROOM_CRUD_READ_ID, //
-        data: {sm_room.ID: widget.id},
-      );
+    // * អានទិន្នន័យបន្ទប់តាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.id});
+    setState(() => is_loading = false);
 
-      final data = tmp.data;
-      if (data == null || data.isEmpty) {
-        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
-        is_loading = false;
-        setState(() {});
-        return;
-      }
-      final row = data[0];
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-      // * ផ្ទុកតម្លៃពីជួរដេក
-      number = row[sm_room.NUMBER]?.toString();
-      usd_per_day = double.tryParse(row[sm_room.USD_PER_DAY]?.toString() ?? "");
-      usd_per_3h = double.tryParse(row[sm_room.USD_PER_3H]?.toString() ?? "");
-      kind = row[sm_room.KIND]?.toString();
-      status = row[sm_room.STATUS]?.toString();
-      note = row[sm_room.NOTE]?.toString();
+    number = parse_string(tmp.data[0][sm_room.NUMBER]);
+    usd_per_day = parse_double(tmp.data[0][sm_room.USD_PER_DAY]);
+    usd_per_3h = parse_double(tmp.data[0][sm_room.USD_PER_3H]);
+    kind = parse_string(tmp.data[0][sm_room.KIND]);
+    status = parse_string(tmp.data[0][sm_room.STATUS]);
+    note = parse_string(tmp.data[0][sm_room.NOTE]);
 
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      // * បង្ហាញលេខបន្ទប់
+      // * បង្ហាញNumber
       Show_Text(
         prefixIcon: Icons.meeting_room_outlined,
         lead: "Number:", //
         value: number,
       ),
 
-      // * បង្ហាញតម្លៃក្នុងមួយថ្ងៃ
+      // * បង្ហាញUSD/Day
       Show_Number(
         prefixIcon: Icons.attach_money,
         leading: "USD/Day:", //
         value: usd_per_day,
       ),
 
-      // * បង្ហាញតម្លៃក្នុងមួយ 3 ម៉ោង
+      // * បង្ហាញUSD/3H
       Show_Number(
         prefixIcon: Icons.attach_money,
         leading: "USD/3H:", //
         value: usd_per_3h,
       ),
 
-      // * បង្ហាញប្រភេទបន្ទប់
+      // * បង្ហាញKind
       Show_Text(
         prefixIcon: Icons.king_bed_outlined,
         lead: "Kind:", //
         value: kind,
       ),
 
-      // * បង្ហាញស្ថានភាពបន្ទប់
+      // * បង្ហាញStatus
       Show_Text(
         prefixIcon: Icons.verified_outlined,
         lead: "Status:", //
@@ -145,6 +132,13 @@ class _Main_State extends State<Main_> {
         maxLines: 4,
       ),
 
+      // * ប៊ូតុងបិទ
+      OutlinedButton.icon(
+        icon: Icon(Icons.check), //
+        label: Text("Close"),
+        onPressed: () => Navigator.pop(context),
+      ),
+
       SizedBox(height: height - 100),
     ]);
   }
@@ -156,7 +150,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រអានបន្ទប់
+// * ថ្នាក់ Main_ ជាទំព័រអានព័ត៌មានបន្ទប់
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
@@ -174,7 +168,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

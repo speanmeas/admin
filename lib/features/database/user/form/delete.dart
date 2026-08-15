@@ -1,4 +1,4 @@
-// * ទំព័រលុបអ្នកប្រើប្រាស់ (Delete User)
+// * ទំព័រលុបអ្នកប្រើប្រាស់
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -49,8 +49,12 @@ Widget _layout(List<Widget> children) {
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការលុបអ្នកប្រើប្រាស់
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
+  bool is_loading = true;
+
+  void init() async {
+    setState(() => is_loading = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,39 +66,35 @@ class _Main_State extends State<Main_> {
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
-      // * ប៊ូតុងលុបអ្នកប្រើប្រាស់
+      // * ប៊ូតុងលុប
       OutlinedButton.icon(
         autofocus: true,
         icon: Icon(Icons.delete_outlined),
         label: Text("Delete"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-        onPressed: on_delete,
+        onPressed: is_loading ? null : on_delete,
       ),
 
       SizedBox(height: height - 100),
     ]);
   }
 
-  // * លុបអ្នកប្រើប្រាស់តាមរយៈ API
+  // * អនុវត្តការលុបអ្នកប្រើប្រាស់
   void on_delete() async {
-    try {
-      // * ផ្ញើសំណើលុបអ្នកប្រើប្រាស់
-      tmp = await dio.post(
-        endpoint.USER_CRUD_DELETE, //
-        data: {"_id": widget.id},
-      );
+    // * ផ្ញើសំណើលុបអ្នកប្រើប្រាស់
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.USER_CRUD_DELETE, data: {"_id": widget.id});
+    setState(() => is_loading = false);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.USER_CRUD_DELETE}", cl: Colors.red);
 
-      // * បង្ហាញសារជោគជ័យ
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data);
+  }
 
-      // * ត្រលប់ទៅទំព័រមុនជាមួយលទ្ធផល
-      Navigator.pop(context, tmp.data);
-
-      //
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+  @override
+  void initState() {
+    super.initState();
+    init();
   }
 }
 
@@ -116,7 +116,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

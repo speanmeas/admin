@@ -1,20 +1,21 @@
-// * ទំព័រកែប្រែ mini bar
+// * ទំព័រកែប្រែព័ត៌មានmini bar
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
 import "package:speanmeas/core/schema/mini_bar.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
-// * បង្កើត layout មេរបស់ទំព័រកែប្រែ mini bar
+// * បង្កើត layout មេរបស់ទំព័រកែប្រែmini bar
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -50,10 +51,10 @@ Widget _layout(List<Widget> children) {
   );
 }
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់កែប្រែ mini bar
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់កែប្រែmini bar
 class _Main_State extends State<Main_> {
   //
-  dynamic tmp; // ignore: unused
+  dynamic tmp;
   bool is_loading = true;
 
   String? name;
@@ -61,44 +62,31 @@ class _Main_State extends State<Main_> {
   double? stock;
   String? note;
 
-  // * ផ្ទុកព័ត៌មាន mini bar តាម id សម្រាប់កែប្រែ
+  // * ផ្ទុកព័ត៌មានmini barបច្ចុប្បន្ន
   void init() async {
-    //
-    try {
-      // * អានព័ត៌មាន mini bar តាម id
-      tmp = await dio.post(
-        endpoint.MINI_BAR_CRUD_READ_ID, //
-        data: {sm_mini_bar.ID: widget.id},
-      );
+    // * អានទិន្នន័យmini barតាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.MINI_BAR_CRUD_READ_ID, data: {sm_mini_bar.ID: widget.id});
+    setState(() => is_loading = false);
 
-      final data = tmp.data;
-      // * បើគ្មានទិន្នន័យ បង្ហាញសារព្រមាន
-      if (data == null || data.isEmpty) {
-        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
-        setState(() => is_loading = false);
-        return;
-      }
-      final row = data[0];
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.MINI_BAR_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-      // * ផ្ទុកតម្លៃទៅក្នុងអថេរ
-      name = row[sm_mini_bar.NAME]?.toString();
-      price = double.tryParse(row[sm_mini_bar.PRICE]?.toString() ?? "");
-      stock = double.tryParse(row[sm_mini_bar.STOCK]?.toString() ?? "");
-      note = row[sm_mini_bar.NOTE]?.toString();
+    name = parse_string(tmp.data[0][sm_mini_bar.NAME]);
+    price = parse_double(tmp.data[0][sm_mini_bar.PRICE]);
+    stock = parse_double(tmp.data[0][sm_mini_bar.STOCK]);
+    note = parse_string(tmp.data[0][sm_mini_bar.NOTE]);
 
-      setState(() => is_loading = false);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      // * កែប្រែឈ្មោះ
+      // * បញ្ចូលName
       Input_Text(
         init: name, //
         lead: "Name:", //
@@ -108,7 +96,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      // * កែប្រែតម្លៃ
+      // * បញ្ចូលPrice
       Input_Number(
         init: price, //
         lead: "Price:", //
@@ -118,7 +106,7 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      // * កែប្រែចំនួនស្តុក
+      // * បញ្ចូលStock
       Input_Number(
         init: stock, //
         lead: "Stock:", //
@@ -128,13 +116,13 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      // * កែប្រែកំណត់ចំណាំ
+      // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
-        init: null, //
+        init: note, //
         lead: "Note:", //
         maxLines: 4, //
         onChanged: (v) {
-          note = v ?? "";
+          note = v;
           setState(() {});
         },
       ),
@@ -144,38 +132,32 @@ class _Main_State extends State<Main_> {
         icon: Icon(Icons.check),
         label: Text("Update"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-        onPressed: on_update,
+        onPressed: is_loading ? null : on_update,
       ),
       SizedBox(height: height - 100),
     ]);
   }
 
-  // * អនុវត្តការកែប្រែ mini bar
+  // * អនុវត្តការកែប្រែmini bar
   void on_update() async {
-    try {
-      // * ផ្ញើសំណើកែប្រែ mini bar
-      tmp = await dio.post(
-        endpoint.MINI_BAR_CRUD_UPDATE, //
-        data: {
-          sm_mini_bar.ID: widget.id,
-          sm_mini_bar.NAME: name,
-          sm_mini_bar.PRICE: price,
-          sm_mini_bar.STOCK: stock,
-          sm_mini_bar.NOTE: note, //
-        },
-      );
+    // * ផ្ញើសំណើកែប្រែmini bar
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.MINI_BAR_CRUD_UPDATE, //
+      data: {
+        sm_mini_bar.ID: widget.id,
+        sm_mini_bar.NAME: name,
+        sm_mini_bar.PRICE: price,
+        sm_mini_bar.STOCK: stock,
+        sm_mini_bar.NOTE: note, //
+      },
+    );
+    setState(() => is_loading = false);
 
-      //
-      Navigator.pop(context, tmp.data[0]);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.MINI_BAR_CRUD_UPDATE}", cl: Colors.red);
 
-      //
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-
-      //
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data[0]);
   }
 
   @override
@@ -183,11 +165,9 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រកែប្រែ mini bar
+// * ថ្នាក់ Main_ ជាទំព័រកែប្រែmini bar
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //
@@ -205,7 +185,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

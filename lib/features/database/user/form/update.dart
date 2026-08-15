@@ -1,20 +1,20 @@
-// * ទំព័រកែប្រែព័ត៌មានអ្នកប្រើប្រាស់ (Update User)
+// * ទំព័រកែប្រែព័ត៌មានអ្នកប្រើប្រាស់
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
+
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-
-import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/pick/pick_boolean.dart";
 import "package:speanmeas/core/widget/input/input_password.dart";
+import "package:speanmeas/core/schema/user.g.dart";
+import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * បង្កើត layout មេរបស់ទំព័រកែប្រែអ្នកប្រើប្រាស់
 Widget _layout(List<Widget> children) {
@@ -52,7 +52,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការកែប្រែអ្នកប្រើប្រាស់
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់កែប្រែអ្នកប្រើប្រាស់
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
@@ -68,105 +68,112 @@ class _Main_State extends State<Main_> {
   bool? is_housekeeper;
   String? note;
 
-  // * ផ្ទុកព័ត៌មានអ្នកប្រើប្រាស់តាម ID
+  // * ផ្ទុកព័ត៌មានអ្នកប្រើប្រាស់បច្ចុប្បន្ន
   void init() async {
-    try {
-      // * អានព័ត៌មានអ្នកប្រើប្រាស់តាម ID
-      tmp = await dio.post(
-        endpoint.USER_CRUD_READ_ID, //
-        data: {sm_user.ID: widget.id},
-      );
+    // * អានទិន្នន័យអ្នកប្រើប្រាស់តាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.USER_CRUD_READ_ID, data: {sm_user.ID: widget.id});
+    setState(() => is_loading = false);
 
-      final data = tmp.data;
-      if (data == null || data.isEmpty) {
-        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
-        is_loading = false;
-        setState(() {});
-        return;
-      }
-      final row = data[0];
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.USER_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-      // * ផ្ទុកតម្លៃពីជួរដេក
-      username = row[sm_user.USERNAME]?.toString();
-      full_name = row[sm_user.FULL_NAME]?.toString();
-      phone_number = row[sm_user.PHONE_NUMBER]?.toString();
-      final a = row[sm_user.IS_ADMIN];
-      is_admin = a is bool ? a : null;
-      final m = row[sm_user.IS_MANAGER];
-      is_manager = m is bool ? m : null;
-      final r = row[sm_user.IS_RECEPTIONIST];
-      is_receptionist = r is bool ? r : null;
-      final h = row[sm_user.IS_HOUSEKEEPER];
-      is_housekeeper = h is bool ? h : null;
-      note = row[sm_user.NOTE]?.toString();
+    username = parse_string(tmp.data[0][sm_user.USERNAME]);
+    full_name = parse_string(tmp.data[0][sm_user.FULL_NAME]);
+    phone_number = parse_string(tmp.data[0][sm_user.PHONE_NUMBER]);
+    is_admin = parse_bool(tmp.data[0][sm_user.IS_ADMIN]);
+    is_manager = parse_bool(tmp.data[0][sm_user.IS_MANAGER]);
+    is_receptionist = parse_bool(tmp.data[0][sm_user.IS_RECEPTIONIST]);
+    is_housekeeper = parse_bool(tmp.data[0][sm_user.IS_HOUSEKEEPER]);
+    note = parse_string(tmp.data[0][sm_user.NOTE]);
 
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      // * បញ្ចូលឈ្មោះអ្នកប្រើប្រាស់
+      // * បញ្ចូលUsername
       Input_Text(
         init: username, //
         lead: "Username:", //
-        onChanged: (v) => username = v,
+        onChanged: (v) {
+          username = v;
+          setState(() {});
+        },
       ),
 
-      // * បញ្ចូលពាក្យសម្ងាត់ថ្មី
+      // * បញ្ចូលពាក្យសម្ងាត់
       Input_Password(
         initial: password, //
         hint: "New Password", //
-        onChanged: (v) => password = v,
+        onChanged: (v) {
+          password = v;
+          setState(() {});
+        },
       ),
 
-      // * បញ្ចូលឈ្មោះពេញ
+      // * បញ្ចូលFull Name
       Input_Text(
         init: full_name, //
         lead: "Full Name:", //
-        onChanged: (v) => full_name = v,
+        onChanged: (v) {
+          full_name = v;
+          setState(() {});
+        },
       ),
 
-      // * បញ្ចូលលេខទូរស័ព្ទ
+      // * បញ្ចូលPhone Number
       Input_Text(
         init: phone_number, //
         lead: "Phone Number:", //
-        onChanged: (v) => phone_number = v,
+        onChanged: (v) {
+          phone_number = v;
+          setState(() {});
+        },
       ),
 
-      // * ជ្រើសរើសតួនាទីជាអ្នកគ្រប់គ្រងប្រព័ន្ធ
+      // * ជ្រើសរើសIs Admin
       Picker_Boolean(
         initial: is_admin, //
         title: "Is Admin:", //
-        onChanged: (v) => is_admin = v,
+        onChanged: (v) {
+          is_admin = v;
+          setState(() {});
+        },
       ),
 
-      // * ជ្រើសរើសតួនាទីជាអ្នកគ្រប់គ្រង
+      // * ជ្រើសរើសIs Manager
       Picker_Boolean(
         initial: is_manager, //
         title: "Is Manager:", //
-        onChanged: (v) => is_manager = v,
+        onChanged: (v) {
+          is_manager = v;
+          setState(() {});
+        },
       ),
 
-      // * ជ្រើសរើសតួនាទីជាអ្នកទទួលភ្ញៀវ
+      // * ជ្រើសរើសIs Receptionist
       Picker_Boolean(
         initial: is_receptionist, //
         title: "Is Receptionist:", //
-        onChanged: (v) => is_receptionist = v,
+        onChanged: (v) {
+          is_receptionist = v;
+          setState(() {});
+        },
       ),
 
-      // * ជ្រើសរើសតួនាទីជាអ្នកសម្អាត
+      // * ជ្រើសរើសIs Housekeeper
       Picker_Boolean(
         initial: is_housekeeper, //
         title: "Is Housekeeper:", //
-        onChanged: (v) => is_housekeeper = v,
+        onChanged: (v) {
+          is_housekeeper = v;
+          setState(() {});
+        },
       ),
 
       // * បញ្ចូលកំណត់ចំណាំ
@@ -174,48 +181,48 @@ class _Main_State extends State<Main_> {
         init: note, //
         lead: "Note:", //
         maxLines: 4, //
-        onChanged: (v) => note = v ?? "",
+        onChanged: (v) {
+          note = v;
+          setState(() {});
+        },
       ),
 
-      // * ប៊ូតុងកែប្រែអ្នកប្រើប្រាស់
+      // * ប៊ូតុងកែប្រែ
       OutlinedButton.icon(
         icon: Icon(Icons.check),
         label: Text("Update"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-        onPressed: on_update,
+        onPressed: is_loading ? null : on_update,
       ),
       SizedBox(height: height - 100),
     ]);
   }
 
-  // * កែប្រែព័ត៌មានអ្នកប្រើប្រាស់តាមរយៈ API
+  // * អនុវត្តការកែប្រែអ្នកប្រើប្រាស់
   void on_update() async {
-    try {
-      // * ផ្ញើសំណើកែប្រែអ្នកប្រើប្រាស់
-      tmp = await dio.post(
-        endpoint.USER_CRUD_UPDATE, //
-        data: {
-          sm_user.ID: widget.id,
-          sm_user.USERNAME: username,
-          sm_user.PASSWORD: password,
-          sm_user.FULL_NAME: full_name,
-          sm_user.PHONE_NUMBER: phone_number,
-          sm_user.IS_ADMIN: is_admin,
-          sm_user.IS_MANAGER: is_manager,
-          sm_user.IS_RECEPTIONIST: is_receptionist,
-          sm_user.IS_HOUSEKEEPER: is_housekeeper,
-          sm_user.NOTE: note, //
-        },
-      );
+    // * ផ្ញើសំណើកែប្រែអ្នកប្រើប្រាស់
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.USER_CRUD_UPDATE, //
+      data: {
+        sm_user.ID: widget.id,
+        sm_user.USERNAME: username,
+        sm_user.PASSWORD: password,
+        sm_user.FULL_NAME: full_name,
+        sm_user.PHONE_NUMBER: phone_number,
+        sm_user.IS_ADMIN: is_admin,
+        sm_user.IS_MANAGER: is_manager,
+        sm_user.IS_RECEPTIONIST: is_receptionist,
+        sm_user.IS_HOUSEKEEPER: is_housekeeper,
+        sm_user.NOTE: note, //
+      },
+    );
+    setState(() => is_loading = false);
 
-      // * ត្រលប់ទៅទំព័រមុនជាមួយទិន្នន័យដែលបានកែប្រែ
-      Navigator.pop(context, tmp.data[0]);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.USER_CRUD_UPDATE}", cl: Colors.red);
 
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data[0]);
   }
 
   @override
@@ -223,8 +230,6 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
 // * ថ្នាក់ Main_ ជាទំព័រកែប្រែអ្នកប្រើប្រាស់
@@ -245,7 +250,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [

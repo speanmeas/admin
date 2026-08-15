@@ -1,4 +1,4 @@
-// * ទំព័រកែប្រែសញ្ជាតិ
+// * ទំព័រកែប្រែព័ត៌មានសញ្ជាតិ
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -8,6 +8,7 @@ import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/schema/nationality.g.dart";
@@ -58,56 +59,47 @@ class _Main_State extends State<Main_> {
   String? name;
   String? note;
 
-  // * ផ្ទុកព័ត៌មានសញ្ជាតិតាម id សម្រាប់កែប្រែ
+  // * ផ្ទុកព័ត៌មានសញ្ជាតិបច្ចុប្បន្ន
   void init() async {
-    try {
-      // * អានព័ត៌មានសញ្ជាតិតាម id
-      tmp = await dio.post(
-        endpoint.NATIONALITY_CRUD_READ_ID, //
-        data: {sm_nationality.ID: widget.id},
-      );
+    // * អានទិន្នន័យសញ្ជាតិតាម id
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.NATIONALITY_CRUD_READ_ID, data: {sm_nationality.ID: widget.id});
+    setState(() => is_loading = false);
 
-      final data = tmp.data;
-      // * បើគ្មានទិន្នន័យ បង្ហាញសារព្រមាន
-      if (data == null || data.isEmpty) {
-        snackbar(ct: context, ms: "No data found.", cl: Colors.red);
-        is_loading = false;
-        setState(() {});
-        return;
-      }
-      final row = data[0];
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.NATIONALITY_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-      // * ផ្ទុកតម្លៃទៅក្នុងអថេរ
-      name = row[sm_nationality.NAME]?.toString();
-      note = row[sm_nationality.NOTE]?.toString();
+    name = parse_string(tmp.data[0][sm_nationality.NAME]);
+    note = parse_string(tmp.data[0][sm_nationality.NOTE]);
 
-      is_loading = false;
-      setState(() {});
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      // * កែប្រែឈ្មោះសញ្ជាតិ
+      // * បញ្ចូលName
       Input_Text(
         init: name, //
         lead: "Name:", //
-        onChanged: (v) => name = v,
+        onChanged: (v) {
+          name = v;
+          setState(() {});
+        },
       ),
 
-      // * កែប្រែកំណត់ចំណាំ
+      // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
-        init: null, //
+        init: note, //
         lead: "Note:", //
         maxLines: 4, //
-        prefixIcon: Icons.note_alt_outlined, //
-        onChanged: (v) => note = v ?? "",
+        onChanged: (v) {
+          note = v;
+          setState(() {});
+        },
       ),
 
       // * ប៊ូតុងកែប្រែ
@@ -115,7 +107,7 @@ class _Main_State extends State<Main_> {
         icon: Icon(Icons.check),
         label: Text("Update"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-        onPressed: on_update,
+        onPressed: is_loading ? null : on_update,
       ),
       SizedBox(height: height - 100),
     ]);
@@ -123,24 +115,22 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការកែប្រែសញ្ជាតិ
   void on_update() async {
-    try {
-      // * ផ្ញើសំណើកែប្រែសញ្ជាតិ
-      tmp = await dio.post(
-        endpoint.NATIONALITY_CRUD_UPDATE, //
-        data: {
-          sm_nationality.ID: widget.id,
-          sm_nationality.NAME: name,
-          sm_nationality.NOTE: note, //
-        },
-      );
+    // * ផ្ញើសំណើកែប្រែសញ្ជាតិ
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.NATIONALITY_CRUD_UPDATE, //
+      data: {
+        sm_nationality.ID: widget.id,
+        sm_nationality.NAME: name,
+        sm_nationality.NOTE: note, //
+      },
+    );
+    setState(() => is_loading = false);
 
-      Navigator.pop(context, tmp.data[0]);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.NATIONALITY_CRUD_UPDATE}", cl: Colors.red);
 
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, tmp.data[0]);
   }
 
   @override
@@ -148,8 +138,6 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
 // * ថ្នាក់ Main_ ជាទំព័រកែប្រែសញ្ជាតិ
@@ -170,7 +158,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
   runApp(
     MultiProvider(
       providers: [
