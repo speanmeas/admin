@@ -1,16 +1,7 @@
 // * នាំចូល Flutter material និងធនធានចាំបាច់សម្រាប់ dialog
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
-
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/secure.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema.g.dart";
+import "package:speanmeas/core/utility/all.dart";
 
 // * ថ្នាក់ state របស់ Dialog_ គ្រប់គ្រង dialog កែឈ្មោះអ្នកប្រើ
 class _Dialog_State extends State<Dialog_> {

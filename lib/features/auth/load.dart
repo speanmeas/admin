@@ -1,21 +1,13 @@
 // * នាំចូល Flutter material និងធនធានចាំបាច់សម្រាប់ទំព័រផ្ទុក
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/i18n/main.dart";
-import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/layout/layout.dart";
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/secure.dart"; // ignore: unused_import
-
 import "sign_in.dart" as form_si;
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទំព័រផ្ទុក
-class _Main_State extends State<Main_> {
+class _LoadState extends State<Load> {
   //
   dynamic tmp;
 
@@ -47,13 +39,7 @@ class _Main_State extends State<Main_> {
       final ac_tk = await secure.read(key: "access_token");
 
       // * បើគ្មាន token ត្រឡប់ទៅទំព័រចូលប្រព័ន្ធ
-      if (ac_tk == null)
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => form_si.Main_(), //
-          ),
-        );
+      if (ac_tk == null) nav_replace(context, form_si.Main_());
       if (ac_tk == null) return;
 
       // * ផ្ទៀងផ្ទាត់ access token ជាមួយ server
@@ -72,27 +58,22 @@ class _Main_State extends State<Main_> {
 
       // * ចូលទៅទំព័រមេ
       await glob.init();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Layout()));
+      nav_replace(context, Layout());
     } catch (e, st) {
       // * បង្ហាញកំហុស និងលុប token មិនត្រឹមត្រូវ
       pprint(st);
       await secure.delete(key: "access_token");
       await secure.delete(key: "_id");
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => form_si.Main_(), //
-        ),
-      );
+      nav_replace(context, form_si.Main_());
     }
   }
 }
 
 // * ថ្នាក់ Main_ ជាទំព័រផ្ទុក
-class Main_ extends StatefulWidget {
-  const Main_({super.key});
+class Load extends StatefulWidget {
+  const Load({super.key});
   @override
-  State<Main_> createState() => _Main_State();
+  State<Load> createState() => _LoadState();
 }
 
 void main() async {
@@ -107,7 +88,7 @@ void main() async {
         ChangeNotifierProvider.value(value: lang),
       ],
       child: MaterialApp(
-        home: Main_(), //
+        home: Load(), //
         theme: theme_data, //
         title: "Development", //
         debugShowCheckedModeBanner: false, //

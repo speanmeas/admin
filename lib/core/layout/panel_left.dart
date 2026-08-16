@@ -60,10 +60,6 @@ class _Panel_LeftState extends State<Panel_Left> {
               if (is_admin || is_manager || is_recept || is_cleaner) //
                 list_tile_l1(name: "Front Desk", icon: Icons.table_bar_outlined),
 
-              // mini bar
-              // if (is_admin || is_manager || is_recept) //
-              //   list_tile_l1(name: "Mini Bar", icon: Icons.local_bar_outlined),
-
               // * ផ្នែក Database
               ExpansionTile(
                 leading: Icon(Icons.storage_outlined), //

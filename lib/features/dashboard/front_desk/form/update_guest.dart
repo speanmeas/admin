@@ -13,9 +13,7 @@ import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/search/search_guest.dart";
 
-import "package:speanmeas/core/schema/room.g.dart";
-import "package:speanmeas/core/schema/guest.g.dart";
-import "package:speanmeas/core/schema/front_desk.g.dart";
+import "package:speanmeas/core/schema.g.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រធ្វើបច្ចុប្បន្នភាពភ្ញៀវ
 Widget _layout(List<Widget> children) {
@@ -53,7 +51,7 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់ធ្វើបច្ចុប្បន្នភាពភ្ញៀវ
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_r;
+  Room? map_r;
   bool is_loading = true;
 
   String? guest_id;
@@ -62,14 +60,14 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-    map_r = tmp.data[0] as Map<String, dynamic>;
+    map_r = Room.fromJson(tmp.data[0]);
 
-    guest_id = map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.GUEST_ID]?[sm_guest.ID]?.toString();
+    guest_id = map_r?.front_desk_id?.guest_id?.id?.toString();
 
     setState(() {});
   }
@@ -82,7 +80,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់
       Text(
-        '${t("Room")} ${map_r?[sm_room.NUMBER] ?? "N/A"}', //
+        '${t("Room")} ${map_r?.number ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -115,8 +113,8 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.FRONT_DESK_UPDATE_GUEST, //
       data: {
-        sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
-        sm_front_desk.GUEST_ID: guest_id,
+        Front_Desk.ID: map_r?.front_desk_id?.id, //
+        Front_Desk.GUEST_ID: guest_id,
       },
     );
     setState(() => is_loading = false);

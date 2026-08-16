@@ -12,9 +12,9 @@ import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/show/show_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema/room.g.dart";
-import "package:speanmeas/core/schema/front_desk.g.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
+
+import "package:speanmeas/core/schema.g.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រ clean
 Widget _layout(List<Widget> children) {
@@ -53,7 +53,7 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់សម្អាតបន្ទប់
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_r = {};
+  Room? map_r;
   bool is_loading = true;
 
   String? note;
@@ -62,12 +62,12 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-    map_r = tmp.data[0] as Map<String, dynamic>;
+    map_r = Room.fromJson(tmp.data[0]);
 
     setState(() {});
   }
@@ -80,21 +80,21 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់
       Text(
-        '${t("Room")} ${map_r?[sm_room.NUMBER] ?? "N/A"}', //
+        '${t("Room")} ${map_r?.number ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
       Divider(height: 1, color: Colors.black),
 
       // * បង្ហាញកំណត់ចំណាំប្រសិនបើគ្មាន front desk
-      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] == null)
+      if (map_r?.front_desk_id?.id == null)
         Show_Text(
           lead: '${t("Note")}:', //
           value: t("Guest has changed from this room."), //
         ),
 
       // * បញ្ចូលកំណត់ចំណាំប្រសិនបើមាន front desk
-      if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] != null)
+      if (map_r?.front_desk_id?.id != null)
         Input_Text(
           init: note, //
           lead: '${t("Note")}:', //
@@ -125,21 +125,21 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.ROOM_CRUD_UPDATE, //
       data: {
-        sm_room.ID: widget.room_id, //
-        sm_room.STATUS: "Available", //
-        sm_room.FRONT_DESK_ID: null, //
+        Room.ID: widget.room_id, //
+        Room.STATUS: "Available", //
+        Room.FRONT_DESK_ID: null, //
       },
     );
     setState(() => is_loading = false);
 
     // * កត់ត្រាការសម្អាតទៅ front desk
     setState(() => is_loading = true);
-    if (map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID] != null)
+    if (map_r?.front_desk_id?.id != null)
       await dio.post(
         endpoint.FRONT_DESK_CLEAN,
         data: {
-          sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
-          sm_front_desk.CLEAN_NOTE: note, //
+          Front_Desk.ID: map_r?.front_desk_id?.id, //
+          Front_Desk.CLEAN_NOTE: note, //
         },
       );
     setState(() => is_loading = false);

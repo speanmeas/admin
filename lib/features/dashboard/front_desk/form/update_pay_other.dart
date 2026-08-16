@@ -14,9 +14,8 @@ import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 
 import "package:speanmeas/core/widget/input/input_bank_auto.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
-import "package:speanmeas/core/schema/front_desk.g.dart";
-import "package:speanmeas/core/schema/payment_other.g.dart";
-import "package:speanmeas/core/schema/room.g.dart";
+
+import "package:speanmeas/core/schema.g.dart";
 
 // * បង្កើត layout មេរបស់ទំព័របន្ថែមការទូទាត់ផ្សេងៗ
 Widget _layout(List<Widget> children) {
@@ -54,7 +53,7 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បន្ថែមការទូទាត់ផ្សេងៗ
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_room;
+  Room? map_room;
   bool is_loading = true;
 
   double? other_price;
@@ -69,23 +68,23 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-    map_room = tmp.data[0] as Map<String, dynamic>;
+    map_room = Room.fromJson(tmp.data[0]);
 
     // * គណនាតម្លៃចាស់ និងប្រាក់ដែលបានទទួលរួច
-    tmp = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
-    for (var l in tmp) {
+    final pay_other_list = map_room?.front_desk_id?.pay_other ?? [];
+    for (var l in pay_other_list) {
       // * តម្លៃសរុប = ផលបូកនៃ add_price ដក sub_price ទាំងអស់
-      old_price = (old_price ?? 0) + (parse_double(l[sm_payment_other.ADD_PRICE]) ?? 0);
-      old_price = (old_price ?? 0) - (parse_double(l[sm_payment_other.SUB_PRICE]) ?? 0);
+      old_price = (old_price ?? 0) + (l.add_price ?? 0);
+      old_price = (old_price ?? 0) - (l.sub_price ?? 0);
       // * ប្រាក់ដែលបានទទួលសរុប
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_other.ADD_CASH]) ?? 0);
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_other.ADD_BANK]) ?? 0);
-      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_other.SUB_RETURN]) ?? 0);
+      last_paid = (last_paid ?? 0) + (l.add_cash ?? 0);
+      last_paid = (last_paid ?? 0) + (l.add_bank ?? 0);
+      last_paid = (last_paid ?? 0) - (l.sub_return ?? 0);
     }
     other_price = old_price;
 
@@ -100,7 +99,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់
       Text(
-        '${t("Room")} ${map_room?[sm_room.NUMBER] ?? "N/A"}', //
+        '${t("Room")} ${map_room?.number ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -228,13 +227,13 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.FRONT_DESK_UPDATE_PAY_OTHER,
       data: {
-        sm_front_desk.ID: map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
-        sm_payment_other.ADD_PRICE: add_price, //
-        sm_payment_other.SUB_PRICE: sub_price, //
-        sm_payment_other.ADD_CASH: add_cash ?? 0, //
-        sm_payment_other.ADD_BANK: add_bank ?? 0, //
-        sm_payment_other.SUB_RETURN: sub_return ?? 0, //
-        sm_payment_other.NOTE: note ?? "", //
+        Front_Desk.ID: map_room?.front_desk_id?.id, //
+        Payment_Other.ADD_PRICE: add_price, //
+        Payment_Other.SUB_PRICE: sub_price, //
+        Payment_Other.ADD_CASH: add_cash ?? 0, //
+        Payment_Other.ADD_BANK: add_bank ?? 0, //
+        Payment_Other.SUB_RETURN: sub_return ?? 0, //
+        Payment_Other.NOTE: note ?? "", //
       },
     );
     setState(() => is_loading = false);
@@ -244,8 +243,8 @@ class _Main_State extends State<Main_> {
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
         data: {
-          sm_room.ID: map_room[sm_room.ID], //
-          sm_room.STATUS: "Pending Pay", //
+          Room.ID: map_room?.id, //
+          Room.STATUS: "Pending Pay", //
         },
       );
       setState(() => is_loading = false);

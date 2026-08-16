@@ -1,22 +1,14 @@
 // * នាំចូល Flutter material និងធនធានចាំបាច់សម្រាប់ទំព័រប្រវត្តិរូប
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/secure.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "dialog/dialog_full_name.dart" as dialog_fn;
 import "dialog/dialog_phone_number.dart" as dialog_pn;
 import "dialog/dialog_username.dart" as dialog_un;
 import "dialog/dialog_password.dart" as dialog_pw;
 
 import "sign_in.dart" as sign_in;
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema.g.dart";
 
 // * បង្កើត layout មូលដ្ឋានសម្រាប់ទំព័រប្រវត្តិរូប
 Widget _layout(List<Widget> children) {
@@ -52,7 +44,7 @@ Widget _layout(List<Widget> children) {
 }
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទំព័រប្រវត្តិរូបអ្នកប្រើ
-class _Main_State extends State<Main_> {
+class _ProfileState extends State<Profile> {
   //
   dynamic tmp;
   dynamic map_data;
@@ -98,7 +90,7 @@ class _Main_State extends State<Main_> {
       // * បង្ហាញកំហុស និងត្រឡប់ទៅទំព័រចូលប្រព័ន្ធ
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => sign_in.Main_()));
+      nav_replace(context, sign_in.Main_());
     }
 
     //
@@ -239,7 +231,7 @@ class _Main_State extends State<Main_> {
       await secure.delete(key: "_id");
 
       // * ត្រឡប់ទៅទំព័រចូលប្រព័ន្ធ
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => sign_in.Main_()));
+      nav_replace(context, sign_in.Main_());
 
       //
       snackbar(ct: context, ms: "Success", cl: Colors.green);
@@ -258,10 +250,10 @@ class _Main_State extends State<Main_> {
 }
 
 // * ថ្នាក់ Main_ ជាទំព័រប្រវត្តិរូបអ្នកប្រើ
-class Main_ extends StatefulWidget {
-  const Main_({super.key});
+class Profile extends StatefulWidget {
+  const Profile({super.key});
   @override
-  State<Main_> createState() => _Main_State();
+  State<Profile> createState() => _ProfileState();
 }
 
 void main() async {
@@ -276,7 +268,7 @@ void main() async {
         ChangeNotifierProvider.value(value: lang),
       ],
       child: MaterialApp(
-        home: const Main_(), //
+        home: const Profile(), //
         theme: theme_data, //
         title: "Development", //
         debugShowCheckedModeBanner: false, //

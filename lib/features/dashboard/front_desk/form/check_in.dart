@@ -6,7 +6,6 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema/payment_room.g.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
@@ -15,9 +14,7 @@ import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/search/search_guest.dart";
 import "package:speanmeas/core/widget/select/select_dynamic.dart";
 
-import "package:speanmeas/core/schema/front_desk.g.dart";
-// import "package:speanmeas/core/schema/guest.g.dart";
-import "package:speanmeas/core/schema/room.g.dart";
+import "package:speanmeas/core/schema.g.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រ check in
 Widget _layout(List<Widget> children) {
@@ -55,7 +52,7 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់ check in
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic data;
+  Room? data;
   bool is_loading = true;
   bool is_submitting = false;
 
@@ -73,16 +70,16 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
     setState(() => is_loading = false);
 
     if (tmp.data == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_READ_ID}", cl: Colors.red);
 
-    data = tmp.data[0] as Map<String, dynamic>? ?? {};
+    data = Room.fromJson(tmp.data[0]);
 
-    room_number = data[sm_room.NUMBER] ?? "";
-    price_per_day = data[sm_room.USD_PER_DAY] ?? 0;
-    price_per_3hours = data[sm_room.USD_PER_3H] ?? 0;
+    room_number = data?.number ?? "";
+    price_per_day = data?.usd_per_day ?? 0;
+    price_per_3hours = data?.usd_per_3h ?? 0;
 
     number_of_guest = 1;
     stay_days = 0;
@@ -196,12 +193,12 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.FRONT_DESK_CHECK_IN, // create
       data: {
-        sm_front_desk.ROOM_ID: widget.room_id, //
-        sm_front_desk.GUEST_ID: guest_id, //
-        sm_front_desk.CHECK_IN_NUMBER: number_of_guest, //
-        sm_front_desk.CHECK_IN_DAY: stay_days, //
-        sm_front_desk.CHECK_IN_HOUR: stay_hours, //
-        sm_front_desk.CHECK_IN_NOTE: note, //
+        Front_Desk.ROOM_ID: widget.room_id, //
+        Front_Desk.GUEST_ID: guest_id, //
+        Front_Desk.CHECK_IN_NUMBER: number_of_guest, //
+        Front_Desk.CHECK_IN_DAY: stay_days, //
+        Front_Desk.CHECK_IN_HOUR: stay_hours, //
+        Front_Desk.CHECK_IN_NOTE: note, //
       },
     );
 
@@ -210,8 +207,8 @@ class _Main_State extends State<Main_> {
       await dio.post(
         endpoint.FRONT_DESK_UPDATE_PAY_ROOM, // update
         data: {
-          sm_front_desk.ID: tmp.data[0][sm_front_desk.ID], //
-          sm_payment_room.ADD_PRICE: add_room_price,
+          Front_Desk.ID: tmp.data[0][Front_Desk.ID], //
+          Payment_Room.ADD_PRICE: add_room_price,
         },
       );
 
@@ -219,9 +216,9 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.ROOM_CRUD_UPDATE, //
       data: {
-        sm_room.ID: widget.room_id, //
-        sm_room.STATUS: "Pending Pay", //
-        sm_room.FRONT_DESK_ID: tmp.data[0][sm_front_desk.ID], //
+        Room.ID: widget.room_id, //
+        Room.STATUS: "Pending Pay", //
+        Room.FRONT_DESK_ID: tmp.data[0][Front_Desk.ID], //
       },
     );
     setState(() => is_loading = false);

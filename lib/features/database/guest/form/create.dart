@@ -2,16 +2,8 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-
-import "package:speanmeas/core/schema/guest.g.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/select/select_dynamic.dart";
 import "package:speanmeas/core/widget/search/search_nationality.dart";
@@ -165,13 +157,13 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.GUEST_CRUD_CREATE, //
       data: {
-        sm_guest.FULL_NAME: full_name,
-        sm_guest.PHONE_NUMBER: phone_number,
-        sm_guest.GENDER: gender,
-        sm_guest.NATIONALITY_ID: nationality_id,
-        sm_guest.ID_NUMBER: id_number,
-        sm_guest.PASSPORT_NUMBER: passport_number,
-        sm_guest.NOTE: note, //
+        Guest.FULL_NAME: full_name,
+        Guest.PHONE_NUMBER: phone_number,
+        Guest.GENDER: gender,
+        Guest.NATIONALITY_ID: nationality_id,
+        Guest.ID_NUMBER: id_number,
+        Guest.PASSPORT_NUMBER: passport_number,
+        Guest.NOTE: note, //
       },
     );
     setState(() => is_loading = false);

@@ -3,22 +3,12 @@
 import "package:flutter/material.dart";
 import "package:flutter/foundation.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
 import "package:pluto_grid/pluto_grid.dart";
-
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/config.dart"; // ignore: unused_import
-import "package:speanmeas/core/i18n/main.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/parse.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/widget/dialog/dialog_page.dart";
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/button/menu_button_text.dart";
-import "package:speanmeas/core/schema/user.g.dart";
 
 import "form/create.dart" as create;
 import "form/read.dart" as read;
@@ -37,7 +27,6 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទិន្នន័យអ្នកប្រើប្រាស់
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic data;
   bool is_loading = true;
   List<String> list_c = columns.map((c) => c.field).toList();
 
@@ -45,6 +34,8 @@ class _Main_State extends State<Main_> {
   int page = 1;
   int row_total = 0;
   PlutoGridStateManager? state_manager;
+
+  List<User> data = [];
 
   // * ផ្ទុកចំនួនជួរដេកសរុប និងទំព័រដំបូង
   void init() async {
@@ -95,37 +86,38 @@ class _Main_State extends State<Main_> {
     final sorted_column = state_manager?.getSortedColumn;
     final filter_rows = List<PlutoRow>.from(state_manager?.filterRows ?? const <PlutoRow>[]);
 
-    // * បម្លែងទិន្នន័យទៅជា List<dynamic> ដើម្បីបង្កើត PlutoRow
-    data = List<dynamic>.from(tmp.data ?? const []);
+    // * បម្លែងទិន្នន័យទៅជា List<User> ដើម្បីបង្កើត PlutoRow
+    data = List<User>.from((tmp.data ?? const []).map((d) => User.fromJson(d)));
 
     // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
     state_manager?.removeAllRows();
     state_manager?.appendRows([
-      for (var d in data)
+      for (var i = 0; i < data.length; i++)
         PlutoRow(
           cells: {
             for (var c in list_c) //
               c: (() {
                 if (c == "index") //
-                  return PlutoCell(value: data.indexOf(d) + 1);
-                if (c == sm_user.ID) //
-                  return PlutoCell(value: parse_string(d[sm_user.ID]));
-                if (c == sm_user.USERNAME) //
-                  return PlutoCell(value: parse_string(d[sm_user.USERNAME]));
-                if (c == sm_user.FULL_NAME) //
-                  return PlutoCell(value: parse_string(d[sm_user.FULL_NAME]));
-                if (c == sm_user.PHONE_NUMBER) //
-                  return PlutoCell(value: parse_string(d[sm_user.PHONE_NUMBER]));
-                if (c == sm_user.IS_ADMIN) //
-                  return PlutoCell(value: parse_bool(d[sm_user.IS_ADMIN]));
-                if (c == sm_user.IS_MANAGER) //
-                  return PlutoCell(value: parse_bool(d[sm_user.IS_MANAGER]));
-                if (c == sm_user.IS_RECEPTIONIST) //
-                  return PlutoCell(value: parse_bool(d[sm_user.IS_RECEPTIONIST]));
-                if (c == sm_user.IS_HOUSEKEEPER) //
-                  return PlutoCell(value: parse_bool(d[sm_user.IS_HOUSEKEEPER]));
-                if (c == sm_user.NOTE) //
-                  return PlutoCell(value: parse_string(d[sm_user.NOTE]));
+                  return PlutoCell(value: i + 1);
+                final user = data[i];
+                if (c == User.ID) //
+                  return PlutoCell(value: user.id);
+                if (c == User.USERNAME) //
+                  return PlutoCell(value: user.username);
+                if (c == User.FULL_NAME) //
+                  return PlutoCell(value: user.full_name);
+                if (c == User.PHONE_NUMBER) //
+                  return PlutoCell(value: user.phone_number);
+                if (c == User.IS_ADMIN) //
+                  return PlutoCell(value: user.is_admin);
+                if (c == User.IS_MANAGER) //
+                  return PlutoCell(value: user.is_manager);
+                if (c == User.IS_RECEPTIONIST) //
+                  return PlutoCell(value: user.is_receptionist);
+                if (c == User.IS_HOUSEKEEPER) //
+                  return PlutoCell(value: user.is_housekeeper);
+                if (c == User.NOTE) //
+                  return PlutoCell(value: user.note);
 
                 return PlutoCell(value: null);
               })(),
@@ -357,7 +349,7 @@ class _Main_State extends State<Main_> {
 
   // * បើកទំព័របង្កើតអ្នកប្រើប្រាស់ថ្មី
   void on_create() async {
-    tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
+    tmp = await nav_push(context, create.Main_());
     if (tmp == null) return;
 
     // * លុប sort + filter
@@ -372,19 +364,19 @@ class _Main_State extends State<Main_> {
   // * បើកទំព័រអានព័ត៌មានអ្នកប្រើប្រាស់
   void on_read() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[sm_user.ID]?.value?.toString() ?? "";
+    final id = row?.cells[User.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
 
-    Navigator.push(context, MaterialPageRoute(builder: (context) => read.Main_(id: id)));
+    nav_push(context, read.Main_(id: id));
   }
 
   // * បើកទំព័រកែប្រែអ្នកប្រើប្រាស់
   void on_update() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[sm_user.ID]?.value?.toString() ?? "";
+    final id = row?.cells[User.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
 
-    tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_(id: id)));
+    tmp = await nav_push(context, update.Main_(id: id));
     if (tmp == null) return;
 
     load_page(page);
@@ -393,13 +385,13 @@ class _Main_State extends State<Main_> {
   // * បើកទំព័រលុបអ្នកប្រើប្រាស់
   void on_delete() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[sm_user.ID]?.value?.toString() ?? "";
+    final id = row?.cells[User.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) {
       snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
       return;
     }
 
-    tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_(id: id)));
+    tmp = await nav_push(context, delete.Main_(id: id));
     if (tmp == null) return;
 
     load_page(page);
@@ -442,7 +434,7 @@ final columns = [
 
   // * ជួរឈរ ID (លាក់)
   PlutoColumn(
-    field: sm_user.ID, //
+    field: User.ID, //
     title: "ID",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -452,7 +444,7 @@ final columns = [
 
   // * ជួរឈរUsername
   PlutoColumn(
-    field: sm_user.USERNAME, //
+    field: User.USERNAME, //
     title: "Username",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -469,7 +461,7 @@ final columns = [
   ),
   // * ជួរឈរFull Name
   PlutoColumn(
-    field: sm_user.FULL_NAME, //
+    field: User.FULL_NAME, //
     title: "Full Name",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -486,7 +478,7 @@ final columns = [
   ),
   // * ជួរឈរPhone Number
   PlutoColumn(
-    field: sm_user.PHONE_NUMBER, //
+    field: User.PHONE_NUMBER, //
     title: "Phone Number",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -503,7 +495,7 @@ final columns = [
   ),
   // * ជួរឈរIs Admin
   PlutoColumn(
-    field: sm_user.IS_ADMIN, //
+    field: User.IS_ADMIN, //
     title: "Is Admin",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -520,7 +512,7 @@ final columns = [
   ),
   // * ជួរឈរIs Manager
   PlutoColumn(
-    field: sm_user.IS_MANAGER, //
+    field: User.IS_MANAGER, //
     title: "Is Manager",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -537,7 +529,7 @@ final columns = [
   ),
   // * ជួរឈរIs Receptionist
   PlutoColumn(
-    field: sm_user.IS_RECEPTIONIST, //
+    field: User.IS_RECEPTIONIST, //
     title: "Is Receptionist",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -554,7 +546,7 @@ final columns = [
   ),
   // * ជួរឈរIs Housekeeper
   PlutoColumn(
-    field: sm_user.IS_HOUSEKEEPER, //
+    field: User.IS_HOUSEKEEPER, //
     title: "Is Housekeeper",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -571,7 +563,7 @@ final columns = [
   ),
   // * ជួរឈរNote
   PlutoColumn(
-    field: sm_user.NOTE, //
+    field: User.NOTE, //
     title: "Note",
     type: PlutoColumnType.text(),
     width: WIDTH,

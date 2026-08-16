@@ -11,8 +11,8 @@ import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/select/select_dynamic.dart";
-import "package:speanmeas/core/schema/front_desk.g.dart";
-import "package:speanmeas/core/schema/room.g.dart";
+
+import "package:speanmeas/core/schema.g.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រប្តូរបន្ទប់
 Widget _layout(List<Widget> children) {
@@ -50,7 +50,7 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់ប្តូរបន្ទប់
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_r;
+  Room? map_r;
   bool is_loading = true;
 
   String? to_room_number;
@@ -58,18 +58,18 @@ class _Main_State extends State<Main_> {
 
   String? to_room_id; // * សម្រាប់រក្សា ID បន្ទប់ថ្មី
 
-  dynamic list_r = []; // * សម្រាប់រក្សាពត៏មានបន្ទប់ទាំងអស់
+  List<Room> list_r = []; // * សម្រាប់រក្សាពត៏មានបន្ទប់ទាំងអស់
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ និងបញ្ជីបន្ទប់ទំនេរ
   void init() async {
     // * អានព័ត៌មានបន្ទប់បច្ចុប្បន្ន
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-    map_r = tmp.data[0] as Map<String, dynamic>;
+    map_r = Room.fromJson(tmp.data[0]);
 
     // * អានបញ្ជីបន្ទប់ទាំងអស់
     setState(() => is_loading = true);
@@ -78,7 +78,7 @@ class _Main_State extends State<Main_> {
 
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ}"), cl: Colors.red);
 
-    list_r = tmp.data as List<dynamic>;
+    list_r = List<Room>.from((tmp.data ?? const []).map((d) => Room.fromJson(d)));
 
     setState(() {});
   }
@@ -91,7 +91,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់បច្ចុប្បន្ន
       Text(
-        '${t("Room")} ${map_r?[sm_room.NUMBER] ?? "N/A"}', //
+        '${t("Room")} ${map_r?.number ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -104,8 +104,8 @@ class _Main_State extends State<Main_> {
         options: (() {
           var options = [];
           for (var r in list_r) {
-            if (r[sm_room.STATUS] == "Available") {
-              options.add(r[sm_room.NUMBER]?.toString() ?? "");
+            if (r.status == "Available") {
+              options.add(r.number?.toString() ?? "");
             }
           }
           return options;
@@ -115,8 +115,8 @@ class _Main_State extends State<Main_> {
 
           // * ស្វែងរក id នៃបន្ទប់ថ្មីដែលបានជ្រើសរើស
           for (var r in list_r) {
-            if (r[sm_room.NUMBER]?.toString() == v) {
-              to_room_id = r[sm_room.ID]?.toString();
+            if (r.number?.toString() == v) {
+              to_room_id = r.id?.toString();
               break;
             }
           }
@@ -160,9 +160,9 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.ROOM_CRUD_UPDATE, //
       data: {
-        sm_room.ID: widget.room_id, //
-        sm_room.STATUS: "Pending Clean", //
-        sm_room.FRONT_DESK_ID: null, //
+        Room.ID: widget.room_id, //
+        Room.STATUS: "Pending Clean", //
+        Room.FRONT_DESK_ID: null, //
       },
     );
     setState(() => is_loading = false);
@@ -172,9 +172,9 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.ROOM_CRUD_UPDATE, //
       data: {
-        sm_room.ID: to_room_id, //
-        sm_room.STATUS: "Pending Pay", //
-        sm_room.FRONT_DESK_ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
+        Room.ID: to_room_id, //
+        Room.STATUS: "Pending Pay", //
+        Room.FRONT_DESK_ID: map_r?.front_desk_id?.id, //
       },
     );
     setState(() => is_loading = false);
@@ -184,9 +184,9 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.FRONT_DESK_UPDATE_CHANGE_ROOM,
       data: {
-        sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
-        sm_front_desk.ROOM_ID: to_room_id, //
-        sm_front_desk.CHANGE_NOTE: change_note, //
+        Front_Desk.ID: map_r?.front_desk_id?.id, //
+        Front_Desk.ROOM_ID: to_room_id, //
+        Front_Desk.CHANGE_NOTE: change_note, //
       },
     );
     setState(() => is_loading = false);

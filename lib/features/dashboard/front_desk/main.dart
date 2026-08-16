@@ -4,24 +4,8 @@
 import "dart:async";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/schema/payment_mini_bar.g.dart";
-import "package:speanmeas/core/schema/payment_other.g.dart";
-import "package:speanmeas/core/schema/payment_room.g.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/config.dart"; // ignore: unused_import
-import "package:speanmeas/core/global.dart"; // ignore: unused_import
-import "package:speanmeas/core/i18n/main.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/parse.dart";
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/navigator.dart";
-
-import "package:speanmeas/core/schema/room.g.dart";
-import "package:speanmeas/core/schema/guest.g.dart";
-import "package:speanmeas/core/schema/front_desk.g.dart";
-import "package:speanmeas/core/widget/snackbar.dart";
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 
 // * នាំចូលទំព័រទម្រង់ផ្សេងៗរបស់ front desk
@@ -43,7 +27,7 @@ import "form/update_stay.dart" as update_stay;
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការបង្ហាញបន្ទប់ទាំងអស់
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic list_room;
+  List<Room> list_room = [];
   bool is_loading = true;
 
   String? search;
@@ -53,15 +37,14 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានបញ្ជីបន្ទប់ទាំងអស់
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ, data: {"key": sm_room.NUMBER, "order": 1});
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ, data: {"key": Room.NUMBER, "order": 1});
     setState(() => is_loading = false);
 
-    if (tmp.data == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_READ}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_READ}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No rooms found", cl: Colors.red);
 
-    // * ការពារការ cast មិនសុវត្ថិភាព បើ data មិនមែន List
-    list_room = tmp.data as List<dynamic>? ?? [];
-    // pprint(list_room);
+    // * បម្លែងទិន្នន័យទៅជា List<Room> ដើម្បីអានតាម typed model
+    list_room = List<Room>.from((tmp.data ?? const []).map((d) => Room.fromJson(d)));
 
     setState(() {});
   }
@@ -153,7 +136,7 @@ class _Main_State extends State<Main_> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "${t("Room")} ${r[sm_room.NUMBER]}",
+                              "${t("Room")} ${r.number}",
                               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                             ),
                           ],
@@ -161,18 +144,18 @@ class _Main_State extends State<Main_> {
 
                         (() {
                           var color = Colors.black; // Default color
-                          if (["Available"].contains(r[sm_room.STATUS])) color = Colors.green;
-                          if (["Pending Pay"].contains(r[sm_room.STATUS])) color = Colors.orange;
-                          if (["Pending Leave"].contains(r[sm_room.STATUS])) color = Colors.blue;
-                          if (["Pending Clean"].contains(r[sm_room.STATUS])) color = Colors.grey;
-                          if (["Pending Fix"].contains(r[sm_room.STATUS])) color = Colors.red;
+                          if (["Available"].contains(r.status)) color = Colors.green;
+                          if (["Pending Pay"].contains(r.status)) color = Colors.orange;
+                          if (["Pending Leave"].contains(r.status)) color = Colors.blue;
+                          if (["Pending Clean"].contains(r.status)) color = Colors.grey;
+                          if (["Pending Fix"].contains(r.status)) color = Colors.red;
 
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Icon(Icons.circle, size: 10, color: color),
                               SizedBox(width: 4),
-                              Text("${r[sm_room.STATUS]}", style: TextStyle(fontSize: 14, color: color)),
+                              Text("${r.status}", style: TextStyle(fontSize: 14, color: color)),
 
                               Tooltip(
                                 message: t("Menu"),
@@ -192,7 +175,7 @@ class _Main_State extends State<Main_> {
                                     );
                                   },
                                   menuChildren: [
-                                    if (!["Available"].contains(r[sm_room.STATUS]))
+                                    if (!["Available"].contains(r.status))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.receipt_outlined, color: Colors.blue),
                                         child: Text(t("View Details"), style: TextStyle(color: Colors.blue)), //
@@ -200,28 +183,28 @@ class _Main_State extends State<Main_> {
                                         // onPressed: () {},
                                       ),
 
-                                    if (["Available"].contains(r[sm_room.STATUS]))
+                                    if (["Available"].contains(r.status))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.bug_report_outlined, color: Colors.blue),
                                         child: Text(t("Set as Broken"), style: TextStyle(color: Colors.blue)), //
                                         onPressed: () => on_broke(r), //
                                       ),
 
-                                    if (["Pending Fix"].contains(r[sm_room.STATUS]))
+                                    if (["Pending Fix"].contains(r.status))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.build_outlined, color: Colors.blue),
                                         child: Text(t("Mark as Fixed"), style: TextStyle(color: Colors.blue)), //
                                         onPressed: () => on_fix(r), //
                                       ),
 
-                                    if (["Pending Pay", "Pending Leave"].contains(r[sm_room.STATUS]))
+                                    if (["Pending Pay", "Pending Leave"].contains(r.status))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.swap_horiz_outlined, color: Colors.blue),
                                         child: Text(t("Change Room"), style: TextStyle(color: Colors.blue)),
                                         onPressed: () => on_change_room(r), //
                                       ),
 
-                                    if (["Pending Pay", "Pending Leave"].contains(r[sm_room.STATUS]))
+                                    if (["Pending Pay", "Pending Leave"].contains(r.status))
                                       MenuItemButton(
                                         leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
                                         child: Text(t("Cancel"), style: TextStyle(color: Colors.red)),
@@ -238,9 +221,9 @@ class _Main_State extends State<Main_> {
                     ),
 
                     (() {
-                      String kind = r[sm_room.KIND] ?? t("N/A");
-                      double usd_per_3h = (r[sm_room.USD_PER_3H] as num?)?.toDouble() ?? 0;
-                      double usd_per_day = (r[sm_room.USD_PER_DAY] as num?)?.toDouble() ?? 0;
+                      String kind = r.kind ?? t("N/A");
+                      double usd_per_3h = r.usd_per_3h ?? 0;
+                      double usd_per_day = r.usd_per_day ?? 0;
                       return Row(
                         spacing: 4,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -254,12 +237,12 @@ class _Main_State extends State<Main_> {
                       );
                     })(),
 
-                    if (r[sm_room.FRONT_DESK_ID] != null) ...[
-                      if (!"${r[sm_room.STATUS]}".contains("Pending Fix"))
+                    if (r.front_desk_id != null) ...[
+                      if (!"${r.status}".contains("Pending Fix"))
                         (() {
-                          tmp = _fd(r)[sm_front_desk.GUEST_ID] as Map<String, dynamic>? ?? {};
-                          final guest_name = tmp[sm_guest.FULL_NAME] ?? "N/A";
-                          final guest_phone = tmp[sm_guest.PHONE_NUMBER] ?? "N/A";
+                          final guest = _fd(r)?.guest_id;
+                          final guest_name = guest?.full_name ?? "N/A";
+                          final guest_phone = guest?.phone_number ?? "N/A";
                           return Row(
                             spacing: 4,
                             children: [
@@ -286,12 +269,12 @@ class _Main_State extends State<Main_> {
                           );
                         })(),
 
-                      if (!["Pending Fix"].contains(r[sm_room.STATUS]))
+                      if (!["Pending Fix"].contains(r.status))
                         (() {
-                          tmp = _fd(r);
-                          final stay_n_guest = tmp[sm_front_desk.CHECK_IN_NUMBER] ?? "0";
-                          final stay_day = tmp[sm_front_desk.CHECK_IN_DAY] ?? "0";
-                          final stay_hour = tmp[sm_front_desk.CHECK_IN_HOUR] ?? "0";
+                          final fd = _fd(r);
+                          final stay_n_guest = fd?.check_in_number?.toString() ?? "0";
+                          final stay_day = fd?.check_in_day?.toString() ?? "0";
+                          final stay_hour = fd?.check_in_hour?.toString() ?? "0";
                           return Row(
                             spacing: 4,
                             children: [
@@ -309,7 +292,7 @@ class _Main_State extends State<Main_> {
                               SizedBox(width: 2), //
                               Icon(Icons.circle, size: 6), //
                               Text("$stay_hour ${t("Hours")}", style: TextStyle(color: Colors.blue)),
-                              if (r[sm_room.STATUS] != "Pending Clean")
+                              if (r.status != "Pending Clean")
                                 Tooltip(
                                   message: t("Edit Stay Info"),
                                   child: InkWell(
@@ -322,18 +305,18 @@ class _Main_State extends State<Main_> {
                           );
                         })(),
 
-                      if (!["Pending Fix"].contains(r[sm_room.STATUS]))
+                      if (!["Pending Fix"].contains(r.status))
                         (() {
-                          tmp = _fd(r)[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
+                          final pay_room_list = _fd(r)?.pay_room ?? [];
                           double price = 0;
                           double pay = 0;
                           double change = 0;
-                          for (var l in tmp) {
-                            price = price + double.parse(l[sm_payment_room.ADD_PRICE]?.toString() ?? "0");
-                            price = price - double.parse(l[sm_payment_room.SUB_PRICE]?.toString() ?? "0");
-                            pay = pay + double.parse(l[sm_payment_room.ADD_CASH]?.toString() ?? "0");
-                            pay = pay + double.parse(l[sm_payment_room.ADD_BANK]?.toString() ?? "0");
-                            change = change + double.parse(l[sm_payment_room.SUB_RETURN]?.toString() ?? "0");
+                          for (var l in pay_room_list) {
+                            price = price + (l.add_price ?? 0);
+                            price = price - (l.sub_price ?? 0);
+                            pay = pay + (l.add_cash ?? 0);
+                            pay = pay + (l.add_bank ?? 0);
+                            change = change + (l.sub_return ?? 0);
                           }
                           return Row(
                             spacing: 4,
@@ -356,7 +339,7 @@ class _Main_State extends State<Main_> {
                               Text(t("Return"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("${change.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
 
-                              if (!["Pending Clean"].contains(r[sm_room.STATUS]))
+                              if (!["Pending Clean"].contains(r.status))
                                 Tooltip(
                                   message: t("Edit Room Payment"),
                                   child: InkWell(
@@ -368,18 +351,18 @@ class _Main_State extends State<Main_> {
                             ],
                           );
                         })(),
-                      if (!["Pending Fix"].contains(r[sm_room.STATUS]))
+                      if (!["Pending Fix"].contains(r.status))
                         (() {
-                          tmp = _fd(r)[sm_front_desk.PAY_MINI_BAR] as List<dynamic>? ?? [];
+                          final pay_mini_bar_list = _fd(r)?.pay_mini_bar ?? [];
                           double price = 0;
                           double pay = 0;
                           double change = 0;
-                          for (var l in tmp) {
-                            price = price + double.parse(l[sm_payment_mini_bar.ADD_PRICE]?.toString() ?? "0");
-                            price = price - double.parse(l[sm_payment_mini_bar.SUB_PRICE]?.toString() ?? "0");
-                            pay = pay + double.parse(l[sm_payment_mini_bar.ADD_CASH]?.toString() ?? "0");
-                            pay = pay + double.parse(l[sm_payment_mini_bar.ADD_BANK]?.toString() ?? "0");
-                            change = change + double.parse(l[sm_payment_mini_bar.SUB_RETURN]?.toString() ?? "0");
+                          for (var l in pay_mini_bar_list) {
+                            price = price + (l.add_price ?? 0);
+                            price = price - (l.sub_price ?? 0);
+                            pay = pay + (l.add_cash ?? 0);
+                            pay = pay + (l.add_bank ?? 0);
+                            change = change + (l.sub_return ?? 0);
                           }
                           return Row(
                             spacing: 4,
@@ -402,7 +385,7 @@ class _Main_State extends State<Main_> {
                               Text(t("Return"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("${change.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
 
-                              if (!["Pending Clean"].contains(r[sm_room.STATUS]))
+                              if (!["Pending Clean"].contains(r.status))
                                 Tooltip(
                                   message: t("Edit Mini Bar Payment"),
                                   child: InkWell(
@@ -415,18 +398,18 @@ class _Main_State extends State<Main_> {
                         })(),
 
                       // payment other info
-                      if (!["Pending Fix"].contains(r[sm_room.STATUS]))
+                      if (!["Pending Fix"].contains(r.status))
                         (() {
-                          tmp = _fd(r)[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
+                          final pay_other_list = _fd(r)?.pay_other ?? [];
                           double price = 0;
                           double pay = 0;
                           double change = 0;
-                          for (var l in tmp) {
-                            price = price + double.parse(l[sm_payment_other.ADD_PRICE]?.toString() ?? "0");
-                            price = price - double.parse(l[sm_payment_other.SUB_PRICE]?.toString() ?? "0");
-                            pay = pay + double.parse(l[sm_payment_other.ADD_CASH]?.toString() ?? "0");
-                            pay = pay + double.parse(l[sm_payment_other.ADD_BANK]?.toString() ?? "0");
-                            change = change + double.parse(l[sm_payment_other.SUB_RETURN]?.toString() ?? "0");
+                          for (var l in pay_other_list) {
+                            price = price + (l.add_price ?? 0);
+                            price = price - (l.sub_price ?? 0);
+                            pay = pay + (l.add_cash ?? 0);
+                            pay = pay + (l.add_bank ?? 0);
+                            change = change + (l.sub_return ?? 0);
                           }
                           return Row(
                             spacing: 4,
@@ -449,7 +432,7 @@ class _Main_State extends State<Main_> {
                               Text(t("Return"), style: TextStyle(fontWeight: FontWeight.bold)), //
                               Text("${change.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                               //
-                              if (r[sm_room.STATUS] != "Pending Clean")
+                              if (r.status != "Pending Clean")
                                 Tooltip(
                                   message: t("Edit Other Payment"),
                                   child: InkWell(
@@ -463,9 +446,9 @@ class _Main_State extends State<Main_> {
                         })(),
 
                       // check in, due to, check out info
-                      if (r[sm_room.STATUS] != "Pending Fix")
+                      if (r.status != "Pending Fix")
                         (() {
-                          String check_in = format_datetime(_fd(r)[sm_front_desk.CHECK_IN_AT]);
+                          String check_in = format_datetime(_fd(r)?.check_in_at);
                           return Row(
                             spacing: 4,
                             children: [
@@ -477,9 +460,9 @@ class _Main_State extends State<Main_> {
                         })(),
 
                       // due to info
-                      if (r[sm_room.STATUS] != "Pending Fix")
+                      if (r.status != "Pending Fix")
                         (() {
-                          String due = format_datetime(_fd(r)[sm_front_desk.CHECK_IN_DUE]);
+                          String due = format_datetime(_fd(r)?.check_in_due);
                           return Row(
                             spacing: 4,
                             children: [
@@ -491,9 +474,9 @@ class _Main_State extends State<Main_> {
                         })(),
 
                       //
-                      if (r[sm_room.STATUS] != "Pending Fix")
+                      if (r.status != "Pending Fix")
                         (() {
-                          String check_out = format_datetime(_fd(r)[sm_front_desk.CHECK_OUT_AT]);
+                          String check_out = format_datetime(_fd(r)?.check_out_at);
                           return Row(
                             spacing: 4,
                             children: [
@@ -505,9 +488,9 @@ class _Main_State extends State<Main_> {
                         })(),
 
                       // broke info
-                      if (r[sm_room.STATUS] == "Pending Fix")
+                      if (r.status == "Pending Fix")
                         (() {
-                          String broke_date = format_datetime(_fd(r)[sm_front_desk.BROKE_AT]);
+                          String broke_date = format_datetime(_fd(r)?.broke_at);
                           return Row(
                             spacing: 4,
                             children: [
@@ -522,28 +505,28 @@ class _Main_State extends State<Main_> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (r[sm_room.STATUS] == "Available") //
+                        if (r.status == "Available") //
                           OutlinedButton.icon(
                             icon: Icon(Icons.login),
                             label: Text(t("Check In")),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.green)),
                             onPressed: () => on_check_in(r), //
                           ), //
-                        if (r[sm_room.STATUS] == "Pending Pay") //
+                        if (r.status == "Pending Pay") //
                           OutlinedButton.icon(
                             icon: Icon(Icons.payment),
                             label: Text(t("Payment")),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.orange)),
                             onPressed: () => on_payment(r), //
                           ), //
-                        if (r[sm_room.STATUS] == "Pending Leave") //
+                        if (r.status == "Pending Leave") //
                           OutlinedButton.icon(
                             icon: Icon(Icons.logout),
                             label: Text(t("Check Out")),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.blue)),
                             onPressed: () => on_check_out(r), //
                           ), //
-                        if (r[sm_room.STATUS] == "Pending Clean") //
+                        if (r.status == "Pending Clean") //
                           OutlinedButton.icon(
                             icon: Icon(Icons.cleaning_services),
                             label: Text(t("Clean")),
@@ -563,99 +546,99 @@ class _Main_State extends State<Main_> {
 
   // * បើកទំព័រ check in សម្រាប់បន្ទប់
   void on_check_in(dynamic r) async {
-    tmp = await navigator(context, check_in.Main_(room_id: r[sm_room.ID]));
+    tmp = await nav_push(context, check_in.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 
   // * បើកទំព័រទូទាត់បន្ទប់
   void on_payment(dynamic r) async {
-    tmp = await navigator(context, pay_room.Main_(room_id: r[sm_room.ID]));
+    tmp = await nav_push(context, pay_room.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 
   // * បើកទំព័រ check out សម្រាប់បន្ទប់
   void on_check_out(dynamic r) async {
-    tmp = await navigator(context, check_out.Main_(room_id: r[sm_room.ID]));
+    tmp = await nav_push(context, check_out.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 
   // * បើកទំព័រសម្អាតបន្ទប់
   void on_clean(dynamic r) async {
-    tmp = await navigator(context, clean.Main_(room_id: r[sm_room.ID]));
+    tmp = await nav_push(context, clean.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 
   // * បើកទំព័រកំណត់បន្ទប់ខូច
   void on_broke(dynamic r) async {
-    tmp = await navigator(context, broke.Main_(room_id: r[sm_room.ID]));
+    tmp = await nav_push(context, broke.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 
   // * បើកទំព័រកំណត់បន្ទប់ជួសជុលរួច
   void on_fix(dynamic r) async {
-    tmp = await navigator(context, fix.Main_(room_id: r[sm_room.ID]));
+    tmp = await nav_push(context, fix.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 
   // * បើកទំព័រមើលព័ត៌មានលម្អិតបន្ទប់
   void on_detail(dynamic r) async {
-    tmp = await navigator(context, detail.Main_(room_id: r[sm_room.ID]));
+    tmp = await nav_push(context, detail.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 
   // * បើកទំព័របោះបង់ការស្នាក់នៅ
   void on_cancel(dynamic r) async {
-    tmp = await navigator(context, cancel.Main_(room_id: r[sm_room.ID]));
+    tmp = await nav_push(context, cancel.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 
   // * បើកទំព័រប្តូរបន្ទប់
   void on_change_room(dynamic r) async {
-    tmp = await navigator(context, change_room.Main_(room_id: r[sm_room.ID]));
+    tmp = await nav_push(context, change_room.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 
   // * បើកទំព័រកែព័ត៌មានស្នាក់នៅ
   void on_update_stay(dynamic r) async {
-    tmp = await navigator(context, update_stay.Main_(room_id: r[sm_room.ID]));
+    tmp = await nav_push(context, update_stay.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 
   // * បើកទំព័រកែព័ត៌មានភ្ញៀវ
   void on_update_guest(dynamic r) async {
-    tmp = await navigator(context, update_guest.Main_(room_id: r[sm_room.ID]));
+    tmp = await nav_push(context, update_guest.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 
   // * បើកទំព័រកែការទូទាត់បន្ទប់
   void on_update_room_payment(dynamic r) async {
-    tmp = await navigator(context, update_pay_room.Main_(room_id: r[sm_room.ID]));
+    tmp = await nav_push(context, update_pay_room.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 
   // * បើកទំព័រទូទាត់ផ្សេងៗ
   void on_pay_other(dynamic r) async {
-    tmp = await navigator(context, pay_other.Main_(room_id: r[sm_room.ID]));
+    tmp = await nav_push(context, pay_other.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 
   // * បើកទំព័រទូទាត់ mini bar
   void on_pay_mini_bar(dynamic r) async {
-    tmp = await navigator(context, pay_mini_bar.Main_(room_id: r[sm_room.ID]));
+    tmp = await nav_push(context, pay_mini_bar.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 
-  // * Safe lookup into map_fd; returns {} if the room's front-desk fetch failed/missing
-  Map<String, dynamic> _fd(dynamic r) => r[sm_room.FRONT_DESK_ID] as Map<String, dynamic>? ?? {};
+  // * Safe lookup into front_desk; returns null if the room has no front-desk record
+  Front_Desk? _fd(Room r) => r.front_desk_id;
 
   // * ត្រងបញ្ជីបន្ទប់តាមលក្ខខណ្ឌស្វែងរក
-  List<dynamic> get _list_show {
+  List<Room> get _list_show {
     final q = search?.trim().toLowerCase();
     if (q == null || q.isEmpty) return list_room;
     return list_room.where((r) {
-      final room_number = '${r[sm_room.NUMBER]}'.toLowerCase();
-      final room_status = '${r[sm_room.STATUS]}'.toLowerCase();
-      final room_kind = '${r[sm_room.KIND]}'.toLowerCase();
+      final room_number = '${r.number}'.toLowerCase();
+      final room_status = '${r.status}'.toLowerCase();
+      final room_kind = '${r.kind}'.toLowerCase();
       return room_number.contains(q) || room_status.contains(q) || room_kind.contains(q);
     }).toList();
   }

@@ -343,7 +343,7 @@ class _Main_State extends State<Main_> {
 
   // * បើកទំព័របង្កើតឧទាហរណ៍ថ្មី
   void on_create() async {
-    tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
+    tmp = await nav_push(context, create.Main_());
     if (tmp == null) return;
 
     // * លុប sort + filter
@@ -361,7 +361,7 @@ class _Main_State extends State<Main_> {
     final id = row?.cells[Demo_2.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
 
-    Navigator.push(context, MaterialPageRoute(builder: (context) => read.Main_(id: id)));
+    nav_push(context, read.Main_(id: id));
   }
 
   // * បើកទំព័រកែប្រែឧទាហរណ៍
@@ -370,7 +370,7 @@ class _Main_State extends State<Main_> {
     final id = row?.cells[Demo_2.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
 
-    tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_(id: id)));
+    tmp = await nav_push(context, update.Main_(id: id));
     if (tmp == null) return;
 
     load_page(page);
@@ -385,7 +385,7 @@ class _Main_State extends State<Main_> {
       return;
     }
 
-    tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_(id: id)));
+    tmp = await nav_push(context, delete.Main_(id: id));
     if (tmp == null) return;
 
     load_page(page);

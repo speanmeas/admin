@@ -8,6 +8,7 @@ import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/navigator.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
@@ -191,7 +192,7 @@ class _Search_GuestState extends State<Search_Guest> {
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
               onPressed: () async {
                 // * បើកទម្រង់បង្កើតសញ្ជាតិថ្មី
-                final v = await Navigator.push(context, MaterialPageRoute(builder: (context) => create_guest.Main_()));
+                final v = await nav_push(context, create_guest.Main_());
                 if (v == null) return;
 
                 // * បង្ហាញឈ្មោះសញ្ជាតិថ្មី និងជ្រើសរើសភ្លាមៗ

@@ -2,16 +2,8 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-
-import "package:speanmeas/core/schema/nationality.g.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 
 // * បង្កើត layout មេរបស់ទំព័របង្កើតសញ្ជាតិ
@@ -107,8 +99,8 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.NATIONALITY_CRUD_CREATE, //
       data: {
-        sm_nationality.NAME: name,
-        sm_nationality.NOTE: note, //
+        Nationality.NAME: name,
+        Nationality.NOTE: note, //
       },
     );
     setState(() => is_loading = false);

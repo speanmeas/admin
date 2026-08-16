@@ -2,18 +2,10 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/parse.dart";
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
-import "package:speanmeas/core/schema/mini_bar.g.dart";
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * បង្កើត layout មេរបស់ទំព័រកែប្រែmini bar
 Widget _layout(List<Widget> children) {
@@ -66,16 +58,17 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានទិន្នន័យmini barតាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.MINI_BAR_CRUD_READ_ID, data: {sm_mini_bar.ID: widget.id});
+    tmp = await dio.post(endpoint.MINI_BAR_CRUD_READ_ID, data: {Mini_Bar.ID: widget.id});
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.MINI_BAR_CRUD_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-    name = parse_string(tmp.data[0][sm_mini_bar.NAME]);
-    price = parse_double(tmp.data[0][sm_mini_bar.PRICE]);
-    stock = parse_double(tmp.data[0][sm_mini_bar.STOCK]);
-    note = parse_string(tmp.data[0][sm_mini_bar.NOTE]);
+    final mini_bar = Mini_Bar.fromJson(tmp.data[0]);
+    name = mini_bar.name;
+    price = mini_bar.price;
+    stock = mini_bar.stock;
+    note = mini_bar.note;
 
     setState(() {});
   }
@@ -145,11 +138,11 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.MINI_BAR_CRUD_UPDATE, //
       data: {
-        sm_mini_bar.ID: widget.id,
-        sm_mini_bar.NAME: name,
-        sm_mini_bar.PRICE: price,
-        sm_mini_bar.STOCK: stock,
-        sm_mini_bar.NOTE: note, //
+        Mini_Bar.ID: widget.id,
+        Mini_Bar.NAME: name,
+        Mini_Bar.PRICE: price,
+        Mini_Bar.STOCK: stock,
+        Mini_Bar.NOTE: note, //
       },
     );
     setState(() => is_loading = false);

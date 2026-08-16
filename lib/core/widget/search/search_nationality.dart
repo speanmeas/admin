@@ -8,6 +8,7 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/navigator.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
@@ -181,12 +182,7 @@ class _Search_NationalityState extends State<Search_Nationality> {
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
               onPressed: () async {
                 // * បើកទម្រង់បង្កើតសញ្ជាតិថ្មី
-                final v = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => create_nationality.Main_(), //
-                  ),
-                );
+                final v = await nav_push(context, create_nationality.Main_());
                 if (v == null) return;
 
                 // * បង្ហាញឈ្មោះសញ្ជាតិថ្មី និងជ្រើសរើសភ្លាមៗ

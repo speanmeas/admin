@@ -3,22 +3,12 @@
 import "package:flutter/material.dart";
 import "package:flutter/foundation.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
 import "package:pluto_grid/pluto_grid.dart";
-
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/config.dart"; // ignore: unused_import
-import "package:speanmeas/core/i18n/main.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/parse.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/widget/dialog/dialog_page.dart";
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/button/menu_button_text.dart";
-import "package:speanmeas/core/schema/bank.g.dart";
 
 import "form/create.dart" as create;
 import "form/read.dart" as read;
@@ -37,7 +27,6 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទិន្នន័យធនាគារ
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic data;
   bool is_loading = true;
   List<String> list_c = columns.map((c) => c.field).toList();
 
@@ -45,6 +34,8 @@ class _Main_State extends State<Main_> {
   int page = 1;
   int row_total = 0;
   PlutoGridStateManager? state_manager;
+
+  List<Bank> data = [];
 
   // * ផ្ទុកចំនួនជួរដេកសរុប និងទំព័រដំបូង
   void init() async {
@@ -95,25 +86,26 @@ class _Main_State extends State<Main_> {
     final sorted_column = state_manager?.getSortedColumn;
     final filter_rows = List<PlutoRow>.from(state_manager?.filterRows ?? const <PlutoRow>[]);
 
-    // * បម្លែងទិន្នន័យទៅជា List<dynamic> ដើម្បីបង្កើត PlutoRow
-    data = List<dynamic>.from(tmp.data ?? const []);
+    // * បម្លែងទិន្នន័យទៅជា List<Bank> ដើម្បីបង្កើត PlutoRow
+    data = List<Bank>.from((tmp.data ?? const []).map((d) => Bank.fromJson(d)));
 
     // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
     state_manager?.removeAllRows();
     state_manager?.appendRows([
-      for (var d in data)
+      for (var i = 0; i < data.length; i++)
         PlutoRow(
           cells: {
             for (var c in list_c) //
               c: (() {
                 if (c == "index") //
-                  return PlutoCell(value: data.indexOf(d) + 1);
-                if (c == sm_bank.ID) //
-                  return PlutoCell(value: parse_string(d[sm_bank.ID]));
-                if (c == sm_bank.NAME) //
-                  return PlutoCell(value: parse_string(d[sm_bank.NAME]));
-                if (c == sm_bank.NOTE) //
-                  return PlutoCell(value: parse_string(d[sm_bank.NOTE]));
+                  return PlutoCell(value: i + 1);
+                final bank = data[i];
+                if (c == Bank.ID) //
+                  return PlutoCell(value: bank.id);
+                if (c == Bank.NAME) //
+                  return PlutoCell(value: bank.name);
+                if (c == Bank.NOTE) //
+                  return PlutoCell(value: bank.note);
 
                 return PlutoCell(value: null);
               })(),
@@ -345,7 +337,7 @@ class _Main_State extends State<Main_> {
 
   // * បើកទំព័របង្កើតធនាគារថ្មី
   void on_create() async {
-    tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => create.Main_()));
+    tmp = await nav_push(context, create.Main_());
     if (tmp == null) return;
 
     // * លុប sort + filter
@@ -360,19 +352,19 @@ class _Main_State extends State<Main_> {
   // * បើកទំព័រអានព័ត៌មានធនាគារ
   void on_read() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[sm_bank.ID]?.value?.toString() ?? "";
+    final id = row?.cells[Bank.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
 
-    Navigator.push(context, MaterialPageRoute(builder: (context) => read.Main_(id: id)));
+    nav_push(context, read.Main_(id: id));
   }
 
   // * បើកទំព័រកែប្រែធនាគារ
   void on_update() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[sm_bank.ID]?.value?.toString() ?? "";
+    final id = row?.cells[Bank.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
 
-    tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_(id: id)));
+    tmp = await nav_push(context, update.Main_(id: id));
     if (tmp == null) return;
 
     load_page(page);
@@ -381,13 +373,13 @@ class _Main_State extends State<Main_> {
   // * បើកទំព័រលុបធនាគារ
   void on_delete() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[sm_bank.ID]?.value?.toString() ?? "";
+    final id = row?.cells[Bank.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) {
       snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
       return;
     }
 
-    tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => delete.Main_(id: id)));
+    tmp = await nav_push(context, delete.Main_(id: id));
     if (tmp == null) return;
 
     load_page(page);
@@ -430,7 +422,7 @@ final columns = [
 
   // * ជួរឈរ ID (លាក់)
   PlutoColumn(
-    field: sm_bank.ID, //
+    field: Bank.ID, //
     title: "ID",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -440,7 +432,7 @@ final columns = [
 
   // * ជួរឈរឈ្មោះធនាគារ
   PlutoColumn(
-    field: sm_bank.NAME, //
+    field: Bank.NAME, //
     title: "Name",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -458,7 +450,7 @@ final columns = [
 
   // * ជួរឈរកំណត់ចំណាំ
   PlutoColumn(
-    field: sm_bank.NOTE, //
+    field: Bank.NOTE, //
     title: "Note",
     type: PlutoColumnType.text(),
     width: WIDTH,

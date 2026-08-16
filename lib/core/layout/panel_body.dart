@@ -1,13 +1,11 @@
 // * នាំចូល Flutter material និង Provider សម្រាប់ state management
 import "package:flutter/material.dart";
-import "package:speanmeas/core/i18n/main.dart";
 import "package:provider/provider.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 // * dashboard
 import "package:speanmeas/features/dashboard/front_desk/main.dart" as d_front_desk;
-import "package:speanmeas/features/dashboard/mini_bar/main.dart" as d_mini_bar;
+// import "package:speanmeas/features/dashboard/mini_bar/main.dart" as d_mini_bar;
 
 // * database
 // import "package:speanmeas/features/database/.front_desk/main.dart" as front_desk;
@@ -25,23 +23,15 @@ import "package:speanmeas/features/database/demo_2/main.dart" as demo_2;
 
 // * setting
 import "package:speanmeas/features/setting/main.dart" as setting;
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
 // * ថ្នាក់ state របស់ Panel_Body គ្រប់គ្រងការបង្ហាញ panel នីមួយៗ
 class _Panel_BodyState extends State<Panel_Body> {
-  //
-  dynamic tmp;
-
-  //
   // * បញ្ជី panel ទាំងអស់របស់កម្មវិធី
   List<Map<String, dynamic>> panels = [
     {"name": "", "panel": Text("This page is under development..")},
     //
     {"name": "Front Desk", "panel": d_front_desk.Main_()}, //
-    {"name": "Mini Bar", "panel": d_mini_bar.Main_()}, //
+    // {"name": "Mini Bar", "panel": d_mini_bar.Main_()}, //
     //
     // {"name": "Data Front Desk", "panel": front_desk.Main_()}, //
     {"name": "Data Room", "panel": room.Main_()}, //

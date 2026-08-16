@@ -1,17 +1,9 @@
 // * នាំចូល Flutter material និង Provider សម្រាប់ state management
 import "package:flutter/material.dart";
-import "package:speanmeas/core/i18n/main.dart";
 import "package:provider/provider.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/config.dart";
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/features/auth/profile.dart" as profile;
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema.g.dart";
+import "package:speanmeas/features/auth/profile.dart";
 
 // * ថ្នាក់ state របស់ Panel_Top គ្រប់គ្រងបន្ទះខាងលើ
 class _Panel_TopState extends State<Panel_Top> {
@@ -130,7 +122,7 @@ class _Panel_TopState extends State<Panel_Top> {
               ),
               onTap: () {
                 // * បើកទំព័រ profile
-                Navigator.push(context, MaterialPageRoute(builder: (_) => profile.Main_()));
+                nav_push(context, Profile());
                 init();
               },
             ),

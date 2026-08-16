@@ -2,20 +2,12 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/parse.dart";
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
 import "../widget/kind_select.dart" as k_select;
 import "../widget/status_select.dart" as s_select;
-import "package:speanmeas/core/schema/room.g.dart";
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * បង្កើត layout មេរបស់ទំព័រកែប្រែបន្ទប់
 Widget _layout(List<Widget> children) {
@@ -70,18 +62,19 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានទិន្នន័យបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.id});
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.id});
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-    number = parse_string(tmp.data[0][sm_room.NUMBER]);
-    usd_per_day = parse_double(tmp.data[0][sm_room.USD_PER_DAY]);
-    usd_per_3h = parse_double(tmp.data[0][sm_room.USD_PER_3H]);
-    kind = parse_string(tmp.data[0][sm_room.KIND]);
-    status = parse_string(tmp.data[0][sm_room.STATUS]);
-    note = parse_string(tmp.data[0][sm_room.NOTE]);
+    final room = Room.fromJson(tmp.data[0]);
+    number = room.number;
+    usd_per_day = room.usd_per_day;
+    usd_per_3h = room.usd_per_3h;
+    kind = room.kind;
+    status = room.status;
+    note = room.note;
 
     setState(() {});
   }
@@ -169,13 +162,13 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.ROOM_CRUD_UPDATE, //
       data: {
-        sm_room.ID: widget.id,
-        sm_room.NUMBER: number,
-        sm_room.USD_PER_DAY: usd_per_day,
-        sm_room.USD_PER_3H: usd_per_3h,
-        sm_room.KIND: kind,
-        sm_room.STATUS: status,
-        sm_room.NOTE: note, //
+        Room.ID: widget.id,
+        Room.NUMBER: number,
+        Room.USD_PER_DAY: usd_per_day,
+        Room.USD_PER_3H: usd_per_3h,
+        Room.KIND: kind,
+        Room.STATUS: status,
+        Room.NOTE: note, //
       },
     );
     setState(() => is_loading = false);

@@ -12,8 +12,8 @@ import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_text.dart";
-import "package:speanmeas/core/schema/front_desk.g.dart";
-import "package:speanmeas/core/schema/room.g.dart";
+
+import "package:speanmeas/core/schema.g.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រ check out
 Widget _layout(List<Widget> children) {
@@ -51,7 +51,7 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់ check out
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_r;
+  Room? map_r;
   bool is_loading = true;
 
   String? note;
@@ -60,12 +60,12 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-    map_r = tmp.data[0] as Map<String, dynamic>;
+    map_r = Room.fromJson(tmp.data[0]);
 
     setState(() {});
   }
@@ -78,7 +78,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់
       Text(
-        '${t("Room")} ${map_r?[sm_room.NUMBER] ?? "N/A"}', //
+        '${t("Room")} ${map_r?.number ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -115,8 +115,8 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.FRONT_DESK_CHECK_OUT, //
       data: {
-        sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
-        sm_front_desk.CHECK_OUT_NOTE: note, //
+        Front_Desk.ID: map_r?.front_desk_id?.id, //
+        Front_Desk.CHECK_OUT_NOTE: note, //
       },
     );
     setState(() => is_loading = false);
@@ -126,8 +126,8 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.ROOM_CRUD_UPDATE, //
       data: {
-        sm_room.ID: widget.room_id, //
-        sm_room.STATUS: "Pending Clean", //
+        Room.ID: widget.room_id, //
+        Room.STATUS: "Pending Clean", //
       },
     );
     setState(() => is_loading = false);

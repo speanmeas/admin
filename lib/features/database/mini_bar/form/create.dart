@@ -2,16 +2,8 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-
-import "package:speanmeas/core/schema/mini_bar.g.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
 
@@ -130,10 +122,10 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.MINI_BAR_CRUD_CREATE, //
       data: {
-        sm_mini_bar.NAME: name,
-        sm_mini_bar.PRICE: price,
-        sm_mini_bar.STOCK: stock,
-        sm_mini_bar.NOTE: note, //
+        Mini_Bar.NAME: name,
+        Mini_Bar.PRICE: price,
+        Mini_Bar.STOCK: stock,
+        Mini_Bar.NOTE: note, //
       },
     );
     setState(() => is_loading = false);

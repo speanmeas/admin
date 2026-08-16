@@ -8,8 +8,6 @@ import "package:flutter/foundation.dart";
 import "package:provider/provider.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:flutter_svg/flutter_svg.dart";
-import "package:speanmeas/core/schema/payment_room.g.dart";
-import "package:speanmeas/core/schema/user.g.dart";
 
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/global.dart"; // ignore: unused_import
@@ -23,9 +21,7 @@ import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/select/select_date_time.dart";
-import "package:speanmeas/core/schema/front_desk.g.dart";
-import "package:speanmeas/core/schema/guest.g.dart";
-import "package:speanmeas/core/schema/room.g.dart";
+import "package:speanmeas/core/schema.g.dart";
 
 // * យកតម្លៃពីធាតុដំបូងនៃបញ្ជីដោយសុវត្ថិភាព (បញ្ជីទទេត្រឡប់ null)
 dynamic _firstOf(dynamic list, String key) {
@@ -42,7 +38,7 @@ dynamic _lastOf(dynamic list, String key) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការស្វែងរក និងបង្ហាញរបាយការណ៍
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic data = [];
+  List<Front_Desk> data = [];
   bool is_loading = true;
 
   bool is_filter = false;
@@ -95,7 +91,7 @@ class _Main_State extends State<Main_> {
 
     if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.REPORT}", cl: Colors.red);
 
-    data = List<dynamic>.from(tmp.data ?? []);
+    data = List<Front_Desk>.from((tmp.data ?? const []).map((d) => Front_Desk.fromJson(d)));
 
     // * បំពេញជួរដេកទៅក្នុងតារាង
     state_manager?.removeAllRows();
@@ -107,85 +103,85 @@ class _Main_State extends State<Main_> {
               c: (() {
                 if (c == "index") //
                   return PlutoCell(value: data.indexOf(fd) + 1);
-                if (c == sm_front_desk.ID) //
-                  return PlutoCell(value: parse_string(fd[sm_front_desk.ID]));
-                if (c == sm_front_desk.ROOM_ID + sm_room.NUMBER) //
-                  return PlutoCell(value: parse_string(fd[sm_front_desk.ROOM_ID]?[sm_room.NUMBER]));
-                if (c == sm_front_desk.GUEST_ID + sm_guest.FULL_NAME) //
-                  return PlutoCell(value: parse_string(fd[sm_front_desk.GUEST_ID]?[sm_guest.FULL_NAME]));
-                if (c == sm_front_desk.CHECK_IN_NUMBER) //
-                  return PlutoCell(value: parse_double(fd[sm_front_desk.CHECK_IN_NUMBER]));
-                if (c == sm_front_desk.CHECK_IN_AT) //
-                  return PlutoCell(value: parse_datetime(fd[sm_front_desk.CHECK_IN_AT]));
-                if (c == sm_front_desk.CHECK_OUT_AT) //
-                  return PlutoCell(value: parse_datetime(fd[sm_front_desk.CHECK_OUT_AT]));
-                if (c == sm_front_desk.CHECK_IN_DAY) //
-                  return PlutoCell(value: parse_int(fd[sm_front_desk.CHECK_IN_DAY]));
-                if (c == sm_front_desk.CHECK_IN_HOUR) //
-                  return PlutoCell(value: parse_int(fd[sm_front_desk.CHECK_IN_HOUR]));
-                // if (c == sm_front_desk.PAY_ROOM + "add_price") //
+                if (c == Front_Desk.ID) //
+                  return PlutoCell(value: parse_string(fd.id));
+                if (c == Front_Desk.ROOM_ID + Room_Show.NUMBER) //
+                  return PlutoCell(value: parse_string(fd.room_id?.number));
+                if (c == Front_Desk.GUEST_ID + Guest_Show.FULL_NAME) //
+                  return PlutoCell(value: parse_string(fd.guest_id?.full_name));
+                if (c == Front_Desk.CHECK_IN_NUMBER) //
+                  return PlutoCell(value: parse_double(fd.check_in_number));
+                if (c == Front_Desk.CHECK_IN_AT) //
+                  return PlutoCell(value: parse_datetime(fd.check_in_at));
+                if (c == Front_Desk.CHECK_OUT_AT) //
+                  return PlutoCell(value: parse_datetime(fd.check_out_at));
+                if (c == Front_Desk.CHECK_IN_DAY) //
+                  return PlutoCell(value: parse_int(fd.check_in_day));
+                if (c == Front_Desk.CHECK_IN_HOUR) //
+                  return PlutoCell(value: parse_int(fd.check_in_hour));
+                // if (c == Front_Desk.PAY_ROOM + Payment_Room.ADD_PRICE) //
                 //   return PlutoCell(
                 //     value: (() {
                 //       double total = 0;
-                //       for (var l in fd[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? []) {
-                //         total = total + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
-                //         total = total - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
+                //       for (var l in (fd.pay_room ?? [])) {
+                //         total = total + (l.add_price ?? 0);
+                //         total = total - (l.sub_price ?? 0);
                 //       }
                 //       return total;
                 //     })(),
                 //   );
-                // if (c == sm_front_desk.PAY_ROOM + "pay_cash") //
-                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_ROOM], "pay_cash"));
-                // if (c == sm_front_desk.PAY_ROOM + "pay_bank") //
-                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_ROOM], "pay_bank"));
-                // if (c == sm_front_desk.PAY_ROOM + "pay_return") //
-                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_ROOM], "pay_return"));
-                // if (c == sm_front_desk.PAY_MINI_BAR + "add_price") //
+                // if (c == Front_Desk.PAY_ROOM + Payment_Room.ADD_CASH) //
+                //   return PlutoCell(value: _firstOf(fd.pay_room, Payment_Room.ADD_CASH));
+                // if (c == Front_Desk.PAY_ROOM + Payment_Room.ADD_BANK) //
+                //   return PlutoCell(value: _firstOf(fd.pay_room, Payment_Room.ADD_BANK));
+                // if (c == Front_Desk.PAY_ROOM + Payment_Room.SUB_RETURN) //
+                //   return PlutoCell(value: _firstOf(fd.pay_room, Payment_Room.SUB_RETURN));
+                // if (c == Front_Desk.PAY_MINI_BAR + Payment_Mini_Bar.ADD_PRICE) //
                 //   return PlutoCell(
                 //     value: (() {
                 //       double total = 0;
-                //       for (var l in fd[sm_front_desk.PAY_MINI_BAR] as List<dynamic>? ?? []) {
-                //         total = total + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
-                //         total = total - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
+                //       for (var l in (fd.pay_mini_bar ?? [])) {
+                //         total = total + (l.add_price ?? 0);
+                //         total = total - (l.sub_price ?? 0);
                 //       }
                 //       return total;
                 //     })(),
                 //   );
-                // if (c == sm_front_desk.PAY_MINI_BAR + "pay_cash") //
-                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_MINI_BAR], "pay_cash"));
-                // if (c == sm_front_desk.PAY_MINI_BAR + "pay_bank") //
-                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_MINI_BAR], "pay_bank"));
-                // if (c == sm_front_desk.PAY_MINI_BAR + "pay_return") //
-                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_MINI_BAR], "pay_return"));
-                // if (c == sm_front_desk.PAY_OTHER + "add_price") //
+                // if (c == Front_Desk.PAY_MINI_BAR + Payment_Mini_Bar.ADD_CASH) //
+                //   return PlutoCell(value: _firstOf(fd.pay_mini_bar, Payment_Mini_Bar.ADD_CASH));
+                // if (c == Front_Desk.PAY_MINI_BAR + Payment_Mini_Bar.ADD_BANK) //
+                //   return PlutoCell(value: _firstOf(fd.pay_mini_bar, Payment_Mini_Bar.ADD_BANK));
+                // if (c == Front_Desk.PAY_MINI_BAR + Payment_Mini_Bar.SUB_RETURN) //
+                //   return PlutoCell(value: _firstOf(fd.pay_mini_bar, Payment_Mini_Bar.SUB_RETURN));
+                // if (c == Front_Desk.PAY_OTHER + Payment_Other.ADD_PRICE) //
                 //   return PlutoCell(
                 //     value: (() {
                 //       double total = 0;
-                //       for (var l in fd[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? []) {
-                //         total = total + (double.tryParse(l["add_price"]?.toString() ?? "0") ?? 0);
-                //         total = total - (double.tryParse(l["sub_price"]?.toString() ?? "0") ?? 0);
+                //       for (var l in (fd.pay_other ?? [])) {
+                //         total = total + (l.add_price ?? 0);
+                //         total = total - (l.sub_price ?? 0);
                 //       }
                 //       return total;
                 //     })(),
                 //   );
-                // if (c == sm_front_desk.PAY_OTHER + "pay_cash") //
-                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_OTHER], "pay_cash"));
-                // if (c == sm_front_desk.PAY_OTHER + "pay_bank") //
-                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_OTHER], "pay_bank"));
-                // if (c == sm_front_desk.PAY_OTHER + "pay_return") //
-                //   return PlutoCell(value: _firstOf(fd[sm_front_desk.PAY_OTHER], "pay_return"));
-                // if (c == sm_front_desk.CHECK_IN_BY + sm_user.FULL_NAME) //
-                //   return PlutoCell(value: fd[sm_front_desk.CHECK_IN_BY]?[sm_user.FULL_NAME]);
-                // if (c == sm_front_desk.PAY_ROOM + "created_by" + sm_user.FULL_NAME) //
-                //   return PlutoCell(value: _lastOf(fd[sm_front_desk.PAY_ROOM], "created_by")?[sm_user.FULL_NAME]);
-                // if (c == sm_front_desk.CHECK_OUT_BY + sm_user.FULL_NAME) //
-                //   return PlutoCell(value: fd[sm_front_desk.CHECK_OUT_BY]?[sm_user.FULL_NAME]);
+                // if (c == Front_Desk.PAY_OTHER + Payment_Other.ADD_CASH) //
+                //   return PlutoCell(value: _firstOf(fd.pay_other, Payment_Other.ADD_CASH));
+                // if (c == Front_Desk.PAY_OTHER + Payment_Other.ADD_BANK) //
+                //   return PlutoCell(value: _firstOf(fd.pay_other, Payment_Other.ADD_BANK));
+                // if (c == Front_Desk.PAY_OTHER + Payment_Other.SUB_RETURN) //
+                //   return PlutoCell(value: _firstOf(fd.pay_other, Payment_Other.SUB_RETURN));
+                // if (c == Front_Desk.CHECK_IN_BY + User_Show.FULL_NAME) //
+                //   return PlutoCell(value: fd.check_in_by?.full_name);
+                // if (c == Front_Desk.PAY_ROOM + User_Show.FULL_NAME) //
+                //   return PlutoCell(value: _lastOf(fd.pay_room, Payment_Room.CREATED_BY)?.full_name);
+                // if (c == Front_Desk.CHECK_OUT_BY + User_Show.FULL_NAME) //
+                //   return PlutoCell(value: fd.check_out_by?.full_name);
 
-                if (c == sm_front_desk.CHECK_IN_BY + sm_user.FULL_NAME) //
-                  return PlutoCell(value: parse_string(fd[sm_front_desk.CHECK_IN_BY]?[sm_user.FULL_NAME]));
+                if (c == Front_Desk.CHECK_IN_BY + User_Show.FULL_NAME) //
+                  return PlutoCell(value: parse_string(fd.check_in_by?.full_name));
 
-                if (c == sm_front_desk.CHECK_OUT_BY + sm_user.FULL_NAME) //
-                  return PlutoCell(value: parse_string(fd[sm_front_desk.CHECK_OUT_BY]?[sm_user.FULL_NAME]));
+                if (c == Front_Desk.CHECK_OUT_BY + User_Show.FULL_NAME) //
+                  return PlutoCell(value: parse_string(fd.check_out_by?.full_name));
 
                 return PlutoCell(value: null);
               })(),
@@ -427,7 +423,7 @@ final columns = [
 
   // * ជួរឈរ ID (លាក់)
   PlutoColumn(
-    field: sm_front_desk.ID, //
+    field: Front_Desk.ID, //
     title: "ID",
     type: PlutoColumnType.number(),
     hide: true, //
@@ -435,7 +431,7 @@ final columns = [
 
   // * ជួរឈរលេខបន្ទប់
   PlutoColumn(
-    field: sm_front_desk.ROOM_ID + sm_room.NUMBER, //
+    field: Front_Desk.ROOM_ID + Room_Show.NUMBER, //
     title: "បន្ទប់",
     type: PlutoColumnType.text(),
     width: 80,
@@ -452,7 +448,7 @@ final columns = [
 
   // * ជួរឈរឈ្មោះភ្ញៀវ
   PlutoColumn(
-    field: sm_front_desk.GUEST_ID + sm_guest.FULL_NAME, //
+    field: Front_Desk.GUEST_ID + Guest_Show.FULL_NAME, //
     title: "ឈ្មោះភ្ញៀវ",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -471,7 +467,7 @@ final columns = [
 
   // * ជួរឈរចំនួនភ្ញៀវ
   PlutoColumn(
-    field: sm_front_desk.CHECK_IN_NUMBER, //
+    field: Front_Desk.CHECK_IN_NUMBER, //
     title: "ចំនួនភ្ញៀវ",
     type: PlutoColumnType.number(),
     width: 100,
@@ -488,7 +484,7 @@ final columns = [
 
   // * ជួរឈរពេលចូល
   PlutoColumn(
-    field: sm_front_desk.CHECK_IN_AT, //
+    field: Front_Desk.CHECK_IN_AT, //
     title: "ពេលចូល",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -510,7 +506,7 @@ final columns = [
 
   // * ជួរឈរពេលចេញ
   PlutoColumn(
-    field: sm_front_desk.CHECK_OUT_AT, //
+    field: Front_Desk.CHECK_OUT_AT, //
     title: "ពេលចេញ",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -532,7 +528,7 @@ final columns = [
 
   // * ជួរឈរចំនួនថ្ងៃស្នាក់នៅ
   PlutoColumn(
-    field: sm_front_desk.CHECK_IN_DAY, //
+    field: Front_Desk.CHECK_IN_DAY, //
     title: "ចំនួនថ្ងៃ",
     type: PlutoColumnType.number(),
     width: 80,
@@ -549,7 +545,7 @@ final columns = [
 
   // * ជួរឈរចំនួនម៉ោងស្នាក់នៅ
   PlutoColumn(
-    field: sm_front_desk.CHECK_IN_HOUR, //
+    field: Front_Desk.CHECK_IN_HOUR, //
     title: "ចំនួនម៉ោង",
     type: PlutoColumnType.number(),
     width: 100,
@@ -566,7 +562,7 @@ final columns = [
 
   // * ជួរឈរថ្លៃបន្ទប់
   PlutoColumn(
-    field: sm_front_desk.PAY_ROOM + "price", //
+    field: Front_Desk.PAY_ROOM + Payment_Room.ADD_PRICE, //
     title: "ថ្លៃបន្ទប់",
     type: PlutoColumnType.number(),
     width: 100,
@@ -603,7 +599,7 @@ final columns = [
 
   // * ជួរឈរសាច់ប្រាក់ (បន្ទប់)
   PlutoColumn(
-    field: sm_front_desk.PAY_ROOM + "cash", //
+    field: Front_Desk.PAY_ROOM + Payment_Room.ADD_CASH, //
     title: "សាច់ប្រាក់",
     type: PlutoColumnType.number(),
     width: 100,
@@ -640,7 +636,7 @@ final columns = [
 
   // * ជួរឈរបង់ប្រាក់តាមធនាគារ (បន្ទប់)
   PlutoColumn(
-    field: sm_front_desk.PAY_ROOM + "bank", //
+    field: Front_Desk.PAY_ROOM + Payment_Room.ADD_BANK, //
     title: "ធនាគារ",
     type: PlutoColumnType.number(),
     width: 100,
@@ -677,7 +673,7 @@ final columns = [
 
   // * ជួរឈរប្រាក់អាប់ (បន្ទប់)
   PlutoColumn(
-    field: sm_front_desk.PAY_ROOM + "return", //
+    field: Front_Desk.PAY_ROOM + Payment_Room.SUB_RETURN, //
     title: "ប្រាក់អាប់",
     type: PlutoColumnType.number(),
     width: 100,
@@ -714,7 +710,7 @@ final columns = [
 
   // * ជួរឈរថ្លៃ mini bar
   PlutoColumn(
-    field: sm_front_desk.PAY_MINI_BAR + "price", //
+    field: Front_Desk.PAY_MINI_BAR + Payment_Mini_Bar.ADD_PRICE, //
     title: "ថ្លៃមីនីបារ",
     type: PlutoColumnType.number(),
     width: 100,
@@ -751,7 +747,7 @@ final columns = [
 
   // * ជួរឈរសាច់ប្រាក់ (mini bar)
   PlutoColumn(
-    field: sm_front_desk.PAY_MINI_BAR + "cash", //
+    field: Front_Desk.PAY_MINI_BAR + Payment_Mini_Bar.ADD_CASH, //
     title: "សាច់ប្រាក់",
     type: PlutoColumnType.number(),
     width: 100,
@@ -788,7 +784,7 @@ final columns = [
 
   // * ជួរឈរបង់ប្រាក់តាមធនាគារ (mini bar)
   PlutoColumn(
-    field: sm_front_desk.PAY_MINI_BAR + "bank", //
+    field: Front_Desk.PAY_MINI_BAR + Payment_Mini_Bar.ADD_BANK, //
     title: "ធនាគារ",
     type: PlutoColumnType.number(),
     width: 100,
@@ -825,7 +821,7 @@ final columns = [
 
   // * ជួរឈរប្រាក់អាប់ (mini bar)
   PlutoColumn(
-    field: sm_front_desk.PAY_MINI_BAR + "return", //
+    field: Front_Desk.PAY_MINI_BAR + Payment_Mini_Bar.SUB_RETURN, //
     title: "ប្រាក់អាប់",
     type: PlutoColumnType.number(),
     width: 100,
@@ -862,7 +858,7 @@ final columns = [
 
   // * ជួរឈរថ្លៃផ្សេងៗ
   PlutoColumn(
-    field: sm_front_desk.PAY_OTHER + "price", //
+    field: Front_Desk.PAY_OTHER + Payment_Other.ADD_PRICE, //
     title: "ថ្លៃផ្សេងៗ",
     type: PlutoColumnType.number(),
     width: 100,
@@ -899,7 +895,7 @@ final columns = [
 
   // * ជួរឈរសាច់ប្រាក់ (ផ្សេងៗ)
   PlutoColumn(
-    field: sm_front_desk.PAY_OTHER + "cash", //
+    field: Front_Desk.PAY_OTHER + Payment_Other.ADD_CASH, //
     title: "សាច់ប្រាក់",
     type: PlutoColumnType.number(),
     width: 100,
@@ -936,7 +932,7 @@ final columns = [
 
   // * ជួរឈរបង់ប្រាក់តាមធនាគារ (ផ្សេងៗ)
   PlutoColumn(
-    field: sm_front_desk.PAY_OTHER + "bank", //
+    field: Front_Desk.PAY_OTHER + Payment_Other.ADD_BANK, //
     title: "ធនាគារ",
     type: PlutoColumnType.number(),
     width: 100,
@@ -973,7 +969,7 @@ final columns = [
 
   // * ជួរឈរប្រាក់អាប់ (ផ្សេងៗ)
   PlutoColumn(
-    field: sm_front_desk.PAY_OTHER + "return", //
+    field: Front_Desk.PAY_OTHER + Payment_Other.SUB_RETURN, //
     title: "ប្រាក់អាប់",
     type: PlutoColumnType.number(),
     width: 100,
@@ -1010,7 +1006,7 @@ final columns = [
 
   // * ជួរឈរអ្នកឲចូល
   PlutoColumn(
-    field: sm_front_desk.CHECK_IN_BY + sm_user.FULL_NAME, //
+    field: Front_Desk.CHECK_IN_BY + User_Show.FULL_NAME, //
     title: "ឲចូលដោយ",
     type: PlutoColumnType.text(),
     width: 160,
@@ -1027,7 +1023,7 @@ final columns = [
 
   // * ជួរឈរអ្នកទទួលប្រាក់
   PlutoColumn(
-    field: sm_front_desk.PAY_ROOM + sm_user.FULL_NAME, //
+    field: Front_Desk.PAY_ROOM + User_Show.FULL_NAME, //
     title: "ទទួលប្រាក់ដោយ",
     type: PlutoColumnType.text(),
     width: 160,
@@ -1044,7 +1040,7 @@ final columns = [
   //
   // * ជួរឈរអ្នកឲចេញ
   PlutoColumn(
-    field: sm_front_desk.CHECK_OUT_BY + sm_user.FULL_NAME, //
+    field: Front_Desk.CHECK_OUT_BY + User_Show.FULL_NAME, //
     title: "ឲចេញដោយ",
     type: PlutoColumnType.text(),
     width: 160,

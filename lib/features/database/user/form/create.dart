@@ -2,16 +2,8 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-
-import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/pick/pick_boolean.dart";
 import "package:speanmeas/core/widget/input/input_password.dart";
@@ -185,15 +177,15 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.USER_CRUD_CREATE, //
       data: {
-        sm_user.USERNAME: username,
-        sm_user.PASSWORD: password,
-        sm_user.FULL_NAME: full_name,
-        sm_user.PHONE_NUMBER: phone_number,
-        sm_user.IS_ADMIN: is_admin,
-        sm_user.IS_MANAGER: is_manager,
-        sm_user.IS_RECEPTIONIST: is_receptionist,
-        sm_user.IS_HOUSEKEEPER: is_housekeeper,
-        sm_user.NOTE: note, //
+        User.USERNAME: username,
+        User.PASSWORD: password,
+        User.FULL_NAME: full_name,
+        User.PHONE_NUMBER: phone_number,
+        User.IS_ADMIN: is_admin,
+        User.IS_MANAGER: is_manager,
+        User.IS_RECEPTIONIST: is_receptionist,
+        User.IS_HOUSEKEEPER: is_housekeeper,
+        User.NOTE: note, //
       },
     );
     setState(() => is_loading = false);

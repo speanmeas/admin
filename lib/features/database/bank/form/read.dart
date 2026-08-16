@@ -2,17 +2,9 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema/bank.g.dart";
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * បង្កើត layout មេរបស់ទំព័រអានព័ត៌មានធនាគារ
 Widget _layout(List<Widget> children) {
@@ -62,14 +54,15 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានទិន្នន័យធនាគារតាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.BANK_CRUD_READ_ID, data: {sm_bank.ID: widget.id});
+    tmp = await dio.post(endpoint.BANK_CRUD_READ_ID, data: {Bank.ID: widget.id});
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.BANK_CRUD_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-    name = parse_string(tmp.data[0][sm_bank.NAME]);
-    note = parse_string(tmp.data[0][sm_bank.NOTE]);
+    final bank = Bank.fromJson(tmp.data[0]);
+    name = bank.name;
+    note = bank.note;
 
     setState(() {});
   }

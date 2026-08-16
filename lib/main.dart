@@ -7,11 +7,12 @@ import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "features/auth/loading.dart" as loading;
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+
+import "features/auth/load.dart" as loading;
 
 // * ចំណុចចាប់ផ្តើមសំខាន់របស់កម្មវិធី
 void main() async {
@@ -45,7 +46,7 @@ class Main extends StatelessWidget {
       title: "$TITLE Admin", //
       theme: theme_data, //
       debugShowCheckedModeBanner: false,
-      home: loading.Main_(),
+      home: loading.Load(),
     );
   }
 }

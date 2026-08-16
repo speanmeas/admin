@@ -8,18 +8,13 @@ import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/global.dart";
 import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema/nationality.g.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 
-import "package:speanmeas/core/schema/guest.g.dart";
-import "package:speanmeas/core/schema/user.g.dart";
-import "package:speanmeas/core/schema/front_desk.g.dart";
-import "package:speanmeas/core/schema/payment_room.g.dart";
-import "package:speanmeas/core/schema/room.g.dart";
+import "package:speanmeas/core/schema.g.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រលម្អិត
 Widget _layout(List<Widget> children) {
@@ -57,19 +52,21 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការបង្ហាញព័ត៌មានលម្អិត
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_room;
+  dynamic map_raw;
+  Room? map_room;
   bool is_loading = true;
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ និង front desk ពី server
   void init() async {
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {sm_room.ID: widget.room_id});
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-    map_room = tmp.data[0] as Map<String, dynamic>;
+    map_raw = tmp.data[0] as Map<String, dynamic>;
+    map_room = Room.fromJson(tmp.data[0]);
 
     setState(() {});
   }
@@ -82,11 +79,11 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញព័ត៌មានបន្ទប់ និងតម្លៃ
       (() {
-        String room_number = map_room?[sm_room.NUMBER]?.toString() ?? "";
-        String room_type = map_room?[sm_room.KIND]?.toString() ?? "";
-        tmp = parse_double(map_room?[sm_room.USD_PER_DAY]) ?? 0;
+        String room_number = map_room?.number ?? "";
+        String room_type = map_room?.kind ?? "";
+        tmp = map_room?.usd_per_day ?? 0;
         String price_per_day = tmp.toStringAsFixed(2);
-        tmp = parse_double(map_room?[sm_room.USD_PER_3H]) ?? 0;
+        tmp = map_room?.usd_per_3h ?? 0;
         String price_per_3hours = tmp.toStringAsFixed(2);
         return Align(
           alignment: Alignment.centerLeft,
@@ -111,10 +108,10 @@ class _Main_State extends State<Main_> {
 
       // * បង្ហាញព័ត៌មានភ្ញៀវ
       (() {
-        String name = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.GUEST_ID]?[sm_guest.FULL_NAME]?.toString() ?? "N/A";
-        String gender = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.GUEST_ID]?[sm_guest.GENDER]?.toString() ?? "N/A";
-        String phone_number = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.GUEST_ID]?[sm_guest.PHONE_NUMBER]?.toString() ?? "N/A";
-        String nationality = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.GUEST_ID]?[sm_guest.NATIONALITY_ID]?[sm_nationality.NAME]?.toString() ?? "N/A";
+        String name = map_room?.front_desk_id?.guest_id?.full_name ?? "N/A";
+        String gender = map_room?.front_desk_id?.guest_id?.gender ?? "N/A";
+        String phone_number = map_room?.front_desk_id?.guest_id?.phone_number ?? "N/A";
+        String nationality = map_raw?[Room.FRONT_DESK_ID]?[Front_Desk.GUEST_ID]?[Guest.NATIONALITY_ID]?[Nationality_Show.NAME]?.toString() ?? "N/A";
         return Align(
           alignment: Alignment.centerLeft,
           child: Wrap(
@@ -142,12 +139,12 @@ class _Main_State extends State<Main_> {
 
       // * បង្ហាញព័ត៌មានការស្នាក់នៅ
       (() {
-        String day = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_DAY]?.toString() ?? "";
-        String hour = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_HOUR]?.toString() ?? "";
-        String number_of_guest = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_NUMBER]?.toString() ?? "";
+        String day = map_room?.front_desk_id?.check_in_day?.toString() ?? "";
+        String hour = map_room?.front_desk_id?.check_in_hour?.toString() ?? "";
+        String number_of_guest = map_room?.front_desk_id?.check_in_number?.toString() ?? "";
         String due = "";
-        if (map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_DUE] != null) {
-          tmp = DateTime.tryParse(map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_DUE]?.toString() ?? "");
+        if (map_room?.front_desk_id?.check_in_due != null) {
+          tmp = DateTime.tryParse(map_room?.front_desk_id?.check_in_due?.toString() ?? "");
           due = tmp != null ? DateFormat(DEFAULT_DATE_FORMAT).format(tmp) : "";
         }
         return Align(
@@ -175,11 +172,11 @@ class _Main_State extends State<Main_> {
       // * បង្ហាញតម្លៃបន្ទប់សរុប
       (() {
         String value = "0.00";
-        final pay_room = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
+        final pay_room = map_room?.front_desk_id?.pay_room ?? [];
         double total = 0;
         for (var l in pay_room) {
-          total = total + (parse_double(l[sm_payment_room.ADD_PRICE]) ?? 0);
-          total = total - (parse_double(l[sm_payment_room.SUB_PRICE]) ?? 0);
+          total = total + (l.add_price ?? 0);
+          total = total - (l.sub_price ?? 0);
         }
         value = total.toStringAsFixed(2);
         return Align(
@@ -197,16 +194,16 @@ class _Main_State extends State<Main_> {
       })(),
 
       // * បង្ហាញប្រវត្តិការទូទាត់បន្ទប់នីមួយៗ
-      for (var m in map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [])
+      for (var m in map_room?.front_desk_id?.pay_room ?? [])
         (() {
           String dt = "";
-          tmp = DateTime.tryParse(m[sm_payment_room.CREATED_AT]?.toString() ?? "");
+          tmp = DateTime.tryParse(m.created_at?.toString() ?? "");
           if (tmp != null) dt = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
-          tmp = parse_double(m[sm_payment_room.ADD_CASH]) ?? 0;
+          tmp = m.add_cash ?? 0;
           String cash = tmp.toStringAsFixed(2);
-          tmp = parse_double(m[sm_payment_room.ADD_BANK]) ?? 0;
+          tmp = m.add_bank ?? 0;
           String bank = tmp.toStringAsFixed(2);
-          tmp = parse_double(m[sm_payment_room.SUB_RETURN]) ?? 0;
+          tmp = m.sub_return ?? 0;
           String change = tmp.toStringAsFixed(2);
           if (cash == "0.00" && bank == "0.00" && change == "0.00") return SizedBox.shrink();
           return Align(
@@ -235,11 +232,11 @@ class _Main_State extends State<Main_> {
       // * បង្ហាញតម្លៃផ្សេងៗសរុប
       (() {
         String value = "0.00";
-        final pay_other = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
+        final pay_other = map_room?.front_desk_id?.pay_other ?? [];
         double total = 0;
         for (var l in pay_other) {
-          total = total + (parse_double(l[sm_payment_room.ADD_PRICE]) ?? 0);
-          total = total - (parse_double(l[sm_payment_room.SUB_PRICE]) ?? 0);
+          total = total + (l.add_price ?? 0);
+          total = total - (l.sub_price ?? 0);
         }
         value = total.toStringAsFixed(2);
         return Align(
@@ -257,16 +254,16 @@ class _Main_State extends State<Main_> {
       })(),
 
       // * បង្ហាញប្រវត្តិការទូទាត់ផ្សេងៗនីមួយៗ
-      for (var m in map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [])
+      for (var m in map_room?.front_desk_id?.pay_other ?? [])
         (() {
           String dt = "";
-          tmp = DateTime.tryParse(m[sm_payment_room.CREATED_AT]?.toString() ?? "");
+          tmp = DateTime.tryParse(m.created_at?.toString() ?? "");
           if (tmp != null) dt = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
-          tmp = parse_double(m[sm_payment_room.ADD_CASH]) ?? 0;
+          tmp = m.add_cash ?? 0;
           String cash = tmp.toStringAsFixed(2);
-          tmp = parse_double(m[sm_payment_room.ADD_BANK]) ?? 0;
+          tmp = m.add_bank ?? 0;
           String bank = tmp.toStringAsFixed(2);
-          tmp = parse_double(m[sm_payment_room.SUB_RETURN]) ?? 0;
+          tmp = m.sub_return ?? 0;
           String change = tmp.toStringAsFixed(2);
           return Align(
             alignment: Alignment.centerLeft,
@@ -293,11 +290,11 @@ class _Main_State extends State<Main_> {
 
       // * បង្ហាញព័ត៌មាន check in
       (() {
-        String note = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_NOTE]?.toString() ?? "N/A";
-        String by = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_BY]?[sm_user.FULL_NAME]?.toString() ?? "N/A";
+        String note = map_room?.front_desk_id?.check_in_note ?? "N/A";
+        String by = map_room?.front_desk_id?.check_in_by?.full_name ?? "N/A";
         String at = "";
-        if (map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_AT] != null) {
-          tmp = DateTime.tryParse(map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_AT]?.toString() ?? "");
+        if (map_room?.front_desk_id?.check_in_at != null) {
+          tmp = DateTime.tryParse(map_room?.front_desk_id?.check_in_at?.toString() ?? "");
           at = tmp != null ? DateFormat(DEFAULT_DATE_FORMAT).format(tmp) : "";
         }
         return Align(
@@ -324,11 +321,11 @@ class _Main_State extends State<Main_> {
 
       // * បង្ហាញព័ត៌មាន check out
       (() {
-        String note = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_OUT_NOTE]?.toString() ?? "N/A";
-        String by = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_OUT_BY]?[sm_user.FULL_NAME]?.toString() ?? "N/A";
+        String note = map_room?.front_desk_id?.check_out_note ?? "N/A";
+        String by = map_room?.front_desk_id?.check_out_by?.full_name ?? "N/A";
         String at = "";
-        if (map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_OUT_AT] != null) {
-          tmp = DateTime.tryParse(map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_OUT_AT]?.toString() ?? "");
+        if (map_room?.front_desk_id?.check_out_at != null) {
+          tmp = DateTime.tryParse(map_room?.front_desk_id?.check_out_at?.toString() ?? "");
           at = tmp != null ? DateFormat(DEFAULT_DATE_FORMAT).format(tmp) : "";
         }
         return Align(
@@ -355,11 +352,11 @@ class _Main_State extends State<Main_> {
 
       // * បង្ហាញព័ត៌មានការសម្អាត
       (() {
-        String note = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CLEAN_NOTE]?.toString() ?? "N/A";
-        String by = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CLEAN_BY]?[sm_user.FULL_NAME]?.toString() ?? "N/A";
+        String note = map_room?.front_desk_id?.clean_note ?? "N/A";
+        String by = map_room?.front_desk_id?.clean_by?.full_name ?? "N/A";
         String at = "";
-        if (map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CLEAN_AT] != null) {
-          tmp = DateTime.tryParse(map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CLEAN_AT]?.toString() ?? "");
+        if (map_room?.front_desk_id?.clean_at != null) {
+          tmp = DateTime.tryParse(map_room?.front_desk_id?.clean_at?.toString() ?? "");
           at = tmp != null ? DateFormat(DEFAULT_DATE_FORMAT).format(tmp) : "";
         }
         return Align(

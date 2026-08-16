@@ -2,16 +2,8 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-
-import "package:speanmeas/core/schema/room.g.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
 import "../widget/kind_select.dart" as k_select;
@@ -152,12 +144,12 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.ROOM_CRUD_CREATE, //
       data: {
-        sm_room.NUMBER: number,
-        sm_room.USD_PER_DAY: usd_per_day,
-        sm_room.USD_PER_3H: usd_per_3h,
-        sm_room.KIND: kind,
-        sm_room.STATUS: status,
-        sm_room.NOTE: note, //
+        Room.NUMBER: number,
+        Room.USD_PER_DAY: usd_per_day,
+        Room.USD_PER_3H: usd_per_3h,
+        Room.KIND: kind,
+        Room.STATUS: status,
+        Room.NOTE: note, //
       },
     );
     setState(() => is_loading = false);

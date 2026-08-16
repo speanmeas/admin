@@ -2,19 +2,11 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/parse.dart";
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/select/select_dynamic.dart";
 import "package:speanmeas/core/widget/search/search_nationality.dart";
-import "package:speanmeas/core/schema/guest.g.dart";
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * បង្កើត layout មេរបស់ទំព័រកែប្រែភ្ញៀវ
 Widget _layout(List<Widget> children) {
@@ -70,19 +62,20 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានទិន្នន័យភ្ញៀវតាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.GUEST_CRUD_READ_ID, data: {sm_guest.ID: widget.id});
+    tmp = await dio.post(endpoint.GUEST_CRUD_READ_ID, data: {Guest.ID: widget.id});
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.GUEST_CRUD_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-    full_name = parse_string(tmp.data[0][sm_guest.FULL_NAME]);
-    phone_number = parse_string(tmp.data[0][sm_guest.PHONE_NUMBER]);
-    gender = parse_string(tmp.data[0][sm_guest.GENDER]);
-    nationality_id = parse_string(tmp.data[0][sm_guest.NATIONALITY_ID]?['name']);
-    id_number = parse_string(tmp.data[0][sm_guest.ID_NUMBER]);
-    passport_number = parse_string(tmp.data[0][sm_guest.PASSPORT_NUMBER]);
-    note = parse_string(tmp.data[0][sm_guest.NOTE]);
+    final guest = Guest.fromJson(tmp.data[0]);
+    full_name = guest.full_name;
+    phone_number = guest.phone_number;
+    gender = guest.gender;
+    nationality_id = guest.nationality_id?.name;
+    id_number = guest.id_number;
+    passport_number = guest.passport_number;
+    note = guest.note;
 
     setState(() {});
   }
@@ -183,14 +176,14 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.GUEST_CRUD_UPDATE, //
       data: {
-        sm_guest.ID: widget.id,
-        sm_guest.FULL_NAME: full_name,
-        sm_guest.PHONE_NUMBER: phone_number,
-        sm_guest.GENDER: gender,
-        sm_guest.NATIONALITY_ID: nationality_id,
-        sm_guest.ID_NUMBER: id_number,
-        sm_guest.PASSPORT_NUMBER: passport_number,
-        sm_guest.NOTE: note, //
+        Guest.ID: widget.id,
+        Guest.FULL_NAME: full_name,
+        Guest.PHONE_NUMBER: phone_number,
+        Guest.GENDER: gender,
+        Guest.NATIONALITY_ID: nationality_id,
+        Guest.ID_NUMBER: id_number,
+        Guest.PASSPORT_NUMBER: passport_number,
+        Guest.NOTE: note, //
       },
     );
     setState(() => is_loading = false);

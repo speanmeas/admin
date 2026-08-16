@@ -2,18 +2,10 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
 import "package:speanmeas/core/widget/show/show_boolean.dart";
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema/user.g.dart";
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * បង្កើត layout មេរបស់ទំព័រអានព័ត៌មានអ្នកប្រើប្រាស់
 Widget _layout(List<Widget> children) {
@@ -70,20 +62,21 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានទិន្នន័យអ្នកប្រើប្រាស់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.USER_CRUD_READ_ID, data: {sm_user.ID: widget.id});
+    tmp = await dio.post(endpoint.USER_CRUD_READ_ID, data: {User.ID: widget.id});
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.USER_CRUD_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-    username = parse_string(tmp.data[0][sm_user.USERNAME]);
-    full_name = parse_string(tmp.data[0][sm_user.FULL_NAME]);
-    phone_number = parse_string(tmp.data[0][sm_user.PHONE_NUMBER]);
-    is_admin = parse_bool(tmp.data[0][sm_user.IS_ADMIN]);
-    is_manager = parse_bool(tmp.data[0][sm_user.IS_MANAGER]);
-    is_receptionist = parse_bool(tmp.data[0][sm_user.IS_RECEPTIONIST]);
-    is_housekeeper = parse_bool(tmp.data[0][sm_user.IS_HOUSEKEEPER]);
-    note = parse_string(tmp.data[0][sm_user.NOTE]);
+    final user = User.fromJson(tmp.data[0]);
+    username = user.username;
+    full_name = user.full_name;
+    phone_number = user.phone_number;
+    is_admin = user.is_admin;
+    is_manager = user.is_manager;
+    is_receptionist = user.is_receptionist;
+    is_housekeeper = user.is_housekeeper;
+    note = user.note;
 
     setState(() {});
   }
