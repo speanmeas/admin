@@ -18,7 +18,7 @@ import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/dialog/dialog_page.dart";
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/button/menu_button_text.dart";
-import "package:speanmeas/core/schema/demo_1.g.dart";
+import "package:speanmeas/core/schema.g.dart";
 
 import "form/create.dart" as create;
 import "form/read.dart" as read;
@@ -37,7 +37,6 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទិន្នន័យឧទាហរណ៍
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic data;
   bool is_loading = true;
   List<String> list_c = columns.map((c) => c.field).toList();
 
@@ -45,6 +44,8 @@ class _Main_State extends State<Main_> {
   int page = 1;
   int row_total = 0;
   PlutoGridStateManager? state_manager;
+
+  List<Demo_1> data = [];
 
   // * ផ្ទុកចំនួនជួរដេកសរុប និងទំព័រដំបូង
   void init() async {
@@ -95,39 +96,40 @@ class _Main_State extends State<Main_> {
     final sorted_column = state_manager?.getSortedColumn;
     final filter_rows = List<PlutoRow>.from(state_manager?.filterRows ?? const <PlutoRow>[]);
 
-    // * បម្លែងទិន្នន័យទៅជា List<dynamic> ដើម្បីបង្កើត PlutoRow
-    data = List<dynamic>.from(tmp.data ?? const []);
+    // * បម្លែងទិន្នន័យទៅជា List<Demo_1> ដើម្បីបង្កើត PlutoRow
+    data = List<Demo_1>.from((tmp.data ?? const []).map((d) => Demo_1.fromJson(d)));
 
     // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
     state_manager?.removeAllRows();
     state_manager?.appendRows([
-      for (var d in data)
+      for (var i = 0; i < data.length; i++)
         PlutoRow(
           cells: {
             for (var c in list_c) //
               c: (() {
                 if (c == "index") //
-                  return PlutoCell(value: data.indexOf(d) + 1);
-                if (c == sm_demo_1.ID) //
-                  return PlutoCell(value: parse_string(d[sm_demo_1.ID]));
-                if (c == sm_demo_1.TEXT_1) //
-                  return PlutoCell(value: parse_string(d[sm_demo_1.TEXT_1]));
-                if (c == sm_demo_1.TEXT_2) //
-                  return PlutoCell(value: parse_string(d[sm_demo_1.TEXT_2]));
-                if (c == sm_demo_1.NUMBER_1) //
-                  return PlutoCell(value: parse_double(d[sm_demo_1.NUMBER_1]));
-                if (c == sm_demo_1.NUMBER_2) //
-                  return PlutoCell(value: parse_double(d[sm_demo_1.NUMBER_2]));
-                if (c == sm_demo_1.DATETIME_1) //
-                  return PlutoCell(value: parse_datetime(d[sm_demo_1.DATETIME_1]));
-                if (c == sm_demo_1.DATETIME_2) //
-                  return PlutoCell(value: parse_datetime(d[sm_demo_1.DATETIME_2]));
-                if (c == sm_demo_1.LOGIC_1) //
-                  return PlutoCell(value: parse_bool(d[sm_demo_1.LOGIC_1]));
-                if (c == sm_demo_1.LOGIC_2) //
-                  return PlutoCell(value: parse_bool(d[sm_demo_1.LOGIC_2]));
-                if (c == sm_demo_1.NOTE) //
-                  return PlutoCell(value: parse_string(d[sm_demo_1.NOTE]));
+                  return PlutoCell(value: i + 1);
+                final demo = data[i];
+                if (c == Demo_1.ID) //
+                  return PlutoCell(value: demo.id);
+                if (c == Demo_1.TEXT_1) //
+                  return PlutoCell(value: demo.text_1);
+                if (c == Demo_1.TEXT_2) //
+                  return PlutoCell(value: demo.text_2);
+                if (c == Demo_1.NUMBER_1) //
+                  return PlutoCell(value: demo.number_1);
+                if (c == Demo_1.NUMBER_2) //
+                  return PlutoCell(value: demo.number_2);
+                if (c == Demo_1.DATETIME_1) //
+                  return PlutoCell(value: demo.datetime_1);
+                if (c == Demo_1.DATETIME_2) //
+                  return PlutoCell(value: demo.datetime_2);
+                if (c == Demo_1.LOGIC_1) //
+                  return PlutoCell(value: demo.logic_1);
+                if (c == Demo_1.LOGIC_2) //
+                  return PlutoCell(value: demo.logic_2);
+                if (c == Demo_1.NOTE) //
+                  return PlutoCell(value: demo.note);
 
                 return PlutoCell(value: null);
               })(),
@@ -374,7 +376,7 @@ class _Main_State extends State<Main_> {
   // * បើកទំព័រអានព័ត៌មានឧទាហរណ៍
   void on_read() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[sm_demo_1.ID]?.value?.toString() ?? "";
+    final id = row?.cells[Demo_1.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
 
     Navigator.push(context, MaterialPageRoute(builder: (context) => read.Main_(id: id)));
@@ -383,7 +385,7 @@ class _Main_State extends State<Main_> {
   // * បើកទំព័រកែប្រែឧទាហរណ៍
   void on_update() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[sm_demo_1.ID]?.value?.toString() ?? "";
+    final id = row?.cells[Demo_1.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
 
     tmp = await Navigator.push(context, MaterialPageRoute(builder: (context) => update.Main_(id: id)));
@@ -395,7 +397,7 @@ class _Main_State extends State<Main_> {
   // * បើកទំព័រលុបឧទាហរណ៍
   void on_delete() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[sm_demo_1.ID]?.value?.toString() ?? "";
+    final id = row?.cells[Demo_1.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) {
       snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
       return;
@@ -444,7 +446,7 @@ final columns = [
 
   // * ជួរឈរ ID (លាក់)
   PlutoColumn(
-    field: sm_demo_1.ID, //
+    field: Demo_1.ID, //
     title: "ID",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -454,7 +456,7 @@ final columns = [
 
   // * ជួរឈរអត្ថបទទី 1
   PlutoColumn(
-    field: sm_demo_1.TEXT_1, //
+    field: Demo_1.TEXT_1, //
     title: "Text 1",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -472,7 +474,7 @@ final columns = [
 
   // * ជួរឈរអត្ថបទទី 2
   PlutoColumn(
-    field: sm_demo_1.TEXT_2, //
+    field: Demo_1.TEXT_2, //
     title: "Text 2",
     type: PlutoColumnType.text(),
     enableEditingMode: false,
@@ -490,7 +492,7 @@ final columns = [
 
   // * ជួរឈរលេខទី 1
   PlutoColumn(
-    field: sm_demo_1.NUMBER_1, //
+    field: Demo_1.NUMBER_1, //
     title: "Number 1",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -508,7 +510,7 @@ final columns = [
 
   // * ជួរឈរលេខទី 2
   PlutoColumn(
-    field: sm_demo_1.NUMBER_2, //
+    field: Demo_1.NUMBER_2, //
     title: "Number 2",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -527,7 +529,7 @@ final columns = [
   // * ជួរឈរកាលបរិច្ឆេទទី 1
   PlutoColumn(
     enableEditingMode: false,
-    field: sm_demo_1.DATETIME_1, //
+    field: Demo_1.DATETIME_1, //
     title: "Date Time 1",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -544,7 +546,7 @@ final columns = [
 
   // * ជួរឈរកាលបរិច្ឆេទទី 2
   PlutoColumn(
-    field: sm_demo_1.DATETIME_2, //
+    field: Demo_1.DATETIME_2, //
     title: "Date Time 2",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -562,7 +564,7 @@ final columns = [
 
   // * ជួរឈរតក្កវិជ្ជា (បាទ/ទេ) ទី 1
   PlutoColumn(
-    field: sm_demo_1.LOGIC_1, //
+    field: Demo_1.LOGIC_1, //
     title: "Logic 1",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -580,7 +582,7 @@ final columns = [
 
   // * ជួរឈរតក្កវិជ្ជា (បាទ/ទេ) ទី 2
   PlutoColumn(
-    field: sm_demo_1.LOGIC_2, //
+    field: Demo_1.LOGIC_2, //
     title: "Logic 2",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -598,7 +600,7 @@ final columns = [
 
   // * ជួរឈរកំណត់ចំណាំ
   PlutoColumn(
-    field: sm_demo_1.NOTE, //
+    field: Demo_1.NOTE, //
     title: "Note",
     type: PlutoColumnType.text(),
     width: WIDTH,

@@ -14,7 +14,7 @@ import "package:speanmeas/core/widget/pick/pick_boolean.dart";
 import "package:speanmeas/core/widget/pick/pick_datetime.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
-import "package:speanmeas/core/schema/demo_1.g.dart";
+import "package:speanmeas/core/schema.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * បង្កើត layout មេរបស់ទំព័រកែប្រែឧទាហរណ៍
@@ -73,25 +73,26 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានទិន្នន័យឧទាហរណ៍តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_1_CRUD_READ_ID, data: {sm_demo_1.ID: widget.id});
+    tmp = await dio.post(endpoint.DEMO_1_CRUD_READ_ID, data: {Demo_1.ID: widget.id});
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-    text_1 = parse_string(tmp.data[0][sm_demo_1.TEXT_1]);
-    text_2 = parse_string(tmp.data[0][sm_demo_1.TEXT_2]);
+    final demo = Demo_1.fromJson(tmp.data[0]);
+    text_1 = demo.text_1;
+    text_2 = demo.text_2;
 
-    number_1 = parse_double(tmp.data[0][sm_demo_1.NUMBER_1]);
-    number_2 = parse_double(tmp.data[0][sm_demo_1.NUMBER_2]);
+    number_1 = demo.number_1;
+    number_2 = demo.number_2;
 
-    datetime_1 = parse_datetime(tmp.data[0][sm_demo_1.DATETIME_1]);
-    datetime_2 = parse_datetime(tmp.data[0][sm_demo_1.DATETIME_2]);
+    datetime_1 = demo.datetime_1;
+    datetime_2 = demo.datetime_2;
 
-    logic_1 = parse_bool(tmp.data[0][sm_demo_1.LOGIC_1]);
-    logic_2 = parse_bool(tmp.data[0][sm_demo_1.LOGIC_2]);
+    logic_1 = demo.logic_1;
+    logic_2 = demo.logic_2;
 
-    note = parse_string(tmp.data[0][sm_demo_1.NOTE]);
+    note = demo.note;
 
     setState(() {});
   }
@@ -211,16 +212,16 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.DEMO_1_CRUD_UPDATE, //
       data: {
-        sm_demo_1.ID: widget.id,
-        sm_demo_1.TEXT_1: text_1,
-        sm_demo_1.TEXT_2: text_2,
-        sm_demo_1.NUMBER_1: number_1,
-        sm_demo_1.NUMBER_2: number_2,
-        sm_demo_1.DATETIME_1: datetime_1?.toIso8601String(),
-        sm_demo_1.DATETIME_2: datetime_2?.toIso8601String(),
-        sm_demo_1.LOGIC_1: logic_1,
-        sm_demo_1.LOGIC_2: logic_2,
-        sm_demo_1.NOTE: note, //
+        Demo_1.ID: widget.id,
+        Demo_1.TEXT_1: text_1,
+        Demo_1.TEXT_2: text_2,
+        Demo_1.NUMBER_1: number_1,
+        Demo_1.NUMBER_2: number_2,
+        Demo_1.DATETIME_1: datetime_1?.toIso8601String(),
+        Demo_1.DATETIME_2: datetime_2?.toIso8601String(),
+        Demo_1.LOGIC_1: logic_1,
+        Demo_1.LOGIC_2: logic_2,
+        Demo_1.NOTE: note, //
       },
     );
     setState(() => is_loading = false);

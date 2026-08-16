@@ -14,7 +14,7 @@ import "package:speanmeas/core/widget/show/show_datetime.dart";
 import "package:speanmeas/core/widget/show/show_number.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema/demo_1.g.dart";
+import "package:speanmeas/core/schema.g.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * បង្កើត layout មេរបស់ទំព័រអានព័ត៌មានឧទាហរណ៍
@@ -72,21 +72,22 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានទិន្នន័យឧទាហរណ៍តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_1_CRUD_READ_ID, data: {sm_demo_1.ID: widget.id});
+    tmp = await dio.post(endpoint.DEMO_1_CRUD_READ_ID, data: {Demo_1.ID: widget.id});
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-    text_1 = parse_string(tmp.data[0][sm_demo_1.TEXT_1]);
-    text_2 = parse_string(tmp.data[0][sm_demo_1.TEXT_2]);
-    number_1 = parse_double(tmp.data[0][sm_demo_1.NUMBER_1]);
-    number_2 = parse_double(tmp.data[0][sm_demo_1.NUMBER_2]);
-    datetime_1 = parse_datetime(tmp.data[0][sm_demo_1.DATETIME_1]);
-    datetime_2 = parse_datetime(tmp.data[0][sm_demo_1.DATETIME_2]);
-    logic_1 = parse_bool(tmp.data[0][sm_demo_1.LOGIC_1]);
-    logic_2 = parse_bool(tmp.data[0][sm_demo_1.LOGIC_2]);
-    note = parse_string(tmp.data[0][sm_demo_1.NOTE]);
+    final demo = Demo_1.fromJson(tmp.data[0]);
+    text_1 = demo.text_1;
+    text_2 = demo.text_2;
+    number_1 = demo.number_1;
+    number_2 = demo.number_2;
+    datetime_1 = demo.datetime_1;
+    datetime_2 = demo.datetime_2;
+    logic_1 = demo.logic_1;
+    logic_2 = demo.logic_2;
+    note = demo.note;
 
     setState(() {});
   }
