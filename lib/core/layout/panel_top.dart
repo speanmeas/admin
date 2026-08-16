@@ -6,12 +6,12 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/features/auth/profile.dart" as profile;
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/schema.g.dart";
 
 // * ថ្នាក់ state របស់ Panel_Top គ្រប់គ្រងបន្ទះខាងលើ
 class _Panel_TopState extends State<Panel_Top> {
@@ -30,7 +30,8 @@ class _Panel_TopState extends State<Panel_Top> {
       tmp = await dio.post(endpoint.AUTH_ACCESS_TOKEN);
 
       // * កំណត់ឈ្មោះពេញ
-      full_name = tmp?.data?[sm_user.FULL_NAME]?["value"] ?? "X";
+      final user = User.fromJson(tmp.data[0]);
+      full_name = user.full_name ?? "X";
 
       setState(() {});
     } catch (e, st) {

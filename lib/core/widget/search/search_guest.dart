@@ -2,18 +2,17 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
+import "package:speanmeas/core/global.dart";
+import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/schema.g.dart";
 
-import "package:speanmeas/core/schema/guest.g.dart";
-import "package:speanmeas/core/schema/nationality.g.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
 
 import "package:speanmeas/features/database/guest/form/create.dart" as create_guest;
@@ -35,7 +34,7 @@ class _Search_GuestState extends State<Search_Guest> {
   String? nationality;
 
   final controller = TextEditingController();
-  dynamic data;
+  List<Guest> data = [];
 
   // * ចាប់ផ្តើមស្វែងរក
   void init() async {
@@ -61,17 +60,18 @@ class _Search_GuestState extends State<Search_Guest> {
       // * ទាញយកព័ត៌មានភ្ញៀវតាម id
       tmp = await dio.post(
         endpoint.GUEST_CRUD_READ_ID, //
-        data: {sm_guest.ID: widget.init},
+        data: {Guest.ID: widget.init},
       );
       if (tmp.data.isEmpty) return;
 
       // * កំណត់ព័ត៌មានភ្ញៀវ
-      id = tmp.data[0][sm_guest.ID]?.toString();
-      full_name = tmp.data[0][sm_guest.FULL_NAME]?.toString();
-      phone_number = tmp.data[0][sm_guest.PHONE_NUMBER]?.toString();
-      gender = tmp.data[0][sm_guest.GENDER]?.toString();
-      nationality = tmp.data[0][sm_guest.NATIONALITY_ID]?[sm_nationality.NAME]?.toString();
-      note = tmp.data[0][sm_guest.NOTE]?.toString();
+      final g = Guest.fromJson(tmp.data[0]);
+      id = g.id;
+      full_name = g.full_name;
+      phone_number = g.phone_number;
+      gender = g.gender;
+      nationality = g.nationality_id?.name;
+      note = g.note;
 
       controller.text = "$full_name (${phone_number ?? 'N/A'})";
       widget.onChanged?.call(id);
@@ -100,12 +100,12 @@ class _Search_GuestState extends State<Search_Guest> {
                 suggestionsCallback: (q) async {
                   try {
                     tmp = await dio.post(endpoint.GUEST_SEARCH, data: {"query": q});
-                    data = tmp.data;
+                    data = List<Guest>.from((tmp.data ?? const []).map((d) => Guest.fromJson(d)));
 
                     // * បង្កើតបញ្ជីជម្រើស
                     final options = <String>[];
-                    for (var d in data) {
-                      final text = "${d[sm_guest.FULL_NAME] ?? ""} (${d[sm_guest.PHONE_NUMBER] ?? "N/A"})";
+                    for (var g in data) {
+                      final text = "${g.full_name ?? ""} (${g.phone_number ?? "N/A"})";
                       options.add(text);
                     }
 
@@ -155,22 +155,22 @@ class _Search_GuestState extends State<Search_Guest> {
                   controller.text = v;
 
                   // * ស្វែងរកទិន្នន័យដែលត្រូវគ្នា
-                  Map<String, dynamic> d = {};
+                  Guest? g;
                   for (var e in data) {
-                    if ("${e[sm_guest.FULL_NAME] ?? ""} (${e[sm_guest.PHONE_NUMBER] ?? "N/A"})" == v) {
-                      d = e;
+                    if ("${e.full_name ?? ""} (${e.phone_number ?? "N/A"})" == v) {
+                      g = e;
                       break;
                     }
                   }
 
                   // * កំណត់ព័ត៌មានភ្ញៀវដែលបានជ្រើសរើស
-                  if (d.isNotEmpty) {
-                    id = d[sm_guest.ID]?.toString();
-                    full_name = d[sm_guest.FULL_NAME]?.toString();
-                    phone_number = d[sm_guest.PHONE_NUMBER]?.toString();
-                    gender = d[sm_guest.GENDER]?.toString();
-                    nationality = d[sm_guest.NATIONALITY_ID]?[sm_nationality.NAME]?.toString();
-                    note = d[sm_guest.NOTE]?.toString();
+                  if (g != null) {
+                    id = g.id;
+                    full_name = g.full_name;
+                    phone_number = g.phone_number;
+                    gender = g.gender;
+                    nationality = g.nationality_id?.name;
+                    note = g.note;
 
                     widget.onChanged?.call(id);
                   }
@@ -195,12 +195,13 @@ class _Search_GuestState extends State<Search_Guest> {
                 if (v == null) return;
 
                 // * បង្ហាញឈ្មោះសញ្ជាតិថ្មី និងជ្រើសរើសភ្លាមៗ
-                id = v[sm_guest.ID]?.toString();
-                full_name = v[sm_guest.FULL_NAME]?.toString();
-                phone_number = v[sm_guest.PHONE_NUMBER]?.toString();
-                gender = v[sm_guest.GENDER]?.toString();
-                nationality = (v[sm_guest.NATIONALITY_ID] as Map<String, dynamic>?)?["name"]?.toString();
-                note = v[sm_guest.NOTE]?.toString();
+                final g = Guest.fromJson(v);
+                id = g.id;
+                full_name = g.full_name;
+                phone_number = g.phone_number;
+                gender = g.gender;
+                nationality = g.nationality_id?.name;
+                note = g.note;
 
                 controller.text = full_name ?? "";
                 widget.onChanged?.call(id);

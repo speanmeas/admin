@@ -2,7 +2,6 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-
 import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/widget/show/show_boolean.dart";

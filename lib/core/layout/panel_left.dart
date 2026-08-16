@@ -6,11 +6,11 @@ import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/config.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/schema.g.dart";
 
 // * ថ្នាក់ state របស់ Panel_Left គ្រប់គ្រង menu ខាងឆ្វេង
 class _Panel_LeftState extends State<Panel_Left> {
@@ -32,10 +32,11 @@ class _Panel_LeftState extends State<Panel_Left> {
       tmp = await dio.post(endpoint.AUTH_ACCESS_TOKEN);
 
       // * កំណត់តួនាទីពីទិន្នន័យដែលបានទទួល
-      if (tmp.data[sm_user.IS_ADMIN]?["value"] == true) is_admin = true;
-      if (tmp.data[sm_user.IS_MANAGER]?["value"] == true) is_manager = true;
-      if (tmp.data[sm_user.IS_RECEPTIONIST]?["value"] == true) is_recept = true;
-      if (tmp.data[sm_user.IS_HOUSEKEEPER]?["value"] == true) is_cleaner = true;
+      final user = User.fromJson(tmp.data[0]);
+      if (user.is_admin == true) is_admin = true;
+      if (user.is_manager == true) is_manager = true;
+      if (user.is_receptionist == true) is_recept = true;
+      if (user.is_housekeeper == true) is_cleaner = true;
 
       setState(() {});
     } catch (e, st) {

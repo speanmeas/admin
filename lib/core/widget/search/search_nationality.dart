@@ -12,8 +12,8 @@ import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 
+import "package:speanmeas/core/schema.g.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
-import "package:speanmeas/core/schema/nationality.g.dart";
 import "package:speanmeas/features/database/nationality/form/create.dart" as create_nationality;
 
 // * ថ្នាក់ state របស់ Search_Nationality គ្រប់គ្រងការស្វែងរកសញ្ជាតិ
@@ -32,7 +32,7 @@ class _Search_NationalityState extends State<Search_Nationality> {
   String? note;
 
   dynamic tmp;
-  dynamic data;
+  List<Nationality> data = [];
 
   // * ចាប់ផ្តើមស្វែងរក
   void init() async {
@@ -55,18 +55,18 @@ class _Search_NationalityState extends State<Search_Nationality> {
       tmp = await dio.post(
         endpoint.NATIONALITY_CRUD_READ_STRING, //
         data: {
-          "key": sm_nationality.NAME, //
+          "key": Nationality.NAME, //
           "query": widget.init, //
         },
       );
       if (tmp.data.isEmpty) return;
 
-      final list = List<Map<String, dynamic>>.from(tmp.data);
+      final list = List<Nationality>.from((tmp.data ?? const []).map((d) => Nationality.fromJson(d)));
 
       // * កំណត់ព័ត៌មានសញ្ជាតិ
-      id = list.first[sm_nationality.ID]?.toString();
-      nationality = list.first[sm_nationality.NAME]?.toString();
-      note = list.first[sm_nationality.NOTE]?.toString();
+      id = list.first.id;
+      nationality = list.first.name;
+      note = list.first.note;
 
       controller.text = nationality ?? "";
       widget.onChanged?.call(id);
@@ -98,19 +98,19 @@ class _Search_NationalityState extends State<Search_Nationality> {
                     tmp = await dio.post(
                       endpoint.NATIONALITY_CRUD_READ_STRING,
                       data: {
-                        "key": sm_nationality.NAME, //
+                        "key": Nationality.NAME, //
                         "query": q, //
                         "order": 1, //
                         "limit": 100, //
                       },
                     );
 
-                    data = List<Map<String, dynamic>>.from(tmp.data);
+                    data = List<Nationality>.from((tmp.data ?? const []).map((d) => Nationality.fromJson(d)));
 
                     // * បង្កើតបញ្ជីជម្រើសដោយគ្មានឈ្មោះស្ទួន
                     final options = <String>[];
-                    for (var d in data) {
-                      final name = d[sm_nationality.NAME]?.toString() ?? "";
+                    for (var n in data) {
+                      final name = n.name ?? "";
                       if (name.isEmpty || options.contains(name)) continue;
                       options.add(name);
                     }
@@ -157,11 +157,11 @@ class _Search_NationalityState extends State<Search_Nationality> {
                   is_selected = true;
                   controller.text = v;
                   // * កំណត់ព័ត៌មានសញ្ជាតិដែលបានជ្រើសរើស
-                  for (final d in data) {
-                    if (d[sm_nationality.NAME]?.toString() == v) {
-                      id = d[sm_nationality.ID]?.toString();
-                      nationality = d[sm_nationality.NAME]?.toString();
-                      note = d[sm_nationality.NOTE]?.toString();
+                  for (final n in data) {
+                    if (n.name == v) {
+                      id = n.id;
+                      nationality = n.name;
+                      note = n.note;
                       widget.onChanged?.call(id);
                       break;
                     }
@@ -191,9 +191,10 @@ class _Search_NationalityState extends State<Search_Nationality> {
 
                 // * បង្ហាញឈ្មោះសញ្ជាតិថ្មី និងជ្រើសរើសភ្លាមៗ
                 is_selected = true;
-                id = v[sm_nationality.ID]?.toString();
-                nationality = v[sm_nationality.NAME]?.toString();
-                note = v[sm_nationality.NOTE]?.toString();
+                final n = Nationality.fromJson(v);
+                id = n.id;
+                nationality = n.name;
+                note = n.note;
 
                 controller.text = nationality ?? "";
                 widget.onChanged?.call(id);
