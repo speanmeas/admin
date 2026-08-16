@@ -2,18 +2,10 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/navigator.dart";
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/schema.g.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
 import "package:speanmeas/features/database/nationality/form/create.dart" as create_nationality;
 

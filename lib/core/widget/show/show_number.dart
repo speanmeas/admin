@@ -1,14 +1,7 @@
 // * នាំចូល Flutter material និង Provider សម្រាប់ state management
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
-
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/all.dart";
 
 // * ថ្នាក់ state របស់ Show_Number គ្រប់គ្រងការបង្ហាញលេខ
 class _Show_NumberState extends State<Show_Number> {

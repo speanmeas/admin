@@ -1,14 +1,7 @@
 // * នាំចូល Flutter material សម្រាប់បង្កើត UI
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
-
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/all.dart";
 
 // * ថ្នាក់ state របស់ Input_Text គ្រប់គ្រងការបញ្ចូលអត្ថបទ
 class _Input_TextState extends State<Input_Text> {
