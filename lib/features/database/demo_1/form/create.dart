@@ -2,16 +2,16 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
 
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/global.dart"; // ignore: unused_import
+import "package:speanmeas/core/schema.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/i18n/main.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 
-import "package:speanmeas/core/schema.g.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/pick/pick_boolean.dart";
 import "package:speanmeas/core/widget/pick/pick_datetime.dart";
@@ -55,7 +55,6 @@ Widget _layout(List<Widget> children) {
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បង្កើតឧទាហរណ៍
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
   bool is_loading = true;
 
