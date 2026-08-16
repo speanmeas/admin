@@ -56,6 +56,7 @@ class _Main_State extends State<Main_> {
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ និងប្រវត្តិការទូទាត់
   void init() async {
+    pprint(widget.room_id);
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
     tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
@@ -64,7 +65,6 @@ class _Main_State extends State<Main_> {
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
     map_room = Room.fromJson(tmp.data[0]);
-    pprint(map_room);
 
     // * គណនាតម្លៃចាស់ និងប្រាក់ដែលបានទទួលរួច
     final pay_room_list = map_room?.front_desk_id?.pay_room ?? [];

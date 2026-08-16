@@ -12,6 +12,18 @@ void pprint(dynamic value) {
   if (value is Map || value is List) //
     return debugPrint(JsonEncoder.withIndent('  ').convert(value));
 
+  // * ប្រសិនបើ value គឺជា object នៃ schema model (មាន toJson()), បំលែងវាទៅជា JSON
+  if (value is Object && value is! Iterable) {
+    // * ព្យាយាមហៅ toJson() ប្រសិនបើ object មាន method នេះ
+    try {
+      final json = (value as dynamic).toJson();
+      if (json is Map<String, dynamic>) //
+        return debugPrint(JsonEncoder.withIndent('  ').convert(json));
+    } catch (_) {
+      // * បើ object គ្មាន toJson(), បន្តទៅបោះពុម្ពដោយផ្ទាល់
+    }
+  }
+
   // * ទូទៅ
   debugPrint(value);
 }

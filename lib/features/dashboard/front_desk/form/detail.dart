@@ -70,28 +70,58 @@ class _Main_State extends State<Main_> {
       (() {
         String room_number = map_room?.number ?? "";
         String room_type = map_room?.kind ?? "";
-        tmp = map_room?.usd_per_day ?? 0;
-        String price_per_day = tmp.toStringAsFixed(2);
-        tmp = map_room?.usd_per_3h ?? 0;
-        String price_per_3hours = tmp.toStringAsFixed(2);
-        return Align(
-          alignment: Alignment.centerLeft,
-          child: Wrap(
-            spacing: 4,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Icon(Icons.hotel_outlined),
-              Text('${t("Room")}:', style: TextStyle(fontWeight: FontWeight.bold)),
-              Icon(Icons.circle, size: 6),
-              Text(room_number, style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text(room_type, style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text("$price_per_day \$ / ${t("Day")}", style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text("$price_per_3hours \$ / ${t("Hour")}", style: TextStyle(color: Colors.blue)),
-            ],
-          ),
+        String price_per_day = (map_room?.usd_per_day ?? 0).toStringAsFixed(2);
+        String price_per_3hours = (map_room?.usd_per_3h ?? 0).toStringAsFixed(2);
+        return Column(
+          children: [
+            Row(
+              children: [
+                Icon(Icons.hotel_outlined),
+                SizedBox(width: 4),
+                Text("${t("Room Information")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Number")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(room_number, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Type")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(room_type, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Price / Day")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text("$price_per_day \$", style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Price / 3H")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text("$price_per_3hours \$", style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+          ],
         );
       })(),
 
@@ -101,28 +131,56 @@ class _Main_State extends State<Main_> {
         String gender = map_room?.front_desk_id?.guest_id?.gender ?? "N/A";
         String phone_number = map_room?.front_desk_id?.guest_id?.phone_number ?? "N/A";
         String nationality = map_raw?[Room.FRONT_DESK_ID]?[Front_Desk.GUEST_ID]?[Guest.NATIONALITY_ID]?[Nationality_Show.NAME]?.toString() ?? "N/A";
-        return Align(
-          alignment: Alignment.centerLeft,
-          child: Wrap(
-            spacing: 4,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Icon(Icons.person_outline),
-              Text('${t("Guest")}:', style: TextStyle(fontWeight: FontWeight.bold)),
-              Icon(Icons.circle, size: 6),
-              Text(t("Name")),
-              Text(name, style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text(t("Gender")),
-              Text(gender, style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text(t("Phone Number")),
-              Text(phone_number, style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text(t("Nationality")),
-              Text(nationality, style: TextStyle(color: Colors.blue)),
-            ],
-          ),
+        return Column(
+          children: [
+            Row(
+              children: [
+                Icon(Icons.person_outline),
+                SizedBox(width: 4),
+                Text("${t("Guest Information")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Name")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(name, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Gender")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(gender, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Phone Number")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(phone_number, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Nationality")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(nationality, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+          ],
         );
       })(),
 
@@ -136,25 +194,46 @@ class _Main_State extends State<Main_> {
           tmp = DateTime.tryParse(map_room?.front_desk_id?.check_in_due?.toString() ?? "");
           due = tmp != null ? DateFormat(DEFAULT_DATE_FORMAT).format(tmp) : "";
         }
-        return Align(
-          alignment: Alignment.centerLeft,
-          child: Wrap(
-            spacing: 4,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Icon(Icons.access_time_outlined),
-              Text('${t("Stay")}:', style: TextStyle(fontWeight: FontWeight.bold)),
-              Icon(Icons.circle, size: 6),
-              Text("$day ${t("days")}", style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text("$hour ${t("hours")}", style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text("$number_of_guest ${t("guests")}", style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text(t("Due to")),
-              Text("$due", style: TextStyle(color: Colors.blue)),
-            ],
-          ),
+        return Column(
+          children: [
+            Row(
+              children: [
+                Icon(Icons.access_time_outlined),
+                SizedBox(width: 4),
+                Text("${t("Stay")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("Duration:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text("$day days $hour hours", style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("Number of Guests:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text("$number_of_guest persons", style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Due Date")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text("$due", style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+          ],
         );
       })(),
 
@@ -338,25 +417,46 @@ class _Main_State extends State<Main_> {
           tmp = DateTime.tryParse(map_room?.front_desk_id?.check_in_at?.toString() ?? "");
           at = tmp != null ? DateFormat(DEFAULT_DATE_FORMAT).format(tmp) : "";
         }
-        return Align(
-          alignment: Alignment.centerLeft,
-          child: Wrap(
-            spacing: 4,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Icon(Icons.login_outlined),
-              Text('${t("Check In")}:', style: TextStyle(fontWeight: FontWeight.bold)),
-              Icon(Icons.circle, size: 6),
-              Text(t("Note")),
-              Text(note, style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text(t("By")),
-              Text(by, style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text(t("At")),
-              Text(at, style: TextStyle(color: Colors.blue)),
-            ],
-          ),
+        return Column(
+          children: [
+            Row(
+              children: [
+                Icon(Icons.login_outlined),
+                SizedBox(width: 4),
+                Text("${t("Check In")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Note")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(note, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Checked In By")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(by, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Checked In At")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(at, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+          ],
         );
       })(),
 
@@ -369,25 +469,46 @@ class _Main_State extends State<Main_> {
           tmp = DateTime.tryParse(map_room?.front_desk_id?.check_out_at?.toString() ?? "");
           at = tmp != null ? DateFormat(DEFAULT_DATE_FORMAT).format(tmp) : "";
         }
-        return Align(
-          alignment: Alignment.centerLeft,
-          child: Wrap(
-            spacing: 4,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Icon(Icons.logout_outlined),
-              Text('${t("Check Out")}:', style: TextStyle(fontWeight: FontWeight.bold)),
-              Icon(Icons.circle, size: 6),
-              Text(t("Note")),
-              Text(note, style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text(t("By")),
-              Text(by, style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text(t("At")),
-              Text(at, style: TextStyle(color: Colors.blue)),
-            ],
-          ),
+        return Column(
+          children: [
+            Row(
+              children: [
+                Icon(Icons.logout_outlined),
+                SizedBox(width: 4),
+                Text("${t("Check Out")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Note")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(note, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Checked Out By")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(by, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Checked Out At")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(at, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+          ],
         );
       })(),
 
@@ -400,25 +521,46 @@ class _Main_State extends State<Main_> {
           tmp = DateTime.tryParse(map_room?.front_desk_id?.clean_at?.toString() ?? "");
           at = tmp != null ? DateFormat(DEFAULT_DATE_FORMAT).format(tmp) : "";
         }
-        return Align(
-          alignment: Alignment.centerLeft,
-          child: Wrap(
-            spacing: 4,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Icon(Icons.cleaning_services_outlined),
-              Text('${t("Clean")}:', style: TextStyle(fontWeight: FontWeight.bold)),
-              Icon(Icons.circle, size: 6),
-              Text(t("Note")),
-              Text(note, style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text(t("By")),
-              Text(by, style: TextStyle(color: Colors.blue)),
-              Icon(Icons.circle, size: 6),
-              Text(t("At")),
-              Text(at, style: TextStyle(color: Colors.blue)),
-            ],
-          ),
+        return Column(
+          children: [
+            Row(
+              children: [
+                Icon(Icons.cleaning_services_outlined),
+                SizedBox(width: 4),
+                Text("${t("Clean")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Note")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(note, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Cleaned By")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(by, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("${t("Cleaned At")}:", style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Text(at, style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+          ],
         );
       })(),
 

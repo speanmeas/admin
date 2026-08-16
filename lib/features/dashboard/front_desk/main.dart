@@ -17,7 +17,7 @@ import "form/check_out.dart" as check_out; // 3
 import "form/clean.dart" as clean; // 4
 import "form/detail.dart" as detail;
 import "form/fix.dart" as fix; // 6
-import "form/pay_room.dart" as pay_room; // 2
+import "form/payment.dart" as pay_room; // 2
 import "form/update_pay_other.dart" as pay_other;
 import "form/update_pay_mini_bar.dart" as pay_mini_bar;
 import "form/update_guest.dart" as update_guest;
