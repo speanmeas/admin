@@ -1,4 +1,3 @@
-// TODO: add more details here
 // * ទំព័រ Detail សម្រាប់បង្ហាញព័ត៌មានលម្អិតនៃការស្នាក់នៅ
 
 import "package:flutter/material.dart";
@@ -189,12 +188,66 @@ class _Main_State extends State<Main_> {
           String dt = "";
           tmp = DateTime.tryParse(m.created_at?.toString() ?? "");
           if (tmp != null) dt = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
-          tmp = m.add_cash ?? 0;
-          String cash = tmp.toStringAsFixed(2);
-          tmp = m.add_bank ?? 0;
-          String bank = tmp.toStringAsFixed(2);
-          tmp = m.sub_return ?? 0;
-          String change = tmp.toStringAsFixed(2);
+          String cash = (m.add_cash ?? 0).toStringAsFixed(2);
+          String bank = (m.add_bank ?? 0).toStringAsFixed(2);
+          String change = (m.sub_return ?? 0).toStringAsFixed(2);
+          if (cash == "0.00" && bank == "0.00" && change == "0.00") return SizedBox.shrink();
+          return Align(
+            alignment: Alignment.centerLeft,
+            child: Wrap(
+              spacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                SizedBox(width: 20),
+                Icon(Icons.arrow_right),
+                Text("$dt:", style: TextStyle(fontWeight: FontWeight.bold)),
+                Icon(Icons.circle, size: 6),
+                Text(t("Cash")),
+                Text("$cash \$", style: TextStyle(color: Colors.blue)),
+                Icon(Icons.circle, size: 6),
+                Text(t("Bank")),
+                Text("$bank \$", style: TextStyle(color: Colors.blue)),
+                Icon(Icons.circle, size: 6),
+                Text(t("Return")),
+                Text("$change \$", style: TextStyle(color: Colors.blue)),
+              ],
+            ),
+          );
+        })(),
+
+      // * បង្ហាញតម្លៃ mini bar សរុប
+      (() {
+        String value = "0.00";
+        final pay_mini_bar = map_room?.front_desk_id?.pay_mini_bar ?? [];
+        double total = 0;
+        for (var l in pay_mini_bar) {
+          total = total + (l.add_price ?? 0);
+          total = total - (l.sub_price ?? 0);
+        }
+        value = total.toStringAsFixed(2);
+        return Align(
+          alignment: Alignment.centerLeft,
+          child: Wrap(
+            spacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Icon(Icons.attach_money_outlined),
+              Text('${t("Mini Bar Price")}:', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text("$value \$", style: TextStyle(color: Colors.blue)),
+            ],
+          ),
+        );
+      })(),
+
+      // * បង្ហាញប្រវត្តិការទូទាត់ mini bar នីមួយៗ
+      for (var m in map_room?.front_desk_id?.pay_mini_bar ?? [])
+        (() {
+          String dt = "";
+          tmp = DateTime.tryParse(m.created_at?.toString() ?? "");
+          if (tmp != null) dt = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
+          String cash = (m.add_cash ?? 0).toStringAsFixed(2);
+          String bank = (m.add_bank ?? 0).toStringAsFixed(2);
+          String change = (m.sub_return ?? 0).toStringAsFixed(2);
           if (cash == "0.00" && bank == "0.00" && change == "0.00") return SizedBox.shrink();
           return Align(
             alignment: Alignment.centerLeft,
@@ -249,12 +302,10 @@ class _Main_State extends State<Main_> {
           String dt = "";
           tmp = DateTime.tryParse(m.created_at?.toString() ?? "");
           if (tmp != null) dt = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
-          tmp = m.add_cash ?? 0;
-          String cash = tmp.toStringAsFixed(2);
-          tmp = m.add_bank ?? 0;
-          String bank = tmp.toStringAsFixed(2);
-          tmp = m.sub_return ?? 0;
-          String change = tmp.toStringAsFixed(2);
+          String cash = (m.add_cash ?? 0).toStringAsFixed(2);
+          String bank = (m.add_bank ?? 0).toStringAsFixed(2);
+          String change = (m.sub_return ?? 0).toStringAsFixed(2);
+          if (cash == "0.00" && bank == "0.00" && change == "0.00") return SizedBox.shrink();
           return Align(
             alignment: Alignment.centerLeft,
             child: Wrap(
@@ -371,9 +422,6 @@ class _Main_State extends State<Main_> {
         );
       })(),
 
-      // TODO: add more details here
-
-      //
       // * ប៊ូតុង OK ដើម្បីបិទទំព័រ
       OutlinedButton.icon(
         autofocus: true,

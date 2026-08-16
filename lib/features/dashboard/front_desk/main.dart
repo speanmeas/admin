@@ -517,7 +517,14 @@ class _Main_State extends State<Main_> {
                             icon: Icon(Icons.payment),
                             label: Text(t("Payment")),
                             style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.orange)),
-                            onPressed: () => on_payment(r), //
+                            onPressed: () {
+                              // * បើ mini bar ឬ other មិនទាន់បង់អស់ មិនអនុញ្ញាតឱ្យទូទាត់ទេ
+                              if (can_payment(r)) {
+                                on_payment(r);
+                              } else {
+                                snackbar(ct: context, ms: t("Please pay Mini Bar and Other first"), cl: Colors.red);
+                              }
+                            }, //
                           ), //
                         if (r.status == "Pending Leave") //
                           OutlinedButton.icon(
@@ -542,6 +549,29 @@ class _Main_State extends State<Main_> {
           ),
         ),
     ]);
+  }
+
+  // * គណនាចំនួនទឹកប្រាក់ដែលនៅសល់ត្រូវបង់សម្រាប់បញ្ជីទូទាត់មួយ
+  double _outstanding(List<dynamic>? items) {
+    double price = 0;
+    double pay = 0;
+    for (var l in (items ?? [])) {
+      price = price + (l.add_price ?? 0);
+      price = price - (l.sub_price ?? 0);
+      pay = pay + (l.add_cash ?? 0);
+      pay = pay + (l.add_bank ?? 0);
+    }
+    return price - pay;
+  }
+
+  // * អនុញ្ញាតឱ្យទូទាត់បាន លុះត្រាតែ mini bar និង other បានបង់អស់
+  bool can_payment(Room r) {
+    final fd = _fd(r);
+    if (fd == null) return false;
+    // * បើ mini bar ឬ other នៅមានបំណុល មិនអនុញ្ញាតឱ្យទូទាត់ទេ
+    if (_outstanding(fd.pay_mini_bar) > 0) return false;
+    if (_outstanding(fd.pay_other) > 0) return false;
+    return true;
   }
 
   // * បើកទំព័រ check in សម្រាប់បន្ទប់
