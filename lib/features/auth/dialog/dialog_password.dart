@@ -8,28 +8,24 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/schema.g.dart";
 
 // * ថ្នាក់ state របស់ Dialog_ គ្រប់គ្រង dialog កែពាក្យសម្ងាត់
 class _Dialog_State extends State<Dialog_> {
-  //
   dynamic tmp;
 
-  final title = "Update Password"; //
-  final label_pw = "New Password:";
-  final label_cf_pw = "Confirm New Password:";
-
-  final controller_pw = TextEditingController();
-  final controller_cf_pw = TextEditingController();
+  String password = "";
+  String confirmed_password = "";
 
   // * កំណត់ការបង្ហាញ/លាក់ពាក្យសម្ងាត់
   bool is_obscure_pw = true;
   bool is_obscure_cf_pw = true;
 
   void init() async {
-    //
+    password = "";
+    confirmed_password = "";
   }
 
   @override
@@ -43,7 +39,7 @@ class _Dialog_State extends State<Dialog_> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
+          Text("Update Password", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
         ],
       ),
 
@@ -53,9 +49,8 @@ class _Dialog_State extends State<Dialog_> {
         children: [
           // * ប្រអប់បញ្ចូលពាក្យសម្ងាត់ថ្មី
           TextField(
-            controller: controller_pw,
             decoration: InputDecoration(
-              labelText: label_pw, //
+              labelText: "New Password:", //
               labelStyle: TextStyle(fontWeight: FontWeight.bold),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               // * ប៊ូតុងបង្ហាញ/លាក់ពាក្យសម្ងាត់
@@ -74,15 +69,17 @@ class _Dialog_State extends State<Dialog_> {
             ),
             obscureText: is_obscure_pw, //
             autofocus: true,
-            onChanged: (v) => setState(() {}),
+            onChanged: (v) {
+              password = v;
+              setState(() {});
+            },
             onSubmitted: (v) => can_okay() ? on_okay() : null,
           ),
 
           // * ប្រអប់បញ្ចូលពាក្យសម្ងាត់បញ្ជាក់
           TextField(
-            controller: controller_cf_pw,
             decoration: InputDecoration(
-              labelText: label_cf_pw, //
+              labelText: "Confirm New Password:", //
               labelStyle: TextStyle(fontWeight: FontWeight.bold),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               // * ប៊ូតុងបង្ហាញ/លាក់ពាក្យសម្ងាត់
@@ -100,7 +97,10 @@ class _Dialog_State extends State<Dialog_> {
               ),
             ),
             obscureText: is_obscure_cf_pw, //
-            onChanged: (v) => setState(() {}),
+            onChanged: (v) {
+              confirmed_password = v;
+              setState(() {});
+            },
             onSubmitted: (v) => can_okay() ? on_okay() : null,
           ),
         ],
@@ -125,33 +125,26 @@ class _Dialog_State extends State<Dialog_> {
 
   // * ពិនិត្យថាតើអាចរក្សាទុកបានឬអត់
   bool can_okay() {
-    if (controller_pw.text.isEmpty) return false;
-    if (controller_cf_pw.text.isEmpty) return false;
-    if (controller_pw.text != controller_cf_pw.text) return false;
+    if (password.isEmpty) return false;
+    if (confirmed_password.isEmpty) return false;
+    if (password != confirmed_password) return false;
     return true;
   }
 
   // * រក្សាទុកពាក្យសម្ងាត់ថ្មី
   void on_okay() async {
-    try {
-      // * ផ្ញើសំណើធ្វើបច្ចុប្បន្នភាពពាក្យសម្ងាត់
-      tmp = await dio.post(
-        endpoint.USER_CRUD_UPDATE, //
-        data: {
-          "_id": await secure.read(key: "_id"), //
-          sm_user.PASSWORD: controller_pw.text, //
-        },
-      );
-      if (tmp == null) throw "Failed";
+    // * ផ្ញើសំណើធ្វើបច្ចុប្បន្នភាពពាក្យសម្ងាត់
+    tmp = await dio.post(
+      endpoint.USER_CRUD_UPDATE, //
+      data: {
+        User.ID: await secure.read(key: "_id"), //
+        User.PASSWORD: password, //
+      },
+    );
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.USER_CRUD_UPDATE}", cl: Colors.red);
 
-      //
-      Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-    } catch (e, st) {
-      // * បង្ហាញកំហុសប្រសិនបើមាន
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, true);
   }
 
   @override

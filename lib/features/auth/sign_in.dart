@@ -9,18 +9,17 @@ import "package:speanmeas/core/utility/secure.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/layout/layout.dart" as layout;
+import "package:speanmeas/core/layout/layout.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទំព័រចូលប្រព័ន្ធ
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
-  // * កំណត់ថាតើបង្ហាញពាក្យសម្ងាត់ឬអត់
+
   bool is_password_visible = false;
 
-  final c_username = TextEditingController();
-  final c_password = TextEditingController();
+  String? username;
+  String? password;
 
   @override
   Widget build(BuildContext context) {
@@ -66,13 +65,15 @@ class _Main_State extends State<Main_> {
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
                   autofocus: true,
-                  controller: c_username,
                   decoration: InputDecoration(
                     labelText: "Username:", //
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
-                  onChanged: (v) => setState(() {}),
+                  onChanged: (v) {
+                    username = v;
+                    setState(() {});
+                  },
                   onSubmitted: (_) => on_sign_in(),
                 ),
               ),
@@ -82,19 +83,24 @@ class _Main_State extends State<Main_> {
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: TextField(
-                  controller: c_password,
                   decoration: InputDecoration(
                     labelText: "Password:", //
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     // * ប៊ូតុងបង្ហាញ/លាក់ពាក្យសម្ងាត់
                     suffixIcon: InkWell(
-                      onTap: password_visibility_toggle,
+                      onTap: () {
+                        is_password_visible = !is_password_visible;
+                        setState(() {});
+                      },
                       child: Icon(!is_password_visible ? Icons.visibility_outlined : Icons.visibility_off_outlined), //
                     ),
                   ),
                   obscureText: !is_password_visible,
-                  onChanged: (v) => setState(() {}),
+                  onChanged: (v) {
+                    password = v;
+                    setState(() {});
+                  },
                   onSubmitted: (_) => on_sign_in(),
                 ),
               ),
@@ -123,31 +129,23 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.AUTH_SIGN_IN, //
       data: {
-        "username": c_username.text, //
-        "password": c_password.text,
+        "username": username, //
+        "password": password,
       },
     );
-    if (tmp == null) snackbar(ct: context, ms: "Error: ${endpoint.AUTH_SIGN_IN}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.AUTH_SIGN_IN}", cl: Colors.red);
 
     // * រក្សាទុក token និង id អ្នកប្រើ
     final data = tmp.data;
-    final id = data?["_id"]?.toString() ?? "";
-    final token = data?["access_token"]?.toString() ?? "";
-    await secure.write(key: "_id", value: id);
-    await secure.write(key: "access_token", value: token);
-    dio.set_token(token);
+    await secure.write(key: "_id", value: data?["_id"]?.toString() ?? "");
+    await secure.write(key: "access_token", value: data?["access_token"]?.toString() ?? "");
+    dio.set_token(data?["access_token"]?.toString() ?? "");
 
     await glob.init();
     snackbar(ct: context, ms: "Success", cl: Colors.green);
 
     // * ប្តូរទៅទំព័រមេ
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Layout()));
-  }
-
-  // * ប្តូរការបង្ហាញពាក្យសម្ងាត់
-  void password_visibility_toggle() {
-    is_password_visible = !is_password_visible;
-    setState(() {});
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Layout()));
   }
 }
 

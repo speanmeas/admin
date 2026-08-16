@@ -2,16 +2,8 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-
-import "package:speanmeas/core/schema/demo_2.g.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
 import "package:speanmeas/core/widget/pick/pick_boolean.dart";
 import "package:speanmeas/core/widget/pick/pick_datetime.dart";
@@ -143,11 +135,11 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.DEMO_2_CRUD_CREATE, //
       data: {
-        sm_demo_2.TEXT_1: text_1, //
-        sm_demo_2.NUMBER_1: number_1, //
-        sm_demo_2.DATETIME_1: datetime_1?.toIso8601String(), //
-        sm_demo_2.LOGIC_1: logic_1, //
-        sm_demo_2.NOTE: note, //
+        Demo_2.TEXT_1: text_1, //
+        Demo_2.NUMBER_1: number_1, //
+        Demo_2.DATETIME_1: datetime_1?.toIso8601String(), //
+        Demo_2.LOGIC_1: logic_1, //
+        Demo_2.NOTE: note, //
       },
     );
     setState(() => is_loading = false);

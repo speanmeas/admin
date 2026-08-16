@@ -8,22 +8,18 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/schema.g.dart";
 
 // * ថ្នាក់ state របស់ Dialog_ គ្រប់គ្រង dialog កែឈ្មោះអ្នកប្រើ
 class _Dialog_State extends State<Dialog_> {
-  //
   dynamic tmp;
 
-  final title = "Update Username"; //
-  final label = "Username:";
-
-  late final controller = TextEditingController(text: widget.input ?? "");
+  String username = "";
 
   void init() async {
-    //
+    username = widget.input?.toString() ?? "";
   }
 
   @override
@@ -37,7 +33,7 @@ class _Dialog_State extends State<Dialog_> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
+          Text("Update Username", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
         ],
       ),
 
@@ -48,9 +44,9 @@ class _Dialog_State extends State<Dialog_> {
           // * ប្រអប់បញ្ចូលឈ្មោះអ្នកប្រើ
           TextField(
             autofocus: true,
-            controller: controller,
+
             decoration: InputDecoration(
-              labelText: label, //
+              labelText: "Username:", //
               labelStyle: TextStyle(fontWeight: FontWeight.bold),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               // * ប៊ូតុងសម្អាតតម្លៃ
@@ -59,12 +55,18 @@ class _Dialog_State extends State<Dialog_> {
                   padding: EdgeInsets.only(right: 4),
                   child: IconButton(
                     icon: Icon(Icons.clear, color: Colors.red),
-                    onPressed: controller.clear,
+                    onPressed: () {
+                      username = "";
+                      setState(() {});
+                    },
                   ), //
                 ),
               ),
             ),
-            onChanged: (v) => setState(() {}),
+            onChanged: (v) {
+              username = v;
+              setState(() {});
+            },
             onSubmitted: (v) => on_okay(),
           ),
         ],
@@ -89,30 +91,24 @@ class _Dialog_State extends State<Dialog_> {
 
   // * រក្សាទុកឈ្មោះអ្នកប្រើថ្មី
   void on_okay() async {
-    try {
-      // * ផ្ញើសំណើធ្វើបច្ចុប្បន្នភាពឈ្មោះអ្នកប្រើ
-      tmp = await dio.post(
-        endpoint.USER_CRUD_UPDATE, //
-        data: {
-          "_id": await secure.read(key: "_id"), //
-          sm_user.USERNAME: controller.text, //
-        },
-      );
-      if (tmp == null) throw "Failed";
+    // * ផ្ញើសំណើធ្វើបច្ចុប្បន្នភាពឈ្មោះអ្នកប្រើ
+    tmp = await dio.post(
+      endpoint.USER_CRUD_UPDATE, //
+      data: {
+        User.ID: await secure.read(key: "_id"), //
+        User.USERNAME: username, //
+      },
+    );
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.USER_CRUD_UPDATE}", cl: Colors.red);
 
-      //
-      Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-    } catch (e, st) {
-      // * បង្ហាញកំហុសប្រសិនបើមាន
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, true);
   }
 
   @override
   void initState() {
     super.initState();
+    username = widget.input ?? "";
     init();
   }
 }

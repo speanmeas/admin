@@ -2,20 +2,12 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:speanmeas/core/global.dart";
-import "package:speanmeas/core/i18n/main.dart";
+import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/widget/show/show_boolean.dart";
 import "package:speanmeas/core/widget/show/show_datetime.dart";
 import "package:speanmeas/core/widget/show/show_number.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
-import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema/demo_2.g.dart";
-import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 
 // * បង្កើត layout មេរបស់ទំព័រអានព័ត៌មានឧទាហរណ៍
 Widget _layout(List<Widget> children) {
@@ -68,17 +60,18 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានទិន្នន័យឧទាហរណ៍តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_2_CRUD_READ_ID, data: {sm_demo_2.ID: widget.id});
+    tmp = await dio.post(endpoint.DEMO_2_CRUD_READ_ID, data: {Demo_2.ID: widget.id});
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_CRUD_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-    text_1 = parse_string(tmp.data[0][sm_demo_2.TEXT_1]);
-    number_1 = parse_double(tmp.data[0][sm_demo_2.NUMBER_1]);
-    datetime_1 = parse_datetime(tmp.data[0][sm_demo_2.DATETIME_1]);
-    logic_1 = parse_bool(tmp.data[0][sm_demo_2.LOGIC_1]);
-    note = parse_string(tmp.data[0][sm_demo_2.NOTE]);
+    final demo = Demo_2.fromJson(tmp.data[0]);
+    text_1 = demo.text_1;
+    number_1 = demo.number_1;
+    datetime_1 = demo.datetime_1;
+    logic_1 = demo.logic_1;
+    note = demo.note;
 
     setState(() {});
   }

@@ -5,11 +5,11 @@ import "package:speanmeas/core/i18n/main.dart";
 import "package:speanmeas/core/global.dart";
 
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
+import "package:speanmeas/core/layout/layout.dart";
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure.dart"; // ignore: unused_import
-import "package:speanmeas/core/layout/layout.dart" as layout;
 
 import "sign_in.dart" as form_si;
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
@@ -72,7 +72,7 @@ class _Main_State extends State<Main_> {
 
       // * ចូលទៅទំព័រមេ
       await glob.init();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => layout.Layout()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Layout()));
     } catch (e, st) {
       // * បង្ហាញកំហុស និងលុប token មិនត្រឹមត្រូវ
       pprint(st);

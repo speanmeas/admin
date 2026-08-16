@@ -8,7 +8,6 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "dialog/dialog_full_name.dart" as dialog_fn;
 import "dialog/dialog_phone_number.dart" as dialog_pn;
@@ -17,6 +16,7 @@ import "dialog/dialog_password.dart" as dialog_pw;
 
 import "sign_in.dart" as sign_in;
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/schema.g.dart";
 
 // * បង្កើត layout មូលដ្ឋានសម្រាប់ទំព័រប្រវត្តិរូប
 Widget _layout(List<Widget> children) {
@@ -82,15 +82,16 @@ class _Main_State extends State<Main_> {
       map_data = tmp.data[0];
 
       // * កំណត់ព័ត៌មានអ្នកប្រើ
-      full_name = map_data?[sm_user.FULL_NAME]?.toString();
-      phone_number = map_data?[sm_user.PHONE_NUMBER]?.toString();
-      username = map_data?[sm_user.USERNAME]?.toString();
-      password = map_data?[sm_user.PASSWORD]?.toString();
+      final user = User.fromJson(map_data);
+      full_name = user.full_name;
+      phone_number = user.phone_number;
+      username = user.username;
+      password = user.password;
 
-      is_admin = map_data?[sm_user.IS_ADMIN] == true;
-      is_manager = map_data?[sm_user.IS_MANAGER] == true;
-      is_receptionist = map_data?[sm_user.IS_RECEPTIONIST] == true;
-      is_housekeeper = map_data?[sm_user.IS_HOUSEKEEPER] == true;
+      is_admin = user.is_admin == true;
+      is_manager = user.is_manager == true;
+      is_receptionist = user.is_receptionist == true;
+      is_housekeeper = user.is_housekeeper == true;
 
       setState(() {});
     } catch (e, st) {

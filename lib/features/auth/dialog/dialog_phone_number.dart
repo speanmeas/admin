@@ -9,22 +9,18 @@ import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/secure.dart"; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
-import "package:speanmeas/core/schema/user.g.dart";
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/schema.g.dart";
 
 // * ថ្នាក់ state របស់ Dialog_ គ្រប់គ្រង dialog កែលេខទូរស័ព្ទ
 class _Dialog_State extends State<Dialog_> {
-  //
   dynamic tmp;
 
-  final title = "Update Phone Number"; //
-  final label = "Phone Number:";
-
-  late final controller = TextEditingController(text: widget.input ?? "");
+  String phone_number = "";
 
   void init() async {
-    //
+    phone_number = widget.input?.toString() ?? "";
   }
 
   @override
@@ -38,7 +34,7 @@ class _Dialog_State extends State<Dialog_> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
+          Text("Update Phone Number", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), //
         ],
       ),
 
@@ -49,12 +45,12 @@ class _Dialog_State extends State<Dialog_> {
           // * ប្រអប់បញ្ចូលលេខទូរស័ព្ទ
           TextField(
             autofocus: true,
-            controller: controller,
+
             keyboardType: TextInputType.numberWithOptions(decimal: false),
             // * អនុញ្ញាតតែលេខ និងសញ្ញាបូក
             inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9+]"))],
             decoration: InputDecoration(
-              labelText: label, //
+              labelText: "Phone Number:", //
               labelStyle: TextStyle(fontWeight: FontWeight.bold),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               // * ប៊ូតុងសម្អាតតម្លៃ
@@ -63,12 +59,18 @@ class _Dialog_State extends State<Dialog_> {
                   padding: EdgeInsets.only(right: 4),
                   child: IconButton(
                     icon: Icon(Icons.clear, color: Colors.red),
-                    onPressed: controller.clear,
+                    onPressed: () {
+                      phone_number = "";
+                      setState(() {});
+                    },
                   ), //
                 ),
               ),
             ),
-            onChanged: (v) => setState(() {}),
+            onChanged: (v) {
+              phone_number = v;
+              setState(() {});
+            },
             onSubmitted: (v) => on_okay(),
           ),
         ],
@@ -93,29 +95,24 @@ class _Dialog_State extends State<Dialog_> {
 
   // * រក្សាទុកលេខទូរស័ព្ទថ្មី
   void on_okay() async {
-    try {
-      // * ផ្ញើសំណើធ្វើបច្ចុប្បន្នភាពលេខទូរស័ព្ទ
-      tmp = await dio.post(
-        endpoint.USER_CRUD_UPDATE, //
-        data: {
-          "_id": await secure.read(key: "_id"), //
-          sm_user.PHONE_NUMBER: controller.text, //
-        },
-      );
-      if (tmp == null) throw "Failed";
+    // * ផ្ញើសំណើធ្វើបច្ចុប្បន្នភាពលេខទូរស័ព្ទ
+    tmp = await dio.post(
+      endpoint.USER_CRUD_UPDATE, //
+      data: {
+        User.ID: await secure.read(key: "_id"), //
+        User.PHONE_NUMBER: phone_number, //
+      },
+    );
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.USER_CRUD_UPDATE}", cl: Colors.red);
 
-      Navigator.pop(context, true);
-      snackbar(ct: context, ms: "Success", cl: Colors.green);
-    } catch (e, st) {
-      // * បង្ហាញកំហុសប្រសិនបើមាន
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    Navigator.pop(context, true);
   }
 
   @override
   void initState() {
     super.initState();
+    phone_number = widget.input?.toString() ?? "";
     init();
   }
 }
