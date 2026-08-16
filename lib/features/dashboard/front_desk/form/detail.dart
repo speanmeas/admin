@@ -202,11 +202,11 @@ class _Main_State extends State<Main_> {
           String dt = "";
           tmp = DateTime.tryParse(m[sm_payment_room.CREATED_AT]?.toString() ?? "");
           if (tmp != null) dt = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
-          tmp = parse_double(m[sm_payment_room.PAY_CASH]) ?? 0;
+          tmp = parse_double(m[sm_payment_room.ADD_CASH]) ?? 0;
           String cash = tmp.toStringAsFixed(2);
-          tmp = parse_double(m[sm_payment_room.PAY_BANK]) ?? 0;
+          tmp = parse_double(m[sm_payment_room.ADD_BANK]) ?? 0;
           String bank = tmp.toStringAsFixed(2);
-          tmp = parse_double(m[sm_payment_room.PAY_RETURN]) ?? 0;
+          tmp = parse_double(m[sm_payment_room.SUB_RETURN]) ?? 0;
           String change = tmp.toStringAsFixed(2);
           if (cash == "0.00" && bank == "0.00" && change == "0.00") return SizedBox.shrink();
           return Align(
@@ -262,11 +262,11 @@ class _Main_State extends State<Main_> {
           String dt = "";
           tmp = DateTime.tryParse(m[sm_payment_room.CREATED_AT]?.toString() ?? "");
           if (tmp != null) dt = DateFormat(DEFAULT_DATE_FORMAT).format(tmp);
-          tmp = parse_double(m[sm_payment_room.PAY_CASH]) ?? 0;
+          tmp = parse_double(m[sm_payment_room.ADD_CASH]) ?? 0;
           String cash = tmp.toStringAsFixed(2);
-          tmp = parse_double(m[sm_payment_room.PAY_BANK]) ?? 0;
+          tmp = parse_double(m[sm_payment_room.ADD_BANK]) ?? 0;
           String bank = tmp.toStringAsFixed(2);
-          tmp = parse_double(m[sm_payment_room.PAY_RETURN]) ?? 0;
+          tmp = parse_double(m[sm_payment_room.SUB_RETURN]) ?? 0;
           String change = tmp.toStringAsFixed(2);
           return Align(
             alignment: Alignment.centerLeft,

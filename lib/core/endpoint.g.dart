@@ -142,17 +142,7 @@ class EndPoint {
 	final PAYMENT_ROOM_CRUD_READ_NUMBER = "/payment_room/crud/read_number";
 	final PAYMENT_ROOM_CRUD_READ_STRING = "/payment_room/crud/read_string";
 	final PAYMENT_ROOM_CRUD_UPDATE = "/payment_room/crud/update";
-	final REPORT_CANCELLATION = "/report/cancellation";
-	final REPORT_CHECK_IN_OUT = "/report/check_in_out";
-	final REPORT_GUEST = "/report/guest";
 	final REPORT = "/report";
-	final REPORT_HOUSEKEEPING = "/report/housekeeping";
-	final REPORT_MINI_BAR_SALES = "/report/mini_bar_sales";
-	final REPORT_OCCUPANCY = "/report/occupancy";
-	final REPORT_PAYMENT_METHOD = "/report/payment_method";
-	final REPORT_REVENUE = "/report/revenue";
-	final REPORT_ROOM_REVENUE = "/report/room_revenue";
-	final REPORT_ROOM_STATUS = "/report/room_status";
 	final ROOM_CRUD_CREATE = "/room/crud/create";
 	final ROOM_CRUD_DELETE = "/room/crud/delete";
 	final ROOM_CRUD_DELETE_HARD = "/room/crud/delete_hard";

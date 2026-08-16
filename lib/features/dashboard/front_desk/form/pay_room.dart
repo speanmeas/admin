@@ -60,10 +60,10 @@ class _Main_State extends State<Main_> {
   double? new_price;
   double? old_price;
   double? last_paid;
-  double? pay_cash;
-  double? pay_bank;
-  double? pay_return;
-  String? pay_note;
+  double? add_cash;
+  double? add_bank;
+  double? sub_return;
+  String? note;
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ និងប្រវត្តិការទូទាត់
   void init() async {
@@ -84,9 +84,9 @@ class _Main_State extends State<Main_> {
       old_price = (old_price ?? 0) + (parse_double(l[sm_payment_room.ADD_PRICE]) ?? 0);
       old_price = (old_price ?? 0) - (parse_double(l[sm_payment_room.SUB_PRICE]) ?? 0);
       // * ប្រាក់ដែលបានទទួលសរុប
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.PAY_CASH]) ?? 0);
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.PAY_BANK]) ?? 0);
-      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_room.PAY_RETURN]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.ADD_CASH]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.ADD_BANK]) ?? 0);
+      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_room.SUB_RETURN]) ?? 0);
     }
 
     new_price = old_price;
@@ -132,42 +132,42 @@ class _Main_State extends State<Main_> {
 
       // * បញ្ចូលការទូទាត់ជាសាច់ប្រាក់
       Input_Number(
-        init: pay_cash, //
+        init: add_cash, //
         lead: '${t("Cash Payment")}:', //
         prefixIcon: Icons.payments_outlined, //
         onChanged: (v) {
-          pay_cash = v;
+          add_cash = v;
           setState(() {});
         },
       ),
 
       // * បញ្ចូលការទូទាត់តាមធនាគារ
       Input_Number(
-        init: pay_bank, //
+        init: add_bank, //
         lead: '${t("Bank Payment")}:', //
         prefixIcon: Icons.account_balance_outlined, //
         onChanged: (v) {
-          pay_bank = v;
+          add_bank = v;
           setState(() {});
         },
       ),
 
       // * បញ្ចូលប្រាក់អាប់
       Input_Number(
-        init: pay_return, //
+        init: sub_return, //
         lead: '${t("Return")}:', //
         prefixIcon: Icons.currency_exchange_outlined, //
         onChanged: (v) {
-          pay_return = v;
+          sub_return = v;
           setState(() {});
         },
       ),
 
       // * បញ្ចូលកំណត់ចំណាំការទូទាត់
       Input_Bank_Auto(
-        init: pay_note, //
+        init: note, //
         onChanged: (v) {
-          pay_note = v;
+          note = v;
           setState(() {});
         },
       ),
@@ -220,20 +220,20 @@ class _Main_State extends State<Main_> {
   double get _diff => (new_price ?? 0) - (old_price ?? 0);
 
   // * បើតម្លៃថ្មីខ្ពស់ជាង បញ្ចូលទៅ add_price
-  double get _add_price => _diff > 0 ? _diff : 0;
+  double get add_price => _diff > 0 ? _diff : 0;
 
   // * បើតម្លៃថ្មីទាបជាង បញ្ចូលទៅ sub_price
-  double get _sub_price => _diff < 0 ? -_diff : 0;
+  double get sub_price => _diff < 0 ? -_diff : 0;
 
   // * គណនាបានប្រាក់សំណើរ = ប្រាក់ទទួលសរុប - តម្លៃថ្មីសរុប
   double get balanced {
     double temp = 0;
 
-    temp = temp + (pay_cash ?? 0);
-    temp = temp + (pay_bank ?? 0);
+    temp = temp + (add_cash ?? 0);
+    temp = temp + (add_bank ?? 0);
     temp = temp + (last_paid ?? 0);
     temp = temp - (new_price ?? 0);
-    temp = temp - (pay_return ?? 0);
+    temp = temp - (sub_return ?? 0);
 
     return temp;
   }
@@ -246,12 +246,12 @@ class _Main_State extends State<Main_> {
       endpoint.FRONT_DESK_UPDATE_PAY_ROOM,
       data: {
         sm_front_desk.ID: map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
-        sm_payment_room.ADD_PRICE: _add_price, //
-        sm_payment_room.SUB_PRICE: _sub_price, //
-        sm_payment_room.PAY_CASH: pay_cash ?? 0, //
-        sm_payment_room.PAY_BANK: pay_bank ?? 0, //
-        sm_payment_room.PAY_RETURN: pay_return ?? 0, //
-        sm_payment_room.PAY_NOTE: pay_note ?? "", //
+        sm_payment_room.ADD_PRICE: add_price, //
+        sm_payment_room.SUB_PRICE: sub_price, //
+        sm_payment_room.ADD_CASH: add_cash ?? 0, //
+        sm_payment_room.ADD_BANK: add_bank ?? 0, //
+        sm_payment_room.SUB_RETURN: sub_return ?? 0, //
+        sm_payment_room.NOTE: note ?? "", //
       },
     );
     setState(() => is_loading = false);

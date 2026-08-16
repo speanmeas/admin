@@ -54,16 +54,16 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បន្ថែមការទូទាត់ផ្សេងៗ
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_r;
+  dynamic map_room;
   bool is_loading = true;
 
   double? other_price;
   double? old_price;
   double? last_paid;
-  double? pay_cash;
-  double? pay_bank;
-  double? pay_return;
-  String? pay_note;
+  double? add_cash;
+  double? add_bank;
+  double? sub_return;
+  String? note;
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ និងប្រវត្តិការទូទាត់ផ្សេងៗ
   void init() async {
@@ -74,18 +74,18 @@ class _Main_State extends State<Main_> {
 
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-    map_r = tmp.data[0] as Map<String, dynamic>;
+    map_room = tmp.data[0] as Map<String, dynamic>;
 
     // * គណនាតម្លៃចាស់ និងប្រាក់ដែលបានទទួលរួច
-    tmp = map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
+    tmp = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
     for (var l in tmp) {
       // * តម្លៃសរុប = ផលបូកនៃ add_price ដក sub_price ទាំងអស់
       old_price = (old_price ?? 0) + (parse_double(l[sm_payment_other.ADD_PRICE]) ?? 0);
       old_price = (old_price ?? 0) - (parse_double(l[sm_payment_other.SUB_PRICE]) ?? 0);
       // * ប្រាក់ដែលបានទទួលសរុប
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_other.PAY_CASH]) ?? 0);
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_other.PAY_BANK]) ?? 0);
-      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_other.PAY_RETURN]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_other.ADD_CASH]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_other.ADD_BANK]) ?? 0);
+      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_other.SUB_RETURN]) ?? 0);
     }
     other_price = old_price;
 
@@ -100,7 +100,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់
       Text(
-        '${t("Room")} ${map_r?[sm_room.NUMBER] ?? "N/A"}', //
+        '${t("Room")} ${map_room?[sm_room.NUMBER] ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -130,42 +130,42 @@ class _Main_State extends State<Main_> {
 
       // * បញ្ចូលការទូទាត់ជាសាច់ប្រាក់
       Input_Number(
-        init: pay_cash, //
+        init: add_cash, //
         lead: '${t("Cash Payment")}:', //
         prefixIcon: Icons.payments_outlined, //
         onChanged: (v) {
-          pay_cash = v;
+          add_cash = v;
           setState(() {});
         },
       ),
 
       // * បញ្ចូលការទូទាត់តាមធនាគារ
       Input_Number(
-        init: pay_bank, //
+        init: add_bank, //
         lead: '${t("Bank Payment")}:', //
         prefixIcon: Icons.account_balance_outlined, //
         onChanged: (v) {
-          pay_bank = v;
+          add_bank = v;
           setState(() {});
         },
       ),
 
       // * បញ្ចូលប្រាក់អាប់
       Input_Number(
-        init: pay_return, //
+        init: sub_return, //
         lead: '${t("Return")}:', //
         prefixIcon: Icons.currency_exchange_outlined, //
         onChanged: (v) {
-          pay_return = v;
+          sub_return = v;
           setState(() {});
         },
       ),
 
       // * បញ្ចូលកំណត់ចំណាំការទូទាត់
       Input_Bank_Auto(
-        init: pay_note, //
+        init: note, //
         onChanged: (v) {
-          pay_note = v;
+          note = v;
           setState(() {});
         },
       ),
@@ -203,20 +203,20 @@ class _Main_State extends State<Main_> {
   double get _diff => (other_price ?? 0) - (old_price ?? 0);
 
   // * បើតម្លៃថ្មីខ្ពស់ជាង បញ្ចូលទៅ add_price
-  double get _add_price => _diff > 0 ? _diff : 0;
+  double get add_price => _diff > 0 ? _diff : 0;
 
   // * បើតម្លៃថ្មីទាបជាង បញ្ចូលទៅ sub_price
-  double get _sub_price => _diff < 0 ? -_diff : 0;
+  double get sub_price => _diff < 0 ? -_diff : 0;
 
   // * គណនាបានប្រាក់សំណើរ = ប្រាក់ទទួលសរុប - តម្លៃថ្មីសរុប
   double get balanced {
     double temp = 0;
 
-    temp = temp + (pay_cash ?? 0);
-    temp = temp + (pay_bank ?? 0);
+    temp = temp + (add_cash ?? 0);
+    temp = temp + (add_bank ?? 0);
     temp = temp + (last_paid ?? 0);
     temp = temp - (other_price ?? 0);
-    temp = temp - (pay_return ?? 0);
+    temp = temp - (sub_return ?? 0);
 
     return temp;
   }
@@ -228,13 +228,13 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.FRONT_DESK_UPDATE_PAY_OTHER,
       data: {
-        sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
-        sm_payment_other.ADD_PRICE: _add_price, //
-        sm_payment_other.SUB_PRICE: _sub_price, //
-        sm_payment_other.PAY_CASH: pay_cash ?? 0, //
-        sm_payment_other.PAY_BANK: pay_bank ?? 0, //
-        sm_payment_other.PAY_RETURN: pay_return ?? 0, //
-        sm_payment_other.PAY_NOTE: pay_note ?? "", //
+        sm_front_desk.ID: map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
+        sm_payment_other.ADD_PRICE: add_price, //
+        sm_payment_other.SUB_PRICE: sub_price, //
+        sm_payment_other.ADD_CASH: add_cash ?? 0, //
+        sm_payment_other.ADD_BANK: add_bank ?? 0, //
+        sm_payment_other.SUB_RETURN: sub_return ?? 0, //
+        sm_payment_other.NOTE: note ?? "", //
       },
     );
     setState(() => is_loading = false);
@@ -244,8 +244,8 @@ class _Main_State extends State<Main_> {
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
         data: {
-          sm_room.ID: map_r[sm_room.ID], //
-          sm_room.STATUS: "Pending Payment", //
+          sm_room.ID: map_room[sm_room.ID], //
+          sm_room.STATUS: "Pending Pay", //
         },
       );
       setState(() => is_loading = false);

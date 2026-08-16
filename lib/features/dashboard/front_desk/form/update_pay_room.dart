@@ -83,9 +83,9 @@ class _Main_State extends State<Main_> {
       old_price = (old_price ?? 0) + (parse_double(l[sm_payment_room.ADD_PRICE]) ?? 0);
       old_price = (old_price ?? 0) - (parse_double(l[sm_payment_room.SUB_PRICE]) ?? 0);
       // * ប្រាក់ដែលបានទទួលសរុប
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.PAY_CASH]) ?? 0);
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.PAY_BANK]) ?? 0);
-      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_room.PAY_RETURN]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.ADD_CASH]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.ADD_BANK]) ?? 0);
+      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_room.SUB_RETURN]) ?? 0);
     }
     room_price = old_price;
 
@@ -244,10 +244,10 @@ class _Main_State extends State<Main_> {
         sm_front_desk.ID: map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
         sm_payment_room.ADD_PRICE: _add_price, //
         sm_payment_room.SUB_PRICE: _sub_price, //
-        sm_payment_room.PAY_CASH: pay_cash ?? 0, //
-        sm_payment_room.PAY_BANK: pay_bank ?? 0, //
-        sm_payment_room.PAY_RETURN: pay_return ?? 0, //
-        sm_payment_room.PAY_NOTE: pay_note ?? "", //
+        sm_payment_room.ADD_CASH: pay_cash ?? 0, //
+        sm_payment_room.ADD_BANK: pay_bank ?? 0, //
+        sm_payment_room.SUB_RETURN: pay_return ?? 0, //
+        sm_payment_room.NOTE: pay_note ?? "", //
       },
     );
     setState(() => is_loading = false);

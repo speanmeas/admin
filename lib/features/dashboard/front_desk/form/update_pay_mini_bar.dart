@@ -54,7 +54,7 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បន្ថែមការទូទាត់ mini bar
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_r;
+  dynamic map_room;
   bool is_loading = true;
 
   double? other_price;
@@ -74,18 +74,18 @@ class _Main_State extends State<Main_> {
 
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-    map_r = tmp.data[0] as Map<String, dynamic>;
+    map_room = tmp.data[0] as Map<String, dynamic>;
 
     // * គណនាតម្លៃចាស់ និងប្រាក់ដែលបានទទួលរួច
-    tmp = map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_MINI_BAR] as List<dynamic>? ?? [];
+    tmp = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_MINI_BAR] as List<dynamic>? ?? [];
     for (var l in tmp) {
       // * តម្លៃសរុប = ផលបូកនៃ add_price ដក sub_price ទាំងអស់
       old_price = (old_price ?? 0) + (parse_double(l[sm_payment_mini_bar.ADD_PRICE]) ?? 0);
       old_price = (old_price ?? 0) - (parse_double(l[sm_payment_mini_bar.SUB_PRICE]) ?? 0);
       // * ប្រាក់ដែលបានទទួលសរុប
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_mini_bar.PAY_CASH]) ?? 0);
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_mini_bar.PAY_BANK]) ?? 0);
-      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_mini_bar.PAY_RETURN]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_mini_bar.ADD_CASH]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_mini_bar.ADD_BANK]) ?? 0);
+      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_mini_bar.SUB_RETURN]) ?? 0);
     }
     other_price = old_price;
 
@@ -100,7 +100,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់
       Text(
-        '${t("Room")} ${map_r?[sm_room.NUMBER] ?? "N/A"}', //
+        '${t("Room")} ${map_room?[sm_room.NUMBER] ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -228,13 +228,13 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.FRONT_DESK_UPDATE_PAY_MINI_BAR,
       data: {
-        sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
+        sm_front_desk.ID: map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
         sm_payment_mini_bar.ADD_PRICE: _add_price, //
         sm_payment_mini_bar.SUB_PRICE: _sub_price, //
-        sm_payment_mini_bar.PAY_CASH: pay_cash ?? 0, //
-        sm_payment_mini_bar.PAY_BANK: pay_bank ?? 0, //
-        sm_payment_mini_bar.PAY_RETURN: pay_return ?? 0, //
-        sm_payment_mini_bar.PAY_NOTE: pay_note ?? "", //
+        sm_payment_mini_bar.ADD_CASH: pay_cash ?? 0, //
+        sm_payment_mini_bar.ADD_BANK: pay_bank ?? 0, //
+        sm_payment_mini_bar.SUB_RETURN: pay_return ?? 0, //
+        sm_payment_mini_bar.NOTE: pay_note ?? "", //
       },
     );
     setState(() => is_loading = false);
@@ -244,8 +244,8 @@ class _Main_State extends State<Main_> {
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
         data: {
-          sm_room.ID: map_r[sm_room.ID], //
-          sm_room.STATUS: "Pending Payment", //
+          sm_room.ID: map_room[sm_room.ID], //
+          sm_room.STATUS: "Pending Pay", //
         },
       );
       setState(() => is_loading = false);

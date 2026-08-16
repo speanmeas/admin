@@ -53,7 +53,7 @@ Widget _layout(List<Widget> children) {
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់ធ្វើបច្ចុប្បន្នភាពការស្នាក់នៅ
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic map_r;
+  dynamic map_room;
   bool is_loading = true;
 
   int? number_of_guest;
@@ -75,23 +75,23 @@ class _Main_State extends State<Main_> {
 
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
-    map_r = tmp.data[0] as Map<String, dynamic>;
+    map_room = tmp.data[0] as Map<String, dynamic>;
 
-    price_per_day = map_r[sm_room.USD_PER_DAY] ?? 0;
-    price_per_3hours = map_r[sm_room.USD_PER_3H] ?? 0;
+    price_per_day = map_room[sm_room.USD_PER_DAY] ?? 0;
+    price_per_3hours = map_room[sm_room.USD_PER_3H] ?? 0;
 
     // * ផ្ទុកចំនួនភ្ញៀវ រយៈពេលស្នាក់ និងកំណត់ចំណាំ
-    number_of_guest = map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_NUMBER] ?? 1;
-    stay_days = map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_DAY] ?? 0;
-    stay_hours = map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_HOUR] ?? 0;
-    note = map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_NOTE] ?? "";
+    number_of_guest = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_NUMBER] ?? 1;
+    stay_days = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_DAY] ?? 0;
+    stay_hours = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_HOUR] ?? 0;
+    note = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CHECK_IN_NOTE] ?? "";
 
     // * គណនាប្រាក់ដែលបានទទួលរួច
-    tmp = map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
+    tmp = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
     for (var l in tmp) {
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.PAY_CASH]) ?? 0);
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.PAY_BANK]) ?? 0);
-      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_room.PAY_RETURN]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.ADD_CASH]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.ADD_BANK]) ?? 0);
+      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_room.SUB_RETURN]) ?? 0);
     }
 
     setState(() {});
@@ -104,7 +104,7 @@ class _Main_State extends State<Main_> {
     return _layout([
       // * បង្ហាញលេខបន្ទប់
       Text(
-        '${t("Room")} ${map_r?[sm_room.NUMBER] ?? "N/A"}', //
+        '${t("Room")} ${map_room?[sm_room.NUMBER] ?? "N/A"}', //
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
 
@@ -189,7 +189,7 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.FRONT_DESK_UPDATE_STAY, //
       data: {
-        sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
+        sm_front_desk.ID: map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
         sm_front_desk.CHECK_IN_NUMBER: number_of_guest, //
         sm_front_desk.CHECK_IN_DAY: stay_days, //
         sm_front_desk.CHECK_IN_HOUR: stay_hours, //
@@ -203,7 +203,7 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.FRONT_DESK_UPDATE_PAY_ROOM, // update
       data: {
-        sm_front_desk.ID: map_r[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
+        sm_front_desk.ID: map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.ID], //
         "add_price": room_price, //
       },
     );

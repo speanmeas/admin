@@ -4,16 +4,19 @@
 import "dart:async";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
+import "package:speanmeas/core/schema/payment_mini_bar.g.dart";
+import "package:speanmeas/core/schema/payment_other.g.dart";
+import "package:speanmeas/core/schema/payment_room.g.dart";
 
+import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 import "package:speanmeas/core/config.dart"; // ignore: unused_import
-import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/global.dart"; // ignore: unused_import
 import "package:speanmeas/core/i18n/main.dart"; // ignore: unused_import
-import "package:speanmeas/core/theme.dart"; // ignore: unused_import
+import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
-import "package:speanmeas/core/utility/navigator.dart";
 import "package:speanmeas/core/utility/parse.dart";
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
+import "package:speanmeas/core/utility/navigator.dart";
 
 import "package:speanmeas/core/schema/room.g.dart";
 import "package:speanmeas/core/schema/guest.g.dart";
@@ -40,7 +43,7 @@ import "form/update_stay.dart" as update_stay;
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការបង្ហាញបន្ទប់ទាំងអស់
 class _Main_State extends State<Main_> {
   dynamic tmp;
-  dynamic data;
+  dynamic list_room;
   bool is_loading = true;
 
   String? search;
@@ -57,7 +60,8 @@ class _Main_State extends State<Main_> {
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No rooms found", cl: Colors.red);
 
     // * ការពារការ cast មិនសុវត្ថិភាព បើ data មិនមែន List
-    data = tmp.data as List<dynamic>? ?? [];
+    list_room = tmp.data as List<dynamic>? ?? [];
+    // pprint(list_room);
 
     setState(() {});
   }
@@ -325,11 +329,11 @@ class _Main_State extends State<Main_> {
                           double pay = 0;
                           double change = 0;
                           for (var l in tmp) {
-                            price = price + double.parse(l["add_price"]?.toString() ?? "0");
-                            price = price - double.parse(l["sub_price"]?.toString() ?? "0");
-                            pay = pay + double.parse(l["pay_cash"]?.toString() ?? "0");
-                            pay = pay + double.parse(l["pay_bank"]?.toString() ?? "0");
-                            change = change + double.parse(l["pay_return"]?.toString() ?? "0");
+                            price = price + double.parse(l[sm_payment_room.ADD_PRICE]?.toString() ?? "0");
+                            price = price - double.parse(l[sm_payment_room.SUB_PRICE]?.toString() ?? "0");
+                            pay = pay + double.parse(l[sm_payment_room.ADD_CASH]?.toString() ?? "0");
+                            pay = pay + double.parse(l[sm_payment_room.ADD_BANK]?.toString() ?? "0");
+                            change = change + double.parse(l[sm_payment_room.SUB_RETURN]?.toString() ?? "0");
                           }
                           return Row(
                             spacing: 4,
@@ -371,11 +375,11 @@ class _Main_State extends State<Main_> {
                           double pay = 0;
                           double change = 0;
                           for (var l in tmp) {
-                            price = price + double.parse(l["add_price"]?.toString() ?? "0");
-                            price = price - double.parse(l["sub_price"]?.toString() ?? "0");
-                            pay = pay + double.parse(l["pay_cash"]?.toString() ?? "0");
-                            pay = pay + double.parse(l["pay_bank"]?.toString() ?? "0");
-                            change = change + double.parse(l["pay_return"]?.toString() ?? "0");
+                            price = price + double.parse(l[sm_payment_mini_bar.ADD_PRICE]?.toString() ?? "0");
+                            price = price - double.parse(l[sm_payment_mini_bar.SUB_PRICE]?.toString() ?? "0");
+                            pay = pay + double.parse(l[sm_payment_mini_bar.ADD_CASH]?.toString() ?? "0");
+                            pay = pay + double.parse(l[sm_payment_mini_bar.ADD_BANK]?.toString() ?? "0");
+                            change = change + double.parse(l[sm_payment_mini_bar.SUB_RETURN]?.toString() ?? "0");
                           }
                           return Row(
                             spacing: 4,
@@ -414,16 +418,15 @@ class _Main_State extends State<Main_> {
                       if (!["Pending Fix"].contains(r[sm_room.STATUS]))
                         (() {
                           tmp = _fd(r)[sm_front_desk.PAY_OTHER] as List<dynamic>? ?? [];
-                          // pprint(tmp);
                           double price = 0;
                           double pay = 0;
                           double change = 0;
                           for (var l in tmp) {
-                            price = price + double.parse(l["add_price"]?.toString() ?? "0");
-                            price = price - double.parse(l["sub_price"]?.toString() ?? "0");
-                            pay = pay + double.parse(l["pay_cash"]?.toString() ?? "0");
-                            pay = pay + double.parse(l["pay_bank"]?.toString() ?? "0");
-                            change = change + double.parse(l["pay_return"]?.toString() ?? "0");
+                            price = price + double.parse(l[sm_payment_other.ADD_PRICE]?.toString() ?? "0");
+                            price = price - double.parse(l[sm_payment_other.SUB_PRICE]?.toString() ?? "0");
+                            pay = pay + double.parse(l[sm_payment_other.ADD_CASH]?.toString() ?? "0");
+                            pay = pay + double.parse(l[sm_payment_other.ADD_BANK]?.toString() ?? "0");
+                            change = change + double.parse(l[sm_payment_other.SUB_RETURN]?.toString() ?? "0");
                           }
                           return Row(
                             spacing: 4,
@@ -648,8 +651,8 @@ class _Main_State extends State<Main_> {
   // * ត្រងបញ្ជីបន្ទប់តាមលក្ខខណ្ឌស្វែងរក
   List<dynamic> get _list_show {
     final q = search?.trim().toLowerCase();
-    if (q == null || q.isEmpty) return data;
-    return data.where((r) {
+    if (q == null || q.isEmpty) return list_room;
+    return list_room.where((r) {
       final room_number = '${r[sm_room.NUMBER]}'.toLowerCase();
       final room_status = '${r[sm_room.STATUS]}'.toLowerCase();
       final room_kind = '${r[sm_room.KIND]}'.toLowerCase();

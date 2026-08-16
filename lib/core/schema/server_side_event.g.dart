@@ -1,6 +1,6 @@
-class Ws {
-	static final Ws instance = Ws._();
-	Ws._();
+class Server_side_event {
+	static final Server_side_event instance = Server_side_event._();
+	Server_side_event._();
 
 	final ID = "_id";
 	final NOTE = "note";
@@ -12,4 +12,4 @@ class Ws {
 	final DELETED_BY = "deleted_by";
 }
 
-Ws sm_ws = Ws.instance;
+Server_side_event sm_server_side_event = Server_side_event.instance;

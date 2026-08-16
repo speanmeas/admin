@@ -1,6 +1,6 @@
-class Sse {
-	static final Sse instance = Sse._();
-	Sse._();
+class Web_socket {
+	static final Web_socket instance = Web_socket._();
+	Web_socket._();
 
 	final ID = "_id";
 	final NOTE = "note";
@@ -12,4 +12,4 @@ class Sse {
 	final DELETED_BY = "deleted_by";
 }
 
-Sse sm_sse = Sse.instance;
+Web_socket sm_web_socket = Web_socket.instance;

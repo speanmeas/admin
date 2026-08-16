@@ -87,9 +87,9 @@ class _Main_State extends State<Main_> {
     // * គណនាចំនួនទឹកប្រាក់ដែលបានបង់រួច
     tmp = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.PAY_ROOM] as List<dynamic>? ?? [];
     for (var l in tmp) {
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.PAY_CASH]) ?? 0);
-      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.PAY_BANK]) ?? 0);
-      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_room.PAY_RETURN]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.ADD_CASH]) ?? 0);
+      last_paid = (last_paid ?? 0) + (parse_double(l[sm_payment_room.ADD_BANK]) ?? 0);
+      last_paid = (last_paid ?? 0) - (parse_double(l[sm_payment_room.SUB_RETURN]) ?? 0);
     }
 
     note = map_room[sm_room.FRONT_DESK_ID]?[sm_front_desk.CANCEL_NOTE]?.toString() ?? "";

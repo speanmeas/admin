@@ -206,13 +206,14 @@ class _Main_State extends State<Main_> {
     );
 
     // * បន្ថែមតម្លៃបន្ទប់ទៅការទូទាត់
-    await dio.post(
-      endpoint.FRONT_DESK_UPDATE_PAY_ROOM, // update
-      data: {
-        sm_front_desk.ID: tmp.data[0][sm_front_desk.ID], //
-        sm_payment_room.ADD_PRICE: add_room_price,
-      },
-    );
+    if (add_room_price > 0)
+      await dio.post(
+        endpoint.FRONT_DESK_UPDATE_PAY_ROOM, // update
+        data: {
+          sm_front_desk.ID: tmp.data[0][sm_front_desk.ID], //
+          sm_payment_room.ADD_PRICE: add_room_price,
+        },
+      );
 
     // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Pending Pay
     await dio.post(
