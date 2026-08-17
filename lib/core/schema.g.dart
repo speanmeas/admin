@@ -417,7 +417,7 @@ class Order_Mini_Bar {
   final String? id;
   final Mini_Bar_Show? mini_bar_id;
   final int? quantity;
-  final List<Front_Desk_Show>? front_desk_id;
+  final Front_Desk_Show? front_desk_id;
   final DateTime? created_at;
   final User_Show? created_by;
   final DateTime? updated_at;
@@ -431,7 +431,7 @@ class Order_Mini_Bar {
     id: json['_id'] as String?,
     mini_bar_id: json['mini_bar_id'] == null ? null : Mini_Bar_Show.fromJson(json['mini_bar_id'] as Map<String, dynamic>),
     quantity: json['quantity'] as int?,
-    front_desk_id: (json['front_desk_id'] as List<dynamic>?)?.map((e) => Front_Desk_Show.fromJson(e as Map<String, dynamic>)).toList(),
+    front_desk_id: json['front_desk_id'] == null ? null : Front_Desk_Show.fromJson(json['front_desk_id'] as Map<String, dynamic>),
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
     created_by: json['created_by'] == null ? null : User_Show.fromJson(json['created_by'] as Map<String, dynamic>),
     updated_at: json['updated_at'] == null ? null : DateTime.tryParse(json['updated_at'] as String),
@@ -445,7 +445,7 @@ class Order_Mini_Bar {
     json['_id'] = id;
     json['mini_bar_id'] = mini_bar_id?.toJson();
     json['quantity'] = quantity;
-    json['front_desk_id'] = front_desk_id?.map((e) => e.toJson()).toList();
+    json['front_desk_id'] = front_desk_id?.toJson();
     json['created_at'] = created_at?.toIso8601String();
     json['created_by'] = created_by?.toJson();
     json['updated_at'] = updated_at?.toIso8601String();

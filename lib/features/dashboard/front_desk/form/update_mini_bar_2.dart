@@ -297,16 +297,16 @@ class _Mini_Bar_2State extends State<Mini_Bar_2> {
     }
 
     // * លុប order ដែលលែងមានក្នុងការជ្រើសរើសថ្មី
-    for (var o in initial_orders) {
-      final id = o.mini_bar_id?.id;
-      if (id != null && !kept.contains(id) && o.id != null) {
-        final r = await dio.post(
-          endpoint.ORDER_MINI_BAR_CRUD_DELETE, //
-          data: {Order_Mini_Bar.ID: o.id},
-        );
-        if (r == null) return false;
-      }
-    }
+    // for (var o in initial_orders) {
+    //   final id = o.mini_bar_id?.id;
+    //   if (id != null && !kept.contains(id) && o.id != null) {
+    //     final r = await dio.post(
+    //       endpoint.ORDER_MINI_BAR_CRUD_DELETE, //
+    //       data: {Order_Mini_Bar.ID: o.id},
+    //     );
+    //     if (r == null) return false;
+    //   }
+    // }
 
     return true;
   }

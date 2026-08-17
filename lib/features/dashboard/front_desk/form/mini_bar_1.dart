@@ -167,7 +167,7 @@ class _Main_State extends State<Main_> {
       OutlinedButton.icon(
         icon: Icon(Icons.arrow_forward), //
         label: Text("Next"), //
-        onPressed: next, //
+        onPressed: can_next ? next : null, //
       ),
 
       SizedBox(height: height - 100),
@@ -247,6 +247,12 @@ class _Main_State extends State<Main_> {
     }
   }
 
+  bool get can_next {
+    if (list_order_mini_bar.isEmpty) return false;
+
+    return true;
+  }
+
   // * បញ្ជាក់ការជ្រើសរើស ហើយបញ្ជូនបញ្ជីទំនិញត្រឡប់ទៅ mini_bar_2
   void next() {
     nav_push(
@@ -256,7 +262,6 @@ class _Main_State extends State<Main_> {
         list_order_mini_bar: list_order_mini_bar, //
       ),
     );
-    // Navigator.pop(context, list_order_mini_bar);
   }
 
   @override
