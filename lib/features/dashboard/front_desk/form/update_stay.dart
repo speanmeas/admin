@@ -194,7 +194,7 @@ class _Main_State extends State<Main_> {
       endpoint.FRONT_DESK_UPDATE_PAY_ROOM, // update
       data: {
         Front_Desk.ID: map_room?.front_desk_id?.id, //
-        Payment_Room.ADD_PRICE: room_price, //
+        Pay_Room.ADD_PRICE: room_price, //
       },
     );
     setState(() => is_loading = false);

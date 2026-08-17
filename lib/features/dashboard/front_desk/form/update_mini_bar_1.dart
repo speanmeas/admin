@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-import "mini_bar_2.dart";
+import "update_mini_bar_2.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រគិតថ្លៃ mini bar
 Widget _layout(List<Widget> children) {
@@ -51,6 +51,12 @@ class _Main_State extends State<Main_> {
   // * បញ្ជីទំនិញ mini bar (catalog) ទាញពី Server
   List<Map<String, dynamic>> catalog = [];
 
+  // * បន្ទប់ដែលកំពុងកែសម្រួល (ទាញតាម room_id)
+  Room? map_room;
+
+  // * បញ្ជី order mini bar ដែលមានស្រាប់ (សម្រាប់កែសម្រួល)
+  List<Order_Mini_Bar> initial_orders = [];
+
   // * ទាញយកបញ្ជីទំនិញ mini bar ពី Server
   void init() async {
     setState(() => is_loading = true);
@@ -68,8 +74,17 @@ class _Main_State extends State<Main_> {
 
     catalog = List<Map<String, dynamic>>.from(tmp?.data ?? []);
 
+    // * អានព័ត៌មានបន្ទប់តាម id ដើម្បីទាញ order mini bar ដែលមានស្រាប់
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
+    setState(() => is_loading = false);
+    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
+
+    map_room = Room.fromJson(tmp.data[0]);
+    initial_orders = map_room?.front_desk_id?.order_mini_bar ?? [];
+
     // * បំពេញចំនួនដែលបានជ្រើសរើសពី order ដែលមានស្រាប់ (សម្រាប់កែសម្រួល)
-    for (var o in widget.initial_orders) {
+    for (var o in initial_orders) {
       final id = o.mini_bar_id?.id;
       final qty = o.quantity ?? 0;
       if (id != null && qty > 0) {
@@ -183,7 +198,7 @@ class _Main_State extends State<Main_> {
       OutlinedButton.icon(
         icon: Icon(Icons.arrow_forward), //
         label: Text("Next"), //
-        onPressed: _total > 0 ? next : null, //
+        onPressed: next, //
       ),
 
       SizedBox(height: height - 100),
@@ -265,6 +280,7 @@ class _Main_State extends State<Main_> {
     nav_push(
       context,
       Mini_Bar_2(
+        room_id: widget.room_id, //
         catalog: catalog, //
         lines: lines, //
         other_price: _total, //
@@ -297,19 +313,6 @@ class _Item_PickerState extends State<_Item_Picker> {
   // * controller សម្រាប់ស្វែងរកទំនិញ
   final _search_controller = TextEditingController();
 
-  // * តម្រងបញ្ជីទំនិញតាមឈ្មោះដែលស្វែងរក
-  List<Map<String, dynamic>> get _list_show {
-    final q = _search_controller.text.trim().toLowerCase();
-    if (q.isEmpty) return widget.catalog;
-    return widget.catalog.where((item) => '${item[Mini_Bar.NAME]}'.toLowerCase().contains(q)).toList();
-  }
-
-  @override
-  void dispose() {
-    _search_controller.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -328,7 +331,7 @@ class _Item_PickerState extends State<_Item_Picker> {
             icon: const Icon(Icons.close, size: 24, color: Colors.red),
             padding: EdgeInsets.all(4),
             constraints: const BoxConstraints(),
-            onPressed: () => Navigator.pop(context),
+            onPressed: _close,
           ),
         ],
       ),
@@ -354,7 +357,7 @@ class _Item_PickerState extends State<_Item_Picker> {
                           isDense: true,
                           prefixIcon: const Icon(Icons.search, size: 20, color: Colors.blue),
                         ),
-                        onChanged: (v) => setState(() {}),
+                        onChanged: _on_search,
                       ),
                     ),
                   ),
@@ -382,16 +385,7 @@ class _Item_PickerState extends State<_Item_Picker> {
                         final price = (item[Mini_Bar.PRICE] as num?)?.toDouble() ?? 0;
                         return InkWell(
                           hoverColor: Colors.blue.withValues(alpha: 0.05),
-                          onTap: () {
-                            // * ជ្រើស/មិនជ្រើសទំនិញមួយម្តងៗ
-                            setState(() {
-                              if (selected) {
-                                _qty.remove(id);
-                              } else {
-                                _qty[id] = 1;
-                              }
-                            });
-                          },
+                          onTap: () => _toggle(id, selected),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                             decoration: BoxDecoration(
@@ -437,19 +431,57 @@ class _Item_PickerState extends State<_Item_Picker> {
         OutlinedButton.icon(
           icon: const Icon(Icons.check), //
           label: const Text("Done"), //
-          onPressed: () => Navigator.pop(context, _qty), //
+          onPressed: _done, //
         ),
       ],
     );
+  }
+
+  // * តម្រងបញ្ជីទំនិញតាមឈ្មោះដែលស្វែងរក
+  List<Map<String, dynamic>> get _list_show {
+    final q = _search_controller.text.trim().toLowerCase();
+    if (q.isEmpty) return widget.catalog;
+    return widget.catalog.where((item) => '${item[Mini_Bar.NAME]}'.toLowerCase().contains(q)).toList();
+  }
+
+  @override
+  void dispose() {
+    _search_controller.dispose();
+    super.dispose();
+  }
+
+  // * បិទ dialog
+  void _close() {
+    Navigator.pop(context);
+  }
+
+  // * បញ្ជាក់ការជ្រើសរើស ហើយប្រគល់ _qty ត្រឡប់ទៅកាន់ dialog
+  void _done() {
+    Navigator.pop(context, _qty);
+  }
+
+  // * ស្វែងរកទំនិញតាមឈ្មោះ
+  void _on_search(String v) {
+    setState(() {});
+  }
+
+  // * ជ្រើស/មិនជ្រើសទំនិញមួយម្តងៗ
+  void _toggle(dynamic id, bool selected) {
+    setState(() {
+      if (selected) {
+        _qty.remove(id);
+      } else {
+        _qty[id] = 1;
+      }
+    });
   }
 }
 
 // * ថ្នាក់ Main_ ជាទំព័រមេ mini bar
 class Main_ extends StatefulWidget {
-  const Main_({super.key, this.initial_orders = const []});
+  const Main_({super.key, this.room_id});
 
-  // * បញ្ជី order mini bar ដែលមានស្រាប់ (សម្រាប់កែសម្រួល)
-  final List<Order_Mini_Bar> initial_orders;
+  final String? room_id; // * id បន្ទប់ដែលកំពុងកែសម្រួល
 
   @override
   State<Main_> createState() => _Main_State();

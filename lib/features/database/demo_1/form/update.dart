@@ -52,13 +52,9 @@ class _Main_State extends State<Main_> {
   bool is_loading = true;
 
   String? text_1;
-  String? text_2;
   double? number_1;
-  double? number_2;
   DateTime? datetime_1;
-  DateTime? datetime_2;
   bool? logic_1;
-  bool? logic_2;
   String? note;
 
   // * ផ្ទុកព័ត៌មានឧទាហរណ៍បច្ចុប្បន្ន
@@ -73,17 +69,9 @@ class _Main_State extends State<Main_> {
 
     final demo = Demo_1.fromJson(tmp.data[0]);
     text_1 = demo.text_1;
-    text_2 = demo.text_2;
-
     number_1 = demo.number_1;
-    number_2 = demo.number_2;
-
     datetime_1 = demo.datetime_1;
-    datetime_2 = demo.datetime_2;
-
     logic_1 = demo.logic_1;
-    logic_2 = demo.logic_2;
-
     note = demo.note;
 
     setState(() {});
@@ -105,32 +93,12 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      // * បញ្ចូលអត្ថបទ 2
-      Input_Text(
-        init: text_2, //
-        lead: "Text 2:", //
-        onChanged: (v) {
-          text_2 = v;
-          setState(() {});
-        },
-      ),
-
       // * បញ្ចូលលេខ 1
       Input_Number(
         init: number_1, //
         lead: "Number 1:", //
         onChanged: (v) {
           number_1 = v;
-          setState(() {});
-        },
-      ),
-
-      // * បញ្ចូលលេខ 2
-      Input_Number(
-        init: number_2, //
-        lead: "Number 2:", //
-        onChanged: (v) {
-          number_2 = v;
           setState(() {});
         },
       ),
@@ -145,32 +113,12 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      // * ជ្រើសរើសកាលបរិច្ឆេទ 2
-      Picker_Datetime(
-        initial: datetime_2, //
-        title: "Datetime 2:", //
-        onChanged: (v) {
-          datetime_2 = v;
-          setState(() {});
-        },
-      ),
-
       // * ជ្រើសរើសតម្លៃប៊ូលីន 1
       Picker_Boolean(
         initial: logic_1, //
         title: "Logic 1:", //
         onChanged: (v) {
           logic_1 = v;
-          setState(() {});
-        },
-      ),
-
-      // * ជ្រើសរើសតម្លៃប៊ូលីន 2
-      Picker_Boolean(
-        initial: logic_2, //
-        title: "Logic 2:", //
-        onChanged: (v) {
-          logic_2 = v;
           setState(() {});
         },
       ),
@@ -206,13 +154,9 @@ class _Main_State extends State<Main_> {
       data: {
         Demo_1.ID: widget.id,
         Demo_1.TEXT_1: text_1,
-        Demo_1.TEXT_2: text_2,
         Demo_1.NUMBER_1: number_1,
-        Demo_1.NUMBER_2: number_2,
         Demo_1.DATETIME_1: datetime_1?.toIso8601String(),
-        Demo_1.DATETIME_2: datetime_2?.toIso8601String(),
         Demo_1.LOGIC_1: logic_1,
-        Demo_1.LOGIC_2: logic_2,
         Demo_1.NOTE: note, //
       },
     );

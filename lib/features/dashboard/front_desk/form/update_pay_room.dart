@@ -231,12 +231,12 @@ class _Main_State extends State<Main_> {
       endpoint.FRONT_DESK_UPDATE_PAY_ROOM,
       data: {
         Front_Desk.ID: map_room?.front_desk_id?.id, //
-        Payment_Room.ADD_PRICE: _add_price, //
-        Payment_Room.SUB_PRICE: _sub_price, //
-        Payment_Room.ADD_CASH: pay_cash ?? 0, //
-        Payment_Room.ADD_BANK: pay_bank ?? 0, //
-        Payment_Room.SUB_RETURN: pay_return ?? 0, //
-        Payment_Room.NOTE: pay_note ?? "", //
+        Pay_Room.ADD_PRICE: _add_price, //
+        Pay_Room.SUB_PRICE: _sub_price, //
+        Pay_Room.ADD_CASH: pay_cash ?? 0, //
+        Pay_Room.ADD_BANK: pay_bank ?? 0, //
+        Pay_Room.SUB_RETURN: pay_return ?? 0, //
+        Pay_Room.NOTE: pay_note ?? "", //
       },
     );
     setState(() => is_loading = false);

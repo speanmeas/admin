@@ -51,13 +51,9 @@ class _Main_State extends State<Main_> {
   bool is_loading = true;
 
   String? text_1;
-  String? text_2;
   double? number_1;
-  double? number_2;
   DateTime? datetime_1;
-  DateTime? datetime_2;
   bool? logic_1;
-  bool? logic_2;
   String? note;
 
   // * ផ្ទុកព័ត៌មានឧទាហរណ៍តាម id
@@ -72,13 +68,9 @@ class _Main_State extends State<Main_> {
 
     final demo = Demo_1.fromJson(tmp.data[0]);
     text_1 = demo.text_1;
-    text_2 = demo.text_2;
     number_1 = demo.number_1;
-    number_2 = demo.number_2;
     datetime_1 = demo.datetime_1;
-    datetime_2 = demo.datetime_2;
     logic_1 = demo.logic_1;
-    logic_2 = demo.logic_2;
     note = demo.note;
 
     setState(() {});
@@ -97,25 +89,11 @@ class _Main_State extends State<Main_> {
         value: text_1,
       ),
 
-      // * បង្ហាញអត្ថបទ 2
-      Show_Text(
-        prefixIcon: Icons.text_fields,
-        lead: "Text 2:", //
-        value: text_2,
-      ),
-
       // * បង្ហាញលេខ 1
       Show_Number(
         prefixIcon: Icons.numbers,
         leading: "Number 1:", //
         value: number_1,
-      ),
-
-      // * បង្ហាញលេខ 2
-      Show_Number(
-        prefixIcon: Icons.numbers,
-        leading: "Number 2:", //
-        value: number_2,
       ),
 
       // * បង្ហាញកាលបរិច្ឆេទ 1
@@ -125,25 +103,11 @@ class _Main_State extends State<Main_> {
         value: datetime_1,
       ),
 
-      // * បង្ហាញកាលបរិច្ឆេទ 2
-      Show_Datetime(
-        prefixIcon: Icons.calendar_month,
-        leading: "Datetime 2:", //
-        value: datetime_2,
-      ),
-
       // * បង្ហាញតម្លៃប៊ូលីន 1
       Show_Boolean(
         prefixIcon: Icons.toggle_on,
         leading: "Boolean:", //
         value: logic_1,
-      ),
-
-      // * បង្ហាញតម្លៃប៊ូលីន 2
-      Show_Boolean(
-        prefixIcon: Icons.toggle_on,
-        leading: "Boolean 2:", //
-        value: logic_2,
       ),
 
       // * បង្ហាញកំណត់ចំណាំ

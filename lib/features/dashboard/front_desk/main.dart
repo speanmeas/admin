@@ -19,8 +19,9 @@ import "form/clean.dart" as clean; // 4
 import "form/detail.dart" as detail;
 import "form/fix.dart" as fix; // 6
 import "form/payment.dart" as pay_room; // 2
+import "form/mini_bar_1.dart" as mini_bar_1;
+import "form/update_mini_bar_1.dart" as update_mini_bar_1;
 import "form/update_pay_other.dart" as pay_other;
-import "form/update_pay_mini_bar.dart" as pay_mini_bar;
 import "form/update_guest.dart" as update_guest;
 import "form/update_pay_room.dart" as update_pay_room;
 import "form/update_stay.dart" as update_stay;
@@ -115,7 +116,10 @@ class _Main_State extends State<Main_> {
         Menu_Button_Icon(
           tip: "Add Mini Bar", //
           icon: Icons.local_bar_outlined, //
-          onPressed: () {},
+          onPressed: () async {
+            tmp = await nav_push(context, mini_bar_1.Main_());
+            if (tmp != null) init();
+          },
         ),
 
         // * ប៊ូតុង refresh ទិន្នន័យ
@@ -664,9 +668,9 @@ class _Main_State extends State<Main_> {
     if (tmp != null) init();
   }
 
-  // * បើកទំព័រទូទាត់ mini bar
+  // * បើកទំព័រកែសម្រួល mini bar (បញ្ជូនតែ room_id ដើម្បីទាញ order ដែលមានស្រាប់)
   void on_pay_mini_bar(dynamic r) async {
-    tmp = await nav_push(context, pay_mini_bar.Main_(room_id: r.id));
+    tmp = await nav_push(context, update_mini_bar_1.Main_(room_id: r.id));
     if (tmp != null) init();
   }
 

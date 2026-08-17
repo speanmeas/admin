@@ -104,20 +104,12 @@ class _Main_State extends State<Main_> {
                   return PlutoCell(value: demo.id);
                 if (c == Demo_1.TEXT_1) //
                   return PlutoCell(value: demo.text_1);
-                if (c == Demo_1.TEXT_2) //
-                  return PlutoCell(value: demo.text_2);
                 if (c == Demo_1.NUMBER_1) //
                   return PlutoCell(value: demo.number_1);
-                if (c == Demo_1.NUMBER_2) //
-                  return PlutoCell(value: demo.number_2);
                 if (c == Demo_1.DATETIME_1) //
                   return PlutoCell(value: demo.datetime_1);
-                if (c == Demo_1.DATETIME_2) //
-                  return PlutoCell(value: demo.datetime_2);
                 if (c == Demo_1.LOGIC_1) //
                   return PlutoCell(value: demo.logic_1);
-                if (c == Demo_1.LOGIC_2) //
-                  return PlutoCell(value: demo.logic_2);
                 if (c == Demo_1.NOTE) //
                   return PlutoCell(value: demo.note);
 
@@ -462,46 +454,10 @@ final columns = [
     },
   ),
 
-  // * ជួរឈរអត្ថបទទី 2
-  PlutoColumn(
-    field: Demo_1.TEXT_2, //
-    title: "Text 2",
-    type: PlutoColumnType.text(),
-    enableEditingMode: false,
-    width: WIDTH,
-    renderer: (rc) {
-      return Align(
-        alignment: Alignment.center, //
-        child: Text(
-          format_string(rc.cell.value), //
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    },
-  ),
-
   // * ជួរឈរលេខទី 1
   PlutoColumn(
     field: Demo_1.NUMBER_1, //
     title: "Number 1",
-    type: PlutoColumnType.number(),
-    width: WIDTH,
-    enableEditingMode: false,
-    renderer: (rc) {
-      return Align(
-        alignment: Alignment.center, //
-        child: Text(
-          format_double(rc.cell.value, digits: 2), //
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    },
-  ),
-
-  // * ជួរឈរលេខទី 2
-  PlutoColumn(
-    field: Demo_1.NUMBER_2, //
-    title: "Number 2",
     type: PlutoColumnType.number(),
     width: WIDTH,
     enableEditingMode: false,
@@ -534,46 +490,10 @@ final columns = [
     },
   ),
 
-  // * ជួរឈរកាលបរិច្ឆេទទី 2
-  PlutoColumn(
-    field: Demo_1.DATETIME_2, //
-    title: "Date Time 2",
-    type: PlutoColumnType.text(),
-    width: WIDTH,
-    enableEditingMode: false,
-    renderer: (rc) {
-      return Align(
-        alignment: Alignment.center, //
-        child: Text(
-          format_datetime(rc.cell.value), //
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    },
-  ),
-
   // * ជួរឈរតក្កវិជ្ជា (បាទ/ទេ) ទី 1
   PlutoColumn(
     field: Demo_1.LOGIC_1, //
     title: "Logic 1",
-    type: PlutoColumnType.text(),
-    width: WIDTH,
-    enableEditingMode: false,
-    renderer: (rc) {
-      return Align(
-        alignment: Alignment.center, //
-        child: Text(
-          format_bool(rc.cell.value), //
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    },
-  ),
-
-  // * ជួរឈរតក្កវិជ្ជា (បាទ/ទេ) ទី 2
-  PlutoColumn(
-    field: Demo_1.LOGIC_2, //
-    title: "Logic 2",
     type: PlutoColumnType.text(),
     width: WIDTH,
     enableEditingMode: false,
