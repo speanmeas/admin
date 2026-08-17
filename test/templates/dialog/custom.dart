@@ -1,13 +1,4 @@
 import "package:flutter/material.dart";
-import "package:speanmeas/core/utility/all.dart";
-
-//
-// Custom dialog — put any widget inside, pop with a result.
-//
-// Usage:
-//   final p = await custom<int>(context, title: "Pick", content: myWidget);
-//   if (p == null) return;
-//
 
 Future<T?> custom<T>(BuildContext context, {String title = "", required Widget content, double width = 360, double height = 400}) async {
   return showDialog<T>(

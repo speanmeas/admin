@@ -1,21 +1,4 @@
 import "package:flutter/material.dart";
-import "package:speanmeas/core/utility/all.dart";
-
-//
-// Confirm dialog — Yes/No with customizable title, message, button colors.
-//
-// Usage:
-//   import "package:speanmeas/templates/dialog/confirm.dart" as confirm;
-//
-//   final ok = await confirm.confirm(
-//     context,
-//     title: "Delete?",
-//     message: "Are you sure?",
-//     confirmText: "Delete",
-//     confirmColor: Colors.red,
-//   );
-//   if (ok != true) return;
-//
 
 Future<bool?> confirm(BuildContext context, {String title = "Confirm", String message = "Are you sure?", String cancelText = "Cancel", String confirmText = "OK", Color? confirmColor}) async {
   //

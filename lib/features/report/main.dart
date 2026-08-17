@@ -15,16 +15,8 @@ import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/select/select_date_time.dart";
 
 // * យកតម្លៃពីធាតុដំបូងនៃបញ្ជីដោយសុវត្ថិភាព (បញ្ជីទទេត្រឡប់ null)
-dynamic _firstOf(dynamic list, String key) {
-  if (list is List && list.isNotEmpty) return list.first[key];
-  return null;
-}
 
 // * យកតម្លៃពីធាតុចុងក្រោយនៃបញ្ជីដោយសុវត្ថិភាព (បញ្ជីទទេត្រឡប់ null)
-dynamic _lastOf(dynamic list, String key) {
-  if (list is List && list.isNotEmpty) return list.last[key];
-  return null;
-}
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការស្វែងរក និងបង្ហាញរបាយការណ៍
 class _Main_State extends State<Main_> {

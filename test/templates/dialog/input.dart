@@ -1,20 +1,5 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:speanmeas/core/utility/all.dart";
-
-//
-// Input dialog — Single text field, returns the entered string or null.
-//
-// Usage:
-//   import "package:speanmeas/templates/dialog/input.dart" as input;
-//
-//   final name = await input.input(
-//     context,
-//     title: "Enter Name",
-//     hint: "Full name...",
-//   );
-//   if (name == null) return;
-//
 
 Future<String?> input(BuildContext context, {String title = "Input", String hint = "", String cancelText = "Cancel", String confirmText = "OK", TextInputType keyboardType = TextInputType.text, List<TextInputFormatter>? inputFormatters}) async {
   //

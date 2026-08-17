@@ -341,7 +341,7 @@ class _Main_State extends State<Main_> {
                                 Icon(Icons.receipt_outlined, size: 24), //
                                 Text(
                                   '${t("Room Payment")}:', //
-                                  style: TextStyle(fontWeight: FontWeight.bold, color: balance != 0 ? Colors.red : Colors.black),
+                                  style: TextStyle(fontWeight: FontWeight.bold, color: balance != 0 ? Colors.orange : Colors.black),
                                 ), //
                                 //
                                 SizedBox(width: 4), //
@@ -394,7 +394,7 @@ class _Main_State extends State<Main_> {
                                   '${t("Mini Bar Payment")}:', //
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold, //
-                                    color: balance != 0 ? Colors.red : Colors.black,
+                                    color: balance != 0 ? Colors.orange : Colors.black,
                                   ),
                                 ), //
                                 //
@@ -447,7 +447,7 @@ class _Main_State extends State<Main_> {
                                 Icon(Icons.receipt_outlined, size: 24), //
                                 Text(
                                   '${t("Other Payment")}:', //
-                                  style: TextStyle(fontWeight: FontWeight.bold, color: balance != 0 ? Colors.red : Colors.black),
+                                  style: TextStyle(fontWeight: FontWeight.bold, color: balance != 0 ? Colors.orange : Colors.black),
                                 ), //
                                 //
                                 SizedBox(width: 4), //
