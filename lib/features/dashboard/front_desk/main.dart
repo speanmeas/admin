@@ -4,6 +4,7 @@
 import "dart:async";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
+import "package:speanmeas/core/enum/room_status.dart" as room_status;
 import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
@@ -159,11 +160,11 @@ class _Main_State extends State<Main_> {
 
                           (() {
                             var color = Colors.black; // Default color
-                            if (["Available"].contains(r.status)) color = Colors.green;
-                            if (["Pending Pay"].contains(r.status)) color = Colors.orange;
-                            if (["Pending Leave"].contains(r.status)) color = Colors.blue;
-                            if (["Pending Clean"].contains(r.status)) color = Colors.grey;
-                            if (["Pending Fix"].contains(r.status)) color = Colors.red;
+                            if ([room_status.AVAILABLE].contains(r.status)) color = Colors.green;
+                            if ([room_status.PENDING_PAY].contains(r.status)) color = Colors.orange;
+                            if ([room_status.PENDING_LEAVE].contains(r.status)) color = Colors.blue;
+                            if ([room_status.PENDING_CLEAN].contains(r.status)) color = Colors.grey;
+                            if ([room_status.PENDING_FIX].contains(r.status)) color = Colors.red;
 
                             return Row(
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -190,7 +191,7 @@ class _Main_State extends State<Main_> {
                                       );
                                     },
                                     menuChildren: [
-                                      if (!["Available"].contains(r.status))
+                                      if (![room_status.AVAILABLE].contains(r.status))
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.receipt_outlined, color: Colors.blue),
                                           child: Text(t("View Details"), style: TextStyle(color: Colors.blue)), //
@@ -198,28 +199,28 @@ class _Main_State extends State<Main_> {
                                           // onPressed: () {},
                                         ),
 
-                                      if (["Available"].contains(r.status))
+                                      if ([room_status.AVAILABLE].contains(r.status))
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.bug_report_outlined, color: Colors.blue),
                                           child: Text(t("Set as Broken"), style: TextStyle(color: Colors.blue)), //
                                           onPressed: () => on_broke(r), //
                                         ),
 
-                                      if (["Pending Fix"].contains(r.status))
+                                      if ([room_status.PENDING_FIX].contains(r.status))
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.build_outlined, color: Colors.blue),
                                           child: Text(t("Mark as Fixed"), style: TextStyle(color: Colors.blue)), //
                                           onPressed: () => on_fix(r), //
                                         ),
 
-                                      if (["Pending Pay", "Pending Leave"].contains(r.status))
+                                      if ([room_status.PENDING_PAY, room_status.PENDING_LEAVE].contains(r.status))
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.swap_horiz_outlined, color: Colors.blue),
                                           child: Text(t("Change Room"), style: TextStyle(color: Colors.blue)),
                                           onPressed: () => on_change_room(r), //
                                         ),
 
-                                      if (["Pending Pay", "Pending Leave"].contains(r.status))
+                                      if ([room_status.PENDING_PAY, room_status.PENDING_LEAVE].contains(r.status))
                                         MenuItemButton(
                                           leadingIcon: Icon(Icons.cancel_outlined, color: Colors.red),
                                           child: Text(t("Cancel"), style: TextStyle(color: Colors.red)),
@@ -253,7 +254,7 @@ class _Main_State extends State<Main_> {
                       })(),
 
                       if (r.front_desk_id != null) ...[
-                        if (!"${r.status}".contains("Pending Fix"))
+                        if (!"${r.status}".contains(room_status.PENDING_FIX))
                           (() {
                             final guest = _fd(r)?.guest_id;
                             final guest_name = guest?.full_name ?? "N/A";
@@ -284,7 +285,7 @@ class _Main_State extends State<Main_> {
                             );
                           })(),
 
-                        if (!["Pending Fix"].contains(r.status))
+                        if (![room_status.PENDING_FIX].contains(r.status))
                           (() {
                             final fd = _fd(r);
                             final stay_n_guest = fd?.check_in_number?.toString() ?? "0";
@@ -307,7 +308,7 @@ class _Main_State extends State<Main_> {
                                 SizedBox(width: 2), //
                                 Icon(Icons.circle, size: 6), //
                                 Text("$stay_hour ${t("Hours")}", style: TextStyle(color: Colors.blue)),
-                                if (r.status != "Pending Clean")
+                                if (r.status != room_status.PENDING_CLEAN)
                                   Tooltip(
                                     message: t("Edit Stay Info"),
                                     child: InkWell(
@@ -320,7 +321,7 @@ class _Main_State extends State<Main_> {
                             );
                           })(),
 
-                        if (!["Pending Fix"].contains(r.status))
+                        if (![room_status.PENDING_FIX].contains(r.status))
                           (() {
                             final pay_room_list = _fd(r)?.pay_room ?? [];
                             double price = 0;
@@ -359,7 +360,7 @@ class _Main_State extends State<Main_> {
                                 Text(t("Return"), style: TextStyle(fontWeight: FontWeight.bold)), //
                                 Text("${change.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
 
-                                if (!["Pending Clean"].contains(r.status))
+                                if (![room_status.PENDING_CLEAN].contains(r.status))
                                   Tooltip(
                                     message: t("Edit Room Payment"),
                                     child: InkWell(
@@ -371,7 +372,7 @@ class _Main_State extends State<Main_> {
                               ],
                             );
                           })(),
-                        if (!["Pending Fix"].contains(r.status))
+                        if (![room_status.PENDING_FIX].contains(r.status))
                           (() {
                             final pay_mini_bar_list = _fd(r)?.pay_mini_bar ?? [];
                             double price = 0;
@@ -413,7 +414,7 @@ class _Main_State extends State<Main_> {
                                 Text(t("Return"), style: TextStyle(fontWeight: FontWeight.bold)), //
                                 Text("${change.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
 
-                                if (!["Pending Clean"].contains(r.status))
+                                if (![room_status.PENDING_CLEAN].contains(r.status))
                                   Tooltip(
                                     message: t("Edit Mini Bar Payment"),
                                     child: InkWell(
@@ -426,7 +427,7 @@ class _Main_State extends State<Main_> {
                           })(),
 
                         // payment other info
-                        if (!["Pending Fix"].contains(r.status))
+                        if (![room_status.PENDING_FIX].contains(r.status))
                           (() {
                             final pay_other_list = _fd(r)?.pay_other ?? [];
                             double price = 0;
@@ -465,7 +466,7 @@ class _Main_State extends State<Main_> {
                                 Text(t("Return"), style: TextStyle(fontWeight: FontWeight.bold)), //
                                 Text("${change.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                                 //
-                                if (r.status != "Pending Clean")
+                                if (r.status != room_status.PENDING_CLEAN)
                                   Tooltip(
                                     message: t("Edit Other Payment"),
                                     child: InkWell(
@@ -479,7 +480,7 @@ class _Main_State extends State<Main_> {
                           })(),
 
                         // check in, due to, check out info
-                        if (r.status != "Pending Fix")
+                        if (r.status != room_status.PENDING_FIX)
                           (() {
                             String check_in = format_datetime(_fd(r)?.check_in_at);
                             return Row(
@@ -493,7 +494,7 @@ class _Main_State extends State<Main_> {
                           })(),
 
                         // due to info
-                        if (r.status != "Pending Fix")
+                        if (r.status != room_status.PENDING_FIX)
                           (() {
                             String due = format_datetime(_fd(r)?.check_in_due);
                             return Row(
@@ -507,7 +508,7 @@ class _Main_State extends State<Main_> {
                           })(),
 
                         //
-                        if (r.status != "Pending Fix")
+                        if (r.status != room_status.PENDING_FIX)
                           (() {
                             String check_out = format_datetime(_fd(r)?.check_out_at);
                             return Row(
@@ -521,7 +522,7 @@ class _Main_State extends State<Main_> {
                           })(),
 
                         // broke info
-                        if (r.status == "Pending Fix")
+                        if (r.status == room_status.PENDING_FIX)
                           (() {
                             String broke_date = format_datetime(_fd(r)?.broke_at);
                             return Row(
@@ -538,28 +539,28 @@ class _Main_State extends State<Main_> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          if (r.status == "Available") //
+                          if (r.status == room_status.AVAILABLE) //
                             OutlinedButton.icon(
                               icon: Icon(Icons.login),
                               label: Text(t("Check In")),
                               style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.green)),
                               onPressed: () => on_check_in(r), //
                             ), //
-                          if (r.status == "Pending Pay") //
+                          if (r.status == room_status.PENDING_PAY) //
                             OutlinedButton.icon(
                               icon: Icon(Icons.payment),
                               label: Text(t("Payment")),
                               style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.orange)),
                               onPressed: () => on_payment(r), //
                             ), //
-                          if (r.status == "Pending Leave") //
+                          if (r.status == room_status.PENDING_LEAVE) //
                             OutlinedButton.icon(
                               icon: Icon(Icons.logout),
                               label: Text(t("Check Out")),
                               style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(Colors.blue)),
                               onPressed: () => on_check_out(r), //
                             ), //
-                          if (r.status == "Pending Clean") //
+                          if (r.status == room_status.PENDING_CLEAN) //
                             OutlinedButton.icon(
                               icon: Icon(Icons.cleaning_services),
                               label: Text(t("Clean")),
@@ -579,6 +580,7 @@ class _Main_State extends State<Main_> {
   }
 
   // * គណនាចំនួនទឹកប្រាក់ដែលនៅសល់ត្រូវបង់សម្រាប់បញ្ជីទូទាត់មួយ
+  // * pay ត្រូវដក sub_return (ប្រាក់អាប់) ដូច block បង្ហាញក្នុង UI
   double _outstanding(List<dynamic>? items) {
     double price = 0;
     double pay = 0;
@@ -587,6 +589,7 @@ class _Main_State extends State<Main_> {
       price = price - (l.sub_price ?? 0);
       pay = pay + (l.add_cash ?? 0);
       pay = pay + (l.add_bank ?? 0);
+      pay = pay - (l.sub_return ?? 0);
     }
     return price - pay;
   }

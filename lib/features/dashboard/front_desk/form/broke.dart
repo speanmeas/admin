@@ -3,6 +3,7 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
+import "package:speanmeas/core/enum/room_status.dart" as room_status;
 import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/widget/input/input_text.dart";
@@ -119,7 +120,7 @@ class _Main_State extends State<Main_> {
       endpoint.ROOM_CRUD_UPDATE, //
       data: {
         Room.ID: widget.room_id, //
-        Room.STATUS: "Pending Fix", //
+        Room.STATUS: room_status.PENDING_FIX, //
         Room.FRONT_DESK_ID: front_desk_id, //
       },
     );

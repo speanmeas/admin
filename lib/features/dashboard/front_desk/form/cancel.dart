@@ -3,6 +3,7 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
+import "package:speanmeas/core/enum/room_status.dart" as room_status;
 import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/widget/input/input_text.dart";
@@ -60,7 +61,7 @@ class _Main_State extends State<Main_> {
 
   double? cancel_price;
 
-  String? room_status;
+  String? target_status;
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ និង front desk ពី server
   void init() async {
@@ -86,7 +87,7 @@ class _Main_State extends State<Main_> {
     final tmp_check = DateTime.tryParse(map_room?.front_desk_id?.check_in_at?.toString() ?? "");
     check_in_at = tmp_check;
 
-    room_status = "Available";
+    target_status = room_status.AVAILABLE;
 
     setState(() {});
   }
@@ -163,11 +164,11 @@ class _Main_State extends State<Main_> {
       // * ជ្រើសរើសស្ថានភាពបន្ទប់បន្ទាប់ពីបោះបង់
       Select_Dynamic(
         lead: '${t("Room Status")}:', //
-        init: room_status, //
-        options: ["Available", "Pending Clean"], //
+        init: target_status, //
+        options: [room_status.AVAILABLE, room_status.PENDING_CLEAN], //
         prefixIcon: Icons.calendar_month_outlined, //
         onChanged: (v) {
-          room_status = v;
+          target_status = v;
           setState(() {});
         },
       ),
@@ -278,21 +279,21 @@ class _Main_State extends State<Main_> {
 
     // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់
     setState(() => is_loading = true);
-    if (room_status == "Available") {
+    if (target_status == room_status.AVAILABLE) {
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
         data: {
           Room.ID: widget.room_id, //
-          Room.STATUS: room_status, //
+          Room.STATUS: target_status, //
           Room.FRONT_DESK_ID: null, //
         },
       );
-    } else if (room_status == "Pending Clean") {
+    } else if (target_status == room_status.PENDING_CLEAN) {
       await dio.post(
         endpoint.ROOM_CRUD_UPDATE, //
         data: {
           Room.ID: widget.room_id, //
-          Room.STATUS: room_status, //
+          Room.STATUS: target_status, //
         },
       );
     }

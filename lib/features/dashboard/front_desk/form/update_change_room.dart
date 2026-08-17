@@ -2,6 +2,7 @@
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
+import "package:speanmeas/core/enum/room_status.dart" as room_status;
 import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/widget/input/input_text.dart";
@@ -97,7 +98,7 @@ class _Main_State extends State<Main_> {
         options: (() {
           var options = [];
           for (var r in list_r) {
-            if (r.status == "Available") {
+            if (r.status == room_status.AVAILABLE) {
               options.add(r.number?.toString() ?? "");
             }
           }
@@ -154,7 +155,7 @@ class _Main_State extends State<Main_> {
       endpoint.ROOM_CRUD_UPDATE, //
       data: {
         Room.ID: widget.room_id, //
-        Room.STATUS: "Pending Clean", //
+        Room.STATUS: room_status.PENDING_CLEAN, //
         Room.FRONT_DESK_ID: null, //
       },
     );
@@ -166,7 +167,7 @@ class _Main_State extends State<Main_> {
       endpoint.ROOM_CRUD_UPDATE, //
       data: {
         Room.ID: to_room_id, //
-        Room.STATUS: "Pending Pay", //
+        Room.STATUS: room_status.PENDING_PAY, //
         Room.FRONT_DESK_ID: map_r?.front_desk_id?.id, //
       },
     );
