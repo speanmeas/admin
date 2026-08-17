@@ -1,7 +1,8 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
-import "package:speanmeas/core/widget/select/select_dynamic.dart";
+
+import "mini_bar_2.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រគិតថ្លៃ mini bar
 Widget _layout(List<Widget> children) {
@@ -17,8 +18,12 @@ Widget _layout(List<Widget> children) {
       titleSpacing: 0,
 
       bottom: PreferredSize(
-        preferredSize: Size.fromHeight(1), //
-        child: Divider(height: 1, color: Colors.black),
+        preferredSize: Size.fromHeight(4), //
+        child: LinearProgressIndicator(
+          minHeight: 4,
+          value: 1 / 2, // fixed bar (no animation)
+          color: Colors.blue, //
+        ),
       ),
     ),
     body: SingleChildScrollView(
@@ -38,43 +43,37 @@ Widget _layout(List<Widget> children) {
 
 // * ថ្នាក់ state របស់ Charge_ គ្រប់គ្រងការជ្រើសរើសទំនិញ mini bar
 class _Main_State extends State<Main_> {
+  dynamic tmp;
+  bool is_loading = true;
   // * ចំនួនដែលជ្រើសរើសក្នុងមួយទំនិញ (key = item id)
   final Map<dynamic, int> _qty = {};
-
-  List<String> options = ["Walk-in", "201", "202", "203", "204"];
 
   // * បញ្ជីទំនិញ mini bar (catalog) ទាញពី Server
   List<Map<String, dynamic>> catalog = [];
 
   // * ទាញយកបញ្ជីទំនិញ mini bar ពី Server
   void init() async {
-    try {
-      final tmp = await dio.post(
-        endpoint.MINI_BAR_CRUD_READ, //
-        data: {
-          "key": DEFAULT_KEY, //
-          "order": DEFAULT_ORDER, //
-          "offset": 0, //
-          "limit": DEFAULT_LIMIT_ROW,
-        },
-      );
-      catalog = List<Map<String, dynamic>>.from(tmp?.data ?? []);
-      setState(() {});
-      //
-    } catch (e, st) {
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
-  }
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.MINI_BAR_CRUD_READ, //
+      data: {
+        "key": DEFAULT_KEY, //
+        "order": DEFAULT_ORDER, //
+        "offset": 0, //
+        "limit": DEFAULT_LIMIT_ROW,
+      },
+    );
+    setState(() => is_loading = false);
+    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.MINI_BAR_CRUD_READ}"), cl: Colors.red);
 
-  @override
-  void initState() {
-    super.initState();
-    init();
+    catalog = List<Map<String, dynamic>>.from(tmp?.data ?? []);
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       // * បញ្ជីទំនិញដែលបានជ្រើសរើសរួច
       if (_selected_items.isEmpty)
@@ -156,7 +155,7 @@ class _Main_State extends State<Main_> {
           // * ប៊ូតុងបើក dialog ជ្រើសរើសទំនិញ mini bar
           OutlinedButton.icon(
             icon: Icon(Icons.add_circle_outline, color: Colors.blue), //
-            label: Text("Add Item", style: TextStyle(fontWeight: FontWeight.bold)), //
+            label: Text("Add Item"), //
             onPressed: () => _pick_item(),
           ),
 
@@ -170,22 +169,14 @@ class _Main_State extends State<Main_> {
         ],
       ),
 
-      Select_Dynamic(
-        lead: "Tag:",
-        init: "Walk-in",
-        prefixIcon: Icons.sell_outlined,
-        options: options,
-        noClear: true,
-        onChanged: (v) {
-          //
-        },
+      // if tag is not walk-in, show payment method
+      OutlinedButton.icon(
+        icon: Icon(Icons.arrow_forward), //
+        label: Text("Next"), //
+        onPressed: _total > 0 ? next : null, //
       ),
 
-      OutlinedButton.icon(
-        icon: Icon(Icons.check), //
-        label: Text("Confirm"), //
-        onPressed: _total > 0 ? _confirm : null, //
-      ),
+      SizedBox(height: height - 100),
     ]);
   }
 
@@ -218,8 +209,7 @@ class _Main_State extends State<Main_> {
   // * ស្តុកដែលនៅសល់ (ស្តុកសរុប - បានលក់រួច)
   int _stock(dynamic item) {
     final total = (item[Mini_Bar.STOCK] as num?)?.toInt() ?? 0;
-    final sold = widget.sold[item[Mini_Bar.ID]] ?? 0;
-    return total - sold;
+    return total;
   }
 
   // * តម្លៃទំនិញមួយឯកតា
@@ -253,20 +243,29 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  // * លុបទំនិញចេញពីបញ្ជីជ្រើសរើស
-  void _remove(dynamic item) {
-    setState(() => _qty.remove(item[Mini_Bar.ID]));
-  }
-
   // * បញ្ជាក់ការជ្រើសរើស ហើយបញ្ជូនបញ្ជីទំនិញត្រឡប់ទៅ main.dart
-  void _confirm() {
+  void next() {
     final lines = <Map<String, dynamic>>[];
     for (var item in _selected_items) {
       final qty = _qty[item[Mini_Bar.ID]] ?? 0;
       final price = _price(item);
       lines.add({Mini_Bar.ID: item[Mini_Bar.ID], Mini_Bar.NAME: item[Mini_Bar.NAME], "price": price, "qty": qty, "total": price * qty});
     }
-    Navigator.pop(context, lines);
+    // Navigator.pop(context, lines);
+    nav_push(
+      context,
+      Mini_Bar_2(
+        catalog: catalog, //
+        lines: lines, //
+        other_price: _total, //
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    init();
   }
 }
 
@@ -437,11 +436,7 @@ class _Item_PickerState extends State<_Item_Picker> {
 
 // * ថ្នាក់ Main_ ជាទំព័រមេ mini bar
 class Main_ extends StatefulWidget {
-  const Main_({super.key, this.room, this.catalog = const [], this.sold = const {}});
-
-  final dynamic room; // * បន្ទប់ (null = walk-in)
-  final List<Map<String, dynamic>> catalog; // * បញ្ជីទំនិញ mini bar
-  final Map<dynamic, int> sold; // * ចំនួនដែលបានលក់រួចហើយ
+  const Main_({super.key});
 
   @override
   State<Main_> createState() => _Main_State();
