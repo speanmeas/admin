@@ -58,7 +58,7 @@ class _Mini_Bar_2State extends State<Mini_Bar_2> {
   bool _order_created = false;
   bool is_loading = true;
 
-  double? other_price;
+  double? new_price;
   double? old_price;
   double? last_paid;
   double? pay_cash;
@@ -127,10 +127,10 @@ class _Mini_Bar_2State extends State<Mini_Bar_2> {
 
       // * បញ្ចូលតម្លៃផ្សេងៗ
       Input_Number(
-        init: other_price, //
+        init: new_price, //
         lead: '${t("Mini Bar Price")}:', //
         onChanged: (v) {
-          other_price = v;
+          new_price = v;
           setState(() {});
         },
       ),
@@ -213,14 +213,14 @@ class _Mini_Bar_2State extends State<Mini_Bar_2> {
     ]);
   }
 
-  // * ភាពខុសគ្នារវាងតម្លៃថ្មី និងតម្លៃចាស់
-  double get _diff => (other_price ?? 0) - (old_price ?? 0);
+  // // * ភាពខុសគ្នារវាងតម្លៃថ្មី និងតម្លៃចាស់
+  // double get _diff => (other_price ?? 0) - (old_price ?? 0);
 
-  // * បើតម្លៃថ្មីខ្ពស់ជាង បញ្ចូលទៅ add_price
-  double get _add_price => _diff > 0 ? _diff : 0;
+  // // * បើតម្លៃថ្មីខ្ពស់ជាង បញ្ចូលទៅ add_price
+  // double get _add_price => _diff > 0 ? _diff : 0;
 
-  // * បើតម្លៃថ្មីទាបជាង បញ្ចូលទៅ sub_price
-  double get _sub_price => _diff < 0 ? -_diff : 0;
+  // // * បើតម្លៃថ្មីទាបជាង បញ្ចូលទៅ sub_price
+  // double get _sub_price => _diff < 0 ? -_diff : 0;
 
   // * គណនាបានប្រាក់សំណើរ = ប្រាក់ទទួលសរុប - តម្លៃថ្មីសរុប
   double get balanced {
@@ -229,7 +229,7 @@ class _Mini_Bar_2State extends State<Mini_Bar_2> {
     temp = temp + (pay_cash ?? 0);
     temp = temp + (pay_bank ?? 0);
     temp = temp + (last_paid ?? 0);
-    temp = temp - (other_price ?? 0);
+    temp = temp - (new_price ?? 0);
     temp = temp - (pay_return ?? 0);
 
     return temp;
@@ -330,12 +330,17 @@ class _Mini_Bar_2State extends State<Mini_Bar_2> {
 
     // * កត់ត្រាការទូទាត់ mini bar (តែពេល tag ជាបន្ទប់)
     if (map_room?.front_desk_id?.id != null) {
+      double add_price = (new_price ?? 0) - (old_price ?? 0);
+      if (add_price < 0) add_price = 0;
+      double sub_price = (old_price ?? 0) - (new_price ?? 0);
+      if (sub_price < 0) sub_price = 0;
+
       await dio.post(
         endpoint.FRONT_DESK_UPDATE_PAY_MINI_BAR,
         data: {
           Front_Desk.ID: map_room?.front_desk_id?.id, //
-          Pay_Mini_Bar.ADD_PRICE: _add_price, //
-          Pay_Mini_Bar.SUB_PRICE: _sub_price, //
+          Pay_Mini_Bar.ADD_PRICE: add_price, //
+          Pay_Mini_Bar.SUB_PRICE: sub_price, //
           Pay_Mini_Bar.ADD_CASH: pay_cash ?? 0, //
           Pay_Mini_Bar.ADD_BANK: pay_bank ?? 0, //
           Pay_Mini_Bar.SUB_RETURN: pay_return ?? 0, //
@@ -363,61 +368,12 @@ class _Mini_Bar_2State extends State<Mini_Bar_2> {
     Navigator.pop(context, true);
   }
 
-  // * បង់ក្រោយ (តែពេល tag ជាបន្ទប់) — កត់ត្រាតម្លៃ ប៉ុន្តែមិនទាមទារការទូទាត់ពេញ
-  void on_pay_later() async {
-    setState(() => is_loading = true);
-
-    // * ធ្វើសមកាលកម្ម order mini bar បើមិនទាន់មាន
-    if (!_order_created && map_room?.front_desk_id?.id != null) {
-      final ok = await _sync_orders();
-      if (!ok) {
-        setState(() => is_loading = false);
-        return snackbar(ct: context, ms: t("Error: ${endpoint.ORDER_MINI_BAR_CRUD_UPDATE}"), cl: Colors.red);
-      }
-      _order_created = true;
-    }
-
-    // * កត់ត្រាការទូទាត់ mini bar
-    if (map_room?.front_desk_id?.id != null) {
-      await dio.post(
-        endpoint.FRONT_DESK_UPDATE_PAY_MINI_BAR,
-        data: {
-          Front_Desk.ID: map_room?.front_desk_id?.id, //
-          Pay_Mini_Bar.ADD_PRICE: _add_price, //
-          Pay_Mini_Bar.SUB_PRICE: _sub_price, //
-          Pay_Mini_Bar.ADD_CASH: pay_cash ?? 0, //
-          Pay_Mini_Bar.ADD_BANK: pay_bank ?? 0, //
-          Pay_Mini_Bar.SUB_RETURN: pay_return ?? 0, //
-          Pay_Mini_Bar.NOTE: pay_note ?? "", //
-        },
-      );
-    }
-    setState(() => is_loading = false);
-
-    // * បន្ទប់នៅតែមានសមតុល្យមិនទាន់បង់ → សម្គាល់ជា Pending Pay
-    if (balanced != 0 && map_room != null) {
-      setState(() => is_loading = true);
-      await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
-        data: {
-          Room.ID: map_room?.id, //
-          Room.STATUS: "Pending Pay", //
-        },
-      );
-      setState(() => is_loading = false);
-    }
-
-    snackbar(ct: context, ms: t("Success"), cl: Colors.green);
-    Navigator.pop(context);
-    Navigator.pop(context, true);
-  }
-
   @override
   void initState() {
     super.initState();
     // * ទទួលតម្លៃដែលបានបញ្ជូនពី mini_bar_1
     catalog = widget.catalog.isNotEmpty ? widget.catalog : catalog;
-    other_price = widget.other_price ?? other_price;
+    new_price = widget.other_price ?? new_price;
     init();
   }
 }

@@ -194,21 +194,11 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
-  // * តម្រូវឱ្យមានតម្លៃ។ មិនកំណត់លើ balanced == 0 ទេ ព្រោះ
   // * លំហូរនេះបន្ថែមការទូទាត់ទៅសមតុល្យ (pay_room ជាលំហូរទូទាត់ពេញ)។
   bool get can_update {
     if ((room_price ?? 0) <= 0) return false;
     return true;
   }
-
-  // * ភាពខុសគ្នារវាងតម្លៃថ្មី និងតម្លៃចាស់
-  double get _diff => (room_price ?? 0) - (old_price ?? 0);
-
-  // * បើតម្លៃថ្មីខ្ពស់ជាង បញ្ចូលទៅ add_price
-  double get _add_price => _diff > 0 ? _diff : 0;
-
-  // * បើតម្លៃថ្មីទាបជាង បញ្ចូលទៅ sub_price
-  double get _sub_price => _diff < 0 ? -_diff : 0;
 
   // * គណនាបានប្រាក់សំណើរ = ប្រាក់ទទួលសរុប - តម្លៃថ្មីសរុប
   double get balanced {
@@ -225,14 +215,19 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការបន្ថែមការទូទាត់បន្ទប់
   void on_update() async {
+    double add_price = (room_price ?? 0) - (old_price ?? 0);
+    if (add_price < 0) add_price = 0;
+    double sub_price = (old_price ?? 0) - (room_price ?? 0);
+    if (sub_price < 0) sub_price = 0;
+
     // * កត់ត្រាការទូទាត់បន្ទប់
     setState(() => is_loading = true);
     await dio.post(
       endpoint.FRONT_DESK_UPDATE_PAY_ROOM,
       data: {
         Front_Desk.ID: map_room?.front_desk_id?.id, //
-        Pay_Room.ADD_PRICE: _add_price, //
-        Pay_Room.SUB_PRICE: _sub_price, //
+        Pay_Room.ADD_PRICE: add_price, //
+        Pay_Room.SUB_PRICE: sub_price, //
         Pay_Room.ADD_CASH: pay_cash ?? 0, //
         Pay_Room.ADD_BANK: pay_bank ?? 0, //
         Pay_Room.SUB_RETURN: pay_return ?? 0, //

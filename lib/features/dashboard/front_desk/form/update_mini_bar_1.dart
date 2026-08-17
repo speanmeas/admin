@@ -60,15 +60,7 @@ class _Main_State extends State<Main_> {
   // * ទាញយកបញ្ជីទំនិញ mini bar ពី Server
   void init() async {
     setState(() => is_loading = true);
-    tmp = await dio.post(
-      endpoint.MINI_BAR_CRUD_READ, //
-      data: {
-        "key": DEFAULT_KEY, //
-        "order": DEFAULT_ORDER, //
-        "offset": 0, //
-        "limit": DEFAULT_LIMIT_ROW,
-      },
-    );
+    tmp = await dio.post(endpoint.MINI_BAR_CRUD_READ);
     setState(() => is_loading = false);
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.MINI_BAR_CRUD_READ}"), cl: Colors.red);
 
@@ -100,6 +92,13 @@ class _Main_State extends State<Main_> {
     final height = MediaQuery.of(context).size.height;
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
+      Text(
+        '${t("Room")} ${map_room?.number ?? "N/A"}', //
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+
+      Divider(height: 1, color: Colors.black),
+
       // * បញ្ជីទំនិញដែលបានជ្រើសរើសរួច
       if (_selected_items.isEmpty)
         Container(

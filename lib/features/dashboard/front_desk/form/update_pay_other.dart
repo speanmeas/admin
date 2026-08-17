@@ -109,10 +109,20 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text('${t("Last Payment")}: ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(
+            '${t("Last Payment")}: ', //
+            style: TextStyle(
+              fontSize: 16, //
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           Text(
             "${last_paid?.toStringAsFixed(2) ?? '0.00'} \$",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+            style: TextStyle(
+              fontSize: 16, //
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
+            ),
           ),
         ],
       ),
@@ -165,11 +175,17 @@ class _Main_State extends State<Main_> {
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text('${t("Balanced")}: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text(
+            '${t("Balanced")}: ', //
+            style: TextStyle(
+              fontSize: 20, //
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           Text(
             "${balanced.toStringAsFixed(2)} \$",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 20, //
               fontWeight: FontWeight.bold, //
               color: balanced == 0 ? Colors.green : Colors.red,
             ),
@@ -188,15 +204,6 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
-  // * ភាពខុសគ្នារវាងតម្លៃថ្មី និងតម្លៃចាស់
-  double get _diff => (other_price ?? 0) - (old_price ?? 0);
-
-  // * បើតម្លៃថ្មីខ្ពស់ជាង បញ្ចូលទៅ add_price
-  double get add_price => _diff > 0 ? _diff : 0;
-
-  // * បើតម្លៃថ្មីទាបជាង បញ្ចូលទៅ sub_price
-  double get sub_price => _diff < 0 ? -_diff : 0;
-
   // * គណនាបានប្រាក់សំណើរ = ប្រាក់ទទួលសរុប - តម្លៃថ្មីសរុប
   double get balanced {
     double temp = 0;
@@ -212,6 +219,11 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការបន្ថែមការទូទាត់ផ្សេងៗ
   void on_pay() async {
+    double add_price = (other_price ?? 0) - (old_price ?? 0);
+    if (add_price < 0) add_price = 0;
+    double sub_price = (old_price ?? 0) - (other_price ?? 0);
+    if (sub_price < 0) sub_price = 0;
+
     // * កត់ត្រាការទូទាត់ផ្សេងៗ
     setState(() => is_loading = true);
     await dio.post(
@@ -269,7 +281,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();
   lang.init();
-  //
+
   runApp(
     MultiProvider(
       providers: [
