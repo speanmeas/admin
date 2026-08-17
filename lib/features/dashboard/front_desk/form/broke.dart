@@ -100,7 +100,13 @@ class _Main_State extends State<Main_> {
   void on_broke() async {
     // * បង្កើតកំណត់ត្រា front desk សម្រាប់បន្ទប់ខូច
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.FRONT_DESK_BROKE, data: {Front_Desk.BROKE_NOTE: note});
+    tmp = await dio.post(
+      endpoint.FRONT_DESK_BROKE, //
+      data: {
+        Front_Desk.ROOM_ID: widget.room_id, //
+        Front_Desk.BROKE_NOTE: note, //
+      },
+    );
     setState(() => is_loading = false);
 
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.FRONT_DESK_BROKE}"), cl: Colors.red);

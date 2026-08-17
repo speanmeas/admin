@@ -121,6 +121,7 @@ class _Main_State extends State<Main_> {
     if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.REPORT}", cl: Colors.red);
 
     data = List<Front_Desk>.from((tmp.data ?? const []).map((d) => Front_Desk.fromJson(d)));
+    pprint(data);
 
     _calc_totals();
 

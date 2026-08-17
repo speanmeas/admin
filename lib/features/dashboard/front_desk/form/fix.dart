@@ -137,11 +137,8 @@ class _Main_State extends State<Main_> {
     super.initState();
     init();
   }
-
-  //
 }
 
-//
 // * ថ្នាក់ Main_ ជាទំព័រជួសជុលបន្ទប់
 class Main_ extends StatefulWidget {
   const Main_({
@@ -155,7 +152,6 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-//
 // * ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
