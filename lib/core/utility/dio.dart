@@ -25,6 +25,9 @@ Dio _dio = Dio(
   ),
 );
 
+// * ការពារការហៅដដែលៗ (សំណើរច្រើនអាច 401 ក្នុងពេលតែមួយ)
+bool _handling_unauthorized = false;
+
 // * ទទួលបាន Dio instance
 Dio get __dio {
   // * បិទ CORS warning នៅលើ web
@@ -36,7 +39,29 @@ Dio get __dio {
 class DioUtil {
   // * singleton instance
   static final DioUtil instance = DioUtil._();
-  DioUtil._();
+
+  // * ត្រង 401 (token ផុតកំណត់/មិនត្រឹមត្រូវ) → ជម្រះ header និងហៅ callback (app layer បញ្ជូនទៅ sign in)
+  DioUtil._() {
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onError: (err, handler) {
+          final status = err.response?.statusCode;
+          final path = err.requestOptions.path;
+          if (status == 401 && !_handling_unauthorized && !path.startsWith("/auth/sign_in") && !path.startsWith("/auth/access_token")) {
+            _handling_unauthorized = true;
+            _dio.options.headers["Authorization"] = "";
+            instance.on_unauthenticated?.call().whenComplete(() {
+              _handling_unauthorized = false;
+            });
+          }
+          handler.next(err);
+        },
+      ),
+    );
+  }
+
+  // * callback ហៅពេលទទួល 401 (token មិនត្រឹមត្រូវ) — កំណត់ពី app layer (main.dart)
+  Future<void> Function()? on_unauthenticated;
 
   // * កំណត់ Authorization token
   void set_token(String? token) {

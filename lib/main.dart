@@ -14,6 +14,12 @@ void main() async {
   // * ចាប់ផ្តើម global state និង language
   glob.init();
   lang.init();
+
+  // * បញ្ជូនទៅ sign in ពេល token ផុតកំណត់ (401) — ជម្រះផ្ទុកសុវត្ថិភាព រួចត្រឡប់ទៅ splash
+  dio.on_unauthenticated = () async {
+    await secureUtil.deleteAll(["access_token", "_id"]);
+    navigatorKey.currentState?.pushAndRemoveUntil(MaterialPageRoute(builder: (_) => loading.Load()), (route) => false);
+  };
   //
   // * បង្កើត root widget ជាមួយ MultiProvider សម្រាប់ផ្តល់ state ដល់កម្មវិធី
   runApp(
@@ -38,6 +44,7 @@ class Main extends StatelessWidget {
     return MaterialApp(
       title: "$TITLE Admin", //
       theme: theme_data, //
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       home: loading.Load(),
     );

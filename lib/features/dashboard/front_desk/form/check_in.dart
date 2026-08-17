@@ -197,12 +197,26 @@ class _Main_State extends State<Main_> {
       },
     );
 
+    // * ពិនិត្យលទ្ធផលមុនបន្ត (dio ត្រឡប់ null ពេលបរាជ័យ)
+    if (tmp == null || tmp.data == null) {
+      setState(() => is_loading = false);
+      return snackbar(ct: context, ms: t("Error: ${endpoint.FRONT_DESK_CHECK_IN}"), cl: Colors.red);
+    }
+
+    // * យក id នៃ front desk ដែលទើបបង្កើត
+    final data_list = tmp.data as List?;
+    if (data_list == null || data_list.isEmpty) {
+      setState(() => is_loading = false);
+      return snackbar(ct: context, ms: t("Error: ${endpoint.FRONT_DESK_CHECK_IN}"), cl: Colors.red);
+    }
+    final front_desk_id = (data_list.first as Map)[Front_Desk.ID];
+
     // * បន្ថែមតម្លៃបន្ទប់ទៅការទូទាត់
     if (add_room_price > 0)
       await dio.post(
         endpoint.FRONT_DESK_UPDATE_PAY_ROOM, // update
         data: {
-          Front_Desk.ID: tmp.data[0][Front_Desk.ID], //
+          Front_Desk.ID: front_desk_id, //
           Pay_Room.ADD_PRICE: add_room_price,
         },
       );
@@ -213,7 +227,7 @@ class _Main_State extends State<Main_> {
       data: {
         Room.ID: widget.room_id, //
         Room.STATUS: room_status.PENDING_PAY, //
-        Room.FRONT_DESK_ID: tmp.data[0][Front_Desk.ID], //
+        Room.FRONT_DESK_ID: front_desk_id, //
       },
     );
     setState(() => is_loading = false);

@@ -231,7 +231,12 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(endpoint.FRONT_DESK_CRUD_CREATE);
     setState(() => is_loading = false);
 
-    var front_desk = Front_Desk.fromJson(tmp.data[0]);
+    // * ពិនិត្យលទ្ធផលមុនបន្ត (dio ត្រឡប់ null ពេលបរាជ័យ)
+    if (tmp == null || tmp.data == null || tmp.data is! List || (tmp.data as List).isEmpty) {
+      return snackbar(ct: context, ms: t("Error: ${endpoint.FRONT_DESK_CRUD_CREATE}"), cl: Colors.red);
+    }
+
+    var front_desk = Front_Desk.fromJson((tmp.data as List).first as Map<String, dynamic>);
 
     //
     setState(() => is_loading = true);
