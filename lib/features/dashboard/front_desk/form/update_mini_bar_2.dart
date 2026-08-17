@@ -389,6 +389,10 @@ class _Mini_Bar_2State extends State<Mini_Bar_2> {
       double sub_price = (old_price ?? 0) - (new_price ?? 0);
       if (sub_price < 0) sub_price = 0;
 
+      // * ការពារការសងលើស: កុំឱ្យ net_price និង net_paid ក្រោម 0
+      sub_price = clamp_sub_price(sub_price, old_price ?? 0, add_price);
+      final clamped_return = clamp_sub_return(sub_return ?? 0, last_paid ?? 0, add_cash ?? 0, add_bank ?? 0);
+
       await dio.post(
         endpoint.FRONT_DESK_UPDATE_PAY_MINI_BAR,
         data: {
@@ -397,7 +401,7 @@ class _Mini_Bar_2State extends State<Mini_Bar_2> {
           Pay_Mini_Bar.SUB_PRICE: sub_price, //
           Pay_Mini_Bar.ADD_CASH: add_cash, //
           Pay_Mini_Bar.ADD_BANK: add_bank, //
-          Pay_Mini_Bar.SUB_RETURN: sub_return, //
+          Pay_Mini_Bar.SUB_RETURN: clamped_return, //
           Pay_Mini_Bar.NOTE: note, //
         },
       );

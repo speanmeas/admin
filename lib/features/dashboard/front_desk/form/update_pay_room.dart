@@ -221,6 +221,10 @@ class _Main_State extends State<Main_> {
     double sub_price = (old_price ?? 0) - (room_price ?? 0);
     if (sub_price < 0) sub_price = 0;
 
+    // * ការពារការសងលើស: កុំឱ្យ net_price និង net_paid ក្រោម 0
+    sub_price = clamp_sub_price(sub_price, old_price ?? 0, add_price);
+    final clamped_return = clamp_sub_return(pay_return ?? 0, last_paid ?? 0, pay_cash ?? 0, pay_bank ?? 0);
+
     // * កត់ត្រាការទូទាត់បន្ទប់
     setState(() => is_loading = true);
     await dio.post(
@@ -231,7 +235,7 @@ class _Main_State extends State<Main_> {
         Pay_Room.SUB_PRICE: sub_price, //
         Pay_Room.ADD_CASH: pay_cash ?? 0, //
         Pay_Room.ADD_BANK: pay_bank ?? 0, //
-        Pay_Room.SUB_RETURN: pay_return ?? 0, //
+        Pay_Room.SUB_RETURN: clamped_return, //
         Pay_Room.NOTE: pay_note ?? "", //
       },
     );

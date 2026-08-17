@@ -225,6 +225,10 @@ class _Main_State extends State<Main_> {
     double sub_price = (old_price ?? 0) - (other_price ?? 0);
     if (sub_price < 0) sub_price = 0;
 
+    // * ការពារការសងលើស: កុំឱ្យ net_price និង net_paid ក្រោម 0
+    sub_price = clamp_sub_price(sub_price, old_price ?? 0, add_price);
+    final clamped_return = clamp_sub_return(sub_return ?? 0, last_paid ?? 0, add_cash ?? 0, add_bank ?? 0);
+
     // * កត់ត្រាការទូទាត់ផ្សេងៗ
     setState(() => is_loading = true);
     await dio.post(
@@ -235,7 +239,7 @@ class _Main_State extends State<Main_> {
         Pay_Other.SUB_PRICE: sub_price, //
         Pay_Other.ADD_CASH: add_cash ?? 0, //
         Pay_Other.ADD_BANK: add_bank ?? 0, //
-        Pay_Other.SUB_RETURN: sub_return ?? 0, //
+        Pay_Other.SUB_RETURN: clamped_return, //
         Pay_Other.NOTE: note ?? "", //
       },
     );

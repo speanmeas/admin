@@ -196,8 +196,9 @@ class _Main_State extends State<Main_> {
 
     // * កត់ត្រាតម្លៃបន្ទប់ថ្មី (បន្ថែមតែភាពខុសគ្នា មិនមែនតម្លៃពេញទេ — check in បានកត់ត្រារួច)
     final diff = room_price - (old_price ?? 0);
-    final add_price = diff > 0 ? diff : 0;
-    final sub_price = diff < 0 ? -diff : 0;
+    final double add_price = diff > 0 ? diff : 0.0;
+    // * ការពារការសងលើស: កុំឱ្យ net_price ក្រោម 0 ពេលកាត់បន្ថយរយៈពេលស្នាក់នៅ
+    final sub_price = clamp_sub_price(diff < 0 ? -diff : 0.0, old_price ?? 0, add_price);
     setState(() => is_loading = true);
     await dio.post(
       endpoint.FRONT_DESK_UPDATE_PAY_ROOM, // update
