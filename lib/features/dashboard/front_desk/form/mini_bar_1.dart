@@ -2,10 +2,9 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-import "../dialog/item_picker.dart";
-import "mini_bar_2.dart";
+import "../dialog/pick_item.dart";
+import "mini_bar_2.dart" as mini_bar_2;
 
-// * បង្កើត layout មេរបស់ទំព័រគិតថ្លៃ mini bar
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -46,15 +45,9 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
-  // * ចំនួនដែលជ្រើសរើសក្នុងមួយទំនិញ (key = item id)
-  final Map<dynamic, int> _qty = {};
 
-  // * បញ្ជីទំនិញ mini bar (catalog) ទាញពី Server
-  //   List<Map<String, dynamic>> catalog = [];
   List<Mini_Bar> list_mini_bar = [];
-
-  // * បញ្ជី order mini bar ដែលមានស្រាប់ (សម្រាប់កែសម្រួល)
-  List<Order_Mini_Bar> initial_orders = [];
+  List<Order_Mini_Bar> list_order_mini_bar = [];
 
   // * ទាញយកបញ្ជីទំនិញ mini bar ពី Server
   void init() async {
@@ -66,16 +59,7 @@ class _Main_State extends State<Main_> {
     list_mini_bar = (tmp?.data as List<dynamic>? ?? []).map((e) => Mini_Bar.fromJson(e as Map<String, dynamic>)).toList();
 
     // * ទំព័របង្កើតថ្មី (Add Mini Bar) មិនមាន order ដែលមានស្រាប់ទេ
-    initial_orders = [];
-
-    // * បំពេញចំនួនដែលបានជ្រើសរើសពី order ដែលមានស្រាប់ (សម្រាប់កែសម្រួល)
-    for (var o in initial_orders) {
-      final id = o.mini_bar_id?.id;
-      final qty = o.quantity ?? 0;
-      if (id != null && qty > 0) {
-        _qty[id] = qty;
-      }
-    }
+    list_order_mini_bar = [];
 
     setState(() {});
   }
@@ -113,13 +97,13 @@ class _Main_State extends State<Main_> {
                 ),
 
                 Text(
-                  "${_qty[item.id] ?? 0}", //
+                  "${_qty_of(item.id)}", //
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
 
                 IconButton(
                   icon: Icon(Icons.add_circle_outline), //
-                  onPressed: (_qty[item.id] ?? 0) < _stock(item) ? () => _add(item) : null,
+                  onPressed: _qty_of(item.id) < _stock(item) ? () => _add(item) : null,
                 ),
 
                 SizedBox(width: 8),
@@ -144,7 +128,7 @@ class _Main_State extends State<Main_> {
                 ),
 
                 Text(
-                  "${(_price(item) * (_qty[item.id] ?? 0)).toStringAsFixed(2)} \$", //
+                  "${(_price(item) * _qty_of(item.id)).toStringAsFixed(2)} \$", //
                   style: TextStyle(
                     fontSize: 18, //
                     fontWeight: FontWeight.bold,
@@ -192,59 +176,74 @@ class _Main_State extends State<Main_> {
 
   // * បញ្ជីទំនិញដែលមានចំនួន > 0
   List<Mini_Bar> get _selected_items {
-    return list_mini_bar.where((item) => (_qty[item.id] ?? 0) > 0).toList();
+    return list_mini_bar.where((item) => _qty_of(item.id) > 0).toList();
   }
 
-  // * បើក dialog ជ្រើសរើសទំនិញ ហើយបញ្ចូលចំនួនដែលបានជ្រើស
+  // * បើក dialog ជ្រើសរើសទំនិញ (កែប្រែ list_order_mini_bar ផ្ទាល់)
   void _pick_item() async {
-    final result = await showDialog<Map<dynamic, int>>(
+    await showDialog(
       context: context, //
-      builder: (context) => Item_Picker_(
+      builder: (context) => Pick_Item(
         list_mini_bar: list_mini_bar, //
+        list_order_mini_bar: list_order_mini_bar, //
       ),
     );
-    if (result == null) return;
-    result.forEach((id, qty) {
-      if (qty > 0) _qty[id] = qty;
-      if (qty <= 0) _qty.remove(id);
-    });
     setState(() {});
   }
 
   // * ស្តុកដែលនៅសល់ (ស្តុកសរុប - បានលក់រួច)
-  int _stock(dynamic item) {
-    final total = (item[Mini_Bar.STOCK] as num?)?.toInt() ?? 0;
+  int _stock(Mini_Bar item) {
+    final total = (item.stock ?? 0).toInt();
     return total;
   }
 
   // * តម្លៃទំនិញមួយឯកតា
-  double _price(dynamic item) => (item[Mini_Bar.PRICE] as num?)?.toDouble() ?? 0;
+  double _price(Mini_Bar item) => item.price ?? 0;
+
+  // * ចំនួនទំនិញតាម id (0 បើមិនទាន់មានក្នុង list_order_mini_bar)
+  int _qty_of(String? id) {
+    for (var o in list_order_mini_bar) {
+      if (o.mini_bar_id?.id == id) return o.quantity ?? 0;
+    }
+    return 0;
+  }
+
+  // * កំណត់ចំនួនទំនិញឡើងវិញ (លុបចោលបើ qty = 0)
+  void _set_qty(Mini_Bar item, int qty) {
+    list_order_mini_bar.removeWhere((o) => o.mini_bar_id?.id == item.id);
+    if (qty > 0) {
+      list_order_mini_bar.add(
+        Order_Mini_Bar(
+          mini_bar_id: Mini_Bar_Show(id: item.id, name: item.name, price: item.price),
+          quantity: qty,
+        ),
+      );
+    }
+  }
 
   // * សរុបតម្លៃទំនិញដែលបានជ្រើសរើស
   double get _total {
     var total = 0.0;
-    for (var item in list_mini_bar) {
-      final qty = _qty[item.id] ?? 0;
+    for (var o in list_order_mini_bar) {
+      final qty = o.quantity ?? 0;
       if (qty > 0) {
-        total += qty * _price(item);
+        total += qty * (o.mini_bar_id?.price ?? 0);
       }
     }
     return total;
   }
 
-  void _add(dynamic item) {
-    final id = item[Mini_Bar.ID];
-    final cur = _qty[id] ?? 0;
+  void _add(Mini_Bar item) {
+    final cur = _qty_of(item.id);
     if (cur < _stock(item)) {
-      setState(() => _qty[id] = cur + 1);
+      setState(() => _set_qty(item, cur + 1));
     }
   }
 
-  void _sub(dynamic item) {
-    final id = item[Mini_Bar.ID];
-    final cur = _qty[id] ?? 0;
+  void _sub(Mini_Bar item) {
+    final cur = _qty_of(item.id);
     if (cur > 0) {
-      setState(() => _qty[id] = cur - 1);
+      setState(() => _set_qty(item, cur - 1));
     }
   }
 
@@ -252,7 +251,7 @@ class _Main_State extends State<Main_> {
   void next() {
     final lines = <Map<String, dynamic>>[];
     for (var item in _selected_items) {
-      final qty = _qty[item.id] ?? 0;
+      final qty = _qty_of(item.id);
       final price = _price(item);
       lines.add({
         Mini_Bar.ID: item.id, //
@@ -265,7 +264,7 @@ class _Main_State extends State<Main_> {
     // Navigator.pop(context, lines);
     nav_push(
       context,
-      Mini_Bar_2(
+      mini_bar_2.Main_(
         list_mini_bar: list_mini_bar, //
         lines: lines, //
         // other_price: _total, //

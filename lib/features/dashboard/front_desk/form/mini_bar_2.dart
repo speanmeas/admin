@@ -44,7 +44,7 @@ Widget _layout(List<Widget> children) {
 }
 
 // * ថ្នាក់ state របស់ Charge_ គ្រប់គ្រងការជ្រើសរើសទំនិញ mini bar
-class _Mini_Bar_2State extends State<Mini_Bar_2> {
+class _Main_State extends State<Main_> {
   // * ចំនួនដែលជ្រើសរើសក្នុងមួយទំនិញ (key = item id)
   // final Map<dynamic, int> _qty = {};
 
@@ -304,18 +304,18 @@ class _Mini_Bar_2State extends State<Mini_Bar_2> {
 }
 
 // * ថ្នាក់ Main_ ជាទំព័រមេ mini bar
-class Mini_Bar_2 extends StatefulWidget {
-  const Mini_Bar_2({
+class Main_ extends StatefulWidget {
+  const Main_({
     super.key, //
     required this.list_mini_bar,
     required this.lines,
   });
 
   final List<Mini_Bar> list_mini_bar;
-  final List<Map> lines;
+  final List<Map> lines; //
 
   @override
-  State<Mini_Bar_2> createState() => _Mini_Bar_2State();
+  State<Main_> createState() => _Main_State();
 }
 
 // * ចំណុចចាប់ផ្តើមកម្មវិធី
@@ -331,7 +331,7 @@ void main() async {
         ChangeNotifierProvider.value(value: lang),
       ],
       child: MaterialApp(
-        home: Mini_Bar_2(
+        home: Main_(
           list_mini_bar: [], //
           lines: [], //
         ), //

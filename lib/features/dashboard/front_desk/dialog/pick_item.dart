@@ -2,23 +2,16 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-class _Item_PickerState extends State<Item_Picker_> {
+class _Item_PickerState extends State<Pick_Item> {
+  late List<Mini_Bar> list_mini_bar = widget.list_mini_bar;
 
-  dynamic tmp;
-
-  List<Mini_Bar> list_mini_bar = [];
+  late List<Order_Mini_Bar> list_order_mini_bar = widget.list_order_mini_bar;
 
   String _search = "";
 
-  List<String> items = []; // id of items that have been picked (selected) in the dialog
-  List<String> pick_items = []; // id of items that have been picked (selected) in the dialog
-
-  // * ទាញយកបញ្ជីទំនិញ mini bar ពី server
-  void init() async {
-    list_mini_bar = widget.list_mini_bar;
-    items = list_mini_bar.map((item) => item.id.toString()).toList();
-    pick_items = [];
-    setState(() {});
+  // * ពិនិត្យថាទំនិញបានជ្រើសរើសហើយឬនៅ (មាន order ដែល quantity > 0)
+  bool _selected(Mini_Bar item) {
+    return list_order_mini_bar.any((o) => o.mini_bar_id?.id == item.id);
   }
 
   @override
@@ -51,29 +44,21 @@ class _Item_PickerState extends State<Item_Picker_> {
             // * ប្រអប់ស្វែងរកទំនិញតាមឈ្មោះ
             Container(
               padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 40,
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: "Search",
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                          border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
-                          isDense: true,
-                          prefixIcon: const Icon(Icons.search, size: 20, color: Colors.blue),
-                        ),
-                        onChanged: (v) {
-                          _search = v;
-                          setState(() {});
-                        },
-                      ),
-                    ),
-                  ),
-                ],
+              child: TextField(
+                decoration: InputDecoration(
+                  isDense: true,
+                  hintText: "Search",
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
+                  prefixIcon: const Icon(Icons.search, size: 20, color: Colors.blue),
+                ),
+                onChanged: (v) {
+                  _search = v;
+                  setState(() {});
+                },
               ),
             ),
+
             const Divider(height: 1),
 
             // * បញ្ជីទំនិញដែលបានត្រង
@@ -90,12 +75,11 @@ class _Item_PickerState extends State<Item_Picker_> {
                       separatorBuilder: (_, _) => const Divider(height: 1, color: Colors.grey),
                       itemBuilder: (context, index) {
                         final item = _list_show[index];
-                        final id = item.id;
-                        final selected = pick_items.contains(id);
+                        final selected = _selected(item);
                         final price = item.price ?? 0;
                         return InkWell(
                           hoverColor: Colors.blue.withValues(alpha: 0.05),
-                          onTap: () => _toggle(id, selected),
+                          onTap: () => _toggle(item, selected),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                             decoration: BoxDecoration(
@@ -142,8 +126,8 @@ class _Item_PickerState extends State<Item_Picker_> {
           icon: const Icon(Icons.check), //
           label: const Text("Done"), //
           onPressed: () {
-            pprint(pick_items);
-            // Navigator.pop(context, pick_items), //
+            pprint(list_order_mini_bar);
+            Navigator.pop(context);
           },
         ),
       ],
@@ -151,11 +135,16 @@ class _Item_PickerState extends State<Item_Picker_> {
   }
 
   // * ជ្រើស/មិនជ្រើសទំនិញមួយម្តងៗ
-  void _toggle(dynamic id, bool selected) {
+  void _toggle(Mini_Bar item, bool selected) {
     if (selected) {
-      pick_items.remove(id);
+      list_order_mini_bar.removeWhere((o) => o.mini_bar_id?.id == item.id);
     } else {
-      pick_items.add(id);
+      list_order_mini_bar.add(
+        Order_Mini_Bar(
+          mini_bar_id: Mini_Bar_Show(id: item.id, name: item.name, price: item.price),
+          quantity: 1,
+        ),
+      );
     }
     setState(() {});
   }
@@ -166,22 +155,21 @@ class _Item_PickerState extends State<Item_Picker_> {
     if (q.isEmpty) return list_mini_bar;
     return list_mini_bar.where((item) => (item.name ?? "").toLowerCase().contains(q)).toList();
   }
-
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
 }
 
 // * dialog ជ្រើសរើសទំនិញ mini bar ជាមួយ stepper +/- ក្នុងមួយទំនិញ
-class Item_Picker_ extends StatefulWidget {
-  const Item_Picker_({super.key, required this.list_mini_bar});
+class Pick_Item extends StatefulWidget {
+  const Pick_Item({
+    super.key, //
+    required this.list_mini_bar,
+    required this.list_order_mini_bar,
+  });
 
   final List<Mini_Bar> list_mini_bar; // * បញ្ជីទំនិញ mini bar
+  final List<Order_Mini_Bar> list_order_mini_bar; // * បញ្ជី order mini bar (កែប្រែផ្ទាល់)
 
   @override
-  State<Item_Picker_> createState() => _Item_PickerState();
+  State<Pick_Item> createState() => _Item_PickerState();
 }
 
 // * ចំណុចចាប់ផ្តើមកម្មវិធី
@@ -201,11 +189,11 @@ void main() async {
           body: Center(
             child: Builder(
               builder: (context) => OutlinedButton(
-                onPressed: () => showDialog<Map<dynamic, int>>(
+                onPressed: () => showDialog(
                   context: context,
-                  builder: (context) => Item_Picker_(
+                  builder: (context) => Pick_Item(
                     list_mini_bar: [], //
-                    // stock: (item) => 0, //
+                    list_order_mini_bar: [], //
                   ),
                 ),
                 child: const Text("Open Item Picker"), //
