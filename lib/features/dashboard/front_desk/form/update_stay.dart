@@ -56,6 +56,8 @@ class _Main_State extends State<Main_> {
 
   double? last_paid;
 
+  double? old_price;
+
   // * ផ្ទុកព័ត៌មានបន្ទប់ និងការស្នាក់នៅបច្ចុប្បន្ន
   void init() async {
     // * អានព័ត៌មានបន្ទប់តាម id
@@ -75,6 +77,9 @@ class _Main_State extends State<Main_> {
     stay_days = map_room?.front_desk_id?.check_in_day?.toInt() ?? 0;
     stay_hours = map_room?.front_desk_id?.check_in_hour?.toInt() ?? 0;
     note = map_room?.front_desk_id?.check_in_note ?? "";
+
+    // * តម្លៃចាស់ពីការស្នាក់នៅបច្ចុប្បន្ន (បានកត់ត្រាពេល check in)
+    old_price = ((price_per_day ?? 0) * (stay_days ?? 0)) + ((price_per_3hours ?? 0) * (stay_hours ?? 0) / 3);
 
     // * គណនាប្រាក់ដែលបានទទួលរួច
     final pay_room_list = map_room?.front_desk_id?.pay_room ?? [];
@@ -188,13 +193,17 @@ class _Main_State extends State<Main_> {
     );
     setState(() => is_loading = false);
 
-    // * កត់ត្រាតម្លៃបន្ទប់ថ្មី
+    // * កត់ត្រាតម្លៃបន្ទប់ថ្មី (បន្ថែមតែភាពខុសគ្នា មិនមែនតម្លៃពេញទេ — check in បានកត់ត្រារួច)
+    final diff = room_price - (old_price ?? 0);
+    final add_price = diff > 0 ? diff : 0;
+    final sub_price = diff < 0 ? -diff : 0;
     setState(() => is_loading = true);
     await dio.post(
       endpoint.FRONT_DESK_UPDATE_PAY_ROOM, // update
       data: {
         Front_Desk.ID: map_room?.front_desk_id?.id, //
-        Pay_Room.ADD_PRICE: room_price, //
+        Pay_Room.ADD_PRICE: add_price, //
+        Pay_Room.SUB_PRICE: sub_price, //
       },
     );
     setState(() => is_loading = false);

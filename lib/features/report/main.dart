@@ -144,7 +144,8 @@ class _Main_State extends State<Main_> {
                 if (c == Front_Desk.CHECK_IN_NUMBER) //
                   return PlutoCell(value: parse_double(fd.check_in_number));
                 if (c == Front_Desk.CHECK_IN_AT) //
-                  return PlutoCell(value: parse_datetime(fd.check_in_at));
+                  // * walk-in គ្មាន check_in_at → ប្រើ created_at (ពេលបង្កើតកំណត់ត្រា)
+                  return PlutoCell(value: parse_datetime(fd.check_in_at ?? fd.created_at));
                 if (c == Front_Desk.CHECK_IN_DUE) //
                   return PlutoCell(value: parse_datetime(fd.check_in_due));
                 if (c == Front_Desk.CHECK_IN_DAY) //
@@ -298,24 +299,6 @@ class _Main_State extends State<Main_> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(width: 8),
-                //
-                Text(
-                  "ចំណូលសរុប: ", //
-                  style: TextStyle(
-                    fontSize: 20, //
-                    fontWeight: FontWeight.bold,
-                  ),
-                ), //
-                Text(
-                  "${total_income.toStringAsFixed(2)} \$",
-                  style: TextStyle(
-                    fontSize: 18, //
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                ),
-
-                SizedBox(width: 24),
 
                 // * ប្រាក់ចំណូលសុទ្ធ (revenue)
                 Text(
@@ -331,6 +314,25 @@ class _Main_State extends State<Main_> {
                     fontSize: 18, //
                     fontWeight: FontWeight.bold,
                     color: Colors.blue,
+                  ),
+                ),
+
+                SizedBox(width: 24),
+
+                //
+                Text(
+                  "ចំណូលសរុប: ", //
+                  style: TextStyle(
+                    fontSize: 20, //
+                    fontWeight: FontWeight.bold,
+                  ),
+                ), //
+                Text(
+                  "${total_income.toStringAsFixed(2)} \$",
+                  style: TextStyle(
+                    fontSize: 18, //
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
                   ),
                 ),
 
@@ -462,7 +464,7 @@ final columns = [
   // * ជួរឈរលេខបន្ទប់
   PlutoColumn(
     field: Front_Desk.ROOM_ID + Room_Show.NUMBER, //
-    title: "បន្ទប់",
+    title: "ប្រភេទ",
     type: PlutoColumnType.text(),
     width: 80,
     renderer: (rc) {
