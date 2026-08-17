@@ -112,7 +112,12 @@ class _Main_State extends State<Main_> {
 
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.FRONT_DESK_BROKE}"), cl: Colors.red);
 
-    final front_desk_id = tmp.data[0][Front_Desk.ID];
+    // * ពិនិត្យលទ្ធផលមុនបន្ត (dio ត្រឡប់ null ពេលបរាជ័យ)
+    if (tmp.data == null || tmp.data is! List || (tmp.data as List).isEmpty) {
+      return snackbar(ct: context, ms: t("Error: ${endpoint.FRONT_DESK_BROKE}"), cl: Colors.red);
+    }
+
+    final front_desk_id = (tmp.data as List).first[Front_Desk.ID];
 
     // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Pending Fix
     setState(() => is_loading = true);
