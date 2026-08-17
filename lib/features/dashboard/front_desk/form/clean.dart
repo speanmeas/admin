@@ -112,6 +112,18 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការសម្អាតបន្ទប់
   void on_clean() async {
+    // * កត់ត្រាការសម្អាតទៅ front desk ជាមុន
+    setState(() => is_loading = true);
+    if (map_r?.front_desk_id?.id != null)
+      await dio.post(
+        endpoint.FRONT_DESK_CLEAN,
+        data: {
+          Front_Desk.ID: map_r?.front_desk_id?.id, //
+          Front_Desk.CLEAN_NOTE: note, //
+        },
+      );
+    setState(() => is_loading = false);
+
     // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Available
     setState(() => is_loading = true);
     await dio.post(
@@ -122,18 +134,6 @@ class _Main_State extends State<Main_> {
         Room.FRONT_DESK_ID: null, //
       },
     );
-    setState(() => is_loading = false);
-
-    // * កត់ត្រាការសម្អាតទៅ front desk
-    setState(() => is_loading = true);
-    if (map_r?.front_desk_id?.id != null)
-      await dio.post(
-        endpoint.FRONT_DESK_CLEAN,
-        data: {
-          Front_Desk.ID: map_r?.front_desk_id?.id, //
-          Front_Desk.CLEAN_NOTE: note, //
-        },
-      );
     setState(() => is_loading = false);
 
     snackbar(ct: context, ms: t("Success"), cl: Colors.green);

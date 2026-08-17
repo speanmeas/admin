@@ -66,7 +66,7 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
     setState(() => is_loading = false);
 
-    if (tmp.data == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_READ_ID}", cl: Colors.red);
 
     data = Room.fromJson(tmp.data[0]);
 
@@ -173,6 +173,7 @@ class _Main_State extends State<Main_> {
   // * ពិនិត្យថាអាច check in បានឬអត់
   bool get can_check_in {
     if (is_loading) return false;
+    if (guest_id == null || guest_id!.isEmpty) return false;
     if ((number_of_guest ?? 0) <= 0) return false;
     if ((stay_days ?? 0) <= 0 && (stay_hours ?? 0) <= 0) return false;
     return true;

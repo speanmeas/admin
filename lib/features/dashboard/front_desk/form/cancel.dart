@@ -261,6 +261,21 @@ class _Main_State extends State<Main_> {
     );
     setState(() => is_loading = false);
 
+    // * កត់ត្រាតម្លៃបោះបង់ និងការទូទាត់ទៅ pay_room (រក្សាដានប្រាក់)
+    setState(() => is_loading = true);
+    if ((cancel_price ?? 0) > 0 || (pay_cash ?? 0) > 0 || (pay_bank ?? 0) > 0 || (pay_return ?? 0) > 0)
+      await dio.post(
+        endpoint.FRONT_DESK_UPDATE_PAY_ROOM,
+        data: {
+          Front_Desk.ID: map_room?.front_desk_id?.id, //
+          Pay_Room.ADD_PRICE: cancel_price ?? 0, //
+          Pay_Room.ADD_CASH: pay_cash ?? 0, //
+          Pay_Room.ADD_BANK: pay_bank ?? 0, //
+          Pay_Room.SUB_RETURN: pay_return ?? 0, //
+        },
+      );
+    setState(() => is_loading = false);
+
     // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់
     setState(() => is_loading = true);
     if (room_status == "Available") {

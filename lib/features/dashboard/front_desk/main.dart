@@ -333,11 +333,16 @@ class _Main_State extends State<Main_> {
                               pay = pay + (l.add_bank ?? 0);
                               change = change + (l.sub_return ?? 0);
                             }
+                            // * សមតុល្យ room payment ដែលនៅសល់ (ប្រាក់ដែលបានទទួល - ប្រាក់អាប់)
+                            final balance = price - (pay - change);
                             return Row(
                               spacing: 4,
                               children: [
                                 Icon(Icons.receipt_outlined, size: 24), //
-                                Text('${t("Room Payment")}:', style: TextStyle(fontWeight: FontWeight.bold)), //
+                                Text(
+                                  '${t("Room Payment")}:', //
+                                  style: TextStyle(fontWeight: FontWeight.bold, color: balance != 0 ? Colors.red : Colors.black),
+                                ), //
                                 //
                                 SizedBox(width: 4), //
                                 Icon(Icons.circle, size: 6), //
@@ -379,11 +384,19 @@ class _Main_State extends State<Main_> {
                               pay = pay + (l.add_bank ?? 0);
                               change = change + (l.sub_return ?? 0);
                             }
+                            // * សមតុល្យ mini bar ដែលនៅសល់ (ប្រាក់ដែលបានទទួល - ប្រាក់អាប់)
+                            final balance = price - (pay - change);
                             return Row(
                               spacing: 4,
                               children: [
                                 Icon(Icons.receipt_outlined, size: 24), //
-                                Text('${t("Mini Bar Payment")}:', style: TextStyle(fontWeight: FontWeight.bold)), //
+                                Text(
+                                  '${t("Mini Bar Payment")}:', //
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold, //
+                                    color: balance != 0 ? Colors.red : Colors.black,
+                                  ),
+                                ), //
                                 //
                                 SizedBox(width: 4), //
                                 Icon(Icons.circle, size: 6), //
@@ -426,11 +439,16 @@ class _Main_State extends State<Main_> {
                               pay = pay + (l.add_bank ?? 0);
                               change = change + (l.sub_return ?? 0);
                             }
+                            // * សមតុល្យ other payment ដែលនៅសល់ (ប្រាក់ដែលបានទទួល - ប្រាក់អាប់)
+                            final balance = price - (pay - change);
                             return Row(
                               spacing: 4,
                               children: [
                                 Icon(Icons.receipt_outlined, size: 24), //
-                                Text('${t("Other Payment")}:', style: TextStyle(fontWeight: FontWeight.bold)), //
+                                Text(
+                                  '${t("Other Payment")}:', //
+                                  style: TextStyle(fontWeight: FontWeight.bold, color: balance != 0 ? Colors.red : Colors.black),
+                                ), //
                                 //
                                 SizedBox(width: 4), //
                                 Icon(Icons.circle, size: 6), //

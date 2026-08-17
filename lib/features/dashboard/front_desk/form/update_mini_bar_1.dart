@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
+import "../dialog/pick_item.dart";
 import "update_mini_bar_2.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រគិតថ្លៃ mini bar
@@ -41,30 +42,28 @@ Widget _layout(List<Widget> children) {
   );
 }
 
-// * ថ្នាក់ state របស់ Charge_ គ្រប់គ្រងការជ្រើសរើសទំនិញ mini bar
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការជ្រើសរើសទំនិញ mini bar
 class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
-  // * ចំនួនដែលជ្រើសរើសក្នុងមួយទំនិញ (key = item id)
-  final Map<dynamic, int> _qty = {};
 
-  // * បញ្ជីទំនិញ mini bar (catalog) ទាញពី Server
-  List<Map<String, dynamic>> catalog = [];
+  List<Mini_Bar> list_mini_bar = [];
+  List<Order_Mini_Bar> list_order_mini_bar = [];
 
   // * បន្ទប់ដែលកំពុងកែសម្រួល (ទាញតាម room_id)
   Room? map_room;
 
   // * បញ្ជី order mini bar ដែលមានស្រាប់ (សម្រាប់កែសម្រួល)
-  List<Order_Mini_Bar> initial_orders = [];
+  List<Order_Mini_Bar> init_order_mini_bar = [];
 
-  // * ទាញយកបញ្ជីទំនិញ mini bar ពី Server
+  // * ទាញយកបញ្ជីទំនិញ mini bar និង order ដែលមានស្រាប់ពី Server
   void init() async {
     setState(() => is_loading = true);
     tmp = await dio.post(endpoint.MINI_BAR_CRUD_READ);
     setState(() => is_loading = false);
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.MINI_BAR_CRUD_READ}"), cl: Colors.red);
 
-    catalog = List<Map<String, dynamic>>.from(tmp?.data ?? []);
+    list_mini_bar = (tmp?.data as List<dynamic>? ?? []).map((e) => Mini_Bar.fromJson(e as Map<String, dynamic>)).toList();
 
     // * អានព័ត៌មានបន្ទប់តាម id ដើម្បីទាញ order mini bar ដែលមានស្រាប់
     setState(() => is_loading = true);
@@ -73,14 +72,18 @@ class _Main_State extends State<Main_> {
     if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
 
     map_room = Room.fromJson(tmp.data[0]);
-    initial_orders = map_room?.front_desk_id?.order_mini_bar ?? [];
+    init_order_mini_bar = map_room?.front_desk_id?.order_mini_bar ?? [];
 
-    // * បំពេញចំនួនដែលបានជ្រើសរើសពី order ដែលមានស្រាប់ (សម្រាប់កែសម្រួល)
-    for (var o in initial_orders) {
-      final id = o.mini_bar_id?.id;
-      final qty = o.quantity ?? 0;
-      if (id != null && qty > 0) {
-        _qty[id] = qty;
+    // * បំពេញ list_order_mini_bar ពី order ដែលមានស្រាប់ (សម្រាប់កែសម្រួល)
+    list_order_mini_bar = [];
+    for (var o in init_order_mini_bar) {
+      if ((o.quantity ?? 0) > 0) {
+        list_order_mini_bar.add(
+          Order_Mini_Bar(
+            mini_bar_id: Mini_Bar_Show(id: o.mini_bar_id?.id, name: o.mini_bar_id?.name, price: o.mini_bar_id?.price),
+            quantity: o.quantity,
+          ),
+        );
       }
     }
 
@@ -127,13 +130,13 @@ class _Main_State extends State<Main_> {
                 ),
 
                 Text(
-                  "${_qty[item[Mini_Bar.ID]] ?? 0}", //
+                  "${_qty_of(item.id)}", //
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
 
                 IconButton(
                   icon: Icon(Icons.add_circle_outline), //
-                  onPressed: (_qty[item[Mini_Bar.ID]] ?? 0) < _stock(item) ? () => _add(item) : null,
+                  onPressed: _qty_of(item.id) < _stock(item) ? () => _add(item) : null,
                 ),
 
                 SizedBox(width: 8),
@@ -143,7 +146,7 @@ class _Main_State extends State<Main_> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${item[Mini_Bar.NAME]} (x${_stock(item)})", //
+                        "${item.name} (x${_stock(item)})", //
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold, //
@@ -158,7 +161,7 @@ class _Main_State extends State<Main_> {
                 ),
 
                 Text(
-                  "${(_price(item) * (_qty[item[Mini_Bar.ID]] ?? 0)).toStringAsFixed(2)} \$", //
+                  "${(_price(item) * _qty_of(item.id)).toStringAsFixed(2)} \$", //
                   style: TextStyle(
                     fontSize: 18, //
                     fontWeight: FontWeight.bold,
@@ -205,84 +208,86 @@ class _Main_State extends State<Main_> {
   }
 
   // * បញ្ជីទំនិញដែលមានចំនួន > 0
-  List<Map<String, dynamic>> get _selected_items {
-    return catalog.where((item) => (_qty[item[Mini_Bar.ID]] ?? 0) > 0).toList();
+  List<Mini_Bar> get _selected_items {
+    return list_mini_bar.where((item) => _qty_of(item.id) > 0).toList();
   }
 
-  // * បើក dialog ជ្រើសរើសទំនិញ ហើយបញ្ចូលចំនួនដែលបានជ្រើស
+  // * ចំនួនទំនិញតាម id (0 បើមិនទាន់មានក្នុង list_order_mini_bar)
+  int _qty_of(String? id) {
+    for (var o in list_order_mini_bar) {
+      if (o.mini_bar_id?.id == id) return o.quantity ?? 0;
+    }
+    return 0;
+  }
+
+  // * បើក dialog ជ្រើសរើសទំនិញ (កែប្រែ list_order_mini_bar ផ្ទាល់)
   void _pick_item() async {
-    final result = await showDialog<Map<dynamic, int>>(
-      context: context,
-      builder: (context) => _Item_Picker(
-        catalog: catalog, //
-        stock: (item) => _stock(item),
+    await showDialog(
+      context: context, //
+      builder: (context) => Pick_Item(
+        list_mini_bar: list_mini_bar, //
+        list_order_mini_bar: list_order_mini_bar, //
       ),
     );
-    if (result == null) return;
-    setState(() {
-      result.forEach((id, qty) {
-        if (qty > 0) {
-          _qty[id] = qty;
-        } else {
-          _qty.remove(id);
-        }
-      });
-    });
+    setState(() {});
   }
 
   // * ស្តុកដែលនៅសល់ (ស្តុកសរុប - បានលក់រួច)
-  int _stock(dynamic item) {
-    final total = (item[Mini_Bar.STOCK] as num?)?.toInt() ?? 0;
+  int _stock(Mini_Bar item) {
+    final total = (item.stock ?? 0).toInt();
     return total;
   }
 
   // * តម្លៃទំនិញមួយឯកតា
-  double _price(dynamic item) => (item[Mini_Bar.PRICE] as num?)?.toDouble() ?? 0;
+  double _price(Mini_Bar item) => item.price ?? 0;
+
+  // * កំណត់ចំនួនទំនិញឡើងវិញ (លុបចោលបើ qty = 0)
+  void _set_qty(Mini_Bar item, int qty) {
+    list_order_mini_bar.removeWhere((o) => o.mini_bar_id?.id == item.id);
+    if (qty > 0) {
+      list_order_mini_bar.add(
+        Order_Mini_Bar(
+          mini_bar_id: Mini_Bar_Show(id: item.id, name: item.name, price: item.price),
+          quantity: qty,
+        ),
+      );
+    }
+  }
 
   // * សរុបតម្លៃទំនិញដែលបានជ្រើសរើស
   double get _total {
     var total = 0.0;
-    for (var item in catalog) {
-      final qty = _qty[item[Mini_Bar.ID]] ?? 0;
+    for (var o in list_order_mini_bar) {
+      final qty = o.quantity ?? 0;
       if (qty > 0) {
-        total += qty * _price(item);
+        total += qty * (o.mini_bar_id?.price ?? 0);
       }
     }
     return total;
   }
 
-  void _add(dynamic item) {
-    final id = item[Mini_Bar.ID];
-    final cur = _qty[id] ?? 0;
+  void _add(Mini_Bar item) {
+    final cur = _qty_of(item.id);
     if (cur < _stock(item)) {
-      setState(() => _qty[id] = cur + 1);
+      setState(() => _set_qty(item, cur + 1));
     }
   }
 
-  void _sub(dynamic item) {
-    final id = item[Mini_Bar.ID];
-    final cur = _qty[id] ?? 0;
+  void _sub(Mini_Bar item) {
+    final cur = _qty_of(item.id);
     if (cur > 0) {
-      setState(() => _qty[id] = cur - 1);
+      setState(() => _set_qty(item, cur - 1));
     }
   }
 
-  // * បញ្ជាក់ការជ្រើសរើស ហើយបញ្ជូនបញ្ជីទំនិញត្រឡប់ទៅ main.dart
+  // * បញ្ជាក់ការជ្រើសរើស ហើយបញ្ជូនបញ្ជីទំនិញត្រឡប់ទៅ update_mini_bar_2
   void next() {
-    final lines = <Map<String, dynamic>>[];
-    for (var item in _selected_items) {
-      final qty = _qty[item[Mini_Bar.ID]] ?? 0;
-      final price = _price(item);
-      lines.add({Mini_Bar.ID: item[Mini_Bar.ID], Mini_Bar.NAME: item[Mini_Bar.NAME], "price": price, "qty": qty, "total": price * qty});
-    }
-    // Navigator.pop(context, lines);
     nav_push(
       context,
       Mini_Bar_2(
         room_id: widget.room_id, //
-        catalog: catalog, //
-        lines: lines, //
-        other_price: _total, //
+        list_mini_bar: list_mini_bar, //
+        list_order_mini_bar: list_order_mini_bar, //
       ),
     );
   }
@@ -291,188 +296,6 @@ class _Main_State extends State<Main_> {
   void initState() {
     super.initState();
     init();
-  }
-}
-
-// * dialog ជ្រើសរើសទំនិញ mini bar ជាមួយ stepper +/- ក្នុងមួយទំនិញ
-class _Item_Picker extends StatefulWidget {
-  const _Item_Picker({required this.catalog, required this.stock});
-
-  final List<Map<String, dynamic>> catalog; // * បញ្ជីទំនិញ mini bar
-  final int Function(dynamic item) stock; // * គណនាស្តុកដែលនៅសល់
-
-  @override
-  State<_Item_Picker> createState() => _Item_PickerState();
-}
-
-class _Item_PickerState extends State<_Item_Picker> {
-  // * ចំនួនដែលជ្រើសរើសក្នុង dialog (key = item id)
-  final Map<dynamic, int> _qty = {};
-
-  // * controller សម្រាប់ស្វែងរកទំនិញ
-  final _search_controller = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-      titlePadding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-      contentPadding: EdgeInsets.zero,
-      title: Row(
-        children: [
-          const Text(
-            "Select Item", //
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const Spacer(),
-          // * ប៊ូតុងបិទ dialog
-          IconButton(
-            icon: const Icon(Icons.close, size: 24, color: Colors.red),
-            padding: EdgeInsets.all(4),
-            constraints: const BoxConstraints(),
-            onPressed: _close,
-          ),
-        ],
-      ),
-      content: SizedBox(
-        width: 420,
-        height: 480,
-        child: Column(
-          children: [
-            // * ប្រអប់ស្វែងរកទំនិញតាមឈ្មោះ
-            Container(
-              padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 40,
-                      child: TextField(
-                        controller: _search_controller,
-                        decoration: InputDecoration(
-                          hintText: "Search",
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                          border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
-                          isDense: true,
-                          prefixIcon: const Icon(Icons.search, size: 20, color: Colors.blue),
-                        ),
-                        onChanged: _on_search,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-
-            // * បញ្ជីទំនិញដែលបានត្រង
-            Expanded(
-              child: widget.catalog.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
-                  : _list_show.isEmpty
-                  ? const Center(
-                      child: Text("No item found", style: TextStyle(color: Colors.grey)),
-                    )
-                  : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                      itemCount: _list_show.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1, color: Colors.grey),
-                      itemBuilder: (context, index) {
-                        final item = _list_show[index];
-                        final id = item[Mini_Bar.ID];
-                        final selected = (_qty[id] ?? 0) > 0;
-                        final price = (item[Mini_Bar.PRICE] as num?)?.toDouble() ?? 0;
-                        return InkWell(
-                          hoverColor: Colors.blue.withValues(alpha: 0.05),
-                          onTap: () => _toggle(id, selected),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                            decoration: BoxDecoration(
-                              border: Border(left: selected ? const BorderSide(color: Colors.blue, width: 3) : BorderSide.none),
-                            ),
-                            child: Row(
-                              children: [
-                                // * សញ្ញាធីកបង្ហាញថាបានជ្រើសរើស
-                                Icon(selected ? Icons.check_circle : Icons.radio_button_unchecked, color: selected ? Colors.blue : Colors.grey),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "${item[Mini_Bar.NAME]}", //
-                                        style: TextStyle(
-                                          fontSize: 16, //
-                                          fontWeight: FontWeight.bold,
-                                          color: selected ? Colors.blue : Colors.black87,
-                                        ),
-                                      ),
-                                      Text(
-                                        "$price \$ / item", //
-                                        style: const TextStyle(color: Colors.blue),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-            ),
-          ],
-        ),
-      ),
-      actionsPadding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-      actions: [
-        // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស
-        OutlinedButton.icon(
-          icon: const Icon(Icons.check), //
-          label: const Text("Done"), //
-          onPressed: _done, //
-        ),
-      ],
-    );
-  }
-
-  // * តម្រងបញ្ជីទំនិញតាមឈ្មោះដែលស្វែងរក
-  List<Map<String, dynamic>> get _list_show {
-    final q = _search_controller.text.trim().toLowerCase();
-    if (q.isEmpty) return widget.catalog;
-    return widget.catalog.where((item) => '${item[Mini_Bar.NAME]}'.toLowerCase().contains(q)).toList();
-  }
-
-  @override
-  void dispose() {
-    _search_controller.dispose();
-    super.dispose();
-  }
-
-  // * បិទ dialog
-  void _close() {
-    Navigator.pop(context);
-  }
-
-  // * បញ្ជាក់ការជ្រើសរើស ហើយប្រគល់ _qty ត្រឡប់ទៅកាន់ dialog
-  void _done() {
-    Navigator.pop(context, _qty);
-  }
-
-  // * ស្វែងរកទំនិញតាមឈ្មោះ
-  void _on_search(String v) {
-    setState(() {});
-  }
-
-  // * ជ្រើស/មិនជ្រើសទំនិញមួយម្តងៗ
-  void _toggle(dynamic id, bool selected) {
-    setState(() {
-      if (selected) {
-        _qty.remove(id);
-      } else {
-        _qty[id] = 1;
-      }
-    });
   }
 }
 
