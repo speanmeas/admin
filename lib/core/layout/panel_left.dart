@@ -5,9 +5,6 @@ import "package:speanmeas/core/utility/all.dart";
 
 // * ថ្នាក់ state របស់ Panel_Left គ្រប់គ្រង menu ខាងឆ្វេង
 class _Panel_LeftState extends State<Panel_Left> {
-  //
-  dynamic tmp;
-
   // * កំណត់របៀបបង្ហាញ
   bool is_mobile = false;
   // * តួនាទីរបស់អ្នកប្រើប្រាស់
@@ -18,23 +15,17 @@ class _Panel_LeftState extends State<Panel_Left> {
 
   // * ចាប់ផ្តើមផ្ទុកតួនាទីរបស់អ្នកប្រើប្រាស់
   void init() async {
-    try {
-      // * ទទួលបានព័ត៌មានអ្នកប្រើប្រាស់ពី server
-      tmp = await dio.post(endpoint.AUTH_ACCESS_TOKEN);
+    // * ទទួលបានអ្នកប្រើបច្ចុប្បន្នពី AuthService (cache តែម្តងក្នុងមួយ shell)
+    final user = await auth.fetch();
+    if (user == null) return;
 
-      // * កំណត់តួនាទីពីទិន្នន័យដែលបានទទួល
-      final user = User.fromJson(tmp.data[0]);
-      if (user.is_admin == true) is_admin = true;
-      if (user.is_manager == true) is_manager = true;
-      if (user.is_receptionist == true) is_recept = true;
-      if (user.is_housekeeper == true) is_cleaner = true;
+    // * កំណត់តួនាទីពីទិន្នន័យដែលបានទទួល
+    if (user.is_admin == true) is_admin = true;
+    if (user.is_manager == true) is_manager = true;
+    if (user.is_receptionist == true) is_recept = true;
+    if (user.is_housekeeper == true) is_cleaner = true;
 
-      setState(() {});
-    } catch (e, st) {
-      // * បង្ហាញកំហុសប្រសិនបើមាន
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+    setState(() {});
   }
 
   @override

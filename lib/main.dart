@@ -17,6 +17,7 @@ void main() async {
 
   // * បញ្ជូនទៅ sign in ពេល token ផុតកំណត់ (401) — ជម្រះផ្ទុកសុវត្ថិភាព រួចត្រឡប់ទៅ splash
   dio.on_unauthenticated = () async {
+    auth.clear();
     await secureUtil.deleteAll(["access_token", "_id"]);
     navigatorKey.currentState?.pushAndRemoveUntil(MaterialPageRoute(builder: (_) => loading.Load()), (route) => false);
   };

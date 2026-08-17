@@ -62,6 +62,7 @@ class _LoadState extends State<Load> {
     } catch (e, st) {
       // * បង្ហាញកំហុស និងលុប token មិនត្រឹមត្រូវ
       pprint(st);
+      auth.clear();
       await secure.delete(key: "access_token");
       await secure.delete(key: "_id");
       nav_replace(context, form_si.Main_());

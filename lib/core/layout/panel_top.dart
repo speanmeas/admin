@@ -7,30 +7,21 @@ import "package:speanmeas/features/auth/profile.dart";
 
 // * ថ្នាក់ state របស់ Panel_Top គ្រប់គ្រងបន្ទះខាងលើ
 class _Panel_TopState extends State<Panel_Top> {
-  //
-  dynamic tmp;
-
   // * ឈ្មោះពេញរបស់អ្នកប្រើប្រាស់
   String? full_name;
 
   // * ចាប់ផ្តើមផ្ទុកព័ត៌មានអ្នកប្រើប្រាស់
   void init() async {
-    //
-    try {
-      //
-      // * ទទួលបានព័ត៌មានអ្នកប្រើប្រាស់ពី server
-      tmp = await dio.post(endpoint.AUTH_ACCESS_TOKEN);
+    // * ទទួលបានអ្នកប្រើបច្ចុប្បន្នពី AuthService (cache តែម្តងក្នុងមួយ shell)
+    final user = await auth.fetch();
+    full_name = user?.full_name ?? "X";
+    setState(() {});
+  }
 
-      // * កំណត់ឈ្មោះពេញ
-      final user = User.fromJson(tmp.data[0]);
-      full_name = user.full_name ?? "X";
-
-      setState(() {});
-    } catch (e, st) {
-      // * បង្ហាញកំហុសប្រសិនបើមាន
-      pprint(st);
-      snackbar(ct: context, ms: e.toString(), cl: Colors.red);
-    }
+  // * ទាញយកថ្មី (ក្រោយកែ profile)
+  void refresh() async {
+    final user = await auth.refresh();
+    if (mounted) setState(() => full_name = user?.full_name ?? "X");
   }
 
   @override
@@ -123,7 +114,7 @@ class _Panel_TopState extends State<Panel_Top> {
               onTap: () {
                 // * បើកទំព័រ profile
                 nav_push(context, Profile());
-                init();
+                refresh();
               },
             ),
           ),

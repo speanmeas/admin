@@ -5,6 +5,7 @@ export "package:speanmeas/core/schema.g.dart";
 export "package:speanmeas/core/endpoint.g.dart";
 export "package:speanmeas/core/i18n/main.dart";
 export "package:speanmeas/core/utility/dio.dart";
+export "package:speanmeas/core/utility/auth_service.dart";
 export "package:speanmeas/core/utility/parse.dart";
 export "package:speanmeas/core/utility/secure.dart";
 export "package:speanmeas/core/utility/pprint.dart";

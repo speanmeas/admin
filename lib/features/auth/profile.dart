@@ -47,7 +47,6 @@ Widget _layout(List<Widget> children) {
 class _ProfileState extends State<Profile> {
   //
   dynamic tmp;
-  dynamic map_data;
 
   // * ព័ត៌មានអ្នកប្រើ
   String? full_name;
@@ -65,16 +64,11 @@ class _ProfileState extends State<Profile> {
   void init() async {
     try {
       //
-      // * ផ្ទៀងផ្ទាត់ access token
-      tmp = await dio.post(
-        endpoint.AUTH_ACCESS_TOKEN, //
-        data: {"access_token": await secure.read(key: "access_token")},
-      );
-      if (tmp == null) throw Exception("Invalid Access Token");
-      map_data = tmp.data[0];
+      // * ផ្ទៀងផ្ទាត់ access token (ទាញយកថ្មីជានិច្ច ដើម្បីបង្ហាញទិន្នន័យបច្ចុប្បន្ន)
+      final user = await auth.refresh();
+      if (user == null) throw Exception("Invalid Access Token");
 
       // * កំណត់ព័ត៌មានអ្នកប្រើ
-      final user = User.fromJson(map_data);
       full_name = user.full_name;
       phone_number = user.phone_number;
       username = user.username;
@@ -227,6 +221,7 @@ class _ProfileState extends State<Profile> {
       // * លុប token និងព័ត៌មានចូលប្រព័ន្ធ
       // await dio.options.headers.remove("Authorization");
       dio.clear_token();
+      auth.clear();
       await secure.delete(key: "access_token");
       await secure.delete(key: "_id");
 
