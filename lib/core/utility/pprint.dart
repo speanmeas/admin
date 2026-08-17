@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 void pprint(dynamic value) {
   // * ប្រសិនបើ value គឺជា String, num, bool ឬ null បោះពុម្ពដោយផ្ទាល់
   if (value is String || value is num || value is bool || value == null) //
-    return debugPrint(value);
+    return debugPrint(value.toString());
 
   // * ប្រសិនបើ value គឺជា Map ឬ List, បំលែងវាទៅជា JSON string ដែលមាន indentation
   if (value is Map || value is List) //

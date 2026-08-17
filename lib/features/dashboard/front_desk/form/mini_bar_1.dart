@@ -179,6 +179,14 @@ class _Main_State extends State<Main_> {
     return list_mini_bar.where((item) => _qty_of(item.id) > 0).toList();
   }
 
+  // * ចំនួនទំនិញតាម id (0 បើមិនទាន់មានក្នុង list_order_mini_bar)
+  int _qty_of(String? id) {
+    for (var o in list_order_mini_bar) {
+      if (o.mini_bar_id?.id == id) return o.quantity ?? 0;
+    }
+    return 0;
+  }
+
   // * បើក dialog ជ្រើសរើសទំនិញ (កែប្រែ list_order_mini_bar ផ្ទាល់)
   void _pick_item() async {
     await showDialog(
@@ -199,14 +207,6 @@ class _Main_State extends State<Main_> {
 
   // * តម្លៃទំនិញមួយឯកតា
   double _price(Mini_Bar item) => item.price ?? 0;
-
-  // * ចំនួនទំនិញតាម id (0 បើមិនទាន់មានក្នុង list_order_mini_bar)
-  int _qty_of(String? id) {
-    for (var o in list_order_mini_bar) {
-      if (o.mini_bar_id?.id == id) return o.quantity ?? 0;
-    }
-    return 0;
-  }
 
   // * កំណត់ចំនួនទំនិញឡើងវិញ (លុបចោលបើ qty = 0)
   void _set_qty(Mini_Bar item, int qty) {
@@ -249,27 +249,14 @@ class _Main_State extends State<Main_> {
 
   // * បញ្ជាក់ការជ្រើសរើស ហើយបញ្ជូនបញ្ជីទំនិញត្រឡប់ទៅ mini_bar_2
   void next() {
-    final lines = <Map<String, dynamic>>[];
-    for (var item in _selected_items) {
-      final qty = _qty_of(item.id);
-      final price = _price(item);
-      lines.add({
-        Mini_Bar.ID: item.id, //
-        Mini_Bar.NAME: item.name, //
-        "price": price, //
-        "qty": qty, //
-        "total": price * qty,
-      });
-    }
-    // Navigator.pop(context, lines);
     nav_push(
       context,
       mini_bar_2.Main_(
         list_mini_bar: list_mini_bar, //
-        lines: lines, //
-        // other_price: _total, //
+        list_order_mini_bar: list_order_mini_bar, //
       ),
     );
+    // Navigator.pop(context, list_order_mini_bar);
   }
 
   @override
