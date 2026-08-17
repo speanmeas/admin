@@ -37,16 +37,20 @@ class _Select_DynamicState extends State<Select_Dynamic> {
             floatingLabelBehavior: FloatingLabelBehavior.always,
             prefixIcon: Icon(widget.prefixIcon),
             // * ប៊ូតុងសម្អាតតម្លៃ
-            suffixIcon: Padding(
-              padding: EdgeInsets.only(right: 4),
-              child: IconButton(
-                icon: Icon(Icons.clear, color: Colors.red),
-                onPressed: () {
-                  controller.clear();
-                  widget.onChanged?.call(null);
-                },
-              ), //
-            ),
+            suffixIcon: widget.noClear == true
+                ? null
+                : ExcludeFocus(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 4),
+                      child: IconButton(
+                        icon: Icon(Icons.clear, color: Colors.red),
+                        onPressed: () {
+                          controller.clear();
+                          widget.onChanged?.call(null);
+                        },
+                      ), //
+                    ),
+                  ),
           ),
         );
       },
@@ -68,6 +72,7 @@ class Select_Dynamic extends StatefulWidget {
     this.lead,
     this.init,
     this.prefixIcon,
+    this.noClear, //
   });
 
   final String? lead;
@@ -75,6 +80,7 @@ class Select_Dynamic extends StatefulWidget {
   final List<dynamic>? options;
   final Function(dynamic)? onChanged;
   final IconData? prefixIcon;
+  final bool? noClear;
 
   @override
   State<Select_Dynamic> createState() => _Select_DynamicState();
