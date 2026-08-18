@@ -33,6 +33,7 @@ class _Main_State extends State<Main_> {
   bool is_loading = true;
 
   String? search;
+
   Timer? _debounce; // * ពន្យាពេល rebuild សម្រាប់ការស្វែងរក
 
   // * ផ្ទុកទិន្នន័យបន្ទប់ និង front desk ពី server
@@ -89,6 +90,7 @@ class _Main_State extends State<Main_> {
           height: 40,
           padding: EdgeInsets.only(top: 8), //
           child: TextField(
+            controller: TextEditingController(text: search ?? ""), //
             decoration: InputDecoration(
               isDense: true, //
               labelText: '${t("Search")}:', //

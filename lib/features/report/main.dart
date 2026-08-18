@@ -198,6 +198,7 @@ class _Main_State extends State<Main_> {
         ),
     ]);
 
+    // state_manager?.NotifyListeners(); // * បង្ហាញទិន្នន័យថ្មី
     setState(() {});
   }
 
@@ -391,7 +392,6 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
-    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout(
       // * តារាងទិន្នន័យរបាយការណ៍
       PlutoGrid(
