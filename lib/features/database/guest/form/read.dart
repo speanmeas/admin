@@ -51,8 +51,6 @@ class _Main_State extends State<Main_> {
   String? phone_number;
   String? gender;
   String? nationality_id;
-  String? id_number;
-  String? passport_number;
   String? note;
 
   // * ផ្ទុកព័ត៌មានភ្ញៀវតាម id
@@ -70,8 +68,6 @@ class _Main_State extends State<Main_> {
     phone_number = guest.phone_number;
     gender = guest.gender;
     nationality_id = guest.nationality_id?.name;
-    id_number = guest.id_number;
-    passport_number = guest.passport_number;
     note = guest.note;
 
     setState(() {});
@@ -109,20 +105,6 @@ class _Main_State extends State<Main_> {
         prefixIcon: Icons.flag_outlined,
         lead: "Nationality:", //
         value: nationality_id,
-      ),
-
-      // * បង្ហាញID Number
-      Show_Text(
-        prefixIcon: Icons.badge_outlined,
-        lead: "ID Number:", //
-        value: id_number,
-      ),
-
-      // * បង្ហាញPassport Number
-      Show_Text(
-        prefixIcon: Icons.book_outlined,
-        lead: "Passport Number:", //
-        value: passport_number,
       ),
 
       // * បង្ហាញកំណត់ចំណាំ

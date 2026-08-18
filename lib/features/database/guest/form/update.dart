@@ -54,8 +54,6 @@ class _Main_State extends State<Main_> {
   String? phone_number;
   String? gender;
   String? nationality_id;
-  String? id_number;
-  String? passport_number;
   String? note;
 
   // * ផ្ទុកព័ត៌មានភ្ញៀវបច្ចុប្បន្ន
@@ -73,8 +71,6 @@ class _Main_State extends State<Main_> {
     phone_number = guest.phone_number;
     gender = guest.gender;
     nationality_id = guest.nationality_id?.name;
-    id_number = guest.id_number;
-    passport_number = guest.passport_number;
     note = guest.note;
 
     setState(() {});
@@ -127,26 +123,6 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      // * បញ្ចូលID Number
-      Input_Text(
-        init: id_number, //
-        lead: "ID Number:", //
-        onChanged: (v) {
-          id_number = v;
-          setState(() {});
-        },
-      ),
-
-      // * បញ្ចូលPassport Number
-      Input_Text(
-        init: passport_number, //
-        lead: "Passport Number:", //
-        onChanged: (v) {
-          passport_number = v;
-          setState(() {});
-        },
-      ),
-
       // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: note, //
@@ -181,8 +157,6 @@ class _Main_State extends State<Main_> {
         Guest.PHONE_NUMBER: phone_number,
         Guest.GENDER: gender,
         Guest.NATIONALITY_ID: nationality_id,
-        Guest.ID_NUMBER: id_number,
-        Guest.PASSPORT_NUMBER: passport_number,
         Guest.NOTE: note, //
       },
     );

@@ -110,10 +110,6 @@ class _Main_State extends State<Main_> {
                   return PlutoCell(value: guest.gender);
                 if (c == Guest.NATIONALITY_ID) //
                   return PlutoCell(value: guest.nationality_id?.name);
-                if (c == Guest.ID_NUMBER) //
-                  return PlutoCell(value: guest.id_number);
-                if (c == Guest.PASSPORT_NUMBER) //
-                  return PlutoCell(value: guest.passport_number);
                 if (c == Guest.NOTE) //
                   return PlutoCell(value: guest.note);
 
@@ -495,40 +491,6 @@ final columns = [
   PlutoColumn(
     field: Guest.NATIONALITY_ID, //
     title: "Nationality",
-    type: PlutoColumnType.text(),
-    width: WIDTH,
-    enableEditingMode: false,
-    renderer: (rc) {
-      return Align(
-        alignment: Alignment.center, //
-        child: Text(
-          format_string(rc.cell.value), //
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    },
-  ),
-  // * ជួរឈរID Number
-  PlutoColumn(
-    field: Guest.ID_NUMBER, //
-    title: "ID Number",
-    type: PlutoColumnType.text(),
-    width: WIDTH,
-    enableEditingMode: false,
-    renderer: (rc) {
-      return Align(
-        alignment: Alignment.center, //
-        child: Text(
-          format_string(rc.cell.value), //
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    },
-  ),
-  // * ជួរឈរPassport Number
-  PlutoColumn(
-    field: Guest.PASSPORT_NUMBER, //
-    title: "Passport Number",
     type: PlutoColumnType.text(),
     width: WIDTH,
     enableEditingMode: false,

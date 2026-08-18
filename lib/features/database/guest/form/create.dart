@@ -46,7 +46,6 @@ Widget _layout(List<Widget> children) {
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បង្កើតភ្ញៀវ
 class _Main_State extends State<Main_> {
-  //
   dynamic tmp;
   bool is_loading = true;
 
@@ -107,26 +106,6 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      // * បញ្ចូលID Number
-      Input_Text(
-        init: id_number, //
-        lead: "ID Number:", //
-        onChanged: (v) {
-          id_number = v;
-          setState(() {});
-        },
-      ),
-
-      // * បញ្ចូលPassport Number
-      Input_Text(
-        init: passport_number, //
-        lead: "Passport Number:", //
-        onChanged: (v) {
-          passport_number = v;
-          setState(() {});
-        },
-      ),
-
       // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: note, //
@@ -161,8 +140,6 @@ class _Main_State extends State<Main_> {
         Guest.PHONE_NUMBER: phone_number,
         Guest.GENDER: gender,
         Guest.NATIONALITY_ID: nationality_id,
-        Guest.ID_NUMBER: id_number,
-        Guest.PASSPORT_NUMBER: passport_number,
         Guest.NOTE: note, //
       },
     );
