@@ -64,6 +64,9 @@ class _Main_State extends State<Main_> {
             children: headers, //
           ),
 
+          // * បន្ទាត់រីកចម្រើនពេលកំពុងផ្ទុក
+          if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
+
           // * តំបន់បង្ហាញបញ្ជីបន្ទប់
           Expanded(
             child: SingleChildScrollView(
@@ -81,7 +84,6 @@ class _Main_State extends State<Main_> {
 
   @override
   Widget build(BuildContext context) {
-    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout(
       headers: [
         // * ប្រអប់ស្វែងរកបន្ទប់
@@ -90,7 +92,6 @@ class _Main_State extends State<Main_> {
           height: 40,
           padding: EdgeInsets.only(top: 8), //
           child: TextField(
-            controller: TextEditingController(text: search ?? ""), //
             decoration: InputDecoration(
               isDense: true, //
               labelText: '${t("Search")}:', //
@@ -715,6 +716,12 @@ class _Main_State extends State<Main_> {
   void initState() {
     super.initState();
     init();
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 }
 
