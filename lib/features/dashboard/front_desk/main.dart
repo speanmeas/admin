@@ -134,7 +134,7 @@ class _Main_State extends State<Main_> {
       children: [
         for (var r in _list_show)
           Container(
-            width: 600,
+            width: 500,
             margin: EdgeInsets.all(2),
             padding: EdgeInsets.all(4),
             decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1)),

@@ -70,8 +70,8 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.MINI_BAR_CRUD_READ, //
       data: {
-        "key": DEFAULT_KEY, //
-        "order": DEFAULT_ORDER, //
+        "key": Mini_Bar.NAME, //
+        "order": 1, //
         "offset": (p - 1) * DEFAULT_LIMIT_ROW, //
         "limit": DEFAULT_LIMIT_ROW,
       },

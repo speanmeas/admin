@@ -49,19 +49,15 @@ class _Main_State extends State<Main_> {
   Room? map_room;
   bool is_loading = true;
 
-  double? pay_cash;
-  double? pay_bank;
-  double? pay_return;
-
-  String? note;
-
-  double? last_paid;
+  double? add_cash;
+  double? add_bank;
+  double? sub_return;
 
   DateTime? check_in_at;
-
+  double? last_paid;
   double? cancel_price;
-
   String? target_status;
+  String? note;
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ និង front desk ពី server
   void init() async {
@@ -130,33 +126,33 @@ class _Main_State extends State<Main_> {
 
       // * បញ្ចូលការទូទាត់ជាសាច់ប្រាក់
       Input_Number(
-        init: pay_cash, //
+        init: add_cash, //
         lead: '${t("Cash Payment")}:', //
         prefixIcon: Icons.payments_outlined, //
         onChanged: (v) {
-          pay_cash = v;
+          add_cash = v;
           setState(() {});
         },
       ),
 
       // * បញ្ចូលការទូទាត់តាមធនាគារ
       Input_Number(
-        init: pay_bank, //
+        init: add_bank, //
         lead: '${t("Bank Payment")}:', //
         prefixIcon: Icons.account_balance_outlined, //
         onChanged: (v) {
-          pay_bank = v;
+          add_bank = v;
           setState(() {});
         },
       ),
 
       // * បញ្ចូលប្រាក់អាប់
       Input_Number(
-        init: pay_return, //
+        init: sub_return, //
         lead: '${t("Return")}:', //
         prefixIcon: Icons.currency_exchange_outlined, //
         onChanged: (v) {
-          pay_return = v;
+          sub_return = v;
           setState(() {});
         },
       ),
@@ -241,9 +237,9 @@ class _Main_State extends State<Main_> {
     double temp = 0;
 
     temp = temp + (last_paid ?? 0);
-    temp = temp + (pay_cash ?? 0);
-    temp = temp + (pay_bank ?? 0);
-    temp = temp - (pay_return ?? 0);
+    temp = temp + (add_cash ?? 0);
+    temp = temp + (add_bank ?? 0);
+    temp = temp - (sub_return ?? 0);
     temp = temp - (cancel_price ?? 0);
 
     return temp;
@@ -264,15 +260,15 @@ class _Main_State extends State<Main_> {
 
     // * កត់ត្រាតម្លៃបោះបង់ និងការទូទាត់ទៅ pay_room (រក្សាដានប្រាក់)
     setState(() => is_loading = true);
-    if ((cancel_price ?? 0) > 0 || (pay_cash ?? 0) > 0 || (pay_bank ?? 0) > 0 || (pay_return ?? 0) > 0)
+    if ((cancel_price ?? 0) > 0 || (add_cash ?? 0) > 0 || (add_bank ?? 0) > 0 || (sub_return ?? 0) > 0)
       await dio.post(
         endpoint.FRONT_DESK_UPDATE_PAY_ROOM,
         data: {
           Front_Desk.ID: map_room?.front_desk_id?.id, //
           Pay_Room.ADD_PRICE: cancel_price ?? 0, //
-          Pay_Room.ADD_CASH: pay_cash ?? 0, //
-          Pay_Room.ADD_BANK: pay_bank ?? 0, //
-          Pay_Room.SUB_RETURN: pay_return ?? 0, //
+          Pay_Room.ADD_CASH: add_cash ?? 0, //
+          Pay_Room.ADD_BANK: add_bank ?? 0, //
+          Pay_Room.SUB_RETURN: sub_return ?? 0, //
         },
       );
     setState(() => is_loading = false);

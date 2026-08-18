@@ -48,7 +48,6 @@ class _Main_State extends State<Main_> {
   dynamic tmp;
   Room? data;
   bool is_loading = true;
-  bool is_submitting = false;
 
   String? room_number;
   double? price_per_day;
@@ -153,8 +152,8 @@ class _Main_State extends State<Main_> {
       // * ប៊ូតុងបញ្ជូន check in
       OutlinedButton.icon(
         icon: Icon(Icons.login_outlined), //
-        label: Text(is_submitting ? t("Checking In...") : t("Check In")), //
-        onPressed: (can_check_in && !is_submitting) ? on_check_in : null, //
+        label: Text("Check In"), //
+        onPressed: (can_check_in) ? on_check_in : null, //
       ),
 
       SizedBox(height: height - 100),
