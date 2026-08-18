@@ -117403,8 +117403,6 @@ if(q==null)q=0
 return 0+o*s+r*q/3},
 gaIo(){var s,r=this
 if(r.f)return!1
-s=r.y
-if(s==null||s.length===0)return!1
 s=r.z
 if((s==null?0:s)<=0)return!1
 s=r.Q
