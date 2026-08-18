@@ -1,4 +1,5 @@
 // * នាំចូល Flutter material និង Provider សម្រាប់ state management
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
@@ -49,7 +50,8 @@ class _Panel_LeftState extends State<Panel_Left> {
                 initiallyExpanded: true,
                 children: [
                   // * front desk
-                  if (is_admin || is_manager || is_recept || is_cleaner) //
+                  // if (is_admin || is_manager || is_recept || is_cleaner) //
+                  if (kDebugMode) //
                     list_tile_l2(prefix: "Data", name: "Front Desk", icon: Icons.table_bar_outlined),
 
                   // * guest
@@ -63,6 +65,10 @@ class _Panel_LeftState extends State<Panel_Left> {
                   // * nationality
                   if (is_admin || is_manager || is_recept) //
                     list_tile_l2(prefix: "Data", name: "Nationality", icon: Icons.flag_outlined),
+
+                  // * bank
+                  if (is_admin || is_manager || is_recept) //
+                    list_tile_l2(prefix: "Data", name: "Bank", icon: Icons.flag_outlined),
 
                   // * user
                   if (is_admin || is_manager) //
@@ -89,7 +95,7 @@ class _Panel_LeftState extends State<Panel_Left> {
                 ),
 
               // * ផ្នែក Demos
-              if (is_admin)
+              if (kDebugMode) //
                 ExpansionTile(
                   leading: Icon(Icons.model_training_outlined), //
                   title: Text("Demo"),

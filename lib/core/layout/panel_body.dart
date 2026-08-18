@@ -13,6 +13,7 @@ import "package:speanmeas/features/database/guest/main.dart" as guest;
 import "package:speanmeas/features/database/room/main.dart" as room;
 import "package:speanmeas/features/database/user/main.dart" as user;
 import "package:speanmeas/features/database/nationality/main.dart" as nationality;
+import "package:speanmeas/features/database/bank/main.dart" as bank;
 import "package:speanmeas/features/database/mini_bar/main.dart" as mini_bar;
 
 // * report
@@ -38,6 +39,7 @@ class _Panel_BodyState extends State<Panel_Body> {
     {"name": "Data Guest", "panel": guest.Main_()},
     {"name": "Data User", "panel": user.Main_()},
     {"name": "Data Nationality", "panel": nationality.Main_()},
+    {"name": "Data Bank", "panel": bank.Main_()},
     {"name": "Data Mini Bar", "panel": mini_bar.Main_()}, //
     //
     {"name": "Report Income", "panel": report.Main_()}, //
