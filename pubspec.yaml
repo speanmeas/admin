@@ -2,7 +2,7 @@ name: speanmeas
 description: "Hotel Management System."
 # publish_to: "CloudFlare" # Remove this line if you wish to publish to pub.dev
 
-version: 1.1.1+188
+version: 1.1.1+189
 
 environment:
   sdk: ^3.11.4
