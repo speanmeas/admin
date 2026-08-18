@@ -120,7 +120,7 @@ class _Main_State extends State<Main_> {
 
       // * ស្វែងរកNationality
       Search_Nationality(
-        init: nationality_id, //
+        init: "Cambodian", //
         onChanged: (v) {
           nationality_id = v;
           setState(() {});

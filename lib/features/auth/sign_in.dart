@@ -133,6 +133,7 @@ class _Main_State extends State<Main_> {
     await secure.write(key: "_id", value: data?["_id"]?.toString() ?? "");
     await secure.write(key: "access_token", value: data?["access_token"]?.toString() ?? "");
     dio.set_token(data?["access_token"]?.toString() ?? "");
+    auth.clear();
 
     await glob.init();
     snackbar(ct: context, ms: "Success", cl: Colors.green);

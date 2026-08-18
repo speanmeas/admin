@@ -3,6 +3,7 @@ import "package:speanmeas/core/endpoint.g.dart";
 import "package:speanmeas/core/schema.g.dart";
 import "package:speanmeas/core/utility/dio.dart";
 import "package:speanmeas/core/utility/secure.dart";
+import "package:speanmeas/core/utility/pprint.dart";
 
 // * AuthService — ទាញយកអ្នកប្រើបច្ចុប្បន្នតែម្តង ហើយផ្ទុក cache
 // * (panel_top / panel_left / profile លែង POST AUTH_ACCESS_TOKEN ដដែលៗរាល់ shell load)
@@ -34,7 +35,7 @@ class AuthService {
     return fetch();
   }
 
-  // * ជម្រះ cache (ពេលចាកចេញ ឬ token មិនត្រឹមត្រូវ)
+  // * ជម្រះ cache (ពេលចាកចេញ ឬ token មិនត្រឹមត្រូវ ឬចុះឈ្មោះចូលគណនីថ្មី)
   void clear() {
     current_user = null;
     _pending = null;
@@ -42,12 +43,25 @@ class AuthService {
 
   // * ផ្ញើសំណើទៅ server
   Future<User?> _load() async {
-    final token = await secure.read(key: "access_token");
-    final tmp = await dio.post(endpoint.AUTH_ACCESS_TOKEN, data: {"access_token": token});
-    if (tmp == null || tmp.data == null) return null;
-    final data_list = tmp.data as List?;
-    if (data_list == null || data_list.isEmpty) return null;
-    return User.fromJson(data_list.first as Map<String, dynamic>);
+    try {
+      final token = await secure.read(key: "access_token");
+      if (token == null || token.isEmpty) return null;
+
+      final tmp = await dio.post(endpoint.AUTH_ACCESS_TOKEN, data: {"access_token": token});
+      if (tmp == null || tmp.data == null) return null;
+
+      // * server ត្រឡប់ list នៃ user ដែលបានពង្រីកវាលភ្ជាប់រួច
+      final data_list = tmp.data as List?;
+      if (data_list == null || data_list.isEmpty) return null;
+
+      final json = data_list.first;
+      if (json is! Map<String, dynamic>) return null;
+      return User.fromJson(json);
+    } catch (e, st) {
+      // * ការពារការ crash ពេលរូបរាងទិន្នន័យមិនស្របនឹង schema (អ្នកប្រើថ្មី/raw doc)
+      pprint(st);
+      return null;
+    }
   }
 }
 
