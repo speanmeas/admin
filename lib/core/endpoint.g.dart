@@ -27,7 +27,6 @@ class EndPoint {
 	final DEMO_1_CRUD_READ_DATETIME = "/demo_1/crud/read_datetime";
 	final DEMO_1_CRUD_READ_ID = "/demo_1/crud/read_id";
 	final DEMO_1_CRUD_READ_NUMBER = "/demo_1/crud/read_number";
-	final DEMO_1_CRUD_READ_SEARCH = "/demo_1/crud/read_search";
 	final DEMO_1_CRUD_READ_STRING = "/demo_1/crud/read_string";
 	final DEMO_1_CRUD_UPDATE = "/demo_1/crud/update";
 	final DEMO_2_CRUD_CREATE = "/demo_2/crud/create";
