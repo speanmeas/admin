@@ -1,15 +1,14 @@
-// * ទំព័រអានព័ត៌មានឧទាហរណ៍
+// * ទំព័រអានព័ត៌មាន front desk
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/widget/show/show_boolean.dart";
-import "package:speanmeas/core/widget/show/show_datetime.dart";
-import "package:speanmeas/core/widget/show/show_number.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
+import "package:speanmeas/core/widget/show/show_number.dart";
+import "package:speanmeas/core/widget/show/show_datetime.dart";
 
-// * បង្កើត layout មេរបស់ទំព័រអានព័ត៌មានឧទាហរណ៍
+// * បង្កើត layout មេរបស់ទំព័រអានព័ត៌មាន front desk
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -45,33 +44,24 @@ Widget _layout(List<Widget> children) {
   );
 }
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការអានព័ត៌មានឧទាហរណ៍
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការអានព័ត៌មាន front desk
 class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
 
-  String? text_1;
-  double? number_1;
-  DateTime? datetime_1;
-  bool? logic_1;
-  String? note;
+  Front_Desk? f;
 
-  // * ផ្ទុកព័ត៌មានឧទាហរណ៍តាម id
+  // * ផ្ទុកព័ត៌មាន front desk តាម id
   void init() async {
-    // * អានទិន្នន័យឧទាហរណ៍តាម id
+    // * អានទិន្នន័យ front desk តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_1_CRUD_READ_ID, data: {Demo_1.ID: widget.id});
+    tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {Front_Desk.ID: widget.id});
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_CRUD_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-    final demo = Demo_1.fromJson(tmp.data[0]);
-    text_1 = demo.text_1;
-    number_1 = demo.number_1;
-    datetime_1 = demo.datetime_1;
-    logic_1 = demo.logic_1;
-    note = demo.note;
+    f = Front_Desk.fromJson(tmp.data[0]);
 
     setState(() {});
   }
@@ -82,40 +72,129 @@ class _Main_State extends State<Main_> {
     // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      // * បង្ហាញអត្ថបទ 1
+      // * បង្ហាញបន្ទប់
       Show_Text(
-        prefixIcon: Icons.text_fields,
-        lead: "Text 1:", //
-        value: text_1,
+        prefixIcon: Icons.meeting_room_outlined,
+        lead: "Room:", //
+        value: "${f?.room_id?.number ?? ""} (${f?.room_id?.kind ?? ""})",
       ),
 
-      // * បង្ហាញលេខ 1
+      // * បង្ហាញភ្ញៀវ
+      Show_Text(
+        prefixIcon: Icons.person_outline,
+        lead: "Guest:", //
+        value: f?.guest_id?.full_name ?? "",
+      ),
+
+      // * បង្ហាញលេខទូរស័ព្ទភ្ញៀវ
+      Show_Text(
+        prefixIcon: Icons.phone_outlined,
+        lead: "Phone:", //
+        value: f?.guest_id?.phone_number ?? "",
+      ),
+
+      // * បង្ហាញចំនួនភ្ញៀវ
       Show_Number(
-        prefixIcon: Icons.numbers,
-        leading: "Number 1:", //
-        value: number_1,
+        prefixIcon: Icons.people_outline,
+        leading: "Number of Guests:", //
+        value: f?.check_in_number,
       ),
 
-      // * បង្ហាញកាលបរិច្ឆេទ 1
+      // * បង្ហាញថ្ងៃស្នាក់នៅ
+      Show_Number(
+        prefixIcon: Icons.calendar_month_outlined,
+        leading: "Stay Days:", //
+        value: f?.check_in_day,
+      ),
+
+      // * បង្ហាញម៉ោងស្នាក់នៅ
+      Show_Number(
+        prefixIcon: Icons.access_time_outlined,
+        leading: "Stay Hours:", //
+        value: f?.check_in_hour,
+      ),
+
+      // * បង្ហាញថ្ងៃកំណត់ check out
       Show_Datetime(
-        prefixIcon: Icons.calendar_month,
-        leading: "Datetime 1:", //
-        value: datetime_1,
+        prefixIcon: Icons.event_outlined,
+        leading: "Due:", //
+        value: f?.check_in_due,
       ),
 
-      // * បង្ហាញតម្លៃប៊ូលីន 1
-      Show_Boolean(
-        prefixIcon: Icons.toggle_on,
-        leading: "Boolean:", //
-        value: logic_1,
+      // * បង្ហាញពេល check in
+      Show_Datetime(
+        prefixIcon: Icons.login_outlined,
+        leading: "Check In At:", //
+        value: f?.check_in_at,
       ),
 
-      // * បង្ហាញកំណត់ចំណាំ
+      // * បង្ហាញកំណត់ចំណាំ check in
       Show_Text(
         prefixIcon: Icons.note_alt_outlined,
-        lead: "Note:", //
-        value: note,
-        maxLines: 4,
+        lead: "Check In Note:", //
+        value: f?.check_in_note,
+        maxLines: 2,
+      ),
+
+      // * បង្ហាញកំណត់ចំណាំបោះបង់
+      Show_Text(
+        prefixIcon: Icons.cancel_outlined,
+        lead: "Cancel Note:", //
+        value: f?.cancel_note,
+        maxLines: 2,
+      ),
+
+      // * បង្ហាញពេលបោះបង់
+      Show_Datetime(
+        prefixIcon: Icons.cancel_outlined,
+        leading: "Cancel At:", //
+        value: f?.cancel_at,
+      ),
+
+      // * បង្ហាញកំណត់ចំណាំ check out
+      Show_Text(
+        prefixIcon: Icons.logout_outlined,
+        lead: "Check Out Note:", //
+        value: f?.check_out_note,
+        maxLines: 2,
+      ),
+
+      // * បង្ហាញពេល check out
+      Show_Datetime(
+        prefixIcon: Icons.logout_outlined,
+        leading: "Check Out At:", //
+        value: f?.check_out_at,
+      ),
+
+      // * បង្ហាញកំណត់ចំណាំសម្អាត
+      Show_Text(
+        prefixIcon: Icons.cleaning_services_outlined,
+        lead: "Clean Note:", //
+        value: f?.clean_note,
+        maxLines: 2,
+      ),
+
+      // * បង្ហាញកំណត់ចំណាំខូចខាត
+      Show_Text(
+        prefixIcon: Icons.error_outline,
+        lead: "Broke Note:", //
+        value: f?.broke_note,
+        maxLines: 2,
+      ),
+
+      // * បង្ហាញកំណត់ចំណាំជួសជុល
+      Show_Text(
+        prefixIcon: Icons.build_outlined,
+        lead: "Fix Note:", //
+        value: f?.fix_note,
+        maxLines: 2,
+      ),
+
+      // * បង្ហាញពេលបង្កើត
+      Show_Datetime(
+        prefixIcon: Icons.create_outlined,
+        leading: "Created At:", //
+        value: f?.created_at,
       ),
 
       // * ប៊ូតុងបិទ
@@ -136,7 +215,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រអានព័ត៌មានឧទាហរណ៍
+// * ថ្នាក់ Main_ ជាទំព័រអានព័ត៌មាន front desk
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //

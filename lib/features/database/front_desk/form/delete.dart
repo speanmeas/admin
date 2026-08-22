@@ -1,10 +1,10 @@
-// * ទំព័រលុបឧទាហរណ៍
+// * ទំព័រលុប front desk
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្កើត layout មេរបស់ទំព័រលុបឧទាហរណ៍
+// * បង្កើត layout មេរបស់ទំព័រលុប front desk
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -40,7 +40,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការលុបឧទាហរណ៍
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការលុប front desk
 class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
@@ -72,13 +72,13 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
-  // * អនុវត្តការលុបឧទាហរណ៍
+  // * អនុវត្តការលុប front desk
   void on_delete() async {
-    // * ផ្ញើសំណើលុបឧទាហរណ៍
+    // * ផ្ញើសំណើលុប front desk
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_1_CRUD_DELETE, data: {"_id": widget.id});
+    tmp = await dio.post(endpoint.FRONT_DESK_CRUD_DELETE, data: {"_id": widget.id});
     setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_DELETE}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_CRUD_DELETE}", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context, tmp.data);
@@ -91,7 +91,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រលុបឧទាហរណ៍
+// * ថ្នាក់ Main_ ជាទំព័រលុប front desk
 class Main_ extends StatefulWidget {
   const Main_({
     super.key, //

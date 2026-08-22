@@ -8,7 +8,7 @@ import "package:speanmeas/features/dashboard/front_desk/main.dart" as d_front_de
 // import "package:speanmeas/features/dashboard/mini_bar/main.dart" as d_mini_bar;
 
 // * database
-// import "package:speanmeas/features/database/.front_desk/main.dart" as front_desk;
+import "package:speanmeas/features/database/front_desk/main.dart" as front_desk;
 import "package:speanmeas/features/database/guest/main.dart" as guest;
 import "package:speanmeas/features/database/room/main.dart" as room;
 import "package:speanmeas/features/database/user/main.dart" as user;
@@ -34,7 +34,7 @@ class _Panel_BodyState extends State<Panel_Body> {
     {"name": "Front Desk", "panel": d_front_desk.Main_()}, //
     // {"name": "Mini Bar", "panel": d_mini_bar.Main_()}, //
     //
-    // {"name": "Data Front Desk", "panel": front_desk.Main_()}, //
+    {"name": "Data Front Desk", "panel": front_desk.Main_()}, //
     {"name": "Data Room", "panel": room.Main_()}, //
     {"name": "Data Guest", "panel": guest.Main_()},
     {"name": "Data User", "panel": user.Main_()},

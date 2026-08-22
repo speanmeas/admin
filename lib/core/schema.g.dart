@@ -57,7 +57,6 @@ class Demo_1 {
   static const DATETIME_1 = 'datetime_1';
   static const LOGIC_1 = 'logic_1';
   static const NOTE = 'note';
-  static const NATIONALITY_ID = 'nationality_id';
   static const CREATED_AT = 'created_at';
   static const CREATED_BY = 'created_by';
   static const UPDATED_AT = 'updated_at';
@@ -71,7 +70,6 @@ class Demo_1 {
   final DateTime? datetime_1;
   final bool? logic_1;
   final String? note;
-  final Nationality? nationality_id;
   final DateTime? created_at;
   final User_Show? created_by;
   final DateTime? updated_at;
@@ -79,7 +77,7 @@ class Demo_1 {
   final DateTime? deleted_at;
   final User_Show? deleted_by;
 
-  Demo_1({this.id, this.text_1, this.number_1, this.datetime_1, this.logic_1, this.note, this.nationality_id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Demo_1({this.id, this.text_1, this.number_1, this.datetime_1, this.logic_1, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
 
   factory Demo_1.fromJson(Map<String, dynamic> json) => Demo_1(
     id: json['_id'] as String?,
@@ -88,7 +86,6 @@ class Demo_1 {
     datetime_1: json['datetime_1'] == null ? null : DateTime.tryParse(json['datetime_1'] as String),
     logic_1: json['logic_1'] as bool?,
     note: json['note'] as String?,
-    nationality_id: json['nationality_id'] == null ? null : Nationality.fromJson(json['nationality_id'] as Map<String, dynamic>),
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
     created_by: json['created_by'] == null ? null : User_Show.fromJson(json['created_by'] as Map<String, dynamic>),
     updated_at: json['updated_at'] == null ? null : DateTime.tryParse(json['updated_at'] as String),
@@ -105,7 +102,6 @@ class Demo_1 {
     json['datetime_1'] = datetime_1?.toIso8601String();
     json['logic_1'] = logic_1;
     json['note'] = note;
-    json['nationality_id'] = nationality_id?.toJson();
     json['created_at'] = created_at?.toIso8601String();
     json['created_by'] = created_by?.toJson();
     json['updated_at'] = updated_at?.toIso8601String();
@@ -123,7 +119,7 @@ class Demo_2 {
   static const DATETIME_1 = 'datetime_1';
   static const LOGIC_1 = 'logic_1';
   static const NOTE = 'note';
-  static const NATIONALITY_ID = 'nationality_id';
+  static const DEMO_1_ID = 'demo_1_id';
   static const CREATED_AT = 'created_at';
   static const CREATED_BY = 'created_by';
   static const UPDATED_AT = 'updated_at';
@@ -137,7 +133,7 @@ class Demo_2 {
   final DateTime? datetime_1;
   final bool? logic_1;
   final String? note;
-  final Nationality_Show? nationality_id;
+  final List<Demo_1>? demo_1_id;
   final DateTime? created_at;
   final User_Show? created_by;
   final DateTime? updated_at;
@@ -145,7 +141,7 @@ class Demo_2 {
   final DateTime? deleted_at;
   final User_Show? deleted_by;
 
-  Demo_2({this.id, this.text_1, this.number_1, this.datetime_1, this.logic_1, this.note, this.nationality_id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Demo_2({this.id, this.text_1, this.number_1, this.datetime_1, this.logic_1, this.note, this.demo_1_id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
 
   factory Demo_2.fromJson(Map<String, dynamic> json) => Demo_2(
     id: json['_id'] as String?,
@@ -154,7 +150,7 @@ class Demo_2 {
     datetime_1: json['datetime_1'] == null ? null : DateTime.tryParse(json['datetime_1'] as String),
     logic_1: json['logic_1'] as bool?,
     note: json['note'] as String?,
-    nationality_id: json['nationality_id'] == null ? null : Nationality_Show.fromJson(json['nationality_id'] as Map<String, dynamic>),
+    demo_1_id: (json['demo_1_id'] as List<dynamic>?)?.map((e) => Demo_1.fromJson(e as Map<String, dynamic>)).toList(),
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
     created_by: json['created_by'] == null ? null : User_Show.fromJson(json['created_by'] as Map<String, dynamic>),
     updated_at: json['updated_at'] == null ? null : DateTime.tryParse(json['updated_at'] as String),
@@ -171,7 +167,7 @@ class Demo_2 {
     json['datetime_1'] = datetime_1?.toIso8601String();
     json['logic_1'] = logic_1;
     json['note'] = note;
-    json['nationality_id'] = nationality_id?.toJson();
+    json['demo_1_id'] = demo_1_id?.map((e) => e.toJson()).toList();
     json['created_at'] = created_at?.toIso8601String();
     json['created_by'] = created_by?.toJson();
     json['updated_at'] = updated_at?.toIso8601String();
@@ -672,8 +668,6 @@ class Guest {
   static const PHONE_NUMBER = 'phone_number';
   static const GENDER = 'gender';
   static const NATIONALITY_ID = 'nationality_id';
-  static const ID_NUMBER = 'id_number';
-  static const PASSPORT_NUMBER = 'passport_number';
   static const NOTE = 'note';
   static const CREATED_AT = 'created_at';
   static const CREATED_BY = 'created_by';
@@ -687,8 +681,6 @@ class Guest {
   final String? phone_number;
   final String? gender;
   final Nationality_Show? nationality_id;
-  final String? id_number;
-  final String? passport_number;
   final String? note;
   final DateTime? created_at;
   final User_Show? created_by;
@@ -697,7 +689,7 @@ class Guest {
   final DateTime? deleted_at;
   final User_Show? deleted_by;
 
-  Guest({this.id, this.full_name, this.phone_number, this.gender, this.nationality_id, this.id_number, this.passport_number, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Guest({this.id, this.full_name, this.phone_number, this.gender, this.nationality_id, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
 
   factory Guest.fromJson(Map<String, dynamic> json) => Guest(
     id: json['_id'] as String?,
@@ -705,8 +697,6 @@ class Guest {
     phone_number: json['phone_number'] as String?,
     gender: json['gender'] as String?,
     nationality_id: json['nationality_id'] == null ? null : Nationality_Show.fromJson(json['nationality_id'] as Map<String, dynamic>),
-    id_number: json['id_number'] as String?,
-    passport_number: json['passport_number'] as String?,
     note: json['note'] as String?,
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
     created_by: json['created_by'] == null ? null : User_Show.fromJson(json['created_by'] as Map<String, dynamic>),
@@ -723,8 +713,6 @@ class Guest {
     json['phone_number'] = phone_number;
     json['gender'] = gender;
     json['nationality_id'] = nationality_id?.toJson();
-    json['id_number'] = id_number;
-    json['passport_number'] = passport_number;
     json['note'] = note;
     json['created_at'] = created_at?.toIso8601String();
     json['created_by'] = created_by?.toJson();
@@ -1238,28 +1226,6 @@ class User_Show {
   }
 }
 
-class Nationality_Show {
-  static const ID = '_id';
-  static const NAME = 'name';
-
-  final String? id;
-  final String? name;
-
-  Nationality_Show({this.id, this.name});
-
-  factory Nationality_Show.fromJson(Map<String, dynamic> json) => Nationality_Show(
-    id: json['_id'] as String?,
-    name: json['name'] as String?,
-  );
-
-  Map<String, dynamic> toJson() {
-    final json = <String, dynamic>{};
-    json['_id'] = id;
-    json['name'] = name;
-    return json;
-  }
-}
-
 class Room_Show {
   static const ID = '_id';
   static const NUMBER = 'number';
@@ -1364,6 +1330,28 @@ class Front_Desk_Show {
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     json['_id'] = id;
+    return json;
+  }
+}
+
+class Nationality_Show {
+  static const ID = '_id';
+  static const NAME = 'name';
+
+  final String? id;
+  final String? name;
+
+  Nationality_Show({this.id, this.name});
+
+  factory Nationality_Show.fromJson(Map<String, dynamic> json) => Nationality_Show(
+    id: json['_id'] as String?,
+    name: json['name'] as String?,
+  );
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    json['_id'] = id;
+    json['name'] = name;
     return json;
   }
 }

@@ -1,15 +1,15 @@
-// * ទំព័របង្កើតឧទាហរណ៍ថ្មី
+// * ទំព័របង្កើត front desk ថ្មី
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/widget/input/input_text.dart";
-import "package:speanmeas/core/widget/pick/pick_boolean.dart";
-import "package:speanmeas/core/widget/pick/pick_datetime.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
+import "package:speanmeas/core/widget/search/search_room.dart";
+import "package:speanmeas/core/widget/search/search_guest.dart";
 
-// * បង្កើត layout មេរបស់ទំព័របង្កើតឧទាហរណ៍
+// * បង្កើត layout មេរបស់ទំព័របង្កើត front desk
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -45,16 +45,23 @@ Widget _layout(List<Widget> children) {
   );
 }
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បង្កើតឧទាហរណ៍
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បង្កើត front desk
 class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
 
-  String? text_1;
-  double? number_1;
-  DateTime? datetime_1;
-  bool? logic_1;
-  String? note;
+  String? room_id;
+  String? guest_id;
+  double? check_in_number;
+  double? check_in_day;
+  double? check_in_hour;
+  String? check_in_note;
+  String? cancel_note;
+  String? change_note;
+  String? check_out_note;
+  String? clean_note;
+  String? broke_note;
+  String? fix_note;
 
   void init() async {
     setState(() => is_loading = false);
@@ -64,53 +71,117 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      // * បញ្ចូលអត្ថបទ 1
-      Input_Text(
-        init: text_1, //
-        lead: "Text 1:", //
+      // * ស្វែងរក និងជ្រើសរើសបន្ទប់
+      Search_Room(
         onChanged: (v) {
-          text_1 = v;
+          room_id = v;
           setState(() {});
         },
       ),
 
-      // * បញ្ចូលលេខ 1
+      // * ស្វែងរក និងជ្រើសរើសភ្ញៀវ
+      Search_Guest(
+        onChanged: (v) {
+          guest_id = v;
+          setState(() {});
+        },
+      ),
+
+      // * បញ្ចូលចំនួនភ្ញៀវ
       Input_Number(
-        init: number_1, //
-        lead: "Number 1:", //
+        init: check_in_number, //
+        lead: "Number of Guests:", //
+        prefixIcon: Icons.people_outline,
         onChanged: (v) {
-          number_1 = v;
+          check_in_number = v;
           setState(() {});
         },
       ),
 
-      // * ជ្រើសរើសកាលបរិច្ឆេទ 1
-      Picker_Datetime(
-        initial: datetime_1, //
-        title: "Datetime 1:", //
+      // * បញ្ចូលថ្ងៃស្នាក់នៅ
+      Input_Number(
+        init: check_in_day, //
+        lead: "Stay Days:", //
+        prefixIcon: Icons.calendar_month_outlined,
         onChanged: (v) {
-          datetime_1 = v;
+          check_in_day = v;
           setState(() {});
         },
       ),
 
-      // * ជ្រើសរើសតម្លៃប៊ូលីន 1
-      Picker_Boolean(
-        initial: logic_1, //
-        title: "Logic 1:", //
+      // * បញ្ចូលម៉ោងស្នាក់នៅ
+      Input_Number(
+        init: check_in_hour, //
+        lead: "Stay Hours:", //
+        prefixIcon: Icons.access_time_outlined,
         onChanged: (v) {
-          logic_1 = v;
+          check_in_hour = v;
           setState(() {});
         },
       ),
 
-      // * បញ្ចូលកំណត់ចំណាំ
+      // * បញ្ចូលកំណត់ចំណាំ check in
       Input_Text(
-        init: note, //
-        lead: "Note:", //
-        maxLines: 4, //
+        init: check_in_note, //
+        lead: "Check In Note:", //
+        maxLines: 2, //
         onChanged: (v) {
-          note = v ?? "";
+          check_in_note = v ?? "";
+          setState(() {});
+        },
+      ),
+
+      // * បញ្ចូលកំណត់ចំណាំបោះបង់
+      Input_Text(
+        init: cancel_note, //
+        lead: "Cancel Note:", //
+        maxLines: 2, //
+        onChanged: (v) {
+          cancel_note = v ?? "";
+          setState(() {});
+        },
+      ),
+
+      // * បញ្ចូលកំណត់ចំណាំ check out
+      Input_Text(
+        init: check_out_note, //
+        lead: "Check Out Note:", //
+        maxLines: 2, //
+        onChanged: (v) {
+          check_out_note = v ?? "";
+          setState(() {});
+        },
+      ),
+
+      // * បញ្ចូលកំណត់ចំណាំសម្អាត
+      Input_Text(
+        init: clean_note, //
+        lead: "Clean Note:", //
+        maxLines: 2, //
+        onChanged: (v) {
+          clean_note = v ?? "";
+          setState(() {});
+        },
+      ),
+
+      // * បញ្ចូលកំណត់ចំណាំខូចខាត
+      Input_Text(
+        init: broke_note, //
+        lead: "Broke Note:", //
+        maxLines: 2, //
+        onChanged: (v) {
+          broke_note = v ?? "";
+          setState(() {});
+        },
+      ),
+
+      // * បញ្ចូលកំណត់ចំណាំជួសជុល
+      Input_Text(
+        init: fix_note, //
+        lead: "Fix Note:", //
+        maxLines: 2, //
+        onChanged: (v) {
+          fix_note = v ?? "";
           setState(() {});
         },
       ),
@@ -127,23 +198,29 @@ class _Main_State extends State<Main_> {
     ]);
   }
 
-  // * អនុវត្តការបង្កើតឧទាហរណ៍
+  // * អនុវត្តការបង្កើត front desk
   void on_create() async {
-    // * ផ្ញើសំណើបង្កើតឧទាហរណ៍
+    // * ផ្ញើសំណើបង្កើត front desk
     setState(() => is_loading = true);
     tmp = await dio.post(
-      endpoint.DEMO_1_CRUD_CREATE, //
+      endpoint.FRONT_DESK_CRUD_CREATE, //
       data: {
-        Demo_1.TEXT_1: text_1, //
-        Demo_1.NUMBER_1: number_1, //
-        Demo_1.DATETIME_1: datetime_1?.toIso8601String(), //
-        Demo_1.LOGIC_1: logic_1, //
-        Demo_1.NOTE: note, //
+        Front_Desk.ROOM_ID: room_id, //
+        Front_Desk.GUEST_ID: guest_id, //
+        Front_Desk.CHECK_IN_NUMBER: check_in_number, //
+        Front_Desk.CHECK_IN_DAY: check_in_day, //
+        Front_Desk.CHECK_IN_HOUR: check_in_hour, //
+        Front_Desk.CHECK_IN_NOTE: check_in_note, //
+        Front_Desk.CANCEL_NOTE: cancel_note, //
+        Front_Desk.CHECK_OUT_NOTE: check_out_note, //
+        Front_Desk.CLEAN_NOTE: clean_note, //
+        Front_Desk.BROKE_NOTE: broke_note, //
+        Front_Desk.FIX_NOTE: fix_note, //
       },
     );
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_CREATE}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_CRUD_CREATE}", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context, tmp.data[0]);
@@ -156,7 +233,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
-// * ថ្នាក់ Main_ ជាទំព័របង្កើតឧទាហរណ៍
+// * ថ្នាក់ Main_ ជាទំព័របង្កើត front desk
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override

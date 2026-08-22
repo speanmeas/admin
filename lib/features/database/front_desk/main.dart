@@ -1,4 +1,4 @@
-// * ទំព័រគ្រប់គ្រងឧទាហរណ៍ (Demo 1) សម្រាប់បង្កើត អាន កែ និងលុប
+// * ទំព័រគ្រប់គ្រង front desk សម្រាប់បង្កើត អាន កែ និងលុប
 
 import "package:flutter/material.dart";
 import "package:flutter/foundation.dart";
@@ -15,7 +15,7 @@ import "form/read.dart" as read;
 import "form/update.dart" as update;
 import "form/delete.dart" as delete;
 
-// * បង្កើត layout មេរបស់ទំព័រគ្រប់គ្រងឧទាហរណ៍
+// * បង្កើត layout មេរបស់ទំព័រគ្រប់គ្រង front desk
 Widget _layout(List<Widget> children) {
   return Scaffold(
     body: Column(
@@ -24,7 +24,7 @@ Widget _layout(List<Widget> children) {
   );
 }
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទិន្នន័យឧទាហរណ៍
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទិន្នន័យ front desk
 class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
@@ -35,14 +35,14 @@ class _Main_State extends State<Main_> {
   int row_total = 0;
   PlutoGridStateManager? state_manager;
 
-  List<Demo_1> data = [];
+  List<Front_Desk> data = [];
 
   // * ផ្ទុកចំនួនជួរដេកសរុប និងទំព័រដំបូង
   void init() async {
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_1_CRUD_READ_COUNT, data: {"count": true});
+    tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_COUNT, data: {"count": true});
     setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_READ_COUNT}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_CRUD_READ_COUNT}", cl: Colors.red);
 
     row_total = parse_int(tmp.data) ?? 0;
     load_page(page);
@@ -51,9 +51,9 @@ class _Main_State extends State<Main_> {
   // * ធ្វើឱ្យទិន្នន័យស្រស់ឡើងវិញ
   void on_refresh() async {
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_1_CRUD_READ_COUNT, data: {"count": true});
+    tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_COUNT, data: {"count": true});
     setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_READ_COUNT}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_CRUD_READ_COUNT}", cl: Colors.red);
 
     row_total = parse_int(tmp.data) ?? 0;
 
@@ -65,10 +65,10 @@ class _Main_State extends State<Main_> {
 
   // * ផ្ទុកទិន្នន័យតាមទំព័រ
   void load_page(int p) async {
-    // * អានទិន្នន័យឧទាហរណ៍តាម offset និង limit
+    // * អានទិន្នន័យ front desk តាម offset និង limit
     setState(() => is_loading = true);
     tmp = await dio.post(
-      endpoint.DEMO_1_CRUD_READ, //
+      endpoint.FRONT_DESK_CRUD_READ, //
       data: {
         "key": DEFAULT_KEY, //
         "order": DEFAULT_ORDER, //
@@ -79,15 +79,15 @@ class _Main_State extends State<Main_> {
     setState(() => is_loading = false);
 
     // * dio ត្រឡប់ null ពេល request បរាជ័យ
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_READ}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_CRUD_READ}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
     // * រក្សាទុក sort និង filter មុនពេលផ្ទុកឡើងវិញ
     final sorted_column = state_manager?.getSortedColumn;
     final filter_rows = List<PlutoRow>.from(state_manager?.filterRows ?? const <PlutoRow>[]);
 
-    // * បម្លែងទិន្នន័យទៅជា List<Demo_1> ដើម្បីបង្កើត PlutoRow
-    data = List<Demo_1>.from((tmp.data ?? const []).map((d) => Demo_1.fromJson(d)));
+    // * បម្លែងទិន្នន័យទៅជា List<Front_Desk> ដើម្បីបង្កើត PlutoRow
+    data = List<Front_Desk>.from((tmp.data ?? const []).map((d) => Front_Desk.fromJson(d)));
 
     // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
     state_manager?.removeAllRows();
@@ -99,19 +99,31 @@ class _Main_State extends State<Main_> {
               c: (() {
                 if (c == "index") //
                   return PlutoCell(value: i + 1);
-                final demo = data[i];
-                if (c == Demo_1.ID) //
-                  return PlutoCell(value: demo.id);
-                if (c == Demo_1.TEXT_1) //
-                  return PlutoCell(value: demo.text_1);
-                if (c == Demo_1.NUMBER_1) //
-                  return PlutoCell(value: demo.number_1);
-                if (c == Demo_1.DATETIME_1) //
-                  return PlutoCell(value: demo.datetime_1);
-                if (c == Demo_1.LOGIC_1) //
-                  return PlutoCell(value: demo.logic_1);
-                if (c == Demo_1.NOTE) //
-                  return PlutoCell(value: demo.note);
+                final f = data[i];
+                if (c == Front_Desk.ID) //
+                  return PlutoCell(value: f.id);
+                if (c == Front_Desk.ROOM_ID) //
+                  return PlutoCell(value: f.room_id?.number);
+                if (c == Front_Desk.GUEST_ID) //
+                  return PlutoCell(value: f.guest_id?.full_name);
+                if (c == Front_Desk.CHECK_IN_NUMBER) //
+                  return PlutoCell(value: f.check_in_number);
+                if (c == Front_Desk.CHECK_IN_DAY) //
+                  return PlutoCell(value: f.check_in_day);
+                if (c == Front_Desk.CHECK_IN_HOUR) //
+                  return PlutoCell(value: f.check_in_hour);
+                if (c == Front_Desk.CHECK_IN_DUE) //
+                  return PlutoCell(value: f.check_in_due);
+                if (c == Front_Desk.CHECK_IN_AT) //
+                  return PlutoCell(value: f.check_in_at);
+                if (c == Front_Desk.CHECK_IN_NOTE) //
+                  return PlutoCell(value: f.check_in_note);
+                if (c == Front_Desk.CANCEL_AT) //
+                  return PlutoCell(value: f.cancel_at);
+                if (c == Front_Desk.CHECK_OUT_AT) //
+                  return PlutoCell(value: f.check_out_at);
+                if (c == Front_Desk.CREATED_AT) //
+                  return PlutoCell(value: f.created_at);
 
                 return PlutoCell(value: null);
               })(),
@@ -341,7 +353,7 @@ class _Main_State extends State<Main_> {
     load_page(page);
   }
 
-  // * បើកទំព័របង្កើតឧទាហរណ៍ថ្មី
+  // * បើកទំព័របង្កើត front desk ថ្មី
   void on_create() async {
     tmp = await nav_push(context, create.Main_());
     if (tmp == null) return;
@@ -355,19 +367,19 @@ class _Main_State extends State<Main_> {
     state_manager?.scroll.vertical?.jumpTo(0);
   }
 
-  // * បើកទំព័រអានព័ត៌មានឧទាហរណ៍
+  // * បើកទំព័រអានព័ត៌មាន front desk
   void on_read() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[Demo_1.ID]?.value?.toString() ?? "";
+    final id = row?.cells[Front_Desk.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
 
     nav_push(context, read.Main_(id: id));
   }
 
-  // * បើកទំព័រកែប្រែឧទាហរណ៍
+  // * បើកទំព័រកែប្រែ front desk
   void on_update() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[Demo_1.ID]?.value?.toString() ?? "";
+    final id = row?.cells[Front_Desk.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
 
     tmp = await nav_push(context, update.Main_(id: id));
@@ -376,10 +388,10 @@ class _Main_State extends State<Main_> {
     load_page(page);
   }
 
-  // * បើកទំព័រលុបឧទាហរណ៍
+  // * បើកទំព័រលុប front desk
   void on_delete() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[Demo_1.ID]?.value?.toString() ?? "";
+    final id = row?.cells[Front_Desk.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) {
       snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
       return;
@@ -428,7 +440,7 @@ final columns = [
 
   // * ជួរឈរ ID (លាក់)
   PlutoColumn(
-    field: Demo_1.ID, //
+    field: Front_Desk.ID, //
     title: "ID",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -436,10 +448,10 @@ final columns = [
     hide: true, //
   ),
 
-  // * ជួរឈរអត្ថបទទី 1
+  // * ជួរឈរបន្ទប់
   PlutoColumn(
-    field: Demo_1.TEXT_1, //
-    title: "Text 1",
+    field: Front_Desk.ROOM_ID, //
+    title: "Room",
     type: PlutoColumnType.text(),
     width: WIDTH,
     enableEditingMode: false,
@@ -454,10 +466,28 @@ final columns = [
     },
   ),
 
-  // * ជួរឈរលេខទី 1
+  // * ជួរឈរភ្ញៀវ
   PlutoColumn(
-    field: Demo_1.NUMBER_1, //
-    title: "Number 1",
+    field: Front_Desk.GUEST_ID, //
+    title: "Guest",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          format_string(rc.cell.value), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+
+  // * ជួរឈរចំនួនភ្ញៀវ
+  PlutoColumn(
+    field: Front_Desk.CHECK_IN_NUMBER, //
+    title: "Guest Num",
     type: PlutoColumnType.number(),
     width: WIDTH,
     enableEditingMode: false,
@@ -465,18 +495,54 @@ final columns = [
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          format_double(rc.cell.value, digits: 2), //
+          format_int(rc.cell.value), //
           overflow: TextOverflow.ellipsis,
         ),
       );
     },
   ),
 
-  // * ជួរឈរកាលបរិច្ឆេទទី 1
+  // * ជួរឈរថ្ងៃស្នាក់នៅ
+  PlutoColumn(
+    field: Front_Desk.CHECK_IN_DAY, //
+    title: "Days",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          format_int(rc.cell.value), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+
+  // * ជួរឈរម៉ោងស្នាក់នៅ
+  PlutoColumn(
+    field: Front_Desk.CHECK_IN_HOUR, //
+    title: "Hours",
+    type: PlutoColumnType.number(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          format_int(rc.cell.value), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+
+  // * ជួរឈរថ្ងៃកំណត់ check out
   PlutoColumn(
     enableEditingMode: false,
-    field: Demo_1.DATETIME_1, //
-    title: "Date Time 1",
+    field: Front_Desk.CHECK_IN_DUE, //
+    title: "Due",
     type: PlutoColumnType.text(),
     width: WIDTH,
     renderer: (rc) {
@@ -490,28 +556,28 @@ final columns = [
     },
   ),
 
-  // * ជួរឈរតក្កវិជ្ជា (បាទ/ទេ) ទី 1
+  // * ជួរឈរពេល check in
   PlutoColumn(
-    field: Demo_1.LOGIC_1, //
-    title: "Logic 1",
+    enableEditingMode: false,
+    field: Front_Desk.CHECK_IN_AT, //
+    title: "Check In At",
     type: PlutoColumnType.text(),
     width: WIDTH,
-    enableEditingMode: false,
     renderer: (rc) {
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          format_bool(rc.cell.value), //
+          format_datetime(rc.cell.value), //
           overflow: TextOverflow.ellipsis,
         ),
       );
     },
   ),
 
-  // * ជួរឈរកំណត់ចំណាំ
+  // * ជួរឈរកំណត់ចំណាំ check in
   PlutoColumn(
-    field: Demo_1.NOTE, //
-    title: "Note",
+    field: Front_Desk.CHECK_IN_NOTE, //
+    title: "Check In Note",
     type: PlutoColumnType.text(),
     width: WIDTH,
     enableEditingMode: false,
@@ -525,9 +591,63 @@ final columns = [
       );
     },
   ),
+
+  // * ជួរឈរពេលបោះបង់
+  PlutoColumn(
+    enableEditingMode: false,
+    field: Front_Desk.CANCEL_AT, //
+    title: "Cancel At",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          format_datetime(rc.cell.value), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+
+  // * ជួរឈរពេល check out
+  PlutoColumn(
+    enableEditingMode: false,
+    field: Front_Desk.CHECK_OUT_AT, //
+    title: "Check Out At",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          format_datetime(rc.cell.value), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+
+  // * ជួរឈរបង្កើតនៅពេលណា
+  PlutoColumn(
+    enableEditingMode: false,
+    field: Front_Desk.CREATED_AT, //
+    title: "Created At",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          format_datetime(rc.cell.value), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
 ];
 
-// * ថ្នាក់ Main_ ជាទំព័រគ្រប់គ្រងឧទាហរណ៍
+// * ថ្នាក់ Main_ ជាទំព័រគ្រប់គ្រង front desk
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override
