@@ -68,10 +68,10 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានទិន្នន័យ front desk តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.FRONT_DESK_CRUD_READ_ID, data: {Front_Desk.ID: widget.id});
+    tmp = await dio.post(endpoint.FRONT_DESK_READ_ID, data: {Front_Desk.ID: widget.id});
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
     final f = Front_Desk.fromJson(tmp.data[0]);
@@ -241,7 +241,7 @@ class _Main_State extends State<Main_> {
     // * ផ្ញើសំណើកែប្រែ front desk
     setState(() => is_loading = true);
     tmp = await dio.post(
-      endpoint.FRONT_DESK_CRUD_UPDATE, //
+      endpoint.FRONT_DESK_UPDATE, //
       data: {
         Front_Desk.ID: widget.id,
         Front_Desk.ROOM_ID: room_id,
@@ -260,7 +260,7 @@ class _Main_State extends State<Main_> {
     );
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_CRUD_UPDATE}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_UPDATE}", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context, tmp.data[0]);

@@ -120,7 +120,7 @@ class _Main_State extends State<Main_> {
     // * ផ្ញើសំណើបង្កើតmini bar
     setState(() => is_loading = true);
     tmp = await dio.post(
-      endpoint.MINI_BAR_CRUD_CREATE, //
+      endpoint.MINI_BAR_CREATE, //
       data: {
         Mini_Bar.NAME: name,
         Mini_Bar.PRICE: price,
@@ -130,7 +130,7 @@ class _Main_State extends State<Main_> {
     );
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.MINI_BAR_CRUD_CREATE}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.MINI_BAR_CREATE}", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context, tmp.data[0]);

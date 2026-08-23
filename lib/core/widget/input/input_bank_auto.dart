@@ -20,7 +20,7 @@ class _Input_Bank_AutoState extends State<Input_Bank_Auto> {
   void init() async {
     try {
       // * ទាញយកបញ្ជីធនាគារពី server
-      tmp = await dio.post(endpoint.BANK_CRUD_READ);
+      tmp = await dio.post(endpoint.BANK_READ);
       data = tmp.data as List<dynamic>;
 
       // * បង្កើតជម្រើស "ពីធនាគារ ទៅធនាគាររបស់យើង"

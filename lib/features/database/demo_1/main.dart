@@ -40,9 +40,9 @@ class _Main_State extends State<Main_> {
   // * ផ្ទុកចំនួនជួរដេកសរុប និងទំព័រដំបូង
   void init() async {
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_1_CRUD_READ_COUNT, data: {"count": true});
+    tmp = await dio.post(endpoint.DEMO_1_READ_COUNT, data: {"count": true});
     setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_READ_COUNT}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_READ_COUNT}", cl: Colors.red);
 
     row_total = parse_int(tmp.data) ?? 0;
     load_page(page);
@@ -51,9 +51,9 @@ class _Main_State extends State<Main_> {
   // * ធ្វើឱ្យទិន្នន័យស្រស់ឡើងវិញ
   void on_refresh() async {
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_1_CRUD_READ_COUNT, data: {"count": true});
+    tmp = await dio.post(endpoint.DEMO_1_READ_COUNT, data: {"count": true});
     setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_READ_COUNT}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_READ_COUNT}", cl: Colors.red);
 
     row_total = parse_int(tmp.data) ?? 0;
 
@@ -68,7 +68,7 @@ class _Main_State extends State<Main_> {
     // * អានទិន្នន័យឧទាហរណ៍តាម offset និង limit
     setState(() => is_loading = true);
     tmp = await dio.post(
-      endpoint.DEMO_1_CRUD_READ, //
+      endpoint.DEMO_1_READ, //
       data: {
         "key": DEFAULT_KEY, //
         "order": DEFAULT_ORDER, //
@@ -79,7 +79,7 @@ class _Main_State extends State<Main_> {
     setState(() => is_loading = false);
 
     // * dio ត្រឡប់ null ពេល request បរាជ័យ
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_CRUD_READ}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_READ}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
     // * រក្សាទុក sort និង filter មុនពេលផ្ទុកឡើងវិញ

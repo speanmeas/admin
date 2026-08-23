@@ -52,7 +52,7 @@ class _Search_GuestState extends State<Search_Guest> {
     try {
       // * ទាញយកព័ត៌មានភ្ញៀវតាម id
       tmp = await dio.post(
-        endpoint.GUEST_CRUD_READ_ID, //
+        endpoint.GUEST_READ_ID, //
         data: {Guest.ID: widget.init},
       );
       if (tmp.data.isEmpty) return;

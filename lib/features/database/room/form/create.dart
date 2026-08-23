@@ -142,11 +142,11 @@ class _Main_State extends State<Main_> {
     // * ផ្ញើសំណើបង្កើតបន្ទប់
     setState(() => is_loading = true);
     tmp = await dio.post(
-      endpoint.ROOM_CRUD_CREATE, //
+      endpoint.ROOM_CREATE, //
       data: {
         Room.NUMBER: number,
-        Room.USD_PER_DAY: usd_per_day,
-        Room.USD_PER_3H: usd_per_3h,
+        Room.PRICE_PER_DAY: usd_per_day,
+        Room.PRICE_PER_3H: usd_per_3h,
         Room.KIND: kind,
         Room.STATUS: status,
         Room.NOTE: note, //
@@ -154,7 +154,7 @@ class _Main_State extends State<Main_> {
     );
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_CREATE}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CREATE}", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context, tmp.data[0]);

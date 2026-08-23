@@ -46,7 +46,7 @@ class _Search_NationalityState extends State<Search_Nationality> {
     try {
       // * ទាញយកព័ត៌មានសញ្ជាតិតាមឈ្មោះ
       tmp = await dio.post(
-        endpoint.NATIONALITY_CRUD_READ_STRING, //
+        endpoint.NATIONALITY_READ_STRING, //
         data: {
           "key": Nationality.NAME, //
           "query": widget.init, //
@@ -89,7 +89,7 @@ class _Search_NationalityState extends State<Search_Nationality> {
                   try {
                     //
                     tmp = await dio.post(
-                      endpoint.NATIONALITY_CRUD_READ_STRING,
+                      endpoint.NATIONALITY_READ_STRING,
                       data: {
                         "key": Nationality.NAME, //
                         "query": q, //

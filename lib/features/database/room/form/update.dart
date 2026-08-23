@@ -62,16 +62,16 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានទិន្នន័យបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.id});
+    tmp = await dio.post(endpoint.ROOM_READ_ID, data: {Room.ID: widget.id});
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
     final room = Room.fromJson(tmp.data[0]);
     number = room.number;
-    usd_per_day = room.usd_per_day;
-    usd_per_3h = room.usd_per_3h;
+    usd_per_day = room.price_per_day;
+    usd_per_3h = room.price_per_3h;
     kind = room.kind;
     status = room.status;
     note = room.note;
@@ -160,12 +160,12 @@ class _Main_State extends State<Main_> {
     // * ផ្ញើសំណើកែប្រែបន្ទប់
     setState(() => is_loading = true);
     tmp = await dio.post(
-      endpoint.ROOM_CRUD_UPDATE, //
+      endpoint.ROOM_UPDATE, //
       data: {
         Room.ID: widget.id,
         Room.NUMBER: number,
-        Room.USD_PER_DAY: usd_per_day,
-        Room.USD_PER_3H: usd_per_3h,
+        Room.PRICE_PER_DAY: usd_per_day,
+        Room.PRICE_PER_3H: usd_per_3h,
         Room.KIND: kind,
         Room.STATUS: status,
         Room.NOTE: note, //
@@ -173,7 +173,7 @@ class _Main_State extends State<Main_> {
     );
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_UPDATE}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_UPDATE}", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context, tmp.data[0]);

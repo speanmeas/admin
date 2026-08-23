@@ -54,10 +54,10 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានទិន្នន័យធនាគារតាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.BANK_CRUD_READ_ID, data: {Bank.ID: widget.id});
+    tmp = await dio.post(endpoint.BANK_READ_ID, data: {Bank.ID: widget.id});
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.BANK_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.BANK_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
     final bank = Bank.fromJson(tmp.data[0]);

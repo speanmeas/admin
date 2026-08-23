@@ -51,7 +51,7 @@ class _Search_RoomState extends State<Search_Room> {
     try {
       // * ទាញយកព័ត៌មានបន្ទប់តាម id
       tmp = await dio.post(
-        endpoint.ROOM_CRUD_READ_ID, //
+        endpoint.ROOM_READ_ID, //
         data: {Room.ID: widget.init},
       );
       if (tmp.data.isEmpty) return;
@@ -61,8 +61,8 @@ class _Search_RoomState extends State<Search_Room> {
       id = r.id;
       number = r.number;
       kind = r.kind;
-      usd_per_day = r.usd_per_day;
-      usd_per_3h = r.usd_per_3h;
+      usd_per_day = r.price_per_day;
+      usd_per_3h = r.price_per_3h;
       note = r.note;
 
       controller.text = "$number (${kind ?? "N/A"})";
@@ -92,7 +92,7 @@ class _Search_RoomState extends State<Search_Room> {
                 suggestionsCallback: (q) async {
                   try {
                     tmp = await dio.post(
-                      endpoint.ROOM_CRUD_READ_STRING, //
+                      endpoint.ROOM_READ_STRING, //
                       data: {
                         "key": Room.NUMBER, //
                         "query": q, //
@@ -168,8 +168,8 @@ class _Search_RoomState extends State<Search_Room> {
                     id = r.id;
                     number = r.number;
                     kind = r.kind;
-                    usd_per_day = r.usd_per_day;
-                    usd_per_3h = r.usd_per_3h;
+                    usd_per_day = r.price_per_day;
+                    usd_per_3h = r.price_per_3h;
                     note = r.note;
 
                     widget.onChanged?.call(id);
@@ -199,8 +199,8 @@ class _Search_RoomState extends State<Search_Room> {
                 id = r.id;
                 number = r.number;
                 kind = r.kind;
-                usd_per_day = r.usd_per_day;
-                usd_per_3h = r.usd_per_3h;
+                usd_per_day = r.price_per_day;
+                usd_per_3h = r.price_per_3h;
                 note = r.note;
 
                 controller.text = number ?? "";

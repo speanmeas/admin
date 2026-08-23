@@ -76,9 +76,9 @@ class _Main_State extends State<Main_> {
   void on_delete() async {
     // * ផ្ញើសំណើលុប front desk
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.FRONT_DESK_CRUD_DELETE, data: {"_id": widget.id});
+    tmp = await dio.post(endpoint.FRONT_DESK_DELETE, data: {"_id": widget.id});
     setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_CRUD_DELETE}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_DELETE}", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context, tmp.data);

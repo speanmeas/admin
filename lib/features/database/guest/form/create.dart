@@ -134,7 +134,7 @@ class _Main_State extends State<Main_> {
     // * ផ្ញើសំណើបង្កើតភ្ញៀវ
     setState(() => is_loading = true);
     tmp = await dio.post(
-      endpoint.GUEST_CRUD_CREATE, //
+      endpoint.GUEST_CREATE, //
       data: {
         Guest.FULL_NAME: full_name,
         Guest.PHONE_NUMBER: phone_number,
@@ -145,7 +145,7 @@ class _Main_State extends State<Main_> {
     );
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.GUEST_CRUD_CREATE}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.GUEST_CREATE}", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context, tmp.data[0]);
