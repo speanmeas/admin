@@ -3,6 +3,7 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 import "../dialog/pick_item.dart";
+import "../helper.dart";
 import "update_mini_bar_2.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រគិតថ្លៃ mini bar
@@ -53,41 +54,62 @@ class _Main_State extends State<Main_> {
   // * បន្ទប់ដែលកំពុងកែសម្រួល (ទាញតាម room_id)
   Room? map_room;
 
+  // * stay សកម្មរបស់បន្ទប់
+  Front_Desk? map_fd;
+
   // * បញ្ជី order mini bar ដែលមានស្រាប់ (សម្រាប់កែសម្រួល)
   List<Order_Mini_Bar> init_order_mini_bar = [];
 
   // * ទាញយកបញ្ជីទំនិញ mini bar និង order ដែលមានស្រាប់ពី Server
   void init() async {
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.MINI_BAR_CRUD_READ);
-    setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.MINI_BAR_CRUD_READ}"), cl: Colors.red);
-
+    tmp = await dio.post(endpoint.MINI_BAR_READ);
+    if (tmp == null) {
+      setState(() => is_loading = false);
+      return snackbar(ct: context, ms: t("Error: ${endpoint.MINI_BAR_READ}"), cl: Colors.red);
+    }
     list_mini_bar = (tmp?.data as List<dynamic>? ?? []).map((e) => Mini_Bar.fromJson(e as Map<String, dynamic>)).toList();
 
     // * អានព័ត៌មានបន្ទប់តាម id ដើម្បីទាញ order mini bar ដែលមានស្រាប់
-    setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
-    setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
+    tmp = await dio.post(endpoint.ROOM_READ_ID, data: {Room.ID: widget.room_id});
+    if (tmp == null) {
+      setState(() => is_loading = false);
+      return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_READ_ID}"), cl: Colors.red);
+    }
 
     map_room = Room.fromJson(tmp.data[0]);
-    init_order_mini_bar = map_room?.front_desk_id?.order_mini_bar ?? [];
 
-    // * បំពេញ list_order_mini_bar ពី order ដែលមានស្រាប់ (សម្រាប់កែសម្រួល)
-    list_order_mini_bar = [];
-    for (var o in init_order_mini_bar) {
-      if ((o.quantity ?? 0) > 0) {
-        list_order_mini_bar.add(
+    // * រក stay សកម្មរបស់បន្ទប់
+    final fds = await load_fds();
+    map_fd = active_fd(fds, widget.room_id);
+
+    // * អាន item mini bar ដែលភ្ជាប់នឹងឯកសារទូទាត់របស់ stay
+    init_order_mini_bar = [];
+    final pay_id = map_fd?.mini_bar_pay_id?.id;
+    if (pay_id != null) {
+      tmp = await dio.post(endpoint.MINI_BAR_ITEM_READ);
+      if (tmp == null) {
+        setState(() => is_loading = false);
+        return snackbar(ct: context, ms: t("Error: ${endpoint.MINI_BAR_ITEM_READ}"), cl: Colors.red);
+      }
+      final items = [for (final d in (tmp.data ?? const [])) Mini_Bar_Item.fromJson(d)];
+      for (var o in items) {
+        if (o.mini_bar_pay_id?.id != pay_id) continue; // * មិនមែនរបស់ stay នេះ
+        if ((o.quantity ?? 0) <= 0) continue;
+        init_order_mini_bar.add(
           Order_Mini_Bar(
-            mini_bar_id: Mini_Bar_Show(id: o.mini_bar_id?.id, name: o.mini_bar_id?.name, price: o.mini_bar_id?.price),
-            quantity: o.quantity,
+            id: o.id, //
+            mini_bar_id: Mini_Bar_Show_2(id: o.mini_bar_id?.id, name: o.mini_bar_id?.name, price: o.mini_bar_id?.price),
+            quantity: o.quantity ?? 1,
           ),
         );
       }
     }
 
-    setState(() {});
+    // * បំពេញ list_order_mini_bar ពី order ដែលមានស្រាប់ (សម្រាប់កែសម្រួល)
+    list_order_mini_bar = [...init_order_mini_bar];
+
+    setState(() => is_loading = false);
   }
 
   @override
@@ -215,7 +237,7 @@ class _Main_State extends State<Main_> {
   // * ចំនួនទំនិញតាម id (0 បើមិនទាន់មានក្នុង list_order_mini_bar)
   int _qty_of(String? id) {
     for (var o in list_order_mini_bar) {
-      if (o.mini_bar_id?.id == id) return o.quantity ?? 0;
+      if (o.mini_bar_id?.id == id) return o.quantity;
     }
     return 0;
   }
@@ -247,7 +269,7 @@ class _Main_State extends State<Main_> {
     if (qty > 0) {
       list_order_mini_bar.add(
         Order_Mini_Bar(
-          mini_bar_id: Mini_Bar_Show(id: item.id, name: item.name, price: item.price),
+          mini_bar_id: Mini_Bar_Show_2(id: item.id, name: item.name, price: item.price),
           quantity: qty,
         ),
       );
@@ -258,7 +280,7 @@ class _Main_State extends State<Main_> {
   double get _total {
     var total = 0.0;
     for (var o in list_order_mini_bar) {
-      final qty = o.quantity ?? 0;
+      final qty = o.quantity;
       if (qty > 0) {
         total += qty * (o.mini_bar_id?.price ?? 0);
       }

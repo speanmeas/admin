@@ -7,6 +7,7 @@ import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/widget/input/input_bank_auto.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
+import "../helper.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រទូទាត់បន្ទប់
 Widget _layout(List<Widget> children) {
@@ -45,11 +46,14 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   dynamic tmp;
   Room? map_room;
+  Front_Desk? map_fd;
   bool is_loading = true;
 
   double? new_price;
   double? old_price;
   double? last_paid;
+  double prev_cash = 0;
+  double prev_bank = 0;
   double? add_cash;
   double? add_bank;
   double? sub_return;
@@ -57,31 +61,28 @@ class _Main_State extends State<Main_> {
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ និងប្រវត្តិការទូទាត់
   void init() async {
-    pprint(widget.room_id);
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
-    setState(() => is_loading = false);
-
-    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
-
+    tmp = await dio.post(endpoint.ROOM_READ_ID, data: {Room.ID: widget.room_id});
+    if (tmp == null) {
+      setState(() => is_loading = false);
+      return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_READ_ID}"), cl: Colors.red);
+    }
     map_room = Room.fromJson(tmp.data[0]);
 
-    // * គណនាតម្លៃចាស់ និងប្រាក់ដែលបានទទួលរួច
-    final pay_room_list = map_room?.front_desk_id?.pay_room ?? [];
-    for (var l in pay_room_list) {
-      // * តម្លៃសរុប = ផលបូកនៃ add_price ដក sub_price ទាំងអស់
-      old_price = (old_price ?? 0) + (l.add_price ?? 0);
-      old_price = (old_price ?? 0) - (l.sub_price ?? 0);
-      // * ប្រាក់ដែលបានទទួលសរុប
-      last_paid = (last_paid ?? 0) + (l.add_cash ?? 0);
-      last_paid = (last_paid ?? 0) + (l.add_bank ?? 0);
-      last_paid = (last_paid ?? 0) - (l.sub_return ?? 0);
-    }
+    // * រក stay សកម្មរបស់បន្ទប់
+    final fds = await load_fds();
+    map_fd = active_fd(fds, widget.room_id);
+
+    // * តម្លៃចាស់ និងប្រាក់ដែលបានទទួលរួច (ពី room_pay តែមួយ)
+    old_price = map_fd?.room_pay_id?.price ?? 0;
+    last_paid = paid_of(map_fd?.room_pay_id);
+    prev_cash = map_fd?.room_pay_id?.cash ?? 0;
+    prev_bank = map_fd?.room_pay_id?.bank ?? 0;
 
     new_price = old_price;
 
-    setState(() {});
+    setState(() => is_loading = false);
   }
 
   @override
@@ -200,22 +201,13 @@ class _Main_State extends State<Main_> {
   // * ពិនិត្យថាអាចទូទាត់បានឬអត់
   bool get can_pay {
     if (is_loading) return false;
-    if (map_room?.front_desk_id?.id == null) return false;
+    if (map_fd?.id == null) return false;
     if ((new_price ?? 0) <= 0) return false;
     if (balanced != 0) return false;
     return true;
   }
 
-  // * ភាពខុសគ្នារវាងតម្លៃថ្មី និងតម្លៃចាស់
-  double get _diff => (new_price ?? 0) - (old_price ?? 0);
-
-  // * បើតម្លៃថ្មីខ្ពស់ជាង បញ្ចូលទៅ add_price
-  double get add_price => _diff > 0 ? _diff : 0;
-
-  // * បើតម្លៃថ្មីទាបជាង បញ្ចូលទៅ sub_price
-  double get sub_price => _diff < 0 ? -_diff : 0;
-
-  // * គណនាបានប្រាក់សំណើរ = ប្រាក់ទទួលសរុប - តម្លៃថ្មីសរុប
+  // * គណនាប្រាក់សំណល់ = ប្រាក់ទទួលសរុប - តម្លៃថ្មីសរុប
   double get balanced {
     double temp = 0;
 
@@ -230,17 +222,16 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការទូទាត់បន្ទប់
   void on_pay() async {
-    // * កត់ត្រាការទូទាត់បន្ទប់
+    // * កត់ត្រាការទូទាត់បន្ទប់ (upsert room_pay + link)
     setState(() => is_loading = true);
     await dio.post(
-      endpoint.FRONT_DESK_UPDATE_PAY_ROOM,
+      endpoint.FRONT_DESK_UPDATE_ROOM_PAY,
       data: {
-        Front_Desk.ID: map_room?.front_desk_id?.id, //
-        Pay_Room.ADD_PRICE: add_price, //
-        Pay_Room.SUB_PRICE: sub_price, //
-        Pay_Room.ADD_CASH: add_cash ?? 0, //
-        Pay_Room.ADD_BANK: add_bank ?? 0, //
-        Pay_Room.SUB_RETURN: sub_return ?? 0, //
+        Front_Desk.ID: map_fd?.id, //
+        Pay_Room.PRICE: new_price ?? 0, //
+        // * ប្រាក់សរុប = ចាស់ + ថ្មី - ប្រាក់អាប់
+        Pay_Room.CASH: prev_cash + (add_cash ?? 0) - (sub_return ?? 0), //
+        Pay_Room.BANK: prev_bank + (add_bank ?? 0), //
         Pay_Room.NOTE: note ?? "", //
       },
     );
@@ -249,7 +240,7 @@ class _Main_State extends State<Main_> {
     // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Pending Leave
     setState(() => is_loading = true);
     await dio.post(
-      endpoint.ROOM_CRUD_UPDATE, //
+      endpoint.ROOM_UPDATE, //
       data: {
         Room.ID: widget.room_id, //
         Room.STATUS: room_status.PENDING_LEAVE, //

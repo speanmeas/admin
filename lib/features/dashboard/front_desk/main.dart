@@ -25,11 +25,13 @@ import "form/update_pay_other.dart" as pay_other;
 import "form/update_guest.dart" as update_guest;
 import "form/update_pay_room.dart" as update_pay_room;
 import "form/update_stay.dart" as update_stay;
+import "helper.dart";
 
 // * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការបង្ហាញបន្ទប់ទាំងអស់
 class _Main_State extends State<Main_> {
   dynamic tmp;
   List<Room> list_room = [];
+  List<Front_Desk> list_fd = [];
   bool is_loading = true;
 
   String? search;
@@ -40,16 +42,23 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានបញ្ជីបន្ទប់ទាំងអស់
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ, data: {"key": Room.NUMBER, "order": 1});
-    setState(() => is_loading = false);
-
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_READ}", cl: Colors.red);
-    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No rooms found", cl: Colors.red);
+    tmp = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
+    if (tmp == null) {
+      setState(() => is_loading = false);
+      return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_READ}", cl: Colors.red);
+    }
+    if (tmp.data.isEmpty) {
+      setState(() => is_loading = false);
+      return snackbar(ct: context, ms: "No rooms found", cl: Colors.red);
+    }
 
     // * បម្លែងទិន្នន័យទៅជា List<Room> ដើម្បីអានតាម typed model
     list_room = List<Room>.from((tmp.data ?? const []).map((d) => Room.fromJson(d)));
 
-    setState(() {});
+    // * អានបញ្ជី stay ទាំងអស់ (ភ្ជាប់ room/guest/pay រួចហើយ)
+    list_fd = await load_fds();
+
+    setState(() => is_loading = false);
   }
 
   // * បង្កើត layout មេដែលមានប្រអប់ស្វែងរក និងប៊ូតុង refresh
@@ -241,22 +250,22 @@ class _Main_State extends State<Main_> {
 
                       (() {
                         String kind = r.kind ?? t("N/A");
-                        double usd_per_3h = r.usd_per_3h ?? 0;
-                        double usd_per_day = r.usd_per_day ?? 0;
+                        double price_per_3h = r.price_per_3h ?? 0;
+                        double price_per_day = r.price_per_day ?? 0;
                         return Row(
                           spacing: 4,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(kind, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                             Text("-"), //
-                            Text("${usd_per_3h.toStringAsFixed(2)} \$ / 3 ${t("Hours")}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)), //
+                            Text("${price_per_3h.toStringAsFixed(2)} \$ / 3 ${t("Hours")}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)), //
                             Text("-"), //
-                            Text("${usd_per_day.toStringAsFixed(2)} \$ / 1 ${t("Days")}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                            Text("${price_per_day.toStringAsFixed(2)} \$ / 1 ${t("Days")}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                           ],
                         );
                       })(),
 
-                      if (r.front_desk_id != null) ...[
+                      if (_fd(r) != null) ...[
                         if (!"${r.status}".contains(room_status.PENDING_FIX))
                           (() {
                             final guest = _fd(r)?.guest_id;
@@ -326,19 +335,11 @@ class _Main_State extends State<Main_> {
 
                         if (![room_status.PENDING_FIX].contains(r.status))
                           (() {
-                            final pay_room_list = _fd(r)?.pay_room ?? [];
-                            double price = 0;
-                            double pay = 0;
-                            double change = 0;
-                            for (var l in pay_room_list) {
-                              price = price + (l.add_price ?? 0);
-                              price = price - (l.sub_price ?? 0);
-                              pay = pay + (l.add_cash ?? 0);
-                              pay = pay + (l.add_bank ?? 0);
-                              change = change + (l.sub_return ?? 0);
-                            }
-                            // * សមតុល្យ room payment ដែលនៅសល់ (ប្រាក់ដែលបានទទួល - ប្រាក់អាប់)
-                            final balance = price - (pay - change);
+                            final pay = _fd(r)?.room_pay_id;
+                            final price = price_of(pay);
+                            final paid = paid_of(pay);
+                            // * សមតុល្យ room payment ដែលនៅសល់
+                            final balance = price - paid;
                             return Row(
                               spacing: 4,
                               children: [
@@ -355,13 +356,16 @@ class _Main_State extends State<Main_> {
                                 //
                                 SizedBox(width: 4), //
                                 Icon(Icons.circle, size: 6), //
-                                Text(t("Pay"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                                Text("${pay.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
+                                Text(t("Paid"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                                Text("${paid.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                                 //
                                 SizedBox(width: 4), //
                                 Icon(Icons.circle, size: 6), //
-                                Text(t("Return"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                                Text("${change.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
+                                Text(t("Due"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                                Text(
+                                  "${balance.toStringAsFixed(2)} \$",
+                                  style: TextStyle(color: balance > 0 ? Colors.red : Colors.blue), //
+                                ), //
 
                                 if (![room_status.PENDING_CLEAN].contains(r.status))
                                   Tooltip(
@@ -377,19 +381,11 @@ class _Main_State extends State<Main_> {
                           })(),
                         if (![room_status.PENDING_FIX].contains(r.status))
                           (() {
-                            final pay_mini_bar_list = _fd(r)?.pay_mini_bar ?? [];
-                            double price = 0;
-                            double pay = 0;
-                            double change = 0;
-                            for (var l in pay_mini_bar_list) {
-                              price = price + (l.add_price ?? 0);
-                              price = price - (l.sub_price ?? 0);
-                              pay = pay + (l.add_cash ?? 0);
-                              pay = pay + (l.add_bank ?? 0);
-                              change = change + (l.sub_return ?? 0);
-                            }
-                            // * សមតុល្យ mini bar ដែលនៅសល់ (ប្រាក់ដែលបានទទួល - ប្រាក់អាប់)
-                            final balance = price - (pay - change);
+                            final pay = _fd(r)?.mini_bar_pay_id;
+                            final price = price_of(pay);
+                            final paid = paid_of(pay);
+                            // * សមតុល្យ mini bar ដែលនៅសល់
+                            final balance = price - paid;
                             return Row(
                               spacing: 4,
                               children: [
@@ -409,13 +405,16 @@ class _Main_State extends State<Main_> {
                                 //
                                 SizedBox(width: 4), //
                                 Icon(Icons.circle, size: 6), //
-                                Text(t("Pay"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                                Text("${pay.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
+                                Text(t("Paid"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                                Text("${paid.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                                 //
                                 SizedBox(width: 4), //
                                 Icon(Icons.circle, size: 6), //
-                                Text(t("Return"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                                Text("${change.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
+                                Text(t("Due"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                                Text(
+                                  "${balance.toStringAsFixed(2)} \$",
+                                  style: TextStyle(color: balance > 0 ? Colors.red : Colors.blue), //
+                                ), //
 
                                 if (![room_status.PENDING_CLEAN].contains(r.status))
                                   Tooltip(
@@ -432,19 +431,11 @@ class _Main_State extends State<Main_> {
                         // payment other info
                         if (![room_status.PENDING_FIX].contains(r.status))
                           (() {
-                            final pay_other_list = _fd(r)?.pay_other ?? [];
-                            double price = 0;
-                            double pay = 0;
-                            double change = 0;
-                            for (var l in pay_other_list) {
-                              price = price + (l.add_price ?? 0);
-                              price = price - (l.sub_price ?? 0);
-                              pay = pay + (l.add_cash ?? 0);
-                              pay = pay + (l.add_bank ?? 0);
-                              change = change + (l.sub_return ?? 0);
-                            }
-                            // * សមតុល្យ other payment ដែលនៅសល់ (ប្រាក់ដែលបានទទួល - ប្រាក់អាប់)
-                            final balance = price - (pay - change);
+                            final pay = _fd(r)?.penalty_pay_id;
+                            final price = price_of(pay);
+                            final paid = paid_of(pay);
+                            // * សមតុល្យ other payment ដែលនៅសល់
+                            final balance = price - paid;
                             return Row(
                               spacing: 4,
                               children: [
@@ -461,13 +452,16 @@ class _Main_State extends State<Main_> {
                                 //
                                 SizedBox(width: 4), //
                                 Icon(Icons.circle, size: 6), //
-                                Text(t("Pay"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                                Text("${pay.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
+                                Text(t("Paid"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                                Text("${paid.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
                                 //
                                 SizedBox(width: 4), //
                                 Icon(Icons.circle, size: 6), //
-                                Text(t("Return"), style: TextStyle(fontWeight: FontWeight.bold)), //
-                                Text("${change.toStringAsFixed(2)} \$", style: TextStyle(color: Colors.blue)), //
+                                Text(t("Due"), style: TextStyle(fontWeight: FontWeight.bold)), //
+                                Text(
+                                  "${balance.toStringAsFixed(2)} \$",
+                                  style: TextStyle(color: balance > 0 ? Colors.red : Colors.blue), //
+                                ), //
                                 //
                                 if (r.status != room_status.PENDING_CLEAN)
                                   Tooltip(
@@ -582,21 +576,6 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  // * គណនាចំនួនទឹកប្រាក់ដែលនៅសល់ត្រូវបង់សម្រាប់បញ្ជីទូទាត់មួយ
-  // * pay ត្រូវដក sub_return (ប្រាក់អាប់) ដូច block បង្ហាញក្នុង UI
-  double _outstanding(List<dynamic>? items) {
-    double price = 0;
-    double pay = 0;
-    for (var l in (items ?? [])) {
-      price = price + (l.add_price ?? 0);
-      price = price - (l.sub_price ?? 0);
-      pay = pay + (l.add_cash ?? 0);
-      pay = pay + (l.add_bank ?? 0);
-      pay = pay - (l.sub_return ?? 0);
-    }
-    return price - pay;
-  }
-
   // * បើកទំព័រ check in សម្រាប់បន្ទប់
   void on_check_in(dynamic r) async {
     tmp = await nav_push(context, check_in.Main_(room_id: r.id));
@@ -607,8 +586,8 @@ class _Main_State extends State<Main_> {
   void on_payment(dynamic r) async {
     // * បើ mini bar ឬ other មិនទាន់បង់អស់ មិនអនុញ្ញាតឱ្យទូទាត់ទេ
     final fd = _fd(r);
-    final mini_bar_due = _outstanding(fd?.pay_mini_bar);
-    final other_due = _outstanding(fd?.pay_other);
+    final mini_bar_due = due_of(fd?.mini_bar_pay_id);
+    final other_due = due_of(fd?.penalty_pay_id);
     if (mini_bar_due <= 0 && other_due <= 0) {
       tmp = await nav_push(context, pay_room.Main_(room_id: r.id));
       if (tmp != null) init();
@@ -698,7 +677,7 @@ class _Main_State extends State<Main_> {
   }
 
   // * Safe lookup into front_desk; returns null if the room has no front-desk record
-  Front_Desk? _fd(Room r) => r.front_desk_id;
+  Front_Desk? _fd(Room r) => active_fd(list_fd, r.id);
 
   // * ត្រងបញ្ជីបន្ទប់តាមលក្ខខណ្ឌស្វែងរក
   List<Room> get _list_show {

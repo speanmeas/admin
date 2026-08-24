@@ -7,6 +7,7 @@ import "package:speanmeas/core/enum/room_status.dart" as room_status;
 import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/widget/input/input_text.dart";
+import "../helper.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រ fix
 Widget _layout(List<Widget> children) {
@@ -45,6 +46,7 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   dynamic tmp;
   Room? map_r;
+  Front_Desk? map_fd;
   bool is_loading = true;
 
   String? note;
@@ -53,16 +55,20 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
-    setState(() => is_loading = false);
-
-    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
-
+    tmp = await dio.post(endpoint.ROOM_READ_ID, data: {Room.ID: widget.room_id});
+    if (tmp == null) {
+      setState(() => is_loading = false);
+      return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_READ_ID}"), cl: Colors.red);
+    }
     map_r = Room.fromJson(tmp.data[0]);
 
-    note = map_r?.front_desk_id?.fix_note ?? "";
+    // * រក stay សកម្មរបស់បន្ទប់
+    final fds = await load_fds();
+    map_fd = active_fd(fds, widget.room_id);
 
-    setState(() {});
+    note = map_fd?.fix_note ?? "";
+
+    setState(() => is_loading = false);
   }
 
   @override
@@ -107,11 +113,11 @@ class _Main_State extends State<Main_> {
   void on_fix() async {
     // * កត់ត្រាការជួសជុលទៅ front desk ជាមុន
     setState(() => is_loading = true);
-    if (map_r?.front_desk_id?.id != null)
+    if (map_fd?.id != null)
       await dio.post(
         endpoint.FRONT_DESK_FIX,
         data: {
-          Front_Desk.ID: map_r?.front_desk_id?.id, //
+          Front_Desk.ID: map_fd?.id, //
           Front_Desk.FIX_NOTE: note, //
         },
       );
@@ -120,11 +126,10 @@ class _Main_State extends State<Main_> {
     // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Available
     setState(() => is_loading = true);
     await dio.post(
-      endpoint.ROOM_CRUD_UPDATE, //
+      endpoint.ROOM_UPDATE, //
       data: {
         Room.ID: widget.room_id, //
         Room.STATUS: room_status.AVAILABLE, //
-        Room.FRONT_DESK_ID: null, //
       },
     );
     setState(() => is_loading = false);

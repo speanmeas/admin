@@ -84,13 +84,13 @@ class _Dialog_State extends State<Dialog_> {
   void on_okay() async {
     // * ផ្ញើសំណើធ្វើបច្ចុប្បន្នភាពឈ្មោះអ្នកប្រើ
     tmp = await dio.post(
-      endpoint.USER_CRUD_UPDATE, //
+      endpoint.USER_UPDATE, //
       data: {
         User.ID: await secure.read(key: "_id"), //
         User.USERNAME: username, //
       },
     );
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.USER_CRUD_UPDATE}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.USER_UPDATE}", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context, true);

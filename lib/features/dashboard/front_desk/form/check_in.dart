@@ -63,16 +63,16 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
+    tmp = await dio.post(endpoint.ROOM_READ_ID, data: {Room.ID: widget.room_id});
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_READ_ID}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_READ_ID}", cl: Colors.red);
 
     data = Room.fromJson(tmp.data[0]);
 
     room_number = data?.number ?? "";
-    price_per_day = data?.usd_per_day ?? 0;
-    price_per_3hours = data?.usd_per_3h ?? 0;
+    price_per_day = data?.price_per_day ?? 0;
+    price_per_3hours = data?.price_per_3h ?? 0;
 
     number_of_guest = 1;
     stay_days = 0;
@@ -209,23 +209,22 @@ class _Main_State extends State<Main_> {
     }
     final front_desk_id = (data_list.first as Map)[Front_Desk.ID];
 
-    // * បន្ថែមតម្លៃបន្ទប់ទៅការទូទាត់
+    // * បន្ថែមតម្លៃបន្ទប់ទៅការទូទាត់ (upsert room_pay + link)
     if (add_room_price > 0)
       await dio.post(
-        endpoint.FRONT_DESK_UPDATE_PAY_ROOM, // update
+        endpoint.FRONT_DESK_UPDATE_ROOM_PAY, // update
         data: {
           Front_Desk.ID: front_desk_id, //
-          Pay_Room.ADD_PRICE: add_room_price,
+          Pay_Room.PRICE: add_room_price,
         },
       );
 
     // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Pending Pay
     await dio.post(
-      endpoint.ROOM_CRUD_UPDATE, //
+      endpoint.ROOM_UPDATE, //
       data: {
         Room.ID: widget.room_id, //
         Room.STATUS: room_status.PENDING_PAY, //
-        Room.FRONT_DESK_ID: front_desk_id, //
       },
     );
     setState(() => is_loading = false);

@@ -2,6 +2,19 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
+// * ថ្នាក់ទិន្នន័យការបញ្ជាទំនិញ mini bar (ប្រើក្នុង UI មុនពេលរក្សាទុក)
+class Order_Mini_Bar {
+  final String? id; // * id នៃ Mini_Bar_Item ដែលរក្សាទុករួច (null = ថ្មី)
+  final Mini_Bar_Show_2? mini_bar_id;
+  int quantity;
+  Order_Mini_Bar({this.id, this.mini_bar_id, this.quantity = 1});
+
+  // * តម្លៃសរុប = price × quantity
+  double get total => (mini_bar_id?.price ?? 0) * quantity;
+
+  factory Order_Mini_Bar.fromJson(Map<String, dynamic> m) => Order_Mini_Bar(id: parse_string(m["_id"]), mini_bar_id: m["mini_bar_id"] == null ? null : Mini_Bar_Show_2.fromJson(m["mini_bar_id"]), quantity: parse_int(m["quantity"]) ?? 1);
+}
+
 class _Item_PickerState extends State<Pick_Item> {
   late List<Mini_Bar> list_mini_bar = widget.list_mini_bar;
 
@@ -141,7 +154,7 @@ class _Item_PickerState extends State<Pick_Item> {
     } else {
       list_order_mini_bar.add(
         Order_Mini_Bar(
-          mini_bar_id: Mini_Bar_Show(id: item.id, name: item.name, price: item.price),
+          mini_bar_id: Mini_Bar_Show_2(id: item.id, name: item.name, price: item.price),
           quantity: 1,
         ),
       );

@@ -52,9 +52,9 @@ class _Main_State extends State<Main_> {
   // * ទាញយកបញ្ជីទំនិញ mini bar ពី Server
   void init() async {
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.MINI_BAR_CRUD_READ);
+    tmp = await dio.post(endpoint.MINI_BAR_READ);
     setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.MINI_BAR_CRUD_READ}"), cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.MINI_BAR_READ}"), cl: Colors.red);
 
     list_mini_bar = (tmp?.data as List<dynamic>? ?? []).map((e) => Mini_Bar.fromJson(e as Map<String, dynamic>)).toList();
 
@@ -182,7 +182,7 @@ class _Main_State extends State<Main_> {
   // * ចំនួនទំនិញតាម id (0 បើមិនទាន់មានក្នុង list_order_mini_bar)
   int _qty_of(String? id) {
     for (var o in list_order_mini_bar) {
-      if (o.mini_bar_id?.id == id) return o.quantity ?? 0;
+      if (o.mini_bar_id?.id == id) return o.quantity;
     }
     return 0;
   }
@@ -214,7 +214,7 @@ class _Main_State extends State<Main_> {
     if (qty > 0) {
       list_order_mini_bar.add(
         Order_Mini_Bar(
-          mini_bar_id: Mini_Bar_Show(id: item.id, name: item.name, price: item.price),
+          mini_bar_id: Mini_Bar_Show_2(id: item.id, name: item.name, price: item.price),
           quantity: qty,
         ),
       );
@@ -225,7 +225,7 @@ class _Main_State extends State<Main_> {
   double get _total {
     var total = 0.0;
     for (var o in list_order_mini_bar) {
-      final qty = o.quantity ?? 0;
+      final qty = o.quantity;
       if (qty > 0) {
         total += qty * (o.mini_bar_id?.price ?? 0);
       }

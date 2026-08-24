@@ -1,5 +1,5 @@
-// * ទំព័រដើម Front Desk (កំណែ PlutoGrid)
-// * បង្ហាញបន្ទប់ទាំងអស់ក្នុងតារាងមួយ ទាញទិន្នន័យពី API (ROOM_CRUD_READ)
+// * ទំព័រដើម Front Desk (កំណែតារាង PlutoGrid)
+// * បង្ហាញបន្ទប់ទាំងអស់ក្នុងតារាងមួយ ទាញទិន្នន័យពី API (ROOM_READ + FRONT_DESK_READ)
 
 import "dart:async";
 
@@ -24,12 +24,13 @@ import "../front_desk/form/update_pay_other.dart" as pay_other;
 import "../front_desk/form/update_pay_room.dart" as update_pay_room;
 import "../front_desk/form/update_stay.dart" as update_stay;
 import "../front_desk/form/update_mini_bar_1.dart" as update_mini_bar_1;
+import "../front_desk/helper.dart";
 
 // * ទំហំជួរឈរស្តង់ដារ
 const double _W = 140;
 const double _W_SMALL = 90;
 
-// * ពណ៌ជួរដេកតាមស្ថានភាព
+// * ពណ៌តាមស្ថានភាពបន្ទប់
 Color _status_color(String? status) {
   switch (status) {
     case room_status.AVAILABLE:
@@ -51,8 +52,9 @@ class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_load = true;
 
-  // * ទិន្នន័យបន្ទប់ទាំងអស់ពី server
+  // * ទិន្នន័យបន្ទប់ និង stay ទាំងអស់ពី server
   List<Room> data = [];
+  List<Front_Desk> list_fd = [];
   String? selected_id;
   String? search;
   Timer? _debounce;
@@ -62,12 +64,16 @@ class _Main_State extends State<Main_> {
   // * ផ្ទុកទិន្នន័យពី server
   Future<void> init() async {
     setState(() => is_load = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ, data: {"key": Room.NUMBER, "order": 1});
+    tmp = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
     if (tmp == null) {
       setState(() => is_load = false);
-      return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_CRUD_READ}", cl: Colors.red);
+      return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_READ}", cl: Colors.red);
     }
     data = List<Room>.from((tmp.data ?? const []).map((d) => Room.fromJson(d)));
+
+    // * អាន stay ទាំងអស់ (ភ្ជាប់ room/guest/pay រួចហើយ)
+    list_fd = await load_fds();
+
     selected_id = null;
     setState(() => is_load = false);
     load_rows();
@@ -85,17 +91,17 @@ class _Main_State extends State<Main_> {
     if (q == null || q.isEmpty) return data;
     return data.where((r) {
       final guest = _fd(r)?.guest_id;
-      final room_number = '${r.number}'.toLowerCase();
-      final room_status_ = '${r.status}'.toLowerCase();
-      final room_kind = '${r.kind}'.toLowerCase();
-      final guest_name = '${guest?.full_name ?? ""}'.toLowerCase();
-      final guest_phone = '${guest?.phone_number ?? ""}'.toLowerCase();
+      final room_number = "${r.number}".toLowerCase();
+      final room_status_ = "${r.status}".toLowerCase();
+      final room_kind = "${r.kind}".toLowerCase();
+      final guest_name = "${guest?.full_name ?? ""}".toLowerCase();
+      final guest_phone = "${guest?.phone_number ?? ""}".toLowerCase();
       return room_number.contains(q) || room_status_.contains(q) || room_kind.contains(q) || guest_name.contains(q) || guest_phone.contains(q);
     }).toList();
   }
 
-  // * Safe lookup front desk របស់បន្ទប់
-  Front_Desk? _fd(Room r) => r.front_desk_id;
+  // * Safe lookup stay សកម្មរបស់បន្ទប់
+  Front_Desk? _fd(Room r) => active_fd(list_fd, r.id);
 
   // * បញ្ចូលទិន្នន័យទៅក្នុងតារាង
   void load_rows() {
@@ -112,10 +118,7 @@ class _Main_State extends State<Main_> {
     final r = show[i];
     final fd = _fd(r);
     final guest = fd?.guest_id;
-    final pay_room_list = fd?.pay_room ?? [];
-    final pay_mini_list = fd?.pay_mini_bar ?? [];
-    final pay_other_list = fd?.pay_other ?? [];
-    final due = _outstanding(pay_room_list) + _outstanding(pay_mini_list) + _outstanding(pay_other_list);
+    final due = due_total(fd);
     return PlutoRow(
       cells: {
         "index": PlutoCell(value: i + 1),
@@ -127,40 +130,15 @@ class _Main_State extends State<Main_> {
         "persons": PlutoCell(value: fd?.check_in_number),
         "days": PlutoCell(value: fd?.check_in_day),
         "hours": PlutoCell(value: fd?.check_in_hour),
-        "usd_3h": PlutoCell(value: r.usd_per_3h),
-        "usd_day": PlutoCell(value: r.usd_per_day),
-        "paid": PlutoCell(value: _sum_pay(pay_room_list) + _sum_pay(pay_mini_list) + _sum_pay(pay_other_list)),
+        "price_3h": PlutoCell(value: r.price_per_3h),
+        "price_day": PlutoCell(value: r.price_per_day),
+        "paid": PlutoCell(value: paid_total(fd)),
         "due": PlutoCell(value: due),
         "check_in": PlutoCell(value: fd?.check_in_at),
         "stay_due": PlutoCell(value: fd?.check_in_due),
         "note": PlutoCell(value: r.note),
       },
     );
-  }
-
-  // * គណនាចំនួនប្រាក់សរុបដែលទទួលបាន (រួមទាំងប្រាក់អាប់)
-  double _sum_pay(List<dynamic>? items) {
-    double pay = 0;
-    for (final l in (items ?? const [])) {
-      pay = pay + (l.add_cash ?? 0);
-      pay = pay + (l.add_bank ?? 0);
-      pay = pay - (l.sub_return ?? 0);
-    }
-    return pay;
-  }
-
-  // * គណនាចំនួនប្រាក់ដែលនៅសល់ (price - pay)
-  double _outstanding(List<dynamic>? items) {
-    double price = 0;
-    double pay = 0;
-    for (final l in (items ?? const [])) {
-      price = price + (l.add_price ?? 0);
-      price = price - (l.sub_price ?? 0);
-      pay = pay + (l.add_cash ?? 0);
-      pay = pay + (l.add_bank ?? 0);
-      pay = pay - (l.sub_return ?? 0);
-    }
-    return price - pay;
   }
 
   // * បើកមឺនុយចុចកណ្ដុរស្ដាំ
@@ -477,8 +455,8 @@ class _Main_State extends State<Main_> {
 
   Future<void> on_payment(Room r) async {
     final fd = _fd(r);
-    final mini_bar_due = _outstanding(fd?.pay_mini_bar ?? []);
-    final other_due = _outstanding(fd?.pay_other ?? []);
+    final mini_bar_due = due_of(fd?.mini_bar_pay_id);
+    final other_due = due_of(fd?.penalty_pay_id);
     if (mini_bar_due <= 0 && other_due <= 0) {
       tmp = await nav_push(context, pay_room.Main_(room_id: r.id));
       if (tmp != null) init();
@@ -625,7 +603,7 @@ List<PlutoColumn> get columns {
       renderer: (rc) => _cell(Text("${rc.cell.value ?? ""}", textAlign: TextAlign.center)),
     ),
     _Col(
-      field: "usd_3h",
+      field: "price_3h",
       title: t("\$/3 Hours"),
       type: PlutoColumnType.number(),
       width: 90,
@@ -633,7 +611,7 @@ List<PlutoColumn> get columns {
       renderer: (rc) => _cell(Text("\$${format_double(rc.cell.value, digits: 2)}", textAlign: TextAlign.right)),
     ),
     _Col(
-      field: "usd_day",
+      field: "price_day",
       title: t("\$/Day"),
       type: PlutoColumnType.number(),
       width: 80,
@@ -702,7 +680,7 @@ List<PlutoColumn> get columns {
   ];
 }
 
-// * ដាក់ចំណាំថាតើបន្ទប់នេះមាន front desk ឬអត់
+// * ដាក់ CELLS ឲ្យត្រងកណ្តាល
 Widget _cell(Widget child) {
   return Align(alignment: Alignment.center, child: child);
 }

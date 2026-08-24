@@ -7,6 +7,7 @@ import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/widget/select/select_dynamic.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
+import "../helper.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រធ្វើបច្ចុប្បន្នភាពការស្នាក់នៅ
 Widget _layout(List<Widget> children) {
@@ -45,6 +46,7 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   dynamic tmp;
   Room? map_room;
+  Front_Desk? map_fd;
   bool is_loading = true;
 
   int? number_of_guest;
@@ -63,34 +65,33 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
-    setState(() => is_loading = false);
-
-    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
-
+    tmp = await dio.post(endpoint.ROOM_READ_ID, data: {Room.ID: widget.room_id});
+    if (tmp == null) {
+      setState(() => is_loading = false);
+      return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_READ_ID}"), cl: Colors.red);
+    }
     map_room = Room.fromJson(tmp.data[0]);
 
-    price_per_day = map_room?.usd_per_day ?? 0;
-    price_per_3hours = map_room?.usd_per_3h ?? 0;
+    // * រក stay សកម្មរបស់បន្ទប់
+    final fds = await load_fds();
+    map_fd = active_fd(fds, widget.room_id);
+
+    price_per_day = map_room?.price_per_day ?? 0;
+    price_per_3hours = map_room?.price_per_3h ?? 0;
 
     // * ផ្ទុកចំនួនភ្ញៀវ រយៈពេលស្នាក់ និងកំណត់ចំណាំ
-    number_of_guest = map_room?.front_desk_id?.check_in_number?.toInt() ?? 1;
-    stay_days = map_room?.front_desk_id?.check_in_day?.toInt() ?? 0;
-    stay_hours = map_room?.front_desk_id?.check_in_hour?.toInt() ?? 0;
-    note = map_room?.front_desk_id?.check_in_note ?? "";
+    number_of_guest = map_fd?.check_in_number?.toInt() ?? 1;
+    stay_days = map_fd?.check_in_day?.toInt() ?? 0;
+    stay_hours = map_fd?.check_in_hour?.toInt() ?? 0;
+    note = map_fd?.check_in_note ?? "";
 
-    // * តម្លៃចាស់ពីការស្នាក់នៅបច្ចុប្បន្ន (បានកត់ត្រាពេល check in)
-    old_price = ((price_per_day ?? 0) * (stay_days ?? 0)) + ((price_per_3hours ?? 0) * (stay_hours ?? 0) / 3);
+    // * តម្លៃចាស់ពីការស្នាក់នៅបច្ចុប្បន្ន (តម្លៃដែលបានកត់ត្រាក្នុង room_pay)
+    old_price = map_fd?.room_pay_id?.price ?? 0;
 
     // * គណនាប្រាក់ដែលបានទទួលរួច
-    final pay_room_list = map_room?.front_desk_id?.pay_room ?? [];
-    for (var l in pay_room_list) {
-      last_paid = (last_paid ?? 0) + (l.add_cash ?? 0);
-      last_paid = (last_paid ?? 0) + (l.add_bank ?? 0);
-      last_paid = (last_paid ?? 0) - (l.sub_return ?? 0);
-    }
+    last_paid = paid_of(map_fd?.room_pay_id);
 
-    setState(() {});
+    setState(() => is_loading = false);
   }
 
   @override
@@ -185,7 +186,7 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.FRONT_DESK_UPDATE_STAY, //
       data: {
-        Front_Desk.ID: map_room?.front_desk_id?.id, //
+        Front_Desk.ID: map_fd?.id, //
         Front_Desk.CHECK_IN_NUMBER: number_of_guest, //
         Front_Desk.CHECK_IN_DAY: stay_days, //
         Front_Desk.CHECK_IN_HOUR: stay_hours, //
@@ -194,21 +195,18 @@ class _Main_State extends State<Main_> {
     );
     setState(() => is_loading = false);
 
-    // * កត់ត្រាតម្លៃបន្ទប់ថ្មី (បន្ថែមតែភាពខុសគ្នា មិនមែនតម្លៃពេញទេ — check in បានកត់ត្រារួច)
-    final diff = room_price - (old_price ?? 0);
-    final double add_price = diff > 0 ? diff : 0.0;
-    // * ការពារការសងលើស: កុំឱ្យ net_price ក្រោម 0 ពេលកាត់បន្ថយរយៈពេលស្នាក់នៅ
-    final sub_price = clamp_sub_price(diff < 0 ? -diff : 0.0, old_price ?? 0, add_price);
-    setState(() => is_loading = true);
-    await dio.post(
-      endpoint.FRONT_DESK_UPDATE_PAY_ROOM, // update
-      data: {
-        Front_Desk.ID: map_room?.front_desk_id?.id, //
-        Pay_Room.ADD_PRICE: add_price, //
-        Pay_Room.SUB_PRICE: sub_price, //
-      },
-    );
-    setState(() => is_loading = false);
+    // * កត់ត្រាតម្លៃបន្ទប់ថ្មី (តម្លៃពេញលើ room_pay — upsert)
+    if ((room_price - (old_price ?? 0)).abs() > 0.001) {
+      setState(() => is_loading = true);
+      await dio.post(
+        endpoint.FRONT_DESK_UPDATE_ROOM_PAY, // update
+        data: {
+          Front_Desk.ID: map_fd?.id, //
+          Pay_Room.PRICE: room_price, //
+        },
+      );
+      setState(() => is_loading = false);
+    }
 
     // * ប្រៀបធៀបជា cents ដើម្បីចៀសវាងបញ្ហាភាពជាក់លាក់នៃចំនួនទសភាគ
     final paid_cents = ((last_paid ?? 0) * 100).round();
@@ -218,7 +216,7 @@ class _Main_State extends State<Main_> {
     setState(() => is_loading = true);
     if (paid_cents == price_cents)
       await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
+        endpoint.ROOM_UPDATE, //
         data: {
           Room.ID: widget.room_id, //
           Room.STATUS: room_status.PENDING_LEAVE, //
@@ -226,7 +224,7 @@ class _Main_State extends State<Main_> {
       );
     else
       await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
+        endpoint.ROOM_UPDATE, //
         data: {
           Room.ID: widget.room_id, //
           Room.STATUS: room_status.PENDING_PAY, //

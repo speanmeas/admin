@@ -7,6 +7,7 @@ import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/widget/input/input_bank_auto.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
+import "../helper.dart";
 
 // * បង្កើត layout មេរបស់ទំព័របន្ថែមការទូទាត់ផ្សេងៗ
 Widget _layout(List<Widget> children) {
@@ -45,11 +46,14 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   dynamic tmp;
   Room? map_room;
+  Front_Desk? map_fd;
   bool is_loading = true;
 
   double? other_price;
   double? old_price;
   double? last_paid;
+  double prev_cash = 0;
+  double prev_bank = 0;
   double? add_cash;
   double? add_bank;
   double? sub_return;
@@ -59,27 +63,25 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
-    setState(() => is_loading = false);
-
-    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
-
+    tmp = await dio.post(endpoint.ROOM_READ_ID, data: {Room.ID: widget.room_id});
+    if (tmp == null) {
+      setState(() => is_loading = false);
+      return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_READ_ID}"), cl: Colors.red);
+    }
     map_room = Room.fromJson(tmp.data[0]);
 
-    // * គណនាតម្លៃចាស់ និងប្រាក់ដែលបានទទួលរួច
-    final pay_other_list = map_room?.front_desk_id?.pay_other ?? [];
-    for (var l in pay_other_list) {
-      // * តម្លៃសរុប = ផលបូកនៃ add_price ដក sub_price ទាំងអស់
-      old_price = (old_price ?? 0) + (l.add_price ?? 0);
-      old_price = (old_price ?? 0) - (l.sub_price ?? 0);
-      // * ប្រាក់ដែលបានទទួលសរុប
-      last_paid = (last_paid ?? 0) + (l.add_cash ?? 0);
-      last_paid = (last_paid ?? 0) + (l.add_bank ?? 0);
-      last_paid = (last_paid ?? 0) - (l.sub_return ?? 0);
-    }
+    // * រក stay សកម្មរបស់បន្ទប់
+    final fds = await load_fds();
+    map_fd = active_fd(fds, widget.room_id);
+
+    // * តម្លៃចាស់ និងប្រាក់ដែលបានទទួលរួច (ពី penalty_pay តែមួយ)
+    old_price = map_fd?.penalty_pay_id?.price ?? 0;
+    last_paid = paid_of(map_fd?.penalty_pay_id);
+    prev_cash = map_fd?.penalty_pay_id?.cash ?? 0;
+    prev_bank = map_fd?.penalty_pay_id?.bank ?? 0;
     other_price = old_price;
 
-    setState(() {});
+    setState(() => is_loading = false);
   }
 
   @override
@@ -220,27 +222,17 @@ class _Main_State extends State<Main_> {
 
   // * អនុវត្តការបន្ថែមការទូទាត់ផ្សេងៗ
   void on_pay() async {
-    double add_price = (other_price ?? 0) - (old_price ?? 0);
-    if (add_price < 0) add_price = 0;
-    double sub_price = (old_price ?? 0) - (other_price ?? 0);
-    if (sub_price < 0) sub_price = 0;
-
-    // * ការពារការសងលើស: កុំឱ្យ net_price និង net_paid ក្រោម 0
-    sub_price = clamp_sub_price(sub_price, old_price ?? 0, add_price);
-    final clamped_return = clamp_sub_return(sub_return ?? 0, last_paid ?? 0, add_cash ?? 0, add_bank ?? 0);
-
-    // * កត់ត្រាការទូទាត់ផ្សេងៗ
+    // * កត់ត្រាការទូទាត់ផ្សេងៗ (upsert penalty_pay + link — តម្លៃពេញ)
     setState(() => is_loading = true);
     await dio.post(
-      endpoint.FRONT_DESK_UPDATE_PAY_OTHER,
+      endpoint.FRONT_DESK_UPDATE_PENALTY_PAY,
       data: {
-        Front_Desk.ID: map_room?.front_desk_id?.id, //
-        Pay_Other.ADD_PRICE: add_price, //
-        Pay_Other.SUB_PRICE: sub_price, //
-        Pay_Other.ADD_CASH: add_cash ?? 0, //
-        Pay_Other.ADD_BANK: add_bank ?? 0, //
-        Pay_Other.SUB_RETURN: clamped_return, //
-        Pay_Other.NOTE: note ?? "", //
+        Front_Desk.ID: map_fd?.id, //
+        Penalty_Pay.PRICE: other_price ?? 0, //
+        // * ប្រាក់សរុប = ចាស់ + ថ្មី - ប្រាក់អាប់ (ការពារសងលើស)
+        Penalty_Pay.CASH: prev_cash + (add_cash ?? 0) - clamp_sub_return(sub_return ?? 0, last_paid ?? 0, add_cash ?? 0, add_bank ?? 0), //
+        Penalty_Pay.BANK: prev_bank + (add_bank ?? 0), //
+        Penalty_Pay.NOTE: note ?? "", //
       },
     );
     setState(() => is_loading = false);
@@ -248,7 +240,7 @@ class _Main_State extends State<Main_> {
     if (balanced != 0) {
       setState(() => is_loading = true);
       await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
+        endpoint.ROOM_UPDATE, //
         data: {
           Room.ID: map_room?.id, //
           Room.STATUS: room_status.PENDING_PAY, //

@@ -6,6 +6,7 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/widget/search/search_guest.dart";
+import "../helper.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រធ្វើបច្ចុប្បន្នភាពភ្ញៀវ
 Widget _layout(List<Widget> children) {
@@ -44,6 +45,7 @@ Widget _layout(List<Widget> children) {
 class _Main_State extends State<Main_> {
   dynamic tmp;
   Room? map_r;
+  Front_Desk? map_fd;
   bool is_loading = true;
 
   String? guest_id;
@@ -52,16 +54,20 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
-    setState(() => is_loading = false);
-
-    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
-
+    tmp = await dio.post(endpoint.ROOM_READ_ID, data: {Room.ID: widget.room_id});
+    if (tmp == null) {
+      setState(() => is_loading = false);
+      return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_READ_ID}"), cl: Colors.red);
+    }
     map_r = Room.fromJson(tmp.data[0]);
 
-    guest_id = map_r?.front_desk_id?.guest_id?.id?.toString();
+    // * រក stay សកម្មរបស់បន្ទប់
+    final fds = await load_fds();
+    map_fd = active_fd(fds, widget.room_id);
 
-    setState(() {});
+    guest_id = map_fd?.guest_id?.id?.toString();
+
+    setState(() => is_loading = false);
   }
 
   @override
@@ -105,7 +111,7 @@ class _Main_State extends State<Main_> {
     await dio.post(
       endpoint.FRONT_DESK_UPDATE_GUEST, //
       data: {
-        Front_Desk.ID: map_r?.front_desk_id?.id, //
+        Front_Desk.ID: map_fd?.id, //
         Front_Desk.GUEST_ID: guest_id,
       },
     );

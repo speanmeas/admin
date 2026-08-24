@@ -5,6 +5,8 @@ import "package:speanmeas/core/utility/all.dart";
 import "package:speanmeas/core/widget/input/input_bank_auto.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
 import "package:speanmeas/core/widget/select/select_dynamic.dart";
+import "../dialog/pick_item.dart";
+import "../helper.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រគិតថ្លៃ mini bar
 Widget _layout(List<Widget> children) {
@@ -66,10 +68,10 @@ class _Main_State extends State<Main_> {
   // * ទាញយកបញ្ជីទំនិញ mini bar ពី Server
   void init() async {
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ);
+    tmp = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ}"), cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_READ}"), cl: Colors.red);
 
     list_room = List<Room>.from((tmp?.data ?? []).map((e) => Room.fromJson(e)));
 
@@ -83,7 +85,7 @@ class _Main_State extends State<Main_> {
 
     // calcualte new price
     for (var l in list_order_mini_bar) {
-      int qty = l.quantity ?? 0;
+      int qty = l.quantity;
       double price = l.mini_bar_id?.price ?? 0;
       new_price = (new_price ?? 0) + qty * price;
     }
@@ -224,123 +226,160 @@ class _Main_State extends State<Main_> {
     if (select_room != null) on_add_room();
   }
 
-  // * អនុវត្តការបន្ថែមការទូទាត់ mini bar
-  void on_add_walk_in() async {
-    // create blank front_desk
-    setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.FRONT_DESK_CRUD_CREATE);
-    setState(() => is_loading = false);
-
-    // * ពិនិត្យលទ្ធផលមុនបន្ត (dio ត្រឡប់ null ពេលបរាជ័យ)
-    if (tmp == null || tmp.data == null || tmp.data is! List || (tmp.data as List).isEmpty) {
-      return snackbar(ct: context, ms: t("Error: ${endpoint.FRONT_DESK_CRUD_CREATE}"), cl: Colors.red);
-    }
-
-    var front_desk = Front_Desk.fromJson((tmp.data as List).first as Map<String, dynamic>);
-
-    //
-    setState(() => is_loading = true);
-    for (var l in list_order_mini_bar) {
-      await dio.post(
-        endpoint.ORDER_MINI_BAR_CRUD_CREATE, //
-        data: {
-          Order_Mini_Bar.MINI_BAR_ID: l.mini_bar_id?.id, //
-          Order_Mini_Bar.QUANTITY: l.quantity, //
-          Order_Mini_Bar.FRONT_DESK_ID: front_desk.id, //
-        },
-      );
-    }
-    setState(() => is_loading = false);
-
-    setState(() => is_loading = true);
-    await dio.post(
-      endpoint.FRONT_DESK_UPDATE_PAY_MINI_BAR,
-      data: {
-        Front_Desk.ID: front_desk.id, //
-        Pay_Mini_Bar.ADD_PRICE: new_price, //
-        Pay_Mini_Bar.SUB_PRICE: null,
-        Pay_Mini_Bar.ADD_CASH: add_cash, //
-        Pay_Mini_Bar.ADD_BANK: add_bank, //
-        Pay_Mini_Bar.SUB_RETURN: sub_return, //
-        Pay_Mini_Bar.NOTE: note, //
-      },
-    );
-    setState(() => is_loading = false);
-
-    // * កាត់បន្ថយស្តុក mini bar តាមចំនួនដែលបានលក់
+  // * កាត់បន្ថយស្តុក mini bar តាមចំនួនដែលបានលក់
+  Future<void> _sub_stock() async {
     for (var l in list_order_mini_bar) {
       final match = widget.list_mini_bar.where((m) => m.id == l.mini_bar_id?.id).toList();
       if (match.isEmpty) continue;
-      final new_stock = (match[0].stock ?? 0) - (l.quantity ?? 0);
+      final new_stock = (match[0].stock ?? 0) - l.quantity;
       await dio.post(
-        endpoint.MINI_BAR_CRUD_UPDATE, //
+        endpoint.MINI_BAR_UPDATE, //
         data: {
           Mini_Bar.ID: match[0].id, //
           Mini_Bar.STOCK: new_stock, //
         },
       );
     }
+  }
+
+  // * បង្កើត item mini bar ទាំងអស់ ភ្ជាប់ទៅឯកសារទូទាត់
+  Future<void> _create_items(String? pay_id) async {
+    for (var l in list_order_mini_bar) {
+      await dio.post(
+        endpoint.MINI_BAR_ITEM_CREATE, //
+        data: {
+          Mini_Bar_Item.MINI_BAR_ID: l.mini_bar_id?.id, //
+          Mini_Bar_Item.QUANTITY: l.quantity, //
+          Mini_Bar_Item.MINI_BAR_PAY_ID: pay_id, //
+        },
+      );
+    }
+  }
+
+  // * អនុវត្តការបន្ថែមការទូទាត់ mini bar (walk-in)
+  void on_add_walk_in() async {
+    // * បង្កើត front_desk ទំនេរសម្រាប់ walk-in
+    setState(() => is_loading = true);
+    tmp = await dio.post(endpoint.FRONT_DESK_CREATE, data: {});
+    setState(() => is_loading = false);
+
+    // * ពិនិត្យលទ្ធផលមុនបន្ត (dio ត្រឡប់ null ពេលបរាជ័យ)
+    if (tmp == null || tmp.data is! List || (tmp.data as List).isEmpty) {
+      return snackbar(ct: context, ms: t("Error: ${endpoint.FRONT_DESK_CREATE}"), cl: Colors.red);
+    }
+
+    var front_desk = Front_Desk.fromJson((tmp.data as List).first as Map<String, dynamic>);
+
+    // * បង្កើតឯកសារទូទាត់ mini bar (walk-in បង់ពេញ)
+    setState(() => is_loading = true);
+    tmp = await dio.post(
+      endpoint.MINI_BAR_PAY_CREATE,
+      data: {
+        Mini_Bar_Pay.PRICE: new_price ?? 0, //
+        Mini_Bar_Pay.CASH: (add_cash ?? 0) - (sub_return ?? 0), //
+        Mini_Bar_Pay.BANK: add_bank ?? 0, //
+        Mini_Bar_Pay.NOTE: note ?? "", //
+      },
+    );
+    setState(() => is_loading = false);
+    if (tmp == null || tmp.data is! List || (tmp.data as List).isEmpty) {
+      return snackbar(ct: context, ms: t("Error: ${endpoint.MINI_BAR_PAY_CREATE}"), cl: Colors.red);
+    }
+    final pay_id = (tmp.data as List).first[Mini_Bar_Pay.ID];
+
+    setState(() => is_loading = true);
+    await _create_items(pay_id);
+
+    // * ភ្ជាប់ឯកសារទូទាត់ទៅ front desk
+    await dio.post(
+      endpoint.FRONT_DESK_UPDATE,
+      data: {
+        Front_Desk.ID: front_desk.id, //
+        Front_Desk.MINI_BAR_PAY_ID: pay_id, //
+      },
+    );
+
+    await _sub_stock();
+    setState(() => is_loading = false);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context);
     Navigator.pop(context, true);
   }
 
-  // * អនុវត្តការបន្ថែមការទូទាត់ mini bar
+  // * អនុវត្តការបន្ថែមការទូទាត់ mini bar (ចារឹកទៅបន្ទប់)
   void on_add_room() async {
+    // * រក stay សកម្មរបស់បន្ទប់
     setState(() => is_loading = true);
-    for (var l in widget.list_order_mini_bar) {
-      await dio.post(
-        endpoint.ORDER_MINI_BAR_CRUD_CREATE, //
+    final fds = await load_fds();
+    final front_desk = active_fd(fds, select_room?.id);
+    if (front_desk?.id == null) {
+      setState(() => is_loading = false);
+      return snackbar(ct: context, ms: t("No active stay for this room."), cl: Colors.red);
+    }
+
+    // * បន្ថែមតម្លៃលើឯកសារទូទាត់ដែលមានស្រាប់ ឬបង្កើតថ្មី (upsert)
+    final prev_price = front_desk?.mini_bar_pay_id?.price ?? 0;
+    final prev_cash = front_desk?.mini_bar_pay_id?.cash ?? 0;
+    final prev_bank = front_desk?.mini_bar_pay_id?.bank ?? 0;
+    String? pay_id = front_desk?.mini_bar_pay_id?.id;
+
+    setState(() => is_loading = true);
+    if (pay_id == null) {
+      tmp = await dio.post(
+        endpoint.MINI_BAR_PAY_CREATE,
         data: {
-          Order_Mini_Bar.MINI_BAR_ID: l.mini_bar_id?.id, //
-          Order_Mini_Bar.QUANTITY: l.quantity, //
-          Order_Mini_Bar.FRONT_DESK_ID: select_room?.front_desk_id?.id, //
+          Mini_Bar_Pay.PRICE: new_price ?? 0, //
+          Mini_Bar_Pay.CASH: prev_cash + (add_cash ?? 0) - (sub_return ?? 0), //
+          Mini_Bar_Pay.BANK: prev_bank + (add_bank ?? 0), //
+          Mini_Bar_Pay.NOTE: note ?? "", //
         },
       );
+      if (tmp == null || tmp.data is! List || (tmp.data as List).isEmpty) {
+        setState(() => is_loading = false);
+        return snackbar(ct: context, ms: t("Error: ${endpoint.MINI_BAR_PAY_CREATE}"), cl: Colors.red);
+      }
+      pay_id = (tmp.data as List).first[Mini_Bar_Pay.ID];
+    } else {
+      tmp = await dio.post(
+        endpoint.MINI_BAR_PAY_UPDATE,
+        data: {
+          Mini_Bar_Pay.ID: pay_id, //
+          Mini_Bar_Pay.PRICE: prev_price + (new_price ?? 0), //
+          Mini_Bar_Pay.CASH: prev_cash + (add_cash ?? 0) - (sub_return ?? 0), //
+          Mini_Bar_Pay.BANK: prev_bank + (add_bank ?? 0), //
+          Mini_Bar_Pay.NOTE: note ?? "", //
+        },
+      );
+      if (tmp == null) {
+        setState(() => is_loading = false);
+        return snackbar(ct: context, ms: t("Error: ${endpoint.MINI_BAR_PAY_UPDATE}"), cl: Colors.red);
+      }
     }
-    setState(() => is_loading = false);
 
-    setState(() => is_loading = true);
+    await _create_items(pay_id);
+
+    // * ភ្ជាប់ឯកសារទូទាត់ទៅ front desk
     await dio.post(
-      endpoint.FRONT_DESK_UPDATE_PAY_MINI_BAR,
+      endpoint.FRONT_DESK_UPDATE,
       data: {
-        Front_Desk.ID: select_room?.front_desk_id?.id, //
-        Pay_Mini_Bar.ADD_PRICE: new_price, //
-        Pay_Mini_Bar.SUB_PRICE: null,
-        Pay_Mini_Bar.ADD_CASH: add_cash, //
-        Pay_Mini_Bar.ADD_BANK: add_bank, //
-        Pay_Mini_Bar.SUB_RETURN: sub_return, //
-        Pay_Mini_Bar.NOTE: note, //
+        Front_Desk.ID: front_desk?.id, //
+        Front_Desk.MINI_BAR_PAY_ID: pay_id, //
       },
     );
-    setState(() => is_loading = false);
 
     // * បើនៅមានសមតុល្យមិនទាន់បង់ → សម្គាល់បន្ទប់ជា Pending Pay
-    setState(() => is_loading = true);
     if (balanced != 0 && select_room != null) //
       await dio.post(
-        endpoint.ROOM_CRUD_UPDATE, //
+        endpoint.ROOM_UPDATE, //
         data: {
           Room.ID: select_room?.id, //
           Room.STATUS: room_status.PENDING_PAY, //
         },
       );
-    setState(() => is_loading = false);
 
-    // * កាត់បន្ថយស្តុក mini bar តាមចំនួនដែលបានលក់
-    for (var l in widget.list_order_mini_bar) {
-      final match = widget.list_mini_bar.where((m) => m.id == l.mini_bar_id?.id).toList();
-      if (match.isEmpty) continue;
-      final new_stock = (match[0].stock ?? 0) - (l.quantity ?? 0);
-      await dio.post(
-        endpoint.MINI_BAR_CRUD_UPDATE, //
-        data: {
-          Mini_Bar.ID: match[0].id, //
-          Mini_Bar.STOCK: new_stock, //
-        },
-      );
-    }
+    await _sub_stock();
+    setState(() => is_loading = false);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context);

@@ -51,12 +51,13 @@ class _Main_State extends State<Main_> {
   void init() async {
     // * អានព័ត៌មានបន្ទប់តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.ROOM_CRUD_READ_ID, data: {Room.ID: widget.room_id});
+    tmp = await dio.post(endpoint.ROOM_READ_ID, data: {Room.ID: widget.room_id});
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_CRUD_READ_ID}"), cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: t("Error: ${endpoint.ROOM_READ_ID}"), cl: Colors.red);
 
     map_room = Room.fromJson(tmp.data[0]);
+    setState(() {});
   }
 
   @override
@@ -117,16 +118,13 @@ class _Main_State extends State<Main_> {
       return snackbar(ct: context, ms: t("Error: ${endpoint.FRONT_DESK_BROKE}"), cl: Colors.red);
     }
 
-    final front_desk_id = (tmp.data as List).first[Front_Desk.ID];
-
     // * ធ្វើបច្ចុប្បន្នភាពស្ថានភាពបន្ទប់ទៅ Pending Fix
     setState(() => is_loading = true);
     await dio.post(
-      endpoint.ROOM_CRUD_UPDATE, //
+      endpoint.ROOM_UPDATE, //
       data: {
         Room.ID: widget.room_id, //
         Room.STATUS: room_status.PENDING_FIX, //
-        Room.FRONT_DESK_ID: front_desk_id, //
       },
     );
     setState(() => is_loading = false);
