@@ -50,11 +50,10 @@ class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
 
-  String? text_1;
-  double? number_1;
-  DateTime? datetime_1;
-  bool? logic_1;
-  String? note;
+  String? text;
+  double? number;
+  DateTime? date_time;
+  bool? logic;
 
   void init() async {
     setState(() => is_loading = false);
@@ -64,53 +63,42 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      // * បញ្ចូលអត្ថបទ 1
+      // * បញ្ចូលអត្ថបទ
       Input_Text(
-        init: text_1, //
-        lead: "Text 1:", //
+        init: text, //
+        lead: "Text:", //
         onChanged: (v) {
-          text_1 = v;
+          text = v;
           setState(() {});
         },
       ),
 
-      // * បញ្ចូលលេខ 1
+      // * បញ្ចូលលេខ
       Input_Number(
-        init: number_1, //
-        lead: "Number 1:", //
+        init: number, //
+        lead: "Number:", //
         onChanged: (v) {
-          number_1 = v;
+          number = v;
           setState(() {});
         },
       ),
 
-      // * ជ្រើសរើសកាលបរិច្ឆេទ 1
+      // * ជ្រើសរើសកាលបរិច្ឆេទ
       Picker_Datetime(
-        initial: datetime_1, //
-        title: "Datetime 1:", //
+        initial: date_time, //
+        title: "Date Time:", //
         onChanged: (v) {
-          datetime_1 = v;
+          date_time = v;
           setState(() {});
         },
       ),
 
-      // * ជ្រើសរើសតម្លៃប៊ូលីន 1
+      // * ជ្រើសរើសតម្លៃប៊ូលីន
       Picker_Boolean(
-        initial: logic_1, //
-        title: "Logic 1:", //
+        initial: logic, //
+        title: "Logic:", //
         onChanged: (v) {
-          logic_1 = v;
-          setState(() {});
-        },
-      ),
-
-      // * បញ្ចូលកំណត់ចំណាំ
-      Input_Text(
-        init: note, //
-        lead: "Note:", //
-        maxLines: 4, //
-        onChanged: (v) {
-          note = v ?? "";
+          logic = v;
           setState(() {});
         },
       ),
@@ -134,11 +122,10 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(
       endpoint.DEMO_1_CREATE, //
       data: {
-        Demo_1.TEXT_1: text_1, //
-        Demo_1.NUMBER_1: number_1, //
-        Demo_1.DATETIME_1: datetime_1?.toIso8601String(), //
-        Demo_1.LOGIC_1: logic_1, //
-        Demo_1.NOTE: note, //
+        Demo_1.TEXT: text, //
+        Demo_1.NUMBER: number, //
+        Demo_1.DATE_TIME: date_time?.toIso8601String(), //
+        Demo_1.LOGIC: logic, //
       },
     );
     setState(() => is_loading = false);

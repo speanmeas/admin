@@ -21,7 +21,8 @@ import "package:speanmeas/features/database/mini_bar/main.dart" as mini_bar;
 import "package:speanmeas/features/report/main.dart" as report;
 
 import "package:speanmeas/features/database/demo_1/main.dart" as demo_1;
-import "package:speanmeas/features/database/demo_2/main.dart" as demo_2;
+import "package:speanmeas/features/database/demo_2_1/main.dart" as demo_2_1;
+import "package:speanmeas/features/database/demo_2_2/main.dart" as demo_2_2;
 
 // * setting
 import "package:speanmeas/features/setting/main.dart" as setting;
@@ -50,7 +51,8 @@ class _Panel_BodyState extends State<Panel_Body> {
     // {"name": "Report Yearly", "panel": report_yearly.Main_()}, //
     //
     {"name": "Demo 001", "panel": demo_1.Main_()},
-    {"name": "Demo 002", "panel": demo_2.Main_()},
+    {"name": "Demo 002-1", "panel": demo_2_1.Main_()},
+    {"name": "Demo 002-2", "panel": demo_2_2.Main_()},
 
     //
     {"name": "Setting", "panel": setting.Main_()},

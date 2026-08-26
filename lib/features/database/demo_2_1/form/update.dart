@@ -4,9 +4,8 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/widget/pick/pick_boolean.dart";
-import "package:speanmeas/core/widget/pick/pick_datetime.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
+import "package:speanmeas/core/widget/search/search_demo_2_2.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រកែប្រែឧទាហរណ៍
@@ -51,28 +50,28 @@ class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
 
-  String? text_1;
-  double? number_1;
-  DateTime? datetime_1;
-  bool? logic_1;
-  String? note;
+  String? text;
+  int? number;
+  String? demo_2_2_id;
+
+  // * អត្ថបទ Demo 2-2 ដើម្បីបង្ហាញនៅក្នុង search widget
+  String? demo_2_2_init;
 
   // * ផ្ទុកព័ត៌មានឧទាហរណ៍បច្ចុប្បន្ន
   void init() async {
     // * អានទិន្នន័យឧទាហរណ៍តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_2_READ_ID, data: {Demo_2.ID: widget.id});
+    tmp = await dio.post(endpoint.DEMO_2_1_READ_ID, data: {Demo_2_1.ID: widget.id});
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_READ_ID}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_1_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-    final demo = Demo_2.fromJson(tmp.data[0]);
-    text_1 = demo.text_1;
-    number_1 = demo.number_1;
-    datetime_1 = demo.datetime_1;
-    logic_1 = demo.logic_1;
-    note = demo.note;
+    final demo = Demo_2_1.fromJson(tmp.data[0]);
+    text = demo.text;
+    number = demo.number;
+    demo_2_2_id = demo.demo_2_2_id?.id;
+    demo_2_2_init = demo.demo_2_2_id?.text;
 
     setState(() {});
   }
@@ -83,53 +82,31 @@ class _Main_State extends State<Main_> {
     // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      // * បញ្ចូលអត្ថបទ 1
+      // * បញ្ចូលអត្ថបទ
       Input_Text(
-        init: text_1, //
-        lead: "Text 1:", //
+        init: text, //
+        lead: "Text:", //
         onChanged: (v) {
-          text_1 = v;
+          text = v;
           setState(() {});
         },
       ),
 
-      // * បញ្ចូលលេខ 1
+      // * បញ្ចូលលេខ
       Input_Number(
-        init: number_1, //
-        lead: "Number 1:", //
+        init: number?.toDouble(), //
+        lead: "Number:", //
         onChanged: (v) {
-          number_1 = v;
+          number = v?.toInt();
           setState(() {});
         },
       ),
 
-      // * ជ្រើសរើសកាលបរិច្ឆេទ 1
-      Picker_Datetime(
-        initial: datetime_1, //
-        title: "Datetime 1:", //
+      // * ស្វែងរក Demo 2-2
+      Search_Demo_2_2(
+        init: demo_2_2_init, //
         onChanged: (v) {
-          datetime_1 = v;
-          setState(() {});
-        },
-      ),
-
-      // * ជ្រើសរើសតម្លៃប៊ូលីន 1
-      Picker_Boolean(
-        initial: logic_1, //
-        title: "Logic 1:", //
-        onChanged: (v) {
-          logic_1 = v;
-          setState(() {});
-        },
-      ),
-
-      // * បញ្ចូលកំណត់ចំណាំ
-      Input_Text(
-        init: note, //
-        lead: "Note:", //
-        maxLines: 4, //
-        onChanged: (v) {
-          note = v ?? "";
+          demo_2_2_id = v;
           setState(() {});
         },
       ),
@@ -150,19 +127,17 @@ class _Main_State extends State<Main_> {
     // * ផ្ញើសំណើកែប្រែឧទាហរណ៍
     setState(() => is_loading = true);
     tmp = await dio.post(
-      endpoint.DEMO_2_UPDATE, //
+      endpoint.DEMO_2_1_UPDATE, //
       data: {
-        Demo_2.ID: widget.id,
-        Demo_2.TEXT_1: text_1,
-        Demo_2.NUMBER_1: number_1,
-        Demo_2.DATETIME_1: datetime_1?.toIso8601String(),
-        Demo_2.LOGIC_1: logic_1,
-        Demo_2.NOTE: note, //
+        Demo_2_1.ID: widget.id,
+        Demo_2_1.TEXT: text,
+        Demo_2_1.NUMBER: number,
+        Demo_2_1.DEMO_2_2_ID: demo_2_2_id, //
       },
     );
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_UPDATE}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_1_UPDATE}", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context, tmp.data[0]);

@@ -1,15 +1,18 @@
-// * ទំព័រលុបឧទាហរណ៍
+// * ទំព័របង្កើតឧទាហរណ៍ថ្មី
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្កើត layout មេរបស់ទំព័រលុបឧទាហរណ៍
+import "package:speanmeas/core/widget/input/input_text.dart";
+import "package:speanmeas/core/widget/input/input_number.dart";
+
+// * បង្កើត layout មេរបស់ទំព័របង្កើតឧទាហរណ៍
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Delete", //
+        "Create", //
         style: TextStyle(
           fontSize: 20, //
           fontWeight: FontWeight.bold,
@@ -40,10 +43,14 @@ Widget _layout(List<Widget> children) {
   );
 }
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងការលុបឧទាហរណ៍
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បង្កើតឧទាហរណ៍
 class _Main_State extends State<Main_> {
+  //
   dynamic tmp;
   bool is_loading = true;
+
+  String? text;
+  int? number;
 
   void init() async {
     setState(() => is_loading = false);
@@ -53,35 +60,55 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      // * សារបញ្ជាក់ការលុប
-      Text(
-        "Confirm to delete?", //
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      // * បញ្ចូលអត្ថបទ
+      Input_Text(
+        init: text, //
+        lead: "Text:", //
+        onChanged: (v) {
+          text = v;
+          setState(() {});
+        },
       ),
 
-      // * ប៊ូតុងលុប
+      // * បញ្ចូលលេខ
+      Input_Number(
+        init: number?.toDouble(), //
+        lead: "Number:", //
+        onChanged: (v) {
+          number = v?.toInt();
+          setState(() {});
+        },
+      ),
+
+      // * ប៊ូតុងបង្កើត
       OutlinedButton.icon(
-        autofocus: true,
-        icon: Icon(Icons.delete_outlined),
-        label: Text("Delete"),
-        style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-        onPressed: is_loading ? null : on_delete,
+        icon: Icon(Icons.check),
+        label: Text("Create"),
+        style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
+        onPressed: is_loading ? null : on_create,
       ),
 
       SizedBox(height: height - 100),
     ]);
   }
 
-  // * អនុវត្តការលុបឧទាហរណ៍
-  void on_delete() async {
-    // * ផ្ញើសំណើលុបឧទាហរណ៍
+  // * អនុវត្តការបង្កើតឧទាហរណ៍
+  void on_create() async {
+    // * ផ្ញើសំណើបង្កើតឧទាហរណ៍
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_2_DELETE, data: {"_id": widget.id});
+    tmp = await dio.post(
+      endpoint.DEMO_2_2_CREATE, //
+      data: {
+        Demo_2_2.TEXT: text, //
+        Demo_2_2.NUMBER: number, //
+      },
+    );
     setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_DELETE}", cl: Colors.red);
+
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_2_CREATE}", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
-    Navigator.pop(context, tmp.data);
+    Navigator.pop(context, tmp.data[0]);
   }
 
   @override
@@ -91,15 +118,9 @@ class _Main_State extends State<Main_> {
   }
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រលុបឧទាហរណ៍
+// * ថ្នាក់ Main_ ជាទំព័របង្កើតឧទាហរណ៍
 class Main_ extends StatefulWidget {
-  const Main_({
-    super.key, //
-    required this.id, //
-  });
-
-  final String id;
-
+  const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
@@ -116,7 +137,7 @@ void main() async {
         ChangeNotifierProvider.value(value: lang),
       ],
       child: MaterialApp(
-        home: Main_(id: "1"), //
+        home: Main_(), //
         theme: theme_data, //
         title: "Development", //
         debugShowCheckedModeBanner: false, //

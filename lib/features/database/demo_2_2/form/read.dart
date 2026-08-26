@@ -4,9 +4,6 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/widget/show/show_boolean.dart";
-import "package:speanmeas/core/widget/show/show_datetime.dart";
-import "package:speanmeas/core/widget/show/show_number.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រអានព័ត៌មានឧទាហរណ៍
@@ -51,25 +48,21 @@ class _Main_State extends State<Main_> {
   bool is_loading = true;
 
   String? text;
-  double? number;
-  DateTime? date_time;
-  bool? logic;
+  int? number;
 
   // * ផ្ទុកព័ត៌មានឧទាហរណ៍តាម id
   void init() async {
     // * អានទិន្នន័យឧទាហរណ៍តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_1_READ_ID, data: {Demo_1.ID: widget.id});
+    tmp = await dio.post(endpoint.DEMO_2_2_READ_ID, data: {Demo_2_2.ID: widget.id});
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_READ_ID}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_2_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-    final demo = Demo_1.fromJson(tmp.data[0]);
+    final demo = Demo_2_2.fromJson(tmp.data[0]);
     text = demo.text;
     number = demo.number;
-    date_time = demo.date_time;
-    logic = demo.logic;
 
     setState(() {});
   }
@@ -88,24 +81,10 @@ class _Main_State extends State<Main_> {
       ),
 
       // * បង្ហាញលេខ
-      Show_Number(
+      Show_Text(
         prefixIcon: Icons.numbers,
-        leading: "Number:", //
-        value: number,
-      ),
-
-      // * បង្ហាញកាលបរិច្ឆេទ
-      Show_Datetime(
-        prefixIcon: Icons.calendar_month,
-        leading: "Date Time:", //
-        value: date_time,
-      ),
-
-      // * បង្ហាញតម្លៃប៊ូលីន
-      Show_Boolean(
-        prefixIcon: Icons.toggle_on,
-        leading: "Logic:", //
-        value: logic,
+        lead: "Number:", //
+        value: format_int(number),
       ),
 
       // * ប៊ូតុងបិទ

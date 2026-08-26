@@ -1,20 +1,19 @@
-// * ទំព័រកែប្រែព័ត៌មានឧទាហរណ៍
+// * ទំព័របង្កើតឧទាហរណ៍ថ្មី
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/widget/pick/pick_boolean.dart";
-import "package:speanmeas/core/widget/pick/pick_datetime.dart";
 import "package:speanmeas/core/widget/input/input_text.dart";
+import "package:speanmeas/core/widget/search/search_demo_2_2.dart";
 import "package:speanmeas/core/widget/input/input_number.dart";
 
-// * បង្កើត layout មេរបស់ទំព័រកែប្រែឧទាហរណ៍
+// * បង្កើត layout មេរបស់ទំព័របង្កើតឧទាហរណ៍
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
       title: Text(
-        "Update", //
+        "Create", //
         style: TextStyle(
           fontSize: 20, //
           fontWeight: FontWeight.bold,
@@ -45,41 +44,23 @@ Widget _layout(List<Widget> children) {
   );
 }
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់កែប្រែឧទាហរណ៍
+// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទម្រង់បង្កើតឧទាហរណ៍
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
   bool is_loading = true;
 
   String? text;
-  double? number;
-  DateTime? date_time;
-  bool? logic;
+  int? number;
+  String? demo_2_2_id;
 
-  // * ផ្ទុកព័ត៌មានឧទាហរណ៍បច្ចុប្បន្ន
   void init() async {
-    // * អានទិន្នន័យឧទាហរណ៍តាម id
-    setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_1_READ_ID, data: {Demo_1.ID: widget.id});
     setState(() => is_loading = false);
-
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_READ_ID}", cl: Colors.red);
-    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
-
-    final demo = Demo_1.fromJson(tmp.data[0]);
-    text = demo.text;
-    number = demo.number;
-    date_time = demo.date_time;
-    logic = demo.logic;
-
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    // * បង្ហាញ loading ពេលកំពុងផ្ទុក
-    if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
       // * បញ្ចូលអត្ថបទ
       Input_Text(
@@ -93,62 +74,49 @@ class _Main_State extends State<Main_> {
 
       // * បញ្ចូលលេខ
       Input_Number(
-        init: number, //
+        init: number?.toDouble(), //
         lead: "Number:", //
         onChanged: (v) {
-          number = v;
+          number = v?.toInt();
           setState(() {});
         },
       ),
 
-      // * ជ្រើសរើសកាលបរិច្ឆេទ
-      Picker_Datetime(
-        initial: date_time, //
-        title: "Date Time:", //
+      // * ស្វែងរក Demo 2-2
+      Search_Demo_2_2(
         onChanged: (v) {
-          date_time = v;
+          demo_2_2_id = v;
           setState(() {});
         },
       ),
 
-      // * ជ្រើសរើសតម្លៃប៊ូលីន
-      Picker_Boolean(
-        initial: logic, //
-        title: "Logic:", //
-        onChanged: (v) {
-          logic = v;
-          setState(() {});
-        },
-      ),
-
-      // * ប៊ូតុងកែប្រែ
+      // * ប៊ូតុងបង្កើត
       OutlinedButton.icon(
         icon: Icon(Icons.check),
-        label: Text("Update"),
+        label: Text("Create"),
         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-        onPressed: is_loading ? null : on_update,
+        onPressed: is_loading ? null : on_create,
       ),
+
       SizedBox(height: height - 100),
     ]);
   }
 
-  // * អនុវត្តការកែប្រែឧទាហរណ៍
-  void on_update() async {
-    // * ផ្ញើសំណើកែប្រែឧទាហរណ៍
+  // * អនុវត្តការបង្កើតឧទាហរណ៍
+  void on_create() async {
+    // * ផ្ញើសំណើបង្កើតឧទាហរណ៍
     setState(() => is_loading = true);
     tmp = await dio.post(
-      endpoint.DEMO_1_UPDATE, //
+      endpoint.DEMO_2_1_CREATE, //
       data: {
-        Demo_1.ID: widget.id,
-        Demo_1.TEXT: text,
-        Demo_1.NUMBER: number,
-        Demo_1.DATE_TIME: date_time?.toIso8601String(),
-        Demo_1.LOGIC: logic, //
+        Demo_2_1.TEXT: text, //
+        Demo_2_1.NUMBER: number, //
+        Demo_2_1.DEMO_2_2_ID: demo_2_2_id, //
       },
     );
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_UPDATE}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_1_CREATE}", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context, tmp.data[0]);
@@ -161,15 +129,9 @@ class _Main_State extends State<Main_> {
   }
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រកែប្រែឧទាហរណ៍
+// * ថ្នាក់ Main_ ជាទំព័របង្កើតឧទាហរណ៍
 class Main_ extends StatefulWidget {
-  const Main_({
-    super.key, //
-    required this.id, //
-  });
-
-  final String id;
-
+  const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
@@ -186,7 +148,7 @@ void main() async {
         ChangeNotifierProvider.value(value: lang),
       ],
       child: MaterialApp(
-        home: Main_(id: "1"), //
+        home: Main_(), //
         theme: theme_data, //
         title: "Development", //
         debugShowCheckedModeBanner: false, //

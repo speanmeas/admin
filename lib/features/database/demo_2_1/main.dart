@@ -1,4 +1,4 @@
-// * ទំព័រគ្រប់គ្រងឧទាហរណ៍ (Demo 1) សម្រាប់បង្កើត អាន កែ និងលុប
+// * ទំព័រគ្រប់គ្រងឧទាហរណ៍ (Demo 2-1) សម្រាប់បង្កើត អាន កែ និងលុប
 
 import "package:flutter/material.dart";
 import "package:flutter/foundation.dart";
@@ -35,14 +35,14 @@ class _Main_State extends State<Main_> {
   int row_total = 0;
   PlutoGridStateManager? state_manager;
 
-  List<Demo_1> data = [];
+  List<Demo_2_1> data = [];
 
   // * ផ្ទុកចំនួនជួរដេកសរុប និងទំព័រដំបូង
   void init() async {
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_1_READ_COUNT, data: {"count": true});
+    tmp = await dio.post(endpoint.DEMO_2_1_READ_COUNT, data: {"count": true});
     setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_READ_COUNT}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_1_READ_COUNT}", cl: Colors.red);
 
     row_total = parse_int(tmp.data) ?? 0;
     load_page(page);
@@ -51,9 +51,9 @@ class _Main_State extends State<Main_> {
   // * ធ្វើឱ្យទិន្នន័យស្រស់ឡើងវិញ
   void on_refresh() async {
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_1_READ_COUNT, data: {"count": true});
+    tmp = await dio.post(endpoint.DEMO_2_1_READ_COUNT, data: {"count": true});
     setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_READ_COUNT}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_1_READ_COUNT}", cl: Colors.red);
 
     row_total = parse_int(tmp.data) ?? 0;
 
@@ -68,7 +68,7 @@ class _Main_State extends State<Main_> {
     // * អានទិន្នន័យឧទាហរណ៍តាម offset និង limit
     setState(() => is_loading = true);
     tmp = await dio.post(
-      endpoint.DEMO_1_READ, //
+      endpoint.DEMO_2_1_READ, //
       data: {
         "key": DEFAULT_KEY, //
         "order": DEFAULT_ORDER, //
@@ -79,15 +79,15 @@ class _Main_State extends State<Main_> {
     setState(() => is_loading = false);
 
     // * dio ត្រឡប់ null ពេល request បរាជ័យ
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_READ}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_1_READ}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
     // * រក្សាទុក sort និង filter មុនពេលផ្ទុកឡើងវិញ
     final sorted_column = state_manager?.getSortedColumn;
     final filter_rows = List<PlutoRow>.from(state_manager?.filterRows ?? const <PlutoRow>[]);
 
-    // * បម្លែងទិន្នន័យទៅជា List<Demo_1> ដើម្បីបង្កើត PlutoRow
-    data = List<Demo_1>.from((tmp.data ?? const []).map((d) => Demo_1.fromJson(d)));
+    // * បម្លែងទិន្នន័យទៅជា List<Demo_2_1> ដើម្បីបង្កើត PlutoRow
+    data = List<Demo_2_1>.from((tmp.data ?? const []).map((d) => Demo_2_1.fromJson(d)));
 
     // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
     state_manager?.removeAllRows();
@@ -100,16 +100,14 @@ class _Main_State extends State<Main_> {
                 if (c == "index") //
                   return PlutoCell(value: i + 1);
                 final demo = data[i];
-                if (c == Demo_1.ID) //
+                if (c == Demo_2_1.ID) //
                   return PlutoCell(value: demo.id);
-                if (c == Demo_1.TEXT) //
+                if (c == Demo_2_1.TEXT) //
                   return PlutoCell(value: demo.text);
-                if (c == Demo_1.NUMBER) //
+                if (c == Demo_2_1.NUMBER) //
                   return PlutoCell(value: demo.number);
-                if (c == Demo_1.DATE_TIME) //
-                  return PlutoCell(value: demo.date_time);
-                if (c == Demo_1.LOGIC) //
-                  return PlutoCell(value: demo.logic);
+                if (c == Demo_2_1.DEMO_2_2_ID) //
+                  return PlutoCell(value: demo.demo_2_2_id?.text);
 
                 return PlutoCell(value: null);
               })(),
@@ -356,7 +354,7 @@ class _Main_State extends State<Main_> {
   // * បើកទំព័រអានព័ត៌មានឧទាហរណ៍
   void on_read() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[Demo_1.ID]?.value?.toString() ?? "";
+    final id = row?.cells[Demo_2_1.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
 
     nav_push(context, read.Main_(id: id));
@@ -365,7 +363,7 @@ class _Main_State extends State<Main_> {
   // * បើកទំព័រកែប្រែឧទាហរណ៍
   void on_update() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[Demo_1.ID]?.value?.toString() ?? "";
+    final id = row?.cells[Demo_2_1.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
 
     tmp = await nav_push(context, update.Main_(id: id));
@@ -377,7 +375,7 @@ class _Main_State extends State<Main_> {
   // * បើកទំព័រលុបឧទាហរណ៍
   void on_delete() async {
     final row = state_manager?.currentRow;
-    final id = row?.cells[Demo_1.ID]?.value?.toString() ?? "";
+    final id = row?.cells[Demo_2_1.ID]?.value?.toString() ?? "";
     if (row == null || id.isEmpty) {
       snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
       return;
@@ -426,7 +424,7 @@ final columns = [
 
   // * ជួរឈរ ID (លាក់)
   PlutoColumn(
-    field: Demo_1.ID, //
+    field: Demo_2_1.ID, //
     title: "ID",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -436,7 +434,7 @@ final columns = [
 
   // * ជួរឈរអត្ថបទ
   PlutoColumn(
-    field: Demo_1.TEXT, //
+    field: Demo_2_1.TEXT, //
     title: "Text",
     type: PlutoColumnType.text(),
     width: WIDTH,
@@ -454,7 +452,7 @@ final columns = [
 
   // * ជួរឈរលេខ
   PlutoColumn(
-    field: Demo_1.NUMBER, //
+    field: Demo_2_1.NUMBER, //
     title: "Number",
     type: PlutoColumnType.number(),
     width: WIDTH,
@@ -463,35 +461,17 @@ final columns = [
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          format_double(rc.cell.value, digits: 2), //
+          format_int(rc.cell.value), //
           overflow: TextOverflow.ellipsis,
         ),
       );
     },
   ),
 
-  // * ជួរឈរកាលបរិច្ឆេទ
+  // * ជួរឈរ Demo 2-2 (link)
   PlutoColumn(
-    enableEditingMode: false,
-    field: Demo_1.DATE_TIME, //
-    title: "Date Time",
-    type: PlutoColumnType.text(),
-    width: WIDTH,
-    renderer: (rc) {
-      return Align(
-        alignment: Alignment.center, //
-        child: Text(
-          format_datetime(rc.cell.value), //
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    },
-  ),
-
-  // * ជួរឈរតក្កវិជ្ជា (បាទ/ទេ)
-  PlutoColumn(
-    field: Demo_1.LOGIC, //
-    title: "Logic",
+    field: Demo_2_1.DEMO_2_2_ID, //
+    title: "Demo 2-2",
     type: PlutoColumnType.text(),
     width: WIDTH,
     enableEditingMode: false,
@@ -499,7 +479,7 @@ final columns = [
       return Align(
         alignment: Alignment.center, //
         child: Text(
-          format_bool(rc.cell.value), //
+          format_string(rc.cell.value), //
           overflow: TextOverflow.ellipsis,
         ),
       );

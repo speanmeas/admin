@@ -4,9 +4,6 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/widget/show/show_boolean.dart";
-import "package:speanmeas/core/widget/show/show_datetime.dart";
-import "package:speanmeas/core/widget/show/show_number.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
 
 // * បង្កើត layout មេរបស់ទំព័រអានព័ត៌មានឧទាហរណ៍
@@ -50,28 +47,25 @@ class _Main_State extends State<Main_> {
   dynamic tmp;
   bool is_loading = true;
 
-  String? text_1;
-  double? number_1;
-  DateTime? datetime_1;
-  bool? logic_1;
-  String? note;
+  String? text;
+  int? number;
+
+  Demo_2_2? demo_2_2_id;
 
   // * ផ្ទុកព័ត៌មានឧទាហរណ៍តាម id
   void init() async {
     // * អានទិន្នន័យឧទាហរណ៍តាម id
     setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.DEMO_2_READ_ID, data: {Demo_2.ID: widget.id});
+    tmp = await dio.post(endpoint.DEMO_2_1_READ_ID, data: {Demo_2_1.ID: widget.id});
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_READ_ID}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_2_1_READ_ID}", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
-    final demo = Demo_2.fromJson(tmp.data[0]);
-    text_1 = demo.text_1;
-    number_1 = demo.number_1;
-    datetime_1 = demo.datetime_1;
-    logic_1 = demo.logic_1;
-    note = demo.note;
+    final demo = Demo_2_1.fromJson(tmp.data[0]);
+    text = demo.text;
+    number = demo.number;
+    demo_2_2_id = demo.demo_2_2_id;
 
     setState(() {});
   }
@@ -82,40 +76,31 @@ class _Main_State extends State<Main_> {
     // * បង្ហាញ loading ពេលកំពុងផ្ទុក
     if (is_loading) return Center(child: CircularProgressIndicator());
     return _layout([
-      // * បង្ហាញអត្ថបទ 1
+      // * បង្ហាញអត្ថបទ
       Show_Text(
         prefixIcon: Icons.text_fields,
-        lead: "Text 1:", //
-        value: text_1,
+        lead: "Text:", //
+        value: text,
       ),
 
-      // * បង្ហាញលេខ 1
-      Show_Number(
-        prefixIcon: Icons.numbers,
-        leading: "Number 1:", //
-        value: number_1,
-      ),
-
-      // * បង្ហាញកាលបរិច្ឆេទ 1
-      Show_Datetime(
-        prefixIcon: Icons.calendar_month,
-        leading: "Datetime 1:", //
-        value: datetime_1,
-      ),
-
-      // * បង្ហាញតម្លៃប៊ូលីន 1
-      Show_Boolean(
-        prefixIcon: Icons.toggle_on,
-        leading: "Boolean:", //
-        value: logic_1,
-      ),
-
-      // * បង្ហាញកំណត់ចំណាំ
+      // * បង្ហាញលេខ
       Show_Text(
-        prefixIcon: Icons.note_alt_outlined,
-        lead: "Note:", //
-        value: note,
-        maxLines: 4,
+        prefixIcon: Icons.numbers,
+        lead: "Number:", //
+        value: format_int(number),
+      ),
+
+      // * បង្ហាញព័ត៌មាន Demo 2-2 (link)
+      Show_Text(
+        prefixIcon: Icons.link,
+        lead: "Demo 2-2:", //
+        value: demo_2_2_id?.text ?? "",
+      ),
+
+      Show_Text(
+        prefixIcon: Icons.numbers,
+        lead: "Demo 2-2 Number:", //
+        value: format_int(demo_2_2_id?.number),
       ),
 
       // * ប៊ូតុងបិទ
