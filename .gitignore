@@ -57,6 +57,8 @@ app.*.map.json
 !.github/
 !.gitignore
 
+session-*.md
+
 AGENTS.md
 todo.md
 

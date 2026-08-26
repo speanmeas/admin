@@ -2,150 +2,90 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
+import "package:speanmeas/core/utility/gen_data.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK VARIABLES ##########
   dynamic tmp;
-  int hot_reload = 0;
+  int reload = 0;
   bool is_load = true;
+  double WIDTH = 120;
 
-  PlutoGridStateManager? state_manager;
-
-  late List<String> list_c = columns.map((c) => c.field).toList();
+  late List<String> list_column;
+  late PlutoGridStateManager state_manager;
 
   List<Demo_1> data = [];
-  final ScrollController header_controller = ScrollController();
-  List<PlutoColumn> columns = [
-    PlutoColumn(
-      field: "index", //
-      title: "No.",
-      type: PlutoColumnType.number(),
-      width: 80,
-      enableEditingMode: false,
-      renderer: (rc) {
-        return Align(
-          alignment: Alignment.center, //
-          child: Text(
-            format_int(rc.cell.value), //
-            overflow: TextOverflow.ellipsis,
-          ),
-        );
-      },
-    ),
-
-    PlutoColumn(
-      field: Demo_1.ID, //
-      title: "ID",
-      type: PlutoColumnType.number(),
-      // width: WIDTH,
-      enableEditingMode: false,
-      hide: true, //
-    ),
-
-    PlutoColumn(
-      field: Demo_1.TEXT, //
-      title: "Room",
-      type: PlutoColumnType.text(),
-      enableEditingMode: false,
-      renderer: (rc) {
-        return Align(
-          alignment: Alignment.center, //
-          child: Text(
-            format_string(rc.cell.value), //
-            overflow: TextOverflow.ellipsis,
-          ),
-        );
-      },
-    ),
-    PlutoColumn(
-      field: "001", //
-      title: "Guest",
-      type: PlutoColumnType.text(),
-      // width: WIDTH,
-      enableEditingMode: false,
-      renderer: (rc) {
-        return Align(
-          alignment: Alignment.center, //
-          child: Text(
-            format_string(rc.cell.value), //
-            overflow: TextOverflow.ellipsis,
-          ),
-        );
-      },
-    ),
-
-    PlutoColumn(
-      field: Demo_1.NUMBER, //
-      title: "Number 1",
-      type: PlutoColumnType.number(),
-      // width: WIDTH,
-      enableEditingMode: false,
-      renderer: (rc) {
-        return Align(
-          alignment: Alignment.center, //
-          child: Text(
-            format_double(rc.cell.value, digits: 2), //
-            overflow: TextOverflow.ellipsis,
-          ),
-        );
-      },
-    ),
-
-    PlutoColumn(
-      enableEditingMode: false,
-      field: Demo_1.DATE_TIME, //
-      title: "Date Time 1",
-      type: PlutoColumnType.text(),
-      // width: WIDTH,
-      renderer: (rc) {
-        return Align(
-          alignment: Alignment.center, //
-          child: Text(
-            format_datetime(rc.cell.value), //
-            overflow: TextOverflow.ellipsis,
-          ),
-        );
-      },
-    ),
-
-    PlutoColumn(
-      field: Demo_1.LOGIC, //
-      title: "Logic 1",
-      type: PlutoColumnType.text(),
-      // width: WIDTH,
-      enableEditingMode: false,
-      renderer: (rc) {
-        return Align(
-          alignment: Alignment.center, //
-          child: Text(
-            format_bool(rc.cell.value), //
-            overflow: TextOverflow.ellipsis,
-          ),
-        );
-      },
-    ),
-
-    PlutoColumn(
-      field: "note", //
-      title: "Note",
-      type: PlutoColumnType.text(),
-      // width: WIDTH,
-      enableEditingMode: false,
-      renderer: (rc) {
-        return Align(
-          alignment: Alignment.center, //
-          child: Text(
-            format_string(rc.cell.value), //
-            overflow: TextOverflow.ellipsis,
-          ),
-        );
-      },
-    ),
-  ];
-
-  List<PlutoRow> rows = [];
-
   // * ########## BLOCK VARIABLES END ##########
+
+  // * ########## BLOCK METHODS ##########
+  @override
+  void reassemble() {
+    super.reassemble();
+    reload++;
+  }
+
+  void on_loaded(PlutoGridOnLoadedEvent event) async {
+    state_manager = event.stateManager;
+
+    list_column = state_manager.refColumns.map((c) => c.field).toList();
+
+    state_manager.appendRows([
+      for (var i = 0; i < 10; i++)
+        PlutoRow(
+          cells: {
+            for (var c in list_column) //
+              c: (() {
+                if (c == "index") //
+                  return PlutoCell(value: i + 1);
+                if (c == "room") //
+                  return PlutoCell(value: (100 + gen_number() * 900).toInt().toString());
+                if (c == "guest_name") //
+                  return PlutoCell(value: gen_text());
+                if (c == "guest_phone") //
+                  return PlutoCell(value: (1000000000 + gen_number() * 9000000000).toInt().toString());
+                if (c == "stay") //
+                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                if (c == "check_in") //
+                  return PlutoCell(value: gen_datetime());
+                if (c == "check_out") //
+                  return PlutoCell(value: gen_datetime());
+                if (c == "room_price") //
+                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                if (c == "room_cash") //
+                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                if (c == "room_bank") //
+                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                if (c == "mini_bar_price") //
+                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                if (c == "mini_bar_cash") //
+                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                if (c == "mini_bar_bank") //
+                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                if (c == "penalty_price") //
+                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                if (c == "penalty_cash") //
+                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                if (c == "penalty_bank") //
+                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                if (c == "check_in_by") //
+                  return PlutoCell(value: gen_text());
+                if (c == "check_out_by") //
+                  return PlutoCell(value: gen_text());
+                if (c == "note_1") //
+                  return PlutoCell(value: gen_text());
+                if (c == "note_2") //
+                  return PlutoCell(value: gen_text());
+
+                return PlutoCell(value: null);
+              })(),
+          },
+        ),
+    ]);
+
+    setState(() => is_load = false);
+  }
+
+  // * ########## BLOCK METHODS END ##########
 
   // * ########## BLOCK DESIGN ##########
   Widget _layout({
@@ -160,9 +100,12 @@ class _Main_State extends State<Main_> {
           Container(
             height: 34, //
             padding: const EdgeInsets.all(1),
-            child: SingleChildScrollView(
-              controller: header_controller, //
-              scrollDirection: Axis.horizontal, //
+            child: InteractiveViewer(
+              panEnabled: true, //
+              constrained: false, //
+              scaleEnabled: false, //
+              panAxis: PanAxis.horizontal, //
+              alignment: Alignment.center, //
               child: Row(
                 spacing: 1,
                 mainAxisAlignment: MainAxisAlignment.start, //
@@ -177,22 +120,15 @@ class _Main_State extends State<Main_> {
 
           Expanded(child: body ?? Container()),
 
+          // FOOTER
           Container(
             height: 34, //
             padding: const EdgeInsets.all(1),
-            child: InteractiveViewer(
-              panEnabled: true, //
-              constrained: false, //
-              scaleEnabled: false, //
-              panAxis: PanAxis.horizontal, //
-              alignment: Alignment.center, //
-              child: Row(
-                spacing: 2, //
-                // mainAxisSize: MainAxisSize.min, //
-                mainAxisAlignment: MainAxisAlignment.center, //
-                crossAxisAlignment: CrossAxisAlignment.center, //
-                children: [...?footer],
-              ),
+            child: Row(
+              spacing: 2, //
+              mainAxisAlignment: MainAxisAlignment.center, //
+              crossAxisAlignment: CrossAxisAlignment.center, //
+              children: [...?footer],
             ),
           ),
         ],
@@ -267,9 +203,409 @@ class _Main_State extends State<Main_> {
         ),
       ],
       body: PlutoGrid(
-        key: ValueKey(hot_reload), //
-        rows: rows, //
-        columns: columns, //
+        key: ValueKey(reload), //
+        rows: [], //
+        columns: [
+          PlutoColumn(
+            field: "_id", //
+            title: "ID",
+            type: PlutoColumnType.number(),
+            enableEditingMode: false,
+            hide: true, //
+          ),
+
+          PlutoColumn(
+            field: "index", //
+            title: "No.",
+            // titleTextAlign: PlutoColumnTextAlign.left, //
+            type: PlutoColumnType.number(),
+            enableEditingMode: false,
+            width: 60,
+            renderer: (rc) {
+              return Row(
+                children: [
+                  //
+                  IconButton(
+                    tooltip: "Cancel", //
+                    icon: Icon(Icons.delete_outline, color: Colors.red),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("Edit Room: ${rc.row.cells["index"]?.value}");
+                    }, //
+                  ),
+
+                  Spacer(),
+
+                  Text(
+                    format_string(rc.cell.value), //
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
+                  Spacer(),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "room", //
+            title: "Room",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Row(
+                children: [
+                  //
+                  Spacer(),
+
+                  Text(
+                    format_string(rc.cell.value), //
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
+                  Spacer(),
+
+                  IconButton(
+                    tooltip: "Change Room", //
+                    icon: Icon(Icons.edit_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("Edit Room: ${rc.row.cells["index"]?.value}");
+                    }, //
+                  ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "guest_name", //
+            title: "Name",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: WIDTH,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "guest_phone", //
+            title: "Phone",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: WIDTH,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "check_in", //
+            title: "Check-In At",
+            enableEditingMode: false,
+            type: PlutoColumnType.text(),
+            width: 140,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(
+                  format_datetime(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "stay", //
+            title: "Duration",
+            type: PlutoColumnType.number(),
+            enableEditingMode: false,
+            width: 100,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 0) + " ថ្ងៃ", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "check_out", //
+            title: "Check-Out At",
+            enableEditingMode: false,
+            type: PlutoColumnType.text(),
+            width: 140,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(
+                  format_datetime(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "room_price", //
+            title: "Price",
+            type: PlutoColumnType.number(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "room_cash", //
+            title: "Cash",
+            type: PlutoColumnType.number(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "room_bank", //
+            title: "Bank",
+            type: PlutoColumnType.number(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "mini_bar_price", //
+            title: "Price",
+            type: PlutoColumnType.number(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "mini_bar_cash", //
+            title: "Cash",
+            type: PlutoColumnType.number(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "mini_bar_bank", //
+            title: "Bank",
+            type: PlutoColumnType.number(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "penalty_price", //
+            title: "Price",
+            type: PlutoColumnType.number(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "penalty_cash", //
+            title: "Cash",
+            type: PlutoColumnType.number(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "penalty_bank", //
+            title: "Bank",
+            type: PlutoColumnType.number(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "check_in_by", //
+            title: "Check-in By",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 140,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "check_out_by", //
+            title: "Check-Out By",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 140,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "note_1", //
+            title: "Note 1",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 120,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "note_2", //
+            title: "Note 2",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 120,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+        ], //
+        columnGroups: [
+          PlutoColumnGroup(
+            title: "Guest", //
+            fields: ["guest_name", "guest_phone"],
+          ),
+          PlutoColumnGroup(
+            title: "Stay", //
+            fields: ["check_in", "stay", "check_out"],
+          ),
+          PlutoColumnGroup(
+            title: "Room Payment", //
+            fields: ["room_price", "room_cash", "room_bank"],
+          ),
+          PlutoColumnGroup(
+            title: "Mini Bar Payment", //
+            fields: ["mini_bar_price", "mini_bar_cash", "mini_bar_bank"],
+          ),
+          PlutoColumnGroup(
+            title: "Penalty Payment", //
+            fields: ["penalty_price", "penalty_cash", "penalty_bank"],
+          ),
+          PlutoColumnGroup(
+            title: "Check By", //
+            fields: ["check_in_by", "check_out_by"],
+          ),
+          PlutoColumnGroup(
+            title: "Notes", //
+            fields: ["note_1", "note_2"],
+          ),
+        ],
         configuration: PlutoGridConfiguration(
           scrollbar: PlutoGridScrollbarConfig(
             scrollbarThickness: 12, //
@@ -278,17 +614,14 @@ class _Main_State extends State<Main_> {
           ),
           style: PlutoGridStyleConfig(
             rowHeight: 28, //
-            columnHeight: 32,
-            columnFilterHeight: 36,
-            defaultColumnTitlePadding: EdgeInsets.fromLTRB(8, 0, 24, 0),
+            columnHeight: 32, //
+            columnFilterHeight: 32,
+            defaultColumnTitlePadding: EdgeInsets.fromLTRB(4, 2, 26, 0),
             defaultColumnFilterPadding: EdgeInsets.fromLTRB(1, 1, 1, 1),
+            defaultCellPadding: EdgeInsets.fromLTRB(2, 2, 2, 2),
           ),
         ),
-        onLoaded: (event) {
-          state_manager = event.stateManager;
-          // list_c = state_manager?.columns.map((c) => c.field).toList() ?? [];
-          setState(() => is_load = false);
-        },
+        onLoaded: on_loaded,
       ),
 
       footer: [
@@ -321,32 +654,8 @@ class _Main_State extends State<Main_> {
       ],
     );
   }
+
   // * ########## BLOCK DESIGN END ##########
-
-  // * ########## BLOCK METHODS ##########
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  @override
-  void dispose() {
-    header_controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    hot_reload++;
-  }
-
-  void init() async {
-    pprint(list_c);
-  }
-
-  // * ########## BLOCK METHODS END ##########
 }
 
 // * ########## BLOCK ARGUMENTS OF MAIN ##########
