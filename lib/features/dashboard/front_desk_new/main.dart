@@ -8,8 +8,8 @@ class _Main_State extends State<Main_> {
   // * ########## BLOCK VARIABLES ##########
   dynamic tmp;
   int reload = 0;
-  bool is_load = true;
   double WIDTH = 120;
+  bool is_load = true;
 
   late List<String> list_column;
   late PlutoGridStateManager state_manager;
@@ -24,8 +24,11 @@ class _Main_State extends State<Main_> {
     reload++;
   }
 
-  void on_loaded(PlutoGridOnLoadedEvent event) async {
-    state_manager = event.stateManager;
+  void on_loaded(PlutoGridOnLoadedEvent e) async {
+    state_manager = e.stateManager;
+
+    // show filter
+    // state_manager.setShowColumnFilter(true);
 
     list_column = state_manager.refColumns.map((c) => c.field).toList();
 
@@ -83,6 +86,11 @@ class _Main_State extends State<Main_> {
     ]);
 
     setState(() => is_load = false);
+  }
+
+  void on_changed(PlutoGridOnChangedEvent e) async {
+    //
+    pprint("onChanged: ${e.row.cells["index"]?.value} | ${e.column.field} | ${e.value}");
   }
 
   // * ########## BLOCK METHODS END ##########
@@ -222,28 +230,12 @@ class _Main_State extends State<Main_> {
             enableEditingMode: false,
             width: 60,
             renderer: (rc) {
-              return Row(
-                children: [
-                  //
-                  IconButton(
-                    tooltip: "Cancel", //
-                    icon: Icon(Icons.delete_outline, color: Colors.red),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      print("Edit Room: ${rc.row.cells["index"]?.value}");
-                    }, //
-                  ),
-
-                  Spacer(),
-
-                  Text(
-                    format_string(rc.cell.value), //
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                  Spacer(),
-                ],
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
               );
             },
           ),
@@ -255,41 +247,8 @@ class _Main_State extends State<Main_> {
             enableEditingMode: false,
             width: 80,
             renderer: (rc) {
-              return Row(
-                children: [
-                  //
-                  Spacer(),
-
-                  Text(
-                    format_string(rc.cell.value), //
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                  Spacer(),
-
-                  IconButton(
-                    tooltip: "Change Room", //
-                    icon: Icon(Icons.edit_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      print("Edit Room: ${rc.row.cells["index"]?.value}");
-                    }, //
-                  ),
-                ],
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "guest_name", //
-            title: "Name",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: WIDTH,
-            renderer: (rc) {
               return Align(
-                alignment: Alignment.centerLeft, //
+                alignment: Alignment.center, //
                 child: Text(
                   format_string(rc.cell.value), //
                   overflow: TextOverflow.ellipsis,
@@ -299,10 +258,44 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
+            field: "guest_name", //
+            title: "Name",
+            type: PlutoColumnType.text(),
+            enableEditingMode: true,
+            width: WIDTH,
+            renderer: (rc) {
+              return Row(
+                children: [
+                  //
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft, //
+                      child: Text(
+                        format_string(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+
+                  // IconButton(
+                  //   tooltip: "Edit Guest Name", //
+                  //   icon: Icon(Icons.edit_outlined),
+                  //   padding: EdgeInsets.all(0),
+                  //   constraints: BoxConstraints(),
+                  //   onPressed: () {
+                  //     print("Edit Guest Name: ${rc.row.cells["index"]?.value}");
+                  //   }, //
+                  // ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
             field: "guest_phone", //
             title: "Phone",
             type: PlutoColumnType.text(),
-            enableEditingMode: false,
+            // enableEditingMode: false,
             width: WIDTH,
             renderer: (rc) {
               return Align(
@@ -320,23 +313,53 @@ class _Main_State extends State<Main_> {
             title: "Check-In At",
             enableEditingMode: false,
             type: PlutoColumnType.text(),
-            width: 140,
+            width: 160,
             renderer: (rc) {
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(
-                  format_datetime(rc.cell.value), //
-                  overflow: TextOverflow.ellipsis,
-                ),
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(
+                        format_datetime(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+
+                  IconButton(
+                    tooltip: "Edit", //
+                    icon: Icon(Icons.calendar_month_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("Edit Room: ${rc.row.cells["index"]?.value}");
+                    }, //
+                  ),
+                ],
               );
             },
+            // renderer: (rc) {
+            //   return Align(
+            //     alignment: Alignment.center, //
+            //     child: Text(
+            //       format_datetime(rc.cell.value), //
+            //       overflow: TextOverflow.ellipsis,
+            //     ),
+            //   );
+            // },
           ),
 
           PlutoColumn(
             field: "stay", //
             title: "Duration",
-            type: PlutoColumnType.number(),
-            enableEditingMode: false,
+            type: PlutoColumnType.number(
+              negative: false, //
+              // allowFirstDot: true,
+              // format: "#,###.##",
+              format: "#,###",
+            ),
+            // enableEditingMode: false,
             width: 100,
             renderer: (rc) {
               return Align(
@@ -354,14 +377,30 @@ class _Main_State extends State<Main_> {
             title: "Check-Out At",
             enableEditingMode: false,
             type: PlutoColumnType.text(),
-            width: 140,
+            width: 160,
             renderer: (rc) {
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(
-                  format_datetime(rc.cell.value), //
-                  overflow: TextOverflow.ellipsis,
-                ),
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(
+                        format_datetime(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+
+                  IconButton(
+                    tooltip: "Edit", //
+                    icon: Icon(Icons.calendar_month_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("Edit Room: ${rc.row.cells["index"]?.value}");
+                    }, //
+                  ),
+                ],
               );
             },
           ),
@@ -369,8 +408,11 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: "room_price", //
             title: "Price",
-            type: PlutoColumnType.number(),
-            enableEditingMode: false,
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,###.##",
+            ),
+            // enableEditingMode: false,
             width: 80,
             renderer: (rc) {
               return Align(
@@ -385,8 +427,11 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: "room_cash", //
             title: "Cash",
-            type: PlutoColumnType.number(),
-            enableEditingMode: false,
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,###.##",
+            ),
+            // enableEditingMode: false,
             width: 80,
             renderer: (rc) {
               return Align(
@@ -401,8 +446,11 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: "room_bank", //
             title: "Bank",
-            type: PlutoColumnType.number(),
-            enableEditingMode: false,
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,###.##",
+            ),
+            // enableEditingMode: false,
             width: 80,
             renderer: (rc) {
               return Align(
@@ -414,10 +462,56 @@ class _Main_State extends State<Main_> {
               );
             },
           ),
+
+          PlutoColumn(
+            field: "room_note", //
+            title: "Note",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "mini_bar_item", //
+            title: "Items",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround, //
+                children: [
+                  //
+                  IconButton(
+                    tooltip: "Update Mini Bar Items", //
+                    icon: Icon(Icons.local_bar_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("Update Mini Bar Items: ${rc.row.cells["index"]?.value}");
+                    }, //
+                  ),
+                ],
+              );
+            },
+          ),
+
           PlutoColumn(
             field: "mini_bar_price", //
             title: "Price",
-            type: PlutoColumnType.number(),
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,###.##",
+            ),
             enableEditingMode: false,
             width: 80,
             renderer: (rc) {
@@ -433,7 +527,10 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: "mini_bar_cash", //
             title: "Cash",
-            type: PlutoColumnType.number(),
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,###.##",
+            ),
             enableEditingMode: false,
             width: 80,
             renderer: (rc) {
@@ -449,7 +546,10 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: "mini_bar_bank", //
             title: "Bank",
-            type: PlutoColumnType.number(),
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,###.##",
+            ),
             enableEditingMode: false,
             width: 80,
             renderer: (rc) {
@@ -462,10 +562,55 @@ class _Main_State extends State<Main_> {
               );
             },
           ),
+
+          PlutoColumn(
+            field: "mini_bar_note", //
+            title: "Note",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "penalty_item", //
+            title: "Items",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround, //
+                children: [
+                  //
+                  IconButton(
+                    tooltip: "Update Penalty Items", //
+                    icon: Icon(Icons.gavel_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("Update Penalty Items: ${rc.row.cells["index"]?.value}");
+                    }, //
+                  ),
+                ],
+              );
+            },
+          ),
           PlutoColumn(
             field: "penalty_price", //
             title: "Price",
-            type: PlutoColumnType.number(),
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,###.##",
+            ),
             enableEditingMode: false,
             width: 80,
             renderer: (rc) {
@@ -481,7 +626,10 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: "penalty_cash", //
             title: "Cash",
-            type: PlutoColumnType.number(),
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,###.##",
+            ),
             enableEditingMode: false,
             width: 80,
             renderer: (rc) {
@@ -497,7 +645,10 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: "penalty_bank", //
             title: "Bank",
-            type: PlutoColumnType.number(),
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,###.##",
+            ),
             enableEditingMode: false,
             width: 80,
             renderer: (rc) {
@@ -505,6 +656,23 @@ class _Main_State extends State<Main_> {
                 alignment: Alignment.centerRight, //
                 child: Text(
                   format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "penalty_note", //
+            title: "Note",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(
+                  format_string(rc.cell.value), //
                   overflow: TextOverflow.ellipsis,
                 ),
               );
@@ -543,40 +711,64 @@ class _Main_State extends State<Main_> {
               );
             },
           ),
+
+          // BUTTON RECEIPT
           PlutoColumn(
-            field: "note_1", //
-            title: "Note 1",
+            field: "other", //
+            title: "Others",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
-            width: 120,
+            width: 80,
             renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerLeft, //
-                child: Text(
-                  format_string(rc.cell.value), //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-          PlutoColumn(
-            field: "note_2", //
-            title: "Note 2",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 120,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerLeft, //
-                child: Text(
-                  format_string(rc.cell.value), //
-                  overflow: TextOverflow.ellipsis,
-                ),
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround, //
+                children: [
+                  //
+                  IconButton(
+                    tooltip: "Print Receipt", //
+                    icon: Icon(Icons.print_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("Print Receipt: ${rc.row.cells["index"]?.value}");
+                    }, //
+                  ),
+
+                  //
+                  IconButton(
+                    tooltip: "Change Room", //
+                    icon: Icon(Icons.swap_horiz_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("Change Room: ${rc.row.cells["index"]?.value}");
+                    }, //
+                  ),
+
+                  //
+                  IconButton(
+                    tooltip: "Cancel", //
+                    icon: Icon(Icons.delete_outline, color: Colors.red),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("Cancel: ${rc.row.cells["index"]?.value}");
+                    }, //
+                  ),
+                ],
               );
             },
           ),
         ], //
         columnGroups: [
+          PlutoColumnGroup(
+            title: "", //
+            fields: ["index"],
+          ),
+          PlutoColumnGroup(
+            title: "", //
+            fields: ["room"],
+          ),
           PlutoColumnGroup(
             title: "Guest", //
             fields: ["guest_name", "guest_phone"],
@@ -587,23 +779,23 @@ class _Main_State extends State<Main_> {
           ),
           PlutoColumnGroup(
             title: "Room Payment", //
-            fields: ["room_price", "room_cash", "room_bank"],
+            fields: ["room_price", "room_cash", "room_bank", "room_note"],
           ),
           PlutoColumnGroup(
             title: "Mini Bar Payment", //
-            fields: ["mini_bar_price", "mini_bar_cash", "mini_bar_bank"],
+            fields: ["mini_bar_item", "mini_bar_price", "mini_bar_cash", "mini_bar_bank", "mini_bar_note"],
           ),
           PlutoColumnGroup(
             title: "Penalty Payment", //
-            fields: ["penalty_price", "penalty_cash", "penalty_bank"],
+            fields: ["penalty_item", "penalty_price", "penalty_cash", "penalty_bank", "penalty_note"],
           ),
           PlutoColumnGroup(
             title: "Check By", //
             fields: ["check_in_by", "check_out_by"],
           ),
           PlutoColumnGroup(
-            title: "Notes", //
-            fields: ["note_1", "note_2"],
+            title: "", //
+            fields: ["other"],
           ),
         ],
         configuration: PlutoGridConfiguration(
@@ -618,10 +810,11 @@ class _Main_State extends State<Main_> {
             columnFilterHeight: 32,
             defaultColumnTitlePadding: EdgeInsets.fromLTRB(4, 2, 26, 0),
             defaultColumnFilterPadding: EdgeInsets.fromLTRB(1, 1, 1, 1),
-            defaultCellPadding: EdgeInsets.fromLTRB(2, 2, 2, 2),
+            defaultCellPadding: EdgeInsets.fromLTRB(2, 0, 2, 0),
           ),
         ),
         onLoaded: on_loaded,
+        onChanged: on_changed,
       ),
 
       footer: [
