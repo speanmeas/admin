@@ -1,9 +1,15 @@
 import "package:flutter/material.dart";
 import "package:flutter_svg/svg.dart";
+import "package:intl/intl.dart";
 import "package:provider/provider.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
 import "package:speanmeas/core/utility/gen_data.dart";
+
+import "form/check_in.dart" as check_in;
+import "form/check_out.dart" as check_out;
+import "form/clean.dart" as clean;
+// import "dialog/check_in.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK VARIABLES ##########
@@ -14,6 +20,8 @@ class _Main_State extends State<Main_> {
 
   late List<String> list_column;
   late PlutoGridStateManager state_manager;
+
+  DateTime dt = DateTime.now();
 
   List<dynamic> rooms = [];
   List<Front_Desk> data = [];
@@ -31,12 +39,10 @@ class _Main_State extends State<Main_> {
     setState(() => is_load = true);
     tmp = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
     setState(() => is_load = false);
-
     if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_READ}", cl: Colors.red);
-
     rooms = tmp.data as List<dynamic>? ?? [];
 
-    pprint(rooms);
+    // pprint(rooms);
     setState(() {});
   }
 
@@ -139,6 +145,7 @@ class _Main_State extends State<Main_> {
                 height: 34, //
                 width: 100, //
                 alignment: Alignment.centerRight, //
+                padding: const EdgeInsets.only(bottom: 2), //
                 child: Text(
                   "Check-In: ", //
                   style: TextStyle(
@@ -159,6 +166,8 @@ class _Main_State extends State<Main_> {
             ],
           ),
 
+          const SizedBox(height: 1),
+
           // CHECK OUT
           Row(
             mainAxisAlignment: .start,
@@ -168,6 +177,7 @@ class _Main_State extends State<Main_> {
                 height: 34, //
                 width: 100, //
                 alignment: Alignment.centerRight, //
+                padding: const EdgeInsets.only(bottom: 2), //
                 child: Text(
                   "Check-Out: ", //
                   style: TextStyle(
@@ -188,6 +198,8 @@ class _Main_State extends State<Main_> {
             ],
           ),
 
+          const SizedBox(height: 1),
+
           // CLEAN
           Row(
             mainAxisAlignment: .start,
@@ -197,6 +209,7 @@ class _Main_State extends State<Main_> {
                 height: 34, //
                 width: 100, //
                 alignment: Alignment.centerRight, //
+                padding: const EdgeInsets.only(bottom: 2), //
                 child: Text(
                   "Clean: ", //
                   style: TextStyle(
@@ -217,7 +230,7 @@ class _Main_State extends State<Main_> {
             ],
           ),
 
-          SizedBox(height: 2),
+          const SizedBox(height: 1),
 
           if (is_load) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
@@ -227,18 +240,11 @@ class _Main_State extends State<Main_> {
           Container(
             height: 34, //
             padding: const EdgeInsets.all(1),
-            child: InteractiveViewer(
-              panEnabled: true, //
-              constrained: false, //
-              scaleEnabled: false, //
-              panAxis: PanAxis.horizontal, //
-              alignment: Alignment.center, //
-              child: Row(
-                spacing: 2, //
-                mainAxisAlignment: MainAxisAlignment.center, //
-                crossAxisAlignment: CrossAxisAlignment.center, //
-                children: [...?footer],
-              ),
+            child: Row(
+              spacing: 2, //
+              mainAxisAlignment: MainAxisAlignment.center, //
+              crossAxisAlignment: CrossAxisAlignment.center, //
+              children: [...?footer],
             ),
           ),
         ],
@@ -255,8 +261,22 @@ class _Main_State extends State<Main_> {
             icon: Icon(Icons.hotel_outlined), //
             label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
-            onPressed: () {
-              pprint("Check-In: ${r[Room.ID]} | ${r[Room.NUMBER]}");
+            onPressed: () async {
+              // pprint(r[Room.ID]);
+              // pprint(r[Room.NUMBER]);
+              // pprint(r[Room.PRICE_PER_DAY]);
+              // pprint(r[Room.PRICE_PER_3H]);
+              tmp = await nav_push(
+                context,
+                check_in.Main_(
+                  room_id: r[Room.ID], //
+                  room_number: r[Room.NUMBER], //
+                  price_per_day: r[Room.PRICE_PER_DAY], //
+                  price_per_3h: r[Room.PRICE_PER_3H], //
+                ),
+              );
+              if (tmp == null) return;
+              init();
             },
           ),
       ],
@@ -266,8 +286,45 @@ class _Main_State extends State<Main_> {
             icon: Icon(Icons.hotel_outlined), //
             label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-            onPressed: () {
-              pprint("Check-Out: ${r[Room.ID]} | ${r[Room.NUMBER]}");
+            onPressed: () async {
+              // pprint("Check-Out: ${r[Room.ID]} | ${r[Room.NUMBER]}");
+              // final v = nav_push(context, )
+              // if (v == null) return;
+              // pprint("Confirm: $v");
+
+              // setState(() => is_load = true);
+              // tmp = await dio.post(
+              //   endpoint.CHECK_OUT_CREATE,
+              //   data: {
+              //     Check_Out.NOTE: "Blah blah", //
+              //   },
+              // );
+              // setState(() => is_load = false);
+
+              // setState(() => is_load = true);
+              // await dio.post(
+              //   endpoint.FRONT_DESK_UPDATE,
+              //   data: {
+              //     Front_Desk.ID: r[Room.FRONT_DESK_ID], //
+              //     Front_Desk.CHECK_OUT_ID: tmp.data[0][Check_Out.ID], //
+              //   },
+              // );
+              // setState(() => is_load = false);
+
+              // setState(() => is_load = true);
+              // await dio.post(
+              //   endpoint.ROOM_UPDATE,
+              //   data: {
+              //     Room.ID: r[Room.ID], //
+              //     Room.STATUS: "Dirty", //
+              //     Room.FRONT_DESK_ID: r[Room.FRONT_DESK_ID], //
+              //   },
+              // );
+              // setState(() => is_load = false);
+
+              // init();
+
+              // setState(() => is_load = false);
             },
           ),
       ],
@@ -277,8 +334,47 @@ class _Main_State extends State<Main_> {
             icon: Icon(Icons.hotel_outlined), //
             label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.grey),
-            onPressed: () {
-              pprint("Clean: ${r[Room.ID]} | ${r[Room.NUMBER]}");
+            onPressed: () async {
+              // pprint("Clean: ${r[Room.ID]} | ${r[Room.NUMBER]}");
+              // final v = await check_in(
+              //   context: context, //
+              //   lead: "Room ${r[Room.NUMBER]} Clean?",
+              // );
+              // if (v == null) return;
+              // pprint("Confirm: $v");
+              // setState(() => is_load = true);
+              // tmp = await dio.post(
+              //   endpoint.CLEAN_CREATE,
+              //   data: {
+              //     Clean.NOTE: "Blah blah", //
+              //   },
+              // );
+              // setState(() => is_load = false);
+
+              // setState(() => is_load = true);
+              // await dio.post(
+              //   endpoint.FRONT_DESK_UPDATE,
+              //   data: {
+              //     Front_Desk.ID: r[Room.FRONT_DESK_ID], //
+              //     Front_Desk.CLEAN_ID: tmp.data[0][Clean.ID], //
+              //   },
+              // );
+              // setState(() => is_load = false);
+
+              // setState(() => is_load = true);
+              // await dio.post(
+              //   endpoint.ROOM_UPDATE,
+              //   data: {
+              //     Room.ID: r[Room.ID], //
+              //     Room.STATUS: "Available", //
+              //     Room.FRONT_DESK_ID: null,
+              //   },
+              // );
+              // setState(() => is_load = false);
+
+              // init();
+
+              // setState(() => is_load = false);
             },
           ),
       ],
@@ -1297,6 +1393,27 @@ class _Main_State extends State<Main_> {
       ),
 
       footer: [
+        //
+        Text(
+          "Total Revenue: xxx\$", //
+          style: TextStyle(
+            fontSize: 16, //
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        SizedBox(width: 8), //
+        //
+        Text(
+          "Total Income: xxx\$", //
+          style: TextStyle(
+            fontSize: 16, //
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        // const Spacer(),
+
         // * ប៊ូតុងបញ្ចេញជា PDF
         Tooltip(
           message: "Export as PDF",
@@ -1338,24 +1455,26 @@ class _Main_State extends State<Main_> {
             ),
           ),
         ),
-
         IconButton(
           tooltip: "Previous", //
           icon: Icon(Icons.navigate_before, size: 32), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () {},
+          onPressed: () {
+            dt = dt.subtract(Duration(days: 1));
+            setState(() {});
+          },
         ),
 
         TextButton(
           child: Text(
-            "2026-08-24", //
+            DateFormat("yyyy-MM-dd").format(dt), //
             style: TextStyle(
               fontSize: 16, //
               fontWeight: FontWeight.bold, //
             ),
           ),
-          onPressed: () {},
+          onPressed: () {}, // TODO: open date picker
         ),
 
         IconButton(
@@ -1363,7 +1482,10 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.navigate_next, size: 32), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () {},
+          onPressed: () {
+            dt = dt.add(Duration(days: 1));
+            setState(() {});
+          },
         ),
       ],
     );

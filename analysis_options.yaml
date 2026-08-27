@@ -9,6 +9,7 @@ analyzer:
     unnecessary_string_interpolations: ignore
     curly_braces_in_flow_control_structures: ignore
     prefer_interpolation_to_compose_strings: ignore
+    prefer_const_constructors_in_immutables: ignore
 
 formatter:
   page_width: 1000

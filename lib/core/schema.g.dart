@@ -114,8 +114,10 @@ class Cancel {
   }
 }
 
-class Check_Out {
+class Change {
   static const ID = '_id';
+  static const FROM_ROOM_ID = 'from_room_id';
+  static const TO_ROOM_ID = 'to_room_id';
   static const NOTE = 'note';
   static const CREATED_AT = 'created_at';
   static const CREATED_BY = 'created_by';
@@ -125,6 +127,8 @@ class Check_Out {
   static const DELETED_BY = 'deleted_by';
 
   final String? id;
+  final Room_Show? from_room_id;
+  final Room_Show? to_room_id;
   final String? note;
   final DateTime? created_at;
   final User_Show? created_by;
@@ -133,10 +137,12 @@ class Check_Out {
   final DateTime? deleted_at;
   final User_Show? deleted_by;
 
-  Check_Out({this.id, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Change({this.id, this.from_room_id, this.to_room_id, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
 
-  factory Check_Out.fromJson(Map<String, dynamic> json) => Check_Out(
+  factory Change.fromJson(Map<String, dynamic> json) => Change(
     id: json['_id'] as String?,
+    from_room_id: json['from_room_id'] == null ? null : Room_Show.fromJson(json['from_room_id'] as Map<String, dynamic>),
+    to_room_id: json['to_room_id'] == null ? null : Room_Show.fromJson(json['to_room_id'] as Map<String, dynamic>),
     note: json['note'] as String?,
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
     created_by: json['created_by'] == null ? null : User_Show.fromJson(json['created_by'] as Map<String, dynamic>),
@@ -149,6 +155,8 @@ class Check_Out {
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     json['_id'] = id;
+    json['from_room_id'] = from_room_id?.toJson();
+    json['to_room_id'] = to_room_id?.toJson();
     json['note'] = note;
     json['created_at'] = created_at?.toIso8601String();
     json['created_by'] = created_by?.toJson();
@@ -206,6 +214,98 @@ class Check_In {
   }
 }
 
+class Check_Out {
+  static const ID = '_id';
+  static const NOTE = 'note';
+  static const CREATED_AT = 'created_at';
+  static const CREATED_BY = 'created_by';
+  static const UPDATED_AT = 'updated_at';
+  static const UPDATED_BY = 'updated_by';
+  static const DELETED_AT = 'deleted_at';
+  static const DELETED_BY = 'deleted_by';
+
+  final String? id;
+  final String? note;
+  final DateTime? created_at;
+  final User_Show? created_by;
+  final DateTime? updated_at;
+  final User_Show? updated_by;
+  final DateTime? deleted_at;
+  final User_Show? deleted_by;
+
+  Check_Out({this.id, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+
+  factory Check_Out.fromJson(Map<String, dynamic> json) => Check_Out(
+    id: json['_id'] as String?,
+    note: json['note'] as String?,
+    created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
+    created_by: json['created_by'] == null ? null : User_Show.fromJson(json['created_by'] as Map<String, dynamic>),
+    updated_at: json['updated_at'] == null ? null : DateTime.tryParse(json['updated_at'] as String),
+    updated_by: json['updated_by'] == null ? null : User_Show.fromJson(json['updated_by'] as Map<String, dynamic>),
+    deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
+    deleted_by: json['deleted_by'] == null ? null : User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>),
+  );
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    json['_id'] = id;
+    json['note'] = note;
+    json['created_at'] = created_at?.toIso8601String();
+    json['created_by'] = created_by?.toJson();
+    json['updated_at'] = updated_at?.toIso8601String();
+    json['updated_by'] = updated_by?.toJson();
+    json['deleted_at'] = deleted_at?.toIso8601String();
+    json['deleted_by'] = deleted_by?.toJson();
+    return json;
+  }
+}
+
+class Clean {
+  static const ID = '_id';
+  static const NOTE = 'note';
+  static const CREATED_AT = 'created_at';
+  static const CREATED_BY = 'created_by';
+  static const UPDATED_AT = 'updated_at';
+  static const UPDATED_BY = 'updated_by';
+  static const DELETED_AT = 'deleted_at';
+  static const DELETED_BY = 'deleted_by';
+
+  final String? id;
+  final String? note;
+  final DateTime? created_at;
+  final User_Show? created_by;
+  final DateTime? updated_at;
+  final User_Show? updated_by;
+  final DateTime? deleted_at;
+  final User_Show? deleted_by;
+
+  Clean({this.id, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+
+  factory Clean.fromJson(Map<String, dynamic> json) => Clean(
+    id: json['_id'] as String?,
+    note: json['note'] as String?,
+    created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
+    created_by: json['created_by'] == null ? null : User_Show.fromJson(json['created_by'] as Map<String, dynamic>),
+    updated_at: json['updated_at'] == null ? null : DateTime.tryParse(json['updated_at'] as String),
+    updated_by: json['updated_by'] == null ? null : User_Show.fromJson(json['updated_by'] as Map<String, dynamic>),
+    deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
+    deleted_by: json['deleted_by'] == null ? null : User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>),
+  );
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    json['_id'] = id;
+    json['note'] = note;
+    json['created_at'] = created_at?.toIso8601String();
+    json['created_by'] = created_by?.toJson();
+    json['updated_at'] = updated_at?.toIso8601String();
+    json['updated_by'] = updated_by?.toJson();
+    json['deleted_at'] = deleted_at?.toIso8601String();
+    json['deleted_by'] = deleted_by?.toJson();
+    return json;
+  }
+}
+
 class Demo_1 {
   static const ID = '_id';
   static const TEXT = 'text';
@@ -218,6 +318,7 @@ class Demo_1 {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const LOG = 'log';
 
   final String? id;
   final String? text;
@@ -230,8 +331,9 @@ class Demo_1 {
   final User_Show? updated_by;
   final DateTime? deleted_at;
   final User_Show? deleted_by;
+  final List<Log_Demo_1>? log;
 
-  Demo_1({this.id, this.text, this.number, this.date_time, this.logic, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Demo_1({this.id, this.text, this.number, this.date_time, this.logic, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.log});
 
   factory Demo_1.fromJson(Map<String, dynamic> json) => Demo_1(
     id: json['_id'] as String?,
@@ -245,6 +347,7 @@ class Demo_1 {
     updated_by: json['updated_by'] == null ? null : User_Show.fromJson(json['updated_by'] as Map<String, dynamic>),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>),
+    log: (json['log'] as List<dynamic>?)?.map((e) => Log_Demo_1.fromJson(e as Map<String, dynamic>)).toList(),
   );
 
   Map<String, dynamic> toJson() {
@@ -260,6 +363,7 @@ class Demo_1 {
     json['updated_by'] = updated_by?.toJson();
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by?.toJson();
+    json['log'] = log?.map((e) => e.toJson()).toList();
     return json;
   }
 }
@@ -530,15 +634,15 @@ class Front_Desk {
   static const ID = '_id';
   static const ROOM_ID = 'room_id';
   static const GUEST_ID = 'guest_id';
+  static const CHECK_IN_ID = 'check_in_id';
   static const STAY_ID = 'stay_id';
   static const ROOM_PAY_ID = 'room_pay_id';
   static const PENALTY_PAY_ID = 'penalty_pay_id';
   static const MINI_BAR_PAY_ID = 'mini_bar_pay_id';
-  static const CHECK_IN_ID = 'check_in_id';
   static const CHECK_OUT_ID = 'check_out_id';
   static const CLEAN_ID = 'clean_id';
-  static const CANCEL_ID = 'cancel_id';
   static const CHANGE_ID = 'change_id';
+  static const CANCEL_ID = 'cancel_id';
   static const CREATED_AT = 'created_at';
   static const CREATED_BY = 'created_by';
   static const UPDATED_AT = 'updated_at';
@@ -547,17 +651,17 @@ class Front_Desk {
   static const DELETED_BY = 'deleted_by';
 
   final String? id;
-  final Room_Show? room_id;
+  final Room_Show_2? room_id;
   final Guest_Show? guest_id;
+  final Check_In_Show? check_in_id;
   final Stay_Show? stay_id;
-  final Pay_Room_Show? room_pay_id;
+  final Room_Pay_Show? room_pay_id;
   final Penalty_Pay_Show? penalty_pay_id;
   final Mini_Bar_Pay_Show? mini_bar_pay_id;
-  final Check_In_Show? check_in_id;
   final Check_Out_Show? check_out_id;
-  final Check_Out_Show? clean_id;
+  final Clean_Show? clean_id;
+  final Change_Show? change_id;
   final Cancel_Show? cancel_id;
-  final Check_Out_Show? change_id;
   final DateTime? created_at;
   final User_Show? created_by;
   final DateTime? updated_at;
@@ -565,21 +669,21 @@ class Front_Desk {
   final DateTime? deleted_at;
   final User_Show? deleted_by;
 
-  Front_Desk({this.id, this.room_id, this.guest_id, this.stay_id, this.room_pay_id, this.penalty_pay_id, this.mini_bar_pay_id, this.check_in_id, this.check_out_id, this.clean_id, this.cancel_id, this.change_id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Front_Desk({this.id, this.room_id, this.guest_id, this.check_in_id, this.stay_id, this.room_pay_id, this.penalty_pay_id, this.mini_bar_pay_id, this.check_out_id, this.clean_id, this.change_id, this.cancel_id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
 
   factory Front_Desk.fromJson(Map<String, dynamic> json) => Front_Desk(
     id: json['_id'] as String?,
-    room_id: json['room_id'] == null ? null : Room_Show.fromJson(json['room_id'] as Map<String, dynamic>),
+    room_id: json['room_id'] == null ? null : Room_Show_2.fromJson(json['room_id'] as Map<String, dynamic>),
     guest_id: json['guest_id'] == null ? null : Guest_Show.fromJson(json['guest_id'] as Map<String, dynamic>),
+    check_in_id: json['check_in_id'] == null ? null : Check_In_Show.fromJson(json['check_in_id'] as Map<String, dynamic>),
     stay_id: json['stay_id'] == null ? null : Stay_Show.fromJson(json['stay_id'] as Map<String, dynamic>),
-    room_pay_id: json['room_pay_id'] == null ? null : Pay_Room_Show.fromJson(json['room_pay_id'] as Map<String, dynamic>),
+    room_pay_id: json['room_pay_id'] == null ? null : Room_Pay_Show.fromJson(json['room_pay_id'] as Map<String, dynamic>),
     penalty_pay_id: json['penalty_pay_id'] == null ? null : Penalty_Pay_Show.fromJson(json['penalty_pay_id'] as Map<String, dynamic>),
     mini_bar_pay_id: json['mini_bar_pay_id'] == null ? null : Mini_Bar_Pay_Show.fromJson(json['mini_bar_pay_id'] as Map<String, dynamic>),
-    check_in_id: json['check_in_id'] == null ? null : Check_In_Show.fromJson(json['check_in_id'] as Map<String, dynamic>),
     check_out_id: json['check_out_id'] == null ? null : Check_Out_Show.fromJson(json['check_out_id'] as Map<String, dynamic>),
-    clean_id: json['clean_id'] == null ? null : Check_Out_Show.fromJson(json['clean_id'] as Map<String, dynamic>),
+    clean_id: json['clean_id'] == null ? null : Clean_Show.fromJson(json['clean_id'] as Map<String, dynamic>),
+    change_id: json['change_id'] == null ? null : Change_Show.fromJson(json['change_id'] as Map<String, dynamic>),
     cancel_id: json['cancel_id'] == null ? null : Cancel_Show.fromJson(json['cancel_id'] as Map<String, dynamic>),
-    change_id: json['change_id'] == null ? null : Check_Out_Show.fromJson(json['change_id'] as Map<String, dynamic>),
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
     created_by: json['created_by'] == null ? null : User_Show.fromJson(json['created_by'] as Map<String, dynamic>),
     updated_at: json['updated_at'] == null ? null : DateTime.tryParse(json['updated_at'] as String),
@@ -593,15 +697,15 @@ class Front_Desk {
     json['_id'] = id;
     json['room_id'] = room_id?.toJson();
     json['guest_id'] = guest_id?.toJson();
+    json['check_in_id'] = check_in_id?.toJson();
     json['stay_id'] = stay_id?.toJson();
     json['room_pay_id'] = room_pay_id?.toJson();
     json['penalty_pay_id'] = penalty_pay_id?.toJson();
     json['mini_bar_pay_id'] = mini_bar_pay_id?.toJson();
-    json['check_in_id'] = check_in_id?.toJson();
     json['check_out_id'] = check_out_id?.toJson();
     json['clean_id'] = clean_id?.toJson();
-    json['cancel_id'] = cancel_id?.toJson();
     json['change_id'] = change_id?.toJson();
+    json['cancel_id'] = cancel_id?.toJson();
     json['created_at'] = created_at?.toIso8601String();
     json['created_by'] = created_by?.toJson();
     json['updated_at'] = updated_at?.toIso8601String();
@@ -736,6 +840,7 @@ class Mini_Bar {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const LOG = 'log';
 
   final String? id;
   final String? name;
@@ -748,8 +853,9 @@ class Mini_Bar {
   final User_Show? updated_by;
   final DateTime? deleted_at;
   final User_Show? deleted_by;
+  final List<Log_Mini_Bar>? log;
 
-  Mini_Bar({this.id, this.name, this.price, this.stock, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Mini_Bar({this.id, this.name, this.price, this.stock, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.log});
 
   factory Mini_Bar.fromJson(Map<String, dynamic> json) => Mini_Bar(
     id: json['_id'] as String?,
@@ -763,6 +869,7 @@ class Mini_Bar {
     updated_by: json['updated_by'] == null ? null : User_Show.fromJson(json['updated_by'] as Map<String, dynamic>),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>),
+    log: (json['log'] as List<dynamic>?)?.map((e) => Log_Mini_Bar.fromJson(e as Map<String, dynamic>)).toList(),
   );
 
   Map<String, dynamic> toJson() {
@@ -778,6 +885,7 @@ class Mini_Bar {
     json['updated_by'] = updated_by?.toJson();
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by?.toJson();
+    json['log'] = log?.map((e) => e.toJson()).toList();
     return json;
   }
 }
@@ -839,6 +947,7 @@ class Mini_Bar_Item {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const LOG = 'log';
 
   final String? id;
   final Mini_Bar_Show_2? mini_bar_id;
@@ -850,8 +959,9 @@ class Mini_Bar_Item {
   final User_Show? updated_by;
   final DateTime? deleted_at;
   final User_Show? deleted_by;
+  final List<Log_Mini_Bar_Item>? log;
 
-  Mini_Bar_Item({this.id, this.mini_bar_id, this.quantity, this.mini_bar_pay_id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Mini_Bar_Item({this.id, this.mini_bar_id, this.quantity, this.mini_bar_pay_id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.log});
 
   factory Mini_Bar_Item.fromJson(Map<String, dynamic> json) => Mini_Bar_Item(
     id: json['_id'] as String?,
@@ -864,6 +974,7 @@ class Mini_Bar_Item {
     updated_by: json['updated_by'] == null ? null : User_Show.fromJson(json['updated_by'] as Map<String, dynamic>),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>),
+    log: (json['log'] as List<dynamic>?)?.map((e) => Log_Mini_Bar_Item.fromJson(e as Map<String, dynamic>)).toList(),
   );
 
   Map<String, dynamic> toJson() {
@@ -878,6 +989,7 @@ class Mini_Bar_Item {
     json['updated_by'] = updated_by?.toJson();
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by?.toJson();
+    json['log'] = log?.map((e) => e.toJson()).toList();
     return json;
   }
 }
@@ -949,6 +1061,7 @@ class Mini_Bar_Pay {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const LOG = 'log';
 
   final String? id;
   final List<Mini_Bar_Item>? mini_bar_list;
@@ -962,8 +1075,9 @@ class Mini_Bar_Pay {
   final User_Show? updated_by;
   final DateTime? deleted_at;
   final User_Show? deleted_by;
+  final List<Log_Mini_Bar_Pay>? log;
 
-  Mini_Bar_Pay({this.id, this.mini_bar_list, this.price, this.cash, this.bank, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Mini_Bar_Pay({this.id, this.mini_bar_list, this.price, this.cash, this.bank, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.log});
 
   factory Mini_Bar_Pay.fromJson(Map<String, dynamic> json) => Mini_Bar_Pay(
     id: json['_id'] as String?,
@@ -978,6 +1092,7 @@ class Mini_Bar_Pay {
     updated_by: json['updated_by'] == null ? null : User_Show.fromJson(json['updated_by'] as Map<String, dynamic>),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>),
+    log: (json['log'] as List<dynamic>?)?.map((e) => Log_Mini_Bar_Pay.fromJson(e as Map<String, dynamic>)).toList(),
   );
 
   Map<String, dynamic> toJson() {
@@ -994,6 +1109,7 @@ class Mini_Bar_Pay {
     json['updated_by'] = updated_by?.toJson();
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by?.toJson();
+    json['log'] = log?.map((e) => e.toJson()).toList();
     return json;
   }
 }
@@ -1159,6 +1275,7 @@ class Penalty_Item {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const LOG = 'log';
 
   final String? id;
   final Penalty_Show? penalty_id;
@@ -1170,8 +1287,9 @@ class Penalty_Item {
   final User_Show? updated_by;
   final DateTime? deleted_at;
   final User_Show? deleted_by;
+  final List<Log_Penalty_Item>? log;
 
-  Penalty_Item({this.id, this.penalty_id, this.quantity, this.penalty_pay_id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Penalty_Item({this.id, this.penalty_id, this.quantity, this.penalty_pay_id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.log});
 
   factory Penalty_Item.fromJson(Map<String, dynamic> json) => Penalty_Item(
     id: json['_id'] as String?,
@@ -1184,6 +1302,7 @@ class Penalty_Item {
     updated_by: json['updated_by'] == null ? null : User_Show.fromJson(json['updated_by'] as Map<String, dynamic>),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>),
+    log: (json['log'] as List<dynamic>?)?.map((e) => Log_Penalty_Item.fromJson(e as Map<String, dynamic>)).toList(),
   );
 
   Map<String, dynamic> toJson() {
@@ -1198,6 +1317,7 @@ class Penalty_Item {
     json['updated_by'] = updated_by?.toJson();
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by?.toJson();
+    json['log'] = log?.map((e) => e.toJson()).toList();
     return json;
   }
 }
@@ -1269,6 +1389,7 @@ class Penalty_Pay {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const LOG = 'log';
 
   final String? id;
   final List<Penalty_Item>? penalty_list;
@@ -1282,8 +1403,9 @@ class Penalty_Pay {
   final User_Show? updated_by;
   final DateTime? deleted_at;
   final User_Show? deleted_by;
+  final List<Log_Penalty_Pay>? log;
 
-  Penalty_Pay({this.id, this.penalty_list, this.price, this.cash, this.bank, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Penalty_Pay({this.id, this.penalty_list, this.price, this.cash, this.bank, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.log});
 
   factory Penalty_Pay.fromJson(Map<String, dynamic> json) => Penalty_Pay(
     id: json['_id'] as String?,
@@ -1298,6 +1420,7 @@ class Penalty_Pay {
     updated_by: json['updated_by'] == null ? null : User_Show.fromJson(json['updated_by'] as Map<String, dynamic>),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>),
+    log: (json['log'] as List<dynamic>?)?.map((e) => Log_Penalty_Pay.fromJson(e as Map<String, dynamic>)).toList(),
   );
 
   Map<String, dynamic> toJson() {
@@ -1314,6 +1437,7 @@ class Penalty_Pay {
     json['updated_by'] = updated_by?.toJson();
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by?.toJson();
+    json['log'] = log?.map((e) => e.toJson()).toList();
     return json;
   }
 }
@@ -1326,7 +1450,7 @@ class Log_Room {
   static const PRICE_PER_3H = 'price_per_3h';
   static const STATUS = 'status';
   static const NOTE = 'note';
-  static const FRONT_DESKS = 'front_desks';
+  static const FRONT_DESK_ID = 'front_desk_id';
   static const CREATED_AT = 'created_at';
   static const CREATED_BY = 'created_by';
   static const BID = 'bid';
@@ -1339,13 +1463,13 @@ class Log_Room {
   final double? price_per_3h;
   final String? status;
   final String? note;
-  final List<Front_Desk>? front_desks;
+  final Front_Desk_Show? front_desk_id;
   final DateTime? created_at;
   final User_Show? created_by;
-  final Room_Show_2? bid;
+  final Room_Show_3? bid;
   final String? op;
 
-  Log_Room({this.id, this.number, this.kind, this.price_per_day, this.price_per_3h, this.status, this.note, this.front_desks, this.created_at, this.created_by, this.bid, this.op});
+  Log_Room({this.id, this.number, this.kind, this.price_per_day, this.price_per_3h, this.status, this.note, this.front_desk_id, this.created_at, this.created_by, this.bid, this.op});
 
   factory Log_Room.fromJson(Map<String, dynamic> json) => Log_Room(
     id: json['_id'] as String?,
@@ -1355,10 +1479,10 @@ class Log_Room {
     price_per_3h: json['price_per_3h'] as double?,
     status: json['status'] as String?,
     note: json['note'] as String?,
-    front_desks: (json['front_desks'] as List<dynamic>?)?.map((e) => Front_Desk.fromJson(e as Map<String, dynamic>)).toList(),
+    front_desk_id: json['front_desk_id'] == null ? null : Front_Desk_Show.fromJson(json['front_desk_id'] as Map<String, dynamic>),
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
     created_by: json['created_by'] == null ? null : User_Show.fromJson(json['created_by'] as Map<String, dynamic>),
-    bid: json['bid'] == null ? null : Room_Show_2.fromJson(json['bid'] as Map<String, dynamic>),
+    bid: json['bid'] == null ? null : Room_Show_3.fromJson(json['bid'] as Map<String, dynamic>),
     op: json['op'] as String?,
   );
 
@@ -1371,7 +1495,7 @@ class Log_Room {
     json['price_per_3h'] = price_per_3h;
     json['status'] = status;
     json['note'] = note;
-    json['front_desks'] = front_desks?.map((e) => e.toJson()).toList();
+    json['front_desk_id'] = front_desk_id?.toJson();
     json['created_at'] = created_at?.toIso8601String();
     json['created_by'] = created_by?.toJson();
     json['bid'] = bid?.toJson();
@@ -1388,13 +1512,14 @@ class Room {
   static const PRICE_PER_3H = 'price_per_3h';
   static const STATUS = 'status';
   static const NOTE = 'note';
-  static const FRONT_DESKS = 'front_desks';
+  static const FRONT_DESK_ID = 'front_desk_id';
   static const CREATED_AT = 'created_at';
   static const CREATED_BY = 'created_by';
   static const UPDATED_AT = 'updated_at';
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const LOG = 'log';
 
   final String? id;
   final String? number;
@@ -1403,15 +1528,16 @@ class Room {
   final double? price_per_3h;
   final String? status;
   final String? note;
-  final List<Front_Desk>? front_desks;
+  final Front_Desk_Show? front_desk_id;
   final DateTime? created_at;
   final User_Show? created_by;
   final DateTime? updated_at;
   final User_Show? updated_by;
   final DateTime? deleted_at;
   final User_Show? deleted_by;
+  final List<Log_Room>? log;
 
-  Room({this.id, this.number, this.kind, this.price_per_day, this.price_per_3h, this.status, this.note, this.front_desks, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Room({this.id, this.number, this.kind, this.price_per_day, this.price_per_3h, this.status, this.note, this.front_desk_id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.log});
 
   factory Room.fromJson(Map<String, dynamic> json) => Room(
     id: json['_id'] as String?,
@@ -1421,13 +1547,14 @@ class Room {
     price_per_3h: json['price_per_3h'] as double?,
     status: json['status'] as String?,
     note: json['note'] as String?,
-    front_desks: (json['front_desks'] as List<dynamic>?)?.map((e) => Front_Desk.fromJson(e as Map<String, dynamic>)).toList(),
+    front_desk_id: json['front_desk_id'] == null ? null : Front_Desk_Show.fromJson(json['front_desk_id'] as Map<String, dynamic>),
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
     created_by: json['created_by'] == null ? null : User_Show.fromJson(json['created_by'] as Map<String, dynamic>),
     updated_at: json['updated_at'] == null ? null : DateTime.tryParse(json['updated_at'] as String),
     updated_by: json['updated_by'] == null ? null : User_Show.fromJson(json['updated_by'] as Map<String, dynamic>),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>),
+    log: (json['log'] as List<dynamic>?)?.map((e) => Log_Room.fromJson(e as Map<String, dynamic>)).toList(),
   );
 
   Map<String, dynamic> toJson() {
@@ -1439,18 +1566,19 @@ class Room {
     json['price_per_3h'] = price_per_3h;
     json['status'] = status;
     json['note'] = note;
-    json['front_desks'] = front_desks?.map((e) => e.toJson()).toList();
+    json['front_desk_id'] = front_desk_id?.toJson();
     json['created_at'] = created_at?.toIso8601String();
     json['created_by'] = created_by?.toJson();
     json['updated_at'] = updated_at?.toIso8601String();
     json['updated_by'] = updated_by?.toJson();
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by?.toJson();
+    json['log'] = log?.map((e) => e.toJson()).toList();
     return json;
   }
 }
 
-class Log_Pay_Room {
+class Log_Room_Pay {
   static const ID = '_id';
   static const PRICE = 'price';
   static const CASH = 'cash';
@@ -1468,12 +1596,12 @@ class Log_Pay_Room {
   final String? note;
   final DateTime? created_at;
   final User_Show? created_by;
-  final Pay_Room_Show_2? bid;
+  final Room_Pay_Show_2? bid;
   final String? op;
 
-  Log_Pay_Room({this.id, this.price, this.cash, this.bank, this.note, this.created_at, this.created_by, this.bid, this.op});
+  Log_Room_Pay({this.id, this.price, this.cash, this.bank, this.note, this.created_at, this.created_by, this.bid, this.op});
 
-  factory Log_Pay_Room.fromJson(Map<String, dynamic> json) => Log_Pay_Room(
+  factory Log_Room_Pay.fromJson(Map<String, dynamic> json) => Log_Room_Pay(
     id: json['_id'] as String?,
     price: json['price'] as double?,
     cash: json['cash'] as double?,
@@ -1481,7 +1609,7 @@ class Log_Pay_Room {
     note: json['note'] as String?,
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
     created_by: json['created_by'] == null ? null : User_Show.fromJson(json['created_by'] as Map<String, dynamic>),
-    bid: json['bid'] == null ? null : Pay_Room_Show_2.fromJson(json['bid'] as Map<String, dynamic>),
+    bid: json['bid'] == null ? null : Room_Pay_Show_2.fromJson(json['bid'] as Map<String, dynamic>),
     op: json['op'] as String?,
   );
 
@@ -1500,7 +1628,7 @@ class Log_Pay_Room {
   }
 }
 
-class Pay_Room {
+class Room_Pay {
   static const ID = '_id';
   static const PRICE = 'price';
   static const CASH = 'cash';
@@ -1512,6 +1640,7 @@ class Pay_Room {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const LOG = 'log';
 
   final String? id;
   final double? price;
@@ -1524,10 +1653,11 @@ class Pay_Room {
   final User_Show? updated_by;
   final DateTime? deleted_at;
   final User_Show? deleted_by;
+  final List<Log_Room_Pay>? log;
 
-  Pay_Room({this.id, this.price, this.cash, this.bank, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Room_Pay({this.id, this.price, this.cash, this.bank, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.log});
 
-  factory Pay_Room.fromJson(Map<String, dynamic> json) => Pay_Room(
+  factory Room_Pay.fromJson(Map<String, dynamic> json) => Room_Pay(
     id: json['_id'] as String?,
     price: json['price'] as double?,
     cash: json['cash'] as double?,
@@ -1539,6 +1669,7 @@ class Pay_Room {
     updated_by: json['updated_by'] == null ? null : User_Show.fromJson(json['updated_by'] as Map<String, dynamic>),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>),
+    log: (json['log'] as List<dynamic>?)?.map((e) => Log_Room_Pay.fromJson(e as Map<String, dynamic>)).toList(),
   );
 
   Map<String, dynamic> toJson() {
@@ -1554,6 +1685,7 @@ class Pay_Room {
     json['updated_by'] = updated_by?.toJson();
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by?.toJson();
+    json['log'] = log?.map((e) => e.toJson()).toList();
     return json;
   }
 }
@@ -1940,6 +2072,28 @@ class User_Show {
   }
 }
 
+class Room_Show {
+  static const ID = '_id';
+  static const NUMBER = 'number';
+
+  final String? id;
+  final String? number;
+
+  Room_Show({this.id, this.number});
+
+  factory Room_Show.fromJson(Map<String, dynamic> json) => Room_Show(
+    id: json['_id'] as String?,
+    number: json['number'] as String?,
+  );
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    json['_id'] = id;
+    json['number'] = number;
+    return json;
+  }
+}
+
 class Demo_1_Show {
   static const ID = '_id';
 
@@ -1958,7 +2112,7 @@ class Demo_1_Show {
   }
 }
 
-class Room_Show {
+class Room_Show_2 {
   static const ID = '_id';
   static const NUMBER = 'number';
   static const KIND = 'kind';
@@ -1971,9 +2125,9 @@ class Room_Show {
   final double? price_per_day;
   final double? price_per_3h;
 
-  Room_Show({this.id, this.number, this.kind, this.price_per_day, this.price_per_3h});
+  Room_Show_2({this.id, this.number, this.kind, this.price_per_day, this.price_per_3h});
 
-  factory Room_Show.fromJson(Map<String, dynamic> json) => Room_Show(
+  factory Room_Show_2.fromJson(Map<String, dynamic> json) => Room_Show_2(
     id: json['_id'] as String?,
     number: json['number'] as String?,
     kind: json['kind'] as String?,
@@ -2022,6 +2176,36 @@ class Guest_Show {
   }
 }
 
+class Check_In_Show {
+  static const ID = '_id';
+  static const NOTE = 'note';
+  static const CREATED_AT = 'created_at';
+  static const CREATED_BY = 'created_by';
+
+  final String? id;
+  final String? note;
+  final DateTime? created_at;
+  final User? created_by;
+
+  Check_In_Show({this.id, this.note, this.created_at, this.created_by});
+
+  factory Check_In_Show.fromJson(Map<String, dynamic> json) => Check_In_Show(
+    id: json['_id'] as String?,
+    note: json['note'] as String?,
+    created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
+    created_by: json['created_by'] == null ? null : User.fromJson(json['created_by'] as Map<String, dynamic>),
+  );
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    json['_id'] = id;
+    json['note'] = note;
+    json['created_at'] = created_at?.toIso8601String();
+    json['created_by'] = created_by?.toJson();
+    return json;
+  }
+}
+
 class Stay_Show {
   static const ID = '_id';
   static const DAY = 'day';
@@ -2064,7 +2248,7 @@ class Stay_Show {
   }
 }
 
-class Pay_Room_Show {
+class Room_Pay_Show {
   static const ID = '_id';
   static const PRICE = 'price';
   static const CASH = 'cash';
@@ -2079,9 +2263,9 @@ class Pay_Room_Show {
   final String? note;
   final DateTime? created_at;
 
-  Pay_Room_Show({this.id, this.price, this.cash, this.bank, this.note, this.created_at});
+  Room_Pay_Show({this.id, this.price, this.cash, this.bank, this.note, this.created_at});
 
-  factory Pay_Room_Show.fromJson(Map<String, dynamic> json) => Pay_Room_Show(
+  factory Room_Pay_Show.fromJson(Map<String, dynamic> json) => Room_Pay_Show(
     id: json['_id'] as String?,
     price: json['price'] as double?,
     cash: json['cash'] as double?,
@@ -2178,7 +2362,7 @@ class Mini_Bar_Pay_Show {
   }
 }
 
-class Check_In_Show {
+class Check_Out_Show {
   static const ID = '_id';
   static const NOTE = 'note';
   static const CREATED_AT = 'created_at';
@@ -2189,9 +2373,9 @@ class Check_In_Show {
   final DateTime? created_at;
   final User? created_by;
 
-  Check_In_Show({this.id, this.note, this.created_at, this.created_by});
+  Check_Out_Show({this.id, this.note, this.created_at, this.created_by});
 
-  factory Check_In_Show.fromJson(Map<String, dynamic> json) => Check_In_Show(
+  factory Check_Out_Show.fromJson(Map<String, dynamic> json) => Check_Out_Show(
     id: json['_id'] as String?,
     note: json['note'] as String?,
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
@@ -2208,7 +2392,7 @@ class Check_In_Show {
   }
 }
 
-class Check_Out_Show {
+class Clean_Show {
   static const ID = '_id';
   static const NOTE = 'note';
   static const CREATED_AT = 'created_at';
@@ -2219,9 +2403,39 @@ class Check_Out_Show {
   final DateTime? created_at;
   final User? created_by;
 
-  Check_Out_Show({this.id, this.note, this.created_at, this.created_by});
+  Clean_Show({this.id, this.note, this.created_at, this.created_by});
 
-  factory Check_Out_Show.fromJson(Map<String, dynamic> json) => Check_Out_Show(
+  factory Clean_Show.fromJson(Map<String, dynamic> json) => Clean_Show(
+    id: json['_id'] as String?,
+    note: json['note'] as String?,
+    created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
+    created_by: json['created_by'] == null ? null : User.fromJson(json['created_by'] as Map<String, dynamic>),
+  );
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    json['_id'] = id;
+    json['note'] = note;
+    json['created_at'] = created_at?.toIso8601String();
+    json['created_by'] = created_by?.toJson();
+    return json;
+  }
+}
+
+class Change_Show {
+  static const ID = '_id';
+  static const NOTE = 'note';
+  static const CREATED_AT = 'created_at';
+  static const CREATED_BY = 'created_by';
+
+  final String? id;
+  final String? note;
+  final DateTime? created_at;
+  final User? created_by;
+
+  Change_Show({this.id, this.note, this.created_at, this.created_by});
+
+  factory Change_Show.fromJson(Map<String, dynamic> json) => Change_Show(
     id: json['_id'] as String?,
     note: json['note'] as String?,
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
@@ -2432,14 +2646,14 @@ class Penalty_Item_Show {
   }
 }
 
-class Room_Show_2 {
+class Front_Desk_Show {
   static const ID = '_id';
 
   final String? id;
 
-  Room_Show_2({this.id});
+  Front_Desk_Show({this.id});
 
-  factory Room_Show_2.fromJson(Map<String, dynamic> json) => Room_Show_2(
+  factory Front_Desk_Show.fromJson(Map<String, dynamic> json) => Front_Desk_Show(
     id: json['_id'] as String?,
   );
 
@@ -2450,14 +2664,32 @@ class Room_Show_2 {
   }
 }
 
-class Pay_Room_Show_2 {
+class Room_Show_3 {
   static const ID = '_id';
 
   final String? id;
 
-  Pay_Room_Show_2({this.id});
+  Room_Show_3({this.id});
 
-  factory Pay_Room_Show_2.fromJson(Map<String, dynamic> json) => Pay_Room_Show_2(
+  factory Room_Show_3.fromJson(Map<String, dynamic> json) => Room_Show_3(
+    id: json['_id'] as String?,
+  );
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    json['_id'] = id;
+    return json;
+  }
+}
+
+class Room_Pay_Show_2 {
+  static const ID = '_id';
+
+  final String? id;
+
+  Room_Pay_Show_2({this.id});
+
+  factory Room_Pay_Show_2.fromJson(Map<String, dynamic> json) => Room_Pay_Show_2(
     id: json['_id'] as String?,
   );
 
