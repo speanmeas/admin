@@ -12,14 +12,15 @@ String? parse_string(dynamic v) {
 }
 
 String format_string(dynamic v, {String fallback = ""}) {
+  if (v == null) return fallback;
   final s = parse_string(v);
   if (s == null) return fallback;
   return s;
 }
 
 // * បម្លែងទៅជា int (null-safe, web-safe)
-int? parse_int(dynamic v) {
-  if (v == null) return null;
+int? parse_int(dynamic v, {int fallback = 0}) {
+  if (v == null) return fallback;
   if (v is int) return v;
   if (v is num) return v.toInt();
   try {
@@ -30,9 +31,10 @@ int? parse_int(dynamic v) {
 }
 
 // * បម្លែងទៅជា String ដែលបាន format ពី int (null-safe, web-safe)
-String format_int(dynamic v, {int fallback = 0}) {
+String format_int(dynamic v, {String fallback = "0"}) {
+  if (v == null) return fallback;
   final i = parse_int(v);
-  if (i == null) return fallback.toString();
+  if (i == null) return fallback;
   return i.toString();
 }
 
@@ -49,9 +51,10 @@ double? parse_double(dynamic v) {
 }
 
 // * បម្លែងទៅជា String ដែលបាន format ពី double (null-safe, web-safe)
-String format_double(dynamic v, {double fallback = 0.0, int digits = 2}) {
+String format_double(dynamic v, {String fallback = "0.00", int digits = 2}) {
+  if (v == null) return fallback;
   final d = parse_double(v);
-  if (d == null) return fallback.toStringAsFixed(digits);
+  if (d == null) return fallback;
   return d.toStringAsFixed(digits);
 }
 
@@ -79,6 +82,7 @@ bool? parse_bool(dynamic v) {
 }
 
 String format_bool(dynamic v, {String true_str = "True", String false_str = "False", String fallback = ""}) {
+  if (v == null) return fallback;
   final b = parse_bool(v);
   if (b == null) return fallback;
   return b ? true_str : false_str;
@@ -97,32 +101,33 @@ DateTime? parse_datetime(dynamic v) {
 
 // * បម្លែងទៅជា String ដែលបាន format ពី DateTime (null-safe, web-safe)
 String format_datetime(dynamic v, {String fallback = "", String format = DEFAULT_DATE_FORMAT}) {
+  if (v == null) return fallback;
   final dt = parse_datetime(v);
-  if (dt == null) return "";
+  if (dt == null) return fallback;
   return DateFormat(format).format(dt.toLocal());
 }
 
-// * បម្លែងទៅជា List<dynamic> (null-safe)
-List<dynamic>? parse_list(dynamic v) {
-  if (v == null) return null;
-  if (v is List) return v;
-  return null;
-}
+// // * បម្លែងទៅជា List<dynamic> (null-safe)
+// List<dynamic>? parse_list(dynamic v) {
+//   if (v == null) return null;
+//   if (v is List) return v;
+//   return null;
+// }
 
-// * បម្លែងទៅជា Map<String, dynamic> (null-safe)
-Map<String, dynamic>? parse_map(dynamic v) {
-  if (v == null) return null;
-  if (v is Map) return Map<String, dynamic>.from(v);
-  return null;
-}
+// // * បម្លែងទៅជា Map<String, dynamic> (null-safe)
+// Map<String, dynamic>? parse_map(dynamic v) {
+//   if (v == null) return null;
+//   if (v is Map) return Map<String, dynamic>.from(v);
+//   return null;
+// }
 
-// * អានតម្លៃ nested ពី Map ដោយសុវត្ថិភាព (guard គ្រប់កម្រិត)
-// * ឧទាហរណ៍: parse_nested(m, ["guest", "name"]) ?? ""
-dynamic parse_nested(dynamic root, List<String> keys) {
-  dynamic cur = root;
-  for (final k in keys) {
-    if (cur is! Map) return null;
-    cur = cur[k];
-  }
-  return cur;
-}
+// // * អានតម្លៃ nested ពី Map ដោយសុវត្ថិភាព (guard គ្រប់កម្រិត)
+// // * ឧទាហរណ៍: parse_nested(m, ["guest", "name"]) ?? ""
+// dynamic parse_nested(dynamic root, List<String> keys) {
+//   dynamic cur = root;
+//   for (final k in keys) {
+//     if (cur is! Map) return null;
+//     cur = cur[k];
+//   }
+//   return cur;
+// }

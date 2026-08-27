@@ -18,6 +18,7 @@ void snackbar({
       SnackBar(
         margin: EdgeInsets.fromLTRB(8, 0, 8, 8),
         duration: Duration(seconds: 5),
+
         content: Row(
           children: [
             // * រូបតំណាងព័ត៌មាន
@@ -36,7 +37,16 @@ void snackbar({
             ),
           ],
         ),
+        // backgroundColor: Colors.transparent,
         backgroundColor: cl,
+
+        elevation: 0, //
+
+        shape: RoundedRectangleBorder(
+          //
+          side: BorderSide(color: cl),
+        ),
+
         behavior: SnackBarBehavior.floating,
       ),
     );
