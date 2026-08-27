@@ -28,6 +28,10 @@ class _Main_State extends State<Main_> {
 
   void init() async {
     // setState(() => is_load = true);
+    tmp = await dio.post(
+      endpoint.ROOM_READ, //
+    );
+    pprint(tmp.data);
   }
 
   @override
@@ -262,7 +266,7 @@ class _Main_State extends State<Main_> {
           ),
       ],
       clean: [
-        for (var i = 0; i < 100; i++)
+        for (var i = 0; i < 10; i++)
           OutlinedButton.icon(
             icon: Icon(Icons.hotel_outlined), //
             label: Text("${400 + i}"),
@@ -574,6 +578,9 @@ class _Main_State extends State<Main_> {
                 child: Text(
                   format_double(rc.cell.value, digits: 2) + " \$", //
                   overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
                 ),
               );
             },
@@ -617,6 +624,9 @@ class _Main_State extends State<Main_> {
                 child: Text(
                   format_double(rc.cell.value, digits: 2) + " \$", //
                   overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
                 ),
               );
             },
@@ -641,6 +651,29 @@ class _Main_State extends State<Main_> {
                     ),
                   ];
                 },
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "room_paid", //
+            title: "Paid",
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,###.00",
+            ),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
               );
             },
           ),
@@ -770,6 +803,9 @@ class _Main_State extends State<Main_> {
                 child: Text(
                   format_double(rc.cell.value, digits: 2) + " \$", //
                   overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
                 ),
               );
             },
@@ -813,6 +849,9 @@ class _Main_State extends State<Main_> {
                 child: Text(
                   format_double(rc.cell.value, digits: 2) + " \$", //
                   overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
                 ),
               );
             },
@@ -837,6 +876,29 @@ class _Main_State extends State<Main_> {
                     ),
                   ];
                 },
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "mini_bar_paid", //
+            title: "Paid",
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,###.00",
+            ),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
               );
             },
           ),
@@ -956,6 +1018,9 @@ class _Main_State extends State<Main_> {
                 child: Text(
                   format_double(rc.cell.value, digits: 2) + " \$", //
                   overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
                 ),
               );
             },
@@ -999,6 +1064,9 @@ class _Main_State extends State<Main_> {
                 child: Text(
                   format_double(rc.cell.value, digits: 2) + " \$", //
                   overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
                 ),
               );
             },
@@ -1023,6 +1091,29 @@ class _Main_State extends State<Main_> {
                     ),
                   ];
                 },
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "penalty_paid", //
+            title: "Paid",
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,###.00",
+            ),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
               );
             },
           ),
@@ -1160,15 +1251,15 @@ class _Main_State extends State<Main_> {
           ),
           PlutoColumnGroup(
             title: "Room Payment", //
-            fields: ["room_price", "room_cash", "room_bank", "room_note"],
+            fields: ["room_price", "room_cash", "room_bank", "room_paid", "room_note"],
           ),
           PlutoColumnGroup(
             title: "Mini Bar Payment", //
-            fields: ["mini_bar_item", "mini_bar_price", "mini_bar_cash", "mini_bar_bank", "mini_bar_note"],
+            fields: ["mini_bar_item", "mini_bar_price", "mini_bar_cash", "mini_bar_bank", "mini_bar_paid", "mini_bar_note"],
           ),
           PlutoColumnGroup(
             title: "Penalty Payment", //
-            fields: ["penalty_item", "penalty_price", "penalty_cash", "penalty_bank", "penalty_note"],
+            fields: ["penalty_item", "penalty_price", "penalty_cash", "penalty_bank", "penalty_paid", "penalty_note"],
           ),
           PlutoColumnGroup(
             title: "Person In Charge", //
