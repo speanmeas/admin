@@ -299,6 +299,29 @@ class _Main_State extends State<Main_> {
                 ),
               );
             },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,###.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.count,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "Sum: ", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
           ),
 
           PlutoColumn(
@@ -520,12 +543,14 @@ class _Main_State extends State<Main_> {
                 type: PlutoAggregateColumnType.sum,
                 titleSpanBuilder: (value) {
                   return [
-                    TextSpan(
-                      text: "$value \$", //
-                      style: TextStyle(
-                        fontSize: 14, //
-                        fontWeight: FontWeight.bold,
-                        overflow: TextOverflow.ellipsis,
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                   ];
@@ -538,7 +563,7 @@ class _Main_State extends State<Main_> {
             field: "room_cash", //
             title: "Cash",
             type: PlutoColumnType.number(
-              negative: false, //
+              //   negative: false, //
               format: "#,###.00",
             ),
             // enableEditingMode: false,
@@ -552,13 +577,36 @@ class _Main_State extends State<Main_> {
                 ),
               );
             },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,###.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
           ),
 
           PlutoColumn(
             field: "room_bank", //
             title: "Bank",
             type: PlutoColumnType.number(
-              negative: false, //
+              //   negative: false, //
               format: "#,###.00",
             ),
             // enableEditingMode: false,
@@ -570,6 +618,29 @@ class _Main_State extends State<Main_> {
                   format_double(rc.cell.value, digits: 2) + " \$", //
                   overflow: TextOverflow.ellipsis,
                 ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,###.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
               );
             },
           ),
@@ -659,13 +730,36 @@ class _Main_State extends State<Main_> {
                 ),
               );
             },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,###.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
           ),
 
           PlutoColumn(
             field: "mini_bar_cash", //
             title: "Cash",
             type: PlutoColumnType.number(
-              negative: false, //
+              //   negative: false, //
               format: "#,###.00",
             ),
             // enableEditingMode: false,
@@ -679,13 +773,36 @@ class _Main_State extends State<Main_> {
                 ),
               );
             },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,###.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
           ),
 
           PlutoColumn(
             field: "mini_bar_bank", //
             title: "Bank",
             type: PlutoColumnType.number(
-              negative: false, //
+              //   negative: false, //
               format: "#,###.00",
             ),
             // enableEditingMode: false,
@@ -697,6 +814,29 @@ class _Main_State extends State<Main_> {
                   format_double(rc.cell.value, digits: 2) + " \$", //
                   overflow: TextOverflow.ellipsis,
                 ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,###.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
               );
             },
           ),
@@ -776,13 +916,36 @@ class _Main_State extends State<Main_> {
                 ),
               );
             },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,###.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
           ),
 
           PlutoColumn(
             field: "penalty_cash", //
             title: "Cash",
             type: PlutoColumnType.number(
-              negative: false, //
+              //   negative: false, //
               format: "#,###.00",
             ),
             // enableEditingMode: false,
@@ -796,13 +959,36 @@ class _Main_State extends State<Main_> {
                 ),
               );
             },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,###.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
           ),
 
           PlutoColumn(
             field: "penalty_bank", //
             title: "Bank",
             type: PlutoColumnType.number(
-              negative: false, //
+              //   negative: false, //
               format: "#,###.00",
             ),
             // enableEditingMode: false,
@@ -814,6 +1000,29 @@ class _Main_State extends State<Main_> {
                   format_double(rc.cell.value, digits: 2) + " \$", //
                   overflow: TextOverflow.ellipsis,
                 ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,###.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
               );
             },
           ),
