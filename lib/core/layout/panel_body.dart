@@ -4,12 +4,12 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 // * dashboard
-import "package:speanmeas/features/dashboard/front_desk/main.dart" as d_front_desk;
+import "package:speanmeas/features/dashboard/.front_desk/main.dart" as d_front_desk;
 import "package:speanmeas/features/dashboard/front_desk_new/main.dart" as d_front_desk_new;
 // import "package:speanmeas/features/dashboard/mini_bar/main.dart" as d_mini_bar;
 
 // * database
-import "package:speanmeas/features/database/front_desk/main.dart" as front_desk;
+// import "package:speanmeas/features/database/front_desk/main.dart" as front_desk;
 import "package:speanmeas/features/database/guest/main.dart" as guest;
 import "package:speanmeas/features/database/room/main.dart" as room;
 import "package:speanmeas/features/database/user/main.dart" as user;
@@ -18,7 +18,7 @@ import "package:speanmeas/features/database/bank/main.dart" as bank;
 import "package:speanmeas/features/database/mini_bar/main.dart" as mini_bar;
 
 // * report
-import "package:speanmeas/features/report/main.dart" as report;
+// import "package:speanmeas/features/report/main.dart" as report;
 
 import "package:speanmeas/features/database/demo_1/main.dart" as demo_1;
 import "package:speanmeas/features/database/demo_2_1/main.dart" as demo_2_1;
@@ -37,7 +37,7 @@ class _Panel_BodyState extends State<Panel_Body> {
     // {"name": "Mini Bar", "panel": d_mini_bar.Main_()}, //
     //
     {"name": "Front Desk (Table)", "panel": d_front_desk_new.Main_()}, //
-    {"name": "Data Front Desk", "panel": front_desk.Main_()}, //
+    // {"name": "Data Front Desk", "panel": front_desk.Main_()}, //
     {"name": "Data Room", "panel": room.Main_()}, //
     {"name": "Data Guest", "panel": guest.Main_()},
     {"name": "Data User", "panel": user.Main_()},
@@ -45,7 +45,7 @@ class _Panel_BodyState extends State<Panel_Body> {
     {"name": "Data Bank", "panel": bank.Main_()},
     {"name": "Data Mini Bar", "panel": mini_bar.Main_()}, //
     //
-    {"name": "Report Income", "panel": report.Main_()}, //
+    // {"name": "Report Income", "panel": report.Main_()}, //
     // {"name": "Report Weekly", "panel": report_weekly.Main_()}, //
     // {"name": "Report Monthly", "panel": report_monthly.Main_()}, //
     // {"name": "Report Yearly", "panel": report_yearly.Main_()}, //

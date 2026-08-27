@@ -15,6 +15,7 @@ class _Main_State extends State<Main_> {
   late List<String> list_column;
   late PlutoGridStateManager state_manager;
 
+  List<dynamic> rooms = [];
   List<Front_Desk> data = [];
   // * ########## BLOCK VARIABLES END ##########
 
@@ -27,11 +28,16 @@ class _Main_State extends State<Main_> {
   }
 
   void init() async {
-    // setState(() => is_load = true);
-    tmp = await dio.post(
-      endpoint.ROOM_READ, //
-    );
-    pprint(tmp.data);
+    setState(() => is_load = true);
+    tmp = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
+    setState(() => is_load = false);
+
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_READ}", cl: Colors.red);
+
+    rooms = tmp.data as List<dynamic>? ?? [];
+
+    pprint(rooms);
+    setState(() {});
   }
 
   @override
@@ -41,7 +47,7 @@ class _Main_State extends State<Main_> {
   }
 
   void on_loaded(PlutoGridOnLoadedEvent e) async {
-    setState(() => is_load = true);
+    // setState(() => is_load = true);
     state_manager = e.stateManager;
     state_manager.columnFooterHeight = 32; // * កម្ពស់ជួរសរុប
 
@@ -104,7 +110,7 @@ class _Main_State extends State<Main_> {
         ),
     ]);
 
-    setState(() => is_load = false);
+    // setState(() => is_load = false);
   }
 
   void on_changed(PlutoGridOnChangedEvent e) async {
@@ -244,35 +250,35 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     return _layout(
       check_in: [
-        for (var i = 0; i < 10; i++)
+        for (var r in rooms.where((r) => r[Room.STATUS] == "Available"))
           OutlinedButton.icon(
             icon: Icon(Icons.hotel_outlined), //
-            label: Text("${200 + i}"),
+            label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
             onPressed: () {
-              pprint("Check-In");
+              pprint("Check-In: ${r[Room.ID]} | ${r[Room.NUMBER]}");
             },
           ),
       ],
       check_out: [
-        for (var i = 0; i < 10; i++)
+        for (var r in rooms.where((r) => r[Room.STATUS] == "Occupied"))
           OutlinedButton.icon(
             icon: Icon(Icons.hotel_outlined), //
-            label: Text("${300 + i}"),
+            label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
             onPressed: () {
-              pprint("Check-Out");
+              pprint("Check-Out: ${r[Room.ID]} | ${r[Room.NUMBER]}");
             },
           ),
       ],
       clean: [
-        for (var i = 0; i < 10; i++)
+        for (var r in rooms.where((r) => r[Room.STATUS] == "Dirty"))
           OutlinedButton.icon(
             icon: Icon(Icons.hotel_outlined), //
-            label: Text("${400 + i}"),
+            label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.grey),
             onPressed: () {
-              pprint("Clean");
+              pprint("Clean: ${r[Room.ID]} | ${r[Room.NUMBER]}");
             },
           ),
       ],
