@@ -171,8 +171,6 @@ class Change {
 class Check_In {
   static const ID = '_id';
   static const NUMBER = 'number';
-  static const DAY = 'day';
-  static const HOUR = 'hour';
   static const NOTE = 'note';
   static const CREATED_AT = 'created_at';
   static const CREATED_BY = 'created_by';
@@ -183,8 +181,6 @@ class Check_In {
 
   final String? id;
   final int? number;
-  final int? day;
-  final int? hour;
   final String? note;
   final DateTime? created_at;
   final User_Show? created_by;
@@ -193,13 +189,11 @@ class Check_In {
   final DateTime? deleted_at;
   final User_Show? deleted_by;
 
-  Check_In({this.id, this.number, this.day, this.hour, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Check_In({this.id, this.number, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
 
   factory Check_In.fromJson(Map<String, dynamic> json) => Check_In(
     id: json['_id'] as String?,
     number: json['number'] as int?,
-    day: json['day'] as int?,
-    hour: json['hour'] as int?,
     note: json['note'] as String?,
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
     created_by: json['created_by'] == null ? null : User_Show.fromJson(json['created_by'] as Map<String, dynamic>),
@@ -213,8 +207,6 @@ class Check_In {
     final json = <String, dynamic>{};
     json['_id'] = id;
     json['number'] = number;
-    json['day'] = day;
-    json['hour'] = hour;
     json['note'] = note;
     json['created_at'] = created_at?.toIso8601String();
     json['created_by'] = created_by?.toJson();

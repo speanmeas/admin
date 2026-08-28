@@ -1,10 +1,12 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
 import "package:flutter_svg/svg.dart";
 import "package:intl/intl.dart";
 import "package:provider/provider.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
-import "package:speanmeas/core/utility/gen_data.dart";
+// import "package:speanmeas/core/utility/gen_data.dart";
 
 import "form/check_in.dart" as check_in;
 import "form/check_out.dart" as check_out;
@@ -25,15 +27,51 @@ class _Main_State extends State<Main_> {
 
   List<dynamic> rooms = [];
   List<Front_Desk> front_desks = [];
+
+  Timer? timer_refresh;
+  bool is_refresh = false;
   // * ########## BLOCK VARIABLES END ##########
 
   // * ########## BLOCK METHODS ##########
   @override
   void initState() {
     super.initState();
+    timer_refresh = Timer.periodic(Duration(minutes: 1), (_) => refresh_time());
   }
 
-  void init() async {
+  @override
+  void dispose() {
+    timer_refresh?.cancel();
+    super.dispose();
+  }
+
+  // * ពេលបញ្ចប់ស្នាក់នៅ: មាន check_out → បិទការគណនាពេល check_out, អត់ → រត់តាមពេលបច្ចុប្បន្ន
+  DateTime stay_end_of(Front_Desk fd, DateTime in_at) {
+    DateTime? out_at = fd.check_out_id?.created_at;
+    if (out_at != null) return out_at;
+    if (fd.check_out_id == null) return DateTime.now();
+    return in_at;
+  }
+
+  // * គណនាតម្លៃបន្ទប់: ក្រោម 1 ម៉ោង = 0, រួចគិតតាម 3 ម៉ោង រហូតលើសតម្លៃ 1 ថ្ងៃ ទើបគិតតាមថ្ងៃ
+  double room_price_of({required int minutes, required double? price_3h, required double? price_day}) {
+    double h3 = price_3h ?? 0;
+    double pd = price_day ?? 0;
+    if (minutes < 60) return 0;
+    if (h3 <= 0) return 0;
+    double total = 0;
+    int remain = minutes;
+    while (remain > 0) {
+      int slice = remain > 1440 ? 1440 : remain;
+      int blocks = (slice / 180).ceil();
+      double price = blocks * h3;
+      total += (pd > 0 && price > pd) ? pd : price;
+      remain -= slice;
+    }
+    return total;
+  }
+
+  Future<void> init() async {
     tmp = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
     if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_READ}", cl: Colors.red);
 
@@ -51,6 +89,13 @@ class _Main_State extends State<Main_> {
 
     front_desks = (tmp.data as List<dynamic>? ?? []).map<Front_Desk>((e) => Front_Desk.fromJson(e)).toList();
 
+    update_grid();
+
+    setState(() {});
+  }
+
+  void update_grid() {
+    //
     state_manager.removeAllRows();
     state_manager.appendRows([
       for (var (i, fd) in front_desks.indexed)
@@ -64,16 +109,26 @@ class _Main_State extends State<Main_> {
                   return PlutoCell(value: fd.room_id?.number ?? "");
                 if (c == "check_in_number") //
                   return PlutoCell(value: fd.check_in_id?.number ?? 0);
-                if (c == "check_in_day") //
-                  return PlutoCell(value: fd.check_in_id?.day ?? 0);
-                if (c == "check_in_hour") //
-                  return PlutoCell(value: fd.check_in_id?.hour ?? 0);
-
-                if (c == "room_price") //
-                  return PlutoCell(value: fd.room_pay_id?.price ?? 0);
 
                 if (c == "check_in_at") //
                   return PlutoCell(value: fd.check_in_id?.created_at ?? 0);
+
+                if (c == "check_in_duration") {
+                  DateTime? in_at = fd.check_in_id?.created_at;
+                  if (in_at == null) return PlutoCell(value: 0);
+                  return PlutoCell(value: stay_end_of(fd, in_at).difference(in_at).inMinutes);
+                }
+
+                if (c == "room_price") {
+                  //   DateTime? in_at = fd.check_in_id?.created_at;
+                  //   int minutes = in_at == null ? 0 : (fd.check_out_id?.created_at ?? DateTime.now()).difference(in_at).inMinutes;
+                  //   if (fd.room_id?.price_per_3h == null && fd.room_id?.price_per_day == null) return PlutoCell(value: fd.room_pay_id?.price ?? 0);
+                  //   return PlutoCell(
+                  //     value: room_price_of(minutes: minutes, price_3h: fd.room_id?.price_per_3h, price_day: fd.room_id?.price_per_day),
+                  //   );
+                  return PlutoCell(value: fd.room_pay_id?.price ?? 0);
+                }
+
                 if (c == "check_out_at") //
                   return PlutoCell(value: fd.check_out_id?.created_at ?? 0);
                 if (c == "clean_at") //
@@ -85,42 +140,6 @@ class _Main_State extends State<Main_> {
                   return PlutoCell(value: fd.check_out_id?.created_by?.full_name ?? "");
                 if (c == "clean_by") //
                   return PlutoCell(value: fd.clean_id?.created_by?.full_name ?? "");
-                // if (c == "guest_name") //
-                //   return PlutoCell(value: gen_text());
-                // if (c == "guest_phone") //
-                //   return PlutoCell(value: (1000000000 + gen_number() * 9000000000).toInt().toString());
-                // if (c == "stay") //
-                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                // if (c == "check_in_at") //
-                //   return PlutoCell(value: gen_datetime());
-                // if (c == "check_out_at") //
-                //   return PlutoCell(value: gen_datetime());
-                // if (c == "room_price") //
-                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                // if (c == "room_cash") //
-                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                // if (c == "room_bank") //
-                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                // if (c == "mini_bar_price") //
-                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                // if (c == "mini_bar_cash") //
-                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                // if (c == "mini_bar_bank") //
-                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                // if (c == "penalty_price") //
-                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                // if (c == "penalty_cash") //
-                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                // if (c == "penalty_bank") //
-                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                // if (c == "check_in_by") //
-                //   return PlutoCell(value: gen_text());
-                // if (c == "check_out_by") //
-                //   return PlutoCell(value: gen_text());
-                // if (c == "note_1") //
-                //   return PlutoCell(value: gen_text());
-                // if (c == "note_2") //
-                //   return PlutoCell(value: gen_text());
 
                 return PlutoCell(value: "");
               })(),
@@ -161,6 +180,13 @@ class _Main_State extends State<Main_> {
 
   void on_clean() {
     // controller
+  }
+
+  void refresh_time() async {
+    if (is_refresh) return;
+    is_refresh = true;
+    update_grid();
+    is_refresh = false;
   }
 
   // * ########## BLOCK METHODS END ##########
@@ -313,7 +339,7 @@ class _Main_State extends State<Main_> {
                   room_id: r[Room.ID], //
                   room_number: r[Room.NUMBER], //
                   price_per_day: r[Room.PRICE_PER_DAY], //
-                  price_per_3h: r[Room.PRICE_PER_3H], //
+                  //   price_per_3h: r[Room.PRICE_PER_3H], //
                 ),
               );
               if (tmp == null) return;
@@ -519,40 +545,22 @@ class _Main_State extends State<Main_> {
             },
           ),
 
-          PlutoColumn(
-            field: "check_in_day", //
-            title: "Days",
-            type: PlutoColumnType.number(negative: false, format: "#,###"),
-            // enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 0) + " ថ្ងៃ", //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "check_in_hour", //
-            title: "Hours",
-            type: PlutoColumnType.number(negative: false, format: "#,###"),
-            // enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 0) + " ម៉ោង", //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-
+          //   PlutoColumn(
+          //     field: "check_in_day", //
+          //     title: "Days",
+          //     type: PlutoColumnType.number(negative: false, format: "#,###"),
+          //     // enableEditingMode: false,
+          //     width: 80,
+          //     renderer: (rc) {
+          //       return Align(
+          //         alignment: Alignment.centerRight, //
+          //         child: Text(
+          //           format_double(rc.cell.value, digits: 0) + " ថ្ងៃ", //
+          //           overflow: TextOverflow.ellipsis,
+          //         ),
+          //       );
+          //     },
+          //   ),
           PlutoColumn(
             field: "check_in_at", //
             title: "Check-In At",
@@ -582,6 +590,32 @@ class _Main_State extends State<Main_> {
                     }, //
                   ),
                 ],
+              );
+            },
+          ),
+
+          // auto calculate
+          PlutoColumn(
+            field: "check_in_duration", //
+            title: "Duration",
+            type: PlutoColumnType.number(negative: false, format: "#,###"),
+            // enableEditingMode: false,
+            width: 140,
+            renderer: (rc) {
+              int minutes = parse_int(rc.cell.value) ?? 0;
+              int day = minutes ~/ 1440;
+              int hour = (minutes % 1440) ~/ 60;
+              int minute = minutes % 60;
+              String text = "";
+              if (day > 0) text += "$day ថ្ងៃ ";
+              if (hour > 0) text += "$hour ម៉ោង ";
+              if (minute > 0 || text.isEmpty) text += "$minute នាទី";
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  text, //
+                  overflow: TextOverflow.ellipsis,
+                ),
               );
             },
           ),
@@ -829,15 +863,15 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  IconButton(
-                    tooltip: "Search", //
-                    icon: Icon(Icons.search_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      print("Search: ${rc.row.cells["index"]?.value}");
-                    }, //
-                  ),
+                  //   IconButton(
+                  //     tooltip: "Search", //
+                  //     icon: Icon(Icons.search_outlined),
+                  //     padding: EdgeInsets.all(0),
+                  //     constraints: BoxConstraints(),
+                  //     onPressed: () {
+                  //       print("Search: ${rc.row.cells["index"]?.value}");
+                  //     }, //
+                  //   ),
                 ],
               );
             },
@@ -852,437 +886,436 @@ class _Main_State extends State<Main_> {
             // },
           ),
 
-          PlutoColumn(
-            field: "mini_bar_item", //
-            title: "Items",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround, //
-                children: [
-                  //
-                  IconButton(
-                    tooltip: "Update Mini Bar Items", //
-                    icon: Icon(Icons.local_bar_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      print("Update Mini Bar Items: ${rc.row.cells["index"]?.value}");
-                    }, //
-                  ),
-                ],
-              );
-            },
-          ),
+          //   PlutoColumn(
+          //     field: "mini_bar_item", //
+          //     title: "Items",
+          //     type: PlutoColumnType.text(),
+          //     enableEditingMode: false,
+          //     width: 80,
+          //     renderer: (rc) {
+          //       return Row(
+          //         mainAxisAlignment: MainAxisAlignment.spaceAround, //
+          //         children: [
+          //           //
+          //           IconButton(
+          //             tooltip: "Update Mini Bar Items", //
+          //             icon: Icon(Icons.local_bar_outlined),
+          //             padding: EdgeInsets.all(0),
+          //             constraints: BoxConstraints(),
+          //             onPressed: () {
+          //               print("Update Mini Bar Items: ${rc.row.cells["index"]?.value}");
+          //             }, //
+          //           ),
+          //         ],
+          //       );
+          //     },
+          //   ),
 
-          PlutoColumn(
-            field: "mini_bar_price", //
-            title: "Price",
-            type: PlutoColumnType.number(
-              negative: false, //
-              format: "#,##0.00",
-            ),
-            enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
+          //   PlutoColumn(
+          //     field: "mini_bar_price", //
+          //     title: "Price",
+          //     type: PlutoColumnType.number(
+          //       negative: false, //
+          //       format: "#,##0.00",
+          //     ),
+          //     enableEditingMode: false,
+          //     width: 80,
+          //     renderer: (rc) {
+          //       return Align(
+          //         alignment: Alignment.centerRight, //
+          //         child: Text(
+          //           format_double(rc.cell.value, digits: 2) + " \$", //
+          //           overflow: TextOverflow.ellipsis,
+          //         ),
+          //       );
+          //     },
+          //     footerRenderer: (rc) {
+          //       return PlutoAggregateColumnFooter(
+          //         rendererContext: rc, //
+          //         format: "#,##0.00", //
+          //         alignment: Alignment.centerRight,
+          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+          //         type: PlutoAggregateColumnType.sum,
+          //         titleSpanBuilder: (value) {
+          //           return [
+          //             WidgetSpan(
+          //               child: Text(
+          //                 "$value \$", //
+          //                 style: TextStyle(
+          //                   fontSize: 14, //
+          //                   fontWeight: FontWeight.bold,
+          //                   overflow: TextOverflow.ellipsis,
+          //                 ),
+          //               ),
+          //             ),
+          //           ];
+          //         },
+          //       );
+          //     },
+          //   ),
 
-          PlutoColumn(
-            field: "mini_bar_cash", //
-            title: "Cash",
-            type: PlutoColumnType.number(
-              //   negative: false, //
-              format: "#,##0.00",
-            ),
-            // enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
+          //   PlutoColumn(
+          //     field: "mini_bar_cash", //
+          //     title: "Cash",
+          //     type: PlutoColumnType.number(
+          //       //   negative: false, //
+          //       format: "#,##0.00",
+          //     ),
+          //     // enableEditingMode: false,
+          //     width: 80,
+          //     renderer: (rc) {
+          //       return Align(
+          //         alignment: Alignment.centerRight, //
+          //         child: Text(
+          //           format_double(rc.cell.value, digits: 2) + " \$", //
+          //           overflow: TextOverflow.ellipsis,
+          //           style: TextStyle(
+          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //     footerRenderer: (rc) {
+          //       return PlutoAggregateColumnFooter(
+          //         rendererContext: rc, //
+          //         format: "#,##0.00", //
+          //         alignment: Alignment.centerRight,
+          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+          //         type: PlutoAggregateColumnType.sum,
+          //         titleSpanBuilder: (value) {
+          //           return [
+          //             WidgetSpan(
+          //               child: Text(
+          //                 "$value \$", //
+          //                 style: TextStyle(
+          //                   fontSize: 14, //
+          //                   fontWeight: FontWeight.bold,
+          //                   overflow: TextOverflow.ellipsis,
+          //                 ),
+          //               ),
+          //             ),
+          //           ];
+          //         },
+          //       );
+          //     },
+          //   ),
 
-          PlutoColumn(
-            field: "mini_bar_bank", //
-            title: "Bank",
-            type: PlutoColumnType.number(
-              //   negative: false, //
-              format: "#,##0.00",
-            ),
-            // enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
+          //   PlutoColumn(
+          //     field: "mini_bar_bank", //
+          //     title: "Bank",
+          //     type: PlutoColumnType.number(
+          //       //   negative: false, //
+          //       format: "#,##0.00",
+          //     ),
+          //     // enableEditingMode: false,
+          //     width: 80,
+          //     renderer: (rc) {
+          //       return Align(
+          //         alignment: Alignment.centerRight, //
+          //         child: Text(
+          //           format_double(rc.cell.value, digits: 2) + " \$", //
+          //           overflow: TextOverflow.ellipsis,
+          //           style: TextStyle(
+          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //     footerRenderer: (rc) {
+          //       return PlutoAggregateColumnFooter(
+          //         rendererContext: rc, //
+          //         format: "#,##0.00", //
+          //         alignment: Alignment.centerRight,
+          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+          //         type: PlutoAggregateColumnType.sum,
+          //         titleSpanBuilder: (value) {
+          //           return [
+          //             WidgetSpan(
+          //               child: Text(
+          //                 "$value \$", //
+          //                 style: TextStyle(
+          //                   fontSize: 14, //
+          //                   fontWeight: FontWeight.bold,
+          //                   overflow: TextOverflow.ellipsis,
+          //                 ),
+          //               ),
+          //             ),
+          //           ];
+          //         },
+          //       );
+          //     },
+          //   ),
 
-          PlutoColumn(
-            field: "mini_bar_paid", //
-            title: "Paid",
-            type: PlutoColumnType.number(
-              negative: false, //
-              format: "#,##0.00",
-            ),
-            enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-          ),
+          //   PlutoColumn(
+          //     field: "mini_bar_paid", //
+          //     title: "Paid",
+          //     type: PlutoColumnType.number(
+          //       negative: false, //
+          //       format: "#,##0.00",
+          //     ),
+          //     enableEditingMode: false,
+          //     width: 80,
+          //     renderer: (rc) {
+          //       return Align(
+          //         alignment: Alignment.centerRight, //
+          //         child: Text(
+          //           format_double(rc.cell.value, digits: 2) + " \$", //
+          //           overflow: TextOverflow.ellipsis,
+          //           style: TextStyle(
+          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //   ),
 
-          PlutoColumn(
-            field: "mini_bar_note", //
-            title: "Note",
-            type: PlutoColumnType.text(),
-            // enableEditingMode: false,
-            width: 120,
-            renderer: (rc) {
-              return Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft, //
-                      child: Text(
-                        format_string(rc.cell.value), //
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
+          //   PlutoColumn(
+          //     field: "mini_bar_note", //
+          //     title: "Note",
+          //     type: PlutoColumnType.text(),
+          //     // enableEditingMode: false,
+          //     width: 120,
+          //     renderer: (rc) {
+          //       return Row(
+          //         children: [
+          //           Expanded(
+          //             child: Align(
+          //               alignment: Alignment.centerLeft, //
+          //               child: Text(
+          //                 format_string(rc.cell.value), //
+          //                 overflow: TextOverflow.ellipsis,
+          //               ),
+          //             ),
+          //           ),
 
-                  IconButton(
-                    tooltip: "Search", //
-                    icon: Icon(Icons.search_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      print("Search: ${rc.row.cells["index"]?.value}");
-                    }, //
-                  ),
-                ],
-              );
-            },
-          ),
+          //           //   IconButton(
+          //           //     tooltip: "Search", //
+          //           //     icon: Icon(Icons.search_outlined),
+          //           //     padding: EdgeInsets.all(0),
+          //           //     constraints: BoxConstraints(),
+          //           //     onPressed: () {
+          //           //       print("Search: ${rc.row.cells["index"]?.value}");
+          //           //     }, //
+          //           //   ),
+          //         ],
+          //       );
+          //     },
+          //   ),
 
-          PlutoColumn(
-            field: "penalty_item", //
-            title: "Items",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center, //
-                children: [
-                  IconButton(
-                    tooltip: "Update Penalty Items", //
-                    icon: Icon(Icons.gavel_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      print("Update Penalty Items: ${rc.row.cells["index"]?.value}");
-                    }, //
-                  ),
-                ],
-              );
-            },
-          ),
+          //   PlutoColumn(
+          //     field: "penalty_item", //
+          //     title: "Items",
+          //     type: PlutoColumnType.text(),
+          //     enableEditingMode: false,
+          //     width: 80,
+          //     renderer: (rc) {
+          //       return Row(
+          //         mainAxisAlignment: MainAxisAlignment.center, //
+          //         children: [
+          //           IconButton(
+          //             tooltip: "Update Penalty Items", //
+          //             icon: Icon(Icons.gavel_outlined),
+          //             padding: EdgeInsets.all(0),
+          //             constraints: BoxConstraints(),
+          //             onPressed: () {
+          //               print("Update Penalty Items: ${rc.row.cells["index"]?.value}");
+          //             }, //
+          //           ),
+          //         ],
+          //       );
+          //     },
+          //   ),
 
-          PlutoColumn(
-            field: "penalty_price", //
-            title: "Price",
-            type: PlutoColumnType.number(
-              negative: false, //
-              format: "#,##0.00",
-            ),
-            enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
+          //   PlutoColumn(
+          //     field: "penalty_price", //
+          //     title: "Price",
+          //     type: PlutoColumnType.number(
+          //       negative: false, //
+          //       format: "#,##0.00",
+          //     ),
+          //     enableEditingMode: false,
+          //     width: 80,
+          //     renderer: (rc) {
+          //       return Align(
+          //         alignment: Alignment.centerRight, //
+          //         child: Text(
+          //           format_double(rc.cell.value, digits: 2) + " \$", //
+          //           overflow: TextOverflow.ellipsis,
+          //         ),
+          //       );
+          //     },
+          //     footerRenderer: (rc) {
+          //       return PlutoAggregateColumnFooter(
+          //         rendererContext: rc, //
+          //         format: "#,##0.00", //
+          //         alignment: Alignment.centerRight,
+          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+          //         type: PlutoAggregateColumnType.sum,
+          //         titleSpanBuilder: (value) {
+          //           return [
+          //             WidgetSpan(
+          //               child: Text(
+          //                 "$value \$", //
+          //                 style: TextStyle(
+          //                   fontSize: 14, //
+          //                   fontWeight: FontWeight.bold,
+          //                   overflow: TextOverflow.ellipsis,
+          //                 ),
+          //               ),
+          //             ),
+          //           ];
+          //         },
+          //       );
+          //     },
+          //   ),
 
-          PlutoColumn(
-            field: "penalty_cash", //
-            title: "Cash",
-            type: PlutoColumnType.number(
-              //   negative: false, //
-              format: "#,##0.00",
-            ),
-            // enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
+          //   PlutoColumn(
+          //     field: "penalty_cash", //
+          //     title: "Cash",
+          //     type: PlutoColumnType.number(
+          //       //   negative: false, //
+          //       format: "#,##0.00",
+          //     ),
+          //     // enableEditingMode: false,
+          //     width: 80,
+          //     renderer: (rc) {
+          //       return Align(
+          //         alignment: Alignment.centerRight, //
+          //         child: Text(
+          //           format_double(rc.cell.value, digits: 2) + " \$", //
+          //           overflow: TextOverflow.ellipsis,
+          //           style: TextStyle(
+          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //     footerRenderer: (rc) {
+          //       return PlutoAggregateColumnFooter(
+          //         rendererContext: rc, //
+          //         format: "#,##0.00", //
+          //         alignment: Alignment.centerRight,
+          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+          //         type: PlutoAggregateColumnType.sum,
+          //         titleSpanBuilder: (value) {
+          //           return [
+          //             WidgetSpan(
+          //               child: Text(
+          //                 "$value \$", //
+          //                 style: TextStyle(
+          //                   fontSize: 14, //
+          //                   fontWeight: FontWeight.bold,
+          //                   overflow: TextOverflow.ellipsis,
+          //                 ),
+          //               ),
+          //             ),
+          //           ];
+          //         },
+          //       );
+          //     },
+          //   ),
 
-          PlutoColumn(
-            field: "penalty_bank", //
-            title: "Bank",
-            type: PlutoColumnType.number(
-              //   negative: false, //
-              format: "#,##0.00",
-            ),
-            // enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
+          //   PlutoColumn(
+          //     field: "penalty_bank", //
+          //     title: "Bank",
+          //     type: PlutoColumnType.number(
+          //       //   negative: false, //
+          //       format: "#,##0.00",
+          //     ),
+          //     // enableEditingMode: false,
+          //     width: 80,
+          //     renderer: (rc) {
+          //       return Align(
+          //         alignment: Alignment.centerRight, //
+          //         child: Text(
+          //           format_double(rc.cell.value, digits: 2) + " \$", //
+          //           overflow: TextOverflow.ellipsis,
+          //           style: TextStyle(
+          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //     footerRenderer: (rc) {
+          //       return PlutoAggregateColumnFooter(
+          //         rendererContext: rc, //
+          //         format: "#,##0.00", //
+          //         alignment: Alignment.centerRight,
+          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+          //         type: PlutoAggregateColumnType.sum,
+          //         titleSpanBuilder: (value) {
+          //           return [
+          //             WidgetSpan(
+          //               child: Text(
+          //                 "$value \$", //
+          //                 style: TextStyle(
+          //                   fontSize: 14, //
+          //                   fontWeight: FontWeight.bold,
+          //                   overflow: TextOverflow.ellipsis,
+          //                 ),
+          //               ),
+          //             ),
+          //           ];
+          //         },
+          //       );
+          //     },
+          //   ),
 
-          PlutoColumn(
-            field: "penalty_paid", //
-            title: "Paid",
-            type: PlutoColumnType.number(
-              negative: false, //
-              format: "#,##0.00",
-            ),
-            enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-          ),
+          //   PlutoColumn(
+          //     field: "penalty_paid", //
+          //     title: "Paid",
+          //     type: PlutoColumnType.number(
+          //       negative: false, //
+          //       format: "#,##0.00",
+          //     ),
+          //     enableEditingMode: false,
+          //     width: 80,
+          //     renderer: (rc) {
+          //       return Align(
+          //         alignment: Alignment.centerRight, //
+          //         child: Text(
+          //           format_double(rc.cell.value, digits: 2) + " \$", //
+          //           overflow: TextOverflow.ellipsis,
+          //           style: TextStyle(
+          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //   ),
 
-          PlutoColumn(
-            field: "penalty_note", //
-            title: "Note",
-            type: PlutoColumnType.text(),
-            // enableEditingMode: false,
-            width: 120,
-            renderer: (rc) {
-              return Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft, //
-                      child: Text(
-                        format_string(rc.cell.value), //
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
+          //   PlutoColumn(
+          //     field: "penalty_note", //
+          //     title: "Note",
+          //     type: PlutoColumnType.text(),
+          //     // enableEditingMode: false,
+          //     width: 120,
+          //     renderer: (rc) {
+          //       return Row(
+          //         children: [
+          //           Expanded(
+          //             child: Align(
+          //               alignment: Alignment.centerLeft, //
+          //               child: Text(
+          //                 format_string(rc.cell.value), //
+          //                 overflow: TextOverflow.ellipsis,
+          //               ),
+          //             ),
+          //           ),
 
-                  IconButton(
-                    tooltip: "Search", //
-                    icon: Icon(Icons.search_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      print("Search: ${rc.row.cells["index"]?.value}");
-                    }, //
-                  ),
-                ],
-              );
-            },
-          ),
-
+          //           //   IconButton(
+          //           //     tooltip: "Search", //
+          //           //     icon: Icon(Icons.search_outlined),
+          //           //     padding: EdgeInsets.all(0),
+          //           //     constraints: BoxConstraints(),
+          //           //     onPressed: () {
+          //           //       print("Search: ${rc.row.cells["index"]?.value}");
+          //           //     }, //
+          //           //   ),
+          //         ],
+          //       );
+          //     },
+          //   ),
           PlutoColumn(
             field: "check_in_by", //
             title: "Check-in By",
@@ -1302,6 +1335,23 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: "check_out_by", //
             title: "Check-Out By",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 140,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "clean_by", //
+            title: "Clean By",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
             width: 140,
@@ -1379,7 +1429,7 @@ class _Main_State extends State<Main_> {
           ),
           PlutoColumnGroup(
             title: "Stay", //
-            fields: ["check_in_number", "check_in_day", "check_in_hour", "check_in_at", "check_out_at", "clean_at"],
+            fields: ["check_in_number", "check_in_duration", "check_in_at", "check_out_at", "clean_at"],
           ),
           PlutoColumnGroup(
             title: "Room Payment", //
@@ -1395,7 +1445,7 @@ class _Main_State extends State<Main_> {
           ),
           PlutoColumnGroup(
             title: "Person In Charge", //
-            fields: ["check_in_by", "check_out_by"],
+            fields: ["check_in_by", "check_out_by", "clean_by"],
           ),
           PlutoColumnGroup(
             title: "", //

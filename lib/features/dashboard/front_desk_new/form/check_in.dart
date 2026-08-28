@@ -9,8 +9,6 @@ class _Main_State extends State<Main_> {
   bool is_load = false;
 
   int? stay_number;
-  int? stay_day;
-  int? stay_hour;
   String? stay_note;
 
   @override
@@ -22,25 +20,8 @@ class _Main_State extends State<Main_> {
   // * ផ្ទុកព័ត៌មានបន្ទប់ពី server
   void init() async {
     stay_number = 1;
-    stay_day = 0;
-    stay_hour = 0;
 
     setState(() {});
-  }
-
-  // * គណនាតម្លៃបន្ទប់សរុប
-  double get room_price {
-    // print(widget.price_per_day);
-    // print(widget.price_per_3h);
-    // print(stay_day);
-    // print(stay_hour);
-
-    double temp = 0;
-
-    temp = temp + ((widget.price_per_day ?? 0) * (stay_day ?? 0));
-    temp = temp + ((widget.price_per_3h ?? 0) * (stay_hour ?? 0) / 3);
-
-    return temp;
   }
 
   // * ពិនិត្យថាអាច check in បានឬអត់
@@ -48,9 +29,10 @@ class _Main_State extends State<Main_> {
     // print(stay_number);
     // print(stay_day);
     // print(stay_hour);
+    // print(room_price);
 
     if ((stay_number ?? 0) <= 0) return false;
-    if ((stay_day ?? 0) <= 0 && (stay_hour ?? 0) <= 0) return false;
+    // if ((stay_day ?? 0) <= 0 && (stay_hour ?? 0) <= 0) return false;
 
     return true;
   }
@@ -67,8 +49,6 @@ class _Main_State extends State<Main_> {
       endpoint.CHECK_IN_CREATE,
       data: {
         Check_In.NUMBER: stay_number, //
-        Check_In.DAY: stay_day, //
-        Check_In.HOUR: stay_hour, //
         Check_In.NOTE: stay_note, //
       },
     );
@@ -77,7 +57,7 @@ class _Main_State extends State<Main_> {
     dynamic tmp_room_pay = await dio.post(
       endpoint.ROOM_PAY_CREATE,
       data: {
-        Room_Pay.PRICE: room_price, //
+        Room_Pay.PRICE: widget.price_per_day, //
       },
     );
 
@@ -160,30 +140,6 @@ class _Main_State extends State<Main_> {
         },
       ),
 
-      // * ជ្រើសរើសរយៈពេលស្នាក់នៅ (ថ្ងៃ)
-      Select_Dynamic(
-        lead: "Stay Duration (Days):",
-        init: stay_day, //
-        options: List.generate(365, (index) => index),
-        prefixIcon: Icons.calendar_month_outlined,
-        onChanged: (v) {
-          stay_day = v;
-          setState(() {});
-        },
-      ),
-
-      // * ជ្រើសរើសរយៈពេលស្នាក់នៅ (ម៉ោង)
-      Select_Dynamic(
-        lead: "Stay Duration (Hours):",
-        init: stay_hour,
-        options: [0, 3, 6, 9, 12, 15, 18, 21],
-        prefixIcon: Icons.access_time_outlined,
-        onChanged: (v) {
-          stay_hour = v;
-          setState(() {});
-        },
-      ),
-
       // * បញ្ចូលកំណត់ចំណាំ
       Input_Text(
         init: stay_note, //
@@ -214,13 +170,13 @@ class Main_ extends StatefulWidget {
     this.room_id,
     this.room_number,
     this.price_per_day,
-    this.price_per_3h,
+    // this.price_per_3h,
   });
 
   final String? room_id;
   final String? room_number;
   final double? price_per_day;
-  final double? price_per_3h;
+  // final double? price_per_3h;
 
   @override
   State<Main_> createState() => _Main_State();
@@ -238,7 +194,7 @@ void main() async {
         // room_id: "6a6ec9d7599d64fa5d293fb9", //
         room_number: "101", //
         price_per_day: 20, //
-        price_per_3h: 5, //
+        // price_per_3h: 5, //
       ), //
       theme: theme_data, //
       title: "Development", //
