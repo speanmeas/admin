@@ -1,11 +1,14 @@
 import "dart:async";
 
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter_svg/svg.dart";
 import "package:intl/intl.dart";
-import "package:provider/provider.dart";
+// import "package:provider/provider.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
+import "package:speanmeas/core/widget/dialog/dialog_datetime.dart";
+// import "package:speanmeas/core/widget/pick/pick_datetime.dart";
 // import "package:speanmeas/core/utility/gen_data.dart";
 
 import "form/check_in.dart" as check_in;
@@ -15,7 +18,6 @@ import "form/clean.dart" as clean;
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK VARIABLES ##########
-  dynamic tmp;
   int reload = 0; // this variable is used to reload the PlutoGrid when the data changes
   bool is_load = false; // this variable is used to guard the fast clicking of the buttons, to prevent multiple requests to the server
   double WIDTH = 120;
@@ -23,7 +25,8 @@ class _Main_State extends State<Main_> {
   late List<String> list_column;
   late PlutoGridStateManager state_manager;
 
-  DateTime dt = DateTime.now();
+  //   DateTime dt = DateTime.now();
+  DateTime dt = DateTime(2026, 8, 29, 0, 0, 0); // * for testing only
 
   List<dynamic> rooms = [];
   List<Front_Desk> front_desks = [];
@@ -45,39 +48,13 @@ class _Main_State extends State<Main_> {
     super.dispose();
   }
 
-  // * ពេលបញ្ចប់ស្នាក់នៅ: មាន check_out → បិទការគណនាពេល check_out, អត់ → រត់តាមពេលបច្ចុប្បន្ន
-  DateTime stay_end_of(Front_Desk fd, DateTime in_at) {
-    DateTime? out_at = fd.check_out_id?.created_at;
-    if (out_at != null) return out_at;
-    if (fd.check_out_id == null) return DateTime.now();
-    return in_at;
-  }
-
-  // * គណនាតម្លៃបន្ទប់: ក្រោម 1 ម៉ោង = 0, រួចគិតតាម 3 ម៉ោង រហូតលើសតម្លៃ 1 ថ្ងៃ ទើបគិតតាមថ្ងៃ
-  double room_price_of({required int minutes, required double? price_3h, required double? price_day}) {
-    double h3 = price_3h ?? 0;
-    double pd = price_day ?? 0;
-    if (minutes < 60) return 0;
-    if (h3 <= 0) return 0;
-    double total = 0;
-    int remain = minutes;
-    while (remain > 0) {
-      int slice = remain > 1440 ? 1440 : remain;
-      int blocks = (slice / 180).ceil();
-      double price = blocks * h3;
-      total += (pd > 0 && price > pd) ? pd : price;
-      remain -= slice;
-    }
-    return total;
-  }
-
   Future<void> init() async {
-    tmp = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_READ}", cl: Colors.red);
+    dynamic tmp_r = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
+    if (tmp_r == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_READ}", cl: Colors.red);
 
-    rooms = tmp.data as List<dynamic>? ?? [];
+    rooms = tmp_r.data as List<dynamic>? ?? [];
 
-    tmp = await dio.post(
+    dynamic tmp_fd = await dio.post(
       endpoint.FRONT_DESK_READ,
       data: {
         "key": Front_Desk.CREATED_AT, //
@@ -85,9 +62,10 @@ class _Main_State extends State<Main_> {
         "link": true, //
       },
     );
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_READ}", cl: Colors.red);
+    if (tmp_fd == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_READ}", cl: Colors.red);
 
-    front_desks = (tmp.data as List<dynamic>? ?? []).map<Front_Desk>((e) => Front_Desk.fromJson(e)).toList();
+    front_desks = (tmp_fd.data as List<dynamic>? ?? []).map<Front_Desk>((e) => Front_Desk.fromJson(e)).toList();
+    // pprint(front_desks);
 
     update_grid();
 
@@ -103,43 +81,49 @@ class _Main_State extends State<Main_> {
           cells: {
             for (var c in list_column) //
               c: (() {
+                if (c == "_id") //
+                  return PlutoCell(value: fd.id ?? "");
                 if (c == "index") //
                   return PlutoCell(value: i + 1);
                 if (c == "room") //
                   return PlutoCell(value: fd.room_id?.number ?? "");
-                if (c == "check_in_number") //
+
+                if (c == "guest_name") //
+                  return PlutoCell(value: fd.guest_id?.full_name ?? "");
+                if (c == "guest_phone") //
+                  return PlutoCell(value: fd.guest_id?.phone_number ?? "");
+
+                if (c == "check_in_people") //
                   return PlutoCell(value: fd.check_in_id?.number ?? 0);
 
                 if (c == "check_in_at") //
-                  return PlutoCell(value: fd.check_in_id?.created_at ?? 0);
+                  return PlutoCell(value: fd.check_in_id?.created_at);
 
                 if (c == "check_in_duration") {
                   DateTime? in_at = fd.check_in_id?.created_at;
+                  DateTime? out_at = fd.check_out_id?.created_at;
                   if (in_at == null) return PlutoCell(value: 0);
-                  return PlutoCell(value: stay_end_of(fd, in_at).difference(in_at).inMinutes);
-                }
-
-                if (c == "room_price") {
-                  //   DateTime? in_at = fd.check_in_id?.created_at;
-                  //   int minutes = in_at == null ? 0 : (fd.check_out_id?.created_at ?? DateTime.now()).difference(in_at).inMinutes;
-                  //   if (fd.room_id?.price_per_3h == null && fd.room_id?.price_per_day == null) return PlutoCell(value: fd.room_pay_id?.price ?? 0);
-                  //   return PlutoCell(
-                  //     value: room_price_of(minutes: minutes, price_3h: fd.room_id?.price_per_3h, price_day: fd.room_id?.price_per_day),
-                  //   );
-                  return PlutoCell(value: fd.room_pay_id?.price ?? 0);
+                  if (out_at == null) return PlutoCell(value: DateTime.now().difference(in_at).inMinutes);
+                  if (out_at != null) return PlutoCell(value: out_at.difference(in_at).inMinutes);
                 }
 
                 if (c == "check_out_at") //
-                  return PlutoCell(value: fd.check_out_id?.created_at ?? 0);
-                if (c == "clean_at") //
-                  return PlutoCell(value: fd.clean_id?.created_at ?? 0);
+                  return PlutoCell(value: fd.check_out_id?.created_at);
+                // if (c == "clean_at") //
+                //   return PlutoCell(value: fd.clean_id?.created_at);
+
+                if (c == "room_price") return PlutoCell(value: fd.room_pay_id?.price ?? 0);
+                if (c == "room_cash") //
+                  return PlutoCell(value: fd.room_pay_id?.cash ?? 0);
+                if (c == "room_bank") //
+                  return PlutoCell(value: fd.room_pay_id?.bank ?? 0);
 
                 if (c == "check_in_by") //
                   return PlutoCell(value: fd.check_in_id?.created_by?.full_name ?? "");
                 if (c == "check_out_by") //
                   return PlutoCell(value: fd.check_out_id?.created_by?.full_name ?? "");
-                if (c == "clean_by") //
-                  return PlutoCell(value: fd.clean_id?.created_by?.full_name ?? "");
+                // if (c == "clean_by") //
+                //   return PlutoCell(value: fd.clean_id?.created_by?.full_name ?? "");
 
                 return PlutoCell(value: "");
               })(),
@@ -167,7 +151,130 @@ class _Main_State extends State<Main_> {
   }
 
   void on_changed(PlutoGridOnChangedEvent e) async {
-    pprint("onChanged: ${e.row.cells["index"]?.value} | ${e.column.field} | ${e.value}");
+    // todo: sync to server, don't reinit.
+    pprint("Old: ${e.oldValue} | New: ${e.value} | Row: ${e.row.cells["_id"]?.value} | Column: ${e.column.field}");
+    // pprint("onChanged: ${e.row.cells["_id"]?.value} | ${e.column.field} | ${e.value}");
+
+    if (e.column.field == "guest_name") {
+      String? guest_id = front_desks.where((fd) => fd.id == e.row.cells["_id"]?.value).firstOrNull?.guest_id?.id;
+      if (guest_id == null) {
+        dynamic tmp_g = await dio.post(
+          endpoint.GUEST_CREATE,
+          data: {
+            Guest.FULL_NAME: e.value, //
+          },
+        );
+        await dio.post(
+          endpoint.FRONT_DESK_UPDATE,
+          data: {
+            Front_Desk.ID: e.row.cells["_id"]?.value, //
+            Front_Desk.GUEST_ID: tmp_g.data[0][Guest.ID], //
+          },
+        );
+      } else {
+        await dio.post(
+          endpoint.GUEST_UPDATE,
+          data: {
+            Guest.ID: guest_id, //
+            Guest.FULL_NAME: e.value, //
+          },
+        );
+      }
+    }
+
+    if (e.column.field == "guest_phone") {
+      String? guest_id = front_desks.where((fd) => fd.id == e.row.cells["_id"]?.value).firstOrNull?.guest_id?.id;
+      if (guest_id == null) {
+        dynamic tmp_g = await dio.post(
+          endpoint.GUEST_CREATE,
+          data: {
+            Guest.PHONE_NUMBER: e.value, //
+          },
+        );
+        await dio.post(
+          endpoint.FRONT_DESK_UPDATE,
+          data: {
+            Front_Desk.ID: e.row.cells["_id"]?.value, //
+            Front_Desk.GUEST_ID: tmp_g.data[0][Guest.ID], //
+          },
+        );
+      } else {
+        await dio.post(
+          endpoint.GUEST_UPDATE,
+          data: {
+            Guest.ID: guest_id, //
+            Guest.PHONE_NUMBER: e.value, //
+          },
+        );
+      }
+    }
+
+    if (e.column.field == "check_in_people") {
+      String check_in_id = front_desks.where((fd) => fd.id == e.row.cells["_id"]?.value).firstOrNull?.check_in_id?.id ?? "";
+      await dio.post(
+        endpoint.CHECK_IN_UPDATE,
+        data: {
+          Check_In.ID: check_in_id, //
+          Check_In.NUMBER: e.value, //
+        },
+      );
+    }
+
+    if (e.column.field == "room_price") {
+      String room_pay_id = front_desks.where((fd) => fd.id == e.row.cells["_id"]?.value).firstOrNull?.room_pay_id?.id ?? "";
+      await dio.post(
+        endpoint.ROOM_PAY_UPDATE,
+        data: {
+          Room_Pay.ID: room_pay_id, //
+          Room_Pay.PRICE: e.value, //
+        },
+      );
+    }
+
+    if (e.column.field == "room_cash") {
+      String room_pay_id = front_desks.where((fd) => fd.id == e.row.cells["_id"]?.value).firstOrNull?.room_pay_id?.id ?? "";
+      await dio.post(
+        endpoint.ROOM_PAY_UPDATE,
+        data: {
+          Room_Pay.ID: room_pay_id, //
+          Room_Pay.CASH: e.value, //
+        },
+      );
+    }
+
+    if (e.column.field == "room_bank") {
+      String room_pay_id = front_desks.where((fd) => fd.id == e.row.cells["_id"]?.value).firstOrNull?.room_pay_id?.id ?? "";
+      await dio.post(
+        endpoint.ROOM_PAY_UPDATE,
+        data: {
+          Room_Pay.ID: room_pay_id, //
+          Room_Pay.BANK: e.value, //
+        },
+      );
+    }
+
+    // if (e.column.field == "check_in_at") {
+    //   String check_in_id = front_desks.where((fd) => fd.id == e.row.cells["_id"]?.value).firstOrNull?.check_in_id?.id ?? "";
+    //   await dio.post(
+    //     endpoint.CHECK_IN_UPDATE,
+    //     data: {
+    //       Check_In.ID: check_in_id, //
+    //       Check_In.CREATED_AT: e.value, //
+    //     },
+    //   );
+    // }
+
+    //     String id =
+
+    //   DateTime? result = await dialog_datetime(context, initial: parse_datetime(e.value));
+    //   pprint(result);
+    // }
+
+    // change room_pay
+    // change check_out
+    // change clean
+
+    init();
   }
 
   void on_check_in() {
@@ -333,7 +440,7 @@ class _Main_State extends State<Main_> {
               // pprint(r[Room.NUMBER]);
               // pprint(r[Room.PRICE_PER_DAY]);
               // pprint(r[Room.PRICE_PER_3H]);
-              tmp = await nav_push(
+              dynamic tmp_cin = await nav_push(
                 context,
                 check_in.Main_(
                   room_id: r[Room.ID], //
@@ -342,7 +449,7 @@ class _Main_State extends State<Main_> {
                   //   price_per_3h: r[Room.PRICE_PER_3H], //
                 ),
               );
-              if (tmp == null) return;
+              if (tmp_cin == null) return;
               init();
             },
           ),
@@ -360,7 +467,7 @@ class _Main_State extends State<Main_> {
               // pprint(r[Room.ID]);
               // pprint(r[Room.NUMBER]);
 
-              tmp = await nav_push(
+              dynamic tmp_cout = await nav_push(
                 context,
                 check_out.Main_(
                   front_desk_id: r[Room.FRONT_DESK_ID], //
@@ -368,7 +475,7 @@ class _Main_State extends State<Main_> {
                   room_number: r[Room.NUMBER], //
                 ),
               );
-              if (tmp == null) return;
+              if (tmp_cout == null) return;
               init();
             },
           ),
@@ -386,7 +493,7 @@ class _Main_State extends State<Main_> {
               // pprint(r[Room.ID]);
               // pprint(r[Room.NUMBER]);
 
-              tmp = await nav_push(
+              dynamic tmp_cl = await nav_push(
                 context,
                 clean.Main_(
                   front_desk_id: r[Room.FRONT_DESK_ID], //
@@ -394,7 +501,7 @@ class _Main_State extends State<Main_> {
                   room_number: r[Room.NUMBER], //
                 ),
               );
-              if (tmp == null) return;
+              if (tmp_cl == null) return;
               init();
             },
           ),
@@ -410,12 +517,13 @@ class _Main_State extends State<Main_> {
             title: "ID",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
-            hide: true, //
+            // hide: !kDebugMode,
+            hide: true,
           ),
 
           PlutoColumn(
             field: "index", //
-            title: "No.",
+            title: "ល.រ.",
             type: PlutoColumnType.number(),
             enableEditingMode: false,
             width: 60,
@@ -455,7 +563,7 @@ class _Main_State extends State<Main_> {
 
           PlutoColumn(
             field: "room", //
-            title: "Room",
+            title: "បន្ទប់",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
             width: 80,
@@ -472,7 +580,7 @@ class _Main_State extends State<Main_> {
 
           PlutoColumn(
             field: "guest_name", //
-            title: "Name",
+            title: "ឈ្មោះ",
             type: PlutoColumnType.text(),
             enableEditingMode: true,
             width: WIDTH,
@@ -496,7 +604,7 @@ class _Main_State extends State<Main_> {
 
           PlutoColumn(
             field: "guest_phone", //
-            title: "Phone",
+            title: "លេខទូរស័ព្ទ",
             type: PlutoColumnType.text(),
             // enableEditingMode: false,
             width: WIDTH,
@@ -530,10 +638,10 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "check_in_number", //
-            title: "People",
+            field: "check_in_people", //
+            title: "ចំនួនភ្ញៀវ",
             type: PlutoColumnType.number(negative: false, format: "#,###"),
-            width: 80,
+            width: 90,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.centerRight, //
@@ -563,9 +671,9 @@ class _Main_State extends State<Main_> {
           //   ),
           PlutoColumn(
             field: "check_in_at", //
-            title: "Check-In At",
-            enableEditingMode: false,
+            title: "ពេលចូល",
             type: PlutoColumnType.text(),
+            enableEditingMode: false,
             width: 160,
             renderer: (rc) {
               return Row(
@@ -580,15 +688,32 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  IconButton(
-                    tooltip: "Update Check-In", //
-                    icon: Icon(Icons.calendar_month_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      print("Update Check-In: ${rc.row.cells["index"]?.value}");
-                    }, //
-                  ),
+                  if (rc.cell.value != null)
+                    IconButton(
+                      tooltip: "Update Check-In", //
+                      icon: Icon(Icons.calendar_month_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () async {
+                        // get check_in_id from front_desks
+                        pprint(rc.row.cells["_id"]?.value);
+                        String? check_in_id = front_desks.where((fd) => fd.id == rc.row.cells["_id"]?.value).firstOrNull?.check_in_id?.id;
+                        if (check_in_id == null) return snackbar(ct: context, ms: "Check-In ID not found.", cl: Colors.red);
+                        DateTime? result = await dialog_datetime(context, initial: parse_datetime(rc.cell.value));
+                        pprint(result);
+                        if (result == null) return;
+                        await dio.post(
+                          endpoint.CHECK_IN_UPDATE,
+                          data: {
+                            Check_In.ID: check_in_id, //
+                            Check_In.CREATED_AT: result, //
+                          },
+                        );
+                        init();
+                        // DateTime? result = await dialog_datetime(context, initial: parse_datetime(rc.cell.value));
+                        // pprint(result);
+                      }, //
+                    ),
                 ],
               );
             },
@@ -597,9 +722,9 @@ class _Main_State extends State<Main_> {
           // auto calculate
           PlutoColumn(
             field: "check_in_duration", //
-            title: "Duration",
+            title: "រយៈពេល",
             type: PlutoColumnType.number(negative: false, format: "#,###"),
-            // enableEditingMode: false,
+            enableEditingMode: false,
             width: 140,
             renderer: (rc) {
               int minutes = parse_int(rc.cell.value) ?? 0;
@@ -622,7 +747,7 @@ class _Main_State extends State<Main_> {
 
           PlutoColumn(
             field: "check_out_at", //
-            title: "Check-Out At",
+            title: "ពេលចេញ",
             enableEditingMode: false,
             type: PlutoColumnType.text(),
             width: 160,
@@ -639,56 +764,59 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  IconButton(
-                    tooltip: "Update Check-Out", //
-                    icon: Icon(Icons.calendar_month_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      print("Update Check-Out: ${rc.row.cells["index"]?.value}");
-                    }, //
-                  ),
-                ],
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "clean_at", //
-            title: "Clean At",
-            enableEditingMode: false,
-            type: PlutoColumnType.text(),
-            width: 160,
-            renderer: (rc) {
-              return Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(
-                        format_datetime(rc.cell.value), //
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                  if (rc.cell.value != null)
+                    IconButton(
+                      tooltip: "Update Check-Out", //
+                      icon: Icon(Icons.calendar_month_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () async {
+                        DateTime? result = await dialog_datetime(context, initial: parse_datetime(rc.cell.value));
+                        pprint(result);
+                      }, //
                     ),
-                  ),
-
-                  IconButton(
-                    tooltip: "Update Clean", //
-                    icon: Icon(Icons.calendar_month_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      print("Update Clean: ${rc.row.cells["index"]?.value}");
-                    }, //
-                  ),
                 ],
               );
             },
           ),
 
+          //   PlutoColumn(
+          //     field: "clean_at", //
+          //     title: "Clean At",
+          //     enableEditingMode: false,
+          //     type: PlutoColumnType.text(),
+          //     width: 160,
+          //     renderer: (rc) {
+          //       return Row(
+          //         children: [
+          //           Expanded(
+          //             child: Align(
+          //               alignment: Alignment.center, //
+          //               child: Text(
+          //                 format_datetime(rc.cell.value), //
+          //                 overflow: TextOverflow.ellipsis,
+          //               ),
+          //             ),
+          //           ),
+
+          //           if (rc.cell.value != null)
+          //             IconButton(
+          //               tooltip: "Update Clean", //
+          //               icon: Icon(Icons.calendar_month_outlined),
+          //               padding: EdgeInsets.all(0),
+          //               constraints: BoxConstraints(),
+          //               onPressed: () async {
+          //                 DateTime? result = await dialog_datetime(context, initial: rc.cell.value);
+          //                 pprint(result);
+          //               }, //
+          //             ),
+          //         ],
+          //       );
+          //     },
+          //   ),
           PlutoColumn(
             field: "room_price", //
-            title: "Price",
+            title: "តម្លៃ",
             type: PlutoColumnType.number(
               negative: false, //
               format: "#,##0.00",
@@ -731,7 +859,7 @@ class _Main_State extends State<Main_> {
 
           PlutoColumn(
             field: "room_cash", //
-            title: "Cash",
+            title: "លុយ",
             type: PlutoColumnType.number(
               //   negative: false, //
               format: "#,##0.00",
@@ -777,7 +905,7 @@ class _Main_State extends State<Main_> {
 
           PlutoColumn(
             field: "room_bank", //
-            title: "Bank",
+            title: "ធនាគារ",
             type: PlutoColumnType.number(
               //   negative: false, //
               format: "#,##0.00",
@@ -823,7 +951,7 @@ class _Main_State extends State<Main_> {
 
           PlutoColumn(
             field: "room_paid", //
-            title: "Paid",
+            title: "បានបង់",
             type: PlutoColumnType.number(
               negative: false, //
               format: "#,##0.00",
@@ -846,7 +974,7 @@ class _Main_State extends State<Main_> {
 
           PlutoColumn(
             field: "room_note", //
-            title: "Note",
+            title: "ចំណាំ",
             type: PlutoColumnType.text(),
             // enableEditingMode: false,
             width: 120,
@@ -1318,7 +1446,7 @@ class _Main_State extends State<Main_> {
           //   ),
           PlutoColumn(
             field: "check_in_by", //
-            title: "Check-in By",
+            title: "ឲចូលដោយ",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
             width: 140,
@@ -1334,7 +1462,7 @@ class _Main_State extends State<Main_> {
           ),
           PlutoColumn(
             field: "check_out_by", //
-            title: "Check-Out By",
+            title: "ឲចេញដោយ",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
             width: 140,
@@ -1349,27 +1477,27 @@ class _Main_State extends State<Main_> {
             },
           ),
 
-          PlutoColumn(
-            field: "clean_by", //
-            title: "Clean By",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 140,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerLeft, //
-                child: Text(
-                  format_string(rc.cell.value), //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
+          //   PlutoColumn(
+          //     field: "clean_by", //
+          //     title: "Clean By",
+          //     type: PlutoColumnType.text(),
+          //     enableEditingMode: false,
+          //     width: 140,
+          //     renderer: (rc) {
+          //       return Align(
+          //         alignment: Alignment.centerLeft, //
+          //         child: Text(
+          //           format_string(rc.cell.value), //
+          //           overflow: TextOverflow.ellipsis,
+          //         ),
+          //       );
+          //     },
+          //   ),
 
           // BUTTON RECEIPT
           PlutoColumn(
             field: "other", //
-            title: "Others",
+            title: "ផ្សេងៗ",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
             width: 80,
@@ -1424,15 +1552,15 @@ class _Main_State extends State<Main_> {
             fields: ["room"],
           ),
           PlutoColumnGroup(
-            title: "Guest", //
+            title: "ភ្ងៀវ", //
             fields: ["guest_name", "guest_phone", "guest_update"],
           ),
           PlutoColumnGroup(
-            title: "Stay", //
-            fields: ["check_in_number", "check_in_duration", "check_in_at", "check_out_at", "clean_at"],
+            title: "ការស្នាក់នៅ", //
+            fields: ["check_in_people", "check_in_duration", "check_in_at", "check_out_at", "clean_at"],
           ),
           PlutoColumnGroup(
-            title: "Room Payment", //
+            title: "ការបង់ប្រាក់ បន្ទប់", //
             fields: ["room_price", "room_cash", "room_bank", "room_paid", "room_note"],
           ),
           PlutoColumnGroup(
@@ -1444,7 +1572,7 @@ class _Main_State extends State<Main_> {
             fields: ["penalty_item", "penalty_price", "penalty_cash", "penalty_bank", "penalty_paid", "penalty_note"],
           ),
           PlutoColumnGroup(
-            title: "Person In Charge", //
+            title: "ការត្រួតពិនិត្យ", //
             fields: ["check_in_by", "check_out_by", "clean_by"],
           ),
           PlutoColumnGroup(
@@ -1474,68 +1602,68 @@ class _Main_State extends State<Main_> {
 
       //
       footer: [
-        //
-        Text(
-          "Total Revenue: xxx\$", //
-          style: TextStyle(
-            fontSize: 16, //
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        // //
+        // Text(
+        //   "Total Revenue: xxx\$", //
+        //   style: TextStyle(
+        //     fontSize: 16, //
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        // ),
 
-        SizedBox(width: 8), //
-        //
-        Text(
-          "Total Income: xxx\$", //
-          style: TextStyle(
-            fontSize: 16, //
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        // SizedBox(width: 8), //
+        // //
+        // Text(
+        //   "Total Income: xxx\$", //
+        //   style: TextStyle(
+        //     fontSize: 16, //
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        // ),
 
-        // const Spacer(),
+        // // const Spacer(),
 
-        // * ប៊ូតុងបញ្ចេញជា PDF
-        Tooltip(
-          message: "Export as PDF",
-          child: InkWell(
-            onTap: () {
-              snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
-            },
-            child: Container(
-              width: 32,
-              height: 32,
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                "assets/icon/pdf.svg", //
-                width: 30,
-                height: 30,
-                colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
-              ),
-            ),
-          ),
-        ),
+        // // * ប៊ូតុងបញ្ចេញជា PDF
+        // Tooltip(
+        //   message: "Export as PDF",
+        //   child: InkWell(
+        //     onTap: () {
+        //       snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
+        //     },
+        //     child: Container(
+        //       width: 32,
+        //       height: 32,
+        //       alignment: Alignment.center,
+        //       child: SvgPicture.asset(
+        //         "assets/icon/pdf.svg", //
+        //         width: 30,
+        //         height: 30,
+        //         colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
+        //       ),
+        //     ),
+        //   ),
+        // ),
 
-        // * ប៊ូតុងបញ្ចេញជា Excel
-        Tooltip(
-          message: "Export as Excel",
-          child: InkWell(
-            onTap: () {
-              snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
-            },
-            child: Container(
-              width: 32,
-              height: 32,
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                "assets/icon/excel.svg", //
-                width: 30,
-                height: 30,
-                colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
-              ),
-            ),
-          ),
-        ),
+        // // * ប៊ូតុងបញ្ចេញជា Excel
+        // Tooltip(
+        //   message: "Export as Excel",
+        //   child: InkWell(
+        //     onTap: () {
+        //       snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
+        //     },
+        //     child: Container(
+        //       width: 32,
+        //       height: 32,
+        //       alignment: Alignment.center,
+        //       child: SvgPicture.asset(
+        //         "assets/icon/excel.svg", //
+        //         width: 30,
+        //         height: 30,
+        //         colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
+        //       ),
+        //     ),
+        //   ),
+        // ),
         IconButton(
           tooltip: "Previous", //
           icon: Icon(Icons.navigate_before, size: 32), //
@@ -1583,22 +1711,13 @@ class Main_ extends StatefulWidget {
 }
 // * ########## BLOCK ARGUMENTS OF MAIN END ##########
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  glob.init();
-  lang.init();
+void main() {
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: glob),
-        ChangeNotifierProvider.value(value: lang),
-      ],
-      child: MaterialApp(
-        home: const Main_(), //
-        theme: theme_data, //
-        title: "Development", //
-        debugShowCheckedModeBanner: false, //
-      ),
+    MaterialApp(
+      home: const Main_(), //
+      theme: theme_data, //
+      title: "Development", //
+      debugShowCheckedModeBanner: false, //
     ),
   );
 }

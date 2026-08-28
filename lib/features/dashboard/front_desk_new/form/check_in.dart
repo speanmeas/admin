@@ -8,7 +8,7 @@ import "package:speanmeas/core/widget/select/select_dynamic.dart";
 class _Main_State extends State<Main_> {
   bool is_load = false;
 
-  int? stay_number;
+  int? stay_number = 1;
   String? stay_note;
 
   @override
@@ -19,33 +19,17 @@ class _Main_State extends State<Main_> {
 
   // * ផ្ទុកព័ត៌មានបន្ទប់ពី server
   void init() async {
-    stay_number = 1;
-
-    setState(() {});
-  }
-
-  // * ពិនិត្យថាអាច check in បានឬអត់
-  bool get can_go {
-    // print(stay_number);
-    // print(stay_day);
-    // print(stay_hour);
-    // print(room_price);
-
-    if ((stay_number ?? 0) <= 0) return false;
-    // if ((stay_day ?? 0) <= 0 && (stay_hour ?? 0) <= 0) return false;
-
-    return true;
+    //
   }
 
   // * អនុវត្តការ check in ភ្ញៀវ
   void on_check_in() async {
     // pprint(room_price);
 
-    if (!can_go) return snackbar(ct: context, ms: "Please fill the form.", cl: Colors.red);
     if (is_load) return snackbar(ct: context, ms: "Please wait.", cl: Colors.red);
 
     // create stay
-    dynamic tmp_stay = await dio.post(
+    dynamic tmp_cin = await dio.post(
       endpoint.CHECK_IN_CREATE,
       data: {
         Check_In.NUMBER: stay_number, //
@@ -54,7 +38,7 @@ class _Main_State extends State<Main_> {
     );
 
     //  create room pay
-    dynamic tmp_room_pay = await dio.post(
+    dynamic tmp_rp = await dio.post(
       endpoint.ROOM_PAY_CREATE,
       data: {
         Room_Pay.PRICE: widget.price_per_day, //
@@ -62,12 +46,12 @@ class _Main_State extends State<Main_> {
     );
 
     // create front desk
-    dynamic tmp_front_desk = await dio.post(
+    dynamic tmp_fd = await dio.post(
       endpoint.FRONT_DESK_CREATE,
       data: {
         Front_Desk.ROOM_ID: widget.room_id, //
-        Front_Desk.CHECK_IN_ID: tmp_stay.data[0][Check_In.ID], //
-        Front_Desk.ROOM_PAY_ID: tmp_room_pay.data[0][Room_Pay.ID], //
+        Front_Desk.CHECK_IN_ID: tmp_cin.data[0][Check_In.ID], //
+        Front_Desk.ROOM_PAY_ID: tmp_rp.data[0][Room_Pay.ID], //
       },
     );
     // update
@@ -78,7 +62,7 @@ class _Main_State extends State<Main_> {
       data: {
         Room.ID: widget.room_id, //
         Room.STATUS: "Occupied", //
-        Room.FRONT_DESK_ID: tmp_front_desk.data[0][Front_Desk.ID], //
+        Room.FRONT_DESK_ID: tmp_fd.data[0][Front_Desk.ID], //
       },
     );
 
