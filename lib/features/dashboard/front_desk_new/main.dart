@@ -14,9 +14,9 @@ import "form/clean.dart" as clean;
 class _Main_State extends State<Main_> {
   // * ########## BLOCK VARIABLES ##########
   dynamic tmp;
-  int reload = 0;
+  int reload = 0; // this variable is used to reload the PlutoGrid when the data changes
+  bool is_load = false; // this variable is used to guard the fast clicking of the buttons, to prevent multiple requests to the server
   double WIDTH = 120;
-  bool is_load = true;
 
   late List<String> list_column;
   late PlutoGridStateManager state_manager;
@@ -24,25 +24,110 @@ class _Main_State extends State<Main_> {
   DateTime dt = DateTime.now();
 
   List<dynamic> rooms = [];
-  List<Front_Desk> data = [];
+  List<Front_Desk> front_desks = [];
   // * ########## BLOCK VARIABLES END ##########
 
   // * ########## BLOCK METHODS ##########
-
   @override
   void initState() {
     super.initState();
-    init();
   }
 
   void init() async {
-    setState(() => is_load = true);
     tmp = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
-    setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_READ}", cl: Colors.red);
+
     rooms = tmp.data as List<dynamic>? ?? [];
 
-    // pprint(rooms);
+    tmp = await dio.post(
+      endpoint.FRONT_DESK_READ,
+      data: {
+        "key": Front_Desk.CREATED_AT, //
+        "order": 1, //
+        "link": true, //
+      },
+    );
+    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_READ}", cl: Colors.red);
+
+    front_desks = (tmp.data as List<dynamic>? ?? []).map<Front_Desk>((e) => Front_Desk.fromJson(e)).toList();
+
+    state_manager.removeAllRows();
+    state_manager.appendRows([
+      for (var (i, fd) in front_desks.indexed)
+        PlutoRow(
+          cells: {
+            for (var c in list_column) //
+              c: (() {
+                if (c == "index") //
+                  return PlutoCell(value: i + 1);
+                if (c == "room") //
+                  return PlutoCell(value: fd.room_id?.number ?? "");
+                if (c == "check_in_number") //
+                  return PlutoCell(value: fd.check_in_id?.number ?? 0);
+                if (c == "check_in_day") //
+                  return PlutoCell(value: fd.check_in_id?.day ?? 0);
+                if (c == "check_in_hour") //
+                  return PlutoCell(value: fd.check_in_id?.hour ?? 0);
+
+                if (c == "room_price") //
+                  return PlutoCell(value: fd.room_pay_id?.price ?? 0);
+
+                if (c == "check_in_at") //
+                  return PlutoCell(value: fd.check_in_id?.created_at ?? 0);
+                if (c == "check_out_at") //
+                  return PlutoCell(value: fd.check_out_id?.created_at ?? 0);
+                if (c == "clean_at") //
+                  return PlutoCell(value: fd.clean_id?.created_at ?? 0);
+
+                if (c == "check_in_by") //
+                  return PlutoCell(value: fd.check_in_id?.created_by?.full_name ?? "");
+                if (c == "check_out_by") //
+                  return PlutoCell(value: fd.check_out_id?.created_by?.full_name ?? "");
+                if (c == "clean_by") //
+                  return PlutoCell(value: fd.clean_id?.created_by?.full_name ?? "");
+                // if (c == "guest_name") //
+                //   return PlutoCell(value: gen_text());
+                // if (c == "guest_phone") //
+                //   return PlutoCell(value: (1000000000 + gen_number() * 9000000000).toInt().toString());
+                // if (c == "stay") //
+                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                // if (c == "check_in_at") //
+                //   return PlutoCell(value: gen_datetime());
+                // if (c == "check_out_at") //
+                //   return PlutoCell(value: gen_datetime());
+                // if (c == "room_price") //
+                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                // if (c == "room_cash") //
+                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                // if (c == "room_bank") //
+                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                // if (c == "mini_bar_price") //
+                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                // if (c == "mini_bar_cash") //
+                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                // if (c == "mini_bar_bank") //
+                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                // if (c == "penalty_price") //
+                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                // if (c == "penalty_cash") //
+                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                // if (c == "penalty_bank") //
+                //   return PlutoCell(value: (gen_number() * 100).toInt().toString());
+                // if (c == "check_in_by") //
+                //   return PlutoCell(value: gen_text());
+                // if (c == "check_out_by") //
+                //   return PlutoCell(value: gen_text());
+                // if (c == "note_1") //
+                //   return PlutoCell(value: gen_text());
+                // if (c == "note_2") //
+                //   return PlutoCell(value: gen_text());
+
+                return PlutoCell(value: "");
+              })(),
+          },
+        ),
+    ]);
+
     setState(() {});
   }
 
@@ -53,74 +138,29 @@ class _Main_State extends State<Main_> {
   }
 
   void on_loaded(PlutoGridOnLoadedEvent e) async {
-    // setState(() => is_load = true);
     state_manager = e.stateManager;
+    state_manager.addListener(() => setState(() {}));
     state_manager.columnFooterHeight = 32; // * កម្ពស់ជួរសរុប
-
-    // show filter
     // state_manager.setShowColumnFilter(true);
-
     list_column = state_manager.refColumns.map((c) => c.field).toList();
 
-    state_manager.removeAllRows();
-    state_manager.appendRows([
-      for (var i = 0; i < 10; i++)
-        PlutoRow(
-          cells: {
-            for (var c in list_column) //
-              c: (() {
-                if (c == "index") //
-                  return PlutoCell(value: i + 1);
-                if (c == "room") //
-                  return PlutoCell(value: (100 + gen_number() * 900).toInt().toString());
-                if (c == "guest_name") //
-                  return PlutoCell(value: gen_text());
-                if (c == "guest_phone") //
-                  return PlutoCell(value: (1000000000 + gen_number() * 9000000000).toInt().toString());
-                if (c == "stay") //
-                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                if (c == "check_in") //
-                  return PlutoCell(value: gen_datetime());
-                if (c == "check_out") //
-                  return PlutoCell(value: gen_datetime());
-                if (c == "room_price") //
-                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                if (c == "room_cash") //
-                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                if (c == "room_bank") //
-                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                if (c == "mini_bar_price") //
-                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                if (c == "mini_bar_cash") //
-                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                if (c == "mini_bar_bank") //
-                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                if (c == "penalty_price") //
-                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                if (c == "penalty_cash") //
-                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                if (c == "penalty_bank") //
-                  return PlutoCell(value: (gen_number() * 100).toInt().toString());
-                if (c == "check_in_by") //
-                  return PlutoCell(value: gen_text());
-                if (c == "check_out_by") //
-                  return PlutoCell(value: gen_text());
-                if (c == "note_1") //
-                  return PlutoCell(value: gen_text());
-                if (c == "note_2") //
-                  return PlutoCell(value: gen_text());
-
-                return PlutoCell(value: "");
-              })(),
-          },
-        ),
-    ]);
-
-    // setState(() => is_load = false);
+    init();
   }
 
   void on_changed(PlutoGridOnChangedEvent e) async {
     pprint("onChanged: ${e.row.cells["index"]?.value} | ${e.column.field} | ${e.value}");
+  }
+
+  void on_check_in() {
+    // controller
+  }
+
+  void on_check_out() {
+    // controller
+  }
+
+  void on_clean() {
+    // controller
   }
 
   // * ########## BLOCK METHODS END ##########
@@ -255,6 +295,7 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     return _layout(
+      //
       check_in: [
         for (var r in rooms.where((r) => r[Room.STATUS] == "Available"))
           OutlinedButton.icon(
@@ -280,6 +321,8 @@ class _Main_State extends State<Main_> {
             },
           ),
       ],
+
+      //
       check_out: [
         for (var r in rooms.where((r) => r[Room.STATUS] == "Occupied"))
           OutlinedButton.icon(
@@ -287,47 +330,25 @@ class _Main_State extends State<Main_> {
             label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
             onPressed: () async {
-              // pprint("Check-Out: ${r[Room.ID]} | ${r[Room.NUMBER]}");
-              // final v = nav_push(context, )
-              // if (v == null) return;
-              // pprint("Confirm: $v");
+              // pprint(r[Room.FRONT_DESK_ID]);
+              // pprint(r[Room.ID]);
+              // pprint(r[Room.NUMBER]);
 
-              // setState(() => is_load = true);
-              // tmp = await dio.post(
-              //   endpoint.CHECK_OUT_CREATE,
-              //   data: {
-              //     Check_Out.NOTE: "Blah blah", //
-              //   },
-              // );
-              // setState(() => is_load = false);
-
-              // setState(() => is_load = true);
-              // await dio.post(
-              //   endpoint.FRONT_DESK_UPDATE,
-              //   data: {
-              //     Front_Desk.ID: r[Room.FRONT_DESK_ID], //
-              //     Front_Desk.CHECK_OUT_ID: tmp.data[0][Check_Out.ID], //
-              //   },
-              // );
-              // setState(() => is_load = false);
-
-              // setState(() => is_load = true);
-              // await dio.post(
-              //   endpoint.ROOM_UPDATE,
-              //   data: {
-              //     Room.ID: r[Room.ID], //
-              //     Room.STATUS: "Dirty", //
-              //     Room.FRONT_DESK_ID: r[Room.FRONT_DESK_ID], //
-              //   },
-              // );
-              // setState(() => is_load = false);
-
-              // init();
-
-              // setState(() => is_load = false);
+              tmp = await nav_push(
+                context,
+                check_out.Main_(
+                  front_desk_id: r[Room.FRONT_DESK_ID], //
+                  room_id: r[Room.ID], //
+                  room_number: r[Room.NUMBER], //
+                ),
+              );
+              if (tmp == null) return;
+              init();
             },
           ),
       ],
+
+      //
       clean: [
         for (var r in rooms.where((r) => r[Room.STATUS] == "Dirty"))
           OutlinedButton.icon(
@@ -335,49 +356,25 @@ class _Main_State extends State<Main_> {
             label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.grey),
             onPressed: () async {
-              // pprint("Clean: ${r[Room.ID]} | ${r[Room.NUMBER]}");
-              // final v = await check_in(
-              //   context: context, //
-              //   lead: "Room ${r[Room.NUMBER]} Clean?",
-              // );
-              // if (v == null) return;
-              // pprint("Confirm: $v");
-              // setState(() => is_load = true);
-              // tmp = await dio.post(
-              //   endpoint.CLEAN_CREATE,
-              //   data: {
-              //     Clean.NOTE: "Blah blah", //
-              //   },
-              // );
-              // setState(() => is_load = false);
+              // pprint(r[Room.FRONT_DESK_ID]);
+              // pprint(r[Room.ID]);
+              // pprint(r[Room.NUMBER]);
 
-              // setState(() => is_load = true);
-              // await dio.post(
-              //   endpoint.FRONT_DESK_UPDATE,
-              //   data: {
-              //     Front_Desk.ID: r[Room.FRONT_DESK_ID], //
-              //     Front_Desk.CLEAN_ID: tmp.data[0][Clean.ID], //
-              //   },
-              // );
-              // setState(() => is_load = false);
-
-              // setState(() => is_load = true);
-              // await dio.post(
-              //   endpoint.ROOM_UPDATE,
-              //   data: {
-              //     Room.ID: r[Room.ID], //
-              //     Room.STATUS: "Available", //
-              //     Room.FRONT_DESK_ID: null,
-              //   },
-              // );
-              // setState(() => is_load = false);
-
-              // init();
-
-              // setState(() => is_load = false);
+              tmp = await nav_push(
+                context,
+                clean.Main_(
+                  front_desk_id: r[Room.FRONT_DESK_ID], //
+                  room_id: r[Room.ID], //
+                  room_number: r[Room.NUMBER], //
+                ),
+              );
+              if (tmp == null) return;
+              init();
             },
           ),
       ],
+
+      //
       body: PlutoGrid(
         key: ValueKey(reload), //
         rows: [], //
@@ -408,7 +405,7 @@ class _Main_State extends State<Main_> {
             footerRenderer: (rc) {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
-                format: "#,###.00", //
+                format: "#,##0.00", //
                 alignment: Alignment.centerRight,
                 padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
                 type: PlutoAggregateColumnType.count,
@@ -507,7 +504,7 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "stay_people", //
+            field: "check_in_number", //
             title: "People",
             type: PlutoColumnType.number(negative: false, format: "#,###"),
             width: 80,
@@ -523,7 +520,7 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "stay_day", //
+            field: "check_in_day", //
             title: "Days",
             type: PlutoColumnType.number(negative: false, format: "#,###"),
             // enableEditingMode: false,
@@ -540,7 +537,7 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "stay_hour", //
+            field: "check_in_hour", //
             title: "Hours",
             type: PlutoColumnType.number(negative: false, format: "#,###"),
             // enableEditingMode: false,
@@ -557,7 +554,7 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "check_in", //
+            field: "check_in_at", //
             title: "Check-In At",
             enableEditingMode: false,
             type: PlutoColumnType.text(),
@@ -590,7 +587,7 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "check_out", //
+            field: "check_out_at", //
             title: "Check-Out At",
             enableEditingMode: false,
             type: PlutoColumnType.text(),
@@ -623,11 +620,44 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
+            field: "clean_at", //
+            title: "Clean At",
+            enableEditingMode: false,
+            type: PlutoColumnType.text(),
+            width: 160,
+            renderer: (rc) {
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(
+                        format_datetime(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+
+                  IconButton(
+                    tooltip: "Update Clean", //
+                    icon: Icon(Icons.calendar_month_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("Update Clean: ${rc.row.cells["index"]?.value}");
+                    }, //
+                  ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
             field: "room_price", //
             title: "Price",
             type: PlutoColumnType.number(
               negative: false, //
-              format: "#,###.00",
+              format: "#,##0.00",
             ),
             // enableEditingMode: false,
             width: 80,
@@ -643,7 +673,7 @@ class _Main_State extends State<Main_> {
             footerRenderer: (rc) {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
-                format: "#,###.00", //
+                format: "#,##0.00", //
                 alignment: Alignment.centerRight,
                 padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
                 type: PlutoAggregateColumnType.sum,
@@ -670,7 +700,7 @@ class _Main_State extends State<Main_> {
             title: "Cash",
             type: PlutoColumnType.number(
               //   negative: false, //
-              format: "#,###.00",
+              format: "#,##0.00",
             ),
             // enableEditingMode: false,
             width: 80,
@@ -689,7 +719,7 @@ class _Main_State extends State<Main_> {
             footerRenderer: (rc) {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
-                format: "#,###.00", //
+                format: "#,##0.00", //
                 alignment: Alignment.centerRight,
                 padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
                 type: PlutoAggregateColumnType.sum,
@@ -716,7 +746,7 @@ class _Main_State extends State<Main_> {
             title: "Bank",
             type: PlutoColumnType.number(
               //   negative: false, //
-              format: "#,###.00",
+              format: "#,##0.00",
             ),
             // enableEditingMode: false,
             width: 80,
@@ -735,7 +765,7 @@ class _Main_State extends State<Main_> {
             footerRenderer: (rc) {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
-                format: "#,###.00", //
+                format: "#,##0.00", //
                 alignment: Alignment.centerRight,
                 padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
                 type: PlutoAggregateColumnType.sum,
@@ -762,7 +792,7 @@ class _Main_State extends State<Main_> {
             title: "Paid",
             type: PlutoColumnType.number(
               negative: false, //
-              format: "#,###.00",
+              format: "#,##0.00",
             ),
             enableEditingMode: false,
             width: 80,
@@ -852,7 +882,7 @@ class _Main_State extends State<Main_> {
             title: "Price",
             type: PlutoColumnType.number(
               negative: false, //
-              format: "#,###.00",
+              format: "#,##0.00",
             ),
             enableEditingMode: false,
             width: 80,
@@ -868,7 +898,7 @@ class _Main_State extends State<Main_> {
             footerRenderer: (rc) {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
-                format: "#,###.00", //
+                format: "#,##0.00", //
                 alignment: Alignment.centerRight,
                 padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
                 type: PlutoAggregateColumnType.sum,
@@ -895,7 +925,7 @@ class _Main_State extends State<Main_> {
             title: "Cash",
             type: PlutoColumnType.number(
               //   negative: false, //
-              format: "#,###.00",
+              format: "#,##0.00",
             ),
             // enableEditingMode: false,
             width: 80,
@@ -914,7 +944,7 @@ class _Main_State extends State<Main_> {
             footerRenderer: (rc) {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
-                format: "#,###.00", //
+                format: "#,##0.00", //
                 alignment: Alignment.centerRight,
                 padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
                 type: PlutoAggregateColumnType.sum,
@@ -941,7 +971,7 @@ class _Main_State extends State<Main_> {
             title: "Bank",
             type: PlutoColumnType.number(
               //   negative: false, //
-              format: "#,###.00",
+              format: "#,##0.00",
             ),
             // enableEditingMode: false,
             width: 80,
@@ -960,7 +990,7 @@ class _Main_State extends State<Main_> {
             footerRenderer: (rc) {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
-                format: "#,###.00", //
+                format: "#,##0.00", //
                 alignment: Alignment.centerRight,
                 padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
                 type: PlutoAggregateColumnType.sum,
@@ -987,7 +1017,7 @@ class _Main_State extends State<Main_> {
             title: "Paid",
             type: PlutoColumnType.number(
               negative: false, //
-              format: "#,###.00",
+              format: "#,##0.00",
             ),
             enableEditingMode: false,
             width: 80,
@@ -1067,7 +1097,7 @@ class _Main_State extends State<Main_> {
             title: "Price",
             type: PlutoColumnType.number(
               negative: false, //
-              format: "#,###.00",
+              format: "#,##0.00",
             ),
             enableEditingMode: false,
             width: 80,
@@ -1083,7 +1113,7 @@ class _Main_State extends State<Main_> {
             footerRenderer: (rc) {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
-                format: "#,###.00", //
+                format: "#,##0.00", //
                 alignment: Alignment.centerRight,
                 padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
                 type: PlutoAggregateColumnType.sum,
@@ -1110,7 +1140,7 @@ class _Main_State extends State<Main_> {
             title: "Cash",
             type: PlutoColumnType.number(
               //   negative: false, //
-              format: "#,###.00",
+              format: "#,##0.00",
             ),
             // enableEditingMode: false,
             width: 80,
@@ -1129,7 +1159,7 @@ class _Main_State extends State<Main_> {
             footerRenderer: (rc) {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
-                format: "#,###.00", //
+                format: "#,##0.00", //
                 alignment: Alignment.centerRight,
                 padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
                 type: PlutoAggregateColumnType.sum,
@@ -1156,7 +1186,7 @@ class _Main_State extends State<Main_> {
             title: "Bank",
             type: PlutoColumnType.number(
               //   negative: false, //
-              format: "#,###.00",
+              format: "#,##0.00",
             ),
             // enableEditingMode: false,
             width: 80,
@@ -1175,7 +1205,7 @@ class _Main_State extends State<Main_> {
             footerRenderer: (rc) {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
-                format: "#,###.00", //
+                format: "#,##0.00", //
                 alignment: Alignment.centerRight,
                 padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
                 type: PlutoAggregateColumnType.sum,
@@ -1202,7 +1232,7 @@ class _Main_State extends State<Main_> {
             title: "Paid",
             type: PlutoColumnType.number(
               negative: false, //
-              format: "#,###.00",
+              format: "#,##0.00",
             ),
             enableEditingMode: false,
             width: 80,
@@ -1349,7 +1379,7 @@ class _Main_State extends State<Main_> {
           ),
           PlutoColumnGroup(
             title: "Stay", //
-            fields: ["stay_people", "stay_day", "stay_hour", "check_in", "check_out"],
+            fields: ["check_in_number", "check_in_day", "check_in_hour", "check_in_at", "check_out_at", "clean_at"],
           ),
           PlutoColumnGroup(
             title: "Room Payment", //
@@ -1392,6 +1422,7 @@ class _Main_State extends State<Main_> {
         onChanged: on_changed,
       ),
 
+      //
       footer: [
         //
         Text(

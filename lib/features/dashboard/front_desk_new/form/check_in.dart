@@ -64,12 +64,12 @@ class _Main_State extends State<Main_> {
 
     // create stay
     dynamic tmp_stay = await dio.post(
-      endpoint.STAY_CREATE,
+      endpoint.CHECK_IN_CREATE,
       data: {
-        Stay.NUMBER: stay_number, //
-        Stay.DAY: stay_day, //
-        Stay.HOUR: stay_hour, //
-        Stay.NOTE: stay_note, //
+        Check_In.NUMBER: stay_number, //
+        Check_In.DAY: stay_day, //
+        Check_In.HOUR: stay_hour, //
+        Check_In.NOTE: stay_note, //
       },
     );
 
@@ -86,7 +86,7 @@ class _Main_State extends State<Main_> {
       endpoint.FRONT_DESK_CREATE,
       data: {
         Front_Desk.ROOM_ID: widget.room_id, //
-        Front_Desk.STAY_ID: tmp_stay.data[0][Stay.ID], //
+        Front_Desk.CHECK_IN_ID: tmp_stay.data[0][Check_In.ID], //
         Front_Desk.ROOM_PAY_ID: tmp_room_pay.data[0][Room_Pay.ID], //
       },
     );

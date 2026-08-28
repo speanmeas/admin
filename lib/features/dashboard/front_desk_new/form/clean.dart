@@ -22,7 +22,7 @@ class _Main_State extends State<Main_> {
   }
 
   // * អនុវត្តការ check in ភ្ញៀវ
-  void on_check_out() async {
+  void on_clean() async {
     if (is_load) return snackbar(ct: context, ms: "Please wait.", cl: Colors.red);
 
     dynamic tpm_clean = await dio.post(
@@ -36,7 +36,7 @@ class _Main_State extends State<Main_> {
       endpoint.FRONT_DESK_UPDATE,
       data: {
         Front_Desk.ID: widget.front_desk_id, //
-        Front_Desk.CHECK_OUT_ID: tpm_clean.data[0][Check_Out.ID], //
+        Front_Desk.CLEAN_ID: tpm_clean.data[0][Clean.ID], //
       },
     );
 
@@ -108,9 +108,9 @@ class _Main_State extends State<Main_> {
 
       // * ប៊ូតុងបញ្ជូន check in
       OutlinedButton.icon(
-        icon: Icon(Icons.logout_outlined), //
-        label: Text("Check Out"), //
-        onPressed: on_check_out,
+        icon: Icon(Icons.cleaning_services), //
+        label: Text("Clean"), //
+        onPressed: on_clean,
       ),
 
       SizedBox(height: height - 100),
