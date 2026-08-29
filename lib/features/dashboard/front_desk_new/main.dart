@@ -11,9 +11,12 @@ import "package:speanmeas/core/widget/dialog/dialog_datetime.dart";
 // import "package:speanmeas/core/widget/pick/pick_datetime.dart";
 // import "package:speanmeas/core/utility/gen_data.dart";
 
-import "form/check_in.dart" as check_in;
-import "form/check_out.dart" as check_out;
-import "form/clean.dart" as clean;
+// import "form/check_in.dart" as check_in;
+import "dialog/check_in.dart";
+import "dialog/check_out.dart";
+import "dialog/clean.dart";
+// import "form/check_out.dart" as check_out;
+// import "form/clean.dart" as clean;
 // import "dialog/check_in.dart";
 
 class _Main_State extends State<Main_> {
@@ -436,20 +439,13 @@ class _Main_State extends State<Main_> {
             label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
             onPressed: () async {
-              // pprint(r[Room.ID]);
-              // pprint(r[Room.NUMBER]);
-              // pprint(r[Room.PRICE_PER_DAY]);
-              // pprint(r[Room.PRICE_PER_3H]);
-              dynamic tmp_cin = await nav_push(
-                context,
-                check_in.Main_(
-                  room_id: r[Room.ID], //
-                  room_number: r[Room.NUMBER], //
-                  price_per_day: r[Room.PRICE_PER_DAY], //
-                  //   price_per_3h: r[Room.PRICE_PER_3H], //
-                ),
+              var v = await dialog_check_in(
+                context: context, //
+                lead: "Room ${r[Room.NUMBER]}", //
+                room_id: r[Room.ID], //
+                price_per_day: r[Room.PRICE_PER_DAY], //
               );
-              if (tmp_cin == null) return;
+              if (v == null) return;
               init();
             },
           ),
@@ -463,19 +459,15 @@ class _Main_State extends State<Main_> {
             label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
             onPressed: () async {
-              // pprint(r[Room.FRONT_DESK_ID]);
-              // pprint(r[Room.ID]);
-              // pprint(r[Room.NUMBER]);
-
-              dynamic tmp_cout = await nav_push(
-                context,
-                check_out.Main_(
-                  front_desk_id: r[Room.FRONT_DESK_ID], //
-                  room_id: r[Room.ID], //
-                  room_number: r[Room.NUMBER], //
-                ),
+              //   TODO: calculate the money before allow to check out
+              var v = await dialog_check_out(
+                context: context, //
+                lead: "Room ${r[Room.NUMBER]}", //
+                front_desk_id: r[Room.FRONT_DESK_ID], //
+                room_id: r[Room.ID], //
               );
-              if (tmp_cout == null) return;
+              if (v == null) return;
+
               init();
             },
           ),
@@ -489,19 +481,13 @@ class _Main_State extends State<Main_> {
             label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.grey),
             onPressed: () async {
-              // pprint(r[Room.FRONT_DESK_ID]);
-              // pprint(r[Room.ID]);
-              // pprint(r[Room.NUMBER]);
-
-              dynamic tmp_cl = await nav_push(
-                context,
-                clean.Main_(
-                  front_desk_id: r[Room.FRONT_DESK_ID], //
-                  room_id: r[Room.ID], //
-                  room_number: r[Room.NUMBER], //
-                ),
+              var v = await dialog_clean(
+                context: context, //
+                lead: "Room ${r[Room.NUMBER]}", //
+                front_desk_id: r[Room.FRONT_DESK_ID], //
+                room_id: r[Room.ID], //
               );
-              if (tmp_cl == null) return;
+              if (v == null) return;
               init();
             },
           ),
@@ -518,7 +504,8 @@ class _Main_State extends State<Main_> {
             type: PlutoColumnType.text(),
             enableEditingMode: false,
             // hide: !kDebugMode,
-            hide: true,
+            // hide: true,
+            width: 0,
           ),
 
           PlutoColumn(
@@ -695,23 +682,18 @@ class _Main_State extends State<Main_> {
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
                       onPressed: () async {
-                        // get check_in_id from front_desks
-                        pprint(rc.row.cells["_id"]?.value);
                         String? check_in_id = front_desks.where((fd) => fd.id == rc.row.cells["_id"]?.value).firstOrNull?.check_in_id?.id;
                         if (check_in_id == null) return snackbar(ct: context, ms: "Check-In ID not found.", cl: Colors.red);
                         DateTime? result = await dialog_datetime(context, initial: parse_datetime(rc.cell.value));
-                        pprint(result);
                         if (result == null) return;
                         await dio.post(
                           endpoint.CHECK_IN_UPDATE,
                           data: {
                             Check_In.ID: check_in_id, //
-                            Check_In.CREATED_AT: result, //
+                            Check_In.CREATED_AT: result.toIso8601String(), //
                           },
                         );
                         init();
-                        // DateTime? result = await dialog_datetime(context, initial: parse_datetime(rc.cell.value));
-                        // pprint(result);
                       }, //
                     ),
                 ],
@@ -771,8 +753,18 @@ class _Main_State extends State<Main_> {
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
                       onPressed: () async {
+                        String? check_out_id = front_desks.where((fd) => fd.id == rc.row.cells["_id"]?.value).firstOrNull?.check_out_id?.id;
+                        if (check_out_id == null) return snackbar(ct: context, ms: "Check-Out ID not found.", cl: Colors.red);
                         DateTime? result = await dialog_datetime(context, initial: parse_datetime(rc.cell.value));
-                        pprint(result);
+                        if (result == null) return;
+                        await dio.post(
+                          endpoint.CHECK_OUT_UPDATE,
+                          data: {
+                            Check_Out.ID: check_out_id, //
+                            Check_Out.CREATED_AT: result.toIso8601String(), //
+                          },
+                        );
+                        init();
                       }, //
                     ),
                 ],
@@ -1014,221 +1006,211 @@ class _Main_State extends State<Main_> {
             // },
           ),
 
-          //   PlutoColumn(
-          //     field: "mini_bar_item", //
-          //     title: "Items",
-          //     type: PlutoColumnType.text(),
-          //     enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Row(
-          //         mainAxisAlignment: MainAxisAlignment.spaceAround, //
-          //         children: [
-          //           //
-          //           IconButton(
-          //             tooltip: "Update Mini Bar Items", //
-          //             icon: Icon(Icons.local_bar_outlined),
-          //             padding: EdgeInsets.all(0),
-          //             constraints: BoxConstraints(),
-          //             onPressed: () {
-          //               print("Update Mini Bar Items: ${rc.row.cells["index"]?.value}");
-          //             }, //
-          //           ),
-          //         ],
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "mini_bar_item", //
+            title: "ទំនិញ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround, //
+                children: [
+                  //
+                  IconButton(
+                    tooltip: "Update Mini Bar Items", //
+                    icon: Icon(Icons.local_bar_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("Update Mini Bar Items: ${rc.row.cells["index"]?.value}");
+                    }, //
+                  ),
+                ],
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "mini_bar_price", //
-          //     title: "Price",
-          //     type: PlutoColumnType.number(
-          //       negative: false, //
-          //       format: "#,##0.00",
-          //     ),
-          //     enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerRight, //
-          //         child: Text(
-          //           format_double(rc.cell.value, digits: 2) + " \$", //
-          //           overflow: TextOverflow.ellipsis,
-          //         ),
-          //       );
-          //     },
-          //     footerRenderer: (rc) {
-          //       return PlutoAggregateColumnFooter(
-          //         rendererContext: rc, //
-          //         format: "#,##0.00", //
-          //         alignment: Alignment.centerRight,
-          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-          //         type: PlutoAggregateColumnType.sum,
-          //         titleSpanBuilder: (value) {
-          //           return [
-          //             WidgetSpan(
-          //               child: Text(
-          //                 "$value \$", //
-          //                 style: TextStyle(
-          //                   fontSize: 14, //
-          //                   fontWeight: FontWeight.bold,
-          //                   overflow: TextOverflow.ellipsis,
-          //                 ),
-          //               ),
-          //             ),
-          //           ];
-          //         },
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "mini_bar_price", //
+            title: "តម្លៃ",
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,##0.00",
+            ),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "mini_bar_cash", //
-          //     title: "Cash",
-          //     type: PlutoColumnType.number(
-          //       //   negative: false, //
-          //       format: "#,##0.00",
-          //     ),
-          //     // enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerRight, //
-          //         child: Text(
-          //           format_double(rc.cell.value, digits: 2) + " \$", //
-          //           overflow: TextOverflow.ellipsis,
-          //           style: TextStyle(
-          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //     footerRenderer: (rc) {
-          //       return PlutoAggregateColumnFooter(
-          //         rendererContext: rc, //
-          //         format: "#,##0.00", //
-          //         alignment: Alignment.centerRight,
-          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-          //         type: PlutoAggregateColumnType.sum,
-          //         titleSpanBuilder: (value) {
-          //           return [
-          //             WidgetSpan(
-          //               child: Text(
-          //                 "$value \$", //
-          //                 style: TextStyle(
-          //                   fontSize: 14, //
-          //                   fontWeight: FontWeight.bold,
-          //                   overflow: TextOverflow.ellipsis,
-          //                 ),
-          //               ),
-          //             ),
-          //           ];
-          //         },
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "mini_bar_cash", //
+            title: "លុយ",
+            type: PlutoColumnType.number(
+              //   negative: false, //
+              format: "#,##0.00",
+            ),
+            // enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "mini_bar_bank", //
-          //     title: "Bank",
-          //     type: PlutoColumnType.number(
-          //       //   negative: false, //
-          //       format: "#,##0.00",
-          //     ),
-          //     // enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerRight, //
-          //         child: Text(
-          //           format_double(rc.cell.value, digits: 2) + " \$", //
-          //           overflow: TextOverflow.ellipsis,
-          //           style: TextStyle(
-          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //     footerRenderer: (rc) {
-          //       return PlutoAggregateColumnFooter(
-          //         rendererContext: rc, //
-          //         format: "#,##0.00", //
-          //         alignment: Alignment.centerRight,
-          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-          //         type: PlutoAggregateColumnType.sum,
-          //         titleSpanBuilder: (value) {
-          //           return [
-          //             WidgetSpan(
-          //               child: Text(
-          //                 "$value \$", //
-          //                 style: TextStyle(
-          //                   fontSize: 14, //
-          //                   fontWeight: FontWeight.bold,
-          //                   overflow: TextOverflow.ellipsis,
-          //                 ),
-          //               ),
-          //             ),
-          //           ];
-          //         },
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "mini_bar_bank", //
+            title: "ធនាគារ",
+            type: PlutoColumnType.number(
+              //   negative: false, //
+              format: "#,##0.00",
+            ),
+            // enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "mini_bar_paid", //
-          //     title: "Paid",
-          //     type: PlutoColumnType.number(
-          //       negative: false, //
-          //       format: "#,##0.00",
-          //     ),
-          //     enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerRight, //
-          //         child: Text(
-          //           format_double(rc.cell.value, digits: 2) + " \$", //
-          //           overflow: TextOverflow.ellipsis,
-          //           style: TextStyle(
-          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "mini_bar_paid", //
+            title: "បានបង់",
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,##0.00",
+            ),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "mini_bar_note", //
-          //     title: "Note",
-          //     type: PlutoColumnType.text(),
-          //     // enableEditingMode: false,
-          //     width: 120,
-          //     renderer: (rc) {
-          //       return Row(
-          //         children: [
-          //           Expanded(
-          //             child: Align(
-          //               alignment: Alignment.centerLeft, //
-          //               child: Text(
-          //                 format_string(rc.cell.value), //
-          //                 overflow: TextOverflow.ellipsis,
-          //               ),
-          //             ),
-          //           ),
-
-          //           //   IconButton(
-          //           //     tooltip: "Search", //
-          //           //     icon: Icon(Icons.search_outlined),
-          //           //     padding: EdgeInsets.all(0),
-          //           //     constraints: BoxConstraints(),
-          //           //     onPressed: () {
-          //           //       print("Search: ${rc.row.cells["index"]?.value}");
-          //           //     }, //
-          //           //   ),
-          //         ],
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "mini_bar_note", //
+            title: "ចំណាំ",
+            type: PlutoColumnType.text(),
+            // enableEditingMode: false,
+            width: 120,
+            renderer: (rc) {
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft, //
+                      child: Text(
+                        format_string(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
 
           //   PlutoColumn(
           //     field: "penalty_item", //
@@ -1564,7 +1546,7 @@ class _Main_State extends State<Main_> {
             fields: ["room_price", "room_cash", "room_bank", "room_paid", "room_note"],
           ),
           PlutoColumnGroup(
-            title: "Mini Bar Payment", //
+            title: "ការបង់ប្រាក់ មីនីបារ", //
             fields: ["mini_bar_item", "mini_bar_price", "mini_bar_cash", "mini_bar_bank", "mini_bar_paid", "mini_bar_note"],
           ),
           PlutoColumnGroup(
