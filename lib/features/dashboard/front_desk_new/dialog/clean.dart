@@ -15,7 +15,7 @@ Future<bool?> dialog_clean({
       return AlertDialog(
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         alignment: Alignment.topCenter,
-        titlePadding: const EdgeInsets.all(4),
+        titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
         contentPadding: const EdgeInsets.all(4),
         actionsPadding: const EdgeInsets.all(4),
         actionsAlignment: MainAxisAlignment.center,
