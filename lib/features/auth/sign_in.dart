@@ -126,7 +126,7 @@ class _Main_State extends State<Main_> {
         "password": password,
       },
     );
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.AUTH_SIGN_IN}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     // * រក្សាទុក token និង id អ្នកប្រើ
     final data = tmp.data;

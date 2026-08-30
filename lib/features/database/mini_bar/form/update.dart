@@ -61,7 +61,7 @@ class _Main_State extends State<Main_> {
     tmp = await dio.post(endpoint.MINI_BAR_READ_ID, data: {Mini_Bar.ID: widget.id});
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.MINI_BAR_READ_ID}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
     final mini_bar = Mini_Bar.fromJson(tmp.data[0]);
@@ -147,7 +147,7 @@ class _Main_State extends State<Main_> {
     );
     setState(() => is_loading = false);
 
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.MINI_BAR_UPDATE}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context, tmp.data[0]);

@@ -19,6 +19,7 @@ class EndPoint {
 	final FRONT_DESK_PENALTY_PAY = "/front_desk/penalty_pay";
 	final FRONT_DESK_ROLLOVER = "/front_desk/rollover";
 	final FRONT_DESK_ROOM_PAY = "/front_desk/room_pay";
+	final FRONT_DESK_ROOM_PAY_UPDATE = "/front_desk/room_pay_update";
 	final FRONT_DESK_UPDATE_CHECK_IN = "/front_desk/update_check_in";
 	final FRONT_DESK_UPDATE_GUEST = "/front_desk/update_guest";
 	final GUEST_SEARCH = "/guest/search";

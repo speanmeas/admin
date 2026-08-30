@@ -60,17 +60,9 @@ Future<bool?> dialog_check_out({
                   Front_Desk.ID: front_desk_id, //
                 },
               );
-              if (tmp == null) return snackbar(ct: context, ms: "Error: Check-Out", cl: Colors.red);
+              if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
-              // update room status to dirty
-              await dio.post(
-                endpoint.ROOM_UPDATE,
-                data: {
-                  Room.ID: room_id, //
-                  Room.STATUS: "Dirty", //
-                },
-              );
-
+              // room status auto-flips to Dirty + clears front_desk_id on the backend
               snackbar(ct: context, ms: "Success", cl: Colors.green);
               Navigator.pop(context, true);
             },

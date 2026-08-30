@@ -78,7 +78,7 @@ class _Main_State extends State<Main_> {
     setState(() => is_loading = true);
     tmp = await dio.post(endpoint.NATIONALITY_DELETE, data: {"_id": widget.id});
     setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.NATIONALITY_DELETE}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context, tmp.data);

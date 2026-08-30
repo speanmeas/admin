@@ -132,7 +132,7 @@ class _Dialog_State extends State<Dialog_> {
         User.PASSWORD: password, //
       },
     );
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.USER_UPDATE}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Success", cl: Colors.green);
     Navigator.pop(context, true);

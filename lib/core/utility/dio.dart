@@ -63,6 +63,9 @@ class DioUtil {
   // * callback ហៅពេលទទួល 401 (token មិនត្រឹមត្រូវ) — កំណត់ពី app layer (main.dart)
   Future<void> Function()? on_unauthenticated;
 
+  // * សារកំហុសចុងក្រោយ ពីអង្គភាព (response body) — ប្រើដើម្បីបង្ហាញក្នុង snackbar
+  String? error_msg;
+
   // * កំណត់ Authorization token
   void set_token(String? token) {
     __dio.options.headers["Authorization"] = token == null ? "" : "Bearer $token";
@@ -76,8 +79,10 @@ class DioUtil {
   // * ផ្ញើ POST request
   Future<Response<dynamic>?> post(String path, {dynamic data}) async {
     try {
+      error_msg = null;
       return await __dio.post(path, data: data);
     } catch (e) {
+      error_msg = e is DioException ? (e.response?.data?.toString() ?? e.message) : e.toString();
       return null;
     }
   }

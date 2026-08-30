@@ -42,7 +42,7 @@ class _Main_State extends State<Main_> {
     setState(() => is_loading = true);
     tmp = await dio.post(endpoint.DEMO_1_READ_COUNT, data: {"count": true});
     setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_READ_COUNT}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     row_total = parse_int(tmp.data) ?? 0;
     load_page(page);
@@ -53,7 +53,7 @@ class _Main_State extends State<Main_> {
     setState(() => is_loading = true);
     tmp = await dio.post(endpoint.DEMO_1_READ_COUNT, data: {"count": true});
     setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_READ_COUNT}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     row_total = parse_int(tmp.data) ?? 0;
 
@@ -79,7 +79,7 @@ class _Main_State extends State<Main_> {
     setState(() => is_loading = false);
 
     // * dio ត្រឡប់ null ពេល request បរាជ័យ
-    if (tmp == null) return snackbar(ct: context, ms: "Error: ${endpoint.DEMO_1_READ}", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
     // * រក្សាទុក sort និង filter មុនពេលផ្ទុកឡើងវិញ

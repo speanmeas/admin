@@ -74,14 +74,12 @@ Future<bool?> dialog_check_in({
                 data: {
                   Front_Desk.ROOM_ID: room_id, //
                   Front_Desk.NUMBER_OF_GUEST: stay_number, //
-                  Front_Desk.CHECK_IN_AT: DateTime.now().toIso8601String(), //
-                  Front_Desk.CHECK_IN_BY: (await auth.fetch())?.id, //
                   Front_Desk.ROOM_PRICE: price_per_day, //
                   Front_Desk.ROOM_CASH: 0, //
                   Front_Desk.ROOM_BANK: 0, //
                 },
               );
-              if (tmp_fd == null) return snackbar(ct: context, ms: "Error: Check-In", cl: Colors.red);
+              if (tmp_fd == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
               snackbar(ct: context, ms: "Success", cl: Colors.green);
               Navigator.pop(context, true);

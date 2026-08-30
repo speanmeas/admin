@@ -60,17 +60,9 @@ Future<bool?> dialog_clean({
                   Front_Desk.ID: front_desk_id, //
                 },
               );
-              if (tmp == null) return snackbar(ct: context, ms: "Error: Clean", cl: Colors.red);
+              if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
-              await dio.post(
-                endpoint.ROOM_UPDATE,
-                data: {
-                  Room.ID: room_id, //
-                  Room.STATUS: "Available", //
-                  Room.FRONT_DESK_ID: null, //
-                },
-              );
-
+              // room status auto-flips to Available + clears front_desk_id on the backend
               snackbar(ct: context, ms: "Success", cl: Colors.green);
               Navigator.pop(context, true);
             },

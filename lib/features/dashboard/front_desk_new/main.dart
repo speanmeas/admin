@@ -5,7 +5,7 @@ import "package:intl/intl.dart";
 // import "package:provider/provider.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
-// import "package:speanmeas/core/widget/pick/pick_datetime.dart";
+import "package:speanmeas/core/widget/dialog/dialog_datetime.dart";
 // import "package:speanmeas/core/utility/gen_data.dart";
 
 // import "form/check_in.dart" as check_in;
@@ -51,7 +51,7 @@ class _Main_State extends State<Main_> {
 
   Future<void> init() async {
     dynamic tmp_r = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
-    if (tmp_r == null) return snackbar(ct: context, ms: "Error: ${endpoint.ROOM_READ}", cl: Colors.red);
+    if (tmp_r == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     rooms = tmp_r.data as List<dynamic>? ?? [];
 
@@ -63,7 +63,7 @@ class _Main_State extends State<Main_> {
         "link": true, //
       },
     );
-    if (tmp_fd == null) return snackbar(ct: context, ms: "Error: ${endpoint.FRONT_DESK_READ}", cl: Colors.red);
+    if (tmp_fd == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     front_desks = (tmp_fd.data as List<dynamic>? ?? []).map<Front_Desk>((e) => Front_Desk.fromJson(e)).toList();
     // pprint(front_desks);
@@ -119,6 +119,7 @@ class _Main_State extends State<Main_> {
                 if (c == "room_price") return PlutoCell(value: fd.room_price);
                 if (c == "room_cash") return PlutoCell(value: fd.room_cash);
                 if (c == "room_bank") return PlutoCell(value: fd.room_bank);
+                if (c == "room_balance") return PlutoCell(value: fd.room_balance);
 
                 if (c == "check_in_by") {
                   dynamic u = fd.check_in_by;
@@ -159,66 +160,27 @@ class _Main_State extends State<Main_> {
     pprint("Old: ${e.oldValue} | New: ${e.value} | Row: ${e.row.cells["_id"]?.value} | Column: ${e.column.field}");
     final fd_id = e.row.cells["_id"]?.value;
     if (fd_id == null) return;
-    Front_Desk? fd = front_desks.where((x) => x.id == fd_id).firstOrNull;
 
     if (e.column.field == "guest_name") {
-      String? guest_id = fd == null ? null : fd_guest(fd)?.id;
-      if (guest_id == null) {
-        dynamic tmp_g = await dio.post(
-          endpoint.GUEST_CREATE,
-          data: {
-            Guest.FULL_NAME: e.value, //
-          },
-        );
-        if (tmp_g == null) snackbar(ct: context, ms: "Error: Guest's Name", cl: Colors.red);
-        dynamic tmp_fd = await dio.post(
-          endpoint.FRONT_DESK_UPDATE,
-          data: {
-            Front_Desk.ID: fd_id, //
-            Front_Desk.GUEST_ID: tmp_g.data[0][Guest.ID], //
-          },
-        );
-        if (tmp_fd == null) snackbar(ct: context, ms: "Error: Front Desk Update", cl: Colors.red);
-      } else {
-        dynamic tmp_g = await dio.post(
-          endpoint.GUEST_UPDATE,
-          data: {
-            Guest.ID: guest_id, //
-            Guest.FULL_NAME: e.value, //
-          },
-        );
-        if (tmp_g == null) snackbar(ct: context, ms: "Error: Guest's Name", cl: Colors.red);
-      }
+      dynamic tmp_fd = await dio.post(
+        endpoint.FRONT_DESK_UPDATE_GUEST,
+        data: {
+          Front_Desk.ID: fd_id, //
+          Guest.FULL_NAME: e.value, //
+        },
+      );
+      if (tmp_fd == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     }
 
     if (e.column.field == "guest_phone") {
-      String? guest_id = fd == null ? null : fd_guest(fd)?.id;
-      if (guest_id == null) {
-        dynamic tmp_g = await dio.post(
-          endpoint.GUEST_CREATE,
-          data: {
-            Guest.PHONE_NUMBER: e.value, //
-          },
-        );
-        if (tmp_g == null) snackbar(ct: context, ms: "Error: Guest's Phone", cl: Colors.red);
-        dynamic tmp_fd = await dio.post(
-          endpoint.FRONT_DESK_UPDATE,
-          data: {
-            Front_Desk.ID: fd_id, //
-            Front_Desk.GUEST_ID: tmp_g.data[0][Guest.ID], //
-          },
-        );
-        if (tmp_fd == null) snackbar(ct: context, ms: "Error: Front Desk Update", cl: Colors.red);
-      } else {
-        dynamic tmp_g = await dio.post(
-          endpoint.GUEST_UPDATE,
-          data: {
-            Guest.ID: guest_id, //
-            Guest.PHONE_NUMBER: e.value, //
-          },
-        );
-        if (tmp_g == null) snackbar(ct: context, ms: "Error: Guest's Phone Existing", cl: Colors.red);
-      }
+      dynamic tmp_fd = await dio.post(
+        endpoint.FRONT_DESK_UPDATE_GUEST,
+        data: {
+          Front_Desk.ID: fd_id, //
+          Guest.PHONE_NUMBER: e.value, //
+        },
+      );
+      if (tmp_fd == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     }
 
     if (e.column.field == "check_in_people") {
@@ -229,45 +191,77 @@ class _Main_State extends State<Main_> {
           Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? ""), //
         },
       );
-      if (tmp_fdn == null) snackbar(ct: context, ms: "Error: Check-In Update", cl: Colors.red);
+      if (tmp_fdn == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     }
 
     if (e.column.field == "room_price") {
       dynamic tmp_fdn = await dio.post(
-        endpoint.FRONT_DESK_ROOM_PAY,
+        endpoint.FRONT_DESK_ROOM_PAY_UPDATE,
         data: {
           Front_Desk.ID: fd_id, //
           Front_Desk.ROOM_PRICE: num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
         },
       );
-      if (tmp_fdn == null) snackbar(ct: context, ms: "Error: Room Price Update", cl: Colors.red);
+      if (tmp_fdn == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     }
 
-    if (e.column.field == "room_cash" || e.column.field == "room_bank") {
-      String key = e.column.field == "room_cash" ? Front_Desk.ROOM_CASH : Front_Desk.ROOM_BANK;
+    if (e.column.field == "room_cash") {
       dynamic tmp_fdn = await dio.post(
-        endpoint.FRONT_DESK_ROOM_PAY,
+        endpoint.FRONT_DESK_ROOM_PAY_UPDATE,
         data: {
           Front_Desk.ID: fd_id, //
-          key: num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
+          Front_Desk.ROOM_CASH: num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
         },
       );
-      if (tmp_fdn == null) snackbar(ct: context, ms: "Error: Room Pay Update", cl: Colors.red);
+      if (tmp_fdn == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    if (e.column.field == "room_bank") {
+      dynamic tmp_fdn = await dio.post(
+        endpoint.FRONT_DESK_ROOM_PAY_UPDATE,
+        data: {
+          Front_Desk.ID: fd_id, //
+          Front_Desk.ROOM_BANK: num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
+        },
+      );
+      if (tmp_fdn == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     }
 
     init();
   }
 
-  void on_check_in() {
-    // controller
+  void on_check_in(dynamic r) async {
+    var v = await dialog_check_in(
+      context: context, //
+      lead: "Room ${r[Room.NUMBER]}", //
+      room_id: r[Room.ID], //
+      price_per_day: r[Room.PRICE_PER_DAY], //
+    );
+    if (v == null) return;
+    init();
   }
 
-  void on_check_out() {
-    // controller
+  void on_check_out(dynamic r) async {
+    var v = await dialog_check_out(
+      context: context, //
+      lead: "Room ${r[Room.NUMBER]}", //
+      front_desk_id: r[Room.FRONT_DESK_ID], //
+      room_id: r[Room.ID], //
+    );
+    if (v == null) return;
+
+    init();
   }
 
-  void on_clean() {
-    // controller
+  void on_clean(dynamic r) async {
+    var v = await dialog_clean(
+      context: context, //
+      lead: "Room ${r[Room.NUMBER]}", //
+      front_desk_id: r[Room.FRONT_DESK_ID], //
+      room_id: r[Room.ID], //
+    );
+    if (v == null) return;
+    init();
   }
 
   Future<void> pick_datetime(PlutoColumnRendererContext rc, {required bool is_check_in}) async {
@@ -276,27 +270,8 @@ class _Main_State extends State<Main_> {
 
     DateTime? current = parse_datetime(rc.cell.value) ?? DateTime.now();
 
-    final DateTime? picked_date = await showDatePicker(
-      context: context, //
-      initialDate: current, //
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (picked_date == null || !mounted) return;
-
-    final TimeOfDay? picked_time = await showTimePicker(
-      context: context, //
-      initialTime: TimeOfDay.fromDateTime(current),
-    );
-    if (picked_time == null || !mounted) return;
-
-    final DateTime picked_datetime = DateTime(
-      picked_date.year, //
-      picked_date.month,
-      picked_date.day,
-      picked_time.hour,
-      picked_time.minute,
-    );
+    final DateTime? picked_datetime = await dialog_datetime(context, initial: current);
+    if (picked_datetime == null || !mounted) return;
 
     String key = is_check_in ? Front_Desk.CHECK_IN_AT : Front_Desk.CHECK_OUT_AT;
     dynamic tmp = await dio.post(
@@ -306,7 +281,7 @@ class _Main_State extends State<Main_> {
         key: format_datetime(picked_datetime), //
       },
     );
-    if (tmp == null) return snackbar(ct: context, ms: "Error: Time Update", cl: Colors.red);
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     init();
   }
@@ -457,16 +432,7 @@ class _Main_State extends State<Main_> {
             icon: Icon(Icons.hotel_outlined), //
             label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
-            onPressed: () async {
-              var v = await dialog_check_in(
-                context: context, //
-                lead: "Room ${r[Room.NUMBER]}", //
-                room_id: r[Room.ID], //
-                price_per_day: r[Room.PRICE_PER_DAY], //
-              );
-              if (v == null) return;
-              init();
-            },
+            onPressed: () => on_check_in(r), //
           ),
       ],
 
@@ -477,21 +443,7 @@ class _Main_State extends State<Main_> {
             icon: Icon(Icons.hotel_outlined), //
             label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-            onPressed: () async {
-              //   TODO: calculate the money before allow to check out
-
-              // log
-
-              var v = await dialog_check_out(
-                context: context, //
-                lead: "Room ${r[Room.NUMBER]}", //
-                front_desk_id: r[Room.FRONT_DESK_ID], //
-                room_id: r[Room.ID], //
-              );
-              if (v == null) return;
-
-              init();
-            },
+            onPressed: () => on_check_out(r), //
           ),
       ],
 
@@ -502,16 +454,7 @@ class _Main_State extends State<Main_> {
             icon: Icon(Icons.hotel_outlined), //
             label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.grey),
-            onPressed: () async {
-              var v = await dialog_clean(
-                context: context, //
-                lead: "Room ${r[Room.NUMBER]}", //
-                front_desk_id: r[Room.FRONT_DESK_ID], //
-                room_id: r[Room.ID], //
-              );
-              if (v == null) return;
-              init();
-            },
+            onPressed: () => on_clean(r), //
           ),
       ],
 
@@ -961,28 +904,28 @@ class _Main_State extends State<Main_> {
             },
           ),
 
-          //   PlutoColumn(
-          //     field: "room_paid", //
-          //     title: "បានបង់",
-          //     type: PlutoColumnType.number(
-          //       negative: false, //
-          //       format: "#,##0.00",
-          //     ),
-          //     enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerRight, //
-          //         child: Text(
-          //           format_double(rc.cell.value, digits: 2) + " \$", //
-          //           overflow: TextOverflow.ellipsis,
-          //           style: TextStyle(
-          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "room_balance", //
+            title: "សមតុល្យ",
+            type: PlutoColumnType.number(
+              negative: true, //
+              format: "#,##0.00",
+            ),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
+              );
+            },
+          ),
           PlutoColumn(
             field: "room_note", //
             title: "ចំណាំ",
@@ -1561,7 +1504,7 @@ class _Main_State extends State<Main_> {
           ),
           PlutoColumnGroup(
             title: "ការបង់ប្រាក់ បន្ទប់", //
-            fields: ["room_price", "room_cash", "room_bank", "room_paid", "room_note"],
+            fields: ["room_price", "room_cash", "room_bank", "room_balance", "room_note"],
           ),
           PlutoColumnGroup(
             title: "ការបង់ប្រាក់ មីនីបារ", //
@@ -1664,6 +1607,8 @@ class _Main_State extends State<Main_> {
         //     ),
         //   ),
         // ),
+        Spacer(), //
+
         IconButton(
           tooltip: "Previous", //
           icon: Icon(Icons.navigate_before, size: 32), //
