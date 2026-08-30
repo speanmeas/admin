@@ -10,8 +10,8 @@ import "package:speanmeas/core/widget/dialog/dialog_datetime.dart";
 
 // import "form/check_in.dart" as check_in;
 import "dialog/check_in.dart";
-import "dialog/check_out.dart";
-import "dialog/clean.dart";
+import "dialog/cancel.dart";
+import "dialog/change_room.dart";
 import "dialog/search_guest.dart";
 // import "form/check_out.dart" as check_out;
 // import "form/clean.dart" as clean;
@@ -120,6 +120,21 @@ class _Main_State extends State<Main_> {
                 if (c == "room_cash") return PlutoCell(value: fd.room_cash);
                 if (c == "room_bank") return PlutoCell(value: fd.room_bank);
                 if (c == "room_balance") return PlutoCell(value: fd.room_balance);
+                if (c == "room_note") return PlutoCell(value: fd.room_note);
+
+                // * mini bar payment fields are inline on the stay (no Mini_Bar_Pay child array)
+                if (c == "mini_bar_price") return PlutoCell(value: fd.mini_bar_price);
+                if (c == "mini_bar_cash") return PlutoCell(value: fd.mini_bar_cash);
+                if (c == "mini_bar_bank") return PlutoCell(value: fd.mini_bar_bank);
+                if (c == "mini_bar_balance") return PlutoCell(value: fd.mini_bar_balance);
+                if (c == "mini_bar_note") return PlutoCell(value: fd.mini_bar_note);
+
+                // * penalty payment fields are inline on the stay (no Penalty_Pay child array)
+                if (c == "penalty_price") return PlutoCell(value: fd.penalty_price);
+                if (c == "penalty_cash") return PlutoCell(value: fd.penalty_cash);
+                if (c == "penalty_bank") return PlutoCell(value: fd.penalty_bank);
+                if (c == "penalty_balance") return PlutoCell(value: fd.penalty_balance);
+                if (c == "penalty_note") return PlutoCell(value: fd.penalty_note);
 
                 if (c == "check_in_by") {
                   dynamic u = fd.check_in_by;
@@ -227,6 +242,50 @@ class _Main_State extends State<Main_> {
       if (tmp_fdn == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     }
 
+    if (e.column.field == "mini_bar_price") {
+      dynamic tmp_fdn = await dio.post(
+        endpoint.FRONT_DESK_MINI_BAR_ITEM,
+        data: {
+          Front_Desk.ID: fd_id, //
+        },
+      );
+      if (tmp_fdn == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    if (e.column.field == "mini_bar_cash" || e.column.field == "mini_bar_bank") {
+      String key = e.column.field == "mini_bar_cash" ? Front_Desk.MINI_BAR_CASH : Front_Desk.MINI_BAR_BANK;
+      dynamic tmp_fdn = await dio.post(
+        endpoint.FRONT_DESK_MINI_BAR_PAY,
+        data: {
+          Front_Desk.ID: fd_id, //
+          key: num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
+        },
+      );
+      if (tmp_fdn == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    if (e.column.field == "penalty_price") {
+      dynamic tmp_fdn = await dio.post(
+        endpoint.FRONT_DESK_PENALTY_ITEM,
+        data: {
+          Front_Desk.ID: fd_id, //
+        },
+      );
+      if (tmp_fdn == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    if (e.column.field == "penalty_cash" || e.column.field == "penalty_bank") {
+      String key = e.column.field == "penalty_cash" ? Front_Desk.PENALTY_CASH : Front_Desk.PENALTY_BANK;
+      dynamic tmp_fdn = await dio.post(
+        endpoint.FRONT_DESK_PENALTY_PAY,
+        data: {
+          Front_Desk.ID: fd_id, //
+          key: num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
+        },
+      );
+      if (tmp_fdn == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
     init();
   }
 
@@ -242,23 +301,59 @@ class _Main_State extends State<Main_> {
   }
 
   void on_check_out(dynamic r) async {
-    var v = await dialog_check_out(
-      context: context, //
-      lead: "Room ${r[Room.NUMBER]}", //
-      front_desk_id: r[Room.FRONT_DESK_ID], //
-      room_id: r[Room.ID], //
-    );
-    if (v == null) return;
+    String? fd_id = r[Room.FRONT_DESK_ID];
+    if (fd_id == null) return snackbar(ct: context, ms: "No stay to check out", cl: Colors.red);
 
+    dynamic tmp = await dio.post(
+      endpoint.FRONT_DESK_CHECK_OUT,
+      data: {
+        Front_Desk.ID: fd_id, //
+      },
+    );
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    snackbar(ct: context, ms: "Checked Out", cl: Colors.green);
     init();
   }
 
   void on_clean(dynamic r) async {
-    var v = await dialog_clean(
+    dynamic tmp = await dio.post(
+      endpoint.FRONT_DESK_CLEAN,
+      data: {
+        Front_Desk.ROOM_ID: r[Room.ID], //
+      },
+    );
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    snackbar(ct: context, ms: "Cleaned", cl: Colors.green);
+    init();
+  }
+
+  // * បញ្ជាការកែប្រែ និងការបោះបង់ពីជួរ grid (action រស់នៅក្នុង method មិននៅក្នុង UI)
+  String? row_stay_id(PlutoColumnRendererContext rc) => rc.row.cells["_id"]?.value;
+
+  void on_cancel(PlutoColumnRendererContext rc) async {
+    String? fd_id = row_stay_id(rc);
+    if (fd_id == null) return snackbar(ct: context, ms: "No stay to cancel", cl: Colors.red);
+
+    var v = await dialog_cancel(
       context: context, //
-      lead: "Room ${r[Room.NUMBER]}", //
-      front_desk_id: r[Room.FRONT_DESK_ID], //
-      room_id: r[Room.ID], //
+      lead: "Room ${rc.row.cells["room"]?.value}", //
+      front_desk_id: fd_id, //
+    );
+    if (v == null) return;
+    init();
+  }
+
+  void on_change_room(PlutoColumnRendererContext rc) async {
+    String? fd_id = row_stay_id(rc);
+    if (fd_id == null) return snackbar(ct: context, ms: "No stay to change room", cl: Colors.red);
+
+    var v = await dialog_change_room(
+      context: context, //
+      lead: "Room ${rc.row.cells["room"]?.value}", //
+      front_desk_id: fd_id, //
+      rooms: rooms.where((r) => r[Room.STATUS] == "Available").toList(), //
     );
     if (v == null) return;
     init();
@@ -722,14 +817,14 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
                   ),
-
-                  IconButton(
-                    tooltip: "កែពេលចេញ", //
-                    icon: Icon(Icons.calendar_month_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => pick_datetime(rc, is_check_in: false), //
-                  ),
+                  if (rc.cell.value != null)
+                    IconButton(
+                      tooltip: "កែពេលចេញ", //
+                      icon: Icon(Icons.calendar_month_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => pick_datetime(rc, is_check_in: false), //
+                    ),
                 ],
               );
             },
@@ -944,16 +1039,6 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
                   ),
-
-                  //   IconButton(
-                  //     tooltip: "Search", //
-                  //     icon: Icon(Icons.search_outlined),
-                  //     padding: EdgeInsets.all(0),
-                  //     constraints: BoxConstraints(),
-                  //     onPressed: () {
-                  //       print("Search: ${rc.row.cells["index"]?.value}");
-                  //     }, //
-                  //   ),
                 ],
               );
             },
@@ -968,425 +1053,456 @@ class _Main_State extends State<Main_> {
             // },
           ),
 
-          //   PlutoColumn(
-          //     field: "mini_bar_item", //
-          //     title: "ទំនិញ",
-          //     type: PlutoColumnType.text(),
-          //     enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Row(
-          //         mainAxisAlignment: MainAxisAlignment.spaceAround, //
-          //         children: [
-          //           //
-          //           IconButton(
-          //             tooltip: "Update Mini Bar Items", //
-          //             icon: Icon(Icons.local_bar_outlined),
-          //             padding: EdgeInsets.all(0),
-          //             constraints: BoxConstraints(),
-          //             onPressed: () {
-          //               print("Update Mini Bar Items: ${rc.row.cells["index"]?.value}");
-          //             }, //
-          //           ),
-          //         ],
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "mini_bar_item", //
+            title: "ទំនិញ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround, //
+                children: [
+                  //
+                  IconButton(
+                    tooltip: "Update Mini Bar Items", //
+                    icon: Icon(Icons.local_bar_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      pprint("Update Mini Bar Items: ${rc.row.cells["index"]?.value}");
+                    }, //
+                  ),
+                ],
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "mini_bar_price", //
-          //     title: "តម្លៃ",
-          //     type: PlutoColumnType.number(
-          //       negative: false, //
-          //       format: "#,##0.00",
-          //     ),
-          //     enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerRight, //
-          //         child: Text(
-          //           format_double(rc.cell.value, digits: 2) + " \$", //
-          //           overflow: TextOverflow.ellipsis,
-          //         ),
-          //       );
-          //     },
-          //     footerRenderer: (rc) {
-          //       return PlutoAggregateColumnFooter(
-          //         rendererContext: rc, //
-          //         format: "#,##0.00", //
-          //         alignment: Alignment.centerRight,
-          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-          //         type: PlutoAggregateColumnType.sum,
-          //         titleSpanBuilder: (value) {
-          //           return [
-          //             WidgetSpan(
-          //               child: Text(
-          //                 "$value \$", //
-          //                 style: TextStyle(
-          //                   fontSize: 14, //
-          //                   fontWeight: FontWeight.bold,
-          //                   overflow: TextOverflow.ellipsis,
-          //                 ),
-          //               ),
-          //             ),
-          //           ];
-          //         },
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "mini_bar_price", //
+            title: "តម្លៃ",
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,##0.00",
+            ),
+            enableEditingMode: false, // Note: Mini bar price is auto calculated from the items, so it should not be editable.
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "mini_bar_cash", //
-          //     title: "លុយ",
-          //     type: PlutoColumnType.number(
-          //       //   negative: false, //
-          //       format: "#,##0.00",
-          //     ),
-          //     // enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerRight, //
-          //         child: Text(
-          //           format_double(rc.cell.value, digits: 2) + " \$", //
-          //           overflow: TextOverflow.ellipsis,
-          //           style: TextStyle(
-          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //     footerRenderer: (rc) {
-          //       return PlutoAggregateColumnFooter(
-          //         rendererContext: rc, //
-          //         format: "#,##0.00", //
-          //         alignment: Alignment.centerRight,
-          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-          //         type: PlutoAggregateColumnType.sum,
-          //         titleSpanBuilder: (value) {
-          //           return [
-          //             WidgetSpan(
-          //               child: Text(
-          //                 "$value \$", //
-          //                 style: TextStyle(
-          //                   fontSize: 14, //
-          //                   fontWeight: FontWeight.bold,
-          //                   overflow: TextOverflow.ellipsis,
-          //                 ),
-          //               ),
-          //             ),
-          //           ];
-          //         },
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "mini_bar_cash", //
+            title: "លុយ",
+            type: PlutoColumnType.number(
+              //   negative: false, //
+              format: "#,##0.00",
+            ),
+            enableEditingMode: false, // Note: Mini bar cash is auto calculated from the items, so it should not be editable.
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "mini_bar_bank", //
-          //     title: "ធនាគារ",
-          //     type: PlutoColumnType.number(
-          //       //   negative: false, //
-          //       format: "#,##0.00",
-          //     ),
-          //     // enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerRight, //
-          //         child: Text(
-          //           format_double(rc.cell.value, digits: 2) + " \$", //
-          //           overflow: TextOverflow.ellipsis,
-          //           style: TextStyle(
-          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //     footerRenderer: (rc) {
-          //       return PlutoAggregateColumnFooter(
-          //         rendererContext: rc, //
-          //         format: "#,##0.00", //
-          //         alignment: Alignment.centerRight,
-          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-          //         type: PlutoAggregateColumnType.sum,
-          //         titleSpanBuilder: (value) {
-          //           return [
-          //             WidgetSpan(
-          //               child: Text(
-          //                 "$value \$", //
-          //                 style: TextStyle(
-          //                   fontSize: 14, //
-          //                   fontWeight: FontWeight.bold,
-          //                   overflow: TextOverflow.ellipsis,
-          //                 ),
-          //               ),
-          //             ),
-          //           ];
-          //         },
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "mini_bar_bank", //
+            title: "ធនាគារ",
+            type: PlutoColumnType.number(
+              //   negative: false, //
+              format: "#,##0.00",
+            ),
+            // enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "mini_bar_paid", //
-          //     title: "បានបង់",
-          //     type: PlutoColumnType.number(
-          //       negative: false, //
-          //       format: "#,##0.00",
-          //     ),
-          //     enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerRight, //
-          //         child: Text(
-          //           format_double(rc.cell.value, digits: 2) + " \$", //
-          //           overflow: TextOverflow.ellipsis,
-          //           style: TextStyle(
-          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //   ),
-          //   PlutoColumn(
-          //     field: "mini_bar_note", //
-          //     title: "ចំណាំ",
-          //     type: PlutoColumnType.text(),
-          //     // enableEditingMode: false,
-          //     width: 120,
-          //     renderer: (rc) {
-          //       return Row(
-          //         children: [
-          //           Expanded(
-          //             child: Align(
-          //               alignment: Alignment.centerLeft, //
-          //               child: Text(
-          //                 format_string(rc.cell.value), //
-          //                 overflow: TextOverflow.ellipsis,
-          //               ),
-          //             ),
-          //           ),
-          //         ],
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "mini_bar_balance", //
+            title: "សមតុល្យ",
+            type: PlutoColumnType.number(format: "#,##0.00"),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "mini_bar_note", //
+            title: "ចំណាំ",
+            type: PlutoColumnType.text(),
+            // enableEditingMode: false,
+            width: 120,
+            renderer: (rc) {
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft, //
+                      child: Text(
+                        format_string(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "penalty_item", //
-          //     title: "Items",
-          //     type: PlutoColumnType.text(),
-          //     enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Row(
-          //         mainAxisAlignment: MainAxisAlignment.center, //
-          //         children: [
-          //           IconButton(
-          //             tooltip: "Update Penalty Items", //
-          //             icon: Icon(Icons.gavel_outlined),
-          //             padding: EdgeInsets.all(0),
-          //             constraints: BoxConstraints(),
-          //             onPressed: () {
-          //               print("Update Penalty Items: ${rc.row.cells["index"]?.value}");
-          //             }, //
-          //           ),
-          //         ],
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "penalty_item", //
+            title: "Items",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
+                children: [
+                  IconButton(
+                    tooltip: "Update Penalty Items", //
+                    icon: Icon(Icons.gavel_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      pprint("Update Penalty Items: ${rc.row.cells["index"]?.value}");
+                    }, //
+                  ),
+                ],
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "penalty_price", //
-          //     title: "Price",
-          //     type: PlutoColumnType.number(
-          //       negative: false, //
-          //       format: "#,##0.00",
-          //     ),
-          //     enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerRight, //
-          //         child: Text(
-          //           format_double(rc.cell.value, digits: 2) + " \$", //
-          //           overflow: TextOverflow.ellipsis,
-          //         ),
-          //       );
-          //     },
-          //     footerRenderer: (rc) {
-          //       return PlutoAggregateColumnFooter(
-          //         rendererContext: rc, //
-          //         format: "#,##0.00", //
-          //         alignment: Alignment.centerRight,
-          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-          //         type: PlutoAggregateColumnType.sum,
-          //         titleSpanBuilder: (value) {
-          //           return [
-          //             WidgetSpan(
-          //               child: Text(
-          //                 "$value \$", //
-          //                 style: TextStyle(
-          //                   fontSize: 14, //
-          //                   fontWeight: FontWeight.bold,
-          //                   overflow: TextOverflow.ellipsis,
-          //                 ),
-          //               ),
-          //             ),
-          //           ];
-          //         },
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "penalty_price", //
+            title: "Price",
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,##0.00",
+            ),
+            // enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "penalty_cash", //
-          //     title: "Cash",
-          //     type: PlutoColumnType.number(
-          //       //   negative: false, //
-          //       format: "#,##0.00",
-          //     ),
-          //     // enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerRight, //
-          //         child: Text(
-          //           format_double(rc.cell.value, digits: 2) + " \$", //
-          //           overflow: TextOverflow.ellipsis,
-          //           style: TextStyle(
-          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //     footerRenderer: (rc) {
-          //       return PlutoAggregateColumnFooter(
-          //         rendererContext: rc, //
-          //         format: "#,##0.00", //
-          //         alignment: Alignment.centerRight,
-          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-          //         type: PlutoAggregateColumnType.sum,
-          //         titleSpanBuilder: (value) {
-          //           return [
-          //             WidgetSpan(
-          //               child: Text(
-          //                 "$value \$", //
-          //                 style: TextStyle(
-          //                   fontSize: 14, //
-          //                   fontWeight: FontWeight.bold,
-          //                   overflow: TextOverflow.ellipsis,
-          //                 ),
-          //               ),
-          //             ),
-          //           ];
-          //         },
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "penalty_cash", //
+            title: "Cash",
+            type: PlutoColumnType.number(
+              //   negative: false, //
+              format: "#,##0.00",
+            ),
+            // enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "penalty_bank", //
-          //     title: "Bank",
-          //     type: PlutoColumnType.number(
-          //       //   negative: false, //
-          //       format: "#,##0.00",
-          //     ),
-          //     // enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerRight, //
-          //         child: Text(
-          //           format_double(rc.cell.value, digits: 2) + " \$", //
-          //           overflow: TextOverflow.ellipsis,
-          //           style: TextStyle(
-          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //     footerRenderer: (rc) {
-          //       return PlutoAggregateColumnFooter(
-          //         rendererContext: rc, //
-          //         format: "#,##0.00", //
-          //         alignment: Alignment.centerRight,
-          //         padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-          //         type: PlutoAggregateColumnType.sum,
-          //         titleSpanBuilder: (value) {
-          //           return [
-          //             WidgetSpan(
-          //               child: Text(
-          //                 "$value \$", //
-          //                 style: TextStyle(
-          //                   fontSize: 14, //
-          //                   fontWeight: FontWeight.bold,
-          //                   overflow: TextOverflow.ellipsis,
-          //                 ),
-          //               ),
-          //             ),
-          //           ];
-          //         },
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "penalty_bank", //
+            title: "Bank",
+            type: PlutoColumnType.number(
+              //   negative: false, //
+              format: "#,##0.00",
+            ),
+            // enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "penalty_paid", //
-          //     title: "Paid",
-          //     type: PlutoColumnType.number(
-          //       negative: false, //
-          //       format: "#,##0.00",
-          //     ),
-          //     enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerRight, //
-          //         child: Text(
-          //           format_double(rc.cell.value, digits: 2) + " \$", //
-          //           overflow: TextOverflow.ellipsis,
-          //           style: TextStyle(
-          //             color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //   ),
+          PlutoColumn(
+            field: "penalty_balance", //
+            title: "សមតុល្យ",
+            type: PlutoColumnType.number(format: "#,##0.00"),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
 
-          //   PlutoColumn(
-          //     field: "penalty_note", //
-          //     title: "Note",
-          //     type: PlutoColumnType.text(),
-          //     // enableEditingMode: false,
-          //     width: 120,
-          //     renderer: (rc) {
-          //       return Row(
-          //         children: [
-          //           Expanded(
-          //             child: Align(
-          //               alignment: Alignment.centerLeft, //
-          //               child: Text(
-          //                 format_string(rc.cell.value), //
-          //                 overflow: TextOverflow.ellipsis,
-          //               ),
-          //             ),
-          //           ),
+          PlutoColumn(
+            field: "penalty_note", //
+            title: "Note",
+            type: PlutoColumnType.text(),
+            // enableEditingMode: false,
+            width: 120,
+            renderer: (rc) {
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft, //
+                      child: Text(
+                        format_string(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
 
-          //           //   IconButton(
-          //           //     tooltip: "Search", //
-          //           //     icon: Icon(Icons.search_outlined),
-          //           //     padding: EdgeInsets.all(0),
-          //           //     constraints: BoxConstraints(),
-          //           //     onPressed: () {
-          //           //       print("Search: ${rc.row.cells["index"]?.value}");
-          //           //     }, //
-          //           //   ),
-          //         ],
-          //       );
-          //     },
-          //   ),
           PlutoColumn(
             field: "check_in_by", //
             title: "ឲចូលដោយ",
@@ -1454,9 +1570,7 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.swap_horiz_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () {
-                      print("Change Room: ${rc.row.cells["index"]?.value}");
-                    }, //
+                    onPressed: () => on_change_room(rc), //
                   ),
 
                   //
@@ -1465,9 +1579,7 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.cancel_outlined, color: Colors.red),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () {
-                      print("Cancel: ${rc.row.cells["index"]?.value}");
-                    }, //
+                    onPressed: () => on_cancel(rc), //
                   ),
 
                   //
@@ -1508,15 +1620,15 @@ class _Main_State extends State<Main_> {
           ),
           PlutoColumnGroup(
             title: "ការបង់ប្រាក់ មីនីបារ", //
-            fields: ["mini_bar_item", "mini_bar_price", "mini_bar_cash", "mini_bar_bank", "mini_bar_paid", "mini_bar_note"],
+            fields: ["mini_bar_item", "mini_bar_price", "mini_bar_cash", "mini_bar_bank", "mini_bar_balance", "mini_bar_note"],
           ),
           PlutoColumnGroup(
             title: "Penalty Payment", //
-            fields: ["penalty_item", "penalty_price", "penalty_cash", "penalty_bank", "penalty_paid", "penalty_note"],
+            fields: ["penalty_item", "penalty_price", "penalty_cash", "penalty_bank", "penalty_balance", "penalty_note"],
           ),
           PlutoColumnGroup(
             title: "ការត្រួតពិនិត្យ", //
-            fields: ["check_in_by", "check_out_by", "clean_by"],
+            fields: ["check_in_by", "check_out_by"],
           ),
           PlutoColumnGroup(
             title: "", //
