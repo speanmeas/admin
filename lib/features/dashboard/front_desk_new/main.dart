@@ -340,6 +340,35 @@ class _Main_State extends State<Main_> {
     return front_desks.where((x) => x.id == fd_id).firstOrNull;
   }
 
+  // * ប្រមូល id ទំនិញដែលបានចុះពីថ្ងៃមុនៗ (locked) តាមខ្សែសង្វាក់ prev_front_desk_id
+  Set<String> locked_mini_bar_ids(Front_Desk fd) {
+    Set<String> ids = {};
+    String? cursor = fd.prev_front_desk_id;
+    while (cursor != null) {
+      Front_Desk? prev = front_desks.where((x) => x.id == cursor).firstOrNull;
+      if (prev == null) break;
+      for (var it in (prev.list_mini_bar_item_id ?? [])) {
+        if (it is Mini_Bar_Item && it.id != null) ids.add(it.id!);
+      }
+      cursor = prev.prev_front_desk_id;
+    }
+    return ids;
+  }
+
+  Set<String> locked_penalty_ids(Front_Desk fd) {
+    Set<String> ids = {};
+    String? cursor = fd.prev_front_desk_id;
+    while (cursor != null) {
+      Front_Desk? prev = front_desks.where((x) => x.id == cursor).firstOrNull;
+      if (prev == null) break;
+      for (var it in (prev.list_penalty_item_id ?? [])) {
+        if (it is Penalty_Item && it.id != null) ids.add(it.id!);
+      }
+      cursor = prev.prev_front_desk_id;
+    }
+    return ids;
+  }
+
   // * ហាមប្រើប្រាស់ ប្រសិនបើបាន check out រួចហើយ
   bool checkout_guard(PlutoColumnRendererContext rc) {
     Front_Desk? fd = row_stay(rc);
@@ -403,6 +432,7 @@ class _Main_State extends State<Main_> {
       builder: (context) => List_Penalty(
         list_penalty: list_penalty, //
         list_order_penalty: orders, //
+        locked_ids: fd == null ? {} : locked_penalty_ids(fd), //
       ),
     );
     if (saved != true) return;
@@ -467,6 +497,7 @@ class _Main_State extends State<Main_> {
       builder: (context) => List_Mini_Bar(
         list_mini_bar: list_mini_bar, //
         list_order_mini_bar: orders, //
+        locked_ids: fd == null ? {} : locked_mini_bar_ids(fd), //
       ),
     );
     if (saved != true) return;
@@ -547,7 +578,7 @@ class _Main_State extends State<Main_> {
     List<Widget>? check_out, //
     List<Widget>? clean, //
     Widget? body, //
-    List<Widget>? footer, //
+    // List<Widget>? footer, //
   }) {
     return Scaffold(
       body: Column(
@@ -653,16 +684,16 @@ class _Main_State extends State<Main_> {
           Expanded(child: body ?? Container()),
 
           // FOOTER
-          Container(
-            height: 34, //
-            padding: const EdgeInsets.all(1),
-            child: Row(
-              spacing: 2, //
-              mainAxisAlignment: MainAxisAlignment.center, //
-              crossAxisAlignment: CrossAxisAlignment.center, //
-              children: [...?footer],
-            ),
-          ),
+          // Container(
+          //   height: 34, //
+          //   padding: const EdgeInsets.all(1),
+          //   child: Row(
+          //     spacing: 2, //
+          //     mainAxisAlignment: MainAxisAlignment.center, //
+          //     crossAxisAlignment: CrossAxisAlignment.center, //
+          //     children: [...?footer],
+          //   ),
+          // ),
         ],
       ),
     );
@@ -820,27 +851,7 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
                   ),
-                ],
-              );
-            },
-          ),
 
-          PlutoColumn(
-            field: "guest_search", //
-            title: "",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            enableContextMenu: false,
-            enableDropToResize: false,
-            enableColumnDrag: false,
-            enableSorting: false,
-            enableFilterMenuItem: false,
-
-            width: 40,
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center, //
-                children: [
                   IconButton(
                     tooltip: "Search Guest", //
                     icon: Icon(Icons.search_outlined),
@@ -861,6 +872,41 @@ class _Main_State extends State<Main_> {
             },
           ),
 
+          // PlutoColumn(
+          //   field: "guest_search", //
+          //   title: "",
+          //   type: PlutoColumnType.text(),
+          //   enableEditingMode: false,
+          //   enableContextMenu: false,
+          //   enableDropToResize: false,
+          //   enableColumnDrag: false,
+          //   enableSorting: false,
+          //   enableFilterMenuItem: false,
+
+          //   width: 40,
+          //   renderer: (rc) {
+          //     return Row(
+          //       mainAxisAlignment: MainAxisAlignment.center, //
+          //       children: [
+          //         IconButton(
+          //           tooltip: "Search Guest", //
+          //           icon: Icon(Icons.search_outlined),
+          //           padding: EdgeInsets.all(0),
+          //           constraints: BoxConstraints(),
+          //           onPressed: () async {
+          //             //   print("Search Guest: ${rc.row.cells["index"]?.value}");
+          //             var v = await dialog_search_guest(
+          //               context: context, //
+          //               front_desk_id: rc.row.cells["_id"]?.value,
+          //             );
+          //             if (v == null) return;
+          //             init();
+          //           }, //
+          //         ),
+          //       ],
+          //     );
+          //   },
+          // ),
           PlutoColumn(
             field: "check_in_people", //
             title: "ចំនួន",
@@ -1807,114 +1853,114 @@ class _Main_State extends State<Main_> {
       ),
 
       //
-      footer: [
-        // //
-        // Text(
-        //   "Total Revenue: xxx\$", //
-        //   style: TextStyle(
-        //     fontSize: 16, //
-        //     fontWeight: FontWeight.bold,
-        //   ),
-        // ),
+      // footer: [
+      // //
+      // Text(
+      //   "Total Revenue: xxx\$", //
+      //   style: TextStyle(
+      //     fontSize: 16, //
+      //     fontWeight: FontWeight.bold,
+      //   ),
+      // ),
 
-        // SizedBox(width: 8), //
-        // //
-        // Text(
-        //   "Total Income: xxx\$", //
-        //   style: TextStyle(
-        //     fontSize: 16, //
-        //     fontWeight: FontWeight.bold,
-        //   ),
-        // ),
+      // SizedBox(width: 8), //
+      // //
+      // Text(
+      //   "Total Income: xxx\$", //
+      //   style: TextStyle(
+      //     fontSize: 16, //
+      //     fontWeight: FontWeight.bold,
+      //   ),
+      // ),
 
-        // // const Spacer(),
+      // // const Spacer(),
 
-        // // * ប៊ូតុងបញ្ចេញជា PDF
-        // Tooltip(
-        //   message: "Export as PDF",
-        //   child: InkWell(
-        //     onTap: () {
-        //       snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
-        //     },
-        //     child: Container(
-        //       width: 32,
-        //       height: 32,
-        //       alignment: Alignment.center,
-        //       child: SvgPicture.asset(
-        //         "assets/icon/pdf.svg", //
-        //         width: 30,
-        //         height: 30,
-        //         colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
-        //       ),
-        //     ),
-        //   ),
-        // ),
+      // // * ប៊ូតុងបញ្ចេញជា PDF
+      // Tooltip(
+      //   message: "Export as PDF",
+      //   child: InkWell(
+      //     onTap: () {
+      //       snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
+      //     },
+      //     child: Container(
+      //       width: 32,
+      //       height: 32,
+      //       alignment: Alignment.center,
+      //       child: SvgPicture.asset(
+      //         "assets/icon/pdf.svg", //
+      //         width: 30,
+      //         height: 30,
+      //         colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
+      //       ),
+      //     ),
+      //   ),
+      // ),
 
-        // // * ប៊ូតុងបញ្ចេញជា Excel
-        // Tooltip(
-        //   message: "Export as Excel",
-        //   child: InkWell(
-        //     onTap: () {
-        //       snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
-        //     },
-        //     child: Container(
-        //       width: 32,
-        //       height: 32,
-        //       alignment: Alignment.center,
-        //       child: SvgPicture.asset(
-        //         "assets/icon/excel.svg", //
-        //         width: 30,
-        //         height: 30,
-        //         colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
-        //       ),
-        //     ),
-        //   ),
-        // ),
-        Spacer(), //
+      // // * ប៊ូតុងបញ្ចេញជា Excel
+      // Tooltip(
+      //   message: "Export as Excel",
+      //   child: InkWell(
+      //     onTap: () {
+      //       snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
+      //     },
+      //     child: Container(
+      //       width: 32,
+      //       height: 32,
+      //       alignment: Alignment.center,
+      //       child: SvgPicture.asset(
+      //         "assets/icon/excel.svg", //
+      //         width: 30,
+      //         height: 30,
+      //         colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
+      //       ),
+      //     ),
+      //   ),
+      // ),
+      // Spacer(), //
 
-        IconButton(
-          tooltip: "Previous", //
-          icon: Icon(Icons.navigate_before, size: 32), //
-          padding: EdgeInsets.all(0),
-          constraints: BoxConstraints(),
-          onPressed: () {
-            date = date.subtract(Duration(days: 1));
-            setState(() {});
-          },
-        ),
+      // IconButton(
+      //   tooltip: "Previous", //
+      //   icon: Icon(Icons.navigate_before, size: 32), //
+      //   padding: EdgeInsets.all(0),
+      //   constraints: BoxConstraints(),
+      //   onPressed: () {
+      //     date = date.subtract(Duration(days: 1));
+      //     setState(() {});
+      //   },
+      // ),
 
-        TextButton(
-          child: Text(
-            DateFormat("yyyy-MM-dd").format(date), //
-            style: TextStyle(
-              fontSize: 16, //
-              fontWeight: FontWeight.bold, //
-            ),
-          ),
-          onPressed: () {}, // TODO: open date picker
-        ),
+      // TextButton(
+      //   child: Text(
+      //     DateFormat("yyyy-MM-dd").format(date), //
+      //     style: TextStyle(
+      //       fontSize: 16, //
+      //       fontWeight: FontWeight.bold, //
+      //     ),
+      //   ),
+      //   onPressed: () {}, // TODO: open date picker
+      // ),
 
-        IconButton(
-          tooltip: "Next", //
-          icon: Icon(Icons.navigate_next, size: 32), //
-          padding: EdgeInsets.all(0),
-          constraints: BoxConstraints(),
-          onPressed: () {
-            date = date.add(Duration(days: 1));
-            setState(() {});
-          },
-        ),
+      // IconButton(
+      //   tooltip: "Next", //
+      //   icon: Icon(Icons.navigate_next, size: 32), //
+      //   padding: EdgeInsets.all(0),
+      //   constraints: BoxConstraints(),
+      //   onPressed: () {
+      //     date = date.add(Duration(days: 1));
+      //     setState(() {});
+      //   },
+      // ),
 
-        Spacer(), //
+      // Spacer(), //
 
-        OutlinedButton.icon(
-          icon: Icon(Icons.restart_alt), //
-          label: Text("Rollover"), //
-          onPressed: () {
-            setState(() {});
-          },
-        ),
-      ],
+      // OutlinedButton.icon(
+      //   icon: Icon(Icons.restart_alt), //
+      //   label: Text("Rollover"), //
+      //   onPressed: () {
+      //     setState(() {});
+      //   },
+      // ),
+      // ],
     );
   }
 

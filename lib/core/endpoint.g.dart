@@ -1,4 +1,5 @@
 class EndPoint {
+	final FRONT_DESK_ROLLOVER = "/front_desk/rollover";
 	final AUTH_ACCESS_TOKEN = "/auth/access_token";
 	final AUTH_SIGN_IN = "/auth/sign_in";
 	final AUTH = "/auth";
@@ -13,11 +14,11 @@ class EndPoint {
 	final FRONT_DESK_CHECK_IN = "/front_desk/check_in";
 	final FRONT_DESK_CHECK_OUT = "/front_desk/check_out";
 	final FRONT_DESK_CLEAN = "/front_desk/clean";
+	final FRONT_DESK_DAILY_REPORT = "/front_desk/daily_report";
 	final FRONT_DESK_MINI_BAR_ITEM = "/front_desk/mini_bar_item";
 	final FRONT_DESK_MINI_BAR_PAY = "/front_desk/mini_bar_pay";
 	final FRONT_DESK_PENALTY_ITEM = "/front_desk/penalty_item";
 	final FRONT_DESK_PENALTY_PAY = "/front_desk/penalty_pay";
-	final FRONT_DESK_ROLLOVER = "/front_desk/rollover";
 	final FRONT_DESK_ROOM_PAY = "/front_desk/room_pay";
 	final FRONT_DESK_ROOM_PAY_UPDATE = "/front_desk/room_pay_update";
 	final FRONT_DESK_UPDATE_CHECK_IN = "/front_desk/update_check_in";

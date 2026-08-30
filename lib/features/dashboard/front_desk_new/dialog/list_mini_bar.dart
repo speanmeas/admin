@@ -20,6 +20,8 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
 
   late List<Order_Mini_Bar> list_order_mini_bar = widget.list_order_mini_bar;
 
+  late Set<String> locked_ids = widget.locked_ids ?? {};
+
   String _search = "";
 
   // * ពិនិត្យថាទំនិញបានជ្រើសរើសហើយឬនៅ (មាន order ដែល quantity > 0)
@@ -34,6 +36,9 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
     }
     return null;
   }
+
+  // * ទំនិញពីថ្ងៃមុន (locked) — មិនអនុញ្ញាតឲ្យបន្ថយចំនួន
+  bool _is_locked(Mini_Bar item) => locked_ids.contains(_order_of(item)?.id);
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +135,10 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
                                 if (selected) ...[
                                   IconButton(
                                     tooltip: "Decrease", //
-                                    icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                                    icon: Icon(
+                                      Icons.remove_circle_outline,
+                                      color: _is_locked(item) ? Colors.grey : Colors.red,
+                                    ),
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(),
                                     onPressed: () => _decrease(item), //
@@ -201,10 +209,11 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
     setState(() {});
   }
 
-  // * បន្ថយចំនួន (ដល់ 0 ដកចេញពីបញ្ជី)
+  // * បន្ថយចំនួន (ដល់ 0 ដកចេញពីបញ្ជី) — មិនអនុញ្ញាតសម្រាប់ទំនិញថ្ងៃមុន (locked)
   void _decrease(Mini_Bar item) {
     var o = _order_of(item);
     if (o == null) return;
+    if (locked_ids.contains(o.id)) return;
     o.quantity--;
     if (o.quantity <= 0) {
       list_order_mini_bar.removeWhere((x) => x.mini_bar_id?.id == item.id);
@@ -226,10 +235,12 @@ class List_Mini_Bar extends StatefulWidget {
     super.key, //
     required this.list_mini_bar,
     required this.list_order_mini_bar,
+    this.locked_ids, //
   });
 
   final List<Mini_Bar> list_mini_bar; // * បញ្ជីទំនិញ mini bar
   final List<Order_Mini_Bar> list_order_mini_bar; // * បញ្ជី order mini bar (កែប្រែផ្ទាល់)
+  final Set<String>? locked_ids; // * id នៃទំនិញពីថ្ងៃមុន (មិនអនុញ្ញាតឲ្យបន្ថយចំនួន)
 
   @override
   State<List_Mini_Bar> createState() => _List_Mini_Bar_State();

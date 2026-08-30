@@ -20,6 +20,8 @@ class _List_Penalty_State extends State<List_Penalty> {
 
   late List<Order_Penalty> list_order_penalty = widget.list_order_penalty;
 
+  late Set<String> locked_ids = widget.locked_ids ?? {};
+
   String _search = "";
 
   // * ពិនិត្យថាទំនិញបានជ្រើសរើសហើយឬនៅ (មាន order ដែល quantity > 0)
@@ -34,6 +36,9 @@ class _List_Penalty_State extends State<List_Penalty> {
     }
     return null;
   }
+
+  // * ទំនិញពីថ្ងៃមុន (locked) — មិនអនុញ្ញាតឲ្យបន្ថយចំនួន
+  bool _is_locked(Penalty item) => locked_ids.contains(_order_of(item)?.id);
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +135,10 @@ class _List_Penalty_State extends State<List_Penalty> {
                                 if (selected) ...[
                                   IconButton(
                                     tooltip: "Decrease", //
-                                    icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                                    icon: Icon(
+                                      Icons.remove_circle_outline,
+                                      color: _is_locked(item) ? Colors.grey : Colors.red,
+                                    ),
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(),
                                     onPressed: () => _decrease(item), //
@@ -200,10 +208,11 @@ class _List_Penalty_State extends State<List_Penalty> {
     setState(() {});
   }
 
-  // * បន្ថយចំនួន (ដល់ 0 ដកចេញពីបញ្ជី)
+  // * បន្ថយចំនួន (ដល់ 0 ដកចេញពីបញ្ជី) — មិនអនុញ្ញាតសម្រាប់ទំនិញថ្ងៃមុន (locked)
   void _decrease(Penalty item) {
     var o = _order_of(item);
     if (o == null) return;
+    if (locked_ids.contains(o.id)) return;
     o.quantity--;
     if (o.quantity <= 0) {
       list_order_penalty.removeWhere((x) => x.penalty_id?.id == item.id);
@@ -225,10 +234,12 @@ class List_Penalty extends StatefulWidget {
     super.key, //
     required this.list_penalty,
     required this.list_order_penalty,
+    this.locked_ids, //
   });
 
   final List<Penalty> list_penalty; // * បញ្ជីទំនិញ penalty
   final List<Order_Penalty> list_order_penalty; // * បញ្ជី order penalty (កែប្រែផ្ទាល់)
+  final Set<String>? locked_ids; // * id នៃទំនិញពីថ្ងៃមុន (មិនអនុញ្ញាតឲ្យបន្ថយចំនួន)
 
   @override
   State<List_Penalty> createState() => _List_Penalty_State();
