@@ -112,7 +112,7 @@ Future<bool?> dialog_search_guest({
                             if (guest_id == null) return snackbar(ct: context, ms: "Please select a guest", cl: Colors.red);
 
                             dynamic tmp_fd = await dio.post(
-                              endpoint.FRONT_DESK_UPDATE,
+                              endpoint.FRONT_DESK_UPDATE_GUEST,
                               data: {
                                 Front_Desk.ID: front_desk_id, //
                                 Front_Desk.GUEST_ID: guest_id, //

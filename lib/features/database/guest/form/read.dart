@@ -66,8 +66,8 @@ class _Main_State extends State<Main_> {
     final guest = Guest.fromJson(tmp.data[0]);
     full_name = guest.full_name;
     phone_number = guest.phone_number;
-    gender = guest.gender;
-    nationality_id = guest.nationality_id?.name;
+    // gender = guest.gender;
+    // nationality_id = guest.nationality_id?.name;
     note = guest.note;
 
     setState(() {});

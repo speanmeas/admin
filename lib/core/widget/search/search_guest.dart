@@ -62,8 +62,8 @@ class _Search_GuestState extends State<Search_Guest> {
       id = g.id;
       full_name = g.full_name;
       phone_number = g.phone_number;
-      gender = g.gender;
-      nationality = g.nationality_id?.name;
+      // gender = g.gender;
+      // nationality = g.nationality_id?.name;
       note = g.note;
 
       controller.text = "$full_name (${phone_number ?? 'N/A'})";
@@ -161,8 +161,8 @@ class _Search_GuestState extends State<Search_Guest> {
                     id = g.id;
                     full_name = g.full_name;
                     phone_number = g.phone_number;
-                    gender = g.gender;
-                    nationality = g.nationality_id?.name;
+                    // gender = g.gender;
+                    // nationality = g.nationality_id?.name;
                     note = g.note;
 
                     widget.onChanged?.call(id);
@@ -192,8 +192,8 @@ class _Search_GuestState extends State<Search_Guest> {
                 id = g.id;
                 full_name = g.full_name;
                 phone_number = g.phone_number;
-                gender = g.gender;
-                nationality = g.nationality_id?.name;
+                // gender = g.gender;
+                // nationality = g.nationality_id?.name;
                 note = g.note;
 
                 controller.text = full_name ?? "";

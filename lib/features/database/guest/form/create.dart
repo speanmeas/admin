@@ -138,8 +138,8 @@ class _Main_State extends State<Main_> {
       data: {
         Guest.FULL_NAME: full_name,
         Guest.PHONE_NUMBER: phone_number,
-        Guest.GENDER: gender,
-        Guest.NATIONALITY_ID: nationality_id,
+        // Guest.GENDER: gender,
+        // Guest.NATIONALITY_ID: nationality_id,
         Guest.NOTE: note, //
       },
     );

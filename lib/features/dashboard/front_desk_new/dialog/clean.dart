@@ -53,15 +53,14 @@ Future<bool?> dialog_clean({
             icon: const Icon(Icons.cleaning_services), //
             label: const Text("Clean"),
             onPressed: () async {
-              dynamic tpm_clean = await dio.post(endpoint.CLEAN_CREATE);
-
-              await dio.post(
-                endpoint.FRONT_DESK_UPDATE,
+              // create Clean child + set clean_id on the stay
+              dynamic tmp = await dio.post(
+                endpoint.FRONT_DESK_CLEAN,
                 data: {
                   Front_Desk.ID: front_desk_id, //
-                  Front_Desk.CLEAN_ID: tpm_clean.data[0][Clean.ID], //
                 },
               );
+              if (tmp == null) return snackbar(ct: context, ms: "Error: Clean", cl: Colors.red);
 
               await dio.post(
                 endpoint.ROOM_UPDATE,

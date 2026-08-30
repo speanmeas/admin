@@ -53,17 +53,14 @@ Future<bool?> dialog_check_out({
             icon: const Icon(Icons.logout_outlined), //
             label: const Text("Check Out"),
             onPressed: () async {
-              // create check out
-              dynamic tpm_check_out = await dio.post(endpoint.CHECK_OUT_CREATE, data: {});
-
-              //   update front desk with check out id
-              await dio.post(
-                endpoint.FRONT_DESK_UPDATE,
+              // create Check_Out child + set check_out_id on the stay
+              dynamic tmp = await dio.post(
+                endpoint.FRONT_DESK_CHECK_OUT,
                 data: {
                   Front_Desk.ID: front_desk_id, //
-                  Front_Desk.CHECK_OUT_ID: tpm_check_out.data[0][Check_Out.ID], //
                 },
               );
+              if (tmp == null) return snackbar(ct: context, ms: "Error: Check-Out", cl: Colors.red);
 
               // update room status to dirty
               await dio.post(

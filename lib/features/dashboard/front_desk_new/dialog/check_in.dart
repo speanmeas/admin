@@ -68,32 +68,27 @@ Future<bool?> dialog_check_in({
             icon: const Icon(Icons.login_outlined), //
             label: const Text("Check In"),
             onPressed: () async {
-              // create stay
-              dynamic tmp_cin = await dio.post(
-                endpoint.CHECK_IN_CREATE,
-                data: {
-                  Check_In.NUMBER: stay_number, //
-                },
-              );
-
-              //  create room pay
-              dynamic tmp_rp = await dio.post(
-                endpoint.ROOM_PAY_CREATE,
-                data: {
-                  Room_Pay.PRICE: price_per_day, //
-                },
-              );
-
-              // create front desk
+              // create stay (Front_Desk + Check_In child, sets check_in_id)
               dynamic tmp_fd = await dio.post(
-                endpoint.FRONT_DESK_CREATE,
+                endpoint.FRONT_DESK_CHECK_IN,
                 data: {
-                  Front_Desk.ROOM_ID: room_id, //
-                  Front_Desk.CHECK_IN_ID: tmp_cin.data[0][Check_In.ID], //
-                  Front_Desk.ROOM_PAY_ID: tmp_rp.data[0][Room_Pay.ID], //
+                  "room_id": room_id, //
+                  "number_of_guest": stay_number, //
                 },
               );
-              // update
+              if (tmp_fd == null) return snackbar(ct: context, ms: "Error: Check-In", cl: Colors.red);
+              String fd_id = tmp_fd.data[0][Front_Desk.ID];
+
+              // set starting room price on the stay (records a Room_Pay row)
+              await dio.post(
+                endpoint.FRONT_DESK_UPDATE_ROOM_PAY,
+                data: {
+                  Front_Desk.ID: fd_id, //
+                  "price": price_per_day, //
+                  "cash": 0, //
+                  "bank": 0, //
+                },
+              );
 
               // update room status to occupied
               await dio.post(
@@ -101,7 +96,7 @@ Future<bool?> dialog_check_in({
                 data: {
                   Room.ID: room_id, //
                   Room.STATUS: "Occupied", //
-                  Room.FRONT_DESK_ID: tmp_fd.data[0][Front_Desk.ID], //
+                  Room.FRONT_DESK_ID: fd_id, //
                 },
               );
 

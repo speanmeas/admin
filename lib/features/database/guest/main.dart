@@ -106,10 +106,10 @@ class _Main_State extends State<Main_> {
                   return PlutoCell(value: guest.full_name);
                 if (c == Guest.PHONE_NUMBER) //
                   return PlutoCell(value: guest.phone_number);
-                if (c == Guest.GENDER) //
-                  return PlutoCell(value: guest.gender);
-                if (c == Guest.NATIONALITY_ID) //
-                  return PlutoCell(value: guest.nationality_id?.name);
+                // if (c == Guest.GENDER) //
+                //   return PlutoCell(value: guest.gender);
+                // if (c == Guest.NATIONALITY_ID) //
+                //   return PlutoCell(value: guest.nationality_id?.name);
                 if (c == Guest.NOTE) //
                   return PlutoCell(value: guest.note);
 
@@ -471,39 +471,39 @@ final columns = [
     },
   ),
   // * ជួរឈរGender
-  PlutoColumn(
-    field: Guest.GENDER, //
-    title: "Gender",
-    type: PlutoColumnType.text(),
-    width: WIDTH,
-    enableEditingMode: false,
-    renderer: (rc) {
-      return Align(
-        alignment: Alignment.center, //
-        child: Text(
-          format_string(rc.cell.value), //
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    },
-  ),
+  // PlutoColumn(
+  //   field: Guest.GENDER, //
+  //   title: "Gender",
+  //   type: PlutoColumnType.text(),
+  //   width: WIDTH,
+  //   enableEditingMode: false,
+  //   renderer: (rc) {
+  //     return Align(
+  //       alignment: Alignment.center, //
+  //       child: Text(
+  //         format_string(rc.cell.value), //
+  //         overflow: TextOverflow.ellipsis,
+  //       ),
+  //     );
+  //   },
+  // ),
   // * ជួរឈរNationality
-  PlutoColumn(
-    field: Guest.NATIONALITY_ID, //
-    title: "Nationality",
-    type: PlutoColumnType.text(),
-    width: WIDTH,
-    enableEditingMode: false,
-    renderer: (rc) {
-      return Align(
-        alignment: Alignment.center, //
-        child: Text(
-          format_string(rc.cell.value), //
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    },
-  ),
+  // PlutoColumn(
+  //   field: Guest.NATIONALITY_ID, //
+  //   title: "Nationality",
+  //   type: PlutoColumnType.text(),
+  //   width: WIDTH,
+  //   enableEditingMode: false,
+  //   renderer: (rc) {
+  //     return Align(
+  //       alignment: Alignment.center, //
+  //       child: Text(
+  //         format_string(rc.cell.value), //
+  //         overflow: TextOverflow.ellipsis,
+  //       ),
+  //     );
+  //   },
+  // ),
   // * ជួរឈរNote
   PlutoColumn(
     field: Guest.NOTE, //
