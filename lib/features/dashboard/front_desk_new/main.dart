@@ -12,6 +12,8 @@ import "package:speanmeas/core/widget/dialog/dialog_datetime.dart";
 import "dialog/check_in.dart";
 import "dialog/cancel.dart";
 import "dialog/change_room.dart";
+import "dialog/list_mini_bar.dart";
+import "dialog/list_penalty.dart";
 import "dialog/search_guest.dart";
 // import "form/check_out.dart" as check_out;
 // import "form/clean.dart" as clean;
@@ -332,7 +334,27 @@ class _Main_State extends State<Main_> {
   // * បញ្ជាការកែប្រែ និងការបោះបង់ពីជួរ grid (action រស់នៅក្នុង method មិននៅក្នុង UI)
   String? row_stay_id(PlutoColumnRendererContext rc) => rc.row.cells["_id"]?.value;
 
+  Front_Desk? row_stay(PlutoColumnRendererContext rc) {
+    String? fd_id = row_stay_id(rc);
+    if (fd_id == null) return null;
+    return front_desks.where((x) => x.id == fd_id).firstOrNull;
+  }
+
+  // * ហាមប្រើប្រាស់ ប្រសិនបើបាន check out រួចហើយ
+  bool checkout_guard(PlutoColumnRendererContext rc) {
+    Front_Desk? fd = row_stay(rc);
+    if (fd?.check_out_at != null) {
+      snackbar(ct: context, ms: "Already checked out", cl: Colors.red);
+      return true;
+    }
+    return false;
+  }
+
+  // * ពិនិត្យថា stay បាន check out រួចហើយឬនៅ (សម្រាប់លាក់ប៊ូតុង)
+  bool is_checked_out(PlutoColumnRendererContext rc) => row_stay(rc)?.check_out_at != null;
+
   void on_cancel(PlutoColumnRendererContext rc) async {
+    if (checkout_guard(rc)) return;
     String? fd_id = row_stay_id(rc);
     if (fd_id == null) return snackbar(ct: context, ms: "No stay to cancel", cl: Colors.red);
 
@@ -346,6 +368,7 @@ class _Main_State extends State<Main_> {
   }
 
   void on_change_room(PlutoColumnRendererContext rc) async {
+    if (checkout_guard(rc)) return;
     String? fd_id = row_stay_id(rc);
     if (fd_id == null) return snackbar(ct: context, ms: "No stay to change room", cl: Colors.red);
 
@@ -356,6 +379,134 @@ class _Main_State extends State<Main_> {
       rooms: rooms.where((r) => r[Room.STATUS] == "Available").toList(), //
     );
     if (v == null) return;
+    init();
+  }
+
+  void on_penalty_item(PlutoColumnRendererContext rc) async {
+    if (checkout_guard(rc)) return;
+    String? fd_id = row_stay_id(rc);
+    if (fd_id == null) return snackbar(ct: context, ms: "No stay to update penalty", cl: Colors.red);
+
+    Front_Desk? fd = front_desks.where((x) => x.id == fd_id).firstOrNull;
+
+    dynamic tmp_p = await dio.post(endpoint.PENALTY_READ, data: {});
+    if (tmp_p == null) return snackbar(ct: context, ms: "Error: Read Penalty", cl: Colors.red);
+    List<Penalty> list_penalty = (tmp_p.data as List<dynamic>? ?? []).map((e) => Penalty.fromJson(e)).toList();
+
+    List<Order_Penalty> orders = [
+      for (var it in (fd?.list_penalty_item_id ?? []))
+        if (it is Penalty_Item) Order_Penalty.fromJson(it.toJson()),
+    ];
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => List_Penalty(
+        list_penalty: list_penalty, //
+        list_order_penalty: orders, //
+      ),
+    );
+    if (saved != true) return;
+
+    // * រក្សាទុកទំនិញ penalty: ថ្មី → create, មានរួច → update quantity
+    List<String> ids = [];
+    for (var o in orders) {
+      if (o.id != null) {
+        dynamic tmp_up = await dio.post(
+          endpoint.PENALTY_ITEM_UPDATE,
+          data: {
+            Penalty_Item.ID: o.id, //
+            Penalty_Item.QUANTITY: o.quantity, //
+          },
+        );
+        if (tmp_up == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+        ids.add(o.id!);
+        continue;
+      }
+      dynamic tmp_item = await dio.post(
+        endpoint.PENALTY_ITEM_CREATE,
+        data: {
+          Penalty_Item.PENALTY_ID: o.penalty_id?.id, //
+          Penalty_Item.QUANTITY: o.quantity, //
+        },
+      );
+      if (tmp_item == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      ids.add(tmp_item.data[0][Penalty_Item.ID]);
+    }
+
+    dynamic tmp_fd = await dio.post(
+      endpoint.FRONT_DESK_PENALTY_ITEM,
+      data: {
+        Front_Desk.ID: fd_id, //
+        Front_Desk.LIST_PENALTY_ITEM_ID: ids, //
+      },
+    );
+    if (tmp_fd == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    snackbar(ct: context, ms: "Penalty Updated", cl: Colors.green);
+    init();
+  }
+
+  void on_mini_bar_item(PlutoColumnRendererContext rc) async {
+    if (checkout_guard(rc)) return;
+    String? fd_id = row_stay_id(rc);
+    if (fd_id == null) return snackbar(ct: context, ms: "No stay to update mini bar", cl: Colors.red);
+
+    Front_Desk? fd = front_desks.where((x) => x.id == fd_id).firstOrNull;
+
+    dynamic tmp_m = await dio.post(endpoint.MINI_BAR_READ, data: {});
+    if (tmp_m == null) return snackbar(ct: context, ms: "Error: Read Mini Bar", cl: Colors.red);
+    List<Mini_Bar> list_mini_bar = (tmp_m.data as List<dynamic>? ?? []).map((e) => Mini_Bar.fromJson(e)).toList();
+
+    List<Order_Mini_Bar> orders = [
+      for (var it in (fd?.list_mini_bar_item_id ?? []))
+        if (it is Mini_Bar_Item) Order_Mini_Bar.fromJson(it.toJson()),
+    ];
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => List_Mini_Bar(
+        list_mini_bar: list_mini_bar, //
+        list_order_mini_bar: orders, //
+      ),
+    );
+    if (saved != true) return;
+
+    // * រក្សាទុកទំនិញ mini bar: ថ្មី → create, មានរួច → update quantity
+    List<String> ids = [];
+    for (var o in orders) {
+      if (o.id != null) {
+        dynamic tmp_up = await dio.post(
+          endpoint.MINI_BAR_ITEM_UPDATE,
+          data: {
+            Mini_Bar_Item.ID: o.id, //
+            Mini_Bar_Item.QUANTITY: o.quantity, //
+          },
+        );
+        if (tmp_up == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+        ids.add(o.id!);
+        continue;
+      }
+      dynamic tmp_item = await dio.post(
+        endpoint.MINI_BAR_ITEM_CREATE,
+        data: {
+          Mini_Bar_Item.MINI_BAR_ID: o.mini_bar_id?.id, //
+          Mini_Bar_Item.QUANTITY: o.quantity, //
+        },
+      );
+      if (tmp_item == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      ids.add(tmp_item.data[0][Mini_Bar_Item.ID]);
+    }
+
+    dynamic tmp_fd = await dio.post(
+      endpoint.FRONT_DESK_MINI_BAR_ITEM,
+      data: {
+        Front_Desk.ID: fd_id, //
+        Front_Desk.LIST_MINI_BAR_ITEM_ID: ids, //
+      },
+    );
+    if (tmp_fd == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    snackbar(ct: context, ms: "Mini Bar Updated", cl: Colors.green);
     init();
   }
 
@@ -817,14 +968,14 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
                   ),
-                  if (rc.cell.value != null)
-                    IconButton(
-                      tooltip: "កែពេលចេញ", //
-                      icon: Icon(Icons.calendar_month_outlined),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () => pick_datetime(rc, is_check_in: false), //
-                    ),
+                  // if (rc.cell.value != null)
+                  //   IconButton(
+                  //     tooltip: "កែពេលចេញ", //
+                  //     icon: Icon(Icons.calendar_month_outlined),
+                  //     padding: EdgeInsets.all(0),
+                  //     constraints: BoxConstraints(),
+                  //     onPressed: () => pick_datetime(rc, is_check_in: false), //
+                  //   ),
                 ],
               );
             },
@@ -1064,15 +1215,14 @@ class _Main_State extends State<Main_> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround, //
                 children: [
                   //
-                  IconButton(
-                    tooltip: "Update Mini Bar Items", //
-                    icon: Icon(Icons.local_bar_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      pprint("Update Mini Bar Items: ${rc.row.cells["index"]?.value}");
-                    }, //
-                  ),
+                  if (!is_checked_out(rc))
+                    IconButton(
+                      tooltip: "Update Mini Bar Items", //
+                      icon: Icon(Icons.local_bar_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_mini_bar_item(rc), //
+                    ),
                 ],
               );
             },
@@ -1128,7 +1278,7 @@ class _Main_State extends State<Main_> {
               //   negative: false, //
               format: "#,##0.00",
             ),
-            enableEditingMode: false, // Note: Mini bar cash is auto calculated from the items, so it should not be editable.
+            enableEditingMode: false,
             width: 80,
             renderer: (rc) {
               return Align(
@@ -1288,15 +1438,14 @@ class _Main_State extends State<Main_> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  IconButton(
-                    tooltip: "Update Penalty Items", //
-                    icon: Icon(Icons.gavel_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      pprint("Update Penalty Items: ${rc.row.cells["index"]?.value}");
-                    }, //
-                  ),
+                  if (!is_checked_out(rc))
+                    IconButton(
+                      tooltip: "Update Penalty Items", //
+                      icon: Icon(Icons.gavel_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_penalty_item(rc), //
+                    ),
                 ],
               );
             },
@@ -1309,7 +1458,7 @@ class _Main_State extends State<Main_> {
               negative: false, //
               format: "#,##0.00",
             ),
-            // enableEditingMode: false,
+            enableEditingMode: false, // Note: Penalty price is auto calculated from the items, so it should not be editable.
             width: 80,
             renderer: (rc) {
               return Align(
@@ -1565,22 +1714,24 @@ class _Main_State extends State<Main_> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround, //
                 children: [
                   //
-                  IconButton(
-                    tooltip: "Change Room", //
-                    icon: Icon(Icons.swap_horiz_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_change_room(rc), //
-                  ),
+                  if (!is_checked_out(rc))
+                    IconButton(
+                      tooltip: "Change Room", //
+                      icon: Icon(Icons.swap_horiz_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_change_room(rc), //
+                    ),
 
                   //
-                  IconButton(
-                    tooltip: "Cancel", //
-                    icon: Icon(Icons.cancel_outlined, color: Colors.red),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_cancel(rc), //
-                  ),
+                  if (!is_checked_out(rc))
+                    IconButton(
+                      tooltip: "Cancel", //
+                      icon: Icon(Icons.cancel_outlined, color: Colors.red),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_cancel(rc), //
+                    ),
 
                   //
                   IconButton(

@@ -27,6 +27,14 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
     return list_order_mini_bar.any((o) => o.mini_bar_id?.id == item.id);
   }
 
+  // * ស្វែងរក order របស់ទំនិញ
+  Order_Mini_Bar? _order_of(Mini_Bar item) {
+    for (var o in list_order_mini_bar) {
+      if (o.mini_bar_id?.id == item.id) return o;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -34,18 +42,11 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
       titlePadding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
       contentPadding: EdgeInsets.zero,
       title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text(
             "Select Item", //
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const Spacer(),
-          // * ប៊ូតុងបិទ dialog
-          IconButton(
-            icon: const Icon(Icons.close, size: 24, color: Colors.red),
-            padding: EdgeInsets.all(4),
-            constraints: const BoxConstraints(),
-            onPressed: () => Navigator.pop(context),
           ),
         ],
       ),
@@ -89,7 +90,9 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
                       itemBuilder: (context, index) {
                         final item = _list_show[index];
                         final selected = _selected(item);
+                        final order = _order_of(item);
                         final price = item.price ?? 0;
+                        final qty = order?.quantity ?? 0;
                         return InkWell(
                           hoverColor: Colors.blue.withValues(alpha: 0.05),
                           onTap: () => _toggle(item, selected),
@@ -122,6 +125,32 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
                                     ],
                                   ),
                                 ),
+
+                                // * stepper +/-
+                                if (selected) ...[
+                                  IconButton(
+                                    tooltip: "Decrease", //
+                                    icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                    onPressed: () => _decrease(item), //
+                                  ),
+                                  SizedBox(
+                                    width: 32,
+                                    child: Text(
+                                      "$qty", //
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    tooltip: "Increase", //
+                                    icon: const Icon(Icons.add_circle_outline, color: Colors.blue),
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                    onPressed: () => _increase(item), //
+                                  ),
+                                ],
                               ],
                             ),
                           ),
@@ -133,6 +162,8 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
         ),
       ),
       actionsPadding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+      actionsAlignment: MainAxisAlignment.center,
+
       actions: [
         // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស
         OutlinedButton.icon(
@@ -140,7 +171,7 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
           label: const Text("Done"), //
           onPressed: () {
             // pprint(list_order_mini_bar);
-            Navigator.pop(context);
+            Navigator.pop(context, true);
           },
         ),
       ],
@@ -158,6 +189,25 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
           quantity: 1,
         ),
       );
+    }
+    setState(() {});
+  }
+
+  // * បង្កើនចំនួន
+  void _increase(Mini_Bar item) {
+    var o = _order_of(item);
+    if (o == null) return;
+    o.quantity++;
+    setState(() {});
+  }
+
+  // * បន្ថយចំនួន (ដល់ 0 ដកចេញពីបញ្ជី)
+  void _decrease(Mini_Bar item) {
+    var o = _order_of(item);
+    if (o == null) return;
+    o.quantity--;
+    if (o.quantity <= 0) {
+      list_order_mini_bar.removeWhere((x) => x.mini_bar_id?.id == item.id);
     }
     setState(() {});
   }
