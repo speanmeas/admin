@@ -53,7 +53,7 @@ Future<bool?> dialog_check_out({
             icon: const Icon(Icons.logout_outlined), //
             label: const Text("Check Out"),
             onPressed: () async {
-              // create Check_Out child + set check_out_id on the stay
+              // stamp check-out on the stay (endpoint auto-sets check_out_at/by)
               dynamic tmp = await dio.post(
                 endpoint.FRONT_DESK_CHECK_OUT,
                 data: {

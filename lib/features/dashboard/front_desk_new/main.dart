@@ -76,11 +76,6 @@ class _Main_State extends State<Main_> {
   // * accessors for Front_Desk linked/expanded fields
   Room? fd_room(Front_Desk fd) => fd.room_id is Room ? fd.room_id as Room : null;
   Guest? fd_guest(Front_Desk fd) => fd.guest_id is Guest ? fd.guest_id as Guest : null;
-  Check_In? fd_check_in(Front_Desk fd) => fd.check_in_id is Check_In ? fd.check_in_id as Check_In : null;
-  Check_Out? fd_check_out(Front_Desk fd) => fd.check_out_id is Check_Out ? fd.check_out_id as Check_Out : null;
-  double sum_price(List<Room_Pay>? l) => (l ?? []).fold(0, (a, e) => a + (e.price ?? 0));
-  double sum_cash(List<Room_Pay>? l) => (l ?? []).fold(0, (a, e) => a + (e.cash ?? 0));
-  double sum_bank(List<Room_Pay>? l) => (l ?? []).fold(0, (a, e) => a + (e.bank ?? 0));
 
   void update_grid() {
     //
@@ -104,33 +99,33 @@ class _Main_State extends State<Main_> {
                   return PlutoCell(value: fd_guest(fd)?.phone_number ?? "");
 
                 if (c == "check_in_people") //
-                  return PlutoCell(value: fd_check_in(fd)?.number_of_guest ?? 0);
+                  return PlutoCell(value: fd.number_of_guest ?? 0);
 
                 if (c == "check_in_at") //
-                  return PlutoCell(value: fd_check_in(fd)?.created_at);
+                  return PlutoCell(value: fd.check_in_at);
 
                 if (c == "check_in_duration") {
-                  DateTime? in_at = fd_check_in(fd)?.created_at;
-                  DateTime? out_at = fd_check_out(fd)?.created_at;
+                  DateTime? in_at = fd.check_in_at;
+                  DateTime? out_at = fd.check_out_at;
                   if (in_at == null) return PlutoCell(value: 0);
                   if (out_at == null) return PlutoCell(value: DateTime.now().difference(in_at).inMinutes);
                   return PlutoCell(value: out_at.difference(in_at).inMinutes);
                 }
 
                 if (c == "check_out_at") //
-                  return PlutoCell(value: fd_check_out(fd)?.created_at);
+                  return PlutoCell(value: fd.check_out_at);
 
-                // * totals from room_pay back= list
-                if (c == "room_price") return PlutoCell(value: sum_price(fd.room_pay));
-                if (c == "room_cash") return PlutoCell(value: sum_cash(fd.room_pay));
-                if (c == "room_bank") return PlutoCell(value: sum_bank(fd.room_pay));
+                // * room payment fields are inline on the stay (no Room_Pay child array)
+                if (c == "room_price") return PlutoCell(value: fd.room_price);
+                if (c == "room_cash") return PlutoCell(value: fd.room_cash);
+                if (c == "room_bank") return PlutoCell(value: fd.room_bank);
 
                 if (c == "check_in_by") {
-                  dynamic u = fd_check_in(fd)?.created_by;
+                  dynamic u = fd.check_in_by;
                   return PlutoCell(value: u is User_Show ? u.full_name : (u ?? ""));
                 }
                 if (c == "check_out_by") {
-                  dynamic u = fd_check_out(fd)?.created_by;
+                  dynamic u = fd.check_out_by;
                   return PlutoCell(value: u is User_Show ? u.full_name : (u ?? ""));
                 }
 
@@ -177,7 +172,7 @@ class _Main_State extends State<Main_> {
         );
         if (tmp_g == null) snackbar(ct: context, ms: "Error: Guest's Name", cl: Colors.red);
         dynamic tmp_fd = await dio.post(
-          endpoint.FRONT_DESK_UPDATE_GUEST,
+          endpoint.FRONT_DESK_UPDATE,
           data: {
             Front_Desk.ID: fd_id, //
             Front_Desk.GUEST_ID: tmp_g.data[0][Guest.ID], //
@@ -207,7 +202,7 @@ class _Main_State extends State<Main_> {
         );
         if (tmp_g == null) snackbar(ct: context, ms: "Error: Guest's Phone", cl: Colors.red);
         dynamic tmp_fd = await dio.post(
-          endpoint.FRONT_DESK_UPDATE_GUEST,
+          endpoint.FRONT_DESK_UPDATE,
           data: {
             Front_Desk.ID: fd_id, //
             Front_Desk.GUEST_ID: tmp_g.data[0][Guest.ID], //
@@ -228,10 +223,10 @@ class _Main_State extends State<Main_> {
 
     if (e.column.field == "check_in_people") {
       dynamic tmp_fdn = await dio.post(
-        endpoint.FRONT_DESK_UPDATE_STAY,
+        endpoint.FRONT_DESK_UPDATE,
         data: {
           Front_Desk.ID: fd_id, //
-          "number_of_guest": int.tryParse(e.value?.toString() ?? ""), //
+          Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? ""), //
         },
       );
       if (tmp_fdn == null) snackbar(ct: context, ms: "Error: Check-In Update", cl: Colors.red);
@@ -239,19 +234,19 @@ class _Main_State extends State<Main_> {
 
     if (e.column.field == "room_price") {
       dynamic tmp_fdn = await dio.post(
-        endpoint.FRONT_DESK_UPDATE_ROOM_PAY,
+        endpoint.FRONT_DESK_ROOM_PAY,
         data: {
           Front_Desk.ID: fd_id, //
-          "price": num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
+          Front_Desk.ROOM_PRICE: num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
         },
       );
       if (tmp_fdn == null) snackbar(ct: context, ms: "Error: Room Price Update", cl: Colors.red);
     }
 
     if (e.column.field == "room_cash" || e.column.field == "room_bank") {
-      String key = e.column.field == "room_cash" ? "cash" : "bank";
+      String key = e.column.field == "room_cash" ? Front_Desk.ROOM_CASH : Front_Desk.ROOM_BANK;
       dynamic tmp_fdn = await dio.post(
-        endpoint.FRONT_DESK_UPDATE_ROOM_PAY,
+        endpoint.FRONT_DESK_ROOM_PAY,
         data: {
           Front_Desk.ID: fd_id, //
           key: num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
@@ -273,6 +268,47 @@ class _Main_State extends State<Main_> {
 
   void on_clean() {
     // controller
+  }
+
+  Future<void> pick_datetime(PlutoColumnRendererContext rc, {required bool is_check_in}) async {
+    String? fd_id = rc.row.cells["_id"]?.value;
+    if (fd_id == null) return;
+
+    DateTime? current = parse_datetime(rc.cell.value) ?? DateTime.now();
+
+    final DateTime? picked_date = await showDatePicker(
+      context: context, //
+      initialDate: current, //
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked_date == null || !mounted) return;
+
+    final TimeOfDay? picked_time = await showTimePicker(
+      context: context, //
+      initialTime: TimeOfDay.fromDateTime(current),
+    );
+    if (picked_time == null || !mounted) return;
+
+    final DateTime picked_datetime = DateTime(
+      picked_date.year, //
+      picked_date.month,
+      picked_date.day,
+      picked_time.hour,
+      picked_time.minute,
+    );
+
+    String key = is_check_in ? Front_Desk.CHECK_IN_AT : Front_Desk.CHECK_OUT_AT;
+    dynamic tmp = await dio.post(
+      endpoint.FRONT_DESK_UPDATE,
+      data: {
+        Front_Desk.ID: fd_id, //
+        key: format_datetime(picked_datetime), //
+      },
+    );
+    if (tmp == null) return snackbar(ct: context, ms: "Error: Time Update", cl: Colors.red);
+
+    init();
   }
 
   void refresh_time() async {
@@ -686,6 +722,14 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
                   ),
+
+                  IconButton(
+                    tooltip: "កែពេលចូល", //
+                    icon: Icon(Icons.calendar_month_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () => pick_datetime(rc, is_check_in: true), //
+                  ),
                 ],
               );
             },
@@ -734,6 +778,14 @@ class _Main_State extends State<Main_> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                  ),
+
+                  IconButton(
+                    tooltip: "កែពេលចេញ", //
+                    icon: Icon(Icons.calendar_month_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () => pick_datetime(rc, is_check_in: false), //
                   ),
                 ],
               );
@@ -1641,6 +1693,16 @@ class _Main_State extends State<Main_> {
           constraints: BoxConstraints(),
           onPressed: () {
             date = date.add(Duration(days: 1));
+            setState(() {});
+          },
+        ),
+
+        Spacer(), //
+
+        OutlinedButton.icon(
+          icon: Icon(Icons.restart_alt), //
+          label: Text("Rollover"), //
+          onPressed: () {
             setState(() {});
           },
         ),

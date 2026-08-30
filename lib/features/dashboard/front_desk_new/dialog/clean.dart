@@ -53,7 +53,7 @@ Future<bool?> dialog_clean({
             icon: const Icon(Icons.cleaning_services), //
             label: const Text("Clean"),
             onPressed: () async {
-              // create Clean child + set clean_id on the stay
+              // stamp cleaned on the stay (endpoint auto-sets clean_at/by)
               dynamic tmp = await dio.post(
                 endpoint.FRONT_DESK_CLEAN,
                 data: {

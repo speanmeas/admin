@@ -68,37 +68,20 @@ Future<bool?> dialog_check_in({
             icon: const Icon(Icons.login_outlined), //
             label: const Text("Check In"),
             onPressed: () async {
-              // create stay (Front_Desk + Check_In child, sets check_in_id)
+              // create the stay + flip room to Occupied (one call: check_in endpoint)
               dynamic tmp_fd = await dio.post(
                 endpoint.FRONT_DESK_CHECK_IN,
                 data: {
-                  "room_id": room_id, //
-                  "number_of_guest": stay_number, //
+                  Front_Desk.ROOM_ID: room_id, //
+                  Front_Desk.NUMBER_OF_GUEST: stay_number, //
+                  Front_Desk.CHECK_IN_AT: DateTime.now().toIso8601String(), //
+                  Front_Desk.CHECK_IN_BY: (await auth.fetch())?.id, //
+                  Front_Desk.ROOM_PRICE: price_per_day, //
+                  Front_Desk.ROOM_CASH: 0, //
+                  Front_Desk.ROOM_BANK: 0, //
                 },
               );
               if (tmp_fd == null) return snackbar(ct: context, ms: "Error: Check-In", cl: Colors.red);
-              String fd_id = tmp_fd.data[0][Front_Desk.ID];
-
-              // set starting room price on the stay (records a Room_Pay row)
-              await dio.post(
-                endpoint.FRONT_DESK_UPDATE_ROOM_PAY,
-                data: {
-                  Front_Desk.ID: fd_id, //
-                  "price": price_per_day, //
-                  "cash": 0, //
-                  "bank": 0, //
-                },
-              );
-
-              // update room status to occupied
-              await dio.post(
-                endpoint.ROOM_UPDATE,
-                data: {
-                  Room.ID: room_id, //
-                  Room.STATUS: "Occupied", //
-                  Room.FRONT_DESK_ID: fd_id, //
-                },
-              );
 
               snackbar(ct: context, ms: "Success", cl: Colors.green);
               Navigator.pop(context, true);
