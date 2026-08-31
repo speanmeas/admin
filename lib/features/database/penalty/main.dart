@@ -1,4 +1,3 @@
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
@@ -70,7 +69,7 @@ class _Main_State extends State<Main_> {
         TextButton(
           child: Text(
             "$current_page / $total_pages", //
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           onPressed: on_goto_page,
         ),
@@ -118,18 +117,18 @@ class _Main_State extends State<Main_> {
             field: Penalty.ID, //
             title: "ID",
             type: PlutoColumnType.text(),
-            width: kDebugMode ? 220 : 0,
             enableEditingMode: false,
+            width: 0,
+            // width: kDebugMode ? 220 : 0,
           ),
 
           PlutoColumn(
             field: "index", //
-            title: "No.",
+            title: "",
             titleSpan: WidgetSpan(
               child: Container(
                 padding: EdgeInsets.only(left: 20), //
                 child: IconButton(
-                  tooltip: "Add Item", //
                   icon: Icon(Icons.add_circle_outline, size: 28), //
                   padding: EdgeInsets.all(0),
                   constraints: BoxConstraints(),
@@ -140,10 +139,10 @@ class _Main_State extends State<Main_> {
             type: PlutoColumnType.number(),
             width: 80,
             enableEditingMode: false,
-            enableSorting: false,
             enableColumnDrag: false,
             enableContextMenu: false,
             enableDropToResize: false,
+            enableFilterMenuItem: false,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.center, //
@@ -161,7 +160,7 @@ class _Main_State extends State<Main_> {
             type: PlutoColumnType.text(),
             renderer: (rc) {
               return Align(
-                alignment: Alignment.centerLeft, //
+                alignment: Alignment.center, //
                 child: Text(
                   format_string(rc.cell.value), //
                   overflow: TextOverflow.ellipsis,
@@ -180,7 +179,7 @@ class _Main_State extends State<Main_> {
             width: 100,
             renderer: (rc) {
               return Align(
-                alignment: Alignment.centerRight, //
+                alignment: Alignment.center, //
                 child: Text(
                   format_double(rc.cell.value, digits: 2) + " \$", //
                   overflow: TextOverflow.ellipsis,
@@ -195,7 +194,7 @@ class _Main_State extends State<Main_> {
             type: PlutoColumnType.text(),
             renderer: (rc) {
               return Align(
-                alignment: Alignment.centerLeft, //
+                alignment: Alignment.center, //
                 child: Text(
                   format_string(rc.cell.value), //
                   overflow: TextOverflow.ellipsis,
@@ -214,6 +213,7 @@ class _Main_State extends State<Main_> {
             enableColumnDrag: false,
             enableContextMenu: false,
             enableDropToResize: false,
+            enableFilterMenuItem: false,
             renderer: (rc) {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
@@ -305,19 +305,17 @@ class _Main_State extends State<Main_> {
       for (var (i, d) in data.indexed)
         PlutoRow(
           cells: {
-            // * បញ្ចូល _id ជានិច្ច (ទោះបី column លាក់ក៏ដោយ) ដើម្បីឲ្យ delete/edit ទាញ id បាន
-            Penalty.ID: PlutoCell(value: d.id),
             for (var c in list_column) //
-              if (c != Penalty.ID) //
-                c: (() {
-                  if (c == "index") return PlutoCell(value: i + 1);
-                  if (c == "actions") return PlutoCell(value: "");
-                  if (c == Penalty.NAME) return PlutoCell(value: d.name ?? "");
-                  if (c == Penalty.PRICE) return PlutoCell(value: d.price ?? 0.0);
-                  if (c == Penalty.NOTE) return PlutoCell(value: d.note ?? "");
+              c: (() {
+                if (c == Penalty.ID) return PlutoCell(value: d.id ?? "");
+                if (c == "index") return PlutoCell(value: i + 1);
+                if (c == "actions") return PlutoCell(value: "");
+                if (c == Penalty.NAME) return PlutoCell(value: d.name ?? "");
+                if (c == Penalty.PRICE) return PlutoCell(value: d.price ?? 0.0);
+                if (c == Penalty.NOTE) return PlutoCell(value: d.note ?? "");
 
-                  return PlutoCell(value: "");
-                })(),
+                return PlutoCell(value: "");
+              })(),
           },
         ),
     ]);
@@ -333,14 +331,13 @@ class _Main_State extends State<Main_> {
     final tmp = await dio.post(endpoint.PENALTY_CREATE);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
-    snackbar(ct: context, ms: "Added blank. Fill the row to edit.", cl: Colors.green);
+    snackbar(ct: context, ms: "Created", cl: Colors.green);
     on_reload();
   }
 
   void on_delete(PlutoColumnRendererContext rc) async {
     final id = rc.row.cells[Penalty.ID]?.value;
-    if (id == null) return snackbar(ct: context, ms: "ID is null", cl: Colors.red);
-    dynamic tmp = await dio.post(endpoint.PENALTY_DELETE, data: {Penalty.ID: id});
+    final tmp = await dio.post(endpoint.PENALTY_DELETE, data: {Penalty.ID: id});
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Deleted", cl: Colors.green);
@@ -349,27 +346,14 @@ class _Main_State extends State<Main_> {
 
   void on_changed(PlutoGridOnChangedEvent e) async {
     final id = e.row.cells[Penalty.ID]?.value;
-    if (id == null) return;
-
-    final field = e.column.field;
-    final old_value = e.oldValue;
-    final value = e.value;
-
-    if (value == null || field == "index" || field == "actions") return;
-
-    final payload = <String, dynamic>{
-      Penalty.ID: id, //
-      field: value, //
-    };
-
-    final tmp = await dio.post(endpoint.PENALTY_UPDATE, data: payload);
+    final tmp = await dio.post(endpoint.PENALTY_UPDATE, data: {Penalty.ID: id, e.column.field: e.value});
 
     if (tmp == null) {
-      e.row.cells[field]?.value = old_value;
+      on_reload();
       return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     }
 
-    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    snackbar(ct: context, ms: "Updated", cl: Colors.green);
   }
 
   void on_first_page() {

@@ -1,73 +1,269 @@
-// * ទំព័រគ្រប់គ្រងសញ្ជាតិ សម្រាប់បង្កើត អាន កែ និងលុប
-
 import "package:flutter/material.dart";
-import "package:flutter/foundation.dart";
-import "package:provider/provider.dart";
 import "package:pluto_grid/pluto_grid.dart";
+
 import "package:speanmeas/core/utility/all.dart";
+import "package:speanmeas/core/widget/dialog/select_page.dart";
 
-import "package:speanmeas/core/widget/dialog/dialog_page.dart";
-import "package:speanmeas/core/widget/button/menu_button_icon.dart";
-import "package:speanmeas/core/widget/button/menu_button_text.dart";
-
-import "form/create.dart" as create;
-import "form/read.dart" as read;
-import "form/update.dart" as update;
-import "form/delete.dart" as delete;
-
-// * បង្កើត layout មេរបស់ទំព័រគ្រប់គ្រងសញ្ជាតិ
-Widget _layout(List<Widget> children) {
-  return Scaffold(
-    body: Column(
-      children: children, //
-    ),
-  );
-}
-
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទិន្នន័យសញ្ជាតិ
 class _Main_State extends State<Main_> {
-  dynamic tmp;
-  bool is_loading = true;
-  List<String> list_c = columns.map((c) => c.field).toList();
-
+  // * ########## BLOCK ATTRIBUTE ##########
+  int reload = 0;
+  bool is_load = false;
   bool is_filter = false;
-  int page = 1;
-  int row_total = 0;
-  PlutoGridStateManager? state_manager;
+  int current_page = 1;
+  int total_row = 0;
+
+  late List<String> list_column;
+  late PlutoGridStateManager state_manager;
 
   List<Nationality> data = [];
 
-  // * ផ្ទុកចំនួនជួរដេកសរុប និងទំព័រដំបូង
-  void init() async {
-    setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.NATIONALITY_READ_COUNT, data: {"count": true});
-    setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+  // * ########## BLOCK ATTRIBUTE END ##########
 
-    row_total = parse_int(tmp.data) ?? 0;
-    load_page(page);
+  // * ########## BLOCK DESIGN ##########
+  Widget _layout({
+    List<Widget>? header, //
+    Widget? body, //
+  }) {
+    return Scaffold(
+      body: Column(
+        spacing: 1,
+        children: [
+          if (header != null)
+            Container(
+              height: 32, //
+              padding: const EdgeInsets.all(1),
+              child: Row(
+                spacing: 1, //
+                children: header,
+              ),
+            ),
+
+          if (is_load) LinearProgressIndicator(minHeight: 2, color: Colors.blue),
+
+          Expanded(child: body ?? Container()),
+        ],
+      ),
+    );
   }
 
-  // * ធ្វើឱ្យទិន្នន័យស្រស់ឡើងវិញ
-  void on_refresh() async {
-    setState(() => is_loading = true);
-    tmp = await dio.post(endpoint.NATIONALITY_READ_COUNT, data: {"count": true});
-    setState(() => is_loading = false);
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+  @override
+  Widget build(BuildContext context) {
+    return _layout(
+      header: [
+        IconButton(
+          tooltip: "First Page", //
+          icon: Icon(Icons.first_page, size: 30), //
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(),
+          onPressed: on_first_page,
+        ),
 
-    row_total = parse_int(tmp.data) ?? 0;
+        IconButton(
+          tooltip: "Previous Page", //
+          icon: Icon(Icons.navigate_before, size: 30), //
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(),
+          onPressed: on_previous_page,
+        ),
 
-    if (page > total_pages) page = total_pages;
-    if (page < 1) page = 1;
+        TextButton(
+          child: Text(
+            "$current_page / $total_pages", //
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          onPressed: on_goto_page,
+        ),
 
-    load_page(page);
+        IconButton(
+          tooltip: "Next Page", //
+          icon: Icon(Icons.navigate_next, size: 30), //
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(),
+          onPressed: on_next_page,
+        ),
+
+        IconButton(
+          tooltip: "Last Page", //
+          icon: Icon(Icons.last_page, size: 30), //
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(),
+          onPressed: on_last_page,
+        ),
+
+        const Spacer(),
+
+        IconButton(
+          tooltip: is_filter ? "Hide Filter" : "Show Filter", //
+          icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(),
+          onPressed: on_filter, // not yet implemented
+        ),
+
+        IconButton(
+          tooltip: "Reload", //
+          icon: Icon(Icons.refresh, size: 30), //
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(),
+          onPressed: on_reload,
+        ),
+      ],
+
+      body: PlutoGrid(
+        key: ValueKey(reload), //
+        rows: [], //
+        columns: [
+          PlutoColumn(
+            field: Nationality.ID, //
+            title: "ID",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 0,
+            // width: kDebugMode ? 220 : 0,
+          ),
+
+          PlutoColumn(
+            field: "index", //
+            title: "",
+            titleSpan: WidgetSpan(
+              child: Container(
+                padding: EdgeInsets.only(left: 20), //
+                child: IconButton(
+                  icon: Icon(Icons.add_circle_outline, size: 28), //
+                  padding: EdgeInsets.all(0),
+                  constraints: BoxConstraints(),
+                  onPressed: on_create, // implemented
+                ),
+              ),
+            ),
+            type: PlutoColumnType.number(),
+            width: 80,
+            enableEditingMode: false,
+            enableColumnDrag: false,
+            enableContextMenu: false,
+            enableDropToResize: false,
+            enableFilterMenuItem: false,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(
+                  format_int(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: Nationality.NAME, //
+            title: "Name",
+            type: PlutoColumnType.text(),
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: Nationality.NOTE, //
+            title: "Note",
+            type: PlutoColumnType.text(),
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "actions", //
+            title: "Actions",
+            type: PlutoColumnType.text(),
+            width: 80,
+            enableEditingMode: false,
+            enableSorting: false,
+            enableColumnDrag: false,
+            enableContextMenu: false,
+            enableDropToResize: false,
+            enableFilterMenuItem: false,
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
+                children: [
+                  IconButton(
+                    tooltip: "Delete Row", //
+                    icon: Icon(Icons.delete_outline, color: Colors.red),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () => on_delete(rc),
+                  ),
+                ],
+              );
+            },
+          ),
+        ], //
+        configuration: PlutoGridConfiguration(
+          scrollbar: PlutoGridScrollbarConfig(
+            isAlwaysShown: true, //
+            scrollbarThickness: 12,
+            scrollbarThicknessWhileDragging: 12,
+          ),
+          style: PlutoGridStyleConfig(
+            rowHeight: 28, //
+            columnHeight: 32, //
+            columnFilterHeight: 32,
+            defaultColumnTitlePadding: EdgeInsets.fromLTRB(4, 0, 26, 0),
+            defaultColumnFilterPadding: EdgeInsets.fromLTRB(1, 1, 1, 1),
+            defaultCellPadding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+          ),
+        ),
+
+        onLoaded: init,
+        onChanged: on_changed,
+      ),
+    );
+  }
+  // * ########## BLOCK DESIGN END ##########
+
+  // * ########## BLOCK METHODS ##########
+  void init(PlutoGridOnLoadedEvent e) async {
+    state_manager = e.stateManager;
+
+    state_manager.addListener(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() {});
+      });
+    });
+    state_manager.setAutoEditing(true);
+    list_column = state_manager.refColumns.map((c) => c.field).toList();
+
+    on_reload();
   }
 
-  // * ផ្ទុកទិន្នន័យតាមទំព័រ
-  void load_page(int p) async {
-    // * អានទិន្នន័យសញ្ជាតិតាម offset និង limit
-    setState(() => is_loading = true);
-    tmp = await dio.post(
+  void on_reload() async {
+    final tmp = await dio.post(endpoint.NATIONALITY_READ_COUNT);
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    total_row = parse_int(tmp.data) ?? 0;
+
+    int total_pages = (total_row / DEFAULT_LIMIT_ROW).ceil();
+    if (current_page > total_pages) current_page = total_pages;
+    if (current_page < 1) current_page = 1;
+
+    on_load_page(current_page);
+  }
+
+  void on_load_page(int p) async {
+    final tmp = await dio.post(
       endpoint.NATIONALITY_READ, //
       data: {
         "key": DEFAULT_KEY, //
@@ -76,395 +272,131 @@ class _Main_State extends State<Main_> {
         "limit": DEFAULT_LIMIT_ROW,
       },
     );
-    setState(() => is_loading = false);
 
-    // * dio ត្រឡប់ null ពេល request បរាជ័យ
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-    if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
-
-    // * រក្សាទុក sort និង filter មុនពេលផ្ទុកឡើងវិញ
-    final sorted_column = state_manager?.getSortedColumn;
-    final filter_rows = List<PlutoRow>.from(state_manager?.filterRows ?? const <PlutoRow>[]);
-
-    // * បម្លែងទិន្នន័យទៅជា List<Nationality> ដើម្បីបង្កើត PlutoRow
     data = List<Nationality>.from((tmp.data ?? const []).map((d) => Nationality.fromJson(d)));
 
+    // * រក្សាទុក sort និង filter មុនពេលផ្ទុកឡើងវិញ
+    final sorted_column = state_manager.getSortedColumn;
+    final filter_rows = List<PlutoRow>.from(state_manager.filterRows);
+
     // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
-    state_manager?.removeAllRows();
-    state_manager?.appendRows([
-      for (var i = 0; i < data.length; i++)
+    state_manager.removeAllRows();
+    state_manager.appendRows([
+      for (var (i, d) in data.indexed)
         PlutoRow(
           cells: {
-            for (var c in list_c) //
+            for (var c in list_column) //
               c: (() {
-                if (c == "index") //
-                  return PlutoCell(value: i + 1);
-                final nationality = data[i];
-                if (c == Nationality.ID) //
-                  return PlutoCell(value: nationality.id);
-                if (c == Nationality.NAME) //
-                  return PlutoCell(value: nationality.name);
-                if (c == Nationality.NOTE) //
-                  return PlutoCell(value: nationality.note);
+                if (c == Nationality.ID) return PlutoCell(value: d.id ?? "");
+                if (c == "index") return PlutoCell(value: i + 1);
+                if (c == "actions") return PlutoCell(value: "");
+                if (c == Nationality.NAME) return PlutoCell(value: d.name ?? "");
+                if (c == Nationality.NOTE) return PlutoCell(value: d.note ?? "");
 
-                return PlutoCell(value: null);
+                return PlutoCell(value: "");
               })(),
           },
         ),
     ]);
 
     // * អនុវត្ត sort និង filter ឡើងវិញ
-    if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
-    state_manager?.setFilterWithFilterRows(filter_rows);
+    if (sorted_column != null) state_manager.sortBySortIdx(sorted_column);
+    state_manager.setFilterWithFilterRows(filter_rows);
 
     setState(() {});
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return _layout([
-      // * របារម៉ឺនុយសកម្មភាព
-      Container(
-        height: 40, //
-        padding: EdgeInsets.all(1),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // * ប៊ូតុងបង្កើត
-            Menu_Button_Icon(
-              tip: t("Create"), //
-              icon: Icons.add,
-              onPressed: is_loading ? null : on_create,
-            ),
+  void on_create() async {
+    final tmp = await dio.post(endpoint.NATIONALITY_CREATE);
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
-            // * ប៊ូតុងអាន
-            Menu_Button_Icon(
-              tip: t("Read"), //
-              icon: Icons.visibility_outlined,
-              onPressed: is_loading ? null : on_read,
-            ),
-
-            // * ប៊ូតុងកែប្រែ
-            Menu_Button_Icon(
-              tip: t("Update"), //
-              icon: Icons.edit_outlined,
-              onPressed: is_loading ? null : on_update,
-            ),
-
-            // * ប៊ូតុងលុប
-            Menu_Button_Icon(
-              tip: t("Delete"), //
-              icon: Icons.delete_outline,
-              onPressed: is_loading ? null : on_delete,
-              color: Colors.red,
-            ),
-
-            Spacer(),
-
-            // * ប៊ូតុងបើក/បិទ filter
-            Menu_Button_Icon(
-              tip: is_filter ? t("Close Filter") : t("Open Filter"), //
-              icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
-              onPressed: () {
-                is_filter = !is_filter;
-                state_manager?.setShowColumnFilter(is_filter);
-                if (!is_filter) state_manager?.setFilterWithFilterRows([]);
-                setState(() {});
-              },
-            ),
-
-            // * ប៊ូតុងស្វែងរក (តែក្នុង debug mode)
-            if (kDebugMode)
-              Menu_Button_Icon(
-                tip: "Search", //
-                icon: Icons.search,
-                onPressed: () {
-                  snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
-                },
-              ),
-
-            // * ប៊ូតុងធ្វើឱ្យស្រស់
-            Menu_Button_Icon(
-              tip: t("Refresh"), //
-              icon: Icons.refresh,
-              onPressed: is_loading ? null : on_refresh,
-            ),
-          ],
-        ),
-      ),
-
-      // * បង្ហាញ progress bar ពេលកំពុងផ្ទុក
-      if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
-
-      // * តារាងទិន្នន័យ
-      Expanded(
-        child: PlutoGrid(
-          rows: [], //
-          columns: columns, //
-          configuration: PlutoGridConfiguration(
-            scrollbar: PlutoGridScrollbarConfig(
-              scrollbarThickness: 12, //
-              scrollbarThicknessWhileDragging: 12,
-              isAlwaysShown: true,
-            ),
-            style: PlutoGridStyleConfig(
-              rowHeight: 28, //
-              columnHeight: 32,
-              columnFilterHeight: 36,
-              defaultColumnTitlePadding: EdgeInsets.fromLTRB(8, 0, 24, 0),
-              defaultColumnFilterPadding: EdgeInsets.fromLTRB(1, 1, 1, 1),
-            ),
-          ),
-          onLoaded: (event) {
-            state_manager = event.stateManager;
-            state_manager?.addListener(() => setState(() {}));
-          },
-        ),
-      ),
-
-      // * របារប្តូរទំព័រ
-      Container(
-        height: 40, //
-        alignment: Alignment.topCenter,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(width: 120),
-
-            Spacer(),
-
-            // * ត្រលប់ទៅទំព័រដំបូង
-            Menu_Button_Icon(
-              tip: t("First Page"), //
-              icon: Icons.first_page,
-              onPressed: is_loading ? null : goto_first_page,
-            ),
-
-            // * ប៊ូតុងទៅទំព័រមុន
-            Menu_Button_Icon(
-              tip: t("Previous Page"), //
-              icon: Icons.navigate_before,
-              onPressed: is_loading ? null : goto_previous_page,
-            ),
-
-            // * ប៊ូតុងជ្រើសរើសទំព័រ
-            Menu_Button_Text(
-              tip: t("Select Page"), //
-              text: "$page / $total_pages", //
-              onPressed: is_loading ? null : goto_page,
-            ),
-
-            // * ប៊ូតុងទៅទំព័របន្ទាប់
-            Menu_Button_Icon(
-              tip: t("Next Page"), //
-              icon: Icons.navigate_next,
-              onPressed: is_loading ? null : goto_next_page,
-            ),
-
-            // * ប៊ូតុងទៅទំព័រចុងក្រោយ
-            Menu_Button_Icon(
-              tip: t("Last Page"), //
-              icon: Icons.last_page,
-              onPressed: is_loading ? null : goto_last_page,
-            ),
-
-            Spacer(),
-
-            // * បង្ហាញចំនួនជួរដេក
-            Container(
-              height: 40,
-              padding: EdgeInsets.only(right: 16),
-              alignment: Alignment.center,
-              child: Text(
-                "${state_manager?.rows.length ?? 0} Rows", //
-                style: TextStyle(
-                  fontSize: 18, //
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ), //
-            ),
-
-            SizedBox(width: 8),
-          ],
-        ),
-      ),
-    ]);
+    snackbar(ct: context, ms: "Created", cl: Colors.green);
+    on_reload();
   }
 
-  // * ត្រលប់ទៅទំព័រដំបូង
-  void goto_first_page() {
-    if (page == 1) return;
-    page = 1;
-    load_page(page);
+  void on_delete(PlutoColumnRendererContext rc) async {
+    final id = rc.row.cells[Nationality.ID]?.value;
+    final tmp = await dio.post(endpoint.NATIONALITY_DELETE, data: {Nationality.ID: id});
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    snackbar(ct: context, ms: "Deleted", cl: Colors.green);
+    on_reload();
   }
 
-  // * ទៅទំព័រមុន
-  void goto_previous_page() {
-    if (page == 1) return;
-    page = page - 1;
-    load_page(page);
+  void on_changed(PlutoGridOnChangedEvent e) async {
+    final id = e.row.cells[Nationality.ID]?.value;
+    final tmp = await dio.post(endpoint.NATIONALITY_UPDATE, data: {Nationality.ID: id, e.column.field: e.value});
+
+    if (tmp == null) {
+      on_reload();
+      return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    snackbar(ct: context, ms: "Updated", cl: Colors.green);
   }
 
-  // * ជ្រើសរើសទំព័រតាមចំនួនដែលអ្នកប្រើបញ្ចូល
-  void goto_page() async {
-    final v = await select_page(
+  void on_first_page() {
+    if (current_page == 1) return;
+    current_page = 1;
+    on_load_page(current_page);
+  }
+
+  void on_previous_page() {
+    if (current_page == 1) return;
+    current_page = current_page - 1;
+    on_load_page(current_page);
+  }
+
+  void on_goto_page() async {
+    final v = await dialog_select_page(
       context, //
-      page: page,
-      row_total: row_total,
+      page: current_page,
+      total_row: total_row,
       limit: DEFAULT_LIMIT_ROW,
     );
     if (v == null) return;
-    page = v;
-    load_page(page);
+    current_page = v;
+    on_load_page(current_page);
   }
 
-  // * ទៅទំព័របន្ទាប់
-  void goto_next_page() {
-    if (page == total_pages) return;
-    page = page + 1;
-    load_page(page);
+  void on_last_page() {
+    if (current_page == total_pages) return;
+    current_page = total_pages;
+    on_load_page(current_page);
   }
 
-  // * ទៅទំព័រចុងក្រោយ
-  void goto_last_page() {
-    if (page == total_pages) return;
-    page = total_pages;
-    load_page(page);
+  void on_next_page() {
+    if (current_page == total_pages) return;
+    current_page = current_page + 1;
+    on_load_page(current_page);
   }
 
-  // * បើកទំព័របង្កើតសញ្ជាតិថ្មី
-  void on_create() async {
-    tmp = await nav_push(context, create.Main_());
-    if (tmp == null) return;
-
-    // * លុប sort + filter
-    final sorted_column = state_manager?.getSortedColumn;
-    if (sorted_column != null) state_manager?.sortBySortIdx(sorted_column);
-    state_manager?.setFilterWithFilterRows([]);
-
-    load_page(page);
-    state_manager?.scroll.vertical?.jumpTo(0);
+  void on_filter() {
+    state_manager.setShowColumnFilter(!is_filter);
+    if (!is_filter) state_manager.setFilterWithFilterRows([]);
+    is_filter = !is_filter;
+    setState(() {});
   }
 
-  // * បើកទំព័រអានព័ត៌មានសញ្ជាតិ
-  void on_read() async {
-    final row = state_manager?.currentRow;
-    final id = row?.cells[Nationality.ID]?.value?.toString() ?? "";
-    if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
-
-    nav_push(context, read.Main_(id: id));
-  }
-
-  // * បើកទំព័រកែប្រែសញ្ជាតិ
-  void on_update() async {
-    final row = state_manager?.currentRow;
-    final id = row?.cells[Nationality.ID]?.value?.toString() ?? "";
-    if (row == null || id.isEmpty) return snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
-
-    tmp = await nav_push(context, update.Main_(id: id));
-    if (tmp == null) return;
-
-    load_page(page);
-  }
-
-  // * បើកទំព័រលុបសញ្ជាតិ
-  void on_delete() async {
-    final row = state_manager?.currentRow;
-    final id = row?.cells[Nationality.ID]?.value?.toString() ?? "";
-    if (row == null || id.isEmpty) {
-      snackbar(ct: context, ms: "Please select a row.", cl: Colors.red);
-      return;
-    }
-
-    tmp = await nav_push(context, delete.Main_(id: id));
-    if (tmp == null) return;
-
-    load_page(page);
-  }
-
-  // * គណនាចំនួនទំព័រសរុប (បង្គត់ឡើង)
   int get total_pages {
-    if (row_total == 0) return 1;
-    return (row_total / DEFAULT_LIMIT_ROW).ceil();
+    if (total_row == 0) return 1;
+    return (total_row / DEFAULT_LIMIT_ROW).ceil();
   }
 
   @override
   void initState() {
     super.initState();
-    init();
   }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    reload++;
+  }
+
+  // * ########## BLOCK METHODS END ##########
 }
-
-const double WIDTH = 140;
-
-// * និយមន័យជួរឈររបស់តារាង
-final columns = [
-  // * ជួរឈរលេខរៀង (No.)
-  PlutoColumn(
-    field: "index", //
-    title: "No.",
-    type: PlutoColumnType.number(),
-    width: 80,
-    enableEditingMode: false,
-    renderer: (rc) {
-      return Align(
-        alignment: Alignment.center, //
-        child: Text(
-          format_int(rc.cell.value), //
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    },
-  ),
-
-  // * ជួរឈរ ID (លាក់)
-  PlutoColumn(
-    field: Nationality.ID, //
-    title: "ID",
-    type: PlutoColumnType.number(),
-    width: WIDTH,
-    enableEditingMode: false,
-    hide: true, //
-  ),
-
-  // * ជួរឈរName
-  PlutoColumn(
-    field: Nationality.NAME, //
-    title: "Name",
-    type: PlutoColumnType.text(),
-    width: WIDTH,
-    enableEditingMode: false,
-    renderer: (rc) {
-      return Align(
-        alignment: Alignment.center, //
-        child: Text(
-          format_string(rc.cell.value), //
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    },
-  ),
-  // * ជួរឈរNote
-  PlutoColumn(
-    field: Nationality.NOTE, //
-    title: "Note",
-    type: PlutoColumnType.text(),
-    width: WIDTH,
-    enableEditingMode: false,
-    renderer: (rc) {
-      return Align(
-        alignment: Alignment.center, //
-        child: Text(
-          format_string(rc.cell.value), //
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    },
-  ),
-];
 
 // * ថ្នាក់ Main_ ជាទំព័រគ្រប់គ្រងសញ្ជាតិ
 class Main_ extends StatefulWidget {
@@ -474,22 +406,13 @@ class Main_ extends StatefulWidget {
 }
 
 // * ចំណុចចាប់ផ្តើមកម្មវិធី
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  glob.init();
-  lang.init();
+void main() {
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: glob),
-        ChangeNotifierProvider.value(value: lang),
-      ],
-      child: MaterialApp(
-        home: const Main_(), //
-        theme: theme_data, //
-        title: "Development", //
-        debugShowCheckedModeBanner: false, //
-      ),
+    MaterialApp(
+      home: const Main_(), //
+      theme: theme_data, //
+      title: "Development", //
+      debugShowCheckedModeBanner: false, //
     ),
   );
 }

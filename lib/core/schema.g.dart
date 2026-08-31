@@ -904,6 +904,8 @@ class Guest {
   static const ID = '_id';
   static const FULL_NAME = 'full_name';
   static const PHONE_NUMBER = 'phone_number';
+  static const GENDER = 'gender';
+  static const NATIONALITY_ID = 'nationality_id';
   static const NOTE = 'note';
   static const CREATED_AT = 'created_at';
   static const CREATED_BY = 'created_by';
@@ -915,6 +917,8 @@ class Guest {
   final String? id;
   final String? full_name;
   final String? phone_number;
+  final String? gender;
+  final dynamic nationality_id;
   final String? note;
   final DateTime? created_at;
   final dynamic created_by;
@@ -923,12 +927,14 @@ class Guest {
   final DateTime? deleted_at;
   final dynamic deleted_by;
 
-  Guest({this.id, this.full_name, this.phone_number, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Guest({this.id, this.full_name, this.phone_number, this.gender, this.nationality_id, this.note, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
 
   factory Guest.fromJson(Map<String, dynamic> json) => Guest(
     id: json['_id'] as String?,
     full_name: json['full_name'] as String?,
     phone_number: json['phone_number'] as String?,
+    gender: json['gender'] as String?,
+    nationality_id: json['nationality_id'] == null ? null : (json['nationality_id'] is Map<String, dynamic> ? Nationality_Show.fromJson(json['nationality_id'] as Map<String, dynamic>) : json['nationality_id']),
     note: json['note'] as String?,
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
     created_by: json['created_by'] == null ? null : (json['created_by'] is Map<String, dynamic> ? User_Show.fromJson(json['created_by'] as Map<String, dynamic>) : json['created_by']),
@@ -943,6 +949,8 @@ class Guest {
     json['_id'] = id;
     json['full_name'] = full_name;
     json['phone_number'] = phone_number;
+    json['gender'] = gender;
+    json['nationality_id'] = nationality_id == null ? null : nationality_id is Nationality_Show ? nationality_id.toJson() : nationality_id;
     json['note'] = note;
     json['created_at'] = created_at?.toIso8601String();
     json['created_by'] = created_by == null ? null : created_by is User_Show ? created_by.toJson() : created_by;
@@ -1602,6 +1610,28 @@ class Front_Desk_Show {
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
     json['_id'] = id;
+    return json;
+  }
+}
+
+class Nationality_Show {
+  static const ID = '_id';
+  static const NAME = 'name';
+
+  final String? id;
+  final String? name;
+
+  Nationality_Show({this.id, this.name});
+
+  factory Nationality_Show.fromJson(Map<String, dynamic> json) => Nationality_Show(
+    id: json['_id'] as String?,
+    name: json['name'] as String?,
+  );
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    json['_id'] = id;
+    json['name'] = name;
     return json;
   }
 }
