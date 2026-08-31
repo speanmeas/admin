@@ -4,7 +4,7 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 // * dashboard
-import "package:speanmeas/features/dashboard/front_desk_new/main.dart" as d_front_desk_new;
+import "package:speanmeas/features/dashboard/front_desk/main.dart" as d_front_desk_new;
 // import "package:speanmeas/features/dashboard/mini_bar/main.dart" as d_mini_bar;
 
 // * database

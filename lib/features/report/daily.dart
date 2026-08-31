@@ -41,6 +41,15 @@ class _Main_State extends State<Main_> {
     report = tmp.data;
     rows = (report?["rows"] as List<dynamic>? ?? []).map((e) => Front_Desk.fromJson(e)).toList();
     summary = report?["summary"] ?? {};
+
+    // * បន្ថែម Walk-In counter (តែងតែនៅ index 1) សម្រាប់គ្រប់ថ្ងៃ
+    dynamic tmp_walk = await dio.post(endpoint.FRONT_DESK_WALK_IN, data: {});
+    if (tmp_walk != null && (tmp_walk.data as List<dynamic>? ?? []).isNotEmpty) {
+      String walk_id = (tmp_walk.data as List<dynamic>)[0]["_id"]?.toString() ?? "";
+      rows.removeWhere((x) => x.id?.toString() == walk_id);
+      rows.insert(0, Front_Desk.fromJson((tmp_walk.data as List<dynamic>)[0]));
+    }
+
     update_grid();
 
     setState(() {});
