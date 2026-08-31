@@ -2,6 +2,10 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
+import "package:speanmeas/core/widget/dialog/dialog_datetime.dart";
+import "package:speanmeas/features/dashboard/front_desk/dialog/list_mini_bar.dart";
+import "package:speanmeas/features/dashboard/front_desk/dialog/list_penalty.dart";
+import "package:speanmeas/features/dashboard/front_desk/dialog/search_guest.dart";
 import "package:speanmeas/features/report/dialog_item_show.dart";
 
 class _Main_State extends State<Main_> {
@@ -18,13 +22,26 @@ class _Main_State extends State<Main_> {
 
   List<Front_Desk> rows = [];
   Map<String, dynamic> summary = {};
+
+  bool is_admin = false; // * កែបានតែ admin ប៉ុណ្ណោះ
   // * ########## BLOCK VARIABLES END ##########
 
   // * ########## BLOCK METHODS ##########
   @override
   void initState() {
     super.initState();
+    load_auth();
     init();
+  }
+
+  // * ទាញតួនាទីអ្នកប្រើសម្រាប់កំណត់ការកែប្រែ cell
+  Future<void> load_auth() async {
+    final user = await auth.fetch();
+    if (user == null) return;
+    setState(() {
+      is_admin = user.is_admin == true;
+      reload++; // * rebuild grid ដើម្បីអនុវត្ត enableEditingMode
+    });
   }
 
   Future<void> init() async {
@@ -42,8 +59,10 @@ class _Main_State extends State<Main_> {
     rows = (report?["rows"] as List<dynamic>? ?? []).map((e) => Front_Desk.fromJson(e)).toList();
     summary = report?["summary"] ?? {};
 
-    // * បន្ថែម Walk-In counter (តែងតែនៅ index 1) សម្រាប់គ្រប់ថ្ងៃ
-    dynamic tmp_walk = await dio.post(endpoint.FRONT_DESK_WALK_IN, data: {});
+    // * បន្ថែម Walk-In counter (តែងតែនៅ index 1) សម្រាប់ថ្ងៃដែលបានជ្រើសរើស
+    dynamic tmp_walk = await dio.post(endpoint.FRONT_DESK_WALK_IN, data: {
+      "date": DateFormat("yyyy-MM-dd").format(date), //
+    });
     if (tmp_walk != null && (tmp_walk.data as List<dynamic>? ?? []).isNotEmpty) {
       String walk_id = (tmp_walk.data as List<dynamic>)[0]["_id"]?.toString() ?? "";
       rows.removeWhere((x) => x.id?.toString() == walk_id);
@@ -60,6 +79,48 @@ class _Main_State extends State<Main_> {
   Guest? fd_guest(Front_Desk fd) => fd.guest_id is Guest ? fd.guest_id as Guest : null;
   User_Show? fd_check_in_by(Front_Desk fd) => fd.check_in_by is User_Show ? fd.check_in_by as User_Show : null;
   User_Show? fd_check_out_by(Front_Desk fd) => fd.check_out_by is User_Show ? fd.check_out_by as User_Show : null;
+
+  String? row_stay_id(PlutoColumnRendererContext rc) => rc.row.cells["_id"]?.value;
+
+  Front_Desk? row_stay(PlutoColumnRendererContext rc) {
+    String? fd_id = row_stay_id(rc);
+    if (fd_id == null) return null;
+    return rows.where((x) => x.id == fd_id).firstOrNull;
+  }
+
+  bool row_is_walk_in(PlutoColumnRendererContext rc) {
+    Front_Desk? fd = row_stay(rc);
+    Room? room = fd == null ? null : fd_room(fd);
+    return room != null && (room.number ?? "").toLowerCase() == "walk-in";
+  }
+
+  Set<String> locked_mini_bar_ids(Front_Desk fd) {
+    Set<String> ids = {};
+    String? cursor = fd.prev_front_desk_id;
+    while (cursor != null) {
+      Front_Desk? prev = rows.where((x) => x.id == cursor).firstOrNull;
+      if (prev == null) break;
+      for (var it in (prev.list_mini_bar_item_id ?? [])) {
+        if (it is Mini_Bar_Item && it.id != null) ids.add(it.id!);
+      }
+      cursor = prev.prev_front_desk_id;
+    }
+    return ids;
+  }
+
+  Set<String> locked_penalty_ids(Front_Desk fd) {
+    Set<String> ids = {};
+    String? cursor = fd.prev_front_desk_id;
+    while (cursor != null) {
+      Front_Desk? prev = rows.where((x) => x.id == cursor).firstOrNull;
+      if (prev == null) break;
+      for (var it in (prev.list_penalty_item_id ?? [])) {
+        if (it is Penalty_Item && it.id != null) ids.add(it.id!);
+      }
+      cursor = prev.prev_front_desk_id;
+    }
+    return ids;
+  }
 
   // * រយៈពេលស្នាក់ជាថ្ងៃ និងម៉ោង
   String duration_text(DateTime? in_at, DateTime? out_at) {
@@ -150,6 +211,321 @@ class _Main_State extends State<Main_> {
     );
     if (picked == null) return;
     date = picked;
+    init();
+  }
+
+  // * កែប្រែ cell ក្នុង grid តាមរចនាប័ទ្ម dashboard (admin តែប៉ុណ្ណោះ)
+  void on_changed(PlutoGridOnChangedEvent e) async {
+    if (!is_admin) return;
+
+    pprint("Old: ${e.oldValue} | New: ${e.value} | Column: ${e.column.field}");
+    final fd_id = e.row.cells["_id"]?.value;
+    if (fd_id == null) return;
+
+    bool is_walkin_row = row_is_walk_in_by_id(fd_id);
+    if (is_walkin_row && e.column.field != "mini_bar_cash" && e.column.field != "mini_bar_bank") {
+      e.row.cells[e.column.field]!.value = e.oldValue;
+      return;
+    }
+
+    if (e.column.field == "guest_name") {
+      dynamic tmp = await dio.post(
+        endpoint.FRONT_DESK_UPDATE_GUEST,
+        data: {
+          Front_Desk.ID: fd_id, //
+          Guest.FULL_NAME: e.value, //
+        },
+      );
+      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    if (e.column.field == "guest_phone") {
+      dynamic tmp = await dio.post(
+        endpoint.FRONT_DESK_UPDATE_GUEST,
+        data: {
+          Front_Desk.ID: fd_id, //
+          Guest.PHONE_NUMBER: e.value, //
+        },
+      );
+      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    if (e.column.field == "number_of_guest") {
+      dynamic tmp = await dio.post(
+        endpoint.FRONT_DESK_UPDATE,
+        data: {
+          Front_Desk.ID: fd_id, //
+          Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? ""), //
+        },
+      );
+      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    if (e.column.field == "room_price") {
+      dynamic tmp = await dio.post(
+        endpoint.FRONT_DESK_ROOM_PAY_UPDATE,
+        data: {
+          Front_Desk.ID: fd_id, //
+          Front_Desk.ROOM_PRICE: num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
+        },
+      );
+      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    if (e.column.field == "room_cash") {
+      dynamic tmp = await dio.post(
+        endpoint.FRONT_DESK_ROOM_PAY_UPDATE,
+        data: {
+          Front_Desk.ID: fd_id, //
+          Front_Desk.ROOM_CASH: num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
+        },
+      );
+      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    if (e.column.field == "room_bank") {
+      dynamic tmp = await dio.post(
+        endpoint.FRONT_DESK_ROOM_PAY_UPDATE,
+        data: {
+          Front_Desk.ID: fd_id, //
+          Front_Desk.ROOM_BANK: num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
+        },
+      );
+      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    if (e.column.field == "room_note") {
+      dynamic tmp = await dio.post(
+        endpoint.FRONT_DESK_ROOM_PAY_UPDATE,
+        data: {
+          Front_Desk.ID: fd_id, //
+          Front_Desk.ROOM_NOTE: e.value?.toString(), //
+        },
+      );
+      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    if (e.column.field == "mini_bar_cash" || e.column.field == "mini_bar_bank") {
+      String key = e.column.field == "mini_bar_cash" ? Front_Desk.MINI_BAR_CASH : Front_Desk.MINI_BAR_BANK;
+      dynamic tmp = await dio.post(
+        is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_MINI_BAR_PAY,
+        data: {
+          Front_Desk.ID: fd_id, //
+          key: num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
+        },
+      );
+      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    if (e.column.field == "mini_bar_note") {
+      dynamic tmp = await dio.post(
+        is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_MINI_BAR_PAY,
+        data: {
+          Front_Desk.ID: fd_id, //
+          Front_Desk.MINI_BAR_NOTE: e.value?.toString(), //
+        },
+      );
+      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    if (e.column.field == "penalty_cash" || e.column.field == "penalty_bank") {
+      String key = e.column.field == "penalty_cash" ? Front_Desk.PENALTY_CASH : Front_Desk.PENALTY_BANK;
+      dynamic tmp = await dio.post(
+        endpoint.FRONT_DESK_PENALTY_PAY,
+        data: {
+          Front_Desk.ID: fd_id, //
+          key: num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
+        },
+      );
+      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    if (e.column.field == "penalty_note") {
+      dynamic tmp = await dio.post(
+        endpoint.FRONT_DESK_PENALTY_PAY,
+        data: {
+          Front_Desk.ID: fd_id, //
+          Front_Desk.PENALTY_NOTE: e.value?.toString(), //
+        },
+      );
+      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    init();
+  }
+
+  // * កែពេលចូល/ចេញ តាម dialog កាលបរិច្ឆេទ (admin តែប៉ុណ្ណោះ)
+  Future<void> pick_datetime(PlutoColumnRendererContext rc, {required bool is_check_in}) async {
+    if (!is_admin) return;
+    if (row_is_walk_in(rc)) return;
+    String? fd_id = rc.row.cells["_id"]?.value;
+    if (fd_id == null) return;
+
+    DateTime? current = parse_datetime(rc.cell.value) ?? DateTime.now();
+
+    final DateTime? picked_datetime = await dialog_datetime(context, initial: current);
+    if (picked_datetime == null || !mounted) return;
+
+    String key = is_check_in ? Front_Desk.CHECK_IN_AT : Front_Desk.CHECK_OUT_AT;
+    dynamic tmp = await dio.post(
+      endpoint.FRONT_DESK_UPDATE,
+      data: {
+        Front_Desk.ID: fd_id, //
+        key: format_datetime(picked_datetime), //
+      },
+    );
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    init();
+  }
+
+  // * បើក dialog កែទំនិញ mini bar (admin តែប៉ុណ្ណោះ)
+  void on_mini_bar_item(PlutoColumnRendererContext rc) async {
+    if (!is_admin) return;
+    String? fd_id = row_stay_id(rc);
+    if (fd_id == null) return snackbar(ct: context, ms: "No stay to update mini bar", cl: Colors.red);
+
+    Front_Desk? fd = row_stay(rc);
+    dynamic tmp_m = await dio.post(endpoint.MINI_BAR_READ, data: {});
+    if (tmp_m == null) return snackbar(ct: context, ms: "Error: Read Mini Bar", cl: Colors.red);
+    List<Mini_Bar> list_mini_bar = (tmp_m.data as List<dynamic>? ?? []).map((e) => Mini_Bar.fromJson(e)).toList();
+
+    List<Order_Mini_Bar> orders = [
+      for (var it in (fd?.list_mini_bar_item_id ?? []))
+        if (it is Mini_Bar_Item) Order_Mini_Bar.fromJson(it.toJson()),
+    ];
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => List_Mini_Bar(
+        list_mini_bar: list_mini_bar, //
+        list_order_mini_bar: orders, //
+        locked_ids: fd == null ? {} : locked_mini_bar_ids(fd), //
+      ),
+    );
+    if (saved != true) return;
+
+    List<String> ids = [];
+    for (var o in orders) {
+      if (o.id != null) {
+        dynamic tmp_up = await dio.post(
+          endpoint.MINI_BAR_ITEM_UPDATE,
+          data: {
+            Mini_Bar_Item.ID: o.id, //
+            Mini_Bar_Item.QUANTITY: o.quantity, //
+          },
+        );
+        if (tmp_up == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+        ids.add(o.id!);
+        continue;
+      }
+      dynamic tmp_item = await dio.post(
+        endpoint.MINI_BAR_ITEM_CREATE,
+        data: {
+          Mini_Bar_Item.MINI_BAR_ID: o.mini_bar_id?.id, //
+          Mini_Bar_Item.QUANTITY: o.quantity, //
+        },
+      );
+      if (tmp_item == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      ids.add(tmp_item.data[0][Mini_Bar_Item.ID]);
+    }
+
+    dynamic tmp_fd = await dio.post(
+      row_is_walk_in(rc) ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_MINI_BAR_ITEM,
+      data: {
+        Front_Desk.ID: fd_id, //
+        Front_Desk.LIST_MINI_BAR_ITEM_ID: ids, //
+      },
+    );
+    if (tmp_fd == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    snackbar(ct: context, ms: "Mini Bar Updated", cl: Colors.green);
+    init();
+  }
+
+  // * បើក dialog កែទំនិញ penalty (admin តែប៉ុណ្ណោះ)
+  void on_penalty_item(PlutoColumnRendererContext rc) async {
+    if (!is_admin) return;
+    String? fd_id = row_stay_id(rc);
+    if (fd_id == null) return snackbar(ct: context, ms: "No stay to update penalty", cl: Colors.red);
+
+    Front_Desk? fd = row_stay(rc);
+    dynamic tmp_p = await dio.post(endpoint.PENALTY_READ, data: {});
+    if (tmp_p == null) return snackbar(ct: context, ms: "Error: Read Penalty", cl: Colors.red);
+    List<Penalty> list_penalty = (tmp_p.data as List<dynamic>? ?? []).map((e) => Penalty.fromJson(e)).toList();
+
+    List<Order_Penalty> orders = [
+      for (var it in (fd?.list_penalty_item_id ?? []))
+        if (it is Penalty_Item) Order_Penalty.fromJson(it.toJson()),
+    ];
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => List_Penalty(
+        list_penalty: list_penalty, //
+        list_order_penalty: orders, //
+        locked_ids: fd == null ? {} : locked_penalty_ids(fd), //
+      ),
+    );
+    if (saved != true) return;
+
+    List<String> ids = [];
+    for (var o in orders) {
+      if (o.id != null) {
+        dynamic tmp_up = await dio.post(
+          endpoint.PENALTY_ITEM_UPDATE,
+          data: {
+            Penalty_Item.ID: o.id, //
+            Penalty_Item.QUANTITY: o.quantity, //
+          },
+        );
+        if (tmp_up == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+        ids.add(o.id!);
+        continue;
+      }
+      dynamic tmp_item = await dio.post(
+        endpoint.PENALTY_ITEM_CREATE,
+        data: {
+          Penalty_Item.PENALTY_ID: o.penalty_id?.id, //
+          Penalty_Item.QUANTITY: o.quantity, //
+        },
+      );
+      if (tmp_item == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      ids.add(tmp_item.data[0][Penalty_Item.ID]);
+    }
+
+    dynamic tmp_fd = await dio.post(
+      endpoint.FRONT_DESK_PENALTY_ITEM,
+      data: {
+        Front_Desk.ID: fd_id, //
+        Front_Desk.LIST_PENALTY_ITEM_ID: ids, //
+      },
+    );
+    if (tmp_fd == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    snackbar(ct: context, ms: "Penalty Updated", cl: Colors.green);
+    init();
+  }
+
+  // * ពិនិត្យ stay ជា Walk-In តាម id
+  bool row_is_walk_in_by_id(String fd_id) {
+    Front_Desk? fd = rows.where((x) => x.id == fd_id).firstOrNull;
+    Room? room = fd == null ? null : fd_room(fd);
+    return room != null && (room.number ?? "").toLowerCase() == "walk-in";
+  }
+
+  // * ស្វែងរកភ្ញៀវ ហើយភ្ជាប់ទៅ stay (admin តែប៉ុណ្ណោះ; walk-in មិនអនុញ្ញាត)
+  Future<void> pick_guest(PlutoColumnRendererContext rc) async {
+    if (!is_admin) return;
+    if (row_is_walk_in(rc)) return;
+    String? fd_id = row_stay_id(rc);
+    if (fd_id == null) return;
+
+    var v = await dialog_search_guest(
+      context: context, //
+      front_desk_id: fd_id, //
+    );
+    if (v == null) return;
     init();
   }
 
@@ -323,7 +699,7 @@ class _Main_State extends State<Main_> {
             field: "guest_name", //
             title: "ឈ្មោះ",
             type: PlutoColumnType.text(),
-            enableEditingMode: false,
+            enableEditingMode: is_admin,
             width: WIDTH,
             renderer: (rc) {
               return Align(
@@ -336,12 +712,26 @@ class _Main_State extends State<Main_> {
             field: "guest_phone", //
             title: "លេខទូរស័ព្ទ",
             type: PlutoColumnType.text(),
-            enableEditingMode: false,
+            enableEditingMode: is_admin,
             width: WIDTH,
             renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerLeft, //
-                child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft, //
+                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+                  if (is_admin && !row_is_walk_in(rc))
+                    IconButton(
+                      tooltip: "Search Guest", //
+                      icon: Icon(Icons.search_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => pick_guest(rc), //
+                    ),
+                ],
               );
             },
           ),
@@ -349,7 +739,7 @@ class _Main_State extends State<Main_> {
             field: "number_of_guest", //
             title: "ចំនួន",
             type: PlutoColumnType.number(negative: false, format: "#,###"),
-            enableEditingMode: false,
+            enableEditingMode: is_admin,
             width: 60,
             renderer: (rc) {
               return Align(
@@ -363,11 +753,25 @@ class _Main_State extends State<Main_> {
             title: "ពេលចូល",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
-            width: 150,
+            width: 160,
             renderer: (rc) {
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+                  if (is_admin && !row_is_walk_in(rc))
+                    IconButton(
+                      tooltip: "កែពេលចូល", //
+                      icon: Icon(Icons.calendar_month_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => pick_datetime(rc, is_check_in: true), //
+                    ),
+                ],
               );
             },
           ),
@@ -389,11 +793,25 @@ class _Main_State extends State<Main_> {
             title: "ពេលចេញ",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
-            width: 150,
+            width: 160,
             renderer: (rc) {
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+                  if (is_admin && !row_is_walk_in(rc))
+                    IconButton(
+                      tooltip: "កែពេលចេញ", //
+                      icon: Icon(Icons.calendar_month_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => pick_datetime(rc, is_check_in: false), //
+                    ),
+                ],
               );
             },
           ),
@@ -412,7 +830,7 @@ class _Main_State extends State<Main_> {
             field: "room_cash", //
             title: "លុយ",
             type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
-            enableEditingMode: false,
+            enableEditingMode: is_admin,
             width: 90,
             renderer: (rc) => _money(rc),
             footerRenderer: (rc) => _sum_footer(rc),
@@ -421,7 +839,7 @@ class _Main_State extends State<Main_> {
             field: "room_bank", //
             title: "ធនាគារ",
             type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
-            enableEditingMode: false,
+            enableEditingMode: is_admin,
             width: 90,
             renderer: (rc) => _money(rc),
             footerRenderer: (rc) => _sum_footer(rc),
@@ -439,7 +857,7 @@ class _Main_State extends State<Main_> {
             field: "room_note", //
             title: "ចំណាំ",
             type: PlutoColumnType.text(),
-            enableEditingMode: false,
+            enableEditingMode: is_admin,
             width: 120,
             renderer: (rc) {
               return Align(
@@ -457,25 +875,27 @@ class _Main_State extends State<Main_> {
             enableEditingMode: false,
             width: 80,
             renderer: (rc) {
-              int i = parse_int(rc.row.cells["index"]?.value) ?? 0;
-              Front_Desk? fd = (i > 0 && i <= rows.length) ? rows[i - 1] : null;
-              List<dynamic> list = (fd?.list_mini_bar_item_id ?? []).cast<dynamic>();
-              if (list.isEmpty) return const SizedBox();
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround, //
                 children: [
                   IconButton(
-                    tooltip: "View Mini Bar Items", //
-                    icon: Icon(Icons.receipt_long_outlined, color: Colors.blue),
+                    tooltip: is_admin ? "Edit Mini Bar Items" : "View Mini Bar Items", //
+                    icon: Icon(is_admin ? Icons.local_bar_outlined : Icons.receipt_long_outlined, color: Colors.blue),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
                     onPressed: () {
-                      dialog_item_show(
-                        context: context, //
-                        title: "Mini Bar Items", //
-                        list: list, //
-                        is_mini_bar: true, //
-                      );
+                      if (is_admin) {
+                        on_mini_bar_item(rc);
+                      } else {
+                        int i = parse_int(rc.row.cells["index"]?.value) ?? 0;
+                        Front_Desk? fd = (i > 0 && i <= rows.length) ? rows[i - 1] : null;
+                        dialog_item_show(
+                          context: context, //
+                          title: "Mini Bar Items", //
+                          list: (fd?.list_mini_bar_item_id ?? []).cast<dynamic>(), //
+                          is_mini_bar: true, //
+                        );
+                      }
                     }, //
                   ),
                 ],
@@ -495,7 +915,7 @@ class _Main_State extends State<Main_> {
             field: "mini_bar_cash", //
             title: "លុយ",
             type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
-            enableEditingMode: false,
+            enableEditingMode: is_admin,
             width: 90,
             renderer: (rc) => _money(rc),
             footerRenderer: (rc) => _sum_footer(rc),
@@ -504,7 +924,7 @@ class _Main_State extends State<Main_> {
             field: "mini_bar_bank", //
             title: "ធនាគារ",
             type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
-            enableEditingMode: false,
+            enableEditingMode: is_admin,
             width: 90,
             renderer: (rc) => _money(rc),
             footerRenderer: (rc) => _sum_footer(rc),
@@ -521,7 +941,7 @@ class _Main_State extends State<Main_> {
             field: "mini_bar_note", //
             title: "ចំណាំ",
             type: PlutoColumnType.text(),
-            enableEditingMode: false,
+            enableEditingMode: is_admin,
             width: 120,
             renderer: (rc) {
               return Align(
@@ -534,30 +954,32 @@ class _Main_State extends State<Main_> {
           // * ការបង់ប្រាក់ penalty
           PlutoColumn(
             field: "penalty_item", //
-            title: "ទំនិញ",
+            title: "ពិន័យ",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
             width: 80,
             renderer: (rc) {
-              int i = parse_int(rc.row.cells["index"]?.value) ?? 0;
-              Front_Desk? fd = (i > 0 && i <= rows.length) ? rows[i - 1] : null;
-              List<dynamic> list = (fd?.list_penalty_item_id ?? []).cast<dynamic>();
-              if (list.isEmpty) return const SizedBox();
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround, //
                 children: [
                   IconButton(
-                    tooltip: "View Penalty Items", //
-                    icon: Icon(Icons.receipt_long_outlined, color: Colors.blue),
+                    tooltip: is_admin ? "Edit Penalty Items" : "View Penalty Items", //
+                    icon: Icon(is_admin ? Icons.gavel_outlined : Icons.receipt_long_outlined, color: Colors.blue),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
                     onPressed: () {
-                      dialog_item_show(
-                        context: context, //
-                        title: "Penalty Items", //
-                        list: list, //
-                        is_mini_bar: false, //
-                      );
+                      if (is_admin) {
+                        on_penalty_item(rc);
+                      } else {
+                        int i = parse_int(rc.row.cells["index"]?.value) ?? 0;
+                        Front_Desk? fd = (i > 0 && i <= rows.length) ? rows[i - 1] : null;
+                        dialog_item_show(
+                          context: context, //
+                          title: "Penalty Items", //
+                          list: (fd?.list_penalty_item_id ?? []).cast<dynamic>(), //
+                          is_mini_bar: false, //
+                        );
+                      }
                     }, //
                   ),
                 ],
@@ -577,7 +999,7 @@ class _Main_State extends State<Main_> {
             field: "penalty_cash", //
             title: "លុយ",
             type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
-            enableEditingMode: false,
+            enableEditingMode: is_admin,
             width: 90,
             renderer: (rc) => _money(rc),
             footerRenderer: (rc) => _sum_footer(rc),
@@ -586,7 +1008,7 @@ class _Main_State extends State<Main_> {
             field: "penalty_bank", //
             title: "ធនាគារ",
             type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
-            enableEditingMode: false,
+            enableEditingMode: is_admin,
             width: 90,
             renderer: (rc) => _money(rc),
             footerRenderer: (rc) => _sum_footer(rc),
@@ -603,7 +1025,7 @@ class _Main_State extends State<Main_> {
             field: "penalty_note", //
             title: "ចំណាំ",
             type: PlutoColumnType.text(),
-            enableEditingMode: false,
+            enableEditingMode: is_admin,
             width: 120,
             renderer: (rc) {
               return Align(
@@ -680,6 +1102,7 @@ class _Main_State extends State<Main_> {
         ),
 
         onLoaded: on_loaded,
+        onChanged: on_changed,
       ),
 
       footer: [

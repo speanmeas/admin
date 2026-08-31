@@ -657,11 +657,12 @@ class _Main_State extends State<Main_> {
       body: Column(
         spacing: 1,
         children: [
-          SizedBox(height: 2),
+          //   SizedBox(height: 1),
           // CHECK IN
           if (check_in != null)
-            Align(
+            Container(
               alignment: Alignment.centerLeft, //
+              padding: const EdgeInsets.all(1),
               child: Wrap(
                 spacing: 1, //
                 runSpacing: 1,
@@ -671,8 +672,9 @@ class _Main_State extends State<Main_> {
 
           // CHECK OUT
           if (check_out != null)
-            Align(
+            Container(
               alignment: Alignment.centerLeft, //
+              padding: const EdgeInsets.all(1),
               child: Wrap(
                 spacing: 1, //
                 runSpacing: 1,
@@ -682,8 +684,9 @@ class _Main_State extends State<Main_> {
 
           // CLEAN
           if (clean != null)
-            Align(
+            Container(
               alignment: Alignment.centerLeft, //
+              padding: const EdgeInsets.all(1),
               child: Wrap(
                 spacing: 1, //
                 runSpacing: 1,
@@ -727,33 +730,42 @@ class _Main_State extends State<Main_> {
       //
       check_in: [
         for (var r in rooms.where((r) => r[Room.STATUS] == "Available" && !is_walk_in_room(r)))
-          OutlinedButton.icon(
-            icon: Icon(Icons.bed_outlined), //
-            label: Text("${r[Room.NUMBER]}"),
-            style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
-            onPressed: () => on_check_in(r), //
+          Tooltip(
+            message: "Check-in Room ${r[Room.NUMBER]}",
+            child: OutlinedButton.icon(
+              icon: Icon(Icons.bed_outlined), //
+              label: Text("${r[Room.NUMBER]}"),
+              style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
+              onPressed: () => on_check_in(r), //
+            ),
           ),
       ],
 
       //
       check_out: [
         for (var r in rooms.where((r) => r[Room.STATUS] == "Occupied"))
-          OutlinedButton.icon(
-            icon: Icon(Icons.hotel_outlined), //
-            label: Text("${r[Room.NUMBER]}"),
-            style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-            onPressed: () => on_check_out(r), //
+          Tooltip(
+            message: "Check-out Room ${r[Room.NUMBER]}",
+            child: OutlinedButton.icon(
+              icon: Icon(Icons.hotel_outlined), //
+              label: Text("${r[Room.NUMBER]}"),
+              style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+              onPressed: () => on_check_out(r), //
+            ),
           ),
       ],
 
       //
       clean: [
         for (var r in rooms.where((r) => r[Room.STATUS] == "Dirty"))
-          OutlinedButton.icon(
-            icon: Icon(Icons.cleaning_services_outlined), //
-            label: Text("${r[Room.NUMBER]}"),
-            style: OutlinedButton.styleFrom(foregroundColor: Colors.grey),
-            onPressed: () => on_clean(r), //
+          Tooltip(
+            message: "Clean Room ${r[Room.NUMBER]}",
+            child: OutlinedButton.icon(
+              icon: Icon(Icons.cleaning_services_outlined), //
+              label: Text("${r[Room.NUMBER]}"),
+              style: OutlinedButton.styleFrom(foregroundColor: Colors.grey),
+              onPressed: () => on_clean(r), //
+            ),
           ),
       ],
 

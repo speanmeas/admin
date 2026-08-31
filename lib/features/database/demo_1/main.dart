@@ -15,19 +15,12 @@ import "form/read.dart" as read;
 import "form/update.dart" as update;
 import "form/delete.dart" as delete;
 
-// * បង្កើត layout មេរបស់ទំព័រគ្រប់គ្រងឧទាហរណ៍
-Widget _layout(List<Widget> children) {
-  return Scaffold(
-    body: Column(
-      children: children, //
-    ),
-  );
-}
-
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទិន្នន័យឧទាហរណ៍
 class _Main_State extends State<Main_> {
+  // * ########## BLOCK VARIABLES ##########
+  int reload = 0; // this variable is used to reload the PlutoGrid when the data changes
+  bool is_load = false; // this variable is used to guard the fast clicking of the buttons, to prevent multiple requests to the server
+
   dynamic tmp;
-  bool is_loading = true;
   List<String> list_c = columns.map((c) => c.field).toList();
 
   bool is_filter = false;
@@ -36,12 +29,20 @@ class _Main_State extends State<Main_> {
   PlutoGridStateManager? state_manager;
 
   List<Demo_1> data = [];
+  // * ########## BLOCK VARIABLES END ##########
+
+  // * ########## BLOCK METHODS ##########
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
 
   // * ផ្ទុកចំនួនជួរដេកសរុប និងទំព័រដំបូង
   void init() async {
-    setState(() => is_loading = true);
+    setState(() => is_load = true);
     tmp = await dio.post(endpoint.DEMO_1_READ_COUNT, data: {"count": true});
-    setState(() => is_loading = false);
+    setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     row_total = parse_int(tmp.data) ?? 0;
@@ -50,9 +51,9 @@ class _Main_State extends State<Main_> {
 
   // * ធ្វើឱ្យទិន្នន័យស្រស់ឡើងវិញ
   void on_refresh() async {
-    setState(() => is_loading = true);
+    setState(() => is_load = true);
     tmp = await dio.post(endpoint.DEMO_1_READ_COUNT, data: {"count": true});
-    setState(() => is_loading = false);
+    setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     row_total = parse_int(tmp.data) ?? 0;
@@ -66,7 +67,7 @@ class _Main_State extends State<Main_> {
   // * ផ្ទុកទិន្នន័យតាមទំព័រ
   void load_page(int p) async {
     // * អានទិន្នន័យឧទាហរណ៍តាម offset និង limit
-    setState(() => is_loading = true);
+    setState(() => is_load = true);
     tmp = await dio.post(
       endpoint.DEMO_1_READ, //
       data: {
@@ -76,7 +77,7 @@ class _Main_State extends State<Main_> {
         "limit": DEFAULT_LIMIT_ROW,
       },
     );
-    setState(() => is_loading = false);
+    setState(() => is_load = false);
 
     // * dio ត្រឡប់ null ពេល request បរាជ័យ
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
@@ -122,180 +123,6 @@ class _Main_State extends State<Main_> {
     state_manager?.setFilterWithFilterRows(filter_rows);
 
     setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _layout([
-      // * របារម៉ឺនុយសកម្មភាព
-      Container(
-        height: 40, //
-        padding: EdgeInsets.all(1),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // * ប៊ូតុងបង្កើត
-            Menu_Button_Icon(
-              tip: t("Create"), //
-              icon: Icons.add,
-              onPressed: is_loading ? null : on_create,
-            ),
-
-            // * ប៊ូតុងអាន
-            Menu_Button_Icon(
-              tip: t("Read"), //
-              icon: Icons.visibility_outlined,
-              onPressed: is_loading ? null : on_read,
-            ),
-
-            // * ប៊ូតុងកែប្រែ
-            Menu_Button_Icon(
-              tip: t("Update"), //
-              icon: Icons.edit_outlined,
-              onPressed: is_loading ? null : on_update,
-            ),
-
-            // * ប៊ូតុងលុប
-            Menu_Button_Icon(
-              tip: t("Delete"), //
-              icon: Icons.delete_outline,
-              onPressed: is_loading ? null : on_delete,
-              color: Colors.red,
-            ),
-
-            Spacer(),
-
-            // * ប៊ូតុងបើក/បិទ filter
-            Menu_Button_Icon(
-              tip: is_filter ? t("Close Filter") : t("Open Filter"), //
-              icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
-              onPressed: () {
-                is_filter = !is_filter;
-                state_manager?.setShowColumnFilter(is_filter);
-                if (!is_filter) state_manager?.setFilterWithFilterRows([]);
-                setState(() {});
-              },
-            ),
-
-            // * ប៊ូតុងស្វែងរក (តែក្នុង debug mode)
-            if (kDebugMode)
-              Menu_Button_Icon(
-                tip: "Search", //
-                icon: Icons.search,
-                onPressed: () {
-                  snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
-                },
-              ),
-
-            // * ប៊ូតុងធ្វើឱ្យស្រស់
-            Menu_Button_Icon(
-              tip: t("Refresh"), //
-              icon: Icons.refresh,
-              onPressed: is_loading ? null : on_refresh,
-            ),
-          ],
-        ),
-      ),
-
-      // * បង្ហាញ progress bar ពេលកំពុងផ្ទុក
-      if (is_loading) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
-
-      // * តារាងទិន្នន័យ
-      Expanded(
-        child: PlutoGrid(
-          rows: [], //
-          columns: columns, //
-          configuration: PlutoGridConfiguration(
-            scrollbar: PlutoGridScrollbarConfig(
-              scrollbarThickness: 12, //
-              scrollbarThicknessWhileDragging: 12,
-              isAlwaysShown: true,
-            ),
-            style: PlutoGridStyleConfig(
-              rowHeight: 28, //
-              columnHeight: 32,
-              columnFilterHeight: 36,
-              defaultColumnTitlePadding: EdgeInsets.fromLTRB(8, 0, 24, 0),
-              defaultColumnFilterPadding: EdgeInsets.fromLTRB(1, 1, 1, 1),
-            ),
-          ),
-          onLoaded: (event) {
-            state_manager = event.stateManager;
-            state_manager?.addListener(() => setState(() {}));
-          },
-        ),
-      ),
-
-      // * របារប្តូរទំព័រ
-      Container(
-        height: 40, //
-        alignment: Alignment.topCenter,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(width: 120),
-
-            Spacer(),
-
-            // * ត្រលប់ទៅទំព័រដំបូង
-            Menu_Button_Icon(
-              tip: t("First Page"), //
-              icon: Icons.first_page,
-              onPressed: is_loading ? null : goto_first_page,
-            ),
-
-            // * ប៊ូតុងទៅទំព័រមុន
-            Menu_Button_Icon(
-              tip: t("Previous Page"), //
-              icon: Icons.navigate_before,
-              onPressed: is_loading ? null : goto_previous_page,
-            ),
-
-            // * ប៊ូតុងជ្រើសរើសទំព័រ
-            Menu_Button_Text(
-              tip: t("Select Page"), //
-              text: "$page / $total_pages", //
-              onPressed: is_loading ? null : goto_page,
-            ),
-
-            // * ប៊ូតុងទៅទំព័របន្ទាប់
-            Menu_Button_Icon(
-              tip: t("Next Page"), //
-              icon: Icons.navigate_next,
-              onPressed: is_loading ? null : goto_next_page,
-            ),
-
-            // * ប៊ូតុងទៅទំព័រចុងក្រោយ
-            Menu_Button_Icon(
-              tip: t("Last Page"), //
-              icon: Icons.last_page,
-              onPressed: is_loading ? null : goto_last_page,
-            ),
-
-            Spacer(),
-
-            // * បង្ហាញចំនួនជួរដេក
-            Container(
-              height: 40,
-              padding: EdgeInsets.only(right: 16),
-              alignment: Alignment.center,
-              child: Text(
-                "${state_manager?.rows.length ?? 0} Rows", //
-                style: TextStyle(
-                  fontSize: 18, //
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ), //
-            ),
-
-            SizedBox(width: 8),
-          ],
-        ),
-      ),
-    ]);
   }
 
   // * ត្រលប់ទៅទំព័រដំបូង
@@ -395,11 +222,203 @@ class _Main_State extends State<Main_> {
     return (row_total / DEFAULT_LIMIT_ROW).ceil();
   }
 
-  @override
-  void initState() {
-    super.initState();
+  void on_loaded(PlutoGridOnLoadedEvent e) async {
+    state_manager = e.stateManager;
+    state_manager?.addListener(() => setState(() {}));
+    list_c = state_manager!.refColumns.map((c) => c.field).toList();
+
     init();
   }
+  // * ########## BLOCK METHODS END ##########
+
+  // * ########## BLOCK DESIGN ##########
+  Widget _layout({
+    List<Widget>? header, //
+    Widget? body, //
+    List<Widget>? footer, //
+  }) {
+    return Scaffold(
+      body: Column(
+        spacing: 1,
+        children: [
+          // HEADER
+          if (header != null)
+            Container(
+              height: 40, //
+              padding: const EdgeInsets.all(1),
+              child: Row(
+                spacing: 2, //
+                children: header,
+              ),
+            ),
+
+          if (is_load) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
+
+          Expanded(child: body ?? Container()),
+
+          // FOOTER
+          if (footer != null)
+            Container(
+              height: 40, //
+              padding: const EdgeInsets.all(1),
+              child: Row(
+                spacing: 2, //
+                children: footer,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _layout(
+      header: [
+        // * ប៊ូតុងបង្កើត
+        Menu_Button_Icon(
+          tip: t("Create"), //
+          icon: Icons.add,
+          onPressed: is_load ? null : on_create,
+        ),
+
+        // * ប៊ូតុងអាន
+        Menu_Button_Icon(
+          tip: t("Read"), //
+          icon: Icons.visibility_outlined,
+          onPressed: is_load ? null : on_read,
+        ),
+
+        // * ប៊ូតុងកែប្រែ
+        Menu_Button_Icon(
+          tip: t("Update"), //
+          icon: Icons.edit_outlined,
+          onPressed: is_load ? null : on_update,
+        ),
+
+        // * ប៊ូតុងលុប
+        Menu_Button_Icon(
+          tip: t("Delete"), //
+          icon: Icons.delete_outline,
+          onPressed: is_load ? null : on_delete,
+          color: Colors.red,
+        ),
+
+        const Spacer(),
+
+        // * ប៊ូតុងបើក/បិទ filter
+        Menu_Button_Icon(
+          tip: is_filter ? t("Close Filter") : t("Open Filter"), //
+          icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
+          onPressed: () {
+            is_filter = !is_filter;
+            state_manager?.setShowColumnFilter(is_filter);
+            if (!is_filter) state_manager?.setFilterWithFilterRows([]);
+            setState(() {});
+          },
+        ),
+
+        // * ប៊ូតុងស្វែងរក (តែក្នុង debug mode)
+        if (kDebugMode)
+          Menu_Button_Icon(
+            tip: "Search", //
+            icon: Icons.search,
+            onPressed: () {
+              snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
+            },
+          ),
+
+        // * ប៊ូតុងធ្វើឱ្យស្រស់
+        Menu_Button_Icon(
+          tip: t("Refresh"), //
+          icon: Icons.refresh,
+          onPressed: is_load ? null : on_refresh,
+        ),
+      ],
+
+      body: PlutoGrid(
+        key: ValueKey(reload), //
+        rows: [], //
+        columns: columns, //
+        configuration: PlutoGridConfiguration(
+          scrollbar: PlutoGridScrollbarConfig(
+            scrollbarThickness: 12, //
+            scrollbarThicknessWhileDragging: 12,
+            isAlwaysShown: true,
+          ),
+          style: PlutoGridStyleConfig(
+            rowHeight: 28, //
+            columnHeight: 32,
+            columnFilterHeight: 36,
+            defaultColumnTitlePadding: EdgeInsets.fromLTRB(8, 0, 24, 0),
+            defaultColumnFilterPadding: EdgeInsets.fromLTRB(1, 1, 1, 1),
+          ),
+        ),
+
+        onLoaded: on_loaded,
+      ),
+
+      footer: [
+        const Spacer(),
+
+        // * ត្រលប់ទៅទំព័រដំបូង
+        Menu_Button_Icon(
+          tip: t("First Page"), //
+          icon: Icons.first_page,
+          onPressed: is_load ? null : goto_first_page,
+        ),
+
+        // * ប៊ូតុងទៅទំព័រមុន
+        Menu_Button_Icon(
+          tip: t("Previous Page"), //
+          icon: Icons.navigate_before,
+          onPressed: is_load ? null : goto_previous_page,
+        ),
+
+        // * ប៊ូតុងជ្រើសរើសទំព័រ
+        Menu_Button_Text(
+          tip: t("Select Page"), //
+          text: "$page / $total_pages", //
+          onPressed: is_load ? null : goto_page,
+        ),
+
+        // * ប៊ូតុងទៅទំព័របន្ទាប់
+        Menu_Button_Icon(
+          tip: t("Next Page"), //
+          icon: Icons.navigate_next,
+          onPressed: is_load ? null : goto_next_page,
+        ),
+
+        // * ប៊ូតុងទៅទំព័រចុងក្រោយ
+        Menu_Button_Icon(
+          tip: t("Last Page"), //
+          icon: Icons.last_page,
+          onPressed: is_load ? null : goto_last_page,
+        ),
+
+        const Spacer(),
+
+        // * បង្ហាញចំនួនជួរដេក
+        Container(
+          height: 40,
+          padding: EdgeInsets.only(right: 16),
+          alignment: Alignment.center,
+          child: Text(
+            "${state_manager?.rows.length ?? 0} Rows", //
+            style: TextStyle(
+              fontSize: 18, //
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ), //
+        ),
+
+        SizedBox(width: 8),
+      ],
+    );
+  }
+
+  // * ########## BLOCK DESIGN END ##########
 }
 
 const double WIDTH = 140;
@@ -492,6 +511,23 @@ final columns = [
   PlutoColumn(
     field: Demo_1.LOGIC, //
     title: "Logic",
+    type: PlutoColumnType.text(),
+    width: WIDTH,
+    enableEditingMode: false,
+    renderer: (rc) {
+      return Align(
+        alignment: Alignment.center, //
+        child: Text(
+          format_bool(rc.cell.value), //
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    },
+  ),
+  // * ជួរឈរតក្កវិជ្ជា (បាទ/ទេ)
+  PlutoColumn(
+    field: "actions", //
+    title: "Actions",
     type: PlutoColumnType.text(),
     width: WIDTH,
     enableEditingMode: false,
