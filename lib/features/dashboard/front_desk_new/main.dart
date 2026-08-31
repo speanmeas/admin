@@ -71,6 +71,12 @@ class _Main_State extends State<Main_> {
     if (tmp_fd == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     front_desks = (tmp_fd.data as List<dynamic>? ?? []).map<Front_Desk>((e) => Front_Desk.fromJson(e)).toList();
+
+    // * បន្ថែម Walk-In counter (តែងតែនៅ index 1) នៅដើមបញ្ជី
+    dynamic tmp_walk = await dio.post(endpoint.FRONT_DESK_WALK_IN, data: {});
+    if (tmp_walk != null && (tmp_walk.data as List<dynamic>? ?? []).isNotEmpty) {
+      front_desks.insert(0, Front_Desk.fromJson((tmp_walk.data as List<dynamic>)[0]));
+    }
     // pprint(front_desks);
 
     update_grid();
@@ -95,6 +101,12 @@ class _Main_State extends State<Main_> {
   // * accessors for Front_Desk linked/expanded fields
   Room? fd_room(Front_Desk fd) => fd.room_id is Room ? fd.room_id as Room : null;
   Guest? fd_guest(Front_Desk fd) => fd.guest_id is Guest ? fd.guest_id as Guest : null;
+
+  // * ពិនិត្យថា room ជា Walk-In (លក់ minibar តែប៉ុណ្ណោះ)
+  bool is_walk_in_room(dynamic r) {
+    String? number = r[Room.NUMBER]?.toString().toLowerCase();
+    return number == "walk-in";
+  }
 
   void update_grid() {
     //
@@ -196,9 +208,22 @@ class _Main_State extends State<Main_> {
     final fd_id = e.row.cells["_id"]?.value;
     if (fd_id == null) return;
 
+    // * Walk-In: row នេះប្រើសម្រាប់ភ្ញៀវ walk-in ទិញ minibar តែប៉ុណ្ណោះ
+    // * — កែបានតែឈ្មោះ/លេខទូរស័ព្ទភ្ញៀវ តាមរយៈ walk_in_update (ផ្នែកផ្សេងទៀតមិនអនុញ្ញាតទេ)
+    bool is_walkin_row = false;
+    {
+      Front_Desk? walk_fd = front_desks.where((x) => x.id == fd_id).firstOrNull;
+      Room? walk_room = walk_fd == null ? null : fd_room(walk_fd);
+      is_walkin_row = walk_room != null && (walk_room.number ?? "").toLowerCase() == "walk-in";
+      if (is_walkin_row && e.column.field != "guest_name" && e.column.field != "guest_phone") {
+        e.row.cells[e.column.field]!.value = e.oldValue;
+        return;
+      }
+    }
+
     if (e.column.field == "guest_name") {
       dynamic tmp_fd = await dio.post(
-        endpoint.FRONT_DESK_UPDATE_GUEST,
+        is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_UPDATE_GUEST,
         data: {
           Front_Desk.ID: fd_id, //
           Guest.FULL_NAME: e.value, //
@@ -209,7 +234,7 @@ class _Main_State extends State<Main_> {
 
     if (e.column.field == "guest_phone") {
       dynamic tmp_fd = await dio.post(
-        endpoint.FRONT_DESK_UPDATE_GUEST,
+        is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_UPDATE_GUEST,
         data: {
           Front_Desk.ID: fd_id, //
           Guest.PHONE_NUMBER: e.value, //
@@ -314,7 +339,7 @@ class _Main_State extends State<Main_> {
       context: context, //
       lead: "Room ${r[Room.NUMBER]}", //
       room_id: r[Room.ID], //
-      price_per_day: r[Room.PRICE_PER_DAY], //
+      price_per_day: r[Room.PRICE_PER_DAY] ?? 0, //
     );
     if (v == null) return;
     init();
@@ -332,8 +357,7 @@ class _Main_State extends State<Main_> {
     );
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
-    snackbar(ct: context, ms: "Checked Out", cl: Colors.green);
-    init();
+    snackbar(ct: context, ms: "Checked Out", cl: Colors.green);    init();
   }
 
   void on_clean(dynamic r) async {
@@ -399,6 +423,13 @@ class _Main_State extends State<Main_> {
 
   // * ពិនិត្យថា stay បាន check out រួចហើយឬនៅ (សម្រាប់លាក់ប៊ូតុង)
   bool is_checked_out(PlutoColumnRendererContext rc) => row_stay(rc)?.check_out_at != null;
+
+  // * ពិនិត្យថា stay ជា Walk-In (លក់ minibar តែប៉ុណ្ណោះ)
+  bool row_is_walk_in(PlutoColumnRendererContext rc) {
+    Front_Desk? fd = row_stay(rc);
+    Room? room = fd == null ? null : fd_room(fd);
+    return room != null && (room.number ?? "").toLowerCase() == "walk-in";
+  }
 
   void on_cancel(PlutoColumnRendererContext rc) async {
     if (checkout_guard(rc)) return;
@@ -546,6 +577,22 @@ class _Main_State extends State<Main_> {
       ids.add(tmp_item.data[0][Mini_Bar_Item.ID]);
     }
 
+    // * Walk-In: ប្រើ endpoint ដាច់ដោយឡែក (walk_in_update)
+    if (row_is_walk_in(rc)) {
+      dynamic tmp_walk = await dio.post(
+        endpoint.FRONT_DESK_WALK_IN_UPDATE,
+        data: {
+          Front_Desk.ID: fd_id, //
+          Front_Desk.LIST_MINI_BAR_ITEM_ID: ids, //
+        },
+      );
+      if (tmp_walk == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+      snackbar(ct: context, ms: "Walk-In Mini Bar Updated", cl: Colors.green);
+      init();
+      return;
+    }
+
     dynamic tmp_fd = await dio.post(
       endpoint.FRONT_DESK_MINI_BAR_ITEM,
       data: {
@@ -589,8 +636,8 @@ class _Main_State extends State<Main_> {
   }
 
   bool is_filter = false; // this variable is used to show/hide the filter row in the PlutoGridj
-  bool hide_penalty = true; // this variable is used to show/hide the penalty column in the PlutoGrid
-  bool hide_mini_bar = true; // this variable is used to show/hide the mini bar column in the PlutoGrid
+  bool hide_penalty = false; // this variable is used to show/hide the penalty column in the PlutoGrid
+  bool hide_mini_bar = false; // this variable is used to show/hide the mini bar column in the PlutoGrid
 
   // * ########## BLOCK METHODS END ##########
 
@@ -676,7 +723,7 @@ class _Main_State extends State<Main_> {
     return _layout(
       //
       check_in: [
-        for (var r in rooms.where((r) => r[Room.STATUS] == "Available"))
+        for (var r in rooms.where((r) => r[Room.STATUS] == "Available" && !is_walk_in_room(r)))
           OutlinedButton.icon(
             icon: Icon(Icons.bed_outlined), //
             label: Text("${r[Room.NUMBER]}"),
@@ -979,13 +1026,14 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  IconButton(
-                    tooltip: "កែពេលចូល", //
-                    icon: Icon(Icons.calendar_month_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => pick_datetime(rc, is_check_in: true), //
-                  ),
+                  if (!is_checked_out(rc) && !row_is_walk_in(rc))
+                    IconButton(
+                      tooltip: "កែពេលចូល", //
+                      icon: Icon(Icons.calendar_month_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => pick_datetime(rc, is_check_in: true), //
+                    ),
                 ],
               );
             },
@@ -1513,7 +1561,7 @@ class _Main_State extends State<Main_> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  if (!is_checked_out(rc))
+                  if (!is_checked_out(rc) && !row_is_walk_in(rc))
                     IconButton(
                       tooltip: "Update Penalty Items", //
                       icon: Icon(Icons.gavel_outlined),
@@ -1777,7 +1825,7 @@ class _Main_State extends State<Main_> {
                 mainAxisAlignment: MainAxisAlignment.end, //
                 children: [
                   //
-                  if (!is_checked_out(rc))
+                  if (!is_checked_out(rc) && !row_is_walk_in(rc))
                     IconButton(
                       tooltip: "Change Room", //
                       icon: Icon(Icons.swap_horiz_outlined),
@@ -1787,7 +1835,7 @@ class _Main_State extends State<Main_> {
                     ),
 
                   //
-                  if (!is_checked_out(rc))
+                  if (!is_checked_out(rc) && !row_is_walk_in(rc))
                     IconButton(
                       tooltip: "Cancel", //
                       icon: Icon(Icons.cancel_outlined, color: Colors.red),
