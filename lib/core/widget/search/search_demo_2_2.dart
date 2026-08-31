@@ -7,7 +7,7 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/widget/show/show_text.dart";
-import "package:speanmeas/features/database/demo_2_2/form/create.dart" as create_demo_2_2;
+import "package:speanmeas/features/database/demo_2_2/dialog/create.dart" as create_demo_2_2;
 
 // * ថ្នាក់ state របស់ Search_Demo_2_2 គ្រប់គ្រងការស្វែងរក Demo 2-2
 class _Search_Demo_2_2State extends State<Search_Demo_2_2> {
@@ -176,7 +176,7 @@ class _Search_Demo_2_2State extends State<Search_Demo_2_2> {
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
               onPressed: () async {
                 // * បើកទម្រង់បង្កើត Demo 2-2 ថ្មី
-                final v = await nav_push(context, create_demo_2_2.Main_());
+                final v = await create_demo_2_2.dialog_create_demo_2_2(context: context);
                 if (v == null) return;
 
                 // * បង្ហាញអត្ថបទ Demo 2-2 ថ្មី និងជ្រើសរើសភ្លាមៗ
