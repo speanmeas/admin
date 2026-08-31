@@ -72,9 +72,11 @@ class _Main_State extends State<Main_> {
 
     front_desks = (tmp_fd.data as List<dynamic>? ?? []).map<Front_Desk>((e) => Front_Desk.fromJson(e)).toList();
 
-    // * បន្ថែម Walk-In counter (តែងតែនៅ index 1) នៅដើមបញ្ជី
+    // * បន្ថែម Walk-In counter (តែងតែនៅ index 1) នៅដើមបញ្ជី ប្រសិនបើមិនទាន់មានក្នុងបញ្ជី
     dynamic tmp_walk = await dio.post(endpoint.FRONT_DESK_WALK_IN, data: {});
     if (tmp_walk != null && (tmp_walk.data as List<dynamic>? ?? []).isNotEmpty) {
+      String walk_id = (tmp_walk.data as List<dynamic>)[0]["_id"]?.toString() ?? "";
+      front_desks.removeWhere((x) => x.id?.toString() == walk_id);
       front_desks.insert(0, Front_Desk.fromJson((tmp_walk.data as List<dynamic>)[0]));
     }
     // pprint(front_desks);
@@ -151,21 +153,21 @@ class _Main_State extends State<Main_> {
                 if (c == "room_cash") return PlutoCell(value: fd.room_cash);
                 if (c == "room_bank") return PlutoCell(value: fd.room_bank);
                 if (c == "room_balance") return PlutoCell(value: fd.room_balance);
-                if (c == "room_note") return PlutoCell(value: fd.room_note);
+                if (c == "room_note") return PlutoCell(value: fd.room_note ?? "");
 
                 // * mini bar payment fields are inline on the stay (no Mini_Bar_Pay child array)
                 if (c == "mini_bar_price") return PlutoCell(value: fd.mini_bar_price);
                 if (c == "mini_bar_cash") return PlutoCell(value: fd.mini_bar_cash);
                 if (c == "mini_bar_bank") return PlutoCell(value: fd.mini_bar_bank);
                 if (c == "mini_bar_balance") return PlutoCell(value: fd.mini_bar_balance);
-                if (c == "mini_bar_note") return PlutoCell(value: fd.mini_bar_note);
+                if (c == "mini_bar_note") return PlutoCell(value: fd.mini_bar_note ?? "");
 
                 // * penalty payment fields are inline on the stay (no Penalty_Pay child array)
                 if (c == "penalty_price") return PlutoCell(value: fd.penalty_price);
                 if (c == "penalty_cash") return PlutoCell(value: fd.penalty_cash);
                 if (c == "penalty_bank") return PlutoCell(value: fd.penalty_bank);
                 if (c == "penalty_balance") return PlutoCell(value: fd.penalty_balance);
-                if (c == "penalty_note") return PlutoCell(value: fd.penalty_note);
+                if (c == "penalty_note") return PlutoCell(value: fd.penalty_note ?? "");
 
                 if (c == "check_in_by") {
                   dynamic u = fd.check_in_by;
@@ -209,13 +211,13 @@ class _Main_State extends State<Main_> {
     if (fd_id == null) return;
 
     // * Walk-In: row នេះប្រើសម្រាប់ភ្ញៀវ walk-in ទិញ minibar តែប៉ុណ្ណោះ
-    // * — កែបានតែឈ្មោះ/លេខទូរស័ព្ទភ្ញៀវ តាមរយៈ walk_in_update (ផ្នែកផ្សេងទៀតមិនអនុញ្ញាតទេ)
+    // * — កែបានតែឈ្មោះ/លេខទូរស័ព្ទភ្ញៀវ និងលុយ/ធនាគាររបស់ minibar (ផ្នែកផ្សេងទៀតមិនអនុញ្ញាតទេ)
     bool is_walkin_row = false;
     {
       Front_Desk? walk_fd = front_desks.where((x) => x.id == fd_id).firstOrNull;
       Room? walk_room = walk_fd == null ? null : fd_room(walk_fd);
       is_walkin_row = walk_room != null && (walk_room.number ?? "").toLowerCase() == "walk-in";
-      if (is_walkin_row && e.column.field != "guest_name" && e.column.field != "guest_phone") {
+      if (is_walkin_row && e.column.field != "guest_name" && e.column.field != "guest_phone" && e.column.field != "mini_bar_cash" && e.column.field != "mini_bar_bank") {
         e.row.cells[e.column.field]!.value = e.oldValue;
         return;
       }
@@ -300,7 +302,7 @@ class _Main_State extends State<Main_> {
     if (e.column.field == "mini_bar_cash" || e.column.field == "mini_bar_bank") {
       String key = e.column.field == "mini_bar_cash" ? Front_Desk.MINI_BAR_CASH : Front_Desk.MINI_BAR_BANK;
       dynamic tmp_fdn = await dio.post(
-        endpoint.FRONT_DESK_MINI_BAR_PAY,
+        is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_MINI_BAR_PAY,
         data: {
           Front_Desk.ID: fd_id, //
           key: num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
@@ -357,7 +359,8 @@ class _Main_State extends State<Main_> {
     );
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
-    snackbar(ct: context, ms: "Checked Out", cl: Colors.green);    init();
+    snackbar(ct: context, ms: "Checked Out", cl: Colors.green);
+    init();
   }
 
   void on_clean(dynamic r) async {
@@ -1018,7 +1021,7 @@ class _Main_State extends State<Main_> {
                 children: [
                   Expanded(
                     child: Align(
-                      alignment: Alignment.center, //
+                      alignment: Alignment.centerLeft, //
                       child: Text(
                         format_datetime(rc.cell.value), //
                         overflow: TextOverflow.ellipsis,
@@ -1076,7 +1079,7 @@ class _Main_State extends State<Main_> {
                 children: [
                   Expanded(
                     child: Align(
-                      alignment: Alignment.center, //
+                      alignment: Alignment.centerLeft, //
                       child: Text(
                         format_datetime(rc.cell.value), //
                         overflow: TextOverflow.ellipsis,
