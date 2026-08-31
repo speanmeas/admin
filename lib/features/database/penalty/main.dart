@@ -1,7 +1,5 @@
 // * ទំព័រគ្រប់គ្រង Penalty ដោយប្រើ inline editing និង dialog confirm/delete
 
-import "dart:async";
-
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:pluto_grid/pluto_grid.dart";
@@ -16,18 +14,28 @@ import "dialog/delete.dart";
 class _Main_State extends State<Main_> {
   // * ########## BLOCK VARIABLES ##########
   int reload = 0; // * rebuild PlutoGrid តាម key ដើម្បីឲ្យ hot reload អាប់ដេតជួរឈរ/ទិន្នន័យ
+  int page = 1;
+  int row_total = 0;
   bool is_load = false; // * guard fast clicking បង្ការការផ្ញើ request ច្រើនដង
+  bool is_filter = false;
 
   late List<String> list_c;
   late PlutoGridStateManager state_manager;
+
   List<Penalty> data = [];
 
-  bool is_filter = false;
-  int page = 1;
-  int row_total = 0;
   // * ########## BLOCK VARIABLES END ##########
 
   // * ########## BLOCK METHODS ##########
+
+  void on_loaded(PlutoGridOnLoadedEvent e) async {
+    state_manager = e.stateManager;
+    state_manager.addListener(() => setState(() {}));
+    state_manager.setAutoEditing(true);
+    list_c = state_manager.refColumns.map((c) => c.field).toList();
+
+    init();
+  }
 
   // * ផ្ទុកចំនួនជួរដេកសរុប និងទំព័រដំបូង
   void init() async {
@@ -47,10 +55,6 @@ class _Main_State extends State<Main_> {
     if (page > total_pages) page = total_pages;
     if (page < 1) page = 1;
 
-    load_page(page);
-  }
-
-  void on_refresh() {
     load_page(page);
   }
 
@@ -211,15 +215,6 @@ class _Main_State extends State<Main_> {
     return (row_total / DEFAULT_LIMIT_ROW).ceil();
   }
 
-  void on_loaded(PlutoGridOnLoadedEvent e) async {
-    state_manager = e.stateManager;
-    state_manager.addListener(() => setState(() {}));
-    state_manager.setAutoEditing(true);
-    list_c = state_manager.refColumns.map((c) => c.field).toList();
-
-    init();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -272,20 +267,32 @@ class _Main_State extends State<Main_> {
         ),
 
         // * ទំព័រមុន
-        Menu_Button_Icon(tip: "Previous Page", icon: Icons.navigate_before, onPressed: is_load ? null : goto_previous_page),
+        Menu_Button_Icon(
+          tip: "Previous Page", //
+          icon: Icons.navigate_before,
+          onPressed: is_load ? null : goto_previous_page,
+        ),
 
         // * ប៊ូតុងជ្រើសរើសទំព័រ
         Menu_Button_Text(
-          tip: t("Select Page"), //
+          tip: "Select Page", //
           text: "$page / $total_pages", //
           onPressed: is_load ? null : goto_page,
         ),
 
         // * ទំព័របន្ទាប់
-        Menu_Button_Icon(tip: "Next Page", icon: Icons.navigate_next, onPressed: is_load ? null : goto_next_page),
+        Menu_Button_Icon(
+          tip: "Next Page", //
+          icon: Icons.navigate_next,
+          onPressed: is_load ? null : goto_next_page,
+        ),
 
         // * ទំព័រចុងក្រោយ
-        Menu_Button_Icon(tip: "Last Page", icon: Icons.last_page, onPressed: is_load ? null : goto_last_page),
+        Menu_Button_Icon(
+          tip: "Last Page", //
+          icon: Icons.last_page,
+          onPressed: is_load ? null : goto_last_page,
+        ),
 
         const Spacer(),
 
@@ -298,7 +305,7 @@ class _Main_State extends State<Main_> {
 
         // * បើក/បិទ filter
         Menu_Button_Icon(
-          tip: is_filter ? t("Close Filter") : t("Open Filter"), //
+          tip: is_filter ? "Close Filter" : "Open Filter", //
           icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
           onPressed: () {
             is_filter = !is_filter;
@@ -310,7 +317,7 @@ class _Main_State extends State<Main_> {
 
         // * ធ្វើឱ្យទិន្នន័យស្រស់
         Menu_Button_Icon(
-          tip: t("Refresh"), //
+          tip: "Refresh", //
           icon: Icons.refresh,
           onPressed: is_load ? null : on_reload,
         ),
