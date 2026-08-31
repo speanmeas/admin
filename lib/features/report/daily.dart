@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
+import "package:speanmeas/features/report/dialog_item_show.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK VARIABLES ##########
@@ -12,9 +13,10 @@ class _Main_State extends State<Main_> {
   late List<String> list_column;
   late PlutoGridStateManager state_manager;
 
-  DateTime date = DateTime.now();  dynamic report; // * response របស់ /front_desk/daily_report
+  DateTime date = DateTime.now();
+  dynamic report; // * response របស់ /front_desk/daily_report
 
-  List<dynamic> rows = [];
+  List<Front_Desk> rows = [];
   Map<String, dynamic> summary = {};
   // * ########## BLOCK VARIABLES END ##########
 
@@ -49,25 +51,6 @@ class _Main_State extends State<Main_> {
   Guest? fd_guest(Front_Desk fd) => fd.guest_id is Guest ? fd.guest_id as Guest : null;
   User_Show? fd_check_in_by(Front_Desk fd) => fd.check_in_by is User_Show ? fd.check_in_by as User_Show : null;
   User_Show? fd_check_out_by(Front_Desk fd) => fd.check_out_by is User_Show ? fd.check_out_by as User_Show : null;
-
-  // * បង្ហាញបញ្ជីទំនិញ (mini bar / penalty) ជាអក្សរ "ឈ្មោះ xចំនួន"
-  String items_text(List<dynamic>? list, {required bool is_mini_bar}) {
-    if (list == null || list.isEmpty) return "";
-    List<String> parts = [];
-    for (var it in list) {
-      String? name;
-      int? qty;
-      if (is_mini_bar && it is Mini_Bar_Item) {
-        name = (it.mini_bar_id is Mini_Bar_Show_2 ? (it.mini_bar_id as Mini_Bar_Show_2).name : null) ?? "";
-        qty = it.quantity;
-      } else if (!is_mini_bar && it is Penalty_Item) {
-        name = (it.penalty_id is Penalty_Show ? (it.penalty_id as Penalty_Show).name : null) ?? "";
-        qty = it.quantity;
-      }
-      parts.add("$name x${qty ?? 1}");
-    }
-    return parts.join(", ");
-  }
 
   // * រយៈពេលស្នាក់ជាថ្ងៃ និងម៉ោង
   String duration_text(DateTime? in_at, DateTime? out_at) {
@@ -110,14 +93,14 @@ class _Main_State extends State<Main_> {
                 if (c == "room_balance") return PlutoCell(value: fd.room_balance);
                 if (c == "room_note") return PlutoCell(value: fd.room_note);
 
-                if (c == "penalty_item") return PlutoCell(value: items_text(fd.list_penalty_item_id, is_mini_bar: false));
+                if (c == "penalty_item") return PlutoCell(value: "");
                 if (c == "penalty_price") return PlutoCell(value: fd.penalty_price);
                 if (c == "penalty_cash") return PlutoCell(value: fd.penalty_cash);
                 if (c == "penalty_bank") return PlutoCell(value: fd.penalty_bank);
                 if (c == "penalty_balance") return PlutoCell(value: fd.penalty_balance);
                 if (c == "penalty_note") return PlutoCell(value: fd.penalty_note);
 
-                if (c == "mini_bar_item") return PlutoCell(value: items_text(fd.list_mini_bar_item_id, is_mini_bar: true));
+                if (c == "mini_bar_item") return PlutoCell(value: "");
                 if (c == "mini_bar_price") return PlutoCell(value: fd.mini_bar_price);
                 if (c == "mini_bar_cash") return PlutoCell(value: fd.mini_bar_cash);
                 if (c == "mini_bar_bank") return PlutoCell(value: fd.mini_bar_bank);
@@ -380,19 +363,6 @@ class _Main_State extends State<Main_> {
             },
           ),
           PlutoColumn(
-            field: "check_out_at", //
-            title: "ពេលចេញ",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 150,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
-              );
-            },
-          ),
-          PlutoColumn(
             field: "duration", //
             title: "រយៈពេល",
             type: PlutoColumnType.text(),
@@ -406,28 +376,15 @@ class _Main_State extends State<Main_> {
             },
           ),
           PlutoColumn(
-            field: "check_in_by", //
-            title: "ឲចូលដោយ",
+            field: "check_out_at", //
+            title: "ពេលចេញ",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
-            width: 110,
+            width: 150,
             renderer: (rc) {
               return Align(
-                alignment: Alignment.centerLeft, //
-                child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
-              );
-            },
-          ),
-          PlutoColumn(
-            field: "check_out_by", //
-            title: "ឲចេញដោយ",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 110,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerLeft, //
-                child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+                alignment: Alignment.center, //
+                child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
               );
             },
           ),
@@ -468,8 +425,91 @@ class _Main_State extends State<Main_> {
             width: 90,
             renderer: (rc) => _money(rc),
           ),
+
           PlutoColumn(
             field: "room_note", //
+            title: "ចំណាំ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 120,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+              );
+            },
+          ),
+
+          // * ការបង់ប្រាក់ mini bar
+          PlutoColumn(
+            field: "mini_bar_item", //
+            title: "ទំនិញ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              int i = parse_int(rc.row.cells["index"]?.value) ?? 0;
+              Front_Desk? fd = (i > 0 && i <= rows.length) ? rows[i - 1] : null;
+              List<dynamic> list = (fd?.list_mini_bar_item_id ?? []).cast<dynamic>();
+              if (list.isEmpty) return const SizedBox();
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround, //
+                children: [
+                  IconButton(
+                    tooltip: "View Mini Bar Items", //
+                    icon: Icon(Icons.receipt_long_outlined, color: Colors.blue),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      dialog_item_show(
+                        context: context, //
+                        title: "Mini Bar Items", //
+                        list: list, //
+                        is_mini_bar: true, //
+                      );
+                    }, //
+                  ),
+                ],
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "mini_bar_price", //
+            title: "តម្លៃ",
+            type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
+            enableEditingMode: false,
+            width: 90,
+            renderer: (rc) => _money(rc),
+            footerRenderer: (rc) => _sum_footer(rc),
+          ),
+          PlutoColumn(
+            field: "mini_bar_cash", //
+            title: "លុយ",
+            type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
+            enableEditingMode: false,
+            width: 90,
+            renderer: (rc) => _money(rc),
+            footerRenderer: (rc) => _sum_footer(rc),
+          ),
+          PlutoColumn(
+            field: "mini_bar_bank", //
+            title: "ធនាគារ",
+            type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
+            enableEditingMode: false,
+            width: 90,
+            renderer: (rc) => _money(rc),
+            footerRenderer: (rc) => _sum_footer(rc),
+          ),
+          PlutoColumn(
+            field: "mini_bar_balance", //
+            title: "សមតុល្យ",
+            type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
+            enableEditingMode: false,
+            width: 90,
+            renderer: (rc) => _money(rc),
+          ),
+          PlutoColumn(
+            field: "mini_bar_note", //
             title: "ចំណាំ",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
@@ -488,11 +528,30 @@ class _Main_State extends State<Main_> {
             title: "ទំនិញ",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
-            width: 160,
+            width: 80,
             renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerLeft, //
-                child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+              int i = parse_int(rc.row.cells["index"]?.value) ?? 0;
+              Front_Desk? fd = (i > 0 && i <= rows.length) ? rows[i - 1] : null;
+              List<dynamic> list = (fd?.list_penalty_item_id ?? []).cast<dynamic>();
+              if (list.isEmpty) return const SizedBox();
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround, //
+                children: [
+                  IconButton(
+                    tooltip: "View Penalty Items", //
+                    icon: Icon(Icons.receipt_long_outlined, color: Colors.blue),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      dialog_item_show(
+                        context: context, //
+                        title: "Penalty Items", //
+                        list: list, //
+                        is_mini_bar: false, //
+                      );
+                    }, //
+                  ),
+                ],
               );
             },
           ),
@@ -531,61 +590,68 @@ class _Main_State extends State<Main_> {
             width: 90,
             renderer: (rc) => _money(rc),
           ),
+          PlutoColumn(
+            field: "penalty_note", //
+            title: "ចំណាំ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 120,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+              );
+            },
+          ),
 
-          // * ការបង់ប្រាក់ mini bar
+          // * ការត្រួតពិនិត្យ
           PlutoColumn(
-            field: "mini_bar_price", //
-            title: "តម្លៃ",
-            type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
+            field: "check_in_by", //
+            title: "ឲចូលដោយ",
+            type: PlutoColumnType.text(),
             enableEditingMode: false,
-            width: 90,
-            renderer: (rc) => _money(rc),
-            footerRenderer: (rc) => _sum_footer(rc),
+            width: 110,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+              );
+            },
           ),
           PlutoColumn(
-            field: "mini_bar_cash", //
-            title: "លុយ",
-            type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
+            field: "check_out_by", //
+            title: "ឲចេញដោយ",
+            type: PlutoColumnType.text(),
             enableEditingMode: false,
-            width: 90,
-            renderer: (rc) => _money(rc),
-            footerRenderer: (rc) => _sum_footer(rc),
-          ),
-          PlutoColumn(
-            field: "mini_bar_bank", //
-            title: "ធនាគារ",
-            type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
-            enableEditingMode: false,
-            width: 90,
-            renderer: (rc) => _money(rc),
-            footerRenderer: (rc) => _sum_footer(rc),
-          ),
-          PlutoColumn(
-            field: "mini_bar_balance", //
-            title: "សមតុល្យ",
-            type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
-            enableEditingMode: false,
-            width: 90,
-            renderer: (rc) => _money(rc),
-            footerRenderer: (rc) => _sum_footer(rc),
+            width: 110,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+              );
+            },
           ),
         ], //
         columnGroups: [
           PlutoColumnGroup(title: "", fields: ["index"]),
           PlutoColumnGroup(title: "", fields: ["room"]),
           PlutoColumnGroup(title: "អតិថិជន", fields: ["guest_name", "guest_phone", "number_of_guest"]),
-          PlutoColumnGroup(title: "ការស្នាក់នៅ", fields: ["check_in_at", "check_out_at"]),
+          PlutoColumnGroup(title: "ការស្នាក់នៅ", fields: ["check_in_at", "duration", "check_out_at"]),
           PlutoColumnGroup(
             title: "ការបង់ប្រាក់ បន្ទប់", //
-            fields: ["room_price", "room_cash", "room_bank", "room_balance"],
-          ),
-          PlutoColumnGroup(
-            title: "ការបង់ប្រាក់ Penalty", //
-            fields: ["penalty_price", "penalty_cash", "penalty_bank", "penalty_balance"],
+            fields: ["room_price", "room_cash", "room_bank", "room_balance", "room_note"],
           ),
           PlutoColumnGroup(
             title: "ការបង់ប្រាក់ មីនីបារ", //
-            fields: ["mini_bar_price", "mini_bar_cash", "mini_bar_bank", "mini_bar_balance"],
+            fields: ["mini_bar_item", "mini_bar_price", "mini_bar_cash", "mini_bar_bank", "mini_bar_balance", "mini_bar_note"],
+          ),
+          PlutoColumnGroup(
+            title: "ការបង់ប្រាក់ Penalty", //
+            fields: ["penalty_item", "penalty_price", "penalty_cash", "penalty_bank", "penalty_balance", "penalty_note"],
+          ),
+          PlutoColumnGroup(
+            title: "ការត្រួតពិនិត្យ", //
+            fields: ["check_in_by", "check_out_by"],
           ),
         ],
         configuration: PlutoGridConfiguration(
@@ -613,7 +679,7 @@ class _Main_State extends State<Main_> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Revenue: ", //
+              "ចំណូល: ", //
               style: TextStyle(
                 fontSize: 16, //
                 fontWeight: FontWeight.bold,
@@ -636,7 +702,7 @@ class _Main_State extends State<Main_> {
           // mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Income: ", //
+              "ចំណូលសុទ្ធ: ", //
               style: TextStyle(
                 fontSize: 16, //
                 fontWeight: FontWeight.bold,

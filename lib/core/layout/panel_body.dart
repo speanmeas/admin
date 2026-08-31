@@ -4,7 +4,6 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 // * dashboard
-import "package:speanmeas/features/dashboard/.front_desk/main.dart" as d_front_desk;
 import "package:speanmeas/features/dashboard/front_desk_new/main.dart" as d_front_desk_new;
 // import "package:speanmeas/features/dashboard/mini_bar/main.dart" as d_mini_bar;
 
@@ -21,8 +20,8 @@ import "package:speanmeas/features/database/mini_bar/main.dart" as mini_bar;
 import "package:speanmeas/features/report/daily.dart" as report_daily;
 
 import "package:speanmeas/features/database/demo_1/main.dart" as demo_1;
-import "package:speanmeas/features/database/demo_2_1/main.dart" as demo_2_1;
-import "package:speanmeas/features/database/demo_2_2/main.dart" as demo_2_2;
+// import "package:speanmeas/features/database/demo_2_1/main.dart" as demo_2_1;
+// import "package:speanmeas/features/database/demo_2_2/main.dart" as demo_2_2;
 
 // * setting
 import "package:speanmeas/features/setting/main.dart" as setting;
@@ -33,11 +32,8 @@ class _Panel_BodyState extends State<Panel_Body> {
   List<Map<String, dynamic>> panels = [
     {"name": "", "panel": Text("This page is under development..")},
     //
-    {"name": "Front Desk", "panel": d_front_desk.Main_()}, //
-    // {"name": "Mini Bar", "panel": d_mini_bar.Main_()}, //
+    {"name": "Front Desk", "panel": d_front_desk_new.Main_()}, //
     //
-    {"name": "Front Desk (Table)", "panel": d_front_desk_new.Main_()}, //
-    // {"name": "Data Front Desk", "panel": front_desk.Main_()}, //
     {"name": "Data Room", "panel": room.Main_()}, //
     {"name": "Data Guest", "panel": guest.Main_()},
     {"name": "Data User", "panel": user.Main_()},
@@ -48,8 +44,8 @@ class _Panel_BodyState extends State<Panel_Body> {
     {"name": "Report Daily", "panel": report_daily.Main_()}, //
     //
     {"name": "Demo 001", "panel": demo_1.Main_()},
-    {"name": "Demo 002-1", "panel": demo_2_1.Main_()},
-    {"name": "Demo 002-2", "panel": demo_2_2.Main_()},
+    // {"name": "Demo 002-1", "panel": demo_2_1.Main_()},
+    // {"name": "Demo 002-2", "panel": demo_2_2.Main_()},
 
     //
     {"name": "Setting", "panel": setting.Main_()},

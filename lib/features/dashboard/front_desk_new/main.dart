@@ -1,7 +1,6 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:intl/intl.dart";
 // import "package:provider/provider.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
@@ -57,10 +56,13 @@ class _Main_State extends State<Main_> {
 
     rooms = tmp_r.data as List<dynamic>? ?? [];
 
+    // * អានសម្រាប់តែថ្ងៃ shift ថ្ងៃនេះ (boundary 7:00)
     dynamic tmp_fd = await dio.post(
-      endpoint.FRONT_DESK_READ,
+      endpoint.FRONT_DESK_READ_DATETIME,
       data: {
         "key": Front_Desk.CREATED_AT, //
+        "start": shift_start(), //
+        "stop": shift_stop(), //
         "order": 1, //
         "link": true, //
       },
@@ -73,6 +75,20 @@ class _Main_State extends State<Main_> {
     update_grid();
 
     setState(() {});
+  }
+
+  // * ដើមថ្ងៃ shift ថ្ងៃនេះ (boundary 7:00) → ISO
+  String shift_start() {
+    final now_dt = DateTime.now();
+    DateTime shift_day = now_dt.hour < 7 ? now_dt.subtract(const Duration(days: 1)) : now_dt;
+    return DateTime(shift_day.year, shift_day.month, shift_day.day, 7, 0).toIso8601String();
+  }
+
+  // * ចុងថ្ងៃ shift ថ្ងៃនេះ (ថ្ងៃស្អែក 7:00) → ISO
+  String shift_stop() {
+    final now_dt = DateTime.now();
+    DateTime shift_day = now_dt.hour < 7 ? now_dt.subtract(const Duration(days: 1)) : now_dt;
+    return DateTime(shift_day.year, shift_day.month, shift_day.day, 7, 0).add(const Duration(days: 1)).toIso8601String();
   }
 
   // * accessors for Front_Desk linked/expanded fields
@@ -583,6 +599,7 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       body: Column(
         children: [
+          SizedBox(height: 2),
           // CHECK IN
           Row(
             mainAxisAlignment: .start,
@@ -593,6 +610,7 @@ class _Main_State extends State<Main_> {
                 width: 100, //
                 alignment: Alignment.centerRight, //
                 padding: const EdgeInsets.only(bottom: 2), //
+                // margin: const EdgeInsets.only(top: 4), //
                 child: Text(
                   "Check-In: ", //
                   style: TextStyle(
@@ -1476,7 +1494,7 @@ class _Main_State extends State<Main_> {
 
           PlutoColumn(
             field: "penalty_item", //
-            title: "Items",
+            title: "ពិន័យ",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
             width: 80,
@@ -1499,7 +1517,7 @@ class _Main_State extends State<Main_> {
 
           PlutoColumn(
             field: "penalty_price", //
-            title: "Price",
+            title: "តម្លៃ",
             type: PlutoColumnType.number(
               negative: false, //
               format: "#,##0.00",
@@ -1542,7 +1560,7 @@ class _Main_State extends State<Main_> {
 
           PlutoColumn(
             field: "penalty_cash", //
-            title: "Cash",
+            title: "លុយ",
             type: PlutoColumnType.number(
               //   negative: false, //
               format: "#,##0.00",
@@ -1588,7 +1606,7 @@ class _Main_State extends State<Main_> {
 
           PlutoColumn(
             field: "penalty_bank", //
-            title: "Bank",
+            title: "ធនាគារ",
             type: PlutoColumnType.number(
               //   negative: false, //
               format: "#,##0.00",
@@ -1677,7 +1695,7 @@ class _Main_State extends State<Main_> {
 
           PlutoColumn(
             field: "penalty_note", //
-            title: "Note",
+            title: "ចំណាំ",
             type: PlutoColumnType.text(),
             // enableEditingMode: false,
             width: 120,
@@ -1820,7 +1838,7 @@ class _Main_State extends State<Main_> {
             fields: ["mini_bar_item", "mini_bar_price", "mini_bar_cash", "mini_bar_bank", "mini_bar_balance", "mini_bar_note"],
           ),
           PlutoColumnGroup(
-            title: "Penalty Payment", //
+            title: "ការពិន័យ", //
             fields: ["penalty_item", "penalty_price", "penalty_cash", "penalty_bank", "penalty_balance", "penalty_note"],
           ),
           PlutoColumnGroup(

@@ -51,8 +51,8 @@ class _Panel_LeftState extends State<Panel_Left> {
                 children: [
                   // * front desk
                   // if (is_admin || is_manager || is_recept || is_cleaner) //
-                  if (kDebugMode) //
-                    list_tile_l2(prefix: "Data", name: "Front Desk", icon: Icons.table_bar_outlined),
+                  // if (kDebugMode) //
+                  //   list_tile_l2(prefix: "Data", name: "Front Desk", icon: Icons.table_bar_outlined),
 
                   // * guest
                   if (is_admin || is_manager || is_recept) //
@@ -63,8 +63,8 @@ class _Panel_LeftState extends State<Panel_Left> {
                     list_tile_l2(prefix: "Data", name: "Room", icon: Icons.hotel_outlined),
 
                   // * nationality
-                  if (is_admin || is_manager || is_recept) //
-                    list_tile_l2(prefix: "Data", name: "Nationality", icon: Icons.flag_outlined),
+                  // if (is_admin || is_manager || is_recept) //
+                  //   list_tile_l2(prefix: "Data", name: "Nationality", icon: Icons.flag_outlined),
 
                   // * bank
                   if (is_admin || is_manager || is_recept) //
@@ -87,7 +87,7 @@ class _Panel_LeftState extends State<Panel_Left> {
                   title: Text("Report"),
                   initiallyExpanded: true,
                   children: [
-                    list_tile_l2(prefix: "Report", name: "Income", icon: Icons.today_outlined),
+                    list_tile_l2(prefix: "Report", name: "Daily", icon: Icons.today_outlined),
                     // list_tile_l2(prefix: "Report", name: "Weekly", icon: Icons.date_range_outlined),
                     // list_tile_l2(prefix: "Report", name: "Monthly", icon: Icons.calendar_month_outlined),
                     // list_tile_l2(prefix: "Report", name: "Yearly", icon: Icons.event_note_outlined),
