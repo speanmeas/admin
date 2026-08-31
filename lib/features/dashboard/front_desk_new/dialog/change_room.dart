@@ -70,9 +70,8 @@ Future<bool?> dialog_change_room({
         actions: [
           OutlinedButton.icon(
             // autofocus: true,
-            style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-            icon: const Icon(Icons.swap_horiz_outlined), //
-            label: const Text("Change Room"),
+            icon: const Icon(Icons.check), //
+            label: const Text("Confirm"),
             onPressed: () async {
               if (new_room_id == null) return snackbar(ct: context, ms: "Please select a new room", cl: Colors.red);
 

@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 // import "package:provider/provider.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
+import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/dialog/dialog_datetime.dart";
 // import "package:speanmeas/core/utility/gen_data.dart";
 
@@ -181,6 +182,7 @@ class _Main_State extends State<Main_> {
   void on_loaded(PlutoGridOnLoadedEvent e) async {
     state_manager = e.stateManager;
     state_manager.addListener(() => setState(() {}));
+    state_manager.setAutoEditing(true);
     state_manager.columnFooterHeight = 32; // * កម្ពស់ជួរសរុប
     // state_manager.setShowColumnFilter(true);
     list_column = state_manager.refColumns.map((c) => c.field).toList();
@@ -586,6 +588,10 @@ class _Main_State extends State<Main_> {
     is_refresh = false;
   }
 
+  bool is_filter = false; // this variable is used to show/hide the filter row in the PlutoGridj
+  bool hide_penalty = true; // this variable is used to show/hide the penalty column in the PlutoGrid
+  bool hide_mini_bar = true; // this variable is used to show/hide the mini bar column in the PlutoGrid
+
   // * ########## BLOCK METHODS END ##########
 
   // * ########## BLOCK DESIGN ##########
@@ -593,125 +599,73 @@ class _Main_State extends State<Main_> {
     List<Widget>? check_in, //
     List<Widget>? check_out, //
     List<Widget>? clean, //
+    List<Widget>? header, //
     Widget? body, //
-    // List<Widget>? footer, //
+    List<Widget>? footer, //
   }) {
     return Scaffold(
       body: Column(
+        spacing: 1,
         children: [
           SizedBox(height: 2),
           // CHECK IN
-          Row(
-            mainAxisAlignment: .start,
-            crossAxisAlignment: .start,
-            children: [
-              Container(
-                height: 34, //
-                width: 100, //
-                alignment: Alignment.centerRight, //
-                padding: const EdgeInsets.only(bottom: 2), //
-                // margin: const EdgeInsets.only(top: 4), //
-                child: Text(
-                  "Check-In: ", //
-                  style: TextStyle(
-                    fontSize: 16, //
-                    fontWeight: FontWeight.bold,
-                    // color: Colors.green,
-                  ),
-                ),
+          if (check_in != null)
+            Align(
+              alignment: Alignment.centerLeft, //
+              child: Wrap(
+                spacing: 1, //
+                runSpacing: 1,
+                children: check_in,
               ),
-
-              Expanded(
-                child: Wrap(
-                  spacing: 1, //
-                  runSpacing: 1,
-                  children: [...?check_in],
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 1),
+            ),
 
           // CHECK OUT
-          Row(
-            mainAxisAlignment: .start,
-            crossAxisAlignment: .start,
-            children: [
-              Container(
-                height: 34, //
-                width: 100, //
-                alignment: Alignment.centerRight, //
-                padding: const EdgeInsets.only(bottom: 2), //
-                child: Text(
-                  "Check-Out: ", //
-                  style: TextStyle(
-                    fontSize: 16, //
-                    fontWeight: FontWeight.bold,
-                    // color: Colors.green,
-                  ),
-                ),
+          if (check_out != null)
+            Align(
+              alignment: Alignment.centerLeft, //
+              child: Wrap(
+                spacing: 1, //
+                runSpacing: 1,
+                children: check_out,
               ),
-
-              Expanded(
-                child: Wrap(
-                  spacing: 1, //
-                  runSpacing: 1,
-                  children: [...?check_out],
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 1),
+            ),
 
           // CLEAN
-          Row(
-            mainAxisAlignment: .start,
-            crossAxisAlignment: .start,
-            children: [
-              Container(
-                height: 34, //
-                width: 100, //
-                alignment: Alignment.centerRight, //
-                padding: const EdgeInsets.only(bottom: 2), //
-                child: Text(
-                  "Clean: ", //
-                  style: TextStyle(
-                    fontSize: 16, //
-                    fontWeight: FontWeight.bold,
-                    // color: Colors.green,
-                  ),
-                ),
+          if (clean != null)
+            Align(
+              alignment: Alignment.centerLeft, //
+              child: Wrap(
+                spacing: 1, //
+                runSpacing: 1,
+                children: [...clean],
               ),
+            ),
 
-              Expanded(
-                child: Wrap(
-                  spacing: 1, //
-                  runSpacing: 1,
-                  children: [...?clean],
-                ),
+          // HEADER
+          if (header != null)
+            Container(
+              height: 34, //
+              padding: const EdgeInsets.all(1),
+              child: Row(
+                spacing: 2, //
+                children: header,
               ),
-            ],
-          ),
-
-          const SizedBox(height: 1),
+            ),
 
           if (is_load) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
           Expanded(child: body ?? Container()),
 
           // FOOTER
-          // Container(
-          //   height: 34, //
-          //   padding: const EdgeInsets.all(1),
-          //   child: Row(
-          //     spacing: 2, //
-          //     mainAxisAlignment: MainAxisAlignment.center, //
-          //     crossAxisAlignment: CrossAxisAlignment.center, //
-          //     children: [...?footer],
-          //   ),
-          // ),
+          if (footer != null)
+            Container(
+              height: 34, //
+              padding: const EdgeInsets.all(1),
+              child: Row(
+                spacing: 2, //
+                children: footer,
+              ),
+            ),
         ],
       ),
     );
@@ -724,7 +678,7 @@ class _Main_State extends State<Main_> {
       check_in: [
         for (var r in rooms.where((r) => r[Room.STATUS] == "Available"))
           OutlinedButton.icon(
-            icon: Icon(Icons.hotel_outlined), //
+            icon: Icon(Icons.bed_outlined), //
             label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
             onPressed: () => on_check_in(r), //
@@ -746,11 +700,60 @@ class _Main_State extends State<Main_> {
       clean: [
         for (var r in rooms.where((r) => r[Room.STATUS] == "Dirty"))
           OutlinedButton.icon(
-            icon: Icon(Icons.hotel_outlined), //
+            icon: Icon(Icons.cleaning_services_outlined), //
             label: Text("${r[Room.NUMBER]}"),
             style: OutlinedButton.styleFrom(foregroundColor: Colors.grey),
             onPressed: () => on_clean(r), //
           ),
+      ],
+
+      header: [
+        const Spacer(),
+
+        // * toggle mini bar column
+        Menu_Button_Icon(
+          tip: hide_mini_bar ? "Show Mini Bar" : "Hide Mini Bar", //
+          icon: Icons.local_bar_outlined,
+          onPressed: () {
+            hide_mini_bar = !hide_mini_bar;
+            reload++;
+            // * PlutoGrid មិនអាន hide attribute ក្នុង didUpdateWidget ដូច្នេះត្រូវ rebuild តាម key
+            setState(() {});
+          },
+        ),
+
+        // * toggle penalty column
+        Menu_Button_Icon(
+          tip: hide_penalty ? "Show Penalty" : "Hide Penalty", //
+          icon: Icons.gavel_outlined,
+          onPressed: () {
+            hide_penalty = !hide_penalty;
+            reload++;
+            // * PlutoGrid មិនអាន hide attribute ក្នុង didUpdateWidget ដូច្នេះត្រូវ rebuild តាម key
+            setState(() {});
+          },
+        ),
+
+        // * ប៊ូតុងបើក/បិទ filter
+        Menu_Button_Icon(
+          tip: is_filter ? "Close Filter" : "Open Filter", //
+          icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
+          onPressed: () {
+            is_filter = !is_filter;
+            state_manager.setShowColumnFilter(is_filter);
+            if (!is_filter) state_manager.setFilterWithFilterRows([]);
+            setState(() {});
+          },
+        ),
+        Menu_Button_Icon(
+          tip: "Refresh", //
+          icon: Icons.refresh,
+          onPressed: () {
+            reload++;
+            // * rebuild grid តាម key ដើម្បីផ្ទុកទិន្នន័យឡើងវិញពេញលេញ
+            setState(() {});
+          }, //
+        ),
       ],
 
       //
@@ -1130,6 +1133,7 @@ class _Main_State extends State<Main_> {
               format: "#,##0.00",
             ),
             // enableEditingMode: false,
+            // enableEditingMode: true,
             width: 80,
             renderer: (rc) {
               return Align(
@@ -1274,6 +1278,7 @@ class _Main_State extends State<Main_> {
             type: PlutoColumnType.text(),
             enableEditingMode: false,
             width: 80,
+            hide: hide_mini_bar,
             renderer: (rc) {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround, //
@@ -1301,6 +1306,7 @@ class _Main_State extends State<Main_> {
             ),
             enableEditingMode: false, // Note: Mini bar price is auto calculated from the items, so it should not be editable.
             width: 80,
+            hide: hide_mini_bar,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.centerRight, //
@@ -1342,7 +1348,8 @@ class _Main_State extends State<Main_> {
               //   negative: false, //
               format: "#,##0.00",
             ),
-            enableEditingMode: false,
+            // enableEditingMode: false,
+            hide: hide_mini_bar,
             width: 80,
             renderer: (rc) {
               return Align(
@@ -1390,6 +1397,7 @@ class _Main_State extends State<Main_> {
             ),
             // enableEditingMode: false,
             width: 80,
+            hide: hide_mini_bar,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.centerRight, //
@@ -1433,6 +1441,7 @@ class _Main_State extends State<Main_> {
             type: PlutoColumnType.number(format: "#,##0.00"),
             enableEditingMode: false,
             width: 80,
+            hide: hide_mini_bar,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.centerRight, //
@@ -1474,6 +1483,7 @@ class _Main_State extends State<Main_> {
             title: "ចំណាំ",
             type: PlutoColumnType.text(),
             // enableEditingMode: false,
+            hide: hide_mini_bar,
             width: 120,
             renderer: (rc) {
               return Row(
@@ -1498,6 +1508,7 @@ class _Main_State extends State<Main_> {
             type: PlutoColumnType.text(),
             enableEditingMode: false,
             width: 80,
+            hide: hide_penalty,
             renderer: (rc) {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
@@ -1524,6 +1535,7 @@ class _Main_State extends State<Main_> {
             ),
             enableEditingMode: false, // Note: Penalty price is auto calculated from the items, so it should not be editable.
             width: 80,
+            hide: hide_penalty,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.centerRight, //
@@ -1567,6 +1579,7 @@ class _Main_State extends State<Main_> {
             ),
             // enableEditingMode: false,
             width: 80,
+            hide: hide_penalty,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.centerRight, //
@@ -1613,6 +1626,7 @@ class _Main_State extends State<Main_> {
             ),
             // enableEditingMode: false,
             width: 80,
+            hide: hide_penalty,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.centerRight, //
@@ -1656,6 +1670,7 @@ class _Main_State extends State<Main_> {
             type: PlutoColumnType.number(format: "#,##0.00"),
             enableEditingMode: false,
             width: 80,
+            hide: hide_penalty,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.centerRight, //
@@ -1699,6 +1714,7 @@ class _Main_State extends State<Main_> {
             type: PlutoColumnType.text(),
             // enableEditingMode: false,
             width: 120,
+            hide: hide_penalty,
             renderer: (rc) {
               return Row(
                 children: [
@@ -1749,23 +1765,6 @@ class _Main_State extends State<Main_> {
             },
           ),
 
-          //   PlutoColumn(
-          //     field: "clean_by", //
-          //     title: "Clean By",
-          //     type: PlutoColumnType.text(),
-          //     enableEditingMode: false,
-          //     width: 140,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerLeft, //
-          //         child: Text(
-          //           format_string(rc.cell.value), //
-          //           overflow: TextOverflow.ellipsis,
-          //         ),
-          //       );
-          //     },
-          //   ),
-
           // BUTTON RECEIPT
           PlutoColumn(
             field: "other", //
@@ -1775,7 +1774,7 @@ class _Main_State extends State<Main_> {
             width: 80,
             renderer: (rc) {
               return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround, //
+                mainAxisAlignment: MainAxisAlignment.end, //
                 children: [
                   //
                   if (!is_checked_out(rc))

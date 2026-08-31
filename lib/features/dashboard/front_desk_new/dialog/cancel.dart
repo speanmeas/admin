@@ -48,7 +48,7 @@ Future<bool?> dialog_cancel({
                 autofocus: true,
                 decoration: const InputDecoration(
                   isDense: true,
-                  labelText: "Cancel Reason",
+                  labelText: "Reason:",
                   prefixIcon: Icon(Icons.text_fields),
                   border: OutlineInputBorder(borderRadius: BorderRadius.zero),
                 ),
@@ -63,9 +63,8 @@ Future<bool?> dialog_cancel({
         actions: [
           OutlinedButton.icon(
             // autofocus: true,
-            style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-            icon: const Icon(Icons.cancel_outlined), //
-            label: const Text("Cancel"),
+            icon: const Icon(Icons.check), //
+            label: const Text("Confirm"),
             onPressed: () async {
               // stamp cancel on the stay (endpoint auto-sets cancel_at/by + check_out_at/by)
               dynamic tmp = await dio.post(

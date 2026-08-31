@@ -135,10 +135,7 @@ class _List_Penalty_State extends State<List_Penalty> {
                                 if (selected) ...[
                                   IconButton(
                                     tooltip: "Decrease", //
-                                    icon: Icon(
-                                      Icons.remove_circle_outline,
-                                      color: _is_locked(item) ? Colors.grey : Colors.red,
-                                    ),
+                                    icon: Icon(Icons.remove_circle_outline, color: _is_locked(item) ? Colors.grey : Colors.red),
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(),
                                     onPressed: () => _decrease(item), //
@@ -175,7 +172,7 @@ class _List_Penalty_State extends State<List_Penalty> {
         // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស
         OutlinedButton.icon(
           icon: const Icon(Icons.check), //
-          label: const Text("Done"), //
+          label: const Text("Confirm"), //
           onPressed: () {
             // pprint(list_order_penalty);
             Navigator.pop(context, true);

@@ -49,9 +49,8 @@ Future<bool?> dialog_check_out({
         actions: [
           OutlinedButton.icon(
             // autofocus: true,
-            style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-            icon: const Icon(Icons.logout_outlined), //
-            label: const Text("Check Out"),
+            icon: const Icon(Icons.check), //
+            label: const Text("Confirm"),
             onPressed: () async {
               // stamp check-out on the stay (endpoint auto-sets check_out_at/by)
               dynamic tmp = await dio.post(

@@ -65,8 +65,8 @@ Future<bool?> dialog_check_in({
           OutlinedButton.icon(
             // autofocus: true,
             style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-            icon: const Icon(Icons.login_outlined), //
-            label: const Text("Check In"),
+            icon: const Icon(Icons.check), //
+            label: const Text("Confirm"),
             onPressed: () async {
               // create the stay + flip room to Occupied (one call: check_in endpoint)
               dynamic tmp_fd = await dio.post(

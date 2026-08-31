@@ -49,9 +49,8 @@ Future<bool?> dialog_clean({
         actions: [
           OutlinedButton.icon(
             // autofocus: true,
-            style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-            icon: const Icon(Icons.cleaning_services), //
-            label: const Text("Clean"),
+            icon: const Icon(Icons.check), //
+            label: const Text("Confirm"),
             onPressed: () async {
               // stamp cleaned on the stay (endpoint auto-sets clean_at/by)
               dynamic tmp = await dio.post(
