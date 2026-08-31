@@ -16,6 +16,7 @@ class _Main_State extends State<Main_> {
   late PlutoGridStateManager state_manager;
 
   List<Guest> data = [];
+  List<Nationality> nationalities = [];
 
   // * ########## BLOCK ATTRIBUTE END ##########
 
@@ -185,6 +186,77 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
+            field: Guest.GENDER, //
+            title: "Gender",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 100,
+            renderer: (rc) {
+              String value = rc.cell.value ?? "";
+              return PopupMenuButton<String>(
+                itemBuilder: (context) => [
+                  for (String o in ["Male", "Female", "Other"])
+                    PopupMenuItem(
+                      value: o,
+                      child: Text(o, style: TextStyle(fontSize: 14)),
+                    ),
+                ],
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        value.isEmpty ? "" : value, //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Icon(Icons.arrow_drop_down, size: 16),
+                  ],
+                ),
+                onSelected: (v) => on_change_field(rc, Guest.GENDER, v),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: Guest.NATIONALITY_ID, //
+            title: "Nationality",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 140,
+            renderer: (rc) {
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(
+                        format_string(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+
+                  IconButton(
+                    icon: Icon(Icons.search), //
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {},
+                  ),
+                ],
+              );
+            },
+            // renderer: (rc) {
+            //   return Align(
+            //     alignment: Alignment.center, //
+            //     child: Text(
+            //       format_string(rc.cell.value), //
+            //       overflow: TextOverflow.ellipsis,
+            //     ),
+            //   );
+            // },
+          ),
+
+          PlutoColumn(
             field: Guest.NOTE, //
             title: "Note",
             type: PlutoColumnType.text(),
@@ -276,6 +348,9 @@ class _Main_State extends State<Main_> {
     if (current_page > total_pages) current_page = total_pages;
     if (current_page < 1) current_page = 1;
 
+    final tn = await dio.post(endpoint.NATIONALITY_READ, data: {"key": DEFAULT_KEY, "order": DEFAULT_ORDER, "offset": 0, "limit": 200});
+    if (tn != null) nationalities = List<Nationality>.from((tn.data ?? const []).map((d) => Nationality.fromJson(d)));
+
     on_load_page(current_page);
   }
 
@@ -312,6 +387,11 @@ class _Main_State extends State<Main_> {
                 if (c == "actions") return PlutoCell(value: "");
                 if (c == Guest.FULL_NAME) return PlutoCell(value: d.full_name ?? "");
                 if (c == Guest.PHONE_NUMBER) return PlutoCell(value: d.phone_number ?? "");
+                if (c == Guest.GENDER) return PlutoCell(value: d.gender ?? "");
+                if (c == Guest.NATIONALITY_ID) {
+                  final nid = d.nationality_id;
+                  return PlutoCell(value: nid is Nationality_Show ? (nid.name ?? "") : (nid is Map ? (nid["name"]?.toString() ?? "") : ""));
+                }
                 if (c == Guest.NOTE) return PlutoCell(value: d.note ?? "");
 
                 return PlutoCell(value: "");
@@ -359,6 +439,30 @@ class _Main_State extends State<Main_> {
       return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     }
 
+    snackbar(ct: context, ms: "Updated", cl: Colors.green);
+  }
+
+  void on_change_field(PlutoColumnRendererContext rc, String field, String v) async {
+    final id = rc.row.cells[Guest.ID]?.value;
+    if (id == null) return;
+    setState(() => is_load = true);
+    final tmp = await dio.post(endpoint.GUEST_UPDATE, data: {Guest.ID: id, field: v});
+    setState(() => is_load = false);
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    snackbar(ct: context, ms: "Updated", cl: Colors.green);
+    on_reload();
+  }
+
+  void on_change_nationality(PlutoColumnRendererContext rc, String id, String name) async {
+    final row_id = rc.row.cells[Guest.ID]?.value;
+    if (row_id == null) return;
+    setState(() => is_load = true);
+    final tmp = await dio.post(endpoint.GUEST_UPDATE, data: {Guest.ID: row_id, Guest.NATIONALITY_ID: id});
+    setState(() => is_load = false);
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    state_manager.changeCellValue(rc.cell, name, callOnChangedEvent: false);
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
   }
 
