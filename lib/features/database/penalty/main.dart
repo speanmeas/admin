@@ -55,7 +55,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.first_page, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_first_page,
+          onPressed: is_load ? null : on_first_page,
         ),
 
         IconButton(
@@ -63,7 +63,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.navigate_before, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_previous_page,
+          onPressed: is_load ? null : on_previous_page,
         ),
 
         TextButton(
@@ -71,7 +71,7 @@ class _Main_State extends State<Main_> {
             "$current_page / $total_pages", //
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          onPressed: on_goto_page,
+          onPressed: is_load ? null : on_goto_page,
         ),
 
         IconButton(
@@ -79,7 +79,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.navigate_next, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_next_page,
+          onPressed: is_load ? null : on_next_page,
         ),
 
         IconButton(
@@ -87,7 +87,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.last_page, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_last_page,
+          onPressed: is_load ? null : on_last_page,
         ),
 
         const Spacer(),
@@ -97,7 +97,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_filter, // not yet implemented
+          onPressed: is_load ? null : on_filter, // not yet implemented
         ),
 
         IconButton(
@@ -105,7 +105,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.refresh, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_reload,
+          onPressed: is_load ? null : on_reload,
         ),
       ],
 
@@ -132,7 +132,7 @@ class _Main_State extends State<Main_> {
                   icon: Icon(Icons.add_circle_outline, size: 28), //
                   padding: EdgeInsets.all(0),
                   constraints: BoxConstraints(),
-                  onPressed: on_create, // implemented
+                  onPressed: is_load ? null : on_create, // implemented
                 ),
               ),
             ),
@@ -269,7 +269,9 @@ class _Main_State extends State<Main_> {
   }
 
   void on_reload() async {
+    setState(() => is_load = true);
     final tmp = await dio.post(endpoint.PENALTY_READ_COUNT);
+    setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     total_row = parse_int(tmp.data) ?? 0;
@@ -282,6 +284,7 @@ class _Main_State extends State<Main_> {
   }
 
   void on_load_page(int p) async {
+    setState(() => is_load = true);
     final tmp = await dio.post(
       endpoint.PENALTY_READ, //
       data: {
@@ -291,6 +294,7 @@ class _Main_State extends State<Main_> {
         "limit": DEFAULT_LIMIT_ROW,
       },
     );
+    setState(() => is_load = false);
 
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     data = List<Penalty>.from((tmp.data ?? const []).map((d) => Penalty.fromJson(d)));
@@ -328,7 +332,9 @@ class _Main_State extends State<Main_> {
   }
 
   void on_create() async {
+    setState(() => is_load = true);
     final tmp = await dio.post(endpoint.PENALTY_CREATE);
+    setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Created", cl: Colors.green);
@@ -336,8 +342,10 @@ class _Main_State extends State<Main_> {
   }
 
   void on_delete(PlutoColumnRendererContext rc) async {
+    setState(() => is_load = true);
     final id = rc.row.cells[Penalty.ID]?.value;
     final tmp = await dio.post(endpoint.PENALTY_DELETE, data: {Penalty.ID: id});
+    setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Deleted", cl: Colors.green);
@@ -345,8 +353,10 @@ class _Main_State extends State<Main_> {
   }
 
   void on_changed(PlutoGridOnChangedEvent e) async {
+    setState(() => is_load = true);
     final id = e.row.cells[Penalty.ID]?.value;
     final tmp = await dio.post(endpoint.PENALTY_UPDATE, data: {Penalty.ID: id, e.column.field: e.value});
+    setState(() => is_load = false);
 
     if (tmp == null) {
       on_reload();
