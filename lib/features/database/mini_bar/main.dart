@@ -370,10 +370,8 @@ class _Main_State extends State<Main_> {
   }
 
   void on_changed(PlutoGridOnChangedEvent e) async {
-    setState(() => is_load = true);
     final id = e.row.cells[Mini_Bar.ID]?.value;
     final tmp = await dio.post(endpoint.MINI_BAR_UPDATE, data: {Mini_Bar.ID: id, e.column.field: e.value});
-    setState(() => is_load = false);
 
     if (tmp == null) {
       on_reload();

@@ -418,8 +418,8 @@ class _Main_State extends State<Main_> {
   }
 
   void on_delete(PlutoColumnRendererContext rc) async {
-    setState(() => is_load = true);
     final id = rc.row.cells[Guest.ID]?.value;
+    setState(() => is_load = true);
     final tmp = await dio.post(endpoint.GUEST_DELETE, data: {Guest.ID: id});
     setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
@@ -429,10 +429,8 @@ class _Main_State extends State<Main_> {
   }
 
   void on_changed(PlutoGridOnChangedEvent e) async {
-    setState(() => is_load = true);
     final id = e.row.cells[Guest.ID]?.value;
     final tmp = await dio.post(endpoint.GUEST_UPDATE, data: {Guest.ID: id, e.column.field: e.value});
-    setState(() => is_load = false);
 
     if (tmp == null) {
       on_reload();

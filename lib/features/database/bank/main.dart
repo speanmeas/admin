@@ -333,10 +333,8 @@ class _Main_State extends State<Main_> {
   }
 
   void on_changed(PlutoGridOnChangedEvent e) async {
-    setState(() => is_load = true);
     final id = e.row.cells[Bank.ID]?.value;
     final tmp = await dio.post(endpoint.BANK_UPDATE, data: {Bank.ID: id, e.column.field: e.value});
-    setState(() => is_load = false);
 
     if (tmp == null) {
       on_reload();
