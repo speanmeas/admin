@@ -16,7 +16,7 @@ class _Main_State extends State<Main_> {
   late PlutoGridStateManager state_manager;
 
   List<String> kinds = ["Single", "Double", "VIP"];
-  List<String> statuses = ["Available", "Occupied", "Cleaning", "Fixing"];
+  List<String> statuses = ["Available", "Occupied", "Dirty", "Broken"];
 
   List<Room> data = [];
 
@@ -58,7 +58,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.first_page, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_first_page,
+          onPressed: is_load ? null : on_first_page,
         ),
 
         IconButton(
@@ -66,7 +66,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.navigate_before, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_previous_page,
+          onPressed: is_load ? null : on_previous_page,
         ),
 
         TextButton(
@@ -74,7 +74,7 @@ class _Main_State extends State<Main_> {
             "$current_page / $total_pages", //
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          onPressed: on_goto_page,
+          onPressed: is_load ? null : on_goto_page,
         ),
 
         IconButton(
@@ -82,7 +82,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.navigate_next, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_next_page,
+          onPressed: is_load ? null : on_next_page,
         ),
 
         IconButton(
@@ -90,7 +90,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.last_page, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_last_page,
+          onPressed: is_load ? null : on_last_page,
         ),
 
         const Spacer(),
@@ -100,7 +100,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_filter, // not yet implemented
+          onPressed: is_load ? null : on_filter, // not yet implemented
         ),
 
         IconButton(
@@ -108,7 +108,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.refresh, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_reload,
+          onPressed: is_load ? null : on_reload,
         ),
       ],
 
@@ -135,7 +135,7 @@ class _Main_State extends State<Main_> {
                   icon: Icon(Icons.add_circle_outline, size: 28), //
                   padding: EdgeInsets.all(0),
                   constraints: BoxConstraints(),
-                  onPressed: on_create, // implemented
+                  onPressed: is_load ? null : on_create, // implemented
                 ),
               ),
             ),
@@ -218,8 +218,7 @@ class _Main_State extends State<Main_> {
             enableEditingMode: false,
             width: 120,
             renderer: (rc) {
-              String value = rc.cell.value ?? "";
-
+              final value = rc.cell.value ?? "";
               return PopupMenuButton<String>(
                 padding: EdgeInsets.all(0),
                 menuPadding: EdgeInsets.all(0),
@@ -245,9 +244,10 @@ class _Main_State extends State<Main_> {
             field: Room.STATUS, //
             title: "Status",
             type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 120,
             renderer: (rc) {
-              String value = rc.cell.value ?? "";
-
+              final value = rc.cell.value ?? "";
               return PopupMenuButton<String>(
                 padding: EdgeInsets.all(0),
                 menuPadding: EdgeInsets.all(0),
@@ -350,7 +350,9 @@ class _Main_State extends State<Main_> {
   }
 
   void on_reload() async {
+    setState(() => is_load = true);
     final tmp = await dio.post(endpoint.ROOM_READ_COUNT);
+    setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     total_row = parse_int(tmp.data) ?? 0;
@@ -363,6 +365,7 @@ class _Main_State extends State<Main_> {
   }
 
   void on_load_page(int p) async {
+    setState(() => is_load = true);
     final tmp = await dio.post(
       endpoint.ROOM_READ, //
       data: {
@@ -372,6 +375,7 @@ class _Main_State extends State<Main_> {
         "limit": DEFAULT_LIMIT_ROW,
       },
     );
+    setState(() => is_load = false);
 
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     data = List<Room>.from((tmp.data ?? const []).map((d) => Room.fromJson(d)));
@@ -412,7 +416,9 @@ class _Main_State extends State<Main_> {
   }
 
   void on_create() async {
+    setState(() => is_load = true);
     final tmp = await dio.post(endpoint.ROOM_CREATE);
+    setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Created", cl: Colors.green);
@@ -421,7 +427,9 @@ class _Main_State extends State<Main_> {
 
   void on_delete(PlutoColumnRendererContext rc) async {
     final id = rc.row.cells[Room.ID]?.value;
+    setState(() => is_load = true);
     final tmp = await dio.post(endpoint.ROOM_DELETE, data: {Room.ID: id});
+    setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Deleted", cl: Colors.green);
@@ -430,8 +438,9 @@ class _Main_State extends State<Main_> {
 
   void on_changed(PlutoGridOnChangedEvent e) async {
     final id = e.row.cells[Room.ID]?.value;
+    setState(() => is_load = true);
     final tmp = await dio.post(endpoint.ROOM_UPDATE, data: {Room.ID: id, e.column.field: e.value});
-
+    setState(() => is_load = false);
     if (tmp == null) {
       on_reload();
       return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
@@ -443,7 +452,9 @@ class _Main_State extends State<Main_> {
   void on_change_field(PlutoColumnRendererContext rc, String field, String v) async {
     final id = rc.row.cells[Room.ID]?.value;
     if (id == null) return;
+    setState(() => is_load = true);
     final tmp = await dio.post(endpoint.ROOM_UPDATE, data: {Room.ID: id, field: v});
+    setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
