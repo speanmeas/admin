@@ -77,6 +77,10 @@ class _Panel_LeftState extends State<Panel_Left> {
                   // * mini bar
                   if (is_admin || is_manager || is_recept) //
                     list_tile_l2(prefix: "Data", name: "Mini Bar", icon: Icons.local_bar_outlined),
+
+                  // * penalty
+                  if (is_admin || is_manager || is_recept) //
+                    list_tile_l2(prefix: "Data", name: "Penalty", icon: Icons.gavel_outlined),
                 ],
               ),
 

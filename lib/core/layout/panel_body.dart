@@ -15,6 +15,7 @@ import "package:speanmeas/features/database/user/main.dart" as user;
 import "package:speanmeas/features/database/nationality/main.dart" as nationality;
 import "package:speanmeas/features/database/bank/main.dart" as bank;
 import "package:speanmeas/features/database/mini_bar/main.dart" as mini_bar;
+import "package:speanmeas/features/database/penalty/main.dart" as penalty;
 
 // * report
 import "package:speanmeas/features/report/daily.dart" as report_daily;
@@ -40,6 +41,7 @@ class _Panel_BodyState extends State<Panel_Body> {
     {"name": "Data Nationality", "panel": nationality.Main_()},
     {"name": "Data Bank", "panel": bank.Main_()},
     {"name": "Data Mini Bar", "panel": mini_bar.Main_()}, //
+    {"name": "Data Penalty", "panel": penalty.Main_()}, //
     //
     {"name": "Report Daily", "panel": report_daily.Main_()}, //
     //
