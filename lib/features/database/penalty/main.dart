@@ -1,59 +1,45 @@
-// * ទំព័រគ្រប់គ្រងឧទាហរណ៍ (Demo 1) សម្រាប់បង្កើត អាន កែ និងលុប
+// * ទំព័រគ្រប់គ្រង Penalty ដោយប្រើ inline editing និង dialog confirm/delete
+
+import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/widget/dialog/dialog_page.dart";
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/button/menu_button_text.dart";
+import "package:speanmeas/core/widget/dialog/dialog_page.dart";
+
+import "dialog/delete.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK VARIABLES ##########
-  int reload = 0; // this variable is used to reload the PlutoGrid when the data changes
-  bool is_load = false; // this variable is used to guard the fast clicking of the buttons, to prevent multiple requests to the server
+  int reload = 0; // * rebuild PlutoGrid តាម key ដើម្បីឲ្យ hot reload អាប់ដេតជួរឈរ/ទិន្នន័យ
+  bool is_load = false; // * guard fast clicking បង្ការការផ្ញើ request ច្រើនដង
 
-  // dynamic tmp;
   late List<String> list_c;
+  late PlutoGridStateManager state_manager;
+  List<Penalty> data = [];
 
   bool is_filter = false;
   int page = 1;
   int row_total = 0;
-  late PlutoGridStateManager state_manager;
-
-  List<Penalty> data = [];
   // * ########## BLOCK VARIABLES END ##########
 
   // * ########## BLOCK METHODS ##########
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    reload++; // * rebuild grid តាម key ដើម្បីឲ្យ hot reload អាប់ដេតជួរឈរ/ទិន្នន័យ
-  }
 
   // * ផ្ទុកចំនួនជួរដេកសរុប និងទំព័រដំបូង
   void init() async {
-    setState(() => is_load = true);
     dynamic tmp = await dio.post(endpoint.PENALTY_READ_COUNT, data: {"count": true});
-    setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
     row_total = parse_int(tmp.data) ?? 0;
     load_page(page);
   }
 
   // * ធ្វើឱ្យទិន្នន័យស្រស់ឡើងវិញ
-  void on_refresh() async {
-    setState(() => is_load = true);
+  void on_reload() async {
     dynamic tmp = await dio.post(endpoint.PENALTY_READ_COUNT, data: {"count": true});
-    setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     row_total = parse_int(tmp.data) ?? 0;
@@ -64,10 +50,13 @@ class _Main_State extends State<Main_> {
     load_page(page);
   }
 
+  void on_refresh() {
+    load_page(page);
+  }
+
   // * ផ្ទុកទិន្នន័យតាមទំព័រ
   void load_page(int p) async {
-    // * អានទិន្នន័យឧទាហរណ៍តាម offset និង limit
-    setState(() => is_load = true);
+    // * អានទិន្នន័យ Penalty តាម offset និង limit
     dynamic tmp = await dio.post(
       endpoint.PENALTY_READ, //
       data: {
@@ -77,9 +66,7 @@ class _Main_State extends State<Main_> {
         "limit": DEFAULT_LIMIT_ROW,
       },
     );
-    setState(() => is_load = false);
 
-    // * dio ត្រឡប់ null ពេល request បរាជ័យ
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     if (tmp.data.isEmpty) return snackbar(ct: context, ms: "No data found.", cl: Colors.red);
 
@@ -96,22 +83,25 @@ class _Main_State extends State<Main_> {
       for (var i = 0; i < data.length; i++)
         PlutoRow(
           cells: {
+            // * បញ្ចូល _id ជានិច្ច (ទោះបី column លាក់ក៏ដោយ) ដើម្បីឲ្យ delete/edit ទាញ id បាន
+            Penalty.ID: PlutoCell(value: data[i].id),
             for (var c in list_c) //
-              c: (() {
-                if (c == "index") //
-                  return PlutoCell(value: i + 1);
-                final penalty = data[i];
-                if (c == Penalty.ID) //
-                  return PlutoCell(value: penalty.id);
-                if (c == Penalty.NAME) //
-                  return PlutoCell(value: penalty.name);
-                if (c == Penalty.PRICE) //
-                  return PlutoCell(value: penalty.price);
-                if (c == Penalty.NOTE) //
-                  return PlutoCell(value: penalty.note);
+              if (c != Penalty.ID) //
+                c: (() {
+                  if (c == "index") //
+                    return PlutoCell(value: i + 1);
+                  if (c == "actions") //
+                    return PlutoCell(value: "");
+                  final penalty = data[i];
+                  if (c == Penalty.NAME) //
+                    return PlutoCell(value: penalty.name ?? "");
+                  if (c == Penalty.PRICE) //
+                    return PlutoCell(value: penalty.price ?? 0.0);
+                  if (c == Penalty.NOTE) //
+                    return PlutoCell(value: penalty.note ?? "");
 
-                return PlutoCell(value: null);
-              })(),
+                  return PlutoCell(value: "");
+                })(),
           },
         ),
     ]);
@@ -121,6 +111,57 @@ class _Main_State extends State<Main_> {
     state_manager.setFilterWithFilterRows(filter_rows);
 
     setState(() {});
+  }
+
+  // * បង្កើត Penalty ទទេថ្មីមួយជួរ ហើយបង្ហាញក្នុងតារាងដើម្បីកែ inline
+  void on_create() async {
+    dynamic tmp = await dio.post(endpoint.PENALTY_CREATE);
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    snackbar(ct: context, ms: "Added blank. Fill the row to edit.", cl: Colors.green);
+    on_reload();
+  }
+
+  // * លុប Penalty តាមជួរដេកដែលបានជ្រើស
+  void on_delete(PlutoColumnRendererContext rc) async {
+    String? id = rc.row.cells[Penalty.ID]?.value;
+    // String? name/ = rc.row.cells[Penalty.NAME]?.value;
+    if (id == null) return;
+
+    final v = await dialog_delete(
+      context: context, //
+      // lead: "Delete Penalty", //
+      id: id, //
+      // name: name ?? "", //
+    );
+    if (v == null) return;
+    on_reload();
+  }
+
+  // * ផ្ទុកការកែប្រែ inline ទៅបម្រុងទុកភ្លាមៗ (auto-save)
+  void on_changed(PlutoGridOnChangedEvent e) async {
+    final id = e.row.cells[Penalty.ID]?.value;
+    if (id == null) return;
+
+    final field = e.column.field;
+    final old_value = e.oldValue;
+    final value = e.value;
+
+    if (value == null || field == "index" || field == "actions") return;
+
+    final payload = <String, dynamic>{
+      Penalty.ID: id, //
+      field: value, //
+    };
+
+    dynamic tmp = await dio.post(endpoint.PENALTY_UPDATE, data: payload);
+
+    if (tmp == null) {
+      e.row.cells[field]?.value = old_value;
+      return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
   }
 
   // * ត្រលប់ទៅទំព័រដំបូង
@@ -135,10 +176,6 @@ class _Main_State extends State<Main_> {
     if (page == 1) return;
     page = page - 1;
     load_page(page);
-  }
-
-  void on_changed(PlutoGridOnChangedEvent e) {
-    //
   }
 
   // * ជ្រើសរើសទំព័រតាមចំនួនដែលអ្នកប្រើបញ្ចូល
@@ -168,16 +205,6 @@ class _Main_State extends State<Main_> {
     load_page(page);
   }
 
-  // * បើកទំព័របង្កើតឧទាហរណ៍ថ្មី
-  void on_create() async {
-    //
-  }
-
-  // * បើកទំព័រលុបឧទាហរណ៍
-  void on_delete() async {
-    //
-  }
-
   // * គណនាចំនួនទំព័រសរុប (បង្គត់ឡើង)
   int get total_pages {
     if (row_total == 0) return 1;
@@ -190,13 +217,18 @@ class _Main_State extends State<Main_> {
     state_manager.setAutoEditing(true);
     list_c = state_manager.refColumns.map((c) => c.field).toList();
 
-    //  state_manager = e.stateManager;
-    // state_manager.addListener(() => setState(() {}));
-    // state_manager.columnFooterHeight = 32; // * កម្ពស់ជួរសរុប
-    // state_manager.setShowColumnFilter(true);
-    // list_column = state_manager.refColumns.map((c) => c.field).toList();
-
     init();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    reload++;
   }
   // * ########## BLOCK METHODS END ##########
 
@@ -204,7 +236,6 @@ class _Main_State extends State<Main_> {
   Widget _layout({
     List<Widget>? header, //
     Widget? body, //
-    List<Widget>? footer, //
   }) {
     return Scaffold(
       body: Column(
@@ -216,7 +247,7 @@ class _Main_State extends State<Main_> {
               height: 40, //
               padding: const EdgeInsets.all(1),
               child: Row(
-                spacing: 1, //
+                spacing: 2, //
                 children: header,
               ),
             ),
@@ -224,17 +255,6 @@ class _Main_State extends State<Main_> {
           if (is_load) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
           Expanded(child: body ?? Container()),
-
-          // FOOTER
-          if (footer != null)
-            Container(
-              height: 40, //
-              padding: const EdgeInsets.all(1),
-              child: Row(
-                spacing: 2, //
-                children: footer,
-              ),
-            ),
         ],
       ),
     );
@@ -244,22 +264,15 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     return _layout(
       header: [
-        // * toggle mini bar column
+        // * ទំព័រដំបូង
         Menu_Button_Icon(
           tip: "First Page", //
           icon: Icons.first_page,
-          onPressed: () {
-            //
-          },
+          onPressed: is_load ? null : goto_first_page,
         ),
 
-        Menu_Button_Icon(
-          tip: "Previous Page",
-          icon: Icons.navigate_before,
-          onPressed: () {
-            //
-          },
-        ),
+        // * ទំព័រមុន
+        Menu_Button_Icon(tip: "Previous Page", icon: Icons.navigate_before, onPressed: is_load ? null : goto_previous_page),
 
         // * ប៊ូតុងជ្រើសរើសទំព័រ
         Menu_Button_Text(
@@ -268,29 +281,22 @@ class _Main_State extends State<Main_> {
           onPressed: is_load ? null : goto_page,
         ),
 
-        Menu_Button_Icon(
-          tip: "Next Page",
-          icon: Icons.navigate_next,
-          onPressed: () {
-            //
-          },
-        ),
-        Menu_Button_Icon(
-          tip: "Last Page",
-          icon: Icons.last_page,
-          onPressed: () {
-            //
-          },
-        ),
+        // * ទំព័របន្ទាប់
+        Menu_Button_Icon(tip: "Next Page", icon: Icons.navigate_next, onPressed: is_load ? null : goto_next_page),
+
+        // * ទំព័រចុងក្រោយ
+        Menu_Button_Icon(tip: "Last Page", icon: Icons.last_page, onPressed: is_load ? null : goto_last_page),
 
         const Spacer(),
 
+        // * ប៊ូតុងបន្ថែម Penalty ទទេថ្មី
         Menu_Button_Icon(
           tip: "Add", //
           icon: Icons.add,
-          onPressed: on_create,
+          onPressed: is_load ? null : on_create,
         ),
 
+        // * បើក/បិទ filter
         Menu_Button_Icon(
           tip: is_filter ? t("Close Filter") : t("Open Filter"), //
           icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
@@ -302,10 +308,11 @@ class _Main_State extends State<Main_> {
           },
         ),
 
+        // * ធ្វើឱ្យទិន្នន័យស្រស់
         Menu_Button_Icon(
           tip: t("Refresh"), //
           icon: Icons.refresh,
-          onPressed: is_load ? null : on_refresh,
+          onPressed: is_load ? null : on_reload,
         ),
       ],
 
@@ -317,12 +324,13 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: Penalty.ID, //
             title: "ID",
-            type: PlutoColumnType.number(),
+            type: PlutoColumnType.text(),
             width: 0,
             enableEditingMode: false,
             hide: true, //
           ),
 
+          // * លេខរៀង
           PlutoColumn(
             field: "index", //
             title: "No.",
@@ -340,12 +348,11 @@ class _Main_State extends State<Main_> {
             },
           ),
 
+          // * ឈ្មោះ (កែប្រែបាន)
           PlutoColumn(
             field: Penalty.NAME, //
             title: "Name",
             type: PlutoColumnType.text(),
-            // width: WIDTH,
-            // enableEditingMode: false,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.center, //
@@ -357,6 +364,7 @@ class _Main_State extends State<Main_> {
             },
           ),
 
+          // * តម្លៃ (កែប្រែបាន)
           PlutoColumn(
             field: Penalty.PRICE, //
             title: "Price",
@@ -364,9 +372,7 @@ class _Main_State extends State<Main_> {
               negative: false, //
               format: "#,##0.00", //
             ),
-            // width: WIDTH,
-            width: 80,
-            // enableEditingMode: false,
+            width: 100,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.centerRight, //
@@ -378,23 +384,23 @@ class _Main_State extends State<Main_> {
             },
           ),
 
+          // * កំណត់ចំណាំ (កែប្រែបាន)
           PlutoColumn(
             field: Penalty.NOTE, //
             title: "Note",
             type: PlutoColumnType.text(),
-            // enableEditingMode: false,
-            // width: WIDTH,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.centerLeft, //
                 child: Text(
-                  format_datetime(rc.cell.value), //
+                  format_string(rc.cell.value), //
                   overflow: TextOverflow.ellipsis,
                 ),
               );
             },
           ),
 
+          // * ប៊ូតុងសកម្មភាព (លុប)
           PlutoColumn(
             field: "actions", //
             title: "Actions",
@@ -410,9 +416,7 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.delete_outline, color: Colors.red),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () {
-                      print("Delete: ${rc.row.cells["index"]?.value}");
-                    }, //
+                    onPressed: () => on_delete(rc),
                   ),
                 ],
               );
@@ -444,7 +448,7 @@ class _Main_State extends State<Main_> {
   // * ########## BLOCK DESIGN END ##########
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រគ្រប់គ្រងឧទាហរណ៍
+// * ថ្នាក់ Main_ ជាទំព័រគ្រប់គ្រង Penalty
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override

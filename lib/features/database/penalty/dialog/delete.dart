@@ -2,12 +2,10 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog សម្រាប់ជ្រើសរើសលេខទំព័រ
-Future<bool?> dialog_confirm({
+// * បង្ហាញ dialog សម្រាប់បញ្ជាក់ការលុប penalty
+Future<bool?> dialog_delete({
   required BuildContext context, //
-  required String lead,
-  required String front_desk_id, //
-  required String room_id, //
+  required String id, //
 }) async {
   final result = await showDialog<bool>(
     context: context,
@@ -20,10 +18,10 @@ Future<bool?> dialog_confirm({
         actionsPadding: const EdgeInsets.all(4),
         actionsAlignment: MainAxisAlignment.center,
         title: Row(
-          mainAxisAlignment: .center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              lead, //
+              "Delete", //
               style: TextStyle(
                 fontSize: 20, //
                 fontWeight: FontWeight.bold,
@@ -41,7 +39,7 @@ Future<bool?> dialog_confirm({
             children: [
               Divider(height: 1, color: Colors.grey),
 
-              Text("Please confirm the clean.", style: TextStyle(fontSize: 16)), //
+              Text("Please confirm the deletion.", style: TextStyle(fontSize: 16)), //
             ],
           ),
         ),
@@ -52,17 +50,13 @@ Future<bool?> dialog_confirm({
             icon: const Icon(Icons.check), //
             label: const Text("Confirm"),
             onPressed: () async {
-              // stamp cleaned on the stay (endpoint auto-sets clean_at/by)
               dynamic tmp = await dio.post(
-                endpoint.FRONT_DESK_CLEAN,
-                data: {
-                  Front_Desk.ID: front_desk_id, //
-                },
+                endpoint.PENALTY_DELETE, //
+                data: {Penalty.ID: id},
               );
               if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
-              // room status auto-flips to Available + clears front_desk_id on the backend
-              snackbar(ct: context, ms: "Success", cl: Colors.green);
+              snackbar(ct: context, ms: "Deleted", cl: Colors.green);
               Navigator.pop(context, true);
             },
           ),
@@ -81,14 +75,12 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_confirm(
+            final v = await dialog_delete(
               context: context, //
-              room_id: "111111111122222222223333", //
-              front_desk_id: "111111111122222222223333", //
-              lead: "Check-Out from Room 201", //
+              id: "111111111122222222223333", //
+              // lead: "Delete Penalty", //
             );
             if (v == null) return;
-            // page = v;
             pprint(v);
             setState(() {});
           },
