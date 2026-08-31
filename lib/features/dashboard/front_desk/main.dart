@@ -211,13 +211,13 @@ class _Main_State extends State<Main_> {
     if (fd_id == null) return;
 
     // * Walk-In: row នេះប្រើសម្រាប់ភ្ញៀវ walk-in ទិញ minibar តែប៉ុណ្ណោះ
-    // * — កែបានតែឈ្មោះ/លេខទូរស័ព្ទភ្ញៀវ និងលុយ/ធនាគាររបស់ minibar (ផ្នែកផ្សេងទៀតមិនអនុញ្ញាតទេ)
+    // * — មិនអនុញ្ញាតឲ្យកែឈ្មោះ/លេខទូរស័ព្ទភ្ញៀវ ឬផ្នែកផ្សេងទៀតទេ (កែបានតែលុយ/ធនាគារ minibar)
     bool is_walkin_row = false;
     {
       Front_Desk? walk_fd = front_desks.where((x) => x.id == fd_id).firstOrNull;
       Room? walk_room = walk_fd == null ? null : fd_room(walk_fd);
       is_walkin_row = walk_room != null && (walk_room.number ?? "").toLowerCase() == "walk-in";
-      if (is_walkin_row && e.column.field != "guest_name" && e.column.field != "guest_phone" && e.column.field != "mini_bar_cash" && e.column.field != "mini_bar_bank") {
+      if (is_walkin_row && e.column.field != "mini_bar_cash" && e.column.field != "mini_bar_bank") {
         e.row.cells[e.column.field]!.value = e.oldValue;
         return;
       }
@@ -225,7 +225,7 @@ class _Main_State extends State<Main_> {
 
     if (e.column.field == "guest_name") {
       dynamic tmp_fd = await dio.post(
-        is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_UPDATE_GUEST,
+        endpoint.FRONT_DESK_UPDATE_GUEST,
         data: {
           Front_Desk.ID: fd_id, //
           Guest.FULL_NAME: e.value, //
@@ -236,7 +236,7 @@ class _Main_State extends State<Main_> {
 
     if (e.column.field == "guest_phone") {
       dynamic tmp_fd = await dio.post(
-        is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_UPDATE_GUEST,
+        endpoint.FRONT_DESK_UPDATE_GUEST,
         data: {
           Front_Desk.ID: fd_id, //
           Guest.PHONE_NUMBER: e.value, //
@@ -923,21 +923,22 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  IconButton(
-                    tooltip: "Search Guest", //
-                    icon: Icon(Icons.search_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () async {
-                      //   print("Search Guest: ${rc.row.cells["index"]?.value}");
-                      var v = await dialog_search_guest(
-                        context: context, //
-                        front_desk_id: rc.row.cells["_id"]?.value,
-                      );
-                      if (v == null) return;
-                      init();
-                    }, //
-                  ),
+                  if (!row_is_walk_in(rc))
+                    IconButton(
+                      tooltip: "Search Guest", //
+                      icon: Icon(Icons.search_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () async {
+                        //   print("Search Guest: ${rc.row.cells["index"]?.value}");
+                        var v = await dialog_search_guest(
+                          context: context, //
+                          front_desk_id: rc.row.cells["_id"]?.value,
+                        );
+                        if (v == null) return;
+                        init();
+                      }, //
+                    ),
                 ],
               );
             },
