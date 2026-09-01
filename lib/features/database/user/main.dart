@@ -120,12 +120,13 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "index", //
+            field: "action", //
             title: "",
             titleSpan: WidgetSpan(
               child: Container(
-                padding: EdgeInsets.only(left: 20), //
+                alignment: Alignment.center, //
                 child: IconButton(
+                  tooltip: "Add Row", //
                   icon: Icon(Icons.add_circle_outline, size: 28), //
                   padding: EdgeInsets.all(0),
                   constraints: BoxConstraints(),
@@ -133,13 +134,38 @@ class _Main_State extends State<Main_> {
                 ),
               ),
             ),
+            titlePadding: EdgeInsets.all(0),
             type: PlutoColumnType.number(),
-            width: 80,
+            width: 40,
             enableEditingMode: false,
             enableColumnDrag: false,
             enableContextMenu: false,
             enableDropToResize: false,
             enableFilterMenuItem: false,
+            enableSorting: false,
+            cellPadding: EdgeInsets.all(0),
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
+                children: [
+                  IconButton(
+                    tooltip: "Remove Row", //
+                    icon: Icon(Icons.remove_circle_outline, size: 28, color: Colors.red),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () => on_delete(rc),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "index", //
+            title: "No.",
+            type: PlutoColumnType.number(),
+            width: 60,
+            enableEditingMode: false,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.center, //
@@ -160,6 +186,22 @@ class _Main_State extends State<Main_> {
                 alignment: Alignment.center, //
                 child: Text(
                   format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: User.PASSWORD, //
+            title: "Password",
+            type: PlutoColumnType.text(),
+            // enableEditingMode: false,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(
+                  "**********", //
                   overflow: TextOverflow.ellipsis,
                 ),
               );
@@ -201,7 +243,7 @@ class _Main_State extends State<Main_> {
             title: "Is Admin",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
-            width: 90,
+            width: 80,
             renderer: (rc) {
               bool value = rc.cell.value ?? false;
               return Center(
@@ -224,7 +266,7 @@ class _Main_State extends State<Main_> {
             title: "Is Manager",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
-            width: 90,
+            width: 80,
             renderer: (rc) {
               bool value = rc.cell.value ?? false;
               return Center(
@@ -247,7 +289,7 @@ class _Main_State extends State<Main_> {
             title: "Is Receptionist",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
-            width: 90,
+            width: 80,
             renderer: (rc) {
               bool value = rc.cell.value ?? false;
               return Center(
@@ -270,7 +312,7 @@ class _Main_State extends State<Main_> {
             title: "Is Housekeeper",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
-            width: 90,
+            width: 80,
             renderer: (rc) {
               bool value = rc.cell.value ?? false;
               return Center(
@@ -299,33 +341,6 @@ class _Main_State extends State<Main_> {
                   format_string(rc.cell.value), //
                   overflow: TextOverflow.ellipsis,
                 ),
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "actions", //
-            title: "Actions",
-            type: PlutoColumnType.text(),
-            width: 80,
-            enableEditingMode: false,
-            enableSorting: false,
-            enableColumnDrag: false,
-            enableContextMenu: false,
-            enableDropToResize: false,
-            enableFilterMenuItem: false,
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center, //
-                children: [
-                  IconButton(
-                    tooltip: "Delete Row", //
-                    icon: Icon(Icons.delete_outline, color: Colors.red),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_delete(rc),
-                  ),
-                ],
               );
             },
           ),

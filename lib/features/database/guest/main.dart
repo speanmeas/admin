@@ -3,6 +3,7 @@ import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 import "package:speanmeas/core/widget/dialog/select_page.dart";
+import "package:speanmeas/features/database/guest/dialog/search_nationality.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK ATTRIBUTE ##########
@@ -120,12 +121,13 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "index", //
+            field: "action", //
             title: "",
             titleSpan: WidgetSpan(
               child: Container(
-                padding: EdgeInsets.only(left: 20), //
+                alignment: Alignment.center, //
                 child: IconButton(
+                  tooltip: "Add Row", //
                   icon: Icon(Icons.add_circle_outline, size: 28), //
                   padding: EdgeInsets.all(0),
                   constraints: BoxConstraints(),
@@ -133,13 +135,38 @@ class _Main_State extends State<Main_> {
                 ),
               ),
             ),
+            titlePadding: EdgeInsets.all(0),
             type: PlutoColumnType.number(),
-            width: 80,
+            width: 40,
             enableEditingMode: false,
             enableColumnDrag: false,
             enableContextMenu: false,
             enableDropToResize: false,
             enableFilterMenuItem: false,
+            enableSorting: false,
+            cellPadding: EdgeInsets.all(0),
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
+                children: [
+                  IconButton(
+                    tooltip: "Remove Row", //
+                    icon: Icon(Icons.remove_circle_outline, size: 28, color: Colors.red),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () => on_delete(rc),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "index", //
+            title: "No.",
+            type: PlutoColumnType.number(),
+            width: 60,
+            enableEditingMode: false,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.center, //
@@ -236,20 +263,11 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.search), //
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () {},
+                    onPressed: () => on_search_nationality(rc), // implemented
                   ),
                 ],
               );
             },
-            // renderer: (rc) {
-            //   return Align(
-            //     alignment: Alignment.center, //
-            //     child: Text(
-            //       format_string(rc.cell.value), //
-            //       overflow: TextOverflow.ellipsis,
-            //     ),
-            //   );
-            // },
           ),
 
           PlutoColumn(
@@ -263,33 +281,6 @@ class _Main_State extends State<Main_> {
                   format_string(rc.cell.value), //
                   overflow: TextOverflow.ellipsis,
                 ),
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "actions", //
-            title: "Actions",
-            type: PlutoColumnType.text(),
-            width: 80,
-            enableEditingMode: false,
-            enableSorting: false,
-            enableColumnDrag: false,
-            enableContextMenu: false,
-            enableDropToResize: false,
-            enableFilterMenuItem: false,
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center, //
-                children: [
-                  IconButton(
-                    tooltip: "Delete Row", //
-                    icon: Icon(Icons.delete_outline, color: Colors.red),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_delete(rc),
-                  ),
-                ],
               );
             },
           ),
@@ -353,6 +344,7 @@ class _Main_State extends State<Main_> {
         "order": DEFAULT_ORDER, //
         "offset": (p - 1) * DEFAULT_LIMIT_ROW, //
         "limit": DEFAULT_LIMIT_ROW,
+        "link": true,
       },
     );
 
@@ -373,13 +365,12 @@ class _Main_State extends State<Main_> {
               c: (() {
                 if (c == Guest.ID) return PlutoCell(value: d.id ?? "");
                 if (c == "index") return PlutoCell(value: i + 1);
-                if (c == "actions") return PlutoCell(value: "");
+                if (c == "action") return PlutoCell(value: "");
                 if (c == Guest.FULL_NAME) return PlutoCell(value: d.full_name ?? "");
                 if (c == Guest.PHONE_NUMBER) return PlutoCell(value: d.phone_number ?? "");
                 if (c == Guest.GENDER) return PlutoCell(value: d.gender ?? "");
                 if (c == Guest.NATIONALITY_ID) {
-                  final nid = d.nationality_id;
-                  return PlutoCell(value: nid is Nationality_Show ? (nid.name ?? "") : (nid is Map ? (nid["name"]?.toString() ?? "") : ""));
+                  return PlutoCell(value: d.nationality_id?.name ?? "");
                 }
                 if (c == Guest.NOTE) return PlutoCell(value: d.note ?? "");
 
@@ -435,14 +426,32 @@ class _Main_State extends State<Main_> {
     on_reload();
   }
 
-  void on_change_nationality(PlutoColumnRendererContext rc, String id, String name) async {
-    final row_id = rc.row.cells[Guest.ID]?.value;
-    if (row_id == null) return;
-    final tmp = await dio.post(endpoint.GUEST_UPDATE, data: {Guest.ID: row_id, Guest.NATIONALITY_ID: id});
+  // void on_change_nationality(PlutoColumnRendererContext rc, String id, String name) async {
+  //   final row_id = rc.row.cells[Guest.ID]?.value;
+  //   if (row_id == null) return;
+  //   final tmp = await dio.post(endpoint.GUEST_UPDATE, data: {Guest.ID: row_id, Guest.NATIONALITY_ID: id});
+  //   if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+  //   state_manager.changeCellValue(rc.cell, name, callOnChangedEvent: false);
+  //   snackbar(ct: context, ms: "Updated", cl: Colors.green);
+  // }
+
+  void on_search_nationality(PlutoColumnRendererContext rc) async {
+    //
+    final v = await dialog_search_nationality(context: context);
+    if (v == null) return;
+
+    final tmp = await dio.post(
+      endpoint.GUEST_UPDATE, //
+      data: {
+        Guest.ID: rc.row.cells[Guest.ID]?.value, //
+        Guest.NATIONALITY_ID: v,
+      },
+    );
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
-    state_manager.changeCellValue(rc.cell, name, callOnChangedEvent: false);
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
+    on_reload();
   }
 
   void on_first_page() {

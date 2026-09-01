@@ -120,12 +120,13 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "index", //
+            field: "action", //
             title: "",
             titleSpan: WidgetSpan(
               child: Container(
-                padding: EdgeInsets.only(left: 20), //
+                alignment: Alignment.center, //
                 child: IconButton(
+                  tooltip: "Add Row", //
                   icon: Icon(Icons.add_circle_outline, size: 28), //
                   padding: EdgeInsets.all(0),
                   constraints: BoxConstraints(),
@@ -133,13 +134,38 @@ class _Main_State extends State<Main_> {
                 ),
               ),
             ),
+            titlePadding: EdgeInsets.all(0),
             type: PlutoColumnType.number(),
-            width: 80,
+            width: 40,
             enableEditingMode: false,
             enableColumnDrag: false,
             enableContextMenu: false,
             enableDropToResize: false,
             enableFilterMenuItem: false,
+            enableSorting: false,
+            cellPadding: EdgeInsets.all(0),
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
+                children: [
+                  IconButton(
+                    tooltip: "Remove Row", //
+                    icon: Icon(Icons.remove_circle_outline, size: 28, color: Colors.red),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () => on_delete(rc),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "index", //
+            title: "No.",
+            type: PlutoColumnType.number(),
+            width: 60,
+            enableEditingMode: false,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.center, //
@@ -212,33 +238,6 @@ class _Main_State extends State<Main_> {
                   format_string(rc.cell.value), //
                   overflow: TextOverflow.ellipsis,
                 ),
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "actions", //
-            title: "Actions",
-            type: PlutoColumnType.text(),
-            width: 80,
-            enableEditingMode: false,
-            enableSorting: false,
-            enableColumnDrag: false,
-            enableContextMenu: false,
-            enableDropToResize: false,
-            enableFilterMenuItem: false,
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center, //
-                children: [
-                  IconButton(
-                    tooltip: "Delete Row", //
-                    icon: Icon(Icons.delete_outline, color: Colors.red),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_delete(rc),
-                  ),
-                ],
               );
             },
           ),
@@ -322,7 +321,7 @@ class _Main_State extends State<Main_> {
               c: (() {
                 if (c == Mini_Bar.ID) return PlutoCell(value: d.id ?? "");
                 if (c == "index") return PlutoCell(value: i + 1);
-                if (c == "actions") return PlutoCell(value: "");
+                if (c == "action") return PlutoCell(value: "");
                 if (c == Mini_Bar.NAME) return PlutoCell(value: d.name ?? "");
                 if (c == Mini_Bar.PRICE) return PlutoCell(value: d.price ?? 0.0);
                 if (c == Mini_Bar.STOCK) return PlutoCell(value: d.stock ?? 0);
