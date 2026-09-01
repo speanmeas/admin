@@ -75,8 +75,8 @@ Future<bool?> dialog_check_in({
                   Front_Desk.ROOM_ID: room_id, //
                   Front_Desk.NUMBER_OF_GUEST: stay_number, //
                   Front_Desk.ROOM_PRICE: price_per_day, //
-                  Front_Desk.ROOM_CASH: 0, //
-                  Front_Desk.ROOM_BANK: 0, //
+                  Front_Desk.PAY_CASH: 0, //
+                  Front_Desk.PAY_BANK: 0, //
                 },
               );
               if (tmp_fd == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);

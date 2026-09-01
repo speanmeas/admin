@@ -392,28 +392,16 @@ class Front_Desk {
   static const CHECK_IN_AT = 'check_in_at';
   static const CHECK_IN_BY = 'check_in_by';
   static const ROOM_PRICE = 'room_price';
-  static const ROOM_CASH = 'room_cash';
-  static const ROOM_BANK = 'room_bank';
-  static const ROOM_BALANCE = 'room_balance';
-  static const ROOM_NOTE = 'room_note';
-  static const ROOM_PAY_AT = 'room_pay_at';
-  static const ROOM_PAY_BY = 'room_pay_by';
-  static const LIST_PENALTY_ITEM_ID = 'list_penalty_item_id';
+  static const PENALTY_ITEM_ID = 'penalty_item_id';
   static const PENALTY_PRICE = 'penalty_price';
-  static const PENALTY_CASH = 'penalty_cash';
-  static const PENALTY_BANK = 'penalty_bank';
-  static const PENALTY_BALANCE = 'penalty_balance';
-  static const PENALTY_NOTE = 'penalty_note';
-  static const PENALTY_PAY_AT = 'penalty_pay_at';
-  static const PENALTY_PAY_BY = 'penalty_pay_by';
-  static const LIST_MINI_BAR_ITEM_ID = 'list_mini_bar_item_id';
+  static const MINI_BAR_ITEM_ID = 'mini_bar_item_id';
   static const MINI_BAR_PRICE = 'mini_bar_price';
-  static const MINI_BAR_CASH = 'mini_bar_cash';
-  static const MINI_BAR_BANK = 'mini_bar_bank';
-  static const MINI_BAR_BALANCE = 'mini_bar_balance';
-  static const MINI_BAR_NOTE = 'mini_bar_note';
-  static const MINI_BAR_PAY_AT = 'mini_bar_pay_at';
-  static const MINI_BAR_PAY_BY = 'mini_bar_pay_by';
+  static const PAY_CASH = 'pay_cash';
+  static const PAY_BANK = 'pay_bank';
+  static const PAY_BALANCE = 'pay_balance';
+  static const PAY_NOTE = 'pay_note';
+  static const PAY_AT = 'pay_at';
+  static const PAY_BY = 'pay_by';
   static const CHECK_OUT_AT = 'check_out_at';
   static const CHECK_OUT_BY = 'check_out_by';
   static const OVERTIME_AT = 'overtime_at';
@@ -424,9 +412,6 @@ class Front_Desk {
   static const CHANGE_TO = 'change_to';
   static const CHANGE_AT = 'change_at';
   static const CHANGE_BY = 'change_by';
-  static const CANCEL_REASON = 'cancel_reason';
-  static const CANCEL_AT = 'cancel_at';
-  static const CANCEL_BY = 'cancel_by';
   static const CREATED_AT = 'created_at';
   static const CREATED_BY = 'created_by';
   static const UPDATED_AT = 'updated_at';
@@ -441,28 +426,16 @@ class Front_Desk {
   final DateTime? check_in_at;
   final dynamic check_in_by;
   final double? room_price;
-  final double? room_cash;
-  final double? room_bank;
-  final double? room_balance;
-  final String? room_note;
-  final DateTime? room_pay_at;
-  final dynamic room_pay_by;
-  final List<dynamic>? list_penalty_item_id;
+  final List<dynamic>? penalty_item_id;
   final double? penalty_price;
-  final double? penalty_cash;
-  final double? penalty_bank;
-  final double? penalty_balance;
-  final String? penalty_note;
-  final DateTime? penalty_pay_at;
-  final dynamic penalty_pay_by;
-  final List<dynamic>? list_mini_bar_item_id;
+  final List<dynamic>? mini_bar_item_id;
   final double? mini_bar_price;
-  final double? mini_bar_cash;
-  final double? mini_bar_bank;
-  final double? mini_bar_balance;
-  final String? mini_bar_note;
-  final DateTime? mini_bar_pay_at;
-  final dynamic mini_bar_pay_by;
+  final double? pay_cash;
+  final double? pay_bank;
+  final double? pay_balance;
+  final String? pay_note;
+  final DateTime? pay_at;
+  final dynamic pay_by;
   final DateTime? check_out_at;
   final dynamic check_out_by;
   final DateTime? overtime_at;
@@ -473,9 +446,6 @@ class Front_Desk {
   final dynamic change_to;
   final DateTime? change_at;
   final dynamic change_by;
-  final String? cancel_reason;
-  final DateTime? cancel_at;
-  final dynamic cancel_by;
   final DateTime? created_at;
   final dynamic created_by;
   final DateTime? updated_at;
@@ -483,7 +453,7 @@ class Front_Desk {
   final DateTime? deleted_at;
   final dynamic deleted_by;
 
-  Front_Desk({this.id, this.room_id, this.guest_id, this.number_of_guest, this.check_in_at, this.check_in_by, this.room_price, this.room_cash, this.room_bank, this.room_balance, this.room_note, this.room_pay_at, this.room_pay_by, this.list_penalty_item_id, this.penalty_price, this.penalty_cash, this.penalty_bank, this.penalty_balance, this.penalty_note, this.penalty_pay_at, this.penalty_pay_by, this.list_mini_bar_item_id, this.mini_bar_price, this.mini_bar_cash, this.mini_bar_bank, this.mini_bar_balance, this.mini_bar_note, this.mini_bar_pay_at, this.mini_bar_pay_by, this.check_out_at, this.check_out_by, this.overtime_at, this.prev_front_desk_id, this.clean_at, this.clean_by, this.change_from, this.change_to, this.change_at, this.change_by, this.cancel_reason, this.cancel_at, this.cancel_by, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Front_Desk({this.id, this.room_id, this.guest_id, this.number_of_guest, this.check_in_at, this.check_in_by, this.room_price, this.penalty_item_id, this.penalty_price, this.mini_bar_item_id, this.mini_bar_price, this.pay_cash, this.pay_bank, this.pay_balance, this.pay_note, this.pay_at, this.pay_by, this.check_out_at, this.check_out_by, this.overtime_at, this.prev_front_desk_id, this.clean_at, this.clean_by, this.change_from, this.change_to, this.change_at, this.change_by, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
 
   factory Front_Desk.fromJson(Map<String, dynamic> json) => Front_Desk(
     id: json['_id'] as String?,
@@ -493,28 +463,16 @@ class Front_Desk {
     check_in_at: json['check_in_at'] == null ? null : DateTime.tryParse(json['check_in_at'] as String),
     check_in_by: json['check_in_by'] == null ? null : (json['check_in_by'] is Map<String, dynamic> ? User_Show.fromJson(json['check_in_by'] as Map<String, dynamic>) : json['check_in_by']),
     room_price: json['room_price'] as double?,
-    room_cash: json['room_cash'] as double?,
-    room_bank: json['room_bank'] as double?,
-    room_balance: json['room_balance'] as double?,
-    room_note: json['room_note'] as String?,
-    room_pay_at: json['room_pay_at'] == null ? null : DateTime.tryParse(json['room_pay_at'] as String),
-    room_pay_by: json['room_pay_by'] == null ? null : (json['room_pay_by'] is Map<String, dynamic> ? User_Show.fromJson(json['room_pay_by'] as Map<String, dynamic>) : json['room_pay_by']),
-    list_penalty_item_id: (json['list_penalty_item_id'] as List<dynamic>?)?.map((e) => e is Map<String, dynamic> ? Penalty_Item.fromJson(e) : e).toList(),
+    penalty_item_id: (json['penalty_item_id'] as List<dynamic>?)?.map((e) => e is Map<String, dynamic> ? Penalty_Item.fromJson(e) : e).toList(),
     penalty_price: json['penalty_price'] as double?,
-    penalty_cash: json['penalty_cash'] as double?,
-    penalty_bank: json['penalty_bank'] as double?,
-    penalty_balance: json['penalty_balance'] as double?,
-    penalty_note: json['penalty_note'] as String?,
-    penalty_pay_at: json['penalty_pay_at'] == null ? null : DateTime.tryParse(json['penalty_pay_at'] as String),
-    penalty_pay_by: json['penalty_pay_by'] == null ? null : (json['penalty_pay_by'] is Map<String, dynamic> ? User_Show.fromJson(json['penalty_pay_by'] as Map<String, dynamic>) : json['penalty_pay_by']),
-    list_mini_bar_item_id: (json['list_mini_bar_item_id'] as List<dynamic>?)?.map((e) => e is Map<String, dynamic> ? Mini_Bar_Item.fromJson(e) : e).toList(),
+    mini_bar_item_id: (json['mini_bar_item_id'] as List<dynamic>?)?.map((e) => e is Map<String, dynamic> ? Mini_Bar_Item.fromJson(e) : e).toList(),
     mini_bar_price: json['mini_bar_price'] as double?,
-    mini_bar_cash: json['mini_bar_cash'] as double?,
-    mini_bar_bank: json['mini_bar_bank'] as double?,
-    mini_bar_balance: json['mini_bar_balance'] as double?,
-    mini_bar_note: json['mini_bar_note'] as String?,
-    mini_bar_pay_at: json['mini_bar_pay_at'] == null ? null : DateTime.tryParse(json['mini_bar_pay_at'] as String),
-    mini_bar_pay_by: json['mini_bar_pay_by'] == null ? null : (json['mini_bar_pay_by'] is Map<String, dynamic> ? User_Show.fromJson(json['mini_bar_pay_by'] as Map<String, dynamic>) : json['mini_bar_pay_by']),
+    pay_cash: json['pay_cash'] as double?,
+    pay_bank: json['pay_bank'] as double?,
+    pay_balance: json['pay_balance'] as double?,
+    pay_note: json['pay_note'] as String?,
+    pay_at: json['pay_at'] == null ? null : DateTime.tryParse(json['pay_at'] as String),
+    pay_by: json['pay_by'] == null ? null : (json['pay_by'] is Map<String, dynamic> ? User_Show.fromJson(json['pay_by'] as Map<String, dynamic>) : json['pay_by']),
     check_out_at: json['check_out_at'] == null ? null : DateTime.tryParse(json['check_out_at'] as String),
     check_out_by: json['check_out_by'] == null ? null : (json['check_out_by'] is Map<String, dynamic> ? User_Show.fromJson(json['check_out_by'] as Map<String, dynamic>) : json['check_out_by']),
     overtime_at: json['overtime_at'] == null ? null : DateTime.tryParse(json['overtime_at'] as String),
@@ -525,9 +483,6 @@ class Front_Desk {
     change_to: json['change_to'] == null ? null : (json['change_to'] is Map<String, dynamic> ? Room_Show.fromJson(json['change_to'] as Map<String, dynamic>) : json['change_to']),
     change_at: json['change_at'] == null ? null : DateTime.tryParse(json['change_at'] as String),
     change_by: json['change_by'] == null ? null : (json['change_by'] is Map<String, dynamic> ? User_Show.fromJson(json['change_by'] as Map<String, dynamic>) : json['change_by']),
-    cancel_reason: json['cancel_reason'] as String?,
-    cancel_at: json['cancel_at'] == null ? null : DateTime.tryParse(json['cancel_at'] as String),
-    cancel_by: json['cancel_by'] == null ? null : (json['cancel_by'] is Map<String, dynamic> ? User_Show.fromJson(json['cancel_by'] as Map<String, dynamic>) : json['cancel_by']),
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
     created_by: json['created_by'] == null ? null : (json['created_by'] is Map<String, dynamic> ? User_Show.fromJson(json['created_by'] as Map<String, dynamic>) : json['created_by']),
     updated_at: json['updated_at'] == null ? null : DateTime.tryParse(json['updated_at'] as String),
@@ -545,28 +500,16 @@ class Front_Desk {
     json['check_in_at'] = check_in_at?.toIso8601String();
     json['check_in_by'] = check_in_by == null ? null : check_in_by is User_Show ? check_in_by.toJson() : check_in_by;
     json['room_price'] = room_price;
-    json['room_cash'] = room_cash;
-    json['room_bank'] = room_bank;
-    json['room_balance'] = room_balance;
-    json['room_note'] = room_note;
-    json['room_pay_at'] = room_pay_at?.toIso8601String();
-    json['room_pay_by'] = room_pay_by == null ? null : room_pay_by is User_Show ? room_pay_by.toJson() : room_pay_by;
-    json['list_penalty_item_id'] = list_penalty_item_id?.map((e) => e is Penalty_Item ? e.toJson() : e).toList();
+    json['penalty_item_id'] = penalty_item_id?.map((e) => e is Penalty_Item ? e.toJson() : e).toList();
     json['penalty_price'] = penalty_price;
-    json['penalty_cash'] = penalty_cash;
-    json['penalty_bank'] = penalty_bank;
-    json['penalty_balance'] = penalty_balance;
-    json['penalty_note'] = penalty_note;
-    json['penalty_pay_at'] = penalty_pay_at?.toIso8601String();
-    json['penalty_pay_by'] = penalty_pay_by == null ? null : penalty_pay_by is User_Show ? penalty_pay_by.toJson() : penalty_pay_by;
-    json['list_mini_bar_item_id'] = list_mini_bar_item_id?.map((e) => e is Mini_Bar_Item ? e.toJson() : e).toList();
+    json['mini_bar_item_id'] = mini_bar_item_id?.map((e) => e is Mini_Bar_Item ? e.toJson() : e).toList();
     json['mini_bar_price'] = mini_bar_price;
-    json['mini_bar_cash'] = mini_bar_cash;
-    json['mini_bar_bank'] = mini_bar_bank;
-    json['mini_bar_balance'] = mini_bar_balance;
-    json['mini_bar_note'] = mini_bar_note;
-    json['mini_bar_pay_at'] = mini_bar_pay_at?.toIso8601String();
-    json['mini_bar_pay_by'] = mini_bar_pay_by == null ? null : mini_bar_pay_by is User_Show ? mini_bar_pay_by.toJson() : mini_bar_pay_by;
+    json['pay_cash'] = pay_cash;
+    json['pay_bank'] = pay_bank;
+    json['pay_balance'] = pay_balance;
+    json['pay_note'] = pay_note;
+    json['pay_at'] = pay_at?.toIso8601String();
+    json['pay_by'] = pay_by == null ? null : pay_by is User_Show ? pay_by.toJson() : pay_by;
     json['check_out_at'] = check_out_at?.toIso8601String();
     json['check_out_by'] = check_out_by == null ? null : check_out_by is User_Show ? check_out_by.toJson() : check_out_by;
     json['overtime_at'] = overtime_at?.toIso8601String();
@@ -577,9 +520,6 @@ class Front_Desk {
     json['change_to'] = change_to == null ? null : change_to is Room_Show ? change_to.toJson() : change_to;
     json['change_at'] = change_at?.toIso8601String();
     json['change_by'] = change_by == null ? null : change_by is User_Show ? change_by.toJson() : change_by;
-    json['cancel_reason'] = cancel_reason;
-    json['cancel_at'] = cancel_at?.toIso8601String();
-    json['cancel_by'] = cancel_by == null ? null : cancel_by is User_Show ? cancel_by.toJson() : cancel_by;
     json['created_at'] = created_at?.toIso8601String();
     json['created_by'] = created_by == null ? null : created_by is User_Show ? created_by.toJson() : created_by;
     json['updated_at'] = updated_at?.toIso8601String();
@@ -598,28 +538,16 @@ class Log_Front_Desk {
   static const CHECK_IN_AT = 'check_in_at';
   static const CHECK_IN_BY = 'check_in_by';
   static const ROOM_PRICE = 'room_price';
-  static const ROOM_CASH = 'room_cash';
-  static const ROOM_BANK = 'room_bank';
-  static const ROOM_BALANCE = 'room_balance';
-  static const ROOM_NOTE = 'room_note';
-  static const ROOM_PAY_AT = 'room_pay_at';
-  static const ROOM_PAY_BY = 'room_pay_by';
-  static const LIST_PENALTY_ITEM_ID = 'list_penalty_item_id';
+  static const PENALTY_ITEM_ID = 'penalty_item_id';
   static const PENALTY_PRICE = 'penalty_price';
-  static const PENALTY_CASH = 'penalty_cash';
-  static const PENALTY_BANK = 'penalty_bank';
-  static const PENALTY_BALANCE = 'penalty_balance';
-  static const PENALTY_NOTE = 'penalty_note';
-  static const PENALTY_PAY_AT = 'penalty_pay_at';
-  static const PENALTY_PAY_BY = 'penalty_pay_by';
-  static const LIST_MINI_BAR_ITEM_ID = 'list_mini_bar_item_id';
+  static const MINI_BAR_ITEM_ID = 'mini_bar_item_id';
   static const MINI_BAR_PRICE = 'mini_bar_price';
-  static const MINI_BAR_CASH = 'mini_bar_cash';
-  static const MINI_BAR_BANK = 'mini_bar_bank';
-  static const MINI_BAR_BALANCE = 'mini_bar_balance';
-  static const MINI_BAR_NOTE = 'mini_bar_note';
-  static const MINI_BAR_PAY_AT = 'mini_bar_pay_at';
-  static const MINI_BAR_PAY_BY = 'mini_bar_pay_by';
+  static const PAY_CASH = 'pay_cash';
+  static const PAY_BANK = 'pay_bank';
+  static const PAY_BALANCE = 'pay_balance';
+  static const PAY_NOTE = 'pay_note';
+  static const PAY_AT = 'pay_at';
+  static const PAY_BY = 'pay_by';
   static const CHECK_OUT_AT = 'check_out_at';
   static const CHECK_OUT_BY = 'check_out_by';
   static const OVERTIME_AT = 'overtime_at';
@@ -630,9 +558,6 @@ class Log_Front_Desk {
   static const CHANGE_TO = 'change_to';
   static const CHANGE_AT = 'change_at';
   static const CHANGE_BY = 'change_by';
-  static const CANCEL_REASON = 'cancel_reason';
-  static const CANCEL_AT = 'cancel_at';
-  static const CANCEL_BY = 'cancel_by';
   static const CREATED_AT = 'created_at';
   static const CREATED_BY = 'created_by';
   static const BID = 'bid';
@@ -645,28 +570,16 @@ class Log_Front_Desk {
   final DateTime? check_in_at;
   final dynamic check_in_by;
   final double? room_price;
-  final double? room_cash;
-  final double? room_bank;
-  final double? room_balance;
-  final String? room_note;
-  final DateTime? room_pay_at;
-  final dynamic room_pay_by;
-  final List<dynamic>? list_penalty_item_id;
+  final List<dynamic>? penalty_item_id;
   final double? penalty_price;
-  final double? penalty_cash;
-  final double? penalty_bank;
-  final double? penalty_balance;
-  final String? penalty_note;
-  final DateTime? penalty_pay_at;
-  final dynamic penalty_pay_by;
-  final List<dynamic>? list_mini_bar_item_id;
+  final List<dynamic>? mini_bar_item_id;
   final double? mini_bar_price;
-  final double? mini_bar_cash;
-  final double? mini_bar_bank;
-  final double? mini_bar_balance;
-  final String? mini_bar_note;
-  final DateTime? mini_bar_pay_at;
-  final dynamic mini_bar_pay_by;
+  final double? pay_cash;
+  final double? pay_bank;
+  final double? pay_balance;
+  final String? pay_note;
+  final DateTime? pay_at;
+  final dynamic pay_by;
   final DateTime? check_out_at;
   final dynamic check_out_by;
   final DateTime? overtime_at;
@@ -677,15 +590,12 @@ class Log_Front_Desk {
   final dynamic change_to;
   final DateTime? change_at;
   final dynamic change_by;
-  final String? cancel_reason;
-  final DateTime? cancel_at;
-  final dynamic cancel_by;
   final DateTime? created_at;
   final dynamic created_by;
   final dynamic bid;
   final String? op;
 
-  Log_Front_Desk({this.id, this.room_id, this.guest_id, this.number_of_guest, this.check_in_at, this.check_in_by, this.room_price, this.room_cash, this.room_bank, this.room_balance, this.room_note, this.room_pay_at, this.room_pay_by, this.list_penalty_item_id, this.penalty_price, this.penalty_cash, this.penalty_bank, this.penalty_balance, this.penalty_note, this.penalty_pay_at, this.penalty_pay_by, this.list_mini_bar_item_id, this.mini_bar_price, this.mini_bar_cash, this.mini_bar_bank, this.mini_bar_balance, this.mini_bar_note, this.mini_bar_pay_at, this.mini_bar_pay_by, this.check_out_at, this.check_out_by, this.overtime_at, this.prev_front_desk_id, this.clean_at, this.clean_by, this.change_from, this.change_to, this.change_at, this.change_by, this.cancel_reason, this.cancel_at, this.cancel_by, this.created_at, this.created_by, this.bid, this.op});
+  Log_Front_Desk({this.id, this.room_id, this.guest_id, this.number_of_guest, this.check_in_at, this.check_in_by, this.room_price, this.penalty_item_id, this.penalty_price, this.mini_bar_item_id, this.mini_bar_price, this.pay_cash, this.pay_bank, this.pay_balance, this.pay_note, this.pay_at, this.pay_by, this.check_out_at, this.check_out_by, this.overtime_at, this.prev_front_desk_id, this.clean_at, this.clean_by, this.change_from, this.change_to, this.change_at, this.change_by, this.created_at, this.created_by, this.bid, this.op});
 
   factory Log_Front_Desk.fromJson(Map<String, dynamic> json) => Log_Front_Desk(
     id: json['_id'] as String?,
@@ -695,28 +605,16 @@ class Log_Front_Desk {
     check_in_at: json['check_in_at'] == null ? null : DateTime.tryParse(json['check_in_at'] as String),
     check_in_by: json['check_in_by'] == null ? null : (json['check_in_by'] is Map<String, dynamic> ? User_Show.fromJson(json['check_in_by'] as Map<String, dynamic>) : json['check_in_by']),
     room_price: json['room_price'] as double?,
-    room_cash: json['room_cash'] as double?,
-    room_bank: json['room_bank'] as double?,
-    room_balance: json['room_balance'] as double?,
-    room_note: json['room_note'] as String?,
-    room_pay_at: json['room_pay_at'] == null ? null : DateTime.tryParse(json['room_pay_at'] as String),
-    room_pay_by: json['room_pay_by'] == null ? null : (json['room_pay_by'] is Map<String, dynamic> ? User_Show.fromJson(json['room_pay_by'] as Map<String, dynamic>) : json['room_pay_by']),
-    list_penalty_item_id: (json['list_penalty_item_id'] as List<dynamic>?)?.map((e) => e is Map<String, dynamic> ? Penalty_Item.fromJson(e) : e).toList(),
+    penalty_item_id: (json['penalty_item_id'] as List<dynamic>?)?.map((e) => e is Map<String, dynamic> ? Penalty_Item.fromJson(e) : e).toList(),
     penalty_price: json['penalty_price'] as double?,
-    penalty_cash: json['penalty_cash'] as double?,
-    penalty_bank: json['penalty_bank'] as double?,
-    penalty_balance: json['penalty_balance'] as double?,
-    penalty_note: json['penalty_note'] as String?,
-    penalty_pay_at: json['penalty_pay_at'] == null ? null : DateTime.tryParse(json['penalty_pay_at'] as String),
-    penalty_pay_by: json['penalty_pay_by'] == null ? null : (json['penalty_pay_by'] is Map<String, dynamic> ? User_Show.fromJson(json['penalty_pay_by'] as Map<String, dynamic>) : json['penalty_pay_by']),
-    list_mini_bar_item_id: (json['list_mini_bar_item_id'] as List<dynamic>?)?.map((e) => e is Map<String, dynamic> ? Mini_Bar_Item.fromJson(e) : e).toList(),
+    mini_bar_item_id: (json['mini_bar_item_id'] as List<dynamic>?)?.map((e) => e is Map<String, dynamic> ? Mini_Bar_Item.fromJson(e) : e).toList(),
     mini_bar_price: json['mini_bar_price'] as double?,
-    mini_bar_cash: json['mini_bar_cash'] as double?,
-    mini_bar_bank: json['mini_bar_bank'] as double?,
-    mini_bar_balance: json['mini_bar_balance'] as double?,
-    mini_bar_note: json['mini_bar_note'] as String?,
-    mini_bar_pay_at: json['mini_bar_pay_at'] == null ? null : DateTime.tryParse(json['mini_bar_pay_at'] as String),
-    mini_bar_pay_by: json['mini_bar_pay_by'] == null ? null : (json['mini_bar_pay_by'] is Map<String, dynamic> ? User_Show.fromJson(json['mini_bar_pay_by'] as Map<String, dynamic>) : json['mini_bar_pay_by']),
+    pay_cash: json['pay_cash'] as double?,
+    pay_bank: json['pay_bank'] as double?,
+    pay_balance: json['pay_balance'] as double?,
+    pay_note: json['pay_note'] as String?,
+    pay_at: json['pay_at'] == null ? null : DateTime.tryParse(json['pay_at'] as String),
+    pay_by: json['pay_by'] == null ? null : (json['pay_by'] is Map<String, dynamic> ? User_Show.fromJson(json['pay_by'] as Map<String, dynamic>) : json['pay_by']),
     check_out_at: json['check_out_at'] == null ? null : DateTime.tryParse(json['check_out_at'] as String),
     check_out_by: json['check_out_by'] == null ? null : (json['check_out_by'] is Map<String, dynamic> ? User_Show.fromJson(json['check_out_by'] as Map<String, dynamic>) : json['check_out_by']),
     overtime_at: json['overtime_at'] == null ? null : DateTime.tryParse(json['overtime_at'] as String),
@@ -727,9 +625,6 @@ class Log_Front_Desk {
     change_to: json['change_to'] == null ? null : (json['change_to'] is Map<String, dynamic> ? Room_Show.fromJson(json['change_to'] as Map<String, dynamic>) : json['change_to']),
     change_at: json['change_at'] == null ? null : DateTime.tryParse(json['change_at'] as String),
     change_by: json['change_by'] == null ? null : (json['change_by'] is Map<String, dynamic> ? User_Show.fromJson(json['change_by'] as Map<String, dynamic>) : json['change_by']),
-    cancel_reason: json['cancel_reason'] as String?,
-    cancel_at: json['cancel_at'] == null ? null : DateTime.tryParse(json['cancel_at'] as String),
-    cancel_by: json['cancel_by'] == null ? null : (json['cancel_by'] is Map<String, dynamic> ? User_Show.fromJson(json['cancel_by'] as Map<String, dynamic>) : json['cancel_by']),
     created_at: json['created_at'] == null ? null : DateTime.tryParse(json['created_at'] as String),
     created_by: json['created_by'] == null ? null : (json['created_by'] is Map<String, dynamic> ? User_Show.fromJson(json['created_by'] as Map<String, dynamic>) : json['created_by']),
     bid: json['bid'] == null ? null : (json['bid'] is Map<String, dynamic> ? Front_Desk_Show.fromJson(json['bid'] as Map<String, dynamic>) : json['bid']),
@@ -745,28 +640,16 @@ class Log_Front_Desk {
     json['check_in_at'] = check_in_at?.toIso8601String();
     json['check_in_by'] = check_in_by == null ? null : check_in_by is User_Show ? check_in_by.toJson() : check_in_by;
     json['room_price'] = room_price;
-    json['room_cash'] = room_cash;
-    json['room_bank'] = room_bank;
-    json['room_balance'] = room_balance;
-    json['room_note'] = room_note;
-    json['room_pay_at'] = room_pay_at?.toIso8601String();
-    json['room_pay_by'] = room_pay_by == null ? null : room_pay_by is User_Show ? room_pay_by.toJson() : room_pay_by;
-    json['list_penalty_item_id'] = list_penalty_item_id?.map((e) => e is Penalty_Item ? e.toJson() : e).toList();
+    json['penalty_item_id'] = penalty_item_id?.map((e) => e is Penalty_Item ? e.toJson() : e).toList();
     json['penalty_price'] = penalty_price;
-    json['penalty_cash'] = penalty_cash;
-    json['penalty_bank'] = penalty_bank;
-    json['penalty_balance'] = penalty_balance;
-    json['penalty_note'] = penalty_note;
-    json['penalty_pay_at'] = penalty_pay_at?.toIso8601String();
-    json['penalty_pay_by'] = penalty_pay_by == null ? null : penalty_pay_by is User_Show ? penalty_pay_by.toJson() : penalty_pay_by;
-    json['list_mini_bar_item_id'] = list_mini_bar_item_id?.map((e) => e is Mini_Bar_Item ? e.toJson() : e).toList();
+    json['mini_bar_item_id'] = mini_bar_item_id?.map((e) => e is Mini_Bar_Item ? e.toJson() : e).toList();
     json['mini_bar_price'] = mini_bar_price;
-    json['mini_bar_cash'] = mini_bar_cash;
-    json['mini_bar_bank'] = mini_bar_bank;
-    json['mini_bar_balance'] = mini_bar_balance;
-    json['mini_bar_note'] = mini_bar_note;
-    json['mini_bar_pay_at'] = mini_bar_pay_at?.toIso8601String();
-    json['mini_bar_pay_by'] = mini_bar_pay_by == null ? null : mini_bar_pay_by is User_Show ? mini_bar_pay_by.toJson() : mini_bar_pay_by;
+    json['pay_cash'] = pay_cash;
+    json['pay_bank'] = pay_bank;
+    json['pay_balance'] = pay_balance;
+    json['pay_note'] = pay_note;
+    json['pay_at'] = pay_at?.toIso8601String();
+    json['pay_by'] = pay_by == null ? null : pay_by is User_Show ? pay_by.toJson() : pay_by;
     json['check_out_at'] = check_out_at?.toIso8601String();
     json['check_out_by'] = check_out_by == null ? null : check_out_by is User_Show ? check_out_by.toJson() : check_out_by;
     json['overtime_at'] = overtime_at?.toIso8601String();
@@ -777,9 +660,6 @@ class Log_Front_Desk {
     json['change_to'] = change_to == null ? null : change_to is Room_Show ? change_to.toJson() : change_to;
     json['change_at'] = change_at?.toIso8601String();
     json['change_by'] = change_by == null ? null : change_by is User_Show ? change_by.toJson() : change_by;
-    json['cancel_reason'] = cancel_reason;
-    json['cancel_at'] = cancel_at?.toIso8601String();
-    json['cancel_by'] = cancel_by == null ? null : cancel_by is User_Show ? cancel_by.toJson() : cancel_by;
     json['created_at'] = created_at?.toIso8601String();
     json['created_by'] = created_by == null ? null : created_by is User_Show ? created_by.toJson() : created_by;
     json['bid'] = bid == null ? null : bid is Front_Desk_Show ? bid.toJson() : bid;
