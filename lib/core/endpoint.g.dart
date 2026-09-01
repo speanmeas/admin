@@ -40,6 +40,7 @@ class EndPoint {
 	final BANK_READ_SEARCH = "/bank/read_search";
 	final BANK_READ_STRING = "/bank/read_string";
 	final BANK_UPDATE = "/bank/update";
+	final BANK_READ_LOG = "/bank/read_log";
 	final DEMO_1_CREATE = "/demo_1/create";
 	final DEMO_1_DELETE = "/demo_1/delete";
 	final DEMO_1_DELETE_HARD = "/demo_1/delete_hard";
@@ -65,6 +66,7 @@ class EndPoint {
 	final DEMO_2_1_READ_SEARCH = "/demo_2_1/read_search";
 	final DEMO_2_1_READ_STRING = "/demo_2_1/read_string";
 	final DEMO_2_1_UPDATE = "/demo_2_1/update";
+	final DEMO_2_1_READ_LOG = "/demo_2_1/read_log";
 	final DEMO_2_2_CREATE = "/demo_2_2/create";
 	final DEMO_2_2_DELETE = "/demo_2_2/delete";
 	final DEMO_2_2_DELETE_HARD = "/demo_2_2/delete_hard";
@@ -77,6 +79,7 @@ class EndPoint {
 	final DEMO_2_2_READ_SEARCH = "/demo_2_2/read_search";
 	final DEMO_2_2_READ_STRING = "/demo_2_2/read_string";
 	final DEMO_2_2_UPDATE = "/demo_2_2/update";
+	final DEMO_2_2_READ_LOG = "/demo_2_2/read_log";
 	final DEMO_3_2_CREATE = "/demo_3_2/create";
 	final DEMO_3_2_DELETE = "/demo_3_2/delete";
 	final DEMO_3_2_DELETE_HARD = "/demo_3_2/delete_hard";
@@ -89,6 +92,7 @@ class EndPoint {
 	final DEMO_3_2_READ_SEARCH = "/demo_3_2/read_search";
 	final DEMO_3_2_READ_STRING = "/demo_3_2/read_string";
 	final DEMO_3_2_UPDATE = "/demo_3_2/update";
+	final DEMO_3_2_READ_LOG = "/demo_3_2/read_log";
 	final DEMO_3_1_CREATE = "/demo_3_1/create";
 	final DEMO_3_1_DELETE = "/demo_3_1/delete";
 	final DEMO_3_1_DELETE_HARD = "/demo_3_1/delete_hard";
@@ -101,6 +105,7 @@ class EndPoint {
 	final DEMO_3_1_READ_SEARCH = "/demo_3_1/read_search";
 	final DEMO_3_1_READ_STRING = "/demo_3_1/read_string";
 	final DEMO_3_1_UPDATE = "/demo_3_1/update";
+	final DEMO_3_1_READ_LOG = "/demo_3_1/read_log";
 	final MINI_BAR_CREATE = "/mini_bar/create";
 	final MINI_BAR_DELETE = "/mini_bar/delete";
 	final MINI_BAR_DELETE_HARD = "/mini_bar/delete_hard";
@@ -126,6 +131,7 @@ class EndPoint {
 	final PENALTY_READ_SEARCH = "/penalty/read_search";
 	final PENALTY_READ_STRING = "/penalty/read_string";
 	final PENALTY_UPDATE = "/penalty/update";
+	final PENALTY_READ_LOG = "/penalty/read_log";
 	final FRONT_DESK_CREATE = "/front_desk/create";
 	final FRONT_DESK_DELETE = "/front_desk/delete";
 	final FRONT_DESK_DELETE_HARD = "/front_desk/delete_hard";
@@ -151,6 +157,7 @@ class EndPoint {
 	final GUEST_READ_SEARCH = "/guest/read_search";
 	final GUEST_READ_STRING = "/guest/read_string";
 	final GUEST_UPDATE = "/guest/update";
+	final GUEST_READ_LOG = "/guest/read_log";
 	final MINI_BAR_ITEM_CREATE = "/mini_bar_item/create";
 	final MINI_BAR_ITEM_DELETE = "/mini_bar_item/delete";
 	final MINI_BAR_ITEM_DELETE_HARD = "/mini_bar_item/delete_hard";
@@ -163,6 +170,7 @@ class EndPoint {
 	final MINI_BAR_ITEM_READ_SEARCH = "/mini_bar_item/read_search";
 	final MINI_BAR_ITEM_READ_STRING = "/mini_bar_item/read_string";
 	final MINI_BAR_ITEM_UPDATE = "/mini_bar_item/update";
+	final MINI_BAR_ITEM_READ_LOG = "/mini_bar_item/read_log";
 	final NATIONALITY_CREATE = "/nationality/create";
 	final NATIONALITY_DELETE = "/nationality/delete";
 	final NATIONALITY_DELETE_HARD = "/nationality/delete_hard";
@@ -175,6 +183,7 @@ class EndPoint {
 	final NATIONALITY_READ_SEARCH = "/nationality/read_search";
 	final NATIONALITY_READ_STRING = "/nationality/read_string";
 	final NATIONALITY_UPDATE = "/nationality/update";
+	final NATIONALITY_READ_LOG = "/nationality/read_log";
 	final PENALTY_ITEM_CREATE = "/penalty_item/create";
 	final PENALTY_ITEM_DELETE = "/penalty_item/delete";
 	final PENALTY_ITEM_DELETE_HARD = "/penalty_item/delete_hard";
@@ -187,6 +196,7 @@ class EndPoint {
 	final PENALTY_ITEM_READ_SEARCH = "/penalty_item/read_search";
 	final PENALTY_ITEM_READ_STRING = "/penalty_item/read_string";
 	final PENALTY_ITEM_UPDATE = "/penalty_item/update";
+	final PENALTY_ITEM_READ_LOG = "/penalty_item/read_log";
 	final ROOM_CREATE = "/room/create";
 	final ROOM_DELETE = "/room/delete";
 	final ROOM_DELETE_HARD = "/room/delete_hard";
@@ -199,6 +209,7 @@ class EndPoint {
 	final ROOM_READ_SEARCH = "/room/read_search";
 	final ROOM_READ_STRING = "/room/read_string";
 	final ROOM_UPDATE = "/room/update";
+	final ROOM_READ_LOG = "/room/read_log";
 	final SERVER_SIDE_EVENT_CREATE = "/server_side_event/create";
 	final SERVER_SIDE_EVENT_DELETE = "/server_side_event/delete";
 	final SERVER_SIDE_EVENT_DELETE_HARD = "/server_side_event/delete_hard";
@@ -211,6 +222,7 @@ class EndPoint {
 	final SERVER_SIDE_EVENT_READ_SEARCH = "/server_side_event/read_search";
 	final SERVER_SIDE_EVENT_READ_STRING = "/server_side_event/read_string";
 	final SERVER_SIDE_EVENT_UPDATE = "/server_side_event/update";
+	final SERVER_SIDE_EVENT_READ_LOG = "/server_side_event/read_log";
 	final SETTING_CREATE = "/setting/create";
 	final SETTING_DELETE = "/setting/delete";
 	final SETTING_DELETE_HARD = "/setting/delete_hard";
@@ -223,6 +235,7 @@ class EndPoint {
 	final SETTING_READ_SEARCH = "/setting/read_search";
 	final SETTING_READ_STRING = "/setting/read_string";
 	final SETTING_UPDATE = "/setting/update";
+	final SETTING_READ_LOG = "/setting/read_log";
 	final USER_CREATE = "/user/create";
 	final USER_DELETE = "/user/delete";
 	final USER_DELETE_HARD = "/user/delete_hard";
@@ -235,6 +248,7 @@ class EndPoint {
 	final USER_READ_SEARCH = "/user/read_search";
 	final USER_READ_STRING = "/user/read_string";
 	final USER_UPDATE = "/user/update";
+	final USER_READ_LOG = "/user/read_log";
 	final USER_CLIENT_CREATE = "/user_client/create";
 	final USER_CLIENT_DELETE = "/user_client/delete";
 	final USER_CLIENT_DELETE_HARD = "/user_client/delete_hard";
@@ -247,6 +261,7 @@ class EndPoint {
 	final USER_CLIENT_READ_SEARCH = "/user_client/read_search";
 	final USER_CLIENT_READ_STRING = "/user_client/read_string";
 	final USER_CLIENT_UPDATE = "/user_client/update";
+	final USER_CLIENT_READ_LOG = "/user_client/read_log";
 	final WEB_SOCKET_CREATE = "/web_socket/create";
 	final WEB_SOCKET_DELETE = "/web_socket/delete";
 	final WEB_SOCKET_DELETE_HARD = "/web_socket/delete_hard";
@@ -259,6 +274,7 @@ class EndPoint {
 	final WEB_SOCKET_READ_SEARCH = "/web_socket/read_search";
 	final WEB_SOCKET_READ_STRING = "/web_socket/read_string";
 	final WEB_SOCKET_UPDATE = "/web_socket/update";
+	final WEB_SOCKET_READ_LOG = "/web_socket/read_log";
 }
 
 EndPoint endpoint = EndPoint();

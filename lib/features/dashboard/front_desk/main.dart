@@ -902,6 +902,13 @@ class _Main_State extends State<Main_> {
     setState(() {});
   }
 
+  // * ច្បាស់ជាចាប់ខ្លួនក្រោយពី PlutoGrid onChanged បញ្ចប់ (ទប់ "framework is locked")
+  void _refresh_safe() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) init();
+    });
+  }
+
   @override
   void reassemble() {
     super.reassemble();
@@ -930,14 +937,14 @@ class _Main_State extends State<Main_> {
     return true;
   }
 
+  // * កែ cell ក្នុង grid ដោយមិន reload ទាំងស្រុង (ដូច demo_1) — reload តែពេលបរាជ័យដើម្បីត្រឡប់តម្លៃដើម
   void on_changed(PlutoGridOnChangedEvent e) async {
-    // todo: sync to server, don't reinit.
-    pprint("Old: ${e.oldValue} | New: ${e.value} | Row: ${e.row.cells["_id"]?.value} | Column: ${e.column.field}");
+    // pprint("Old: ${e.oldValue} | New: ${e.value} | Row: ${e.row.cells["_id"]?.value} | Column: ${e.column.field}");
     final fd_id = e.row.cells["_id"]?.value;
     if (fd_id == null) return;
 
     // * Walk-In (Minibar only): អនុញ្ញាតឲ្យកែឈ្មោះ/លេខទូរស័ព្ទភ្ញៀវ (guest_name / guest_phone) និងលុយ/ធនាគារ (pay_cash / pay_bank)
-    // * — មិនអនុញ្ញាតឲ្យកែ room price, change room ឬ penalty ទេ
+    // * — មិនអនុញ្ញាតឲ្យកែ room price, change room ឬ penalty ទេ (revert តម្លៃដើមវិញ)
     bool is_walkin_row = false;
     {
       Front_Desk? walk_fd = front_desks.where((x) => x.id == fd_id).firstOrNull;
@@ -948,9 +955,10 @@ class _Main_State extends State<Main_> {
       }
     }
 
-    if (e.column.field == "guest_name") await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.FULL_NAME: e.value});
-    if (e.column.field == "guest_phone") await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.PHONE_NUMBER: e.value});
-    if (e.column.field == "check_in_people") await _update(endpoint.FRONT_DESK_UPDATE, {Front_Desk.ID: fd_id, Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? "")});
+    bool ok = true;
+    if (e.column.field == "guest_name") ok = await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.FULL_NAME: e.value});
+    if (e.column.field == "guest_phone") ok = await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.PHONE_NUMBER: e.value});
+    if (e.column.field == "check_in_people") ok = await _update(endpoint.FRONT_DESK_UPDATE, {Front_Desk.ID: fd_id, Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? "")});
 
     if (e.column.field == "room_price" || e.column.field == "pay_cash" || e.column.field == "pay_bank" || e.column.field == "pay_note") {
       dynamic key = switch (e.column.field) {
@@ -960,15 +968,19 @@ class _Main_State extends State<Main_> {
         _ => Front_Desk.PAY_NOTE,
       };
       dynamic value = e.column.field == "pay_note" ? e.value?.toString() : num.tryParse(e.value?.toString() ?? "")?.toDouble();
-      await _update(is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, key: value});
+      ok = await _update(is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, key: value});
     }
 
     // * កែសមតុល្យ (balance) ដោយផ្ទាល់ — អនុញ្ញាតតែ admin ប៉ុណ្ណោះ
-    if (e.column.field == "pay_balance" && is_admin) await _update(endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, Front_Desk.PAY_BALANCE: num.tryParse(e.value?.toString() ?? "")?.toDouble()});
-    if (e.column.field == "mini_bar_price") await _update(endpoint.FRONT_DESK_MINI_BAR_ITEM, {Front_Desk.ID: fd_id});
-    if (e.column.field == "penalty_price") await _update(endpoint.FRONT_DESK_PENALTY_ITEM, {Front_Desk.ID: fd_id});
+    if (e.column.field == "pay_balance" && is_admin) ok = await _update(endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, Front_Desk.PAY_BALANCE: num.tryParse(e.value?.toString() ?? "")?.toDouble()});
+    if (e.column.field == "mini_bar_price") ok = await _update(endpoint.FRONT_DESK_MINI_BAR_ITEM, {Front_Desk.ID: fd_id});
+    if (e.column.field == "penalty_price") ok = await _update(endpoint.FRONT_DESK_PENALTY_ITEM, {Front_Desk.ID: fd_id});
 
-    init();
+    // * បរាជ័យ → revert តម្លៃដើម ហើយ reload ដើម្បីយកទិន្នន័យពិតមកវិញ (មិន reload ពេលជោគជ័យ)
+    if (!ok) {
+      e.row.cells[e.column.field]!.value = e.oldValue;
+      _refresh_safe();
+    }
   }
 
   void on_check_in(dynamic r) async {
@@ -1232,7 +1244,7 @@ class _Main_State extends State<Main_> {
   }
 
   void refresh_time() async {
-    if (is_refresh) return;
+    if (is_refresh || !mounted || list_column.isEmpty) return;
     is_refresh = true;
     update_grid();
     is_refresh = false;

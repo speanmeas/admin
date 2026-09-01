@@ -2,9 +2,9 @@ import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
-import "package:speanmeas/core/widget/dialog/dialog_datetime.dart";
 import "package:speanmeas/features/dashboard/front_desk/dialog/list_mini_bar.dart";
 import "package:speanmeas/features/dashboard/front_desk/dialog/list_penalty.dart";
+import "package:speanmeas/features/dashboard/front_desk/dialog/pick_datetime.dart";
 import "package:speanmeas/features/dashboard/front_desk/dialog/search_guest.dart";
 import "package:speanmeas/features/report/dialog_item_show.dart";
 
@@ -199,100 +199,76 @@ class _Main_State extends State<Main_> {
     init();
   }
 
+  // * ផ្ញើ POST អាប់ដេត → បង្ហាញ snackbar ជោគជ័យ/បរាជ័យ ហើយត្រឡប់ true បើជោគជ័យ
+  Future<bool> _update(String ep, Map<String, dynamic> data) async {
+    final tmp = await dio.post(ep, data: data);
+    if (tmp == null) {
+      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      return false;
+    }
+    snackbar(ct: context, ms: "Updated", cl: Colors.green);
+    return true;
+  }
+
+  // * ច្បាស់ជាចាប់ខ្លួនក្រោយពី PlutoGrid onChanged បញ្ចប់ (ទប់ "framework is locked")
+  void _refresh_safe() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) init();
+    });
+  }
+
   // * កែប្រែ cell ក្នុង grid តាមរចនាប័ទ្ម dashboard (admin តែប៉ុណ្ណោះ)
   void on_changed(PlutoGridOnChangedEvent e) async {
     if (!is_admin) return;
 
-    pprint("Old: ${e.oldValue} | New: ${e.value} | Column: ${e.column.field}");
+    // pprint("Old: ${e.oldValue} | New: ${e.value} | Column: ${e.column.field}");
     final fd_id = e.row.cells["_id"]?.value;
     if (fd_id == null) return;
 
+    // * Walk-In (Minibar only): អនុញ្ញាតឲ្យកែឈ្មោះ/លេខទូរស័ព្ទភ្ញៀវ (guest_name / guest_phone) និងលុយ/ធនាគារ (pay_cash / pay_bank)
+    // * — មិនអនុញ្ញាតឲ្យកែ room price, change room ឬ penalty ទេ (revert តម្លៃដើមវិញ)
     bool is_walkin_row = row_is_walk_in_by_id(fd_id);
     if (is_walkin_row &&
         e.column.field != "guest_name" &&
         e.column.field != "guest_phone" &&
         e.column.field != "pay_cash" &&
-        e.column.field != "pay_bank") {
+        e.column.field != "pay_bank" &&
+        e.column.field != "pay_balance") {
       e.row.cells[e.column.field]!.value = e.oldValue;
       return;
     }
 
-    if (e.column.field == "guest_name") {
-      dynamic tmp = await dio.post(
-        endpoint.FRONT_DESK_UPDATE_GUEST,
-        data: {
-          Front_Desk.ID: fd_id, //
-          Guest.FULL_NAME: e.value, //
-        },
-      );
-      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-    }
-
-    if (e.column.field == "guest_phone") {
-      dynamic tmp = await dio.post(
-        endpoint.FRONT_DESK_UPDATE_GUEST,
-        data: {
-          Front_Desk.ID: fd_id, //
-          Guest.PHONE_NUMBER: e.value, //
-        },
-      );
-      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-    }
-
-    if (e.column.field == "number_of_guest") {
-      dynamic tmp = await dio.post(
-        endpoint.FRONT_DESK_UPDATE,
-        data: {
-          Front_Desk.ID: fd_id, //
-          Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? ""), //
-        },
-      );
-      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-    }
+    bool ok = true;
+    if (e.column.field == "guest_name") ok = await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.FULL_NAME: e.value});
+    if (e.column.field == "guest_phone") ok = await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.PHONE_NUMBER: e.value});
+    if (e.column.field == "number_of_guest") ok = await _update(endpoint.FRONT_DESK_UPDATE, {Front_Desk.ID: fd_id, Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? "")});
 
     if (e.column.field == "room_price" || e.column.field == "pay_cash" || e.column.field == "pay_bank" || e.column.field == "pay_note") {
-      String key = switch (e.column.field) {
+      dynamic key = switch (e.column.field) {
         "room_price" => Front_Desk.ROOM_PRICE,
         "pay_cash" => Front_Desk.PAY_CASH,
         "pay_bank" => Front_Desk.PAY_BANK,
         _ => Front_Desk.PAY_NOTE,
       };
-      dynamic tmp = await dio.post(
-        is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_PAY,
-        data: {
-          Front_Desk.ID: fd_id, //
-          key: e.column.field == "pay_note" ? e.value?.toString() : num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
-        },
-      );
-      if (tmp == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      dynamic value = e.column.field == "pay_note" ? e.value?.toString() : num.tryParse(e.value?.toString() ?? "")?.toDouble();
+      ok = await _update(is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, key: value});
     }
 
-    init();
+    // * កែសមតុល្យ (balance) ដោយផ្ទាល់ — អនុញ្ញាតតែ admin ប៉ុណ្ណោះ
+    if (e.column.field == "pay_balance" && is_admin) ok = await _update(endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, Front_Desk.PAY_BALANCE: num.tryParse(e.value?.toString() ?? "")?.toDouble()});
+
+    // * បរាជ័យ → revert តម្លៃដើម ហើយ reload ដើម្បីយកទិន្នន័យពិតមកវិញ (មិន reload ពេលជោគជ័យ)
+    if (!ok) {
+      e.row.cells[e.column.field]!.value = e.oldValue;
+      _refresh_safe();
+    }
   }
 
   // * កែពេលចូល/ចេញ តាម dialog កាលបរិច្ឆេទ (admin តែប៉ុណ្ណោះ)
   Future<void> pick_datetime(PlutoColumnRendererContext rc, {required bool is_check_in}) async {
     if (!is_admin) return;
-    if (row_is_walk_in(rc)) return;
-    String? fd_id = rc.row.cells["_id"]?.value;
-    if (fd_id == null) return;
-
-    DateTime? current = parse_datetime(rc.cell.value) ?? DateTime.now();
-
-    final DateTime? picked_datetime = await dialog_datetime(context, initial: current);
-    if (picked_datetime == null || !mounted) return;
-
-    String key = is_check_in ? Front_Desk.CHECK_IN_AT : Front_Desk.CHECK_OUT_AT;
-    dynamic tmp = await dio.post(
-      endpoint.FRONT_DESK_UPDATE,
-      data: {
-        Front_Desk.ID: fd_id, //
-        key: format_datetime(picked_datetime), //
-      },
-    );
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    init();
+    final v = await dialog_pick_datetime(context: context, rc: rc, is_check_in: is_check_in);
+    if (v == true) init();
   }
 
   // * បើក dialog កែទំនិញ mini bar (admin តែប៉ុណ្ណោះ)
@@ -852,7 +828,7 @@ class _Main_State extends State<Main_> {
             field: "pay_balance", //
             title: "សមតុល្យ",
             type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
-            enableEditingMode: false,
+            enableEditingMode: is_admin, // * កែសមតុល្យបានតែ admin ប៉ុណ្ណោះ
             width: 90,
             renderer: (rc) => _money(rc),
             footerRenderer: (rc) => _sum_footer(rc),

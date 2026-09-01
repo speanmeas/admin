@@ -160,7 +160,7 @@ Future<void> dialog_item_show({
     }
   } else {
     if (it is Penalty_Item) {
-      final show = it.penalty_id is Penalty_Show ? it.penalty_id as Penalty_Show : null;
+      final show = it.penalty_id is Penalty_Show_2 ? it.penalty_id as Penalty_Show_2 : null;
       return (show?.name, show?.price, it.quantity);
     }
   }

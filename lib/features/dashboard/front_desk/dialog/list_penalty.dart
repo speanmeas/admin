@@ -5,14 +5,14 @@ import "package:speanmeas/core/utility/all.dart";
 // * ថ្នាក់ទិន្នន័យការបញ្ជាទំនិញ penalty (ប្រើក្នុង UI មុនពេលរក្សាទុក)
 class Order_Penalty {
   final String? id; // * id នៃ Penalty_Item ដែលរក្សាទុករួច (null = ថ្មី)
-  final Penalty_Show? penalty_id;
+  final Penalty_Show_2? penalty_id;
   int quantity;
   Order_Penalty({this.id, this.penalty_id, this.quantity = 1});
 
   // * តម្លៃសរុប = price × quantity
   double get total => (penalty_id?.price ?? 0) * quantity;
 
-  factory Order_Penalty.fromJson(Map<String, dynamic> m) => Order_Penalty(id: parse_string(m["_id"]), penalty_id: m["penalty_id"] == null ? null : Penalty_Show.fromJson(m["penalty_id"]), quantity: parse_int(m["quantity"]) ?? 1);
+  factory Order_Penalty.fromJson(Map<String, dynamic> m) => Order_Penalty(id: parse_string(m["_id"]), penalty_id: m["penalty_id"] == null ? null : Penalty_Show_2.fromJson(m["penalty_id"]), quantity: parse_int(m["quantity"]) ?? 1);
 }
 
 class _List_Penalty_State extends State<List_Penalty> {
@@ -189,7 +189,7 @@ class _List_Penalty_State extends State<List_Penalty> {
     } else {
       list_order_penalty.add(
         Order_Penalty(
-          penalty_id: Penalty_Show(id: item.id, name: item.name, price: item.price),
+          penalty_id: Penalty_Show_2(id: item.id, name: item.name, price: item.price),
           quantity: 1,
         ),
       );
