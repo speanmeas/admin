@@ -1,17 +1,15 @@
 import "dart:async";
 
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
-import "package:speanmeas/core/widget/button/menu_button_icon.dart";
-import "package:speanmeas/core/widget/dialog/dialog_datetime.dart";
 
-import "dialog/check_in.dart";
-// import "dialog/.cancel.dart";
+import "dialog/add_mini_bar.dart";
 import "dialog/change_room.dart";
+import "dialog/check_in.dart";
 import "dialog/list_mini_bar.dart";
 import "dialog/list_penalty.dart";
+import "dialog/pick_datetime.dart";
 import "dialog/search_guest.dart";
 
 class _Main_State extends State<Main_> {
@@ -28,6 +26,8 @@ class _Main_State extends State<Main_> {
 
   List<dynamic> rooms = [];
   List<Front_Desk> front_desks = [];
+
+  bool is_admin = false; // this variable is used to allow edit balance for admin only
 
   Timer? timer_refresh;
   bool is_refresh = false;
@@ -123,12 +123,12 @@ class _Main_State extends State<Main_> {
           ),
 
         Tooltip(
-          message: "Walk-In Mini Bar", //
+          message: "Add Mini Bar", //
           child: OutlinedButton.icon(
-            label: Text("Walk-In"), //
+            label: Text("Mini Bar"), //
             icon: Icon(Icons.local_bar_outlined), //
             style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
-            onPressed: () {}, //
+            onPressed: on_mini_bar_only, //
           ),
         ),
       ],
@@ -158,31 +158,6 @@ class _Main_State extends State<Main_> {
             ),
           ),
       ],
-
-      // header: [
-      //   const Spacer(),
-
-      //   // * ប៊ូតុងបើក/បិទ filter
-      //   Menu_Button_Icon(
-      //     tip: is_filter ? "Close Filter" : "Open Filter", //
-      //     icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
-      //     onPressed: () {
-      //       is_filter = !is_filter;
-      //       state_manager.setShowColumnFilter(is_filter);
-      //       if (!is_filter) state_manager.setFilterWithFilterRows([]);
-      //       setState(() {});
-      //     },
-      //   ),
-      //   Menu_Button_Icon(
-      //     tip: "Refresh", //
-      //     icon: Icons.refresh,
-      //     onPressed: () {
-      //       reload++;
-      //       // * rebuild grid តាម key ដើម្បីផ្ទុកទិន្នន័យឡើងវិញពេញលេញ
-      //       setState(() {});
-      //     }, //
-      //   ),
-      // ],
 
       //
       body: PlutoGrid(
@@ -244,7 +219,7 @@ class _Main_State extends State<Main_> {
             title: "បន្ទប់",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
-            width: 80,
+            width: 100,
             renderer: (rc) {
               return Row(
                 children: [
@@ -257,14 +232,14 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
                   ),
-
-                  IconButton(
-                    tooltip: "Change Room", //
-                    icon: Icon(Icons.swap_horiz_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {},
-                  ),
+                  if (!is_checked_out(rc) && !row_is_mini_bar(rc))
+                    IconButton(
+                      tooltip: "Change Room", //
+                      icon: Icon(Icons.swap_horiz_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_change_room(rc), //
+                    ),
                 ],
               );
             },
@@ -289,13 +264,16 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  if (!is_checked_out(rc) && !row_is_walk_in(rc))
+                  if (!is_checked_out(rc) && !row_is_mini_bar(rc))
                     IconButton(
                       tooltip: "កែពេលចូល", //
                       icon: Icon(Icons.calendar_month_outlined),
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
-                      onPressed: () => pick_datetime(rc, is_check_in: true), //
+                      onPressed: () async {
+                        final v = await dialog_pick_datetime(context: context, rc: rc, is_check_in: true);
+                        if (v == true) init();
+                      }, //
                     ),
                 ],
               );
@@ -396,22 +374,21 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  if (!row_is_walk_in(rc))
-                    IconButton(
-                      tooltip: "Search Guest", //
-                      icon: Icon(Icons.search_outlined),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () async {
-                        //   print("Search Guest: ${rc.row.cells["index"]?.value}");
-                        var v = await dialog_search_guest(
-                          context: context, //
-                          front_desk_id: rc.row.cells["_id"]?.value,
-                        );
-                        if (v == null) return;
-                        init();
-                      }, //
-                    ),
+                  IconButton(
+                    tooltip: "Search Guest", //
+                    icon: Icon(Icons.search_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () async {
+                      //   print("Search Guest: ${rc.row.cells["index"]?.value}");
+                      var v = await dialog_search_guest(
+                        context: context, //
+                        front_desk_id: rc.row.cells["_id"]?.value,
+                      );
+                      if (v == null) return;
+                      init();
+                    }, //
+                  ),
                 ],
               );
             },
@@ -451,29 +428,7 @@ class _Main_State extends State<Main_> {
                 ),
               );
             },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.center,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
+            footerRenderer: _sum_footer,
           ),
 
           PlutoColumn(
@@ -509,29 +464,7 @@ class _Main_State extends State<Main_> {
                 ],
               );
             },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.center,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
+            footerRenderer: _sum_footer,
           ),
 
           PlutoColumn(
@@ -557,48 +490,18 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  IconButton(
-                    tooltip: "Penalty Items", //
-                    icon: Icon(Icons.gavel_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_penalty_item(rc), //
-                  ),
+                  if (!row_is_mini_bar(rc))
+                    IconButton(
+                      tooltip: "Penalty Items", //
+                      icon: Icon(Icons.gavel_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_penalty_item(rc), //
+                    ),
                 ],
               );
             },
-            // renderer: (rc) {
-            //   return Align(
-            //     alignment: Alignment.centerRight, //
-            //     child: Text(
-            //       format_double(rc.cell.value, digits: 2) + " \$", //
-            //       overflow: TextOverflow.ellipsis,
-            //     ),
-            //   );
-            // },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.center,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
+            footerRenderer: _sum_footer,
           ),
 
           PlutoColumn(
@@ -623,29 +526,7 @@ class _Main_State extends State<Main_> {
                 ),
               );
             },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.center,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
+            footerRenderer: _sum_footer,
           ),
 
           PlutoColumn(
@@ -669,29 +550,7 @@ class _Main_State extends State<Main_> {
                 ),
               );
             },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.center,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
+            footerRenderer: _sum_footer,
           ),
 
           PlutoColumn(
@@ -701,7 +560,7 @@ class _Main_State extends State<Main_> {
               negative: true, //
               format: "#,##0.00",
             ),
-            enableEditingMode: false,
+            enableEditingMode: is_admin, // * កែសមតុល្យបានតែ admin ប៉ុណ្ណោះ
             width: 80,
             renderer: (rc) {
               return Align(
@@ -866,6 +725,17 @@ class _Main_State extends State<Main_> {
   void initState() {
     super.initState();
     timer_refresh = Timer.periodic(Duration(minutes: 1), (_) => refresh_time());
+    load_auth();
+  }
+
+  // * ទាញតួនាទីអ្នកប្រើសម្រាប់កំណត់ការកែប្រែ cell
+  Future<void> load_auth() async {
+    final user = await auth.fetch();
+    if (user == null) return;
+    setState(() {
+      is_admin = user.is_admin == true;
+      reload++; // * rebuild grid ដើម្បីអនុវត្ត enableEditingMode
+    });
   }
 
   @override
@@ -918,10 +788,53 @@ class _Main_State extends State<Main_> {
   Room? fd_room(Front_Desk fd) => fd.room_id is Room ? fd.room_id as Room : null;
   Guest? fd_guest(Front_Desk fd) => fd.guest_id is Guest ? fd.guest_id as Guest : null;
 
-  // * ពិនិត្យថា room ជា Walk-In (លក់ minibar តែប៉ុណ្ណោះ)
-  bool is_walk_in_room(dynamic r) {
-    String? number = r[Room.NUMBER]?.toString().toLowerCase();
-    return number == "walk-in";
+  // * ពិនិត្យថា stay ជា Walk-In / Mini Bar only (លក់ minibar តែប៉ុណ្ណោះ) — មិនអាស្រ័យតែលើ expanded room ទេ
+  bool is_walkin(Front_Desk fd) {
+    Room? room = fd_room(fd);
+    if (room != null) return _is_mini_bar_room(room.number);
+    // * room_id អាចមកជា string id (មិន expanded) → រកក្នុងបញ្ជី rooms
+    String rid = (fd.room_id ?? "").toString();
+    if (rid.isEmpty) return false;
+    for (var r in rooms) {
+      if ((r[Room.ID] ?? "").toString() == rid && _is_mini_bar_room(r[Room.NUMBER]?.toString())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // * ពិនិត្យថាឈ្មោះបន្ទប់ជា Walk-In ឬ Mini Bar (minibar only)
+  bool _is_mini_bar_room(String? number) {
+    String n = (number ?? "").toLowerCase();
+    return n == "walk-in" || n == "mini bar";
+  }
+
+  // * ពិនិត្យថា room ជា Walk-In / Mini Bar (លក់ minibar តែប៉ុណ្ណោះ)
+  bool is_walk_in_room(dynamic r) => _is_mini_bar_room(r[Room.NUMBER]?.toString());
+
+  // * footer ជួរសរុប (sum) សម្រាប់ជួរលុយ
+  PlutoAggregateColumnFooter _sum_footer(PlutoColumnFooterRendererContext rc) {
+    return PlutoAggregateColumnFooter(
+      rendererContext: rc, //
+      format: "#,##0.00", //
+      alignment: Alignment.center,
+      padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+      type: PlutoAggregateColumnType.sum,
+      titleSpanBuilder: (value) {
+        return [
+          WidgetSpan(
+            child: Text(
+              "$value \$", //
+              style: TextStyle(
+                fontSize: 14, //
+                fontWeight: FontWeight.bold,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ];
+      },
+    );
   }
 
   void update_grid() {
@@ -1006,94 +919,54 @@ class _Main_State extends State<Main_> {
     init();
   }
 
+  // * ផ្ញើ POST អាប់ដេត → បង្ហាញ snackbar ជោគជ័យ/បរាជ័យ ហើយត្រឡប់ true បើជោគជ័យ
+  Future<bool> _update(String ep, Map<String, dynamic> data) async {
+    final tmp = await dio.post(ep, data: data);
+    if (tmp == null) {
+      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      return false;
+    }
+    snackbar(ct: context, ms: "Updated", cl: Colors.green);
+    return true;
+  }
+
   void on_changed(PlutoGridOnChangedEvent e) async {
     // todo: sync to server, don't reinit.
     pprint("Old: ${e.oldValue} | New: ${e.value} | Row: ${e.row.cells["_id"]?.value} | Column: ${e.column.field}");
     final fd_id = e.row.cells["_id"]?.value;
     if (fd_id == null) return;
 
-    // * Walk-In: row នេះប្រើសម្រាប់ភ្ញៀវ walk-in ទិញ minibar តែប៉ុណ្ណោះ
-    // * — មិនអនុញ្ញាតឲ្យកែឈ្មោះ/លេខទូរស័ព្ទភ្ញៀវ ឬផ្នែកផ្សេងទៀតទេ (កែបានតែលុយ/ធនាគារ)
+    // * Walk-In (Minibar only): អនុញ្ញាតឲ្យកែឈ្មោះ/លេខទូរស័ព្ទភ្ញៀវ (guest_name / guest_phone) និងលុយ/ធនាគារ (pay_cash / pay_bank)
+    // * — មិនអនុញ្ញាតឲ្យកែ room price, change room ឬ penalty ទេ
     bool is_walkin_row = false;
     {
       Front_Desk? walk_fd = front_desks.where((x) => x.id == fd_id).firstOrNull;
-      Room? walk_room = walk_fd == null ? null : fd_room(walk_fd);
-      is_walkin_row = walk_room != null && (walk_room.number ?? "").toLowerCase() == "walk-in";
-      if (is_walkin_row && e.column.field != "pay_cash" && e.column.field != "pay_bank") {
+      is_walkin_row = walk_fd != null && is_walkin(walk_fd);
+      if (is_walkin_row && e.column.field != "guest_name" && e.column.field != "guest_phone" && e.column.field != "pay_cash" && e.column.field != "pay_bank" && e.column.field != "pay_balance") {
         e.row.cells[e.column.field]!.value = e.oldValue;
         return;
       }
     }
 
-    if (e.column.field == "guest_name") {
-      dynamic tmp_fd = await dio.post(
-        endpoint.FRONT_DESK_UPDATE_GUEST,
-        data: {
-          Front_Desk.ID: fd_id, //
-          Guest.FULL_NAME: e.value, //
-        },
-      );
-      if (tmp_fd == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-    }
-
-    if (e.column.field == "guest_phone") {
-      dynamic tmp_fd = await dio.post(
-        endpoint.FRONT_DESK_UPDATE_GUEST,
-        data: {
-          Front_Desk.ID: fd_id, //
-          Guest.PHONE_NUMBER: e.value, //
-        },
-      );
-      if (tmp_fd == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-    }
-
-    if (e.column.field == "check_in_people") {
-      dynamic tmp_fdn = await dio.post(
-        endpoint.FRONT_DESK_UPDATE,
-        data: {
-          Front_Desk.ID: fd_id, //
-          Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? ""), //
-        },
-      );
-      if (tmp_fdn == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-    }
+    if (e.column.field == "guest_name") await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.FULL_NAME: e.value});
+    if (e.column.field == "guest_phone") await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.PHONE_NUMBER: e.value});
+    if (e.column.field == "check_in_people") await _update(endpoint.FRONT_DESK_UPDATE, {Front_Desk.ID: fd_id, Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? "")});
 
     if (e.column.field == "room_price" || e.column.field == "pay_cash" || e.column.field == "pay_bank" || e.column.field == "pay_note") {
-      String key = switch (e.column.field) {
+      dynamic key = switch (e.column.field) {
         "room_price" => Front_Desk.ROOM_PRICE,
         "pay_cash" => Front_Desk.PAY_CASH,
         "pay_bank" => Front_Desk.PAY_BANK,
         _ => Front_Desk.PAY_NOTE,
       };
-      dynamic tmp_fdn = await dio.post(
-        is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_PAY,
-        data: {
-          Front_Desk.ID: fd_id, //
-          key: e.column.field == "pay_note" ? e.value?.toString() : num.tryParse(e.value?.toString() ?? "")?.toDouble(), //
-        },
-      );
-      if (tmp_fdn == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      dynamic value = e.column.field == "pay_note" ? e.value?.toString() : num.tryParse(e.value?.toString() ?? "")?.toDouble();
+      await _update(is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, key: value});
     }
 
-    if (e.column.field == "mini_bar_price") {
-      dynamic tmp_fdn = await dio.post(
-        endpoint.FRONT_DESK_MINI_BAR_ITEM,
-        data: {
-          Front_Desk.ID: fd_id, //
-        },
-      );
-      if (tmp_fdn == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-    }
-
-    if (e.column.field == "penalty_price") {
-      dynamic tmp_fdn = await dio.post(
-        endpoint.FRONT_DESK_PENALTY_ITEM,
-        data: {
-          Front_Desk.ID: fd_id, //
-        },
-      );
-      if (tmp_fdn == null) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-    }
+    // * កែសមតុល្យ (balance) ដោយផ្ទាល់ — អនុញ្ញាតតែ admin ប៉ុណ្ណោះ
+    if (e.column.field == "pay_balance" && is_admin) await _update(endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, Front_Desk.PAY_BALANCE: num.tryParse(e.value?.toString() ?? "")?.toDouble()});
+    if (e.column.field == "mini_bar_price") await _update(endpoint.FRONT_DESK_MINI_BAR_ITEM, {Front_Desk.ID: fd_id});
+    if (e.column.field == "penalty_price") await _update(endpoint.FRONT_DESK_PENALTY_ITEM, {Front_Desk.ID: fd_id});
 
     init();
   }
@@ -1138,6 +1011,13 @@ class _Main_State extends State<Main_> {
     init();
   }
 
+  // * បើក Walk-In: យក (ឬបង្កើត) row Walk-In នៃថ្ងៃ shift នេះ សម្រាប់លក់ minibar តែប៉ុណ្ណោះ
+  Future<void> on_mini_bar_only() async {
+    final v = await dialog_add_mini_bar(context: context);
+    if (v == null) return;
+    init();
+  }
+
   // * បញ្ជាការកែប្រែ និងការបោះបង់ពីជួរ grid (action រស់នៅក្នុង method មិននៅក្នុង UI)
   String? row_stay_id(PlutoColumnRendererContext rc) => rc.row.cells["_id"]?.value;
 
@@ -1148,33 +1028,27 @@ class _Main_State extends State<Main_> {
   }
 
   // * ប្រមូល id ទំនិញដែលបានចុះពីថ្ងៃមុនៗ (locked) តាមខ្សែសង្វាក់ prev_front_desk_id
-  Set<String> locked_mini_bar_ids(Front_Desk fd) {
+  Set<String> _locked_ids(Front_Desk fd, List<dynamic>? Function(Front_Desk) items) {
     Set<String> ids = {};
     String? cursor = fd.prev_front_desk_id;
     while (cursor != null) {
       Front_Desk? prev = front_desks.where((x) => x.id == cursor).firstOrNull;
       if (prev == null) break;
-      for (var it in (prev.mini_bar_item_id ?? [])) {
-        if (it is Mini_Bar_Item && it.id != null) ids.add(it.id!);
+      for (var it in (items(prev) ?? [])) {
+        dynamic id = it is Mini_Bar_Item
+            ? it.id
+            : it is Penalty_Item
+            ? it.id
+            : null;
+        if (id != null) ids.add(id.toString());
       }
       cursor = prev.prev_front_desk_id;
     }
     return ids;
   }
 
-  Set<String> locked_penalty_ids(Front_Desk fd) {
-    Set<String> ids = {};
-    String? cursor = fd.prev_front_desk_id;
-    while (cursor != null) {
-      Front_Desk? prev = front_desks.where((x) => x.id == cursor).firstOrNull;
-      if (prev == null) break;
-      for (var it in (prev.penalty_item_id ?? [])) {
-        if (it is Penalty_Item && it.id != null) ids.add(it.id!);
-      }
-      cursor = prev.prev_front_desk_id;
-    }
-    return ids;
-  }
+  Set<String> locked_mini_bar_ids(Front_Desk fd) => _locked_ids(fd, (d) => d.mini_bar_item_id);
+  Set<String> locked_penalty_ids(Front_Desk fd) => _locked_ids(fd, (d) => d.penalty_item_id);
 
   // * ហាមប្រើប្រាស់ ប្រសិនបើបាន check out រួចហើយ
   bool checkout_guard(PlutoColumnRendererContext rc) {
@@ -1190,25 +1064,11 @@ class _Main_State extends State<Main_> {
   bool is_checked_out(PlutoColumnRendererContext rc) => row_stay(rc)?.check_out_at != null;
 
   // * ពិនិត្យថា stay ជា Walk-In (លក់ minibar តែប៉ុណ្ណោះ)
-  bool row_is_walk_in(PlutoColumnRendererContext rc) {
+  bool row_is_mini_bar(PlutoColumnRendererContext rc) {
     Front_Desk? fd = row_stay(rc);
-    Room? room = fd == null ? null : fd_room(fd);
-    return room != null && (room.number ?? "").toLowerCase() == "walk-in";
+    if (fd == null) return false;
+    return is_walkin(fd);
   }
-
-  // void on_cancel(PlutoColumnRendererContext rc) async {
-  //   if (checkout_guard(rc)) return;
-  //   String? fd_id = row_stay_id(rc);
-  //   if (fd_id == null) return snackbar(ct: context, ms: "No stay to cancel", cl: Colors.red);
-
-  //   var v = await dialog_cancel(
-  //     context: context, //
-  //     lead: "Room ${rc.row.cells["room"]?.value}", //
-  //     front_desk_id: fd_id, //
-  //   );
-  //   if (v == null) return;
-  //   init();
-  // }
 
   void on_change_room(PlutoColumnRendererContext rc) async {
     if (checkout_guard(rc)) return;
@@ -1343,7 +1203,7 @@ class _Main_State extends State<Main_> {
     }
 
     // * Walk-In: ប្រើ endpoint ដាច់ដោយឡែក (walk_in_update)
-    if (row_is_walk_in(rc)) {
+    if (row_is_mini_bar(rc)) {
       dynamic tmp_walk = await dio.post(
         endpoint.FRONT_DESK_WALK_IN_UPDATE,
         data: {
@@ -1371,38 +1231,12 @@ class _Main_State extends State<Main_> {
     init();
   }
 
-  Future<void> pick_datetime(PlutoColumnRendererContext rc, {required bool is_check_in}) async {
-    String? fd_id = rc.row.cells["_id"]?.value;
-    if (fd_id == null) return;
-
-    DateTime? current = parse_datetime(rc.cell.value) ?? DateTime.now();
-
-    final DateTime? picked_datetime = await dialog_datetime(context, initial: current);
-    if (picked_datetime == null || !mounted) return;
-
-    String key = is_check_in ? Front_Desk.CHECK_IN_AT : Front_Desk.CHECK_OUT_AT;
-    dynamic tmp = await dio.post(
-      endpoint.FRONT_DESK_UPDATE,
-      data: {
-        Front_Desk.ID: fd_id, //
-        key: format_datetime(picked_datetime), //
-      },
-    );
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    init();
-  }
-
   void refresh_time() async {
     if (is_refresh) return;
     is_refresh = true;
     update_grid();
     is_refresh = false;
   }
-
-  bool is_filter = false; // this variable is used to show/hide the filter row in the PlutoGridj
-  bool hide_penalty = false; // this variable is used to show/hide the penalty column in the PlutoGrid
-  bool hide_mini_bar = false; // this variable is used to show/hide the mini bar column in the PlutoGrid
 
   // * ########## BLOCK METHODS END ##########
 }

@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
-import "package:speanmeas/core/widget/select/select_dynamic.dart";
 
 // * បង្ហាញ dialog សម្រាប់ជ្រើសរើសលេខទំព័រ
 Future<bool?> dialog_check_in({
@@ -13,7 +12,7 @@ Future<bool?> dialog_check_in({
   final result = await showDialog<bool>(
     context: context,
     builder: (context) {
-      int stay_number = 1;
+      const int stay_number = 1;
 
       return AlertDialog(
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
@@ -43,20 +42,7 @@ Future<bool?> dialog_check_in({
             mainAxisSize: MainAxisSize.min,
             children: [
               Divider(height: 1, color: Colors.grey),
-
-              // * ជ្រើសរើសចំនួនភ្ញៀវ
-              Select_Dynamic(
-                lead: "Number of Guests:",
-                init: stay_number, //
-                options: List.generate(10, (index) => index + 1),
-                prefixIcon: Icons.people_outline, //
-                onChanged: (v) {
-                  stay_number = v;
-                  // setState(() {});
-                },
-              ),
-
-              // Text("Please confirm the check-in."), //
+              Text("Please confirm the check-in."), //
             ],
           ),
         ),

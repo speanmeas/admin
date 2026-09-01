@@ -81,7 +81,12 @@ class _Main_State extends State<Main_> {
   bool row_is_walk_in(PlutoColumnRendererContext rc) {
     Front_Desk? fd = row_stay(rc);
     Room? room = fd == null ? null : fd_room(fd);
-    return room != null && (room.number ?? "").toLowerCase() == "walk-in";
+    return room != null && _is_mini_bar_room(room.number);
+  }
+
+  bool _is_mini_bar_room(String? number) {
+    String n = (number ?? "").toLowerCase();
+    return n == "walk-in" || n == "mini bar";
   }
 
   Set<String> locked_mini_bar_ids(Front_Desk fd) {
@@ -203,7 +208,11 @@ class _Main_State extends State<Main_> {
     if (fd_id == null) return;
 
     bool is_walkin_row = row_is_walk_in_by_id(fd_id);
-    if (is_walkin_row && e.column.field != "pay_cash" && e.column.field != "pay_bank") {
+    if (is_walkin_row &&
+        e.column.field != "guest_name" &&
+        e.column.field != "guest_phone" &&
+        e.column.field != "pay_cash" &&
+        e.column.field != "pay_bank") {
       e.row.cells[e.column.field]!.value = e.oldValue;
       return;
     }
@@ -418,13 +427,12 @@ class _Main_State extends State<Main_> {
   bool row_is_walk_in_by_id(String fd_id) {
     Front_Desk? fd = rows.where((x) => x.id == fd_id).firstOrNull;
     Room? room = fd == null ? null : fd_room(fd);
-    return room != null && (room.number ?? "").toLowerCase() == "walk-in";
+    return room != null && _is_mini_bar_room(room.number);
   }
 
   // * ស្វែងរកភ្ញៀវ ហើយភ្ជាប់ទៅ stay (admin តែប៉ុណ្ណោះ; walk-in មិនអនុញ្ញាត)
   Future<void> pick_guest(PlutoColumnRendererContext rc) async {
     if (!is_admin) return;
-    if (row_is_walk_in(rc)) return;
     String? fd_id = row_stay_id(rc);
     if (fd_id == null) return;
 
@@ -630,7 +638,7 @@ class _Main_State extends State<Main_> {
                       child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
                     ),
                   ),
-                  if (is_admin && !row_is_walk_in(rc))
+                  if (is_admin)
                     IconButton(
                       tooltip: "Search Guest", //
                       icon: Icon(Icons.search_outlined),
