@@ -1,5 +1,6 @@
 // * នាំចូល Flutter material សម្រាប់ UI components
 import "package:flutter/material.dart";
+import "dart:math" as math; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
@@ -16,7 +17,7 @@ void snackbar({
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
-        margin: EdgeInsets.fromLTRB(8, 0, 8, 8),
+        margin: EdgeInsets.only(left: math.max(8, MediaQuery.sizeOf(ct).width - 500 - 8), top: 0, right: 8, bottom: 8),
         duration: Duration(seconds: 5),
 
         content: Row(
@@ -50,4 +51,47 @@ void snackbar({
         behavior: SnackBarBehavior.floating,
       ),
     );
+}
+
+// * Widget សម្រាប់សាកល្បង snackbar
+class SnackbarTester extends StatefulWidget {
+  const SnackbarTester({super.key});
+
+  @override
+  State<SnackbarTester> createState() => _SnackbarTesterState();
+}
+
+class _SnackbarTesterState extends State<SnackbarTester> {
+  static const _colors = [Colors.green, Colors.orange, Colors.red, Colors.blue];
+  int _index = 0;
+
+  void _show() {
+    snackbar(ct: context, ms: "ដំណឹងជោគជ័យ! ព័ត៌មានត្រូវបានរក្សាទុក។", cl: _colors[_index % _colors.length]);
+  }
+
+  void _cycle() {
+    setState(() => _index++);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[200],
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FilledButton(onPressed: _show, child: const Text("បង្ហាញ Snackbar")),
+            const SizedBox(height: 12),
+            TextButton.icon(onPressed: _cycle, icon: const Icon(Icons.palette_outlined), label: const Text("ប្ដូរពណ៌")),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// * ចំណុចចូលកម្មវិធីសម្រាប់សាកល្បង snackbar
+void main() {
+  runApp(const MaterialApp(home: SnackbarTester(), debugShowCheckedModeBanner: false));
 }
