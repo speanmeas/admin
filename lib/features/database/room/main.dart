@@ -437,9 +437,8 @@ class _Main_State extends State<Main_> {
 
   void on_changed(PlutoGridOnChangedEvent e) async {
     final id = e.row.cells[Room.ID]?.value;
-    setState(() => is_load = true);
     final tmp = await dio.post(endpoint.ROOM_UPDATE, data: {Room.ID: id, e.column.field: e.value});
-    setState(() => is_load = false);
+
     if (tmp == null) {
       on_reload();
       return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);

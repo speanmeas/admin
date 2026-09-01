@@ -85,7 +85,7 @@ class _Panel_LeftState extends State<Panel_Left> {
               ),
 
               // * ផ្នែក Reports
-              if (is_admin | is_manager | is_recept)
+              if (is_admin || is_manager || is_recept)
                 ExpansionTile(
                   leading: Icon(Icons.assessment_outlined), //
                   title: Text("Report"),
