@@ -200,14 +200,23 @@ class _Main_State extends State<Main_> {
   }
 
   // * ផ្ញើ POST អាប់ដេត → បង្ហាញ snackbar ជោគជ័យ/បរាជ័យ ហើយត្រឡប់ true បើជោគជ័យ
-  Future<bool> _update(String ep, Map<String, dynamic> data) async {
+  Future<dynamic> _update(String ep, Map<String, dynamic> data) async {
     final tmp = await dio.post(ep, data: data);
     if (tmp == null) {
       snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-      return false;
+      return null;
     }
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
-    return true;
+    return tmp.data;
+  }
+
+  // * អាប់ដេតសមតុល្យ (pay_balance) ក្នុង row ដែលកំពុងកែ ដោយមិន reload ទាំងស្រុង
+  void _apply_balance(PlutoGridOnChangedEvent e, dynamic row_data) {
+    if (row_data == null) return;
+    dynamic balance = row_data is List ? (row_data.isEmpty ? null : row_data[0]?["pay_balance"]) : row_data["pay_balance"];
+    if (balance == null) return;
+    final cell = e.row.cells["pay_balance"];
+    if (cell != null) state_manager.changeCellValue(cell, balance, callOnChangedEvent: false);
   }
 
   // * ច្បាស់ជាចាប់ខ្លួនក្រោយពី PlutoGrid onChanged បញ្ចប់ (ទប់ "framework is locked")
@@ -238,11 +247,12 @@ class _Main_State extends State<Main_> {
       return;
     }
 
-    bool ok = true;
-    if (e.column.field == "guest_name") ok = await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.FULL_NAME: e.value});
-    if (e.column.field == "guest_phone") ok = await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.PHONE_NUMBER: e.value});
-    if (e.column.field == "number_of_guest") ok = await _update(endpoint.FRONT_DESK_UPDATE, {Front_Desk.ID: fd_id, Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? "")});
+    dynamic updated;
+    if (e.column.field == "guest_name") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.FULL_NAME: e.value});
+    if (e.column.field == "guest_phone") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.PHONE_NUMBER: e.value});
+    if (e.column.field == "number_of_guest") updated = await _update(endpoint.FRONT_DESK_UPDATE, {Front_Desk.ID: fd_id, Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? "")});
 
+    // * កែ price / cash / bank / note → សមតុល្យអាស្រ័យលើវា ដូច្នេះអាប់ដេត pay_balance ភ្លាម (មិន reload)
     if (e.column.field == "room_price" || e.column.field == "pay_cash" || e.column.field == "pay_bank" || e.column.field == "pay_note") {
       dynamic key = switch (e.column.field) {
         "room_price" => Front_Desk.ROOM_PRICE,
@@ -251,14 +261,15 @@ class _Main_State extends State<Main_> {
         _ => Front_Desk.PAY_NOTE,
       };
       dynamic value = e.column.field == "pay_note" ? e.value?.toString() : num.tryParse(e.value?.toString() ?? "")?.toDouble();
-      ok = await _update(is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, key: value});
+      updated = await _update(is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, key: value});
+      _apply_balance(e, updated);
     }
 
     // * កែសមតុល្យ (balance) ដោយផ្ទាល់ — អនុញ្ញាតតែ admin ប៉ុណ្ណោះ
-    if (e.column.field == "pay_balance" && is_admin) ok = await _update(endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, Front_Desk.PAY_BALANCE: num.tryParse(e.value?.toString() ?? "")?.toDouble()});
+    if (e.column.field == "pay_balance" && is_admin) updated = await _update(endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, Front_Desk.PAY_BALANCE: num.tryParse(e.value?.toString() ?? "")?.toDouble()});
 
     // * បរាជ័យ → revert តម្លៃដើម ហើយ reload ដើម្បីយកទិន្នន័យពិតមកវិញ (មិន reload ពេលជោគជ័យ)
-    if (!ok) {
+    if (updated == null) {
       e.row.cells[e.column.field]!.value = e.oldValue;
       _refresh_safe();
     }
