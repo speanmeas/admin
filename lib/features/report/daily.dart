@@ -148,7 +148,7 @@ class _Main_State extends State<Main_> {
                 if (c == "number_of_guest") return PlutoCell(value: fd.number_of_guest ?? 0);
                 if (c == "check_in_at") return PlutoCell(value: fd.check_in_at);
                 if (c == "check_out_at") return PlutoCell(value: fd.check_out_at);
-                if (c == "duration") return PlutoCell(value: duration_text(fd.check_in_at, fd.check_out_at));
+                if (c == "duration") return PlutoCell(value: row_is_walk_in_by_id(fd.id ?? "") ? "" : duration_text(fd.check_in_at, fd.check_out_at));
                 if (c == "check_in_by") return PlutoCell(value: fd_check_in_by(fd)?.full_name ?? "");
                 if (c == "check_out_by") return PlutoCell(value: fd_check_out_by(fd)?.full_name ?? "");
 

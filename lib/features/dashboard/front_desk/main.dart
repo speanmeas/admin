@@ -865,6 +865,7 @@ class _Main_State extends State<Main_> {
                   return PlutoCell(value: fd.check_in_at);
 
                 if (c == "check_in_duration") {
+                  if (is_walkin(fd)) return PlutoCell(value: 0);
                   DateTime? in_at = fd.check_in_at;
                   DateTime? out_at = fd.check_out_at;
                   if (in_at == null) return PlutoCell(value: 0);
