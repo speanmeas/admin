@@ -1,23 +1,17 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-// import "package:provider/provider.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
 import "package:speanmeas/core/widget/button/menu_button_icon.dart";
 import "package:speanmeas/core/widget/dialog/dialog_datetime.dart";
-// import "package:speanmeas/core/utility/gen_data.dart";
 
-// import "form/check_in.dart" as check_in;
 import "dialog/check_in.dart";
 import "dialog/cancel.dart";
 import "dialog/change_room.dart";
 import "dialog/list_mini_bar.dart";
 import "dialog/list_penalty.dart";
 import "dialog/search_guest.dart";
-// import "form/check_out.dart" as check_out;
-// import "form/clean.dart" as clean;
-// import "dialog/check_in.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK VARIABLES ##########
@@ -37,6 +31,732 @@ class _Main_State extends State<Main_> {
   Timer? timer_refresh;
   bool is_refresh = false;
   // * ########## BLOCK VARIABLES END ##########
+
+  // * ########## BLOCK DESIGN ##########
+  Widget _layout({
+    List<Widget>? check_in, //
+    List<Widget>? check_out, //
+    List<Widget>? clean, //
+    List<Widget>? header, //
+    Widget? body, //
+    List<Widget>? footer, //
+  }) {
+    return Scaffold(
+      body: Column(
+        spacing: 1,
+        children: [
+          if (check_in != null)
+            Container(
+              alignment: Alignment.centerLeft, //
+              padding: const EdgeInsets.all(1),
+              child: Wrap(
+                spacing: 1, //
+                runSpacing: 1,
+                children: check_in,
+              ),
+            ),
+
+          if (check_out != null)
+            Container(
+              alignment: Alignment.centerLeft, //
+              padding: const EdgeInsets.all(1),
+              child: Wrap(
+                spacing: 1, //
+                runSpacing: 1,
+                children: check_out,
+              ),
+            ),
+
+          if (clean != null)
+            Container(
+              alignment: Alignment.centerLeft, //
+              padding: const EdgeInsets.all(1),
+              child: Wrap(
+                spacing: 1, //
+                runSpacing: 1,
+                children: [...clean],
+              ),
+            ),
+
+          if (header != null)
+            Container(
+              height: 34, //
+              padding: const EdgeInsets.all(1),
+              child: Row(
+                spacing: 2, //
+                children: header,
+              ),
+            ),
+
+          if (is_load) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
+
+          Expanded(child: body ?? Container()),
+
+          if (footer != null)
+            Container(
+              height: 34, //
+              padding: const EdgeInsets.all(1),
+              child: Row(
+                spacing: 2, //
+                children: footer,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _layout(
+      check_in: [
+        for (var r in rooms.where((r) => r[Room.STATUS] == "Available" && !is_walk_in_room(r)))
+          Tooltip(
+            message: "Check-in ${r[Room.NUMBER]}",
+            child: OutlinedButton.icon(
+              icon: Icon(Icons.bed_outlined), //
+              label: Text("${r[Room.NUMBER]}"),
+              style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
+              onPressed: () => on_check_in(r), //
+            ),
+          ),
+      ],
+
+      check_out: [
+        for (var r in rooms.where((r) => r[Room.STATUS] == "Occupied"))
+          Tooltip(
+            message: "Check-out ${r[Room.NUMBER]}",
+            child: OutlinedButton.icon(
+              icon: Icon(Icons.hotel_outlined), //
+              label: Text("${r[Room.NUMBER]}"),
+              style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+              onPressed: () => on_check_out(r), //
+            ),
+          ),
+      ],
+
+      clean: [
+        for (var r in rooms.where((r) => r[Room.STATUS] == "Dirty"))
+          Tooltip(
+            message: "Clean ${r[Room.NUMBER]}",
+            child: OutlinedButton.icon(
+              icon: Icon(Icons.cleaning_services_outlined), //
+              label: Text("${r[Room.NUMBER]}"),
+              style: OutlinedButton.styleFrom(foregroundColor: Colors.grey),
+              onPressed: () => on_clean(r), //
+            ),
+          ),
+      ],
+
+      header: [
+        // * toggle mini bar column
+        Menu_Button_Icon(
+          tip: hide_mini_bar ? "Show Mini Bar" : "Hide Mini Bar", //
+          icon: Icons.local_bar_outlined,
+          onPressed: () {
+            hide_mini_bar = !hide_mini_bar;
+            reload++;
+            // * PlutoGrid មិនអាន hide attribute ក្នុង didUpdateWidget ដូច្នេះត្រូវ rebuild តាម key
+            setState(() {});
+          },
+        ),
+
+        // * toggle penalty column
+        Menu_Button_Icon(
+          tip: hide_penalty ? "Show Penalty" : "Hide Penalty", //
+          icon: Icons.gavel_outlined,
+          onPressed: () {
+            hide_penalty = !hide_penalty;
+            reload++;
+            // * PlutoGrid មិនអាន hide attribute ក្នុង didUpdateWidget ដូច្នេះត្រូវ rebuild តាម key
+            setState(() {});
+          },
+        ),
+
+        const Spacer(),
+
+        // * ប៊ូតុងបើក/បិទ filter
+        Menu_Button_Icon(
+          tip: is_filter ? "Close Filter" : "Open Filter", //
+          icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
+          onPressed: () {
+            is_filter = !is_filter;
+            state_manager.setShowColumnFilter(is_filter);
+            if (!is_filter) state_manager.setFilterWithFilterRows([]);
+            setState(() {});
+          },
+        ),
+        Menu_Button_Icon(
+          tip: "Refresh", //
+          icon: Icons.refresh,
+          onPressed: () {
+            reload++;
+            // * rebuild grid តាម key ដើម្បីផ្ទុកទិន្នន័យឡើងវិញពេញលេញ
+            setState(() {});
+          }, //
+        ),
+      ],
+
+      //
+      body: PlutoGrid(
+        key: ValueKey(reload), //
+        rows: [], //
+        columns: [
+          PlutoColumn(
+            field: "_id", //
+            title: "ID",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            // hide: !kDebugMode,
+            // hide: true,
+            width: 0,
+          ),
+
+          PlutoColumn(
+            field: "index", //
+            title: "ល.រ.",
+            type: PlutoColumnType.number(),
+            enableEditingMode: false,
+            width: 60,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.count,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "Sum: ", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "room", //
+            title: "បន្ទប់",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "guest_name", //
+            title: "ឈ្មោះ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: true,
+            width: WIDTH,
+            renderer: (rc) {
+              return Row(
+                children: [
+                  //
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft, //
+                      child: Text(
+                        format_string(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "guest_phone", //
+            title: "លេខទូរស័ព្ទ",
+            type: PlutoColumnType.text(),
+            // enableEditingMode: false,
+            width: WIDTH,
+
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft, //
+                      child: Text(
+                        format_string(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+
+                  if (!row_is_walk_in(rc))
+                    IconButton(
+                      tooltip: "Search Guest", //
+                      icon: Icon(Icons.search_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () async {
+                        //   print("Search Guest: ${rc.row.cells["index"]?.value}");
+                        var v = await dialog_search_guest(
+                          context: context, //
+                          front_desk_id: rc.row.cells["_id"]?.value,
+                        );
+                        if (v == null) return;
+                        init();
+                      }, //
+                    ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "check_in_people", //
+            title: "ចំនួន",
+            type: PlutoColumnType.number(negative: false, format: "#,###"),
+            width: 60,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 0) + " នាក់", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "check_in_at", //
+            title: "ពេលចូល",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 160,
+            renderer: (rc) {
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft, //
+                      child: Text(
+                        format_datetime(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+
+                  if (!is_checked_out(rc) && !row_is_walk_in(rc))
+                    IconButton(
+                      tooltip: "កែពេលចូល", //
+                      icon: Icon(Icons.calendar_month_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => pick_datetime(rc, is_check_in: true), //
+                    ),
+                ],
+              );
+            },
+          ),
+
+          // auto calculate
+          PlutoColumn(
+            field: "check_in_duration", //
+            title: "រយៈពេល",
+            type: PlutoColumnType.number(negative: false, format: "#,###"),
+            enableEditingMode: false,
+            width: 140,
+            renderer: (rc) {
+              int minutes = parse_int(rc.cell.value) ?? 0;
+              int day = minutes ~/ 1440;
+              int hour = (minutes % 1440) ~/ 60;
+              int minute = minutes % 60;
+              String text = "";
+              if (day > 0) text += "$day ថ្ងៃ ";
+              if (hour > 0) text += "$hour ម៉ោង ";
+              if (minute > 0 || text.isEmpty) text += "$minute នាទី";
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  text, //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "check_out_at", //
+            title: "ពេលចេញ",
+            enableEditingMode: false,
+            type: PlutoColumnType.text(),
+            width: 160,
+            renderer: (rc) {
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft, //
+                      child: Text(
+                        format_datetime(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "room_price", //
+            title: "តម្លៃ",
+            type: PlutoColumnType.number(
+              negative: false, //
+              format: "#,##0.00",
+            ),
+            // enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "room_cash", //
+            title: "លុយ",
+            type: PlutoColumnType.number(
+              //   negative: false, //
+              format: "#,##0.00",
+            ),
+            // enableEditingMode: false,
+            // enableEditingMode: true,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "room_bank", //
+            title: "ធនាគារ",
+            type: PlutoColumnType.number(
+              //   negative: false, //
+              format: "#,##0.00",
+            ),
+            // enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
+                  ),
+                ),
+              );
+            },
+            footerRenderer: (rc) {
+              return PlutoAggregateColumnFooter(
+                rendererContext: rc, //
+                format: "#,##0.00", //
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+                type: PlutoAggregateColumnType.sum,
+                titleSpanBuilder: (value) {
+                  return [
+                    WidgetSpan(
+                      child: Text(
+                        "$value \$", //
+                        style: TextStyle(
+                          fontSize: 14, //
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "room_balance", //
+            title: "សមតុល្យ",
+            type: PlutoColumnType.number(
+              negative: true, //
+              format: "#,##0.00",
+            ),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerRight, //
+                child: Text(
+                  format_double(rc.cell.value, digits: 2) + " \$", //
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: rc.cell.value == 0
+                        ? Colors.black
+                        : rc.cell.value > 0
+                        ? Colors.green
+                        : Colors.red, //
+                  ),
+                ),
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "room_note", //
+            title: "ចំណាំ",
+            type: PlutoColumnType.text(),
+            // enableEditingMode: false,
+            width: 120,
+            renderer: (rc) {
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft, //
+                      child: Text(
+                        format_string(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "check_in_by", //
+            title: "ឲចូលដោយ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 140,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "check_out_by", //
+            title: "ឲចេញដោយ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 140,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.centerLeft, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            },
+          ),
+
+          // BUTTON RECEIPT
+          PlutoColumn(
+            field: "other", //
+            title: "ផ្សេងៗ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 80,
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.end, //
+                children: [
+                  //
+                  if (!is_checked_out(rc) && !row_is_walk_in(rc))
+                    IconButton(
+                      tooltip: "Change Room", //
+                      icon: Icon(Icons.swap_horiz_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_change_room(rc), //
+                    ),
+
+                  //
+                  if (!is_checked_out(rc) && !row_is_walk_in(rc))
+                    IconButton(
+                      tooltip: "Cancel", //
+                      icon: Icon(Icons.cancel_outlined, color: Colors.red),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_cancel(rc), //
+                    ),
+
+                  //
+                  IconButton(
+                    tooltip: "Print Receipt", //
+                    icon: Icon(Icons.print_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("Print Receipt: ${rc.row.cells["index"]?.value}");
+                    }, //
+                  ),
+                ],
+              );
+            },
+          ),
+        ], //
+        columnGroups: [
+          PlutoColumnGroup(
+            title: "", //
+            fields: ["index"],
+          ),
+          PlutoColumnGroup(
+            title: "", //
+            fields: ["room"],
+          ),
+          PlutoColumnGroup(
+            title: "អតិថិជន", //
+            fields: ["guest_name", "guest_phone", "guest_search"],
+          ),
+          PlutoColumnGroup(
+            title: "ការស្នាក់នៅ", //
+            fields: ["check_in_people", "check_in_duration", "check_in_at", "check_out_at", "clean_at"],
+          ),
+          PlutoColumnGroup(
+            title: "ការបង់ប្រាក់ បន្ទប់", //
+            fields: ["room_price", "room_cash", "room_bank", "room_balance", "room_note"],
+          ),
+          PlutoColumnGroup(
+            title: "ការបង់ប្រាក់ មីនីបារ", //
+            fields: ["mini_bar_item", "mini_bar_price", "mini_bar_cash", "mini_bar_bank", "mini_bar_balance", "mini_bar_note"],
+          ),
+          PlutoColumnGroup(
+            title: "ការពិន័យ", //
+            fields: ["penalty_item", "penalty_price", "penalty_cash", "penalty_bank", "penalty_balance", "penalty_note"],
+          ),
+          PlutoColumnGroup(
+            title: "ការត្រួតពិនិត្យ", //
+            fields: ["check_in_by", "check_out_by"],
+          ),
+          PlutoColumnGroup(
+            title: "", //
+            fields: ["other"],
+          ),
+        ],
+        configuration: PlutoGridConfiguration(
+          scrollbar: PlutoGridScrollbarConfig(
+            isAlwaysShown: true, //
+            scrollbarThickness: 12,
+            scrollbarThicknessWhileDragging: 12,
+          ),
+          style: PlutoGridStyleConfig(
+            rowHeight: 28, //
+            columnHeight: 32, //
+            columnFilterHeight: 32,
+            defaultColumnTitlePadding: EdgeInsets.fromLTRB(4, 2, 26, 0),
+            defaultColumnFilterPadding: EdgeInsets.fromLTRB(1, 1, 1, 1),
+            defaultCellPadding: EdgeInsets.fromLTRB(2, 0, 2, 0),
+          ),
+        ),
+
+        onLoaded: on_loaded,
+        onChanged: on_changed,
+      ),
+    );
+  }
+
+  // * ########## BLOCK DESIGN END ##########
 
   // * ########## BLOCK METHODS ##########
   @override
@@ -71,15 +791,6 @@ class _Main_State extends State<Main_> {
     if (tmp_fd == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     front_desks = (tmp_fd.data as List<dynamic>? ?? []).map<Front_Desk>((e) => Front_Desk.fromJson(e)).toList();
-
-    // * បន្ថែម Walk-In counter (តែងតែនៅ index 1) នៅដើមបញ្ជី ប្រសិនបើមិនទាន់មានក្នុងបញ្ជី
-    dynamic tmp_walk = await dio.post(endpoint.FRONT_DESK_WALK_IN, data: {});
-    if (tmp_walk != null && (tmp_walk.data as List<dynamic>? ?? []).isNotEmpty) {
-      String walk_id = (tmp_walk.data as List<dynamic>)[0]["_id"]?.toString() ?? "";
-      front_desks.removeWhere((x) => x.id?.toString() == walk_id);
-      front_desks.insert(0, Front_Desk.fromJson((tmp_walk.data as List<dynamic>)[0]));
-    }
-    // pprint(front_desks);
 
     update_grid();
 
@@ -643,1409 +1354,6 @@ class _Main_State extends State<Main_> {
   bool hide_mini_bar = false; // this variable is used to show/hide the mini bar column in the PlutoGrid
 
   // * ########## BLOCK METHODS END ##########
-
-  // * ########## BLOCK DESIGN ##########
-  Widget _layout({
-    List<Widget>? check_in, //
-    List<Widget>? check_out, //
-    List<Widget>? clean, //
-    List<Widget>? header, //
-    Widget? body, //
-    List<Widget>? footer, //
-  }) {
-    return Scaffold(
-      body: Column(
-        spacing: 1,
-        children: [
-          //   SizedBox(height: 1),
-          // CHECK IN
-          if (check_in != null)
-            Container(
-              alignment: Alignment.centerLeft, //
-              padding: const EdgeInsets.all(1),
-              child: Wrap(
-                spacing: 1, //
-                runSpacing: 1,
-                children: check_in,
-              ),
-            ),
-
-          // CHECK OUT
-          if (check_out != null)
-            Container(
-              alignment: Alignment.centerLeft, //
-              padding: const EdgeInsets.all(1),
-              child: Wrap(
-                spacing: 1, //
-                runSpacing: 1,
-                children: check_out,
-              ),
-            ),
-
-          // CLEAN
-          if (clean != null)
-            Container(
-              alignment: Alignment.centerLeft, //
-              padding: const EdgeInsets.all(1),
-              child: Wrap(
-                spacing: 1, //
-                runSpacing: 1,
-                children: [...clean],
-              ),
-            ),
-
-          // HEADER
-          if (header != null)
-            Container(
-              height: 34, //
-              padding: const EdgeInsets.all(1),
-              child: Row(
-                spacing: 2, //
-                children: header,
-              ),
-            ),
-
-          if (is_load) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
-
-          Expanded(child: body ?? Container()),
-
-          // FOOTER
-          if (footer != null)
-            Container(
-              height: 34, //
-              padding: const EdgeInsets.all(1),
-              child: Row(
-                spacing: 2, //
-                children: footer,
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _layout(
-      //
-      check_in: [
-        for (var r in rooms.where((r) => r[Room.STATUS] == "Available" && !is_walk_in_room(r)))
-          Tooltip(
-            message: "Check-in Room ${r[Room.NUMBER]}",
-            child: OutlinedButton.icon(
-              icon: Icon(Icons.bed_outlined), //
-              label: Text("${r[Room.NUMBER]}"),
-              style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
-              onPressed: () => on_check_in(r), //
-            ),
-          ),
-      ],
-
-      //
-      check_out: [
-        for (var r in rooms.where((r) => r[Room.STATUS] == "Occupied"))
-          Tooltip(
-            message: "Check-out Room ${r[Room.NUMBER]}",
-            child: OutlinedButton.icon(
-              icon: Icon(Icons.hotel_outlined), //
-              label: Text("${r[Room.NUMBER]}"),
-              style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-              onPressed: () => on_check_out(r), //
-            ),
-          ),
-      ],
-
-      //
-      clean: [
-        for (var r in rooms.where((r) => r[Room.STATUS] == "Dirty"))
-          Tooltip(
-            message: "Clean Room ${r[Room.NUMBER]}",
-            child: OutlinedButton.icon(
-              icon: Icon(Icons.cleaning_services_outlined), //
-              label: Text("${r[Room.NUMBER]}"),
-              style: OutlinedButton.styleFrom(foregroundColor: Colors.grey),
-              onPressed: () => on_clean(r), //
-            ),
-          ),
-      ],
-
-      header: [
-        const Spacer(),
-
-        // * toggle mini bar column
-        Menu_Button_Icon(
-          tip: hide_mini_bar ? "Show Mini Bar" : "Hide Mini Bar", //
-          icon: Icons.local_bar_outlined,
-          onPressed: () {
-            hide_mini_bar = !hide_mini_bar;
-            reload++;
-            // * PlutoGrid មិនអាន hide attribute ក្នុង didUpdateWidget ដូច្នេះត្រូវ rebuild តាម key
-            setState(() {});
-          },
-        ),
-
-        // * toggle penalty column
-        Menu_Button_Icon(
-          tip: hide_penalty ? "Show Penalty" : "Hide Penalty", //
-          icon: Icons.gavel_outlined,
-          onPressed: () {
-            hide_penalty = !hide_penalty;
-            reload++;
-            // * PlutoGrid មិនអាន hide attribute ក្នុង didUpdateWidget ដូច្នេះត្រូវ rebuild តាម key
-            setState(() {});
-          },
-        ),
-
-        // * ប៊ូតុងបើក/បិទ filter
-        Menu_Button_Icon(
-          tip: is_filter ? "Close Filter" : "Open Filter", //
-          icon: is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined,
-          onPressed: () {
-            is_filter = !is_filter;
-            state_manager.setShowColumnFilter(is_filter);
-            if (!is_filter) state_manager.setFilterWithFilterRows([]);
-            setState(() {});
-          },
-        ),
-        Menu_Button_Icon(
-          tip: "Refresh", //
-          icon: Icons.refresh,
-          onPressed: () {
-            reload++;
-            // * rebuild grid តាម key ដើម្បីផ្ទុកទិន្នន័យឡើងវិញពេញលេញ
-            setState(() {});
-          }, //
-        ),
-      ],
-
-      //
-      body: PlutoGrid(
-        key: ValueKey(reload), //
-        rows: [], //
-        columns: [
-          PlutoColumn(
-            field: "_id", //
-            title: "ID",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            // hide: !kDebugMode,
-            // hide: true,
-            width: 0,
-          ),
-
-          PlutoColumn(
-            field: "index", //
-            title: "ល.រ.",
-            type: PlutoColumnType.number(),
-            enableEditingMode: false,
-            width: 60,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(
-                  format_string(rc.cell.value), //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.count,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "Sum: ", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "room", //
-            title: "បន្ទប់",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(
-                  format_string(rc.cell.value), //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "guest_name", //
-            title: "ឈ្មោះ",
-            type: PlutoColumnType.text(),
-            enableEditingMode: true,
-            width: WIDTH,
-            renderer: (rc) {
-              return Row(
-                children: [
-                  //
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft, //
-                      child: Text(
-                        format_string(rc.cell.value), //
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "guest_phone", //
-            title: "លេខទូរស័ព្ទ",
-            type: PlutoColumnType.text(),
-            // enableEditingMode: false,
-            width: WIDTH,
-
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center, //
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft, //
-                      child: Text(
-                        format_string(rc.cell.value), //
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-
-                  if (!row_is_walk_in(rc))
-                    IconButton(
-                      tooltip: "Search Guest", //
-                      icon: Icon(Icons.search_outlined),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () async {
-                        //   print("Search Guest: ${rc.row.cells["index"]?.value}");
-                        var v = await dialog_search_guest(
-                          context: context, //
-                          front_desk_id: rc.row.cells["_id"]?.value,
-                        );
-                        if (v == null) return;
-                        init();
-                      }, //
-                    ),
-                ],
-              );
-            },
-          ),
-
-          // PlutoColumn(
-          //   field: "guest_search", //
-          //   title: "",
-          //   type: PlutoColumnType.text(),
-          //   enableEditingMode: false,
-          //   enableContextMenu: false,
-          //   enableDropToResize: false,
-          //   enableColumnDrag: false,
-          //   enableSorting: false,
-          //   enableFilterMenuItem: false,
-
-          //   width: 40,
-          //   renderer: (rc) {
-          //     return Row(
-          //       mainAxisAlignment: MainAxisAlignment.center, //
-          //       children: [
-          //         IconButton(
-          //           tooltip: "Search Guest", //
-          //           icon: Icon(Icons.search_outlined),
-          //           padding: EdgeInsets.all(0),
-          //           constraints: BoxConstraints(),
-          //           onPressed: () async {
-          //             //   print("Search Guest: ${rc.row.cells["index"]?.value}");
-          //             var v = await dialog_search_guest(
-          //               context: context, //
-          //               front_desk_id: rc.row.cells["_id"]?.value,
-          //             );
-          //             if (v == null) return;
-          //             init();
-          //           }, //
-          //         ),
-          //       ],
-          //     );
-          //   },
-          // ),
-          PlutoColumn(
-            field: "check_in_people", //
-            title: "ចំនួន",
-            type: PlutoColumnType.number(negative: false, format: "#,###"),
-            width: 60,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 0) + " នាក់", //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-
-          //   PlutoColumn(
-          //     field: "check_in_day", //
-          //     title: "Days",
-          //     type: PlutoColumnType.number(negative: false, format: "#,###"),
-          //     // enableEditingMode: false,
-          //     width: 80,
-          //     renderer: (rc) {
-          //       return Align(
-          //         alignment: Alignment.centerRight, //
-          //         child: Text(
-          //           format_double(rc.cell.value, digits: 0) + " ថ្ងៃ", //
-          //           overflow: TextOverflow.ellipsis,
-          //         ),
-          //       );
-          //     },
-          //   ),
-          PlutoColumn(
-            field: "check_in_at", //
-            title: "ពេលចូល",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 160,
-            renderer: (rc) {
-              return Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft, //
-                      child: Text(
-                        format_datetime(rc.cell.value), //
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-
-                  if (!is_checked_out(rc) && !row_is_walk_in(rc))
-                    IconButton(
-                      tooltip: "កែពេលចូល", //
-                      icon: Icon(Icons.calendar_month_outlined),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () => pick_datetime(rc, is_check_in: true), //
-                    ),
-                ],
-              );
-            },
-          ),
-
-          // auto calculate
-          PlutoColumn(
-            field: "check_in_duration", //
-            title: "រយៈពេល",
-            type: PlutoColumnType.number(negative: false, format: "#,###"),
-            enableEditingMode: false,
-            width: 140,
-            renderer: (rc) {
-              int minutes = parse_int(rc.cell.value) ?? 0;
-              int day = minutes ~/ 1440;
-              int hour = (minutes % 1440) ~/ 60;
-              int minute = minutes % 60;
-              String text = "";
-              if (day > 0) text += "$day ថ្ងៃ ";
-              if (hour > 0) text += "$hour ម៉ោង ";
-              if (minute > 0 || text.isEmpty) text += "$minute នាទី";
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  text, //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "check_out_at", //
-            title: "ពេលចេញ",
-            enableEditingMode: false,
-            type: PlutoColumnType.text(),
-            width: 160,
-            renderer: (rc) {
-              return Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft, //
-                      child: Text(
-                        format_datetime(rc.cell.value), //
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                  // if (rc.cell.value != null)
-                  //   IconButton(
-                  //     tooltip: "កែពេលចេញ", //
-                  //     icon: Icon(Icons.calendar_month_outlined),
-                  //     padding: EdgeInsets.all(0),
-                  //     constraints: BoxConstraints(),
-                  //     onPressed: () => pick_datetime(rc, is_check_in: false), //
-                  //   ),
-                ],
-              );
-            },
-          ),
-
-          //   PlutoColumn(
-          //     field: "clean_at", //
-          //     title: "Clean At",
-          //     enableEditingMode: false,
-          //     type: PlutoColumnType.text(),
-          //     width: 160,
-          //     renderer: (rc) {
-          //       return Row(
-          //         children: [
-          //           Expanded(
-          //             child: Align(
-          //               alignment: Alignment.center, //
-          //               child: Text(
-          //                 format_datetime(rc.cell.value), //
-          //                 overflow: TextOverflow.ellipsis,
-          //               ),
-          //             ),
-          //           ),
-
-          //           if (rc.cell.value != null)
-          //             IconButton(
-          //               tooltip: "Update Clean", //
-          //               icon: Icon(Icons.calendar_month_outlined),
-          //               padding: EdgeInsets.all(0),
-          //               constraints: BoxConstraints(),
-          //               onPressed: () async {
-          //                 DateTime? result = await dialog_datetime(context, initial: rc.cell.value);
-          //                 pprint(result);
-          //               }, //
-          //             ),
-          //         ],
-          //       );
-          //     },
-          //   ),
-          PlutoColumn(
-            field: "room_price", //
-            title: "តម្លៃ",
-            type: PlutoColumnType.number(
-              negative: false, //
-              format: "#,##0.00",
-            ),
-            // enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "room_cash", //
-            title: "លុយ",
-            type: PlutoColumnType.number(
-              //   negative: false, //
-              format: "#,##0.00",
-            ),
-            // enableEditingMode: false,
-            // enableEditingMode: true,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "room_bank", //
-            title: "ធនាគារ",
-            type: PlutoColumnType.number(
-              //   negative: false, //
-              format: "#,##0.00",
-            ),
-            // enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "room_balance", //
-            title: "សមតុល្យ",
-            type: PlutoColumnType.number(
-              negative: true, //
-              format: "#,##0.00",
-            ),
-            enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-          ),
-          PlutoColumn(
-            field: "room_note", //
-            title: "ចំណាំ",
-            type: PlutoColumnType.text(),
-            // enableEditingMode: false,
-            width: 120,
-            renderer: (rc) {
-              return Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft, //
-                      child: Text(
-                        format_string(rc.cell.value), //
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-            // renderer: (rc) {
-            //   return Align(
-            //     alignment: Alignment.centerLeft, //
-            //     child: Text(
-            //       format_string(rc.cell.value), //
-            //       overflow: TextOverflow.ellipsis,
-            //     ),
-            //   );
-            // },
-          ),
-
-          PlutoColumn(
-            field: "mini_bar_item", //
-            title: "ទំនិញ",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 80,
-            hide: hide_mini_bar,
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround, //
-                children: [
-                  //
-                  if (!is_checked_out(rc))
-                    IconButton(
-                      tooltip: "Update Mini Bar Items", //
-                      icon: Icon(Icons.local_bar_outlined),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () => on_mini_bar_item(rc), //
-                    ),
-                ],
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "mini_bar_price", //
-            title: "តម្លៃ",
-            type: PlutoColumnType.number(
-              negative: false, //
-              format: "#,##0.00",
-            ),
-            enableEditingMode: false, // Note: Mini bar price is auto calculated from the items, so it should not be editable.
-            width: 80,
-            hide: hide_mini_bar,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "mini_bar_cash", //
-            title: "លុយ",
-            type: PlutoColumnType.number(
-              //   negative: false, //
-              format: "#,##0.00",
-            ),
-            // enableEditingMode: false,
-            hide: hide_mini_bar,
-            width: 80,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "mini_bar_bank", //
-            title: "ធនាគារ",
-            type: PlutoColumnType.number(
-              //   negative: false, //
-              format: "#,##0.00",
-            ),
-            // enableEditingMode: false,
-            width: 80,
-            hide: hide_mini_bar,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "mini_bar_balance", //
-            title: "សមតុល្យ",
-            type: PlutoColumnType.number(format: "#,##0.00"),
-            enableEditingMode: false,
-            width: 80,
-            hide: hide_mini_bar,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
-          PlutoColumn(
-            field: "mini_bar_note", //
-            title: "ចំណាំ",
-            type: PlutoColumnType.text(),
-            // enableEditingMode: false,
-            hide: hide_mini_bar,
-            width: 120,
-            renderer: (rc) {
-              return Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft, //
-                      child: Text(
-                        format_string(rc.cell.value), //
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "penalty_item", //
-            title: "ពិន័យ",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 80,
-            hide: hide_penalty,
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center, //
-                children: [
-                  if (!is_checked_out(rc) && !row_is_walk_in(rc))
-                    IconButton(
-                      tooltip: "Update Penalty Items", //
-                      icon: Icon(Icons.gavel_outlined),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () => on_penalty_item(rc), //
-                    ),
-                ],
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "penalty_price", //
-            title: "តម្លៃ",
-            type: PlutoColumnType.number(
-              negative: false, //
-              format: "#,##0.00",
-            ),
-            enableEditingMode: false, // Note: Penalty price is auto calculated from the items, so it should not be editable.
-            width: 80,
-            hide: hide_penalty,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "penalty_cash", //
-            title: "លុយ",
-            type: PlutoColumnType.number(
-              //   negative: false, //
-              format: "#,##0.00",
-            ),
-            // enableEditingMode: false,
-            width: 80,
-            hide: hide_penalty,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "penalty_bank", //
-            title: "ធនាគារ",
-            type: PlutoColumnType.number(
-              //   negative: false, //
-              format: "#,##0.00",
-            ),
-            // enableEditingMode: false,
-            width: 80,
-            hide: hide_penalty,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "penalty_balance", //
-            title: "សមតុល្យ",
-            type: PlutoColumnType.number(format: "#,##0.00"),
-            enableEditingMode: false,
-            width: 80,
-            hide: hide_penalty,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerRight, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: rc.cell.value >= 0 ? Colors.black : Colors.red, //
-                  ),
-                ),
-              );
-            },
-            footerRenderer: (rc) {
-              return PlutoAggregateColumnFooter(
-                rendererContext: rc, //
-                format: "#,##0.00", //
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-                type: PlutoAggregateColumnType.sum,
-                titleSpanBuilder: (value) {
-                  return [
-                    WidgetSpan(
-                      child: Text(
-                        "$value \$", //
-                        style: TextStyle(
-                          fontSize: 14, //
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "penalty_note", //
-            title: "ចំណាំ",
-            type: PlutoColumnType.text(),
-            // enableEditingMode: false,
-            width: 120,
-            hide: hide_penalty,
-            renderer: (rc) {
-              return Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft, //
-                      child: Text(
-                        format_string(rc.cell.value), //
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "check_in_by", //
-            title: "ឲចូលដោយ",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 140,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerLeft, //
-                child: Text(
-                  format_string(rc.cell.value), //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-          PlutoColumn(
-            field: "check_out_by", //
-            title: "ឲចេញដោយ",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 140,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.centerLeft, //
-                child: Text(
-                  format_string(rc.cell.value), //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-
-          // BUTTON RECEIPT
-          PlutoColumn(
-            field: "other", //
-            title: "ផ្សេងៗ",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.end, //
-                children: [
-                  //
-                  if (!is_checked_out(rc) && !row_is_walk_in(rc))
-                    IconButton(
-                      tooltip: "Change Room", //
-                      icon: Icon(Icons.swap_horiz_outlined),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () => on_change_room(rc), //
-                    ),
-
-                  //
-                  if (!is_checked_out(rc) && !row_is_walk_in(rc))
-                    IconButton(
-                      tooltip: "Cancel", //
-                      icon: Icon(Icons.cancel_outlined, color: Colors.red),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () => on_cancel(rc), //
-                    ),
-
-                  //
-                  IconButton(
-                    tooltip: "Print Receipt", //
-                    icon: Icon(Icons.print_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      print("Print Receipt: ${rc.row.cells["index"]?.value}");
-                    }, //
-                  ),
-                ],
-              );
-            },
-          ),
-        ], //
-        columnGroups: [
-          PlutoColumnGroup(
-            title: "", //
-            fields: ["index"],
-          ),
-          PlutoColumnGroup(
-            title: "", //
-            fields: ["room"],
-          ),
-          PlutoColumnGroup(
-            title: "អតិថិជន", //
-            fields: ["guest_name", "guest_phone", "guest_search"],
-          ),
-          PlutoColumnGroup(
-            title: "ការស្នាក់នៅ", //
-            fields: ["check_in_people", "check_in_duration", "check_in_at", "check_out_at", "clean_at"],
-          ),
-          PlutoColumnGroup(
-            title: "ការបង់ប្រាក់ បន្ទប់", //
-            fields: ["room_price", "room_cash", "room_bank", "room_balance", "room_note"],
-          ),
-          PlutoColumnGroup(
-            title: "ការបង់ប្រាក់ មីនីបារ", //
-            fields: ["mini_bar_item", "mini_bar_price", "mini_bar_cash", "mini_bar_bank", "mini_bar_balance", "mini_bar_note"],
-          ),
-          PlutoColumnGroup(
-            title: "ការពិន័យ", //
-            fields: ["penalty_item", "penalty_price", "penalty_cash", "penalty_bank", "penalty_balance", "penalty_note"],
-          ),
-          PlutoColumnGroup(
-            title: "ការត្រួតពិនិត្យ", //
-            fields: ["check_in_by", "check_out_by"],
-          ),
-          PlutoColumnGroup(
-            title: "", //
-            fields: ["other"],
-          ),
-        ],
-        configuration: PlutoGridConfiguration(
-          scrollbar: PlutoGridScrollbarConfig(
-            isAlwaysShown: true, //
-            scrollbarThickness: 12,
-            scrollbarThicknessWhileDragging: 12,
-          ),
-          style: PlutoGridStyleConfig(
-            rowHeight: 28, //
-            columnHeight: 32, //
-            columnFilterHeight: 32,
-            defaultColumnTitlePadding: EdgeInsets.fromLTRB(4, 2, 26, 0),
-            defaultColumnFilterPadding: EdgeInsets.fromLTRB(1, 1, 1, 1),
-            defaultCellPadding: EdgeInsets.fromLTRB(2, 0, 2, 0),
-          ),
-        ),
-
-        onLoaded: on_loaded,
-        onChanged: on_changed,
-      ),
-
-      //
-      // footer: [
-      // //
-      // Text(
-      //   "Total Revenue: xxx\$", //
-      //   style: TextStyle(
-      //     fontSize: 16, //
-      //     fontWeight: FontWeight.bold,
-      //   ),
-      // ),
-
-      // SizedBox(width: 8), //
-      // //
-      // Text(
-      //   "Total Income: xxx\$", //
-      //   style: TextStyle(
-      //     fontSize: 16, //
-      //     fontWeight: FontWeight.bold,
-      //   ),
-      // ),
-
-      // // const Spacer(),
-
-      // // * ប៊ូតុងបញ្ចេញជា PDF
-      // Tooltip(
-      //   message: "Export as PDF",
-      //   child: InkWell(
-      //     onTap: () {
-      //       snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
-      //     },
-      //     child: Container(
-      //       width: 32,
-      //       height: 32,
-      //       alignment: Alignment.center,
-      //       child: SvgPicture.asset(
-      //         "assets/icon/pdf.svg", //
-      //         width: 30,
-      //         height: 30,
-      //         colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
-      //       ),
-      //     ),
-      //   ),
-      // ),
-
-      // // * ប៊ូតុងបញ្ចេញជា Excel
-      // Tooltip(
-      //   message: "Export as Excel",
-      //   child: InkWell(
-      //     onTap: () {
-      //       snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
-      //     },
-      //     child: Container(
-      //       width: 32,
-      //       height: 32,
-      //       alignment: Alignment.center,
-      //       child: SvgPicture.asset(
-      //         "assets/icon/excel.svg", //
-      //         width: 30,
-      //         height: 30,
-      //         colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
-      //       ),
-      //     ),
-      //   ),
-      // ),
-      // Spacer(), //
-
-      // IconButton(
-      //   tooltip: "Previous", //
-      //   icon: Icon(Icons.navigate_before, size: 32), //
-      //   padding: EdgeInsets.all(0),
-      //   constraints: BoxConstraints(),
-      //   onPressed: () {
-      //     date = date.subtract(Duration(days: 1));
-      //     setState(() {});
-      //   },
-      // ),
-
-      // TextButton(
-      //   child: Text(
-      //     DateFormat("yyyy-MM-dd").format(date), //
-      //     style: TextStyle(
-      //       fontSize: 16, //
-      //       fontWeight: FontWeight.bold, //
-      //     ),
-      //   ),
-      //   onPressed: () {}, // TODO: open date picker
-      // ),
-
-      // IconButton(
-      //   tooltip: "Next", //
-      //   icon: Icon(Icons.navigate_next, size: 32), //
-      //   padding: EdgeInsets.all(0),
-      //   constraints: BoxConstraints(),
-      //   onPressed: () {
-      //     date = date.add(Duration(days: 1));
-      //     setState(() {});
-      //   },
-      // ),
-
-      // Spacer(), //
-
-      // OutlinedButton.icon(
-      //   icon: Icon(Icons.restart_alt), //
-      //   label: Text("Rollover"), //
-      //   onPressed: () {
-      //     setState(() {});
-      //   },
-      // ),
-      // ],
-    );
-  }
-
-  // * ########## BLOCK DESIGN END ##########
 }
 
 // * ########## BLOCK ARGUMENTS OF MAIN ##########
