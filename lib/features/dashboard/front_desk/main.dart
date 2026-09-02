@@ -693,10 +693,7 @@ class _Main_State extends State<Main_> {
             title: "", //
             fields: ["index"],
           ),
-          // PlutoColumnGroup(
-          //   title: "", //
-          //   fields: ["room"],
-          // ),
+
           PlutoColumnGroup(
             title: "អតិថិជន", //
             fields: ["guest_name", "guest_phone", "guest_search", "check_in_people"],
@@ -713,10 +710,6 @@ class _Main_State extends State<Main_> {
             title: "ការត្រួតពិនិត្យ", //
             fields: ["check_in_by", "check_out_by"],
           ),
-          // PlutoColumnGroup(
-          //   title: "", //
-          //   fields: ["other"],
-          // ),
         ],
         configuration: PlutoGridConfiguration(
           scrollbar: PlutoGridScrollbarConfig(
@@ -787,7 +780,7 @@ class _Main_State extends State<Main_> {
         "key": Front_Desk.CREATED_AT, //
         "start": shift_start(), //
         "stop": shift_stop(), //
-        "order": 1, //
+        "order": -1, //
         "link": true, //
       },
     );
