@@ -258,9 +258,6 @@ class _Main_State extends State<Main_> {
     if (fd_id == null) return snackbar(ct: context, ms: "No stay to update mini bar", cl: Colors.red);
 
     Front_Desk? fd = row_stay(rc);
-    dynamic tmp_m = await dio.post(endpoint.MINI_BAR_READ, data: {});
-    if (tmp_m == null) return snackbar(ct: context, ms: "Error: Read Mini Bar", cl: Colors.red);
-    List<Mini_Bar> list_mini_bar = (tmp_m.data as List<dynamic>? ?? []).map((e) => Mini_Bar.fromJson(e)).toList();
 
     List<Order_Mini_Bar> orders = [
       for (var it in (fd?.mini_bar_item_id ?? []))
@@ -270,48 +267,13 @@ class _Main_State extends State<Main_> {
     final saved = await showDialog<bool>(
       context: context,
       builder: (context) => List_Mini_Bar(
-        list_mini_bar: list_mini_bar, //
         list_order_mini_bar: orders, //
-        locked_ids: {}, //
+        front_desk_id: fd_id, //
+        is_walk_in: row_is_walk_in(rc), //
       ),
     );
     if (saved != true) return;
 
-    List<String> ids = [];
-    for (var o in orders) {
-      if (o.id != null) {
-        dynamic tmp_up = await dio.post(
-          endpoint.MINI_BAR_ITEM_UPDATE,
-          data: {
-            Mini_Bar_Item.ID: o.id, //
-            Mini_Bar_Item.QUANTITY: o.quantity, //
-          },
-        );
-        if (tmp_up == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-        ids.add(o.id!);
-        continue;
-      }
-      dynamic tmp_item = await dio.post(
-        endpoint.MINI_BAR_ITEM_CREATE,
-        data: {
-          Mini_Bar_Item.MINI_BAR_ID: o.mini_bar_id?.id, //
-          Mini_Bar_Item.QUANTITY: o.quantity, //
-        },
-      );
-      if (tmp_item == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-      ids.add(tmp_item.data[0][Mini_Bar_Item.ID]);
-    }
-
-    dynamic tmp_fd = await dio.post(
-      row_is_walk_in(rc) ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_MINI_BAR_ITEM,
-      data: {
-        Front_Desk.ID: fd_id, //
-        Front_Desk.MINI_BAR_ITEM_ID: ids, //
-      },
-    );
-    if (tmp_fd == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    snackbar(ct: context, ms: "Mini Bar Updated", cl: Colors.green);
     init();
   }
 
@@ -322,9 +284,6 @@ class _Main_State extends State<Main_> {
     if (fd_id == null) return snackbar(ct: context, ms: "No stay to update penalty", cl: Colors.red);
 
     Front_Desk? fd = row_stay(rc);
-    dynamic tmp_p = await dio.post(endpoint.PENALTY_READ, data: {});
-    if (tmp_p == null) return snackbar(ct: context, ms: "Error: Read Penalty", cl: Colors.red);
-    List<Penalty> list_penalty = (tmp_p.data as List<dynamic>? ?? []).map((e) => Penalty.fromJson(e)).toList();
 
     List<Order_Penalty> orders = [
       for (var it in (fd?.penalty_item_id ?? []))
@@ -334,48 +293,12 @@ class _Main_State extends State<Main_> {
     final saved = await showDialog<bool>(
       context: context,
       builder: (context) => List_Penalty(
-        list_penalty: list_penalty, //
         list_order_penalty: orders, //
-        locked_ids: {}, //
+        front_desk_id: fd_id, //
       ),
     );
     if (saved != true) return;
 
-    List<String> ids = [];
-    for (var o in orders) {
-      if (o.id != null) {
-        dynamic tmp_up = await dio.post(
-          endpoint.PENALTY_ITEM_UPDATE,
-          data: {
-            Penalty_Item.ID: o.id, //
-            Penalty_Item.QUANTITY: o.quantity, //
-          },
-        );
-        if (tmp_up == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-        ids.add(o.id!);
-        continue;
-      }
-      dynamic tmp_item = await dio.post(
-        endpoint.PENALTY_ITEM_CREATE,
-        data: {
-          Penalty_Item.PENALTY_ID: o.penalty_id?.id, //
-          Penalty_Item.QUANTITY: o.quantity, //
-        },
-      );
-      if (tmp_item == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-      ids.add(tmp_item.data[0][Penalty_Item.ID]);
-    }
-
-    dynamic tmp_fd = await dio.post(
-      endpoint.FRONT_DESK_PENALTY_ITEM,
-      data: {
-        Front_Desk.ID: fd_id, //
-        Front_Desk.PENALTY_ITEM_ID: ids, //
-      },
-    );
-    if (tmp_fd == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    snackbar(ct: context, ms: "Penalty Updated", cl: Colors.green);
     init();
   }
 

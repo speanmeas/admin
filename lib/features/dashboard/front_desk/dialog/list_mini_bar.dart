@@ -16,13 +16,32 @@ class Order_Mini_Bar {
 }
 
 class _List_Mini_Bar_State extends State<List_Mini_Bar> {
-  late List<Mini_Bar> list_mini_bar = widget.list_mini_bar;
+  List<Mini_Bar> list_mini_bar = [];
 
   late List<Order_Mini_Bar> list_order_mini_bar = widget.list_order_mini_bar;
 
-  late Set<String> locked_ids = widget.locked_ids ?? {};
-
   String _search = "";
+
+  bool is_loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  // * ទាញយកបញ្ជីទំនិញ mini bar ពី server
+  Future<void> _load() async {
+    if (!mounted) return;
+    final tmp = await dio.post(endpoint.MINI_BAR_READ, data: {});
+    if (!mounted) return;
+    if (tmp == null) {
+      snackbar(ct: context, ms: "Error: Read Mini Bar", cl: Colors.red);
+      Navigator.pop(context, false);
+      return;
+    }
+    setState(() => list_mini_bar = (tmp.data as List<dynamic>? ?? []).map((e) => Mini_Bar.fromJson(e)).toList());
+  }
 
   // * ពិនិត្យថាទំនិញបានជ្រើសរើសហើយឬនៅ (មាន order ដែល quantity > 0)
   bool _selected(Mini_Bar item) {
@@ -36,9 +55,6 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
     }
     return null;
   }
-
-  // * ទំនិញពីថ្ងៃមុន (locked) — មិនអនុញ្ញាតឲ្យបន្ថយចំនួន
-  bool _is_locked(Mini_Bar item) => locked_ids.contains(_order_of(item)?.id);
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +151,7 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
                                 if (selected) ...[
                                   IconButton(
                                     tooltip: "Decrease", //
-                                    icon: Icon(Icons.remove_circle_outline, color: _is_locked(item) ? Colors.grey : Colors.red),
+                                    icon: Icon(Icons.remove_circle_outline, color: Colors.red),
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(),
                                     onPressed: () => _decrease(item), //
@@ -170,17 +186,71 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
       actionsAlignment: MainAxisAlignment.center,
 
       actions: [
-        // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស
+        // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស និងរក្សាទុកទំនិញ
         OutlinedButton.icon(
-          icon: const Icon(Icons.check), //
+          icon: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check), //
           label: const Text("Confirm"), //
-          onPressed: () {
-            // pprint(list_order_mini_bar);
-            Navigator.pop(context, true);
-          },
+          onPressed: is_loading ? null : _on_confirm,
         ),
       ],
     );
+  }
+
+  // * រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
+  Future<void> _on_confirm() async {
+    if (is_loading) return;
+    setState(() => is_loading = true);
+
+    List<String> ids = [];
+    for (var o in list_order_mini_bar) {
+      if (o.id != null) {
+        final tmp_up = await dio.post(
+          endpoint.MINI_BAR_ITEM_UPDATE,
+          data: {
+            Mini_Bar_Item.ID: o.id, //
+            Mini_Bar_Item.QUANTITY: o.quantity, //
+          },
+        );
+        if (tmp_up == null) {
+          if (mounted) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+          setState(() => is_loading = false);
+          return;
+        }
+        ids.add(o.id!);
+        continue;
+      }
+      final tmp_item = await dio.post(
+        endpoint.MINI_BAR_ITEM_CREATE,
+        data: {
+          Mini_Bar_Item.MINI_BAR_ID: o.mini_bar_id?.id, //
+          Mini_Bar_Item.QUANTITY: o.quantity, //
+        },
+      );
+      if (tmp_item == null) {
+        if (mounted) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+        setState(() => is_loading = false);
+        return;
+      }
+      ids.add(tmp_item.data[0][Mini_Bar_Item.ID]);
+    }
+
+    // * Walk-In: ប្រើ endpoint ដាច់ដោយឡែក (walk_in_update)
+    final tmp_fd = await dio.post(
+      widget.is_walk_in ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_MINI_BAR_ITEM,
+      data: {
+        Front_Desk.ID: widget.front_desk_id, //
+        Front_Desk.MINI_BAR_ITEM_ID: ids, //
+      },
+    );
+    if (tmp_fd == null) {
+      if (mounted) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      setState(() => is_loading = false);
+      return;
+    }
+
+    if (!mounted) return;
+    snackbar(ct: context, ms: "Mini Bar Updated", cl: Colors.green);
+    Navigator.pop(context, true);
   }
 
   // * ជ្រើស/មិនជ្រើសទំនិញមួយម្តងៗ
@@ -206,11 +276,10 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
     setState(() {});
   }
 
-  // * បន្ថយចំនួន (ដល់ 0 ដកចេញពីបញ្ជី) — មិនអនុញ្ញាតសម្រាប់ទំនិញថ្ងៃមុន (locked)
+  // * បន្ថយចំនួន (ដល់ 0 ដកចេញពីបញ្ជី)
   void _decrease(Mini_Bar item) {
     var o = _order_of(item);
     if (o == null) return;
-    if (locked_ids.contains(o.id)) return;
     o.quantity--;
     if (o.quantity <= 0) {
       list_order_mini_bar.removeWhere((x) => x.mini_bar_id?.id == item.id);
@@ -230,14 +299,14 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
 class List_Mini_Bar extends StatefulWidget {
   const List_Mini_Bar({
     super.key, //
-    required this.list_mini_bar,
     required this.list_order_mini_bar,
-    this.locked_ids, //
+    required this.front_desk_id,
+    required this.is_walk_in,
   });
 
-  final List<Mini_Bar> list_mini_bar; // * បញ្ជីទំនិញ mini bar
   final List<Order_Mini_Bar> list_order_mini_bar; // * បញ្ជី order mini bar (កែប្រែផ្ទាល់)
-  final Set<String>? locked_ids; // * id នៃទំនិញពីថ្ងៃមុន (មិនអនុញ្ញាតឲ្យបន្ថយចំនួន)
+  final String? front_desk_id; // * id នៃ stay ដែលភ្ជាប់ទំនិញ
+  final bool is_walk_in; // * true = Walk-In (ដំណើរការជាមួយ FRONT_DESK_WALK_IN_UPDATE)
 
   @override
   State<List_Mini_Bar> createState() => _List_Mini_Bar_State();
@@ -263,8 +332,9 @@ void main() async {
                 onPressed: () => showDialog(
                   context: context,
                   builder: (context) => List_Mini_Bar(
-                    list_mini_bar: [], //
                     list_order_mini_bar: [], //
+                    front_desk_id: null, //
+                    is_walk_in: false, //
                   ),
                 ),
                 child: const Text("Open Item Picker"), //

@@ -16,13 +16,32 @@ class Order_Penalty {
 }
 
 class _List_Penalty_State extends State<List_Penalty> {
-  late List<Penalty> list_penalty = widget.list_penalty;
+  List<Penalty> list_penalty = [];
 
   late List<Order_Penalty> list_order_penalty = widget.list_order_penalty;
 
-  late Set<String> locked_ids = widget.locked_ids ?? {};
-
   String _search = "";
+
+  bool is_loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  // * ទាញយកបញ្ជីទំនិញ penalty ពី server
+  Future<void> _load() async {
+    if (!mounted) return;
+    final tmp = await dio.post(endpoint.PENALTY_READ, data: {});
+    if (!mounted) return;
+    if (tmp == null) {
+      snackbar(ct: context, ms: "Error: Read Penalty", cl: Colors.red);
+      Navigator.pop(context, false);
+      return;
+    }
+    setState(() => list_penalty = (tmp.data as List<dynamic>? ?? []).map((e) => Penalty.fromJson(e)).toList());
+  }
 
   // * ពិនិត្យថាទំនិញបានជ្រើសរើសហើយឬនៅ (មាន order ដែល quantity > 0)
   bool _selected(Penalty item) {
@@ -36,9 +55,6 @@ class _List_Penalty_State extends State<List_Penalty> {
     }
     return null;
   }
-
-  // * ទំនិញពីថ្ងៃមុន (locked) — មិនអនុញ្ញាតឲ្យបន្ថយចំនួន
-  bool _is_locked(Penalty item) => locked_ids.contains(_order_of(item)?.id);
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +151,7 @@ class _List_Penalty_State extends State<List_Penalty> {
                                 if (selected) ...[
                                   IconButton(
                                     tooltip: "Decrease", //
-                                    icon: Icon(Icons.remove_circle_outline, color: _is_locked(item) ? Colors.grey : Colors.red),
+                                    icon: Icon(Icons.remove_circle_outline, color: Colors.red),
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(),
                                     onPressed: () => _decrease(item), //
@@ -169,17 +185,70 @@ class _List_Penalty_State extends State<List_Penalty> {
       actionsPadding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
       actionsAlignment: MainAxisAlignment.center,
       actions: [
-        // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស
+        // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស និងរក្សាទុកទំនិញ
         OutlinedButton.icon(
-          icon: const Icon(Icons.check), //
+          icon: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check), //
           label: const Text("Confirm"), //
-          onPressed: () {
-            // pprint(list_order_penalty);
-            Navigator.pop(context, true);
-          },
+          onPressed: is_loading ? null : _on_confirm,
         ),
       ],
     );
+  }
+
+  // * រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
+  Future<void> _on_confirm() async {
+    if (is_loading) return;
+    setState(() => is_loading = true);
+
+    List<String> ids = [];
+    for (var o in list_order_penalty) {
+      if (o.id != null) {
+        final tmp_up = await dio.post(
+          endpoint.PENALTY_ITEM_UPDATE,
+          data: {
+            Penalty_Item.ID: o.id, //
+            Penalty_Item.QUANTITY: o.quantity, //
+          },
+        );
+        if (tmp_up == null) {
+          if (mounted) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+          setState(() => is_loading = false);
+          return;
+        }
+        ids.add(o.id!);
+        continue;
+      }
+      final tmp_item = await dio.post(
+        endpoint.PENALTY_ITEM_CREATE,
+        data: {
+          Penalty_Item.PENALTY_ID: o.penalty_id?.id, //
+          Penalty_Item.QUANTITY: o.quantity, //
+        },
+      );
+      if (tmp_item == null) {
+        if (mounted) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+        setState(() => is_loading = false);
+        return;
+      }
+      ids.add(tmp_item.data[0][Penalty_Item.ID]);
+    }
+
+    final tmp_fd = await dio.post(
+      endpoint.FRONT_DESK_PENALTY_ITEM,
+      data: {
+        Front_Desk.ID: widget.front_desk_id, //
+        Front_Desk.PENALTY_ITEM_ID: ids, //
+      },
+    );
+    if (tmp_fd == null) {
+      if (mounted) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      setState(() => is_loading = false);
+      return;
+    }
+
+    if (!mounted) return;
+    snackbar(ct: context, ms: "Penalty Updated", cl: Colors.green);
+    Navigator.pop(context, true);
   }
 
   // * ជ្រើស/មិនជ្រើសទំនិញមួយម្តងៗ
@@ -205,11 +274,10 @@ class _List_Penalty_State extends State<List_Penalty> {
     setState(() {});
   }
 
-  // * បន្ថយចំនួន (ដល់ 0 ដកចេញពីបញ្ជី) — មិនអនុញ្ញាតសម្រាប់ទំនិញថ្ងៃមុន (locked)
+  // * បន្ថយចំនួន (ដល់ 0 ដកចេញពីបញ្ជី)
   void _decrease(Penalty item) {
     var o = _order_of(item);
     if (o == null) return;
-    if (locked_ids.contains(o.id)) return;
     o.quantity--;
     if (o.quantity <= 0) {
       list_order_penalty.removeWhere((x) => x.penalty_id?.id == item.id);
@@ -229,14 +297,12 @@ class _List_Penalty_State extends State<List_Penalty> {
 class List_Penalty extends StatefulWidget {
   const List_Penalty({
     super.key, //
-    required this.list_penalty,
     required this.list_order_penalty,
-    this.locked_ids, //
+    required this.front_desk_id,
   });
 
-  final List<Penalty> list_penalty; // * បញ្ជីទំនិញ penalty
   final List<Order_Penalty> list_order_penalty; // * បញ្ជី order penalty (កែប្រែផ្ទាល់)
-  final Set<String>? locked_ids; // * id នៃទំនិញពីថ្ងៃមុន (មិនអនុញ្ញាតឲ្យបន្ថយចំនួន)
+  final String? front_desk_id; // * id នៃ stay ដែលភ្ជាប់ទំនិញ
 
   @override
   State<List_Penalty> createState() => _List_Penalty_State();
@@ -262,8 +328,8 @@ void main() async {
                 onPressed: () => showDialog(
                   context: context,
                   builder: (context) => List_Penalty(
-                    list_penalty: [], //
                     list_order_penalty: [], //
+                    front_desk_id: null, //
                   ),
                 ),
                 child: const Text("Open Item Picker"), //
