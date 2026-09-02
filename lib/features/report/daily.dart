@@ -89,34 +89,6 @@ class _Main_State extends State<Main_> {
     return n == "walk-in" || n == "mini bar";
   }
 
-  Set<String> locked_mini_bar_ids(Front_Desk fd) {
-    Set<String> ids = {};
-    String? cursor = fd.prev_front_desk_id;
-    while (cursor != null) {
-      Front_Desk? prev = rows.where((x) => x.id == cursor).firstOrNull;
-      if (prev == null) break;
-      for (var it in (prev.mini_bar_item_id ?? [])) {
-        if (it is Mini_Bar_Item && it.id != null) ids.add(it.id!);
-      }
-      cursor = prev.prev_front_desk_id;
-    }
-    return ids;
-  }
-
-  Set<String> locked_penalty_ids(Front_Desk fd) {
-    Set<String> ids = {};
-    String? cursor = fd.prev_front_desk_id;
-    while (cursor != null) {
-      Front_Desk? prev = rows.where((x) => x.id == cursor).firstOrNull;
-      if (prev == null) break;
-      for (var it in (prev.penalty_item_id ?? [])) {
-        if (it is Penalty_Item && it.id != null) ids.add(it.id!);
-      }
-      cursor = prev.prev_front_desk_id;
-    }
-    return ids;
-  }
-
   // * រយៈពេលស្នាក់ជាថ្ងៃ និងម៉ោង
   String duration_text(DateTime? in_at, DateTime? out_at) {
     if (in_at == null) return "";
@@ -303,7 +275,7 @@ class _Main_State extends State<Main_> {
       builder: (context) => List_Mini_Bar(
         list_mini_bar: list_mini_bar, //
         list_order_mini_bar: orders, //
-        locked_ids: fd == null ? {} : locked_mini_bar_ids(fd), //
+        locked_ids: {}, //
       ),
     );
     if (saved != true) return;
@@ -367,7 +339,7 @@ class _Main_State extends State<Main_> {
       builder: (context) => List_Penalty(
         list_penalty: list_penalty, //
         list_order_penalty: orders, //
-        locked_ids: fd == null ? {} : locked_penalty_ids(fd), //
+        locked_ids: {}, //
       ),
     );
     if (saved != true) return;

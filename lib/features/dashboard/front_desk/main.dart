@@ -1058,29 +1058,6 @@ class _Main_State extends State<Main_> {
     return front_desks.where((x) => x.id == fd_id).firstOrNull;
   }
 
-  // * ប្រមូល id ទំនិញដែលបានចុះពីថ្ងៃមុនៗ (locked) តាមខ្សែសង្វាក់ prev_front_desk_id
-  Set<String> _locked_ids(Front_Desk fd, List<dynamic>? Function(Front_Desk) items) {
-    Set<String> ids = {};
-    String? cursor = fd.prev_front_desk_id;
-    while (cursor != null) {
-      Front_Desk? prev = front_desks.where((x) => x.id == cursor).firstOrNull;
-      if (prev == null) break;
-      for (var it in (items(prev) ?? [])) {
-        dynamic id = it is Mini_Bar_Item
-            ? it.id
-            : it is Penalty_Item
-            ? it.id
-            : null;
-        if (id != null) ids.add(id.toString());
-      }
-      cursor = prev.prev_front_desk_id;
-    }
-    return ids;
-  }
-
-  Set<String> locked_mini_bar_ids(Front_Desk fd) => _locked_ids(fd, (d) => d.mini_bar_item_id);
-  Set<String> locked_penalty_ids(Front_Desk fd) => _locked_ids(fd, (d) => d.penalty_item_id);
-
   // * ហាមប្រើប្រាស់ ប្រសិនបើបាន check out រួចហើយ
   bool checkout_guard(PlutoColumnRendererContext rc) {
     Front_Desk? fd = row_stay(rc);
@@ -1137,7 +1114,7 @@ class _Main_State extends State<Main_> {
       builder: (context) => List_Penalty(
         list_penalty: list_penalty, //
         list_order_penalty: orders, //
-        locked_ids: fd == null ? {} : locked_penalty_ids(fd), //
+        locked_ids: {}, //
       ),
     );
     if (saved != true) return;
@@ -1202,7 +1179,7 @@ class _Main_State extends State<Main_> {
       builder: (context) => List_Mini_Bar(
         list_mini_bar: list_mini_bar, //
         list_order_mini_bar: orders, //
-        locked_ids: fd == null ? {} : locked_mini_bar_ids(fd), //
+        locked_ids: {}, //
       ),
     );
     if (saved != true) return;
