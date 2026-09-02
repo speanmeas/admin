@@ -204,7 +204,7 @@ class _Main_State extends State<Main_> {
               return Align(
                 alignment: Alignment.center, //
                 child: Text(
-                  format_double(rc.cell.value, digits: 2), //
+                  format_double(rc.cell.value, digits: 2) + " \$", //
                   overflow: TextOverflow.ellipsis,
                 ),
               );

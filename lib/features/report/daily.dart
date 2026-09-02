@@ -6,7 +6,6 @@ import "package:speanmeas/features/dashboard/front_desk/dialog/list_mini_bar.dar
 import "package:speanmeas/features/dashboard/front_desk/dialog/list_penalty.dart";
 import "package:speanmeas/features/dashboard/front_desk/dialog/pick_datetime.dart";
 import "package:speanmeas/features/dashboard/front_desk/dialog/search_guest.dart";
-import "package:speanmeas/features/report/dialog_item_show.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK VARIABLES ##########
@@ -125,9 +124,7 @@ class _Main_State extends State<Main_> {
                 if (c == "check_out_by") return PlutoCell(value: fd_check_out_by(fd)?.full_name ?? "");
 
                 if (c == "room_price") return PlutoCell(value: fd.room_price);
-                if (c == "penalty_item") return PlutoCell(value: "");
                 if (c == "penalty_price") return PlutoCell(value: fd.penalty_price);
-                if (c == "mini_bar_item") return PlutoCell(value: "");
                 if (c == "mini_bar_price") return PlutoCell(value: fd.mini_bar_price);
                 if (c == "pay_cash") return PlutoCell(value: fd.pay_cash);
                 if (c == "pay_bank") return PlutoCell(value: fd.pay_bank);
@@ -577,7 +574,7 @@ class _Main_State extends State<Main_> {
             width: WIDTH,
             renderer: (rc) {
               return Align(
-                alignment: Alignment.centerLeft, //
+                alignment: Alignment.center, //
                 child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
               );
             },
@@ -590,10 +587,11 @@ class _Main_State extends State<Main_> {
             width: WIDTH,
             renderer: (rc) {
               return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
                   Expanded(
                     child: Align(
-                      alignment: Alignment.centerLeft, //
+                      alignment: Alignment.center, //
                       child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
                     ),
                   ),
@@ -617,7 +615,7 @@ class _Main_State extends State<Main_> {
             width: 60,
             renderer: (rc) {
               return Align(
-                alignment: Alignment.centerRight, //
+                alignment: Alignment.center, //
                 child: Text(format_double(rc.cell.value, digits: 0) + " នាក់", overflow: TextOverflow.ellipsis),
               );
             },
@@ -630,6 +628,7 @@ class _Main_State extends State<Main_> {
             width: 160,
             renderer: (rc) {
               return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
                   Expanded(
                     child: Align(
@@ -670,6 +669,7 @@ class _Main_State extends State<Main_> {
             width: 160,
             renderer: (rc) {
               return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
                   Expanded(
                     child: Align(
@@ -694,117 +694,95 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: "room_price", //
             title: "ថ្លៃបន្ទប់",
-            type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
-            enableEditingMode: false,
+            type: PlutoColumnType.number(negative: false, format: "#,##0.00"),
+            enableEditingMode: is_admin,
             width: 90,
             renderer: (rc) => _money(rc),
             footerRenderer: (rc) => _sum_footer(rc),
           ),
 
-          PlutoColumn(
-            field: "mini_bar_item", //
-            title: "ទំនិញ",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 80,
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround, //
-                children: [
-                  IconButton(
-                    tooltip: is_admin ? "Edit Mini Bar Items" : "View Mini Bar Items", //
-                    icon: Icon(is_admin ? Icons.local_bar_outlined : Icons.receipt_long_outlined, color: Colors.blue),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      if (is_admin) {
-                        on_mini_bar_item(rc);
-                      } else {
-                        int i = parse_int(rc.row.cells["index"]?.value) ?? 0;
-                        Front_Desk? fd = (i > 0 && i <= rows.length) ? rows[i - 1] : null;
-                        dialog_item_show(
-                          context: context, //
-                          title: "Mini Bar Items", //
-                          list: (fd?.mini_bar_item_id ?? []).cast<dynamic>(), //
-                          is_mini_bar: true, //
-                        );
-                      }
-                    }, //
-                  ),
-                ],
-              );
-            },
-          ),
           PlutoColumn(
             field: "mini_bar_price", //
             title: "ថ្លៃមីនីបារ",
-            type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
+            type: PlutoColumnType.number(negative: false, format: "#,##0.00"),
             enableEditingMode: false,
             width: 90,
-            renderer: (rc) => _money(rc),
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(
+                        format_double(parse_double(rc.cell.value) ?? 0, digits: 2) + " \$", //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  if (is_admin)
+                    IconButton(
+                      tooltip: "Mini Bar Items", //
+                      icon: Icon(Icons.local_bar_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_mini_bar_item(rc), //
+                    ),
+                ],
+              );
+            },
             footerRenderer: (rc) => _sum_footer(rc),
           ),
 
           PlutoColumn(
-            field: "penalty_item", //
-            title: "ពិន័យ",
-            type: PlutoColumnType.text(),
+            field: "penalty_price", //
+            title: "ថ្លៃពិន័យ",
+            type: PlutoColumnType.number(negative: false, format: "#,##0.00"),
             enableEditingMode: false,
-            width: 80,
+            width: 90,
             renderer: (rc) {
               return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround, //
+                mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  IconButton(
-                    tooltip: is_admin ? "Edit Penalty Items" : "View Penalty Items", //
-                    icon: Icon(is_admin ? Icons.gavel_outlined : Icons.receipt_long_outlined, color: Colors.blue),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () {
-                      if (is_admin) {
-                        on_penalty_item(rc);
-                      } else {
-                        int i = parse_int(rc.row.cells["index"]?.value) ?? 0;
-                        Front_Desk? fd = (i > 0 && i <= rows.length) ? rows[i - 1] : null;
-                        dialog_item_show(
-                          context: context, //
-                          title: "Penalty Items", //
-                          list: (fd?.penalty_item_id ?? []).cast<dynamic>(), //
-                          is_mini_bar: false, //
-                        );
-                      }
-                    }, //
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(
+                        format_double(parse_double(rc.cell.value) ?? 0, digits: 2) + " \$", //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ),
+                  if (is_admin && !row_is_walk_in(rc))
+                    IconButton(
+                      tooltip: "Penalty Items", //
+                      icon: Icon(Icons.gavel_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_penalty_item(rc), //
+                    ),
                 ],
               );
             },
-          ),
-          PlutoColumn(
-            field: "penalty_price", //
-            title: "ថ្លៃពិន័យ",
-            type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
-            enableEditingMode: false,
-            width: 90,
-            renderer: (rc) => _money(rc),
             footerRenderer: (rc) => _sum_footer(rc),
           ),
 
           PlutoColumn(
             field: "pay_cash", //
             title: "លុយ",
-            type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
+            type: PlutoColumnType.number(negative: false, format: "#,##0.00"),
             enableEditingMode: is_admin,
             width: 90,
-            renderer: (rc) => _money(rc),
+            renderer: (rc) => _money_cash_bank(rc),
             footerRenderer: (rc) => _sum_footer(rc),
           ),
           PlutoColumn(
             field: "pay_bank", //
             title: "ធនាគារ",
-            type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
+            type: PlutoColumnType.number(negative: false, format: "#,##0.00"),
             enableEditingMode: is_admin,
             width: 90,
-            renderer: (rc) => _money(rc),
+            renderer: (rc) => _money_cash_bank(rc),
             footerRenderer: (rc) => _sum_footer(rc),
           ),
           PlutoColumn(
@@ -813,7 +791,7 @@ class _Main_State extends State<Main_> {
             type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
             enableEditingMode: is_admin, // * កែសមតុល្យបានតែ admin ប៉ុណ្ណោះ
             width: 90,
-            renderer: (rc) => _money(rc),
+            renderer: (rc) => _money_balance(rc),
             footerRenderer: (rc) => _sum_footer(rc),
           ),
           PlutoColumn(
@@ -824,7 +802,7 @@ class _Main_State extends State<Main_> {
             width: 120,
             renderer: (rc) {
               return Align(
-                alignment: Alignment.centerLeft, //
+                alignment: Alignment.center, //
                 child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
               );
             },
@@ -840,7 +818,7 @@ class _Main_State extends State<Main_> {
             width: 110,
             renderer: (rc) {
               return Align(
-                alignment: Alignment.centerLeft, //
+                alignment: Alignment.center, //
                 child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
               );
             },
@@ -853,7 +831,7 @@ class _Main_State extends State<Main_> {
             width: 110,
             renderer: (rc) {
               return Align(
-                alignment: Alignment.centerLeft, //
+                alignment: Alignment.center, //
                 child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
               );
             },
@@ -866,7 +844,7 @@ class _Main_State extends State<Main_> {
           PlutoColumnGroup(title: "ការស្នាក់នៅ", fields: ["check_in_at", "duration", "check_out_at"]),
           PlutoColumnGroup(
             title: "ការបង់ប្រាក់", //
-            fields: ["room_price", "mini_bar_item", "mini_bar_price", "penalty_item", "penalty_price", "pay_cash", "pay_bank", "pay_balance", "pay_note"],
+            fields: ["room_price", "mini_bar_price", "penalty_price", "pay_cash", "pay_bank", "pay_balance", "pay_note"],
           ),
           PlutoColumnGroup(
             title: "ការត្រួតពិនិត្យ", //
@@ -999,34 +977,57 @@ class _Main_State extends State<Main_> {
     );
   }
 
+  // * បង្ហាញតម្លៃលុយ (ថ្លៃបន្ទប់ / មីនីបារ / ពិន័យ) — ដូច front_desk (center, no color, null-safe)
   Widget _money(PlutoColumnRendererContext rc) {
     return Align(
-      alignment: Alignment.centerRight, //
+      alignment: Alignment.center, //
       child: Text(
-        format_double(rc.cell.value, digits: 2) + " \$", //
+        format_double(parse_double(rc.cell.value) ?? 0, digits: 2) + " \$", //
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(color: rc.cell.value >= 0 ? Colors.black : Colors.red),
       ),
     );
   }
 
+  // * សាច់ប្រាក់/ធនាគារ — ដូច front_desk (center; ខ្មៅ = វិជ្ជមាន, ក្រហម = អវិជ្ជមាន)
+  Widget _money_cash_bank(PlutoColumnRendererContext rc) {
+    double v = parse_double(rc.cell.value) ?? 0;
+    return Align(
+      alignment: Alignment.center, //
+      child: Text(
+        format_double(v, digits: 2) + " \$", //
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(color: v >= 0 ? Colors.black : Colors.red),
+      ),
+    );
+  }
+
+  // * សមតុល្យ — ដូច front_desk (center; ខ្មៅ = 0, បៃតង = >0, ក្រហម = <0)
+  Widget _money_balance(PlutoColumnRendererContext rc) {
+    double v = parse_double(rc.cell.value) ?? 0;
+    return Align(
+      alignment: Alignment.center, //
+      child: Text(
+        format_double(v, digits: 2) + " \$", //
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(color: v == 0 ? Colors.black : (v > 0 ? Colors.green : Colors.red)),
+      ),
+    );
+  }
+
+  // * footer ជួរសរុប (sum) — ដូច front_desk (center, no color)
   Widget _sum_footer(PlutoColumnFooterRendererContext rc) {
-    // * price → ពណ៌ខៀវ; cash/bank → បៃតង (វិជ្ជមាន) / ក្រហម (អវិជ្ជមាន)
-    bool is_price = rc.column.field.endsWith("_price");
     return PlutoAggregateColumnFooter(
       rendererContext: rc, //
       format: "#,##0.00", //
-      alignment: Alignment.centerRight,
+      alignment: Alignment.center,
       padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
       type: PlutoAggregateColumnType.sum,
       titleSpanBuilder: (value) {
-        double? v = parse_double(value);
-        Color color = is_price ? Colors.blue : ((v ?? 0) >= 0 ? Colors.green : Colors.red);
         return [
           WidgetSpan(
             child: Text(
               "$value \$", //
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color, overflow: TextOverflow.ellipsis),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
             ),
           ),
         ];
