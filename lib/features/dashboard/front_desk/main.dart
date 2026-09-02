@@ -46,7 +46,7 @@ class _Main_State extends State<Main_> {
       body: Column(
         spacing: 1,
         children: [
-          if (check_in != null)
+          if (check_in != null && check_in.isNotEmpty)
             Container(
               alignment: Alignment.centerLeft, //
               padding: const EdgeInsets.only(top: 1),
@@ -57,7 +57,7 @@ class _Main_State extends State<Main_> {
               ),
             ),
 
-          if (check_out != null)
+          if (check_out != null && check_out.isNotEmpty)
             Container(
               alignment: Alignment.centerLeft, //
               padding: const EdgeInsets.only(top: 1),
@@ -68,7 +68,7 @@ class _Main_State extends State<Main_> {
               ),
             ),
 
-          if (clean != null)
+          if (clean != null && clean.isNotEmpty)
             Container(
               alignment: Alignment.centerLeft, //
               padding: const EdgeInsets.only(top: 1),
@@ -79,7 +79,7 @@ class _Main_State extends State<Main_> {
               ),
             ),
 
-          if (header != null)
+          if (header != null && header.isNotEmpty)
             Container(
               height: 34, //
               padding: const EdgeInsets.only(top: 1),
@@ -93,7 +93,7 @@ class _Main_State extends State<Main_> {
 
           Expanded(child: body ?? Container()),
 
-          if (footer != null)
+          if (footer != null && footer.isNotEmpty)
             Container(
               height: 34, //
               padding: const EdgeInsets.only(top: 1),
