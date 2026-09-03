@@ -2,6 +2,7 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
+import "package:url_launcher/url_launcher.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 // * ថ្នាក់ state របស់ Panel_Left គ្រប់គ្រង menu ខាងឆ្វេង
@@ -125,9 +126,16 @@ class _Panel_LeftState extends State<Panel_Left> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                "This footer is under development.", //
-                style: TextStyle(fontSize: 12, color: Colors.black),
+              InkWell(
+                onTap: () => launchUrl(Uri.parse("https://t.me/muysengly")),
+                child: Text(
+                  "Developer: MUY Sengly (011-358-858)", //
+                  style: TextStyle(
+                    fontSize: 12, //
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),

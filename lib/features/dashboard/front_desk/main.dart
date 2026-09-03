@@ -1,5 +1,3 @@
-import "dart:async";
-
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
@@ -30,10 +28,7 @@ class _Main_State extends State<Main_> {
   List<dynamic> rooms = [];
   List<Front_Desk> front_desks = [];
 
-  Timer? timer_refresh;
-
   bool is_admin = false;
-  bool is_refresh = false;
   bool is_filter = false;
   bool show_check_out = false;
   // * ########## BLOCK VARIABLES END ##########
@@ -799,7 +794,6 @@ class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
-    timer_refresh = Timer.periodic(Duration(minutes: 1), (_) => refresh_time());
     load_auth();
   }
 
@@ -1202,35 +1196,8 @@ class _Main_State extends State<Main_> {
     on_load_front_desk();
   }
 
-  // * ធ្វើបច្ចុប្បន្នភាពជួរ "រយៈពេល" ដោយស្ងៀមស្ងាត់ — មិនកសាង grid ឡើងវិញទេ ដើម្បីកុំរំខានពេលកំពុងកែប្រែ
-  void refresh_time() {
-    if (is_refresh || !mounted || list_column.isEmpty) return;
-    // * ប្រសិនបើកំពុងកែប្រែ cell ឬកំពុងជ្រើសរើស → រំលងដើម្បីកុំរំខាន (នឹងបន្តនៅជុំបន្ទាប់)
-    if (state_manager.isEditing) return;
-    is_refresh = true;
-
-    for (final row in state_manager.rows) {
-      final cell = row.cells["check_in_duration"];
-      if (cell == null) continue;
-      final fd_id = row.cells["_id"]?.value;
-      if (fd_id == null) continue;
-      final Front_Desk? fd = front_desks.where((x) => x.id == fd_id).firstOrNull;
-      if (fd == null) continue;
-      if (is_walkin(fd)) continue;
-
-      DateTime? in_at = fd.check_in_at;
-      DateTime? out_at = fd.check_out_at;
-      if (in_at == null) continue;
-      int minutes = out_at == null ? DateTime.now().difference(in_at).inMinutes : out_at.difference(in_at).inMinutes;
-      state_manager.changeCellValue(cell, minutes, callOnChangedEvent: false);
-    }
-
-    is_refresh = false;
-  }
-
   @override
   void dispose() {
-    timer_refresh?.cancel();
     super.dispose();
   }
 
