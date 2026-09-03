@@ -373,7 +373,7 @@ class _Main_State extends State<Main_> {
             padding: const EdgeInsets.all(1),
             child: Row(
               spacing: 2, //
-              mainAxisAlignment: MainAxisAlignment.center, //
+              mainAxisAlignment: MainAxisAlignment.start, //
               crossAxisAlignment: CrossAxisAlignment.center, //
               children: [...?header],
             ),
@@ -435,6 +435,16 @@ class _Main_State extends State<Main_> {
             init();
           },
         ),
+
+        const Spacer(),
+
+        IconButton(
+          tooltip: "Reload", //
+          icon: Icon(Icons.refresh, size: 30), //
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(),
+          onPressed: init, //
+        ),
       ],
 
       body: PlutoGrid(
@@ -490,60 +500,6 @@ class _Main_State extends State<Main_> {
               return Align(
                 alignment: Alignment.center, //
                 child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
-              );
-            },
-          ),
-          PlutoColumn(
-            field: "guest_name", //
-            title: "ឈ្មោះ",
-            type: PlutoColumnType.text(),
-            enableEditingMode: is_admin,
-            width: WIDTH,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
-              );
-            },
-          ),
-          PlutoColumn(
-            field: "guest_phone", //
-            title: "លេខទូរស័ព្ទ",
-            type: PlutoColumnType.text(),
-            enableEditingMode: is_admin,
-            width: WIDTH,
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center, //
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
-                  if (is_admin)
-                    IconButton(
-                      tooltip: "Search Guest", //
-                      icon: Icon(Icons.search_outlined),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () => pick_guest(rc), //
-                    ),
-                ],
-              );
-            },
-          ),
-          PlutoColumn(
-            field: "number_of_guest", //
-            title: "ចំនួន",
-            type: PlutoColumnType.number(negative: false, format: "#,###"),
-            enableEditingMode: is_admin,
-            width: 60,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(format_double(rc.cell.value, digits: 0) + " នាក់", overflow: TextOverflow.ellipsis),
               );
             },
           ),
@@ -613,6 +569,61 @@ class _Main_State extends State<Main_> {
                       onPressed: () => pick_datetime(rc, is_check_in: false), //
                     ),
                 ],
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "guest_name", //
+            title: "ឈ្មោះ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: is_admin,
+            width: WIDTH,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "guest_phone", //
+            title: "លេខទូរស័ព្ទ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: is_admin,
+            width: WIDTH,
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+                  if (is_admin)
+                    IconButton(
+                      tooltip: "Search Guest", //
+                      icon: Icon(Icons.search_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => pick_guest(rc), //
+                    ),
+                ],
+              );
+            },
+          ),
+          PlutoColumn(
+            field: "number_of_guest", //
+            title: "ចំនួន",
+            type: PlutoColumnType.number(negative: false, format: "#,###"),
+            enableEditingMode: is_admin,
+            width: 60,
+            renderer: (rc) {
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(format_double(rc.cell.value, digits: 0) + " នាក់", overflow: TextOverflow.ellipsis),
               );
             },
           ),
@@ -766,9 +777,8 @@ class _Main_State extends State<Main_> {
         ], //
         columnGroups: [
           PlutoColumnGroup(title: "", fields: ["index"]),
-          PlutoColumnGroup(title: "", fields: ["room"]),
+          PlutoColumnGroup(title: "ការស្នាក់នៅ", fields: ["room", "check_in_at", "duration", "check_out_at"]),
           PlutoColumnGroup(title: "អតិថិជន", fields: ["guest_name", "guest_phone", "number_of_guest"]),
-          PlutoColumnGroup(title: "ការស្នាក់នៅ", fields: ["check_in_at", "duration", "check_out_at"]),
           PlutoColumnGroup(
             title: "ការបង់ប្រាក់", //
             fields: ["room_price", "mini_bar_price", "penalty_price", "pay_cash", "pay_bank", "pay_balance", "pay_note"],

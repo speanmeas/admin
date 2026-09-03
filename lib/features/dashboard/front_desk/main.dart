@@ -16,7 +16,6 @@ import "dialog/search_guest.dart";
 class _Main_State extends State<Main_> {
   // * ########## BLOCK VARIABLES ##########
   int reload = 0;
-  bool is_load = false;
   double WIDTH = 120;
 
   late List<String> list_column;
@@ -91,8 +90,6 @@ class _Main_State extends State<Main_> {
               ),
             ),
 
-          if (is_load) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
-
           Expanded(child: body ?? Container()),
 
           if (footer != null && footer.isNotEmpty)
@@ -164,7 +161,7 @@ class _Main_State extends State<Main_> {
       header: [
         IconButton(
           tooltip: "Carry Over", //
-          icon: Icon(Icons.event_repeat_outlined, size: 30), //
+          icon: Icon(Icons.fast_forward_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
           onPressed: on_carry_over, //
@@ -180,7 +177,7 @@ class _Main_State extends State<Main_> {
         //   onPressed: () {},
         // ),
         Text(
-          DateFormat("yyyy-MM-dd").format(date.subtract(const Duration(hours: 7))), //
+          "Shift: " + DateFormat("yyyy-MM-dd").format(date.subtract(const Duration(hours: 7))), //
           style: TextStyle(
             fontSize: 16, //
             color: Colors.blue,

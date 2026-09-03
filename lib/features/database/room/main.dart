@@ -445,14 +445,14 @@ class _Main_State extends State<Main_> {
     }
 
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
+    // * ផ្ទុកឡើងវិញ ដើម្បីរក្សា និងអនុវត្ត sort / filter ឡើងវិញ (PlutoGrid មិន re-sort/filter ដោយស្វ័យប្រវត្តិ)
+    on_reload();
   }
 
   void on_change_field(PlutoColumnRendererContext rc, String field, String v) async {
     final id = rc.row.cells[Room.ID]?.value;
     if (id == null) return;
-    setState(() => is_load = true);
     final tmp = await dio.post(endpoint.ROOM_UPDATE, data: {Room.ID: id, field: v});
-    setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Updated", cl: Colors.green);

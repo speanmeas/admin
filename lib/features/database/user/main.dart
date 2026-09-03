@@ -474,6 +474,8 @@ class _Main_State extends State<Main_> {
     }
 
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
+    // * ផ្ទុកឡើងវិញ ដើម្បីរក្សា និងអនុវត្ត sort / filter ឡើងវិញ (PlutoGrid មិន re-sort/filter ដោយស្វ័យប្រវត្តិ)
+    on_reload();
   }
 
   void on_change_bool(PlutoColumnRendererContext rc, String field, bool v) async {
