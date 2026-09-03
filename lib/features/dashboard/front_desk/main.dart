@@ -159,13 +159,23 @@ class _Main_State extends State<Main_> {
       ],
 
       header: [
-        IconButton(
-          tooltip: "Carry Over", //
-          icon: Icon(Icons.fast_forward_outlined, size: 30), //
-          padding: EdgeInsets.all(0),
-          constraints: BoxConstraints(),
-          onPressed: on_carry_over, //
-        ),
+        if (is_admin)
+          IconButton(
+            tooltip: "Carry Over", //
+            icon: Icon(Icons.event_repeat_outlined, size: 30), //
+            padding: EdgeInsets.all(0),
+            constraints: BoxConstraints(),
+            onPressed: on_carry_over, //
+          ),
+
+        if (is_admin)
+          IconButton(
+            tooltip: "Over Time", //
+            icon: Icon(Icons.schedule_outlined, size: 30), //
+            padding: EdgeInsets.all(0),
+            constraints: BoxConstraints(),
+            onPressed: on_over_time, //
+          ),
 
         const Spacer(),
 
@@ -1032,6 +1042,15 @@ class _Main_State extends State<Main_> {
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Carried Over", cl: Colors.green);
+    on_load_room();
+    on_load_front_desk();
+  }
+
+  void on_over_time() async {
+    dynamic tmp = await dio.post(endpoint.FRONT_DESK_OVERTIME, data: {});
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    snackbar(ct: context, ms: "Over Time Applied", cl: Colors.green);
     on_load_room();
     on_load_front_desk();
   }

@@ -13,6 +13,7 @@ class EndPoint {
 	final FRONT_DESK_CHECK_IN = "/front_desk/check_in";
 	final FRONT_DESK_CHECK_OUT = "/front_desk/check_out";
 	final FRONT_DESK_CLEAN = "/front_desk/clean";
+	final FRONT_DESK_OVERTIME = "/front_desk/overtime";
 	final FRONT_DESK_REPORT_DAILY = "/front_desk/report_daily";
 	final FRONT_DESK_UPDATE_GUEST_INFO = "/front_desk/update_guest_info";
 	final FRONT_DESK_UPDATE_MINI_BAR_ITEM = "/front_desk/update_mini_bar_item";
