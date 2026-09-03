@@ -234,7 +234,7 @@ class _List_Penalty_State extends State<List_Penalty> {
     }
 
     final tmp_fd = await dio.post(
-      endpoint.FRONT_DESK_PENALTY_ITEM,
+      endpoint.FRONT_DESK_UPDATE_PENALTY_ITEM,
       data: {
         Front_Desk.ID: widget.front_desk_id, //
         Front_Desk.PENALTY_ITEM_ID: ids, //

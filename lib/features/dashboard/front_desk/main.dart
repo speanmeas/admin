@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
+import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
 
@@ -14,8 +15,8 @@ import "dialog/search_guest.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK VARIABLES ##########
-  int reload = 0; // this variable is used to reload the PlutoGrid when the data changes
-  bool is_load = false; // this variable is used to guard the fast clicking of the buttons, to prevent multiple requests to the server
+  int reload = 0;
+  bool is_load = false;
   double WIDTH = 120;
 
   late List<String> list_column;
@@ -27,11 +28,10 @@ class _Main_State extends State<Main_> {
   List<dynamic> rooms = [];
   List<Front_Desk> front_desks = [];
 
-  bool is_admin = false; // this variable is used to allow edit balance for admin only
-
   Timer? timer_refresh;
-  bool is_refresh = false;
 
+  bool is_admin = false;
+  bool is_refresh = false;
   bool is_filter = false;
   // * ########## BLOCK VARIABLES END ##########
 
@@ -162,16 +162,48 @@ class _Main_State extends State<Main_> {
       ],
 
       header: [
-        const Spacer(), //
-
         IconButton(
-          tooltip: is_filter ? "Hide Filter" : "Show Filter", //
-          icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
+          tooltip: "Previous", //
+          icon: Icon(Icons.navigate_before, size: 32), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_filter, // not yet implemented
+          onPressed: () {},
         ),
+        TextButton(
+          child: Text(
+            DateFormat("yyyy-MM-dd").format(date.subtract(const Duration(hours: 7))), //
+            style: TextStyle(
+              fontSize: 16, //
+              fontWeight: FontWeight.bold, //
+            ),
+          ),
 
+          //   onPressed: pick_date,
+          onPressed: () {},
+        ),
+        IconButton(
+          tooltip: "RollOver", //
+          icon: Icon(Icons.navigate_next, size: 32), //
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(),
+          onPressed: () {},
+        ),
+        const Spacer(), //
+        // IconButton(
+        //   tooltip: "Rollover",
+        //   icon: Icon(Icons.event_repeat_outlined, size: 30), //
+        //   padding: EdgeInsets.all(0),
+        //   constraints: BoxConstraints(),
+        //   onPressed: () {},
+        // ),
+
+        // IconButton(
+        //   tooltip: is_filter ? "Hide Filter" : "Show Filter", //
+        //   icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
+        //   padding: EdgeInsets.all(0),
+        //   constraints: BoxConstraints(),
+        //   onPressed: on_filter, // not yet implemented
+        // ),
         IconButton(
           tooltip: "Reload", //
           icon: Icon(Icons.refresh, size: 30), //
@@ -777,7 +809,7 @@ class _Main_State extends State<Main_> {
     dynamic tmp_fd = await dio.post(
       endpoint.FRONT_DESK_READ_DATETIME,
       data: {
-        "key": Front_Desk.CREATED_AT, //
+        "key": Front_Desk.SHIFT_DATE, //
         "start": shift_start(), //
         "stop": shift_stop(), //
         "order": -1, //
@@ -840,18 +872,16 @@ class _Main_State extends State<Main_> {
     setState(() {});
   }
 
-  // * ដើមថ្ងៃ shift ថ្ងៃនេះ (boundary 7:00) → ISO
+  // * ដើមថ្ងៃ shift ថ្ងៃនេះ (shift_date = កណ្ដាលអធ្រាត្រ, ថ្ងៃ shift = now − 7h) → ISO
   String shift_start() {
-    final now_dt = DateTime.now();
-    DateTime shift_day = now_dt.hour < 7 ? now_dt.subtract(const Duration(days: 1)) : now_dt;
-    return DateTime(shift_day.year, shift_day.month, shift_day.day, 7, 0).toIso8601String();
+    final shift_day = DateTime.now().subtract(const Duration(hours: 7));
+    return DateTime(shift_day.year, shift_day.month, shift_day.day).toIso8601String();
   }
 
-  // * ចុងថ្ងៃ shift ថ្ងៃនេះ (ថ្ងៃស្អែក 7:00) → ISO
+  // * ចុងថ្ងៃ shift ថ្ងៃនេះ (ថ្ងៃស្អែក 00:00) → ISO
   String shift_stop() {
-    final now_dt = DateTime.now();
-    DateTime shift_day = now_dt.hour < 7 ? now_dt.subtract(const Duration(days: 1)) : now_dt;
-    return DateTime(shift_day.year, shift_day.month, shift_day.day, 7, 0).add(const Duration(days: 1)).toIso8601String();
+    final shift_day = DateTime.now().subtract(const Duration(hours: 7));
+    return DateTime(shift_day.year, shift_day.month, shift_day.day).add(const Duration(days: 1)).toIso8601String();
   }
 
   // * accessors for Front_Desk linked/expanded fields
@@ -952,31 +982,35 @@ class _Main_State extends State<Main_> {
     }
 
     dynamic updated;
-    if (e.column.field == "guest_name") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.FULL_NAME: e.value});
-    if (e.column.field == "guest_phone") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.PHONE_NUMBER: e.value});
+    if (e.column.field == "guest_name") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, {Front_Desk.ID: fd_id, Guest.FULL_NAME: e.value});
+    if (e.column.field == "guest_phone") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, {Front_Desk.ID: fd_id, Guest.PHONE_NUMBER: e.value});
     if (e.column.field == "check_in_people") updated = await _update(endpoint.FRONT_DESK_UPDATE, {Front_Desk.ID: fd_id, Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? "")});
 
-    // * កែ price / cash / bank / note → សមតុល្យអាស្រ័យលើវា ដូច្នេះអាប់ដេត pay_balance ភ្លាម (មិន reload)
-    if (e.column.field == "room_price" || e.column.field == "pay_cash" || e.column.field == "pay_bank" || e.column.field == "pay_note") {
+    // * កែ room_price → endpoint update_room_price; cash / bank / note → update_payment (បន្ទាប់ពីដកចេញពី update_payment)
+    if (e.column.field == "room_price") {
+      dynamic value = num.tryParse(e.value?.toString() ?? "")?.toDouble();
+      updated = await _update(endpoint.FRONT_DESK_UPDATE_ROOM_PRICE, {Front_Desk.ID: fd_id, Front_Desk.ROOM_PRICE: value});
+      _apply_balance(e, updated);
+    }
+    if (e.column.field == "pay_cash" || e.column.field == "pay_bank" || e.column.field == "pay_note") {
       dynamic key = switch (e.column.field) {
-        "room_price" => Front_Desk.ROOM_PRICE,
         "pay_cash" => Front_Desk.PAY_CASH,
         "pay_bank" => Front_Desk.PAY_BANK,
         _ => Front_Desk.PAY_NOTE,
       };
       dynamic value = e.column.field == "pay_note" ? e.value?.toString() : num.tryParse(e.value?.toString() ?? "")?.toDouble();
-      updated = await _update(is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, key: value});
+      updated = await _update(is_walkin_row ? endpoint.FRONT_DESK_UPDATE_WALKIN : endpoint.FRONT_DESK_UPDATE_PAYMENT, {Front_Desk.ID: fd_id, key: value});
       _apply_balance(e, updated);
     }
 
     // * កែសមតុល្យ (balance) ដោយផ្ទាល់ — អនុញ្ញាតតែ admin ប៉ុណ្ណោះ
-    if (e.column.field == "pay_balance" && is_admin) updated = await _update(endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, Front_Desk.PAY_BALANCE: num.tryParse(e.value?.toString() ?? "")?.toDouble()});
+    if (e.column.field == "pay_balance" && is_admin) updated = await _update(endpoint.FRONT_DESK_UPDATE_PAYMENT, {Front_Desk.ID: fd_id, Front_Desk.PAY_BALANCE: num.tryParse(e.value?.toString() ?? "")?.toDouble()});
     if (e.column.field == "mini_bar_price") {
-      updated = await _update(endpoint.FRONT_DESK_MINI_BAR_ITEM, {Front_Desk.ID: fd_id});
+      updated = await _update(endpoint.FRONT_DESK_UPDATE_MINI_BAR_ITEM, {Front_Desk.ID: fd_id});
       _apply_balance(e, updated);
     }
     if (e.column.field == "penalty_price") {
-      updated = await _update(endpoint.FRONT_DESK_PENALTY_ITEM, {Front_Desk.ID: fd_id});
+      updated = await _update(endpoint.FRONT_DESK_UPDATE_PENALTY_ITEM, {Front_Desk.ID: fd_id});
       _apply_balance(e, updated);
     }
 
@@ -989,9 +1023,9 @@ class _Main_State extends State<Main_> {
       context: context, //
       lead: "Room ${r[Room.NUMBER]}", //
       room_id: r[Room.ID], //
-      price_per_day: r[Room.PRICE_PER_DAY] ?? 0, //
     );
     if (v == null) return;
+    on_load_room();
     on_load_front_desk();
   }
 
@@ -1008,6 +1042,7 @@ class _Main_State extends State<Main_> {
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Checked Out", cl: Colors.green);
+    on_load_room();
     on_load_front_desk();
   }
 
@@ -1021,6 +1056,7 @@ class _Main_State extends State<Main_> {
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Cleaned", cl: Colors.green);
+    on_load_room();
     on_load_front_desk();
   }
 

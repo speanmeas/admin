@@ -234,9 +234,9 @@ class _List_Mini_Bar_State extends State<List_Mini_Bar> {
       ids.add(tmp_item.data[0][Mini_Bar_Item.ID]);
     }
 
-    // * Walk-In: ប្រើ endpoint ដាច់ដោយឡែក (walk_in_update)
+    // * Walk-In: ប្រើ endpoint ដាច់ដោយឡែក (update_walkin)
     final tmp_fd = await dio.post(
-      widget.is_walk_in ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_MINI_BAR_ITEM,
+      widget.is_walk_in ? endpoint.FRONT_DESK_UPDATE_WALKIN : endpoint.FRONT_DESK_UPDATE_MINI_BAR_ITEM,
       data: {
         Front_Desk.ID: widget.front_desk_id, //
         Front_Desk.MINI_BAR_ITEM_ID: ids, //
@@ -306,7 +306,7 @@ class List_Mini_Bar extends StatefulWidget {
 
   final List<Order_Mini_Bar> list_order_mini_bar; // * បញ្ជី order mini bar (កែប្រែផ្ទាល់)
   final String? front_desk_id; // * id នៃ stay ដែលភ្ជាប់ទំនិញ
-  final bool is_walk_in; // * true = Walk-In (ដំណើរការជាមួយ FRONT_DESK_WALK_IN_UPDATE)
+  final bool is_walk_in; // * true = Walk-In (ដំណើរការជាមួយ FRONT_DESK_UPDATE_WALKIN)
 
   @override
   State<List_Mini_Bar> createState() => _List_Mini_Bar_State();

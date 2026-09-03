@@ -7,13 +7,10 @@ Future<bool?> dialog_check_in({
   required BuildContext context, //
   required String lead,
   required String room_id, //
-  required double price_per_day, //
 }) async {
   final result = await showDialog<bool>(
     context: context,
     builder: (context) {
-      const int stay_number = 1;
-
       return AlertDialog(
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         alignment: Alignment.topCenter,
@@ -59,10 +56,6 @@ Future<bool?> dialog_check_in({
                 endpoint.FRONT_DESK_CHECK_IN,
                 data: {
                   Front_Desk.ROOM_ID: room_id, //
-                  Front_Desk.NUMBER_OF_GUEST: stay_number, //
-                  Front_Desk.ROOM_PRICE: price_per_day, //
-                  Front_Desk.PAY_CASH: 0, //
-                  Front_Desk.PAY_BANK: 0, //
                 },
               );
               if (tmp_fd == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
@@ -89,7 +82,6 @@ class _Main_State extends State<Main_> {
             final v = await dialog_check_in(
               context: context, //
               room_id: "111111111122222222223333", //
-              price_per_day: 100.0, //
               lead: "Check-In to Room 201", //
             );
             if (v == null) return;

@@ -17,7 +17,7 @@ class _Main_State extends State<Main_> {
   late PlutoGridStateManager state_manager;
 
   DateTime date = DateTime.now();
-  dynamic report; // * response របស់ /front_desk/daily_report
+  dynamic report; // * response របស់ /front_desk/report_daily
 
   List<Front_Desk> rows = [];
   Map<String, dynamic> summary = {};
@@ -46,7 +46,7 @@ class _Main_State extends State<Main_> {
   Future<void> init() async {
     setState(() => is_load = true);
     dynamic tmp = await dio.post(
-      endpoint.FRONT_DESK_DAILY_REPORT,
+      endpoint.FRONT_DESK_REPORT_DAILY,
       data: {
         "date": DateFormat("yyyy-MM-dd").format(date), //
       },
@@ -217,25 +217,29 @@ class _Main_State extends State<Main_> {
     }
 
     dynamic updated;
-    if (e.column.field == "guest_name") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.FULL_NAME: e.value});
-    if (e.column.field == "guest_phone") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST, {Front_Desk.ID: fd_id, Guest.PHONE_NUMBER: e.value});
+    if (e.column.field == "guest_name") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, {Front_Desk.ID: fd_id, Guest.FULL_NAME: e.value});
+    if (e.column.field == "guest_phone") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, {Front_Desk.ID: fd_id, Guest.PHONE_NUMBER: e.value});
     if (e.column.field == "number_of_guest") updated = await _update(endpoint.FRONT_DESK_UPDATE, {Front_Desk.ID: fd_id, Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? "")});
 
-    // * កែ price / cash / bank / note → សមតុល្យអាស្រ័យលើវា ដូច្នេះអាប់ដេត pay_balance ភ្លាម (មិន reload)
-    if (e.column.field == "room_price" || e.column.field == "pay_cash" || e.column.field == "pay_bank" || e.column.field == "pay_note") {
+    // * កែ room_price → endpoint update_room_price; cash / bank / note → update_payment
+    if (e.column.field == "room_price") {
+      dynamic value = num.tryParse(e.value?.toString() ?? "")?.toDouble();
+      updated = await _update(endpoint.FRONT_DESK_UPDATE_ROOM_PRICE, {Front_Desk.ID: fd_id, Front_Desk.ROOM_PRICE: value});
+      _apply_balance(e, updated);
+    }
+    if (e.column.field == "pay_cash" || e.column.field == "pay_bank" || e.column.field == "pay_note") {
       dynamic key = switch (e.column.field) {
-        "room_price" => Front_Desk.ROOM_PRICE,
         "pay_cash" => Front_Desk.PAY_CASH,
         "pay_bank" => Front_Desk.PAY_BANK,
         _ => Front_Desk.PAY_NOTE,
       };
       dynamic value = e.column.field == "pay_note" ? e.value?.toString() : num.tryParse(e.value?.toString() ?? "")?.toDouble();
-      updated = await _update(is_walkin_row ? endpoint.FRONT_DESK_WALK_IN_UPDATE : endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, key: value});
+      updated = await _update(is_walkin_row ? endpoint.FRONT_DESK_UPDATE_WALKIN : endpoint.FRONT_DESK_UPDATE_PAYMENT, {Front_Desk.ID: fd_id, key: value});
       _apply_balance(e, updated);
     }
 
     // * កែសមតុល្យ (balance) ដោយផ្ទាល់ — អនុញ្ញាតតែ admin ប៉ុណ្ណោះ
-    if (e.column.field == "pay_balance" && is_admin) updated = await _update(endpoint.FRONT_DESK_PAY, {Front_Desk.ID: fd_id, Front_Desk.PAY_BALANCE: num.tryParse(e.value?.toString() ?? "")?.toDouble()});
+    if (e.column.field == "pay_balance" && is_admin) updated = await _update(endpoint.FRONT_DESK_UPDATE_PAYMENT, {Front_Desk.ID: fd_id, Front_Desk.PAY_BALANCE: num.tryParse(e.value?.toString() ?? "")?.toDouble()});
 
     // * បរាជ័យ → revert តម្លៃដើម ហើយ reload ដើម្បីយកទិន្នន័យពិតមកវិញ (មិន reload ពេលជោគជ័យ)
     if (updated == null) {

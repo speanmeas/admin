@@ -1,5 +1,4 @@
 class EndPoint {
-	final FRONT_DESK_ROLLOVER = "/front_desk/rollover";
 	final AUTH_ACCESS_TOKEN = "/auth/access_token";
 	final AUTH_SIGN_IN = "/auth/sign_in";
 	final AUTH = "/auth";
@@ -13,14 +12,16 @@ class EndPoint {
 	final FRONT_DESK_CHECK_IN = "/front_desk/check_in";
 	final FRONT_DESK_CHECK_OUT = "/front_desk/check_out";
 	final FRONT_DESK_CLEAN = "/front_desk/clean";
-	final FRONT_DESK_DAILY_REPORT = "/front_desk/daily_report";
-	final FRONT_DESK_MINI_BAR_ITEM = "/front_desk/mini_bar_item";
-	final FRONT_DESK_PAY = "/front_desk/pay";
-	final FRONT_DESK_PENALTY_ITEM = "/front_desk/penalty_item";
-	final FRONT_DESK_UPDATE_CHECK_IN = "/front_desk/update_check_in";
-	final FRONT_DESK_UPDATE_GUEST = "/front_desk/update_guest";
+	final FRONT_DESK_REPORT_DAILY = "/front_desk/report_daily";
+	final FRONT_DESK_ROLLOVER = "/front_desk/rollover";
+	final FRONT_DESK_UPDATE_GUEST_INFO = "/front_desk/update_guest_info";
+	final FRONT_DESK_UPDATE_MINI_BAR_ITEM = "/front_desk/update_mini_bar_item";
+	final FRONT_DESK_UPDATE_NUMBER_OF_GUEST = "/front_desk/update_number_of_guest";
+	final FRONT_DESK_UPDATE_PAYMENT = "/front_desk/update_payment";
+	final FRONT_DESK_UPDATE_PENALTY_ITEM = "/front_desk/update_penalty_item";
+	final FRONT_DESK_UPDATE_ROOM_PRICE = "/front_desk/update_room_price";
+	final FRONT_DESK_UPDATE_WALKIN = "/front_desk/update_walkin";
 	final FRONT_DESK_WALK_IN = "/front_desk/walk_in";
-	final FRONT_DESK_WALK_IN_UPDATE = "/front_desk/walk_in_update";
 	final GUEST_SEARCH = "/guest/search";
 	final SETTING_NOW = "/setting/now";
 	final SETTING_RATE = "/setting/rate";
