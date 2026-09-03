@@ -22,7 +22,6 @@ class EndPoint {
 	final FRONT_DESK_UPDATE_ROOM_PRICE = "/front_desk/update_room_price";
 	final FRONT_DESK_UPDATE_WALKIN = "/front_desk/update_walkin";
 	final FRONT_DESK_WALK_IN = "/front_desk/walk_in";
-	final GUEST_SEARCH = "/guest/search";
 	final SETTING_NOW = "/setting/now";
 	final SETTING_RATE = "/setting/rate";
 	final SETTING_TITLE = "/setting/title";
