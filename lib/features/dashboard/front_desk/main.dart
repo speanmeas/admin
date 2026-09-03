@@ -163,40 +163,41 @@ class _Main_State extends State<Main_> {
 
       header: [
         IconButton(
-          tooltip: "Previous", //
-          icon: Icon(Icons.navigate_before, size: 32), //
+          tooltip: "Carry Over", //
+          icon: Icon(Icons.event_repeat_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () {},
+          onPressed: on_carry_over, //
         ),
-        TextButton(
-          child: Text(
-            DateFormat("yyyy-MM-dd").format(date.subtract(const Duration(hours: 7))), //
-            style: TextStyle(
-              fontSize: 16, //
-              fontWeight: FontWeight.bold, //
-            ),
-          ),
 
-          //   onPressed: pick_date,
-          onPressed: () {},
-        ),
-        IconButton(
-          tooltip: "RollOver", //
-          icon: Icon(Icons.navigate_next, size: 32), //
-          padding: EdgeInsets.all(0),
-          constraints: BoxConstraints(),
-          onPressed: () {},
-        ),
-        const Spacer(), //
+        const Spacer(),
+
         // IconButton(
-        //   tooltip: "Rollover",
-        //   icon: Icon(Icons.event_repeat_outlined, size: 30), //
+        //   tooltip: "Previous", //
+        //   icon: Icon(Icons.navigate_before, size: 32), //
         //   padding: EdgeInsets.all(0),
         //   constraints: BoxConstraints(),
         //   onPressed: () {},
         // ),
+        Text(
+          DateFormat("yyyy-MM-dd").format(date.subtract(const Duration(hours: 7))), //
+          style: TextStyle(
+            fontSize: 16, //
+            color: Colors.blue,
+            fontWeight: FontWeight.bold, //
+          ),
+        ),
 
+        //   onPressed: pick_date,
+
+        // IconButton(
+        //   tooltip: "RollOver", //
+        //   icon: Icon(Icons.navigate_next, size: 32), //
+        //   padding: EdgeInsets.all(0),
+        //   constraints: BoxConstraints(),
+        //   onPressed: () {},
+        // ),
+        const Spacer(), //
         // IconButton(
         //   tooltip: is_filter ? "Hide Filter" : "Show Filter", //
         //   icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
@@ -1025,6 +1026,15 @@ class _Main_State extends State<Main_> {
       room_id: r[Room.ID], //
     );
     if (v == null) return;
+    on_load_room();
+    on_load_front_desk();
+  }
+
+  void on_carry_over() async {
+    dynamic tmp = await dio.post(endpoint.FRONT_DESK_CARRY_OVER, data: {});
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    snackbar(ct: context, ms: "Carried Over", cl: Colors.green);
     on_load_room();
     on_load_front_desk();
   }
