@@ -6,7 +6,6 @@ import "package:speanmeas/core/utility/all.dart";
 Future<bool?> dialog_clean({
   required BuildContext context, //
   required String lead,
-  required String front_desk_id, //
   required String room_id, //
 }) async {
   final result = await showDialog<bool>(
@@ -56,7 +55,7 @@ Future<bool?> dialog_clean({
               dynamic tmp = await dio.post(
                 endpoint.FRONT_DESK_CLEAN,
                 data: {
-                  Front_Desk.ID: front_desk_id, //
+                  Front_Desk.ROOM_ID: room_id, //
                 },
               );
               if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
@@ -84,8 +83,7 @@ class _Main_State extends State<Main_> {
             final v = await dialog_clean(
               context: context, //
               room_id: "111111111122222222223333", //
-              front_desk_id: "111111111122222222223333", //
-              lead: "Check-Out from Room 201", //
+              lead: "Clean Room 201", //
             );
             if (v == null) return;
             // page = v;

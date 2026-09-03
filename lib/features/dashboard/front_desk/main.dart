@@ -8,9 +8,12 @@ import "package:speanmeas/core/utility/all.dart";
 import "dialog/add_mini_bar.dart";
 import "dialog/change_room.dart";
 import "dialog/check_in.dart";
+import "dialog/check_out.dart";
+import "dialog/clean.dart";
 import "dialog/list_mini_bar.dart";
 import "dialog/list_penalty.dart";
-import "dialog/pick_datetime.dart";
+import "dialog/update_check_in_at.dart";
+import "dialog/update_check_out_at.dart";
 import "dialog/search_guest.dart";
 
 class _Main_State extends State<Main_> {
@@ -32,6 +35,7 @@ class _Main_State extends State<Main_> {
   bool is_admin = false;
   bool is_refresh = false;
   bool is_filter = false;
+  bool show_check_out = false;
   // * ########## BLOCK VARIABLES END ##########
 
   // * ########## BLOCK DESIGN ##########
@@ -159,6 +163,32 @@ class _Main_State extends State<Main_> {
       ],
 
       header: [
+        // IconButton(
+        //   tooltip: "Previous", //
+        //   icon: Icon(Icons.navigate_before, size: 32), //
+        //   padding: EdgeInsets.all(0),
+        //   constraints: BoxConstraints(),
+        //   onPressed: () {},
+        // ),
+        Text(
+          DateFormat("yyyy-MM-dd").format(date.subtract(const Duration(hours: 7))), //
+          style: TextStyle(
+            fontSize: 16, //
+            color: Colors.blue,
+            fontWeight: FontWeight.bold, //
+          ),
+        ),
+
+        //   onPressed: pick_date,
+
+        // IconButton(
+        //   tooltip: "RollOver", //
+        //   icon: Icon(Icons.navigate_next, size: 32), //
+        //   padding: EdgeInsets.all(0),
+        //   constraints: BoxConstraints(),
+        //   onPressed: () {},
+        // ),
+        const Spacer(), //
         if (is_admin)
           IconButton(
             tooltip: "Carry Over", //
@@ -177,41 +207,26 @@ class _Main_State extends State<Main_> {
             onPressed: on_over_time, //
           ),
 
-        const Spacer(),
-
-        // IconButton(
-        //   tooltip: "Previous", //
-        //   icon: Icon(Icons.navigate_before, size: 32), //
-        //   padding: EdgeInsets.all(0),
-        //   constraints: BoxConstraints(),
-        //   onPressed: () {},
-        // ),
-        Text(
-          "Shift: " + DateFormat("yyyy-MM-dd").format(date.subtract(const Duration(hours: 7))), //
-          style: TextStyle(
-            fontSize: 16, //
-            color: Colors.blue,
-            fontWeight: FontWeight.bold, //
-          ),
+        IconButton(
+          tooltip: show_check_out ? "Hide Check-out" : "Show Check-out", //
+          icon: Icon(show_check_out ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 30), //
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(),
+          onPressed: () {
+            show_check_out = !show_check_out;
+            on_update_grid();
+            setState(() {});
+          }, //
         ),
 
-        //   onPressed: pick_date,
+        IconButton(
+          tooltip: is_filter ? "Hide Filter" : "Show Filter", //
+          icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(),
+          onPressed: on_filter, // not yet implemented
+        ),
 
-        // IconButton(
-        //   tooltip: "RollOver", //
-        //   icon: Icon(Icons.navigate_next, size: 32), //
-        //   padding: EdgeInsets.all(0),
-        //   constraints: BoxConstraints(),
-        //   onPressed: () {},
-        // ),
-        const Spacer(), //
-        // IconButton(
-        //   tooltip: is_filter ? "Hide Filter" : "Show Filter", //
-        //   icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
-        //   padding: EdgeInsets.all(0),
-        //   constraints: BoxConstraints(),
-        //   onPressed: on_filter, // not yet implemented
-        // ),
         IconButton(
           tooltip: "Reload", //
           icon: Icon(Icons.refresh, size: 30), //
@@ -294,7 +309,7 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
                   ),
-                  if (!is_checked_out(rc) && !is_row_mini_bar(rc))
+                  if (!is_row_mini_bar(rc))
                     IconButton(
                       tooltip: "Change Room", //
                       icon: Icon(Icons.swap_horiz_outlined),
@@ -326,16 +341,13 @@ class _Main_State extends State<Main_> {
                     ),
                   ),
 
-                  if (!is_checked_out(rc) && !is_row_mini_bar(rc))
+                  if (!is_row_mini_bar(rc))
                     IconButton(
                       tooltip: "កែពេលចូល", //
                       icon: Icon(Icons.calendar_month_outlined),
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
-                      onPressed: () async {
-                        final v = await dialog_pick_datetime(context: context, rc: rc, is_check_in: true);
-                        if (v == true) on_load_front_desk();
-                      }, //
+                      onPressed: () => on_update_check_in_at(rc), //
                     ),
                 ],
               );
@@ -386,6 +398,14 @@ class _Main_State extends State<Main_> {
                       ),
                     ),
                   ),
+                  if (!is_row_mini_bar(rc) && rc.cell.value != null)
+                    IconButton(
+                      tooltip: "កែពេលចេញ", //
+                      icon: Icon(Icons.calendar_month_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_update_check_out_at(rc), //
+                    ),
                 ],
               );
             },
@@ -835,46 +855,48 @@ class _Main_State extends State<Main_> {
 
   void on_update_grid() {
     state_manager.removeAllRows();
+    int index = 0;
     state_manager.appendRows([
-      for (var (i, fd) in front_desks.indexed)
-        PlutoRow(
-          cells: {
-            for (var c in list_column) //
-              c: (() {
-                if (c == "_id") return PlutoCell(value: fd.id ?? "");
-                if (c == "index") return PlutoCell(value: i + 1);
-                if (c == "room") return PlutoCell(value: fd_room(fd)?.number ?? "");
-                if (c == "guest_name") return PlutoCell(value: fd_guest(fd)?.full_name ?? "");
-                if (c == "guest_phone") return PlutoCell(value: fd_guest(fd)?.phone_number ?? "");
-                if (c == "check_in_people") return PlutoCell(value: fd.number_of_guest ?? 0);
-                if (c == "check_in_at") return PlutoCell(value: fd.check_in_at);
+      for (var fd in front_desks)
+        if (show_check_out || fd.check_out_at == null)
+          PlutoRow(
+            cells: {
+              for (var c in list_column) //
+                c: (() {
+                  if (c == "_id") return PlutoCell(value: fd.id ?? "");
+                  if (c == "index") return PlutoCell(value: ++index);
+                  if (c == "room") return PlutoCell(value: fd_room(fd)?.number ?? "");
+                  if (c == "guest_name") return PlutoCell(value: fd_guest(fd)?.full_name ?? "");
+                  if (c == "guest_phone") return PlutoCell(value: fd_guest(fd)?.phone_number ?? "");
+                  if (c == "check_in_people") return PlutoCell(value: fd.number_of_guest ?? 0);
+                  if (c == "check_in_at") return PlutoCell(value: fd.check_in_at);
 
-                if (c == "check_in_duration") {
-                  if (is_walkin(fd)) return PlutoCell(value: 0);
-                  DateTime? in_at = fd.check_in_at;
-                  DateTime? out_at = fd.check_out_at;
-                  if (in_at == null) return PlutoCell(value: 0);
-                  if (out_at == null) return PlutoCell(value: DateTime.now().difference(in_at).inMinutes);
-                  return PlutoCell(value: out_at.difference(in_at).inMinutes);
-                }
+                  if (c == "check_in_duration") {
+                    if (is_walkin(fd)) return PlutoCell(value: 0);
+                    DateTime? in_at = fd.check_in_at;
+                    DateTime? out_at = fd.check_out_at;
+                    if (in_at == null) return PlutoCell(value: 0);
+                    if (out_at == null) return PlutoCell(value: DateTime.now().difference(in_at).inMinutes);
+                    return PlutoCell(value: out_at.difference(in_at).inMinutes);
+                  }
 
-                if (c == "check_out_at") return PlutoCell(value: fd.check_out_at);
+                  if (c == "check_out_at") return PlutoCell(value: fd.check_out_at);
 
-                // * room payment fields are inline on the stay (no Room_Pay child array)
-                if (c == "room_price") return PlutoCell(value: fd.room_price);
-                if (c == "mini_bar_price") return PlutoCell(value: fd.mini_bar_price);
-                if (c == "penalty_price") return PlutoCell(value: fd.penalty_price);
-                if (c == "pay_cash") return PlutoCell(value: fd.pay_cash);
-                if (c == "pay_bank") return PlutoCell(value: fd.pay_bank);
-                if (c == "pay_balance") return PlutoCell(value: fd.pay_balance);
-                if (c == "pay_note") return PlutoCell(value: fd.pay_note ?? "");
-                if (c == "check_in_by") return PlutoCell(value: fd.check_in_by is User_Show ? (fd.check_in_by as User_Show).full_name : (fd.check_in_by ?? ""));
-                if (c == "check_out_by") return PlutoCell(value: fd.check_out_by is User_Show ? (fd.check_out_by as User_Show).full_name : (fd.check_out_by ?? ""));
+                  // * room payment fields are inline on the stay (no Room_Pay child array)
+                  if (c == "room_price") return PlutoCell(value: fd.room_price);
+                  if (c == "mini_bar_price") return PlutoCell(value: fd.mini_bar_price);
+                  if (c == "penalty_price") return PlutoCell(value: fd.penalty_price);
+                  if (c == "pay_cash") return PlutoCell(value: fd.pay_cash);
+                  if (c == "pay_bank") return PlutoCell(value: fd.pay_bank);
+                  if (c == "pay_balance") return PlutoCell(value: fd.pay_balance);
+                  if (c == "pay_note") return PlutoCell(value: fd.pay_note ?? "");
+                  if (c == "check_in_by") return PlutoCell(value: fd.check_in_by is User_Show ? (fd.check_in_by as User_Show).full_name : (fd.check_in_by ?? ""));
+                  if (c == "check_out_by") return PlutoCell(value: fd.check_out_by is User_Show ? (fd.check_out_by as User_Show).full_name : (fd.check_out_by ?? ""));
 
-                return PlutoCell(value: "");
-              })(),
-          },
-        ),
+                  return PlutoCell(value: "");
+                })(),
+            },
+          ),
     ]);
 
     setState(() {});
@@ -1026,6 +1048,20 @@ class _Main_State extends State<Main_> {
     on_load_front_desk();
   }
 
+  void on_update_check_in_at(PlutoColumnRendererContext rc) async {
+    final fd_id = rc.row.cells["_id"]?.value;
+    if (fd_id == null) return;
+    final v = await dialog_update_check_in_at(context: context, fd_id: fd_id);
+    if (v == true) on_load_front_desk();
+  }
+
+  void on_update_check_out_at(PlutoColumnRendererContext rc) async {
+    final fd_id = rc.row.cells["_id"]?.value;
+    if (fd_id == null) return;
+    final v = await dialog_update_check_out_at(context: context, fd_id: fd_id);
+    if (v == true) on_load_front_desk();
+  }
+
   void on_check_in(dynamic r) async {
     var v = await dialog_check_in(
       context: context, //
@@ -1059,29 +1095,25 @@ class _Main_State extends State<Main_> {
     String? fd_id = r[Room.FRONT_DESK_ID];
     if (fd_id == null) return snackbar(ct: context, ms: "No stay to check out", cl: Colors.red);
 
-    dynamic tmp = await dio.post(
-      endpoint.FRONT_DESK_CHECK_OUT,
-      data: {
-        Front_Desk.ID: fd_id, //
-      },
+    var v = await dialog_check_out(
+      context: context, //
+      lead: "Room ${r[Room.NUMBER]}", //
+      room_id: r[Room.ID], //
     );
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    if (v == null) return;
 
-    snackbar(ct: context, ms: "Checked Out", cl: Colors.green);
     on_load_room();
     on_load_front_desk();
   }
 
   void on_clean(dynamic r) async {
-    dynamic tmp = await dio.post(
-      endpoint.FRONT_DESK_CLEAN,
-      data: {
-        Front_Desk.ROOM_ID: r[Room.ID], //
-      },
+    var v = await dialog_clean(
+      context: context, //
+      lead: "Room ${r[Room.NUMBER]}", //
+      room_id: r[Room.ID], //
     );
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    if (v == null) return;
 
-    snackbar(ct: context, ms: "Cleaned", cl: Colors.green);
     on_load_room();
     on_load_front_desk();
   }
@@ -1102,19 +1134,6 @@ class _Main_State extends State<Main_> {
     return front_desks.where((x) => x.id == fd_id).firstOrNull;
   }
 
-  // * ហាមប្រើប្រាស់ ប្រសិនបើបាន check out រួចហើយ
-  bool checkout_guard(PlutoColumnRendererContext rc) {
-    Front_Desk? fd = row_stay(rc);
-    if (fd?.check_out_at != null) {
-      snackbar(ct: context, ms: "Already checked out", cl: Colors.red);
-      return true;
-    }
-    return false;
-  }
-
-  // * ពិនិត្យថា stay បាន check out រួចហើយឬនៅ (សម្រាប់លាក់ប៊ូតុង)
-  bool is_checked_out(PlutoColumnRendererContext rc) => row_stay(rc)?.check_out_at != null;
-
   // * ពិនិត្យថា stay ជា Walk-In (លក់ minibar តែប៉ុណ្ណោះ)
   bool is_row_mini_bar(PlutoColumnRendererContext rc) {
     Front_Desk? fd = row_stay(rc);
@@ -1123,22 +1142,20 @@ class _Main_State extends State<Main_> {
   }
 
   void on_change_room(PlutoColumnRendererContext rc) async {
-    if (checkout_guard(rc)) return;
-    String? fd_id = row_stay_id(rc);
-    if (fd_id == null) return snackbar(ct: context, ms: "No stay to change room", cl: Colors.red);
+    Front_Desk? fd = row_stay(rc);
+    String? room_id = fd == null ? null : fd_room(fd)?.id;
+    if (room_id == null) return snackbar(ct: context, ms: "No stay to change room", cl: Colors.red);
 
     var v = await dialog_change_room(
       context: context, //
       lead: "Room ${rc.row.cells["room"]?.value}", //
-      front_desk_id: fd_id, //
-      rooms: rooms.where((r) => r[Room.STATUS] == "Available").toList(), //
+      room_id: room_id, //
     );
     if (v == null) return;
     on_load_front_desk();
   }
 
   void on_penalty_item(PlutoColumnRendererContext rc) async {
-    if (checkout_guard(rc)) return;
     String? fd_id = row_stay_id(rc);
     if (fd_id == null) return snackbar(ct: context, ms: "No stay to update penalty", cl: Colors.red);
 
@@ -1162,7 +1179,6 @@ class _Main_State extends State<Main_> {
   }
 
   void on_mini_bar_item(PlutoColumnRendererContext rc) async {
-    if (checkout_guard(rc)) return;
     String? fd_id = row_stay_id(rc);
     if (fd_id == null) return snackbar(ct: context, ms: "No stay to update mini bar", cl: Colors.red);
 

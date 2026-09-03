@@ -3,13 +3,20 @@ import "package:flutter/material.dart";
 import "package:speanmeas/core/utility/all.dart";
 import "package:speanmeas/core/widget/select/select_dynamic.dart";
 
-// * បង្ហាញ dialog សម្រាប់ផ្លាស់ប្តូរបន្ទប់ (change room)
+// * បង្ហាញ dialog សម្រាប់ផ្លាស់ប្តូរបន្ទប់ (change room) — ដកខ្លួនឯងនូវបញ្ជីបន្ទប់ Available
 Future<bool?> dialog_change_room({
   required BuildContext context, //
   required String lead,
-  required String front_desk_id, //
-  required List<dynamic> rooms, //
+  required String room_id, //
 }) async {
+  // * ទាញបន្ទប់ Available ពី server ដោយខ្លួនឯង
+  dynamic tmp = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
+  if (tmp == null) {
+    snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    return null;
+  }
+  List<dynamic> rooms = (tmp.data as List<dynamic>? ?? []).where((r) => r[Room.STATUS] == "Available").toList();
+
   final result = await showDialog<bool>(
     context: context,
     builder: (context) {
@@ -78,7 +85,7 @@ Future<bool?> dialog_change_room({
               dynamic tmp_fd = await dio.post(
                 endpoint.FRONT_DESK_CHANGE,
                 data: {
-                  Front_Desk.ID: front_desk_id, //
+                  Front_Desk.ROOM_ID: room_id, //
                   "new_room_id": new_room_id, //
                 },
               );
@@ -105,11 +112,7 @@ class _Main_State extends State<Main_> {
           onPressed: () async {
             final v = await dialog_change_room(
               context: context, //
-              front_desk_id: "111111111122222222223333", //
-              rooms: [
-                {Room.ID: "111111111122222222223333", Room.NUMBER: "201"},
-                {Room.ID: "111111111122222222224444", Room.NUMBER: "202"},
-              ],
+              room_id: "111111111122222222223333", //
               lead: "Change Room 201", //
             );
             if (v == null) return;

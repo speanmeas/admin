@@ -4,7 +4,8 @@ import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
 import "package:speanmeas/features/dashboard/front_desk/dialog/list_mini_bar.dart";
 import "package:speanmeas/features/dashboard/front_desk/dialog/list_penalty.dart";
-import "package:speanmeas/features/dashboard/front_desk/dialog/pick_datetime.dart";
+import "package:speanmeas/features/dashboard/front_desk/dialog/update_check_in_at.dart";
+import "package:speanmeas/features/dashboard/front_desk/dialog/update_check_out_at.dart";
 import "package:speanmeas/features/dashboard/front_desk/dialog/search_guest.dart";
 
 class _Main_State extends State<Main_> {
@@ -248,10 +249,19 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  // * កែពេលចូល/ចេញ តាម dialog កាលបរិច្ឆេទ (admin តែប៉ុណ្ណោះ)
-  Future<void> pick_datetime(PlutoColumnRendererContext rc, {required bool is_check_in}) async {
-    if (!is_admin) return;
-    final v = await dialog_pick_datetime(context: context, rc: rc, is_check_in: is_check_in);
+  // * កែពេលចូល តាម dialog កាលបរិច្ឆេទ (admin តែប៉ុណ្ណោះ)
+  void on_update_check_in_at(PlutoColumnRendererContext rc) async {
+    final fd_id = rc.row.cells["_id"]?.value;
+    if (fd_id == null) return;
+    final v = await dialog_update_check_in_at(context: context, fd_id: fd_id);
+    if (v == true) init();
+  }
+
+  // * កែពេលចេញ តាម dialog កាលបរិច្ឆេទ (admin តែប៉ុណ្ណោះ)
+  void on_update_check_out_at(PlutoColumnRendererContext rc) async {
+    final fd_id = rc.row.cells["_id"]?.value;
+    if (fd_id == null) return;
+    final v = await dialog_update_check_out_at(context: context, fd_id: fd_id);
     if (v == true) init();
   }
 
@@ -525,7 +535,7 @@ class _Main_State extends State<Main_> {
                       icon: Icon(Icons.calendar_month_outlined),
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
-                      onPressed: () => pick_datetime(rc, is_check_in: true), //
+                      onPressed: () => on_update_check_in_at(rc), //
                     ),
                 ],
               );
@@ -566,7 +576,7 @@ class _Main_State extends State<Main_> {
                       icon: Icon(Icons.calendar_month_outlined),
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
-                      onPressed: () => pick_datetime(rc, is_check_in: false), //
+                      onPressed: () => on_update_check_out_at(rc), //
                     ),
                 ],
               );
