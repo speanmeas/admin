@@ -70,6 +70,7 @@ Future<bool?> dialog_search_guest({
                     children: [
                       Expanded(
                         child: TypeAheadField<String>(
+                          animationDuration: Duration.zero, //
                           // offset: const Offset(0, 0),
                           // decorationBuilder: (context, child) {
                           //   return DecoratedBox(

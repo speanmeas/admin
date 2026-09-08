@@ -183,7 +183,7 @@ Future<bool?> dialog_select_mini_bar({
                             child: Text("No item found", style: TextStyle(color: Colors.grey)),
                           )
                         : ListView.separated(
-                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                            padding: const EdgeInsets.fromLTRB(8, 0, 16, 8),
                             itemCount: list_show().length,
                             separatorBuilder: (_, _) => const Divider(height: 1, color: Colors.grey),
                             itemBuilder: (context, index) {
@@ -272,6 +272,11 @@ Future<bool?> dialog_select_mini_bar({
             actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
             actionsAlignment: MainAxisAlignment.center,
             actions: [
+              OutlinedButton.icon(
+                icon: const Icon(Icons.close), //
+                label: const Text("Cancel"),
+                onPressed: () => Navigator.pop(context, false),
+              ),
               // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស និងរក្សាទុកទំនិញ
               OutlinedButton.icon(
                 icon: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check), //

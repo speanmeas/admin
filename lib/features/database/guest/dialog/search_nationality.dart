@@ -68,6 +68,7 @@ Future<String?> dialog_search_nationality({
                     children: [
                       Expanded(
                         child: TypeAheadField<String>(
+                          animationDuration: Duration.zero, //
                           itemBuilder: (context, item) => ListTile(title: Text(item)),
                           suggestionsCallback: search,
                           builder: (context, controller, focusNode) {

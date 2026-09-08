@@ -64,6 +64,7 @@ Future<bool?> dialog_select_room({
                   const Divider(height: 0, color: Colors.grey),
                   const SizedBox(height: 8),
                   TypeAheadField<String>(
+                    animationDuration: Duration.zero, //
                     itemBuilder: (context, item) => ListTile(
                       title: Text(item),
                       leading: const Icon(Icons.meeting_room_outlined, color: Colors.blue),
@@ -104,7 +105,7 @@ Future<bool?> dialog_select_room({
               OutlinedButton.icon(
                 icon: const Icon(Icons.close), //
                 label: const Text("Cancel"),
-                onPressed: is_loading ? null : () => Navigator.pop(context, false),
+                onPressed: () => Navigator.pop(context, false),
               ),
               OutlinedButton.icon(
                 icon: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check), //

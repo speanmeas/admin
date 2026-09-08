@@ -274,7 +274,7 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.calendar_month_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () => on_change_datetime(rc, Front_Desk.CHECK_IN_AT), //
+                    onPressed: () => on_change_check_in_datetime(rc), //
                   ),
                 ],
               );
@@ -316,7 +316,7 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.calendar_month_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () => on_change_datetime(rc, Front_Desk.CHECK_OUT_AT), //
+                    onPressed: () => on_change_check_out_datetime(rc), //
                   ),
                 ],
               );
@@ -706,10 +706,12 @@ class _Main_State extends State<Main_> {
   void on_changed(PlutoGridOnChangedEvent e) async {
     final id = e.row.cells[Front_Desk.ID]?.value;
 
-    // * guest_name មិនមែនជា field របស់ Front_Desk ទេ → បញ្ជូនទៅ update guest info
+    // * guest_name / guest_phone មិនមែនជា field របស់ Front_Desk ទេ → បញ្ជូនទៅ update guest info
     dynamic tmp;
     if (e.column.field == "guest_name") {
       tmp = await dio.post(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, data: {Front_Desk.ID: id, Guest.FULL_NAME: e.value});
+    } else if (e.column.field == "guest_phone") {
+      tmp = await dio.post(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, data: {Front_Desk.ID: id, Guest.PHONE_NUMBER: e.value});
     } else {
       tmp = await dio.post(endpoint.FRONT_DESK_UPDATE, data: {Front_Desk.ID: id, e.column.field: e.value});
     }
@@ -724,28 +726,30 @@ class _Main_State extends State<Main_> {
     on_reload();
   }
 
-  void on_change_datetime(PlutoColumnRendererContext rc, String field) async {
+  // * កែ check_in_at — dialog ជ្រើសកាលបរិច្ឆេទ + ម៉ោង (+_by ដោយស្វ័យប្រវត្តិ)
+  void on_change_check_in_datetime(PlutoColumnRendererContext rc) async {
+    DateTime? dt = rc.cell.value is DateTime ? rc.cell.value as DateTime : null;
+    final id = rc.row.cells[Front_Desk.ID]?.value;
+    if (id == null) return;
+
+    final v = await dialog_select_check_in_datetime(context: context, front_desk_id: id, initial: dt);
+    if (v == null) return;
+    on_reload();
+  }
+
+  // * កែ check_out_at — dialog ជ្រើសកាលបរិច្ឆេទ + ម៉ោង (guard ទល់នឹង check_in_at)
+  void on_change_check_out_datetime(PlutoColumnRendererContext rc) async {
     DateTime? dt = rc.cell.value is DateTime ? rc.cell.value as DateTime : null;
     final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
     final check_in = rc.row.cells[Front_Desk.CHECK_IN_AT]?.value;
 
-    bool? v;
-    if (field == Front_Desk.CHECK_OUT_AT) {
-      v = await dialog_select_check_out_datetime(
-        context: context, //
-        front_desk_id: id, //
-        initial: dt, //
-        check_in_at: check_in is DateTime ? check_in : null, //
-      );
-    } else {
-      v = await dialog_select_check_in_datetime(
-        context: context, //
-        front_desk_id: id, //
-        initial: dt, //
-      );
-    }
-
+    final v = await dialog_select_check_out_datetime(
+      context: context, //
+      front_desk_id: id, //
+      initial: dt, //
+      check_in_at: check_in is DateTime ? check_in : null, //
+    );
     if (v == null) return;
     on_reload();
   }

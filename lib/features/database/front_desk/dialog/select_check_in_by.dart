@@ -19,6 +19,7 @@ Future<bool?> dialog_select_check_in_by({
 
   String? new_user_id;
   bool is_loading = false;
+  TextEditingController? user_ctrl;
 
   // * ស្វែងរកអ្នកប្រើដោយ full_name
   List<String> search(String q) {
@@ -62,9 +63,11 @@ Future<bool?> dialog_select_check_in_by({
                   Divider(height: 1, color: Colors.grey),
                   SizedBox(height: 8),
                   TypeAheadField<String>(
+                    animationDuration: Duration.zero, //
                     itemBuilder: (context, item) => ListTile(title: Text(item)),
                     suggestionsCallback: search,
                     builder: (context, controller, focusNode) {
+                      user_ctrl = controller;
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         if (!focusNode.hasFocus) focusNode.requestFocus();
                       });
@@ -81,6 +84,7 @@ Future<bool?> dialog_select_check_in_by({
                       );
                     },
                     onSelected: (v) {
+                      user_ctrl?.text = v;
                       for (var u in users) {
                         if ((u[User.FULL_NAME] ?? "").toString() == v) {
                           new_user_id = u[User.ID];
@@ -97,7 +101,7 @@ Future<bool?> dialog_select_check_in_by({
               OutlinedButton.icon(
                 icon: const Icon(Icons.close), //
                 label: const Text("Cancel"),
-                onPressed: is_loading ? null : () => Navigator.pop(context, false),
+                onPressed: () => Navigator.pop(context, false),
               ),
               OutlinedButton.icon(
                 icon: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check), //
@@ -171,4 +175,3 @@ void main() {
     ),
   );
 }
-

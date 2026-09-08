@@ -65,6 +65,7 @@ Future<bool?> dialog_search_guest({
                   const Divider(height: 0, color: Colors.grey),
                   const SizedBox(height: 8),
                   TypeAheadField<String>(
+                    animationDuration: Duration.zero, //
                     itemBuilder: (context, item) => ListTile(title: Text(item)),
                     suggestionsCallback: search,
                     builder: (context, controller, focusNode) {
