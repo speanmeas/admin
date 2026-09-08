@@ -205,23 +205,13 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  glob.init();
-  lang.init();
-  //
+void main() {
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: glob),
-        ChangeNotifierProvider.value(value: lang),
-      ],
-      child: MaterialApp(
-        home: const Main_(), //
-        theme: theme_data, //
-        title: "Development", //
-        debugShowCheckedModeBanner: false, //
-      ),
+    MaterialApp(
+      home: const Main_(), //
+      theme: theme_data, //
+      title: "Development", //
+      debugShowCheckedModeBanner: false, //
     ),
   );
 }

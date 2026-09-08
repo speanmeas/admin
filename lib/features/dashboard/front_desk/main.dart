@@ -1077,7 +1077,7 @@ class _Main_State extends State<Main_> {
   }
 
   void on_over_time() async {
-    dynamic tmp = await dio.post(endpoint.FRONT_DESK_OVERTIME, data: {});
+    dynamic tmp = await dio.post(endpoint.FRONT_DESK_OVER_TIME, data: {});
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Over Time Applied", cl: Colors.green);
