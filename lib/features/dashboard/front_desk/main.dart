@@ -4,7 +4,7 @@ import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 import "dialog/add_mini_bar.dart";
-import "dialog/change_room.dart";
+import "dialog/select_room.dart";
 import "dialog/check_in.dart";
 import "dialog/check_out.dart";
 import "dialog/clean.dart";
@@ -30,7 +30,7 @@ class _Main_State extends State<Main_> {
 
   bool is_admin = false;
   bool is_filter = false;
-  bool show_check_out = false;
+  bool show_carry_over = true; // * លាក់/បង្ហាញ stay ដែលចូលពីថ្ងៃមុន
   // * ########## BLOCK VARIABLES END ##########
 
   // * ########## BLOCK DESIGN ##########
@@ -158,6 +158,7 @@ class _Main_State extends State<Main_> {
       ],
 
       header: [
+        SizedBox(width: 8), //
         // IconButton(
         //   tooltip: "Previous", //
         //   icon: Icon(Icons.navigate_before, size: 32), //
@@ -169,8 +170,8 @@ class _Main_State extends State<Main_> {
           DateFormat("yyyy-MM-dd").format(date.subtract(const Duration(hours: 7))), //
           style: TextStyle(
             fontSize: 16, //
-            color: Colors.blue,
             fontWeight: FontWeight.bold, //
+            // color: Colors.blue,
           ),
         ),
 
@@ -203,12 +204,13 @@ class _Main_State extends State<Main_> {
           ),
 
         IconButton(
-          tooltip: show_check_out ? "Hide Check-out" : "Show Check-out", //
-          icon: Icon(show_check_out ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 30), //
+          tooltip: show_carry_over ? "Hide Carry-over" : "Show Carry-over", //
+          icon: Icon(show_carry_over ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
           onPressed: () {
-            show_check_out = !show_check_out;
+            // * todo: toggle បង្ហាញ stay ដែលចូលពីថ្ងៃមុន (room_price = 0 និង check_out_at = before today 2pm)
+            show_carry_over = !show_carry_over;
             on_update_grid();
             setState(() {});
           }, //
@@ -850,9 +852,12 @@ class _Main_State extends State<Main_> {
   void on_update_grid() {
     state_manager.removeAllRows();
     int index = 0;
+    // * stay ពីថ្ងៃមុន = room_price = 0 និង check_out_at មុនម៉ោង 2 រសៀលថ្ងៃនេះ
+    final now = DateTime.now();
+    final cutoff_2pm = DateTime(now.year, now.month, now.day, 14, 0);
     state_manager.appendRows([
       for (var fd in front_desks)
-        if (show_check_out || fd.check_out_at == null)
+        if (show_carry_over || !(fd.room_price == 0 && (fd.check_out_at == null || !fd.check_out_at!.isAfter(cutoff_2pm))))
           PlutoRow(
             cells: {
               for (var c in list_column) //
@@ -1045,14 +1050,14 @@ class _Main_State extends State<Main_> {
   void on_update_check_in_at(PlutoColumnRendererContext rc) async {
     final fd_id = rc.row.cells["_id"]?.value;
     if (fd_id == null) return;
-    final v = await dialog_update_check_in_at(context: context, fd_id: fd_id);
+    final v = await dialog_update_check_in_at(context: context, fd_id: fd_id, initial: parse_datetime(rc.cell.value));
     if (v == true) on_load_front_desk();
   }
 
   void on_update_check_out_at(PlutoColumnRendererContext rc) async {
     final fd_id = rc.row.cells["_id"]?.value;
     if (fd_id == null) return;
-    final v = await dialog_update_check_out_at(context: context, fd_id: fd_id);
+    final v = await dialog_update_check_out_at(context: context, fd_id: fd_id, initial: parse_datetime(rc.cell.value));
     if (v == true) on_load_front_desk();
   }
 
@@ -1140,12 +1145,13 @@ class _Main_State extends State<Main_> {
     String? room_id = fd == null ? null : fd_room(fd)?.id;
     if (room_id == null) return snackbar(ct: context, ms: "No stay to change room", cl: Colors.red);
 
-    var v = await dialog_change_room(
+    var v = await dialog_select_room(
       context: context, //
       lead: "Room ${rc.row.cells["room"]?.value}", //
       room_id: room_id, //
     );
     if (v == null) return;
+    on_load_room();
     on_load_front_desk();
   }
 
@@ -1160,12 +1166,10 @@ class _Main_State extends State<Main_> {
         if (it is Penalty_Item) Order_Penalty.fromJson(it.toJson()),
     ];
 
-    final saved = await showDialog<bool>(
-      context: context,
-      builder: (context) => List_Penalty(
-        list_order_penalty: orders, //
-        front_desk_id: fd_id, //
-      ),
+    final saved = await dialog_select_penalty(
+      context: context, //
+      list_order_penalty: orders, //
+      front_desk_id: fd_id, //
     );
     if (saved != true) return;
 
@@ -1183,13 +1187,11 @@ class _Main_State extends State<Main_> {
         if (it is Mini_Bar_Item) Order_Mini_Bar.fromJson(it.toJson()),
     ];
 
-    final saved = await showDialog<bool>(
-      context: context,
-      builder: (context) => List_Mini_Bar(
-        list_order_mini_bar: orders, //
-        front_desk_id: fd_id, //
-        is_walk_in: is_row_mini_bar(rc), //
-      ),
+    final saved = await dialog_select_mini_bar(
+      context: context, //
+      list_order_mini_bar: orders, //
+      front_desk_id: fd_id, //
+      is_walk_in: is_row_mini_bar(rc), //
     );
     if (saved != true) return;
 

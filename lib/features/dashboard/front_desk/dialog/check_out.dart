@@ -2,70 +2,83 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog សម្រាប់ជ្រើសរើសលេខទំព័រ
+// * បង្ហាញ dialog បញ្ជាក់ការចេញស្នាក់ (Check-Out) — រួមទាំង dio request និង snackbar
+// * — Confirm ធ្វើ request តែប៉ុណ្ណោះ (FRONT_DESK_CHECK_OUT)
 Future<bool?> dialog_check_out({
   required BuildContext context, //
   required String lead,
   required String room_id, //
 }) async {
+  bool is_loading = false;
+
   final result = await showDialog<bool>(
     context: context,
     builder: (context) {
-      return AlertDialog(
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        alignment: Alignment.topCenter,
-        titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
-        contentPadding: const EdgeInsets.all(4),
-        actionsPadding: const EdgeInsets.all(4),
-        actionsAlignment: MainAxisAlignment.center,
-        title: Row(
-          mainAxisAlignment: .center,
-          children: [
-            Text(
-              lead, //
-              style: TextStyle(
-                fontSize: 20, //
-                fontWeight: FontWeight.bold,
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+            alignment: Alignment.topCenter,
+            titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+            contentPadding: const EdgeInsets.all(4),
+            actionsPadding: const EdgeInsets.all(4),
+            actionsAlignment: MainAxisAlignment.center,
+            title: Row(
+              mainAxisAlignment: .center,
+              children: [
+                Text(
+                  lead, //
+                  style: TextStyle(
+                    fontSize: 20, //
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            content: SizedBox(
+              width: 400,
+              child: Column(
+                spacing: 8,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Divider(height: 1, color: Colors.grey),
+                  Text("Please confirm the check-out.", style: TextStyle(fontSize: 16)), //
+                ],
               ),
             ),
-          ],
-        ),
-        //
-        content: SizedBox(
-          width: 400,
-          // height: 100,
-          child: Column(
-            spacing: 8,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Divider(height: 1, color: Colors.grey),
+            actions: [
+              OutlinedButton.icon(
+                icon: const Icon(Icons.close, color: Colors.red), //
+                label: const Text("Cancel", style: TextStyle(color: Colors.red)),
+                onPressed: is_loading ? null : () => Navigator.pop(context, false),
+              ),
+              OutlinedButton.icon(
+                icon: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check), //
+                label: const Text("Confirm"),
+                onPressed: is_loading
+                    ? null
+                    : () async {
+                        // stamp check-out on the stay (endpoint auto-sets check_out_at/by)
+                        setState(() => is_loading = true);
+                        dynamic tmp = await dio.post(
+                          endpoint.FRONT_DESK_CHECK_OUT,
+                          data: {
+                            Front_Desk.ROOM_ID: room_id, //
+                          },
+                        );
+                        if (tmp == null) {
+                          if (context.mounted) setState(() => is_loading = false);
+                          return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+                        }
 
-              Text("Please confirm the check-out.", style: TextStyle(fontSize: 16)), //
+                        // room status auto-flips to Dirty + clears front_desk_id on the backend
+                        snackbar(ct: context, ms: "Success", cl: Colors.green);
+                        if (context.mounted) Navigator.pop(context, true);
+                      },
+              ),
             ],
-          ),
-        ),
-        //
-        actions: [
-          OutlinedButton.icon(
-            // autofocus: true,
-            icon: const Icon(Icons.check), //
-            label: const Text("Confirm"),
-            onPressed: () async {
-              // stamp check-out on the stay (endpoint auto-sets check_out_at/by)
-              dynamic tmp = await dio.post(
-                endpoint.FRONT_DESK_CHECK_OUT,
-                data: {
-                  Front_Desk.ROOM_ID: room_id, //
-                },
-              );
-              if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-              // room status auto-flips to Dirty + clears front_desk_id on the backend
-              snackbar(ct: context, ms: "Success", cl: Colors.green);
-              Navigator.pop(context, true);
-            },
-          ),
-        ],
+          );
+        },
       );
     },
   );

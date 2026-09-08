@@ -273,8 +273,8 @@ Future<bool?> dialog_select_mini_bar({
             actionsAlignment: MainAxisAlignment.center,
             actions: [
               OutlinedButton.icon(
-                icon: const Icon(Icons.close), //
-                label: const Text("Cancel"),
+                icon: const Icon(Icons.close, color: Colors.red), //
+                label: const Text("Cancel", style: TextStyle(color: Colors.red)),
                 onPressed: () => Navigator.pop(context, false),
               ),
               // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស និងរក្សាទុកទំនិញ

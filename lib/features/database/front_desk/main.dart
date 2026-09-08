@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
@@ -20,6 +21,7 @@ class _Main_State extends State<Main_> {
   int reload = 0;
   bool is_load = false;
   bool is_filter = false;
+  bool is_admin = false; // * អាចជ្រើសអ្នកចូល/ចេញបានតែ admin ប៉ុណ្ណោះ
   int current_page = 1;
   double WIDTH = 120;
 
@@ -194,38 +196,6 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: Front_Desk.SHIFT_DATE, //
-            title: "របាយការណ៍",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 140,
-            renderer: (rc) {
-              final v = rc.cell.value is DateTime ? rc.cell.value as DateTime : null;
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center, //
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(
-                        v == null ? "" : DateFormat("yyyy-MM-dd").format(v), //
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    tooltip: "កែថ្ងៃ", //
-                    icon: Icon(Icons.calendar_month_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_change_shift_date(rc), //
-                  ),
-                ],
-              );
-            },
-          ),
-
-          PlutoColumn(
             field: "room", //
             title: "បន្ទប់",
             type: PlutoColumnType.text(),
@@ -243,7 +213,7 @@ class _Main_State extends State<Main_> {
                   ),
                   IconButton(
                     tooltip: "ផ្លាស់បន្ទប់", //
-                    icon: Icon(Icons.edit_outlined),
+                    icon: Icon(Icons.meeting_room_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
                     onPressed: () => on_change_room(rc), //
@@ -286,7 +256,7 @@ class _Main_State extends State<Main_> {
             title: "រយៈពេល",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
-            width: 110,
+            width: 160,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.center, //
@@ -451,7 +421,10 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: Front_Desk.PAY_CASH, //
             title: "លុយ",
-            type: PlutoColumnType.number(negative: false, format: "#,##0.00"),
+            type: PlutoColumnType.number(
+              negative: true, //
+              format: "#,##0.00",
+            ),
             enableEditingMode: true,
             width: 90,
             renderer: (rc) => _money_cash_bank(rc),
@@ -461,7 +434,10 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: Front_Desk.PAY_BANK, //
             title: "ធនាគារ",
-            type: PlutoColumnType.number(negative: false, format: "#,##0.00"),
+            type: PlutoColumnType.number(
+              negative: true, //
+              format: "#,##0.00",
+            ),
             enableEditingMode: true,
             width: 90,
             renderer: (rc) => _money_cash_bank(rc),
@@ -509,13 +485,14 @@ class _Main_State extends State<Main_> {
                       child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
                     ),
                   ),
-                  IconButton(
-                    tooltip: "ជ្រើសអ្នកចូល", //
-                    icon: Icon(Icons.edit_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_select_check_in_by(rc), //
-                  ),
+                  if (is_admin || kDebugMode)
+                    IconButton(
+                      tooltip: "ជ្រើសអ្នកចូល", //
+                      icon: Icon(Icons.edit_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_select_check_in_by(rc), //
+                    ),
                 ],
               );
             },
@@ -537,12 +514,77 @@ class _Main_State extends State<Main_> {
                       child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
                     ),
                   ),
+                  if (is_admin || kDebugMode)
+                    IconButton(
+                      tooltip: "ជ្រើសអ្នកចេញ", //
+                      icon: Icon(Icons.edit_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_select_check_out_by(rc), //
+                    ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: Front_Desk.SHIFT_DATE, //
+            title: "របាយការណ៍ថ្ងៃ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 120,
+            renderer: (rc) {
+              final v = rc.cell.value is DateTime ? rc.cell.value as DateTime : null;
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(
+                        v == null ? "" : DateFormat("yyyy-MM-dd").format(v), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
                   IconButton(
-                    tooltip: "ជ្រើសអ្នកចេញ", //
-                    icon: Icon(Icons.edit_outlined),
+                    tooltip: "កែថ្ងៃ", //
+                    icon: Icon(Icons.calendar_month_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () => on_select_check_out_by(rc), //
+                    onPressed: () => on_change_shift_date(rc), //
+                  ),
+                ],
+              );
+            },
+          ),
+
+          // BUTTON RECEIPT
+          PlutoColumn(
+            field: "other", //
+            title: "ផ្សេងៗ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            enableColumnDrag: false,
+            enableContextMenu: false,
+            enableDropToResize: false,
+            enableFilterMenuItem: false,
+            enableSorting: false,
+            width: 40,
+            cellPadding: EdgeInsets.all(0),
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
+                children: [
+                  IconButton(
+                    tooltip: "Print Receipt", //
+                    icon: Icon(Icons.print_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("Print Receipt: ${rc.row.cells["index"]?.value}");
+                      snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
+                    }, //
                   ),
                 ],
               );
@@ -550,7 +592,10 @@ class _Main_State extends State<Main_> {
           ),
         ], //
         columnGroups: [
-          // PlutoColumnGroup(title: "", fields: ["action", "index"]),
+          PlutoColumnGroup(
+            title: "", //
+            fields: ["action", "index", "shift_date", "other"],
+          ),
           PlutoColumnGroup(
             title: "ការស្នាក់នៅ", //
             fields: ["room", "check_in_at", "duration", "check_out_at"],
@@ -982,6 +1027,17 @@ class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
+    load_auth();
+  }
+
+  // * ទាញតួនាទីអ្នកប្រើសម្រាប់កំណត់ការកែប្រែ cell
+  Future<void> load_auth() async {
+    final user = await auth.fetch();
+    if (user == null) return;
+    setState(() {
+      is_admin = user.is_admin == true;
+      reload++; // * rebuild grid ដើម្បីអនុវត្ត enableEditingMode
+    });
   }
 
   @override

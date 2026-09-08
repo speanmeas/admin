@@ -51,9 +51,8 @@ class _Panel_LeftState extends State<Panel_Left> {
                 initiallyExpanded: true,
                 children: [
                   // * front desk
-                  // if (is_admin || is_manager || is_recept || is_cleaner) //
-                  // if (kDebugMode) //
-                  //   list_tile_l2(prefix: "Data", name: "Front Desk", icon: Icons.table_bar_outlined),
+                  if (is_admin || is_manager || is_recept) //
+                    list_tile_l2(prefix: "Data", name: "Front Desk", icon: Icons.table_bar_outlined),
 
                   // * guest
                   if (is_admin || is_manager || is_recept) //

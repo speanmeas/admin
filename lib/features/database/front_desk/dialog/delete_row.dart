@@ -46,8 +46,8 @@ Future<bool?> dialog_delete_row({
             ),
             actions: [
               OutlinedButton.icon(
-                icon: const Icon(Icons.close), //
-                label: const Text("Cancel"),
+                icon: const Icon(Icons.close, color: Colors.red), //
+                label: const Text("Cancel", style: TextStyle(color: Colors.red)),
                 onPressed: is_loading ? null : () => Navigator.pop(context, false),
               ),
               OutlinedButton.icon(

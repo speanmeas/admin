@@ -99,8 +99,8 @@ Future<bool?> dialog_select_check_in_by({
             ),
             actions: [
               OutlinedButton.icon(
-                icon: const Icon(Icons.close), //
-                label: const Text("Cancel"),
+                icon: const Icon(Icons.close, color: Colors.red), //
+                label: const Text("Cancel", style: TextStyle(color: Colors.red)),
                 onPressed: () => Navigator.pop(context, false),
               ),
               OutlinedButton.icon(

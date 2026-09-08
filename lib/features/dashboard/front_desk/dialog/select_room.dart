@@ -3,20 +3,21 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog សម្រាប់ផ្លាស់បន្ទប់ — ប្រើតែ CRUD endpoints ប៉ុណ្ណោះ (ROOM_READ + FRONT_DESK_UPDATE)
-// * — ជ្រើសបន្ទប់ទាំងអស់ គ្មានលក្ខខណ្ឌ (រួមទាំង walk-in); Confirm ធ្វើ request
+// * បង្ហាញ dialog សម្រាប់ផ្លាស់ប្តូរបន្ទប់ (change room) — ស្វែងរក + ជ្រើសបន្ទប់ Available ដោយ typeahead
+// * — Confirm ធ្វើ request តែប៉ុណ្ណោះ (FRONT_DESK_CHANGE)
 Future<bool?> dialog_select_room({
   required BuildContext context, //
-  required String? front_desk_id, //
+  required String lead,
+  required String room_id, //
 }) async {
-  // * ទាញបន្ទប់ទាំងអស់ពី server (CRUD read)
-  dynamic tmp_r = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
-  if (tmp_r == null) {
+  // * ទាញបន្ទប់ Available ពី server ដោយខ្លួនឯង
+  dynamic tmp = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
+  if (tmp == null) {
     snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     return null;
   }
 
-  final rooms = tmp_r.data as List<dynamic>? ?? [];
+  final rooms = (tmp.data as List<dynamic>? ?? []).where((r) => r[Room.STATUS] == "Available").toList();
 
   String? new_room_id;
   bool is_loading = false;
@@ -35,7 +36,7 @@ Future<bool?> dialog_select_room({
     return options;
   }
 
-  final v = await showDialog<bool>(
+  final result = await showDialog<bool>(
     context: context,
     builder: (context) {
       return StatefulBuilder(
@@ -47,12 +48,15 @@ Future<bool?> dialog_select_room({
             contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
             actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
             actionsAlignment: MainAxisAlignment.center,
-            title: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            title: Row(
+              mainAxisAlignment: .center,
               children: [
                 Text(
-                  "Select Room", //
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  lead, //
+                  style: TextStyle(
+                    fontSize: 20, //
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -63,6 +67,8 @@ Future<bool?> dialog_select_room({
                 children: [
                   const Divider(height: 0, color: Colors.grey),
                   const SizedBox(height: 8),
+
+                  // * ស្វែងរក + ជ្រើសបន្ទប់ថ្មីដែល Available
                   TypeAheadField<String>(
                     animationDuration: Duration.zero, //
                     itemBuilder: (context, item) => ListTile(
@@ -80,7 +86,7 @@ Future<bool?> dialog_select_room({
                         controller: controller,
                         focusNode: focusNode,
                         decoration: const InputDecoration(
-                          labelText: "Room:",
+                          labelText: "New Room:",
                           labelStyle: TextStyle(fontWeight: FontWeight.bold),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           prefixIcon: Icon(Icons.search, color: Colors.blue),
@@ -105,7 +111,7 @@ Future<bool?> dialog_select_room({
               OutlinedButton.icon(
                 icon: const Icon(Icons.close, color: Colors.red), //
                 label: const Text("Cancel", style: TextStyle(color: Colors.red)),
-                onPressed: () => Navigator.pop(context, false),
+                onPressed: is_loading ? null : () => Navigator.pop(context, false),
               ),
               OutlinedButton.icon(
                 icon: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check), //
@@ -113,15 +119,14 @@ Future<bool?> dialog_select_room({
                 onPressed: is_loading
                     ? null
                     : () async {
-                        if (new_room_id == null) return snackbar(ct: context, ms: "Please select a room", cl: Colors.red);
+                        if (new_room_id == null) return snackbar(ct: context, ms: "Please select a new room", cl: Colors.red);
 
-                        // * ធ្វើបច្ចុប្បន្នភាព room_id របស់ stay (CRUD update)
                         setState(() => is_loading = true);
                         dynamic tmp_fd = await dio.post(
-                          endpoint.FRONT_DESK_UPDATE,
+                          endpoint.FRONT_DESK_CHANGE,
                           data: {
-                            Front_Desk.ID: front_desk_id, //
-                            Front_Desk.ROOM_ID: new_room_id, //
+                            Front_Desk.ROOM_ID: room_id, //
+                            "new_room_id": new_room_id, //
                           },
                         );
                         if (tmp_fd == null) {
@@ -139,7 +144,7 @@ Future<bool?> dialog_select_room({
       );
     },
   );
-  return v;
+  return result;
 }
 
 class _Main_State extends State<Main_> {
@@ -152,7 +157,11 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_select_room(context: context, front_desk_id: "test");
+            final v = await dialog_select_room(
+              context: context, //
+              room_id: "111111111122222222223333", //
+              lead: "Change Room 201", //
+            );
             if (v == null) return;
             tmp = v;
             setState(() {});
