@@ -136,7 +136,7 @@ Future<bool?> dialog_select_penalty({
         builder: (context, setState) {
           return AlertDialog(
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-            titlePadding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+            titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
             contentPadding: EdgeInsets.zero,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -267,7 +267,7 @@ Future<bool?> dialog_select_penalty({
                 ],
               ),
             ),
-            actionsPadding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+            actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
             actionsAlignment: MainAxisAlignment.center,
             actions: [
               // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស និងរក្សាទុកទំនិញ
@@ -336,4 +336,5 @@ void main() {
     ),
   );
 }
+
 

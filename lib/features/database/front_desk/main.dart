@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
-
 import "package:speanmeas/core/utility/all.dart";
 
 import "dialog/add_row.dart";
@@ -28,6 +27,8 @@ class _Main_State extends State<Main_> {
   late PlutoGridStateManager state_manager;
 
   List<Front_Desk> data = [];
+
+  // List<Room> = [];
 
   // * ########## BLOCK ATTRIBUTE END ##########
 
@@ -688,44 +689,30 @@ class _Main_State extends State<Main_> {
   }
 
   void on_create() async {
-    // * បញ្ជាក់ការបន្ថែមជួរដេកថ្មី
-    final confirmed = await dialog_add_row(context);
-    if (confirmed != true) return;
-
-    setState(() => is_load = true);
     final day = page_day(current_page);
     final shift_date = DateTime(day.year, day.month, day.day);
-    final tmp = await dio.post(
-      endpoint.FRONT_DESK_CREATE,
-      data: {
-        Front_Desk.SHIFT_DATE: shift_date.toIso8601String(), //
-      },
-    );
-    setState(() => is_load = false);
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    snackbar(ct: context, ms: "Created", cl: Colors.green);
+    final v = await dialog_add_row(context: context, shift_date: shift_date);
+    if (v != true) return;
     on_reload();
   }
 
   void on_delete(PlutoColumnRendererContext rc) async {
-    // * បញ្ជាក់ការលុបជួរដេក
-    final confirmed = await dialog_delete_row(context);
-    if (confirmed != true) return;
-
     final id = rc.row.cells[Front_Desk.ID]?.value;
-    setState(() => is_load = true);
-    final tmp = await dio.post(endpoint.FRONT_DESK_DELETE, data: {Front_Desk.ID: id});
-    setState(() => is_load = false);
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    snackbar(ct: context, ms: "Deleted", cl: Colors.green);
+    final v = await dialog_delete_row(context: context, front_desk_id: id);
+    if (v != true) return;
     on_reload();
   }
 
   void on_changed(PlutoGridOnChangedEvent e) async {
     final id = e.row.cells[Front_Desk.ID]?.value;
-    final tmp = await dio.post(endpoint.FRONT_DESK_UPDATE, data: {Front_Desk.ID: id, e.column.field: e.value});
+
+    // * guest_name មិនមែនជា field របស់ Front_Desk ទេ → បញ្ជូនទៅ update guest info
+    dynamic tmp;
+    if (e.column.field == "guest_name") {
+      tmp = await dio.post(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, data: {Front_Desk.ID: id, Guest.FULL_NAME: e.value});
+    } else {
+      tmp = await dio.post(endpoint.FRONT_DESK_UPDATE, data: {Front_Desk.ID: id, e.column.field: e.value});
+    }
 
     if (tmp == null) {
       on_reload();

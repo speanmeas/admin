@@ -18,6 +18,7 @@ Future<bool?> dialog_select_check_in_by({
   final users = tmp_u.data as List<dynamic>? ?? [];
 
   String? new_user_id;
+  bool is_loading = false;
 
   // * ស្វែងរកអ្នកប្រើដោយ full_name
   List<String> search(String q) {
@@ -41,14 +42,14 @@ Future<bool?> dialog_select_check_in_by({
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
             alignment: Alignment.topCenter,
             titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
-            contentPadding: const EdgeInsets.all(4),
-            actionsPadding: const EdgeInsets.all(4),
+            contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+            actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
             actionsAlignment: MainAxisAlignment.center,
             title: Row(
               mainAxisAlignment: .center,
               children: [
                 Text(
-                  "ជ្រើសអ្នកចូល", //
+                  "Select Check-in User", //
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -59,7 +60,7 @@ Future<bool?> dialog_select_check_in_by({
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Divider(height: 1, color: Colors.grey),
-                  SizedBox(height: 4),
+                  SizedBox(height: 8),
                   TypeAheadField<String>(
                     itemBuilder: (context, item) => ListTile(title: Text(item)),
                     suggestionsCallback: search,
@@ -79,31 +80,51 @@ Future<bool?> dialog_select_check_in_by({
                         ),
                       );
                     },
-                    onSelected: (v) async {
+                    onSelected: (v) {
                       for (var u in users) {
                         if ((u[User.FULL_NAME] ?? "").toString() == v) {
                           new_user_id = u[User.ID];
                           break;
                         }
                       }
-                      if (new_user_id == null) return snackbar(ct: context, ms: "Please select a user", cl: Colors.red);
-
-                      dynamic tmp_fd = await dio.post(
-                        endpoint.FRONT_DESK_UPDATE,
-                        data: {
-                          Front_Desk.ID: front_desk_id, //
-                          Front_Desk.CHECK_IN_BY: new_user_id, //
-                        },
-                      );
-                      if (tmp_fd == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-                      snackbar(ct: context, ms: "Success", cl: Colors.green);
-                      Navigator.pop(context, true);
+                      setState(() {});
                     },
                   ),
                 ],
               ),
             ),
+            actions: [
+              OutlinedButton.icon(
+                icon: const Icon(Icons.close), //
+                label: const Text("Cancel"),
+                onPressed: is_loading ? null : () => Navigator.pop(context, false),
+              ),
+              OutlinedButton.icon(
+                icon: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check), //
+                label: const Text("Confirm"),
+                onPressed: is_loading
+                    ? null
+                    : () async {
+                        if (new_user_id == null) return snackbar(ct: context, ms: "Please select a user", cl: Colors.red);
+
+                        setState(() => is_loading = true);
+                        dynamic tmp_fd = await dio.post(
+                          endpoint.FRONT_DESK_UPDATE,
+                          data: {
+                            Front_Desk.ID: front_desk_id, //
+                            Front_Desk.CHECK_IN_BY: new_user_id, //
+                          },
+                        );
+                        if (tmp_fd == null) {
+                          if (context.mounted) setState(() => is_loading = false);
+                          return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+                        }
+
+                        snackbar(ct: context, ms: "Success", cl: Colors.green);
+                        if (context.mounted) Navigator.pop(context, true);
+                      },
+              ),
+            ],
           );
         },
       );

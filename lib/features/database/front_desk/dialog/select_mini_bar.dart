@@ -138,13 +138,13 @@ Future<bool?> dialog_select_mini_bar({
         builder: (context, setState) {
           return AlertDialog(
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-            titlePadding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+            titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 4),
             contentPadding: EdgeInsets.zero,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  "Select Item", //
+                  "Select Mini Bar", //
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -269,7 +269,7 @@ Future<bool?> dialog_select_mini_bar({
                 ],
               ),
             ),
-            actionsPadding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+            actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
             actionsAlignment: MainAxisAlignment.center,
             actions: [
               // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស និងរក្សាទុកទំនិញ
@@ -339,4 +339,3 @@ void main() {
     ),
   );
 }
-
