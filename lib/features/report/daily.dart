@@ -489,7 +489,6 @@ class _Main_State extends State<Main_> {
             },
           ),
 
-
           // * ការត្រួតពិនិត្យ
           PlutoColumn(
             field: "check_in_by", //
@@ -514,6 +513,38 @@ class _Main_State extends State<Main_> {
               return Align(
                 alignment: Alignment.center, //
                 child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+              );
+            },
+          ),
+
+          // BUTTON RECEIPT
+          PlutoColumn(
+            field: "other", //
+            title: "ផ្សេងៗ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            enableColumnDrag: false,
+            enableContextMenu: false,
+            enableDropToResize: false,
+            enableFilterMenuItem: false,
+            enableSorting: false,
+            width: 40,
+            cellPadding: EdgeInsets.all(0),
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
+                children: [
+                  IconButton(
+                    tooltip: "Print Receipt", //
+                    icon: Icon(Icons.print_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("Print Receipt: ${rc.row.cells["index"]?.value}");
+                      snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
+                    }, //
+                  ),
+                ],
               );
             },
           ),
