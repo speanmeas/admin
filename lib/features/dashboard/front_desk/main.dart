@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
@@ -16,18 +17,13 @@ import "dialog/search_guest.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK VARIABLES ##########
-  int reload = 0;
-  double WIDTH = 120;
-
-  late List<String> list_column;
+  late List<String> list_column; // to store column id for pluto grid
   late PlutoGridStateManager state_manager;
-
-  //   DateTime dt = DateTime.now();
-  DateTime date = DateTime.now();
 
   List<dynamic> rooms = [];
   List<Front_Desk> front_desks = [];
 
+  int reload = 0; // to reload pluto grid
   bool is_admin = false;
   bool is_filter = false;
   bool show_carry_over = true; // * លាក់/បង្ហាញ stay ដែលចូលពីថ្ងៃមុន
@@ -159,15 +155,9 @@ class _Main_State extends State<Main_> {
 
       header: [
         SizedBox(width: 8), //
-        // IconButton(
-        //   tooltip: "Previous", //
-        //   icon: Icon(Icons.navigate_before, size: 32), //
-        //   padding: EdgeInsets.all(0),
-        //   constraints: BoxConstraints(),
-        //   onPressed: () {},
-        // ),
+
         Text(
-          DateFormat("yyyy-MM-dd").format(date.subtract(const Duration(hours: 7))), //
+          DateFormat("yyyy-MM-dd").format(DateTime.now().subtract(const Duration(hours: 7))), //
           style: TextStyle(
             fontSize: 16, //
             fontWeight: FontWeight.bold, //
@@ -175,17 +165,9 @@ class _Main_State extends State<Main_> {
           ),
         ),
 
-        //   onPressed: pick_date,
-
-        // IconButton(
-        //   tooltip: "RollOver", //
-        //   icon: Icon(Icons.navigate_next, size: 32), //
-        //   padding: EdgeInsets.all(0),
-        //   constraints: BoxConstraints(),
-        //   onPressed: () {},
-        // ),
         const Spacer(), //
-        if (is_admin)
+
+        if (is_admin || kDebugMode)
           IconButton(
             tooltip: "Carry Over", //
             icon: Icon(Icons.event_repeat_outlined, size: 30), //
@@ -194,7 +176,7 @@ class _Main_State extends State<Main_> {
             onPressed: on_carry_over, //
           ),
 
-        if (is_admin)
+        if (is_admin || kDebugMode)
           IconButton(
             tooltip: "Over Time", //
             icon: Icon(Icons.schedule_outlined, size: 30), //
@@ -203,19 +185,16 @@ class _Main_State extends State<Main_> {
             onPressed: on_over_time, //
           ),
 
+        /// បង្ហាញ/លាក់ carry-over
         IconButton(
           tooltip: show_carry_over ? "Hide Carry-over" : "Show Carry-over", //
           icon: Icon(show_carry_over ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () {
-            // * todo: toggle បង្ហាញ stay ដែលចូលពីថ្ងៃមុន (room_price = 0 និង check_out_at = before today 2pm)
-            show_carry_over = !show_carry_over;
-            on_update_grid();
-            setState(() {});
-          }, //
+          onPressed: on_toggle_carry_over, //
         ),
 
+        ///
         IconButton(
           tooltip: is_filter ? "Hide Filter" : "Show Filter", //
           icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
@@ -224,6 +203,7 @@ class _Main_State extends State<Main_> {
           onPressed: on_filter, // not yet implemented
         ),
 
+        ///
         IconButton(
           tooltip: "Reload", //
           icon: Icon(Icons.refresh, size: 30), //
@@ -413,7 +393,7 @@ class _Main_State extends State<Main_> {
             title: "ឈ្មោះ",
             type: PlutoColumnType.text(),
             enableEditingMode: true,
-            width: WIDTH,
+            width: 120,
             renderer: (rc) {
               return Row(
                 children: [
@@ -437,7 +417,7 @@ class _Main_State extends State<Main_> {
             title: "លេខទូរស័ព្ទ",
             type: PlutoColumnType.text(),
             // enableEditingMode: false,
-            width: WIDTH,
+            width: 120,
 
             renderer: (rc) {
               return Row(
@@ -803,10 +783,9 @@ class _Main_State extends State<Main_> {
   Future<void> load_auth() async {
     final user = await auth.fetch();
     if (user == null) return;
-    setState(() {
-      is_admin = user.is_admin == true;
-      reload++; // * rebuild grid ដើម្បីអនុវត្ត enableEditingMode
-    });
+    is_admin = user.is_admin == true;
+    reload++; // * rebuild grid ដើម្បីអនុវត្ត enableEditingMode
+    setState(() {});
   }
 
   void on_loaded(PlutoGridOnLoadedEvent e) async {
@@ -814,7 +793,6 @@ class _Main_State extends State<Main_> {
     state_manager.addListener(() => setState(() {}));
     state_manager.setAutoEditing(true);
     state_manager.columnFooterHeight = 32; // * កម្ពស់ជួរសរុប
-    // state_manager.setShowColumnFilter(true);
     list_column = state_manager.refColumns.map((c) => c.field).toList();
 
     on_load_room();
@@ -852,7 +830,6 @@ class _Main_State extends State<Main_> {
   void on_update_grid() {
     state_manager.removeAllRows();
     int index = 0;
-    // * stay ពីថ្ងៃមុន = room_price = 0 និង check_out_at មុនម៉ោង 2 រសៀលថ្ងៃនេះ
     final now = DateTime.now();
     final cutoff_2pm = DateTime(now.year, now.month, now.day, 14, 0);
     state_manager.appendRows([
@@ -869,19 +846,8 @@ class _Main_State extends State<Main_> {
                   if (c == "guest_phone") return PlutoCell(value: fd_guest(fd)?.phone_number ?? "");
                   if (c == "check_in_people") return PlutoCell(value: fd.number_of_guest ?? 0);
                   if (c == "check_in_at") return PlutoCell(value: fd.check_in_at);
-
-                  if (c == "check_in_duration") {
-                    if (is_walkin(fd)) return PlutoCell(value: 0);
-                    DateTime? in_at = fd.check_in_at;
-                    DateTime? out_at = fd.check_out_at;
-                    if (in_at == null) return PlutoCell(value: 0);
-                    if (out_at == null) return PlutoCell(value: DateTime.now().difference(in_at).inMinutes);
-                    return PlutoCell(value: out_at.difference(in_at).inMinutes);
-                  }
-
+                  if (c == "check_in_duration") return PlutoCell(value: check_in_duration(fd));
                   if (c == "check_out_at") return PlutoCell(value: fd.check_out_at);
-
-                  // * room payment fields are inline on the stay (no Room_Pay child array)
                   if (c == "room_price") return PlutoCell(value: fd.room_price);
                   if (c == "mini_bar_price") return PlutoCell(value: fd.mini_bar_price);
                   if (c == "penalty_price") return PlutoCell(value: fd.penalty_price);
@@ -920,6 +886,16 @@ class _Main_State extends State<Main_> {
 
   Guest? fd_guest(Front_Desk fd) {
     return fd.guest_id is Guest ? fd.guest_id as Guest : null;
+  }
+
+  // * គណនារយៈពេលស្នាក់នៅ (check-in → check-out; បើមិនទាន់ចេញ → ដល់ពេលបច្ចុប្បន្ន)
+  int check_in_duration(Front_Desk fd) {
+    if (is_walkin(fd)) return 0;
+    DateTime? in_at = fd.check_in_at;
+    DateTime? out_at = fd.check_out_at;
+    if (in_at == null) return 0;
+    if (out_at == null) return DateTime.now().difference(in_at).inMinutes;
+    return out_at.difference(in_at).inMinutes;
   }
 
   // * ពិនិត្យថា stay ជា Walk-In / Mini Bar only (លក់ minibar តែប៉ុណ្ណោះ) — មិនអាស្រ័យតែលើ expanded room ទេ
@@ -1212,6 +1188,13 @@ class _Main_State extends State<Main_> {
   void on_filter() {
     is_filter = !is_filter;
     state_manager.setShowColumnFilter(is_filter);
+  }
+
+  void on_toggle_carry_over() {
+    // * todo: toggle បង្ហាញ stay ដែលចូលពីថ្ងៃមុន (room_price = 0 និង check_out_at = before today 2pm)
+    show_carry_over = !show_carry_over;
+    on_update_grid();
+    setState(() {});
   }
 
   // * ########## BLOCK METHODS END ##########
