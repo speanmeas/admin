@@ -163,28 +163,6 @@ class _Main_State extends State<Main_> {
     return Scaffold(
       body: Column(
         children: [
-          // // HEADER
-          // Container(
-          //   height: 40,
-          //   padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
-          //   child: Row(
-          //     children: [
-          //       OutlinedButton.icon(
-          //         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-          //         icon: const Icon(Icons.calendar_month_outlined), //
-          //         label: Text(DateFormat("yyyy-MM-dd").format(date)), //
-          //         onPressed: pick_date, //
-          //       ),
-          //       const SizedBox(width: 8),
-          //       OutlinedButton.icon(
-          //         style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-          //         icon: const Icon(Icons.refresh_outlined), //
-          //         label: const Text("Refresh"),
-          //         onPressed: init, //
-          //       ),
-          //     ],
-          //   ),
-          // ),
           // header
           Container(
             height: 34, //
@@ -683,16 +661,6 @@ class _Main_State extends State<Main_> {
         //   },
         // ),
         Spacer(),
-
-        // * ប៊ូតុងបោះពុម្ពការចូល (under development)
-        OutlinedButton.icon(
-          style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-          icon: const Icon(Icons.print_outlined), //
-          label: const Text("Print Receipt"), //
-          onPressed: () {
-            snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
-          },
-        ),
       ],
     );
   }

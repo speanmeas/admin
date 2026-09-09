@@ -17,16 +17,17 @@ import "dialog/search_guest.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK VARIABLES ##########
-  late List<String> list_column; // to store column id for pluto grid
-  late PlutoGridStateManager state_manager;
+  int reload = 0; // to reload pluto grid
+  bool is_admin = false;
+  bool is_load = false; // * block all clicks centrally while loading
+  bool is_filter = false;
+  bool show_carry_over = true; // * លាក់/បង្ហាញ stay ដែលចូលពីថ្ងៃមុន
 
   List<dynamic> rooms = [];
   List<Front_Desk> front_desks = [];
 
-  int reload = 0; // to reload pluto grid
-  bool is_admin = false;
-  bool is_filter = false;
-  bool show_carry_over = true; // * លាក់/បង្ហាញ stay ដែលចូលពីថ្ងៃមុន
+  late List<String> list_column; // to store column id for pluto grid
+  late PlutoGridStateManager state_manager;
   // * ########## BLOCK VARIABLES END ##########
 
   // * ########## BLOCK DESIGN ##########
@@ -39,61 +40,83 @@ class _Main_State extends State<Main_> {
     List<Widget>? footer, //
   }) {
     return Scaffold(
-      body: Column(
-        spacing: 1,
+      body: Stack(
         children: [
-          if (check_in != null && check_in.isNotEmpty)
-            Container(
-              alignment: Alignment.centerLeft, //
-              padding: const EdgeInsets.only(top: 1),
-              child: Wrap(
-                spacing: 1, //
-                runSpacing: 1,
-                children: check_in,
+          Column(
+            spacing: 1,
+            children: [
+              if (check_in != null && check_in.isNotEmpty)
+                Container(
+                  alignment: Alignment.centerLeft, //
+                  padding: const EdgeInsets.only(top: 1),
+                  child: Wrap(
+                    spacing: 1, //
+                    runSpacing: 1,
+                    children: check_in,
+                  ),
+                ),
+
+              if (check_out != null && check_out.isNotEmpty)
+                Container(
+                  alignment: Alignment.centerLeft, //
+                  padding: const EdgeInsets.only(top: 1),
+                  child: Wrap(
+                    spacing: 1, //
+                    runSpacing: 1,
+                    children: check_out,
+                  ),
+                ),
+
+              if (clean != null && clean.isNotEmpty)
+                Container(
+                  alignment: Alignment.centerLeft, //
+                  padding: const EdgeInsets.only(top: 1),
+                  child: Wrap(
+                    spacing: 1, //
+                    runSpacing: 1,
+                    children: [...clean],
+                  ),
+                ),
+
+              if (header != null && header.isNotEmpty)
+                Container(
+                  height: 34, //
+                  padding: const EdgeInsets.only(top: 1),
+                  child: Row(
+                    spacing: 1, //
+                    children: header,
+                  ),
+                ),
+
+              Expanded(
+                child: AbsorbPointer(
+                  absorbing: is_load, // * block all clicks (incl. Pluto cells) while loading
+                  child: body ?? Container(),
+                ),
               ),
-            ),
 
-          if (check_out != null && check_out.isNotEmpty)
-            Container(
-              alignment: Alignment.centerLeft, //
-              padding: const EdgeInsets.only(top: 1),
-              child: Wrap(
-                spacing: 1, //
-                runSpacing: 1,
-                children: check_out,
-              ),
-            ),
+              if (footer != null && footer.isNotEmpty)
+                Container(
+                  height: 34, //
+                  padding: const EdgeInsets.only(top: 1),
+                  child: Row(
+                    spacing: 2, //
+                    children: footer,
+                  ),
+                ),
+            ],
+          ),
 
-          if (clean != null && clean.isNotEmpty)
-            Container(
-              alignment: Alignment.centerLeft, //
-              padding: const EdgeInsets.only(top: 1),
-              child: Wrap(
-                spacing: 1, //
-                runSpacing: 1,
-                children: [...clean],
-              ),
-            ),
-
-          if (header != null && header.isNotEmpty)
-            Container(
-              height: 34, //
-              padding: const EdgeInsets.only(top: 1),
-              child: Row(
-                spacing: 1, //
-                children: header,
-              ),
-            ),
-
-          Expanded(child: body ?? Container()),
-
-          if (footer != null && footer.isNotEmpty)
-            Container(
-              height: 34, //
-              padding: const EdgeInsets.only(top: 1),
-              child: Row(
-                spacing: 2, //
-                children: footer,
+          // * overlay to block clicks centrally while loading — no per-button guard needed
+          if (is_load)
+            Positioned.fill(
+              child: AbsorbPointer(
+                absorbing: true,
+                child: Container(
+                  color: Colors.black.withValues(alpha: 0.10),
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                ),
               ),
             ),
         ],
@@ -112,7 +135,11 @@ class _Main_State extends State<Main_> {
               icon: Icon(Icons.bed_outlined), //
               label: Text("${r[Room.NUMBER]}"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
-              onPressed: () => on_check_in(r), //
+              onPressed: () async {
+                setState(() => is_load = true);
+                await on_check_in(r);
+                setState(() => is_load = false);
+              }, //
             ),
           ),
 
@@ -122,7 +149,11 @@ class _Main_State extends State<Main_> {
             label: Text("Mini Bar"), //
             icon: Icon(Icons.local_bar_outlined), //
             style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
-            onPressed: on_mini_bar_only, //
+            onPressed: () async {
+              setState(() => is_load = true);
+              await on_mini_bar_only();
+              setState(() => is_load = false);
+            }, //
           ),
         ),
       ],
@@ -135,7 +166,11 @@ class _Main_State extends State<Main_> {
               icon: Icon(Icons.hotel_outlined), //
               label: Text("${r[Room.NUMBER]}"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-              onPressed: () => on_check_out(r), //
+              onPressed: () async {
+                setState(() => is_load = true);
+                await on_check_out(r);
+                setState(() => is_load = false);
+              }, //
             ),
           ),
       ],
@@ -148,7 +183,11 @@ class _Main_State extends State<Main_> {
               icon: Icon(Icons.cleaning_services_outlined), //
               label: Text("${r[Room.NUMBER]}"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.grey),
-              onPressed: () => on_clean(r), //
+              onPressed: () async {
+                setState(() => is_load = true);
+                await on_clean(r);
+                setState(() => is_load = false);
+              }, //
             ),
           ),
       ],
@@ -173,7 +212,11 @@ class _Main_State extends State<Main_> {
             icon: Icon(Icons.event_repeat_outlined, size: 30), //
             padding: EdgeInsets.all(0),
             constraints: BoxConstraints(),
-            onPressed: on_carry_over, //
+            onPressed: () async {
+              setState(() => is_load = true);
+              await on_carry_over();
+              setState(() => is_load = false);
+            }, //
           ),
 
         if (is_admin || kDebugMode)
@@ -182,7 +225,11 @@ class _Main_State extends State<Main_> {
             icon: Icon(Icons.schedule_outlined, size: 30), //
             padding: EdgeInsets.all(0),
             constraints: BoxConstraints(),
-            onPressed: on_over_time, //
+            onPressed: () async {
+              setState(() => is_load = true);
+              await on_over_time();
+              setState(() => is_load = false);
+            }, //
           ),
 
         /// បង្ហាញ/លាក់ carry-over
@@ -191,7 +238,11 @@ class _Main_State extends State<Main_> {
           icon: Icon(show_carry_over ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_toggle_carry_over, //
+          onPressed: () async {
+            setState(() => is_load = true);
+            on_toggle_carry_over();
+            setState(() => is_load = false);
+          }, //
         ),
 
         ///
@@ -200,7 +251,11 @@ class _Main_State extends State<Main_> {
           icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_filter, // not yet implemented
+          onPressed: () async {
+            setState(() => is_load = true);
+            on_filter(); // not yet implemented (sync, no await)
+            setState(() => is_load = false);
+          }, //
         ),
 
         ///
@@ -209,7 +264,11 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.refresh, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_reload, //
+          onPressed: () async {
+            setState(() => is_load = true);
+            await on_reload();
+            setState(() => is_load = false);
+          }, //
         ),
       ],
 
@@ -292,7 +351,11 @@ class _Main_State extends State<Main_> {
                       icon: Icon(Icons.swap_horiz_outlined),
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
-                      onPressed: () => on_change_room(rc), //
+                      onPressed: () async {
+                        setState(() => is_load = true);
+                        await on_change_room(rc);
+                        setState(() => is_load = false);
+                      }, //
                     ),
                 ],
               );
@@ -324,7 +387,11 @@ class _Main_State extends State<Main_> {
                       icon: Icon(Icons.calendar_month_outlined),
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
-                      onPressed: () => on_update_check_in_at(rc), //
+                      onPressed: () async {
+                        setState(() => is_load = true);
+                        await on_update_check_in_at(rc);
+                        setState(() => is_load = false);
+                      }, //
                     ),
                 ],
               );
@@ -381,7 +448,11 @@ class _Main_State extends State<Main_> {
                       icon: Icon(Icons.calendar_month_outlined),
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
-                      onPressed: () => on_update_check_out_at(rc), //
+                      onPressed: () async {
+                        setState(() => is_load = true);
+                        await on_update_check_out_at(rc);
+                        setState(() => is_load = false);
+                      }, //
                     ),
                 ],
               );
@@ -439,13 +510,18 @@ class _Main_State extends State<Main_> {
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
                     onPressed: () async {
+                      setState(() => is_load = true);
                       //   print("Search Guest: ${rc.row.cells["index"]?.value}");
                       var v = await dialog_search_guest(
                         context: context, //
                         front_desk_id: rc.row.cells["_id"]?.value,
                       );
-                      if (v == null) return;
-                      on_load_front_desk();
+                      if (v == null) {
+                        setState(() => is_load = false);
+                        return;
+                      }
+                      await on_load_front_desk();
+                      setState(() => is_load = false);
                     }, //
                   ),
                 ],
@@ -518,7 +594,11 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.local_bar_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () => on_mini_bar_item(rc), //
+                    onPressed: () async {
+                      setState(() => is_load = true);
+                      await on_mini_bar_item(rc);
+                      setState(() => is_load = false);
+                    }, //
                   ),
                 ],
               );
@@ -555,7 +635,11 @@ class _Main_State extends State<Main_> {
                       icon: Icon(Icons.gavel_outlined),
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
-                      onPressed: () => on_penalty_item(rc), //
+                      onPressed: () async {
+                        setState(() => is_load = true);
+                        await on_penalty_item(rc);
+                        setState(() => is_load = false);
+                      }, //
                     ),
                 ],
               );
@@ -799,22 +883,21 @@ class _Main_State extends State<Main_> {
     on_load_front_desk();
   }
 
-  void on_load_room() async {
+  Future<void> on_load_room() async {
     dynamic tmp_r = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
     if (tmp_r == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     rooms = tmp_r.data as List<dynamic>? ?? [];
   }
 
-  void on_reload() {
+  Future<void> on_reload() async {
     reload++;
-    load_auth();
-    on_load_room();
-    on_load_front_desk();
+    await load_auth();
+    await Future.wait([on_load_room(), on_load_front_desk()]);
     setState(() {});
   }
 
-  void on_load_front_desk() async {
+  Future<void> on_load_front_desk() async {
     // * អានសម្រាប់តែថ្ងៃ shift ថ្ងៃនេះ (boundary 7:00)
     dynamic tmp_fd = await dio.post(
       endpoint.FRONT_DESK_READ_DATETIME,
@@ -1031,50 +1114,47 @@ class _Main_State extends State<Main_> {
     on_load_front_desk();
   }
 
-  void on_update_check_in_at(PlutoColumnRendererContext rc) async {
+  Future<void> on_update_check_in_at(PlutoColumnRendererContext rc) async {
     final fd_id = rc.row.cells["_id"]?.value;
     if (fd_id == null) return;
     final v = await dialog_update_check_in_at(context: context, fd_id: fd_id, initial: parse_datetime(rc.cell.value));
-    if (v == true) on_load_front_desk();
+    if (v == true) await on_load_front_desk();
   }
 
-  void on_update_check_out_at(PlutoColumnRendererContext rc) async {
+  Future<void> on_update_check_out_at(PlutoColumnRendererContext rc) async {
     final fd_id = rc.row.cells["_id"]?.value;
     if (fd_id == null) return;
     final v = await dialog_update_check_out_at(context: context, fd_id: fd_id, initial: parse_datetime(rc.cell.value));
-    if (v == true) on_load_front_desk();
+    if (v == true) await on_load_front_desk();
   }
 
-  void on_check_in(dynamic r) async {
+  Future<void> on_check_in(dynamic r) async {
     var v = await dialog_check_in(
       context: context, //
       lead: "Room ${r[Room.NUMBER]}", //
       room_id: r[Room.ID], //
     );
     if (v == null) return;
-    on_load_room();
-    on_load_front_desk();
+    await Future.wait([on_load_room(), on_load_front_desk()]);
   }
 
-  void on_carry_over() async {
+  Future<void> on_carry_over() async {
     dynamic tmp = await dio.post(endpoint.FRONT_DESK_CARRY_OVER, data: {});
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Carried Over", cl: Colors.green);
-    on_load_room();
-    on_load_front_desk();
+    await Future.wait([on_load_room(), on_load_front_desk()]);
   }
 
-  void on_over_time() async {
+  Future<void> on_over_time() async {
     dynamic tmp = await dio.post(endpoint.FRONT_DESK_OVER_TIME, data: {});
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Over Time Applied", cl: Colors.green);
-    on_load_room();
-    on_load_front_desk();
+    await Future.wait([on_load_room(), on_load_front_desk()]);
   }
 
-  void on_check_out(dynamic r) async {
+  Future<void> on_check_out(dynamic r) async {
     String? fd_id = r[Room.FRONT_DESK_ID];
     if (fd_id == null) return snackbar(ct: context, ms: "No stay to check out", cl: Colors.red);
 
@@ -1085,11 +1165,10 @@ class _Main_State extends State<Main_> {
     );
     if (v == null) return;
 
-    on_load_room();
-    on_load_front_desk();
+    await Future.wait([on_load_room(), on_load_front_desk()]);
   }
 
-  void on_clean(dynamic r) async {
+  Future<void> on_clean(dynamic r) async {
     var v = await dialog_clean(
       context: context, //
       lead: "Room ${r[Room.NUMBER]}", //
@@ -1097,15 +1176,14 @@ class _Main_State extends State<Main_> {
     );
     if (v == null) return;
 
-    on_load_room();
-    on_load_front_desk();
+    await Future.wait([on_load_room(), on_load_front_desk()]);
   }
 
   // * បើក Walk-In: យក (ឬបង្កើត) row Walk-In នៃថ្ងៃ shift នេះ សម្រាប់លក់ minibar តែប៉ុណ្ណោះ
   Future<void> on_mini_bar_only() async {
     final v = await dialog_add_mini_bar(context: context);
     if (v == null) return;
-    on_load_front_desk();
+    await on_load_front_desk();
   }
 
   // * បញ្ជាការកែប្រែ និងការបោះបង់ពីជួរ grid (action រស់នៅក្នុង method មិននៅក្នុង UI)
@@ -1124,7 +1202,7 @@ class _Main_State extends State<Main_> {
     return is_walkin(fd);
   }
 
-  void on_change_room(PlutoColumnRendererContext rc) async {
+  Future<void> on_change_room(PlutoColumnRendererContext rc) async {
     Front_Desk? fd = row_stay(rc);
     String? room_id = fd == null ? null : fd_room(fd)?.id;
     if (room_id == null) return snackbar(ct: context, ms: "No stay to change room", cl: Colors.red);
@@ -1135,11 +1213,10 @@ class _Main_State extends State<Main_> {
       room_id: room_id, //
     );
     if (v == null) return;
-    on_load_room();
-    on_load_front_desk();
+    await Future.wait([on_load_room(), on_load_front_desk()]);
   }
 
-  void on_penalty_item(PlutoColumnRendererContext rc) async {
+  Future<void> on_penalty_item(PlutoColumnRendererContext rc) async {
     String? fd_id = row_stay_id(rc);
     if (fd_id == null) return snackbar(ct: context, ms: "No stay to update penalty", cl: Colors.red);
 
@@ -1157,10 +1234,10 @@ class _Main_State extends State<Main_> {
     );
     if (saved != true) return;
 
-    on_load_front_desk();
+    await on_load_front_desk();
   }
 
-  void on_mini_bar_item(PlutoColumnRendererContext rc) async {
+  Future<void> on_mini_bar_item(PlutoColumnRendererContext rc) async {
     String? fd_id = row_stay_id(rc);
     if (fd_id == null) return snackbar(ct: context, ms: "No stay to update mini bar", cl: Colors.red);
 
@@ -1179,7 +1256,7 @@ class _Main_State extends State<Main_> {
     );
     if (saved != true) return;
 
-    on_load_front_desk();
+    await on_load_front_desk();
   }
 
   @override
