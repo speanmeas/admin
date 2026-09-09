@@ -8,6 +8,7 @@ class _Main_State extends State<Main_> {
   // * ########## BLOCK ATTRIBUTE ##########
   int reload = 0;
   bool is_filter = false;
+  bool is_load = false; // * block all clicks centrally while loading
   int current_page = 1;
   int total_row = 0;
 
@@ -25,20 +26,42 @@ class _Main_State extends State<Main_> {
     Widget? body, //
   }) {
     return Scaffold(
-      body: Column(
-        spacing: 1,
+      body: Stack(
         children: [
-          if (header != null)
-            Container(
-              height: 32, //
-              padding: const EdgeInsets.all(1),
-              child: Row(
-                spacing: 1, //
-                children: header,
+          Column(
+            spacing: 1,
+            children: [
+              if (header != null)
+                Container(
+                  height: 32, //
+                  padding: const EdgeInsets.all(1),
+                  child: Row(
+                    spacing: 1, //
+                    children: header,
+                  ),
+                ),
+
+              Expanded(
+                child: AbsorbPointer(
+                  absorbing: is_load, // * block all clicks (incl. Pluto cells) while loading
+                  child: body ?? Container(),
+                ),
+              ),
+            ],
+          ),
+
+          // * overlay to block clicks centrally while loading — no per-button guard needed
+          if (is_load)
+            Positioned.fill(
+              child: AbsorbPointer(
+                absorbing: true,
+                child: Container(
+                  color: Colors.black.withValues(alpha: 0.10),
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                ),
               ),
             ),
-
-          Expanded(child: body ?? Container()),
         ],
       ),
     );
@@ -53,7 +76,11 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.first_page, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_first_page,
+          onPressed: () async {
+            setState(() => is_load = true);
+            await on_first_page();
+            setState(() => is_load = false);
+          },
         ),
 
         IconButton(
@@ -61,7 +88,11 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.navigate_before, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_previous_page,
+          onPressed: () async {
+            setState(() => is_load = true);
+            await on_previous_page();
+            setState(() => is_load = false);
+          },
         ),
 
         TextButton(
@@ -69,7 +100,11 @@ class _Main_State extends State<Main_> {
             "$current_page / $total_pages", //
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          onPressed: on_goto_page,
+          onPressed: () async {
+            setState(() => is_load = true);
+            await on_goto_page();
+            setState(() => is_load = false);
+          },
         ),
 
         IconButton(
@@ -77,7 +112,11 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.navigate_next, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_next_page,
+          onPressed: () async {
+            setState(() => is_load = true);
+            await on_next_page();
+            setState(() => is_load = false);
+          },
         ),
 
         IconButton(
@@ -85,7 +124,11 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.last_page, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_last_page,
+          onPressed: () async {
+            setState(() => is_load = true);
+            await on_last_page();
+            setState(() => is_load = false);
+          },
         ),
 
         const Spacer(),
@@ -95,7 +138,11 @@ class _Main_State extends State<Main_> {
           icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_filter, // not yet implemented
+          onPressed: () async {
+            setState(() => is_load = true);
+            on_filter(); // not yet implemented (sync, no await)
+            setState(() => is_load = false);
+          },
         ),
 
         IconButton(
@@ -103,7 +150,11 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.refresh, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_reload,
+          onPressed: () async {
+            setState(() => is_load = true);
+            await on_reload();
+            setState(() => is_load = false);
+          },
         ),
       ],
 
@@ -131,7 +182,11 @@ class _Main_State extends State<Main_> {
                   icon: Icon(Icons.add_circle_outline, size: 28), //
                   padding: EdgeInsets.all(0),
                   constraints: BoxConstraints(),
-                  onPressed: on_create, // implemented
+                  onPressed: () async {
+                    setState(() => is_load = true);
+                    await on_create(); // implemented
+                    setState(() => is_load = false);
+                  },
                 ),
               ),
             ),
@@ -154,7 +209,11 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.remove_circle_outline, size: 28, color: Colors.red),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () => on_delete(rc),
+                    onPressed: () async {
+                      setState(() => is_load = true);
+                      await on_delete(rc);
+                      setState(() => is_load = false);
+                    },
                   ),
                 ],
               );
@@ -224,7 +283,7 @@ class _Main_State extends State<Main_> {
                   height: 28,
                   child: PopupMenuButton<String>(
                     tooltip: "Demo 2-2",
-                    onSelected: (v) {
+                    onSelected: (v) async {
                       String? did;
                       for (final d in demos) {
                         if (d.text == v) {
@@ -233,7 +292,9 @@ class _Main_State extends State<Main_> {
                         }
                       }
                       if (did == null) return;
-                      on_change_demo(rc, did, v);
+                      setState(() => is_load = true);
+                      await on_change_demo(rc, did, v);
+                      setState(() => is_load = false);
                     },
                     itemBuilder: (context) => [
                       for (String o in options)
@@ -305,7 +366,7 @@ class _Main_State extends State<Main_> {
     on_reload();
   }
 
-  void on_reload() async {
+  Future<void> on_reload() async {
     final tmp = await dio.post(endpoint.DEMO_2_1_READ_COUNT);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
@@ -318,10 +379,10 @@ class _Main_State extends State<Main_> {
     final td = await dio.post(endpoint.DEMO_2_2_READ, data: {"key": DEFAULT_KEY, "order": DEFAULT_ORDER, "offset": 0, "limit": 200});
     if (td != null) demos = List<Demo_2_2>.from((td.data ?? const []).map((d) => Demo_2_2.fromJson(d)));
 
-    on_load_page(current_page);
+    await on_load_page(current_page);
   }
 
-  void on_load_page(int p) async {
+  Future<void> on_load_page(int p) async {
     final tmp = await dio.post(
       endpoint.DEMO_2_1_READ, //
       data: {
@@ -370,38 +431,38 @@ class _Main_State extends State<Main_> {
     setState(() {});
   }
 
-  void on_create() async {
+  Future<void> on_create() async {
     final tmp = await dio.post(endpoint.DEMO_2_1_CREATE);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Created", cl: Colors.green);
-    on_reload();
+    await on_reload();
   }
 
-  void on_delete(PlutoColumnRendererContext rc) async {
+  Future<void> on_delete(PlutoColumnRendererContext rc) async {
     final id = rc.row.cells[Demo_2_1.ID]?.value;
     final tmp = await dio.post(endpoint.DEMO_2_1_DELETE, data: {Demo_2_1.ID: id});
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Deleted", cl: Colors.green);
-    on_reload();
+    await on_reload();
   }
 
-  void on_changed(PlutoGridOnChangedEvent e) async {
+  Future<void> on_changed(PlutoGridOnChangedEvent e) async {
     final id = e.row.cells[Demo_2_1.ID]?.value;
     final tmp = await dio.post(endpoint.DEMO_2_1_UPDATE, data: {Demo_2_1.ID: id, e.column.field: e.value});
 
     if (tmp == null) {
-      on_reload();
+      await on_reload();
       return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     }
 
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
     // * ផ្ទុកឡើងវិញ ដើម្បីរក្សា និងអនុវត្ត sort / filter ឡើងវិញ (PlutoGrid មិន re-sort/filter ដោយស្វ័យប្រវត្តិ)
-    on_reload();
+    await on_reload();
   }
 
-  void on_change_demo(PlutoColumnRendererContext rc, String id, String name) async {
+  Future<void> on_change_demo(PlutoColumnRendererContext rc, String id, String name) async {
     final row_id = rc.row.cells[Demo_2_1.ID]?.value;
     if (row_id == null) return;
     final tmp = await dio.post(endpoint.DEMO_2_1_UPDATE, data: {Demo_2_1.ID: row_id, Demo_2_1.DEMO_2_2_ID: id});
@@ -411,19 +472,19 @@ class _Main_State extends State<Main_> {
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
   }
 
-  void on_first_page() {
+  Future<void> on_first_page() async {
     if (current_page == 1) return;
     current_page = 1;
-    on_load_page(current_page);
+    await on_load_page(current_page);
   }
 
-  void on_previous_page() {
+  Future<void> on_previous_page() async {
     if (current_page == 1) return;
     current_page = current_page - 1;
-    on_load_page(current_page);
+    await on_load_page(current_page);
   }
 
-  void on_goto_page() async {
+  Future<void> on_goto_page() async {
     final v = await dialog_select_page(
       context, //
       page: current_page,
@@ -432,19 +493,19 @@ class _Main_State extends State<Main_> {
     );
     if (v == null) return;
     current_page = v;
-    on_load_page(current_page);
+    await on_load_page(current_page);
   }
 
-  void on_last_page() {
+  Future<void> on_last_page() async {
     if (current_page == total_pages) return;
     current_page = total_pages;
-    on_load_page(current_page);
+    await on_load_page(current_page);
   }
 
-  void on_next_page() {
+  Future<void> on_next_page() async {
     if (current_page == total_pages) return;
     current_page = current_page + 1;
-    on_load_page(current_page);
+    await on_load_page(current_page);
   }
 
   void on_filter() {
