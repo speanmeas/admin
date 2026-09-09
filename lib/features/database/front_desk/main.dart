@@ -654,6 +654,7 @@ class _Main_State extends State<Main_> {
 
   void on_reload() {
     // * អានទិន្នន័យតែមួយថ្ងៃ (ថ្ងៃ shift នៃទំព័របច្ចុប្បន្ន) — ដូច report
+    load_auth();
     on_load_page(current_page);
   }
 
@@ -1034,10 +1035,9 @@ class _Main_State extends State<Main_> {
   Future<void> load_auth() async {
     final user = await auth.fetch();
     if (user == null) return;
-    setState(() {
-      is_admin = user.is_admin == true;
-      reload++; // * rebuild grid ដើម្បីអនុវត្ត enableEditingMode
-    });
+    is_admin = user.is_admin == true;
+    reload++; // * rebuild grid ដើម្បីអនុវត្ត enableEditingMode
+    setState(() {});
   }
 
   @override

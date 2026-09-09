@@ -209,7 +209,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.refresh, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: on_load_front_desk, //
+          onPressed: on_reload, //
         ),
       ],
 
@@ -804,6 +804,14 @@ class _Main_State extends State<Main_> {
     if (tmp_r == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     rooms = tmp_r.data as List<dynamic>? ?? [];
+  }
+
+  void on_reload() {
+    reload++;
+    load_auth();
+    on_load_room();
+    on_load_front_desk();
+    setState(() {});
   }
 
   void on_load_front_desk() async {
