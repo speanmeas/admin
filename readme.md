@@ -40,3 +40,11 @@ Structure:
 - Form
 - Widget
 - Dialog
+
+```bash
+git checkout 22532fc841ffd81a23f5f886c4ff61347159d9b5
+
+git reset --hard 22532fc841ffd81a23f5f886c4ff61347159d9b5
+
+git push origin HEAD --force
+```
