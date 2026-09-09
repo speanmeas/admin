@@ -629,7 +629,7 @@ class _Main_State extends State<Main_> {
           ),
         ),
 
-        onLoaded: init,
+        onLoaded: on_loaded,
         onChanged: on_changed,
       ),
     );
@@ -637,7 +637,7 @@ class _Main_State extends State<Main_> {
   // * ########## BLOCK DESIGN END ##########
 
   // * ########## BLOCK METHODS ##########
-  void init(PlutoGridOnLoadedEvent e) async {
+  void on_loaded(PlutoGridOnLoadedEvent e) async {
     state_manager = e.stateManager;
 
     state_manager.addListener(() {
@@ -649,7 +649,16 @@ class _Main_State extends State<Main_> {
     state_manager.columnFooterHeight = 32; // * កម្ពស់ជួរសរុប
     list_column = state_manager.refColumns.map((c) => c.field).toList();
 
-    on_reload();
+    on_load_page(current_page);
+  }
+
+  // * ទាញតួនាទីអ្នកប្រើសម្រាប់កំណត់ការកែប្រែ cell
+  Future<void> load_auth() async {
+    final user = await auth.fetch();
+    if (user == null) return;
+    is_admin = user.is_admin == true;
+    reload++; // * rebuild grid ដើម្បីអនុវត្ត enableEditingMode
+    setState(() {});
   }
 
   void on_reload() {
@@ -667,8 +676,8 @@ class _Main_State extends State<Main_> {
   // * ទំព័រ p = ថ្ងៃ shift កន្លងទៅ (p-1) ថ្ងៃ
   DateTime page_day(int p) => shift_day().subtract(Duration(days: p - 1));
 
+  // * អានទិន្នន័យតាមថ្ងៃ shift នៃទំព័រនេះ (មិនមែន offset/limit)
   void on_load_page(int p) async {
-    // * អានទិន្នន័យតាមថ្ងៃ shift នៃទំព័រនេះ (មិនមែន offset/limit)
     final day = page_day(p);
     final start = DateTime(day.year, day.month, day.day);
     final stop = DateTime(day.year, day.month, day.day, 23, 59, 59, 999);
@@ -739,14 +748,14 @@ class _Main_State extends State<Main_> {
     final shift_date = DateTime(day.year, day.month, day.day);
     final v = await dialog_add_row(context: context, shift_date: shift_date);
     if (v != true) return;
-    on_reload();
+    on_load_page(current_page);
   }
 
   void on_delete(PlutoColumnRendererContext rc) async {
     final id = rc.row.cells[Front_Desk.ID]?.value;
     final v = await dialog_delete_row(context: context, front_desk_id: id);
     if (v != true) return;
-    on_reload();
+    on_load_page(current_page);
   }
 
   void on_changed(PlutoGridOnChangedEvent e) async {
@@ -763,13 +772,13 @@ class _Main_State extends State<Main_> {
     }
 
     if (tmp == null) {
-      on_reload();
+      on_load_page(current_page);
       return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     }
 
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
     // * ផ្ទុកឡើងវិញ ដើម្បីរក្សា និងអនុវត្ត sort / filter ឡើងវិញ (PlutoGrid មិន re-sort/filter ដោយស្វ័យប្រវត្តិ)
-    on_reload();
+    on_load_page(current_page);
   }
 
   // * កែ check_in_at — dialog ជ្រើសកាលបរិច្ឆេទ + ម៉ោង (+_by ដោយស្វ័យប្រវត្តិ)
@@ -780,7 +789,7 @@ class _Main_State extends State<Main_> {
 
     final v = await dialog_select_check_in_datetime(context: context, front_desk_id: id, initial: dt);
     if (v == null) return;
-    on_reload();
+    on_load_page(current_page);
   }
 
   // * កែ check_out_at — dialog ជ្រើសកាលបរិច្ឆេទ + ម៉ោង (guard ទល់នឹង check_in_at)
@@ -797,7 +806,7 @@ class _Main_State extends State<Main_> {
       check_in_at: check_in is DateTime ? check_in : null, //
     );
     if (v == null) return;
-    on_reload();
+    on_load_page(current_page);
   }
 
   // * កែ shift_date — ជ្រើសតែកាលបរិច្ឆេទ (00:00:00) ដូច report
@@ -808,7 +817,7 @@ class _Main_State extends State<Main_> {
 
     final v = await dialog_select_shift_date(context: context, front_desk_id: id, initial: dt);
     if (v == null) return;
-    on_reload();
+    on_load_page(current_page);
   }
 
   // * ជ្រើសរើសអ្នកចូល (check_in_by) ពីបញ្ជីអ្នកប្រើ — CRUD only
@@ -817,7 +826,7 @@ class _Main_State extends State<Main_> {
     if (fd_id == null) return;
     final v = await dialog_select_check_in_by(context: context, front_desk_id: fd_id);
     if (v == null) return;
-    on_reload();
+    on_load_page(current_page);
   }
 
   // * ជ្រើសរើសអ្នកបញ្ចប់ (check_out_by) ពីបញ្ជីអ្នកប្រើ — CRUD only
@@ -826,7 +835,7 @@ class _Main_State extends State<Main_> {
     if (fd_id == null) return;
     final v = await dialog_select_check_out_by(context: context, front_desk_id: fd_id);
     if (v == null) return;
-    on_reload();
+    on_load_page(current_page);
   }
 
   // * ស្វែងរក/បង្កើតភ្ញៀវតាមលេខទូរស័ព្ទ ហើយភ្ជាប់ទៅ stay (CRUD only)
@@ -835,7 +844,7 @@ class _Main_State extends State<Main_> {
     if (fd_id == null) return;
     final v = await dialog_search_guest(context: context, front_desk_id: fd_id);
     if (v == null) return;
-    on_reload();
+    on_load_page(current_page);
   }
 
   // * បើក dialog ជ្រើសរើសទំនិញ mini bar (ដូច dashboard) — មិនកែតម្លៃផ្ទាល់
@@ -858,7 +867,7 @@ class _Main_State extends State<Main_> {
     );
     if (saved != true) return;
 
-    on_reload();
+    on_load_page(current_page);
   }
 
   // * បើក dialog ជ្រើសរើសទំនិញ penalty (ដូច dashboard) — មិនកែតម្លៃផ្ទាល់
@@ -880,7 +889,7 @@ class _Main_State extends State<Main_> {
     );
     if (saved != true) return;
 
-    on_reload();
+    on_load_page(current_page);
   }
 
   // * ពិនិត្យថា stay ជា Walk-In / Mini Bar only
@@ -903,7 +912,7 @@ class _Main_State extends State<Main_> {
 
     final v = await dialog_select_room(context: context, front_desk_id: fd_id);
     if (v == null) return;
-    on_reload();
+    on_load_page(current_page);
   }
 
   // * accessors for Front_Desk linked/expanded fields
@@ -1029,15 +1038,6 @@ class _Main_State extends State<Main_> {
   void initState() {
     super.initState();
     load_auth();
-  }
-
-  // * ទាញតួនាទីអ្នកប្រើសម្រាប់កំណត់ការកែប្រែ cell
-  Future<void> load_auth() async {
-    final user = await auth.fetch();
-    if (user == null) return;
-    is_admin = user.is_admin == true;
-    reload++; // * rebuild grid ដើម្បីអនុវត្ត enableEditingMode
-    setState(() {});
   }
 
   @override
