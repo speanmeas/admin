@@ -48,8 +48,9 @@ class _Main_State extends State<Main_> {
   }
 
   // * accessors for Front_Desk linked/expanded fields
-  Room? fd_room(Front_Desk fd) => fd.room_id is Room ? fd.room_id as Room : null;
-  Guest? fd_guest(Front_Desk fd) => fd.guest_id is Guest ? fd.guest_id as Guest : null;
+  String? fd_room_number(Front_Desk fd) => fd.room_number;
+  String? fd_guest_name(Front_Desk fd) => fd.guest_name;
+  String? fd_guest_phone(Front_Desk fd) => fd.guest_phone;
   User_Show? fd_check_in_by(Front_Desk fd) => fd.check_in_by is User_Show ? fd.check_in_by as User_Show : null;
   User_Show? fd_check_out_by(Front_Desk fd) => fd.check_out_by is User_Show ? fd.check_out_by as User_Show : null;
 
@@ -84,9 +85,9 @@ class _Main_State extends State<Main_> {
               c: (() {
                 if (c == "_id") return PlutoCell(value: fd.id ?? "");
                 if (c == "index") return PlutoCell(value: i + 1);
-                if (c == "room") return PlutoCell(value: fd_room(fd)?.number ?? "");
-                if (c == "guest_name") return PlutoCell(value: fd_guest(fd)?.full_name ?? "");
-                if (c == "guest_phone") return PlutoCell(value: fd_guest(fd)?.phone_number ?? "");
+                if (c == "room") return PlutoCell(value: fd_room_number(fd) ?? "");
+                if (c == "guest_name") return PlutoCell(value: fd_guest_name(fd) ?? "");
+                if (c == "guest_phone") return PlutoCell(value: fd_guest_phone(fd) ?? "");
                 if (c == "number_of_guest") return PlutoCell(value: fd.number_of_guest ?? 0);
                 if (c == "check_in_at") return PlutoCell(value: fd.check_in_at);
                 if (c == "check_out_at") return PlutoCell(value: fd.check_out_at);
@@ -141,8 +142,7 @@ class _Main_State extends State<Main_> {
   // * ពិនិត្យ stay ជា Walk-In តាម id
   bool row_is_walk_in_by_id(String fd_id) {
     Front_Desk? fd = rows.where((x) => x.id == fd_id).firstOrNull;
-    Room? room = fd == null ? null : fd_room(fd);
-    return room != null && _is_mini_bar_room(room.number);
+    return fd != null && _is_mini_bar_room(fd.room_number);
   }
 
   // * គណនាតម្លៃពី summary របស់ backend

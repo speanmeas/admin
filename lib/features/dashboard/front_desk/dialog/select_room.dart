@@ -7,8 +7,8 @@ import "package:speanmeas/core/utility/all.dart";
 // * — Confirm ធ្វើ request តែប៉ុណ្ណោះ (FRONT_DESK_CHANGE)
 Future<bool?> dialog_select_room({
   required BuildContext context, //
-  required String lead,
-  required String room_id, //
+  required String lead, //
+  required String front_desk_id, //
 }) async {
   // * ទាញបន្ទប់ Available ពី server ដោយខ្លួនឯង
   dynamic tmp = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
@@ -19,7 +19,7 @@ Future<bool?> dialog_select_room({
 
   final rooms = (tmp.data as List<dynamic>? ?? []).where((r) => r[Room.STATUS] == "Available").toList();
 
-  String? new_room_id;
+  String? new_room_number;
   bool is_loading = false;
   TextEditingController? room_ctrl;
 
@@ -97,7 +97,7 @@ Future<bool?> dialog_select_room({
                       room_ctrl?.text = v;
                       for (var r in rooms) {
                         if ((r[Room.NUMBER] ?? "").toString() == v) {
-                          new_room_id = r[Room.ID];
+                          new_room_number = r[Room.NUMBER];
                           break;
                         }
                       }
@@ -119,14 +119,14 @@ Future<bool?> dialog_select_room({
                 onPressed: is_loading
                     ? null
                     : () async {
-                        if (new_room_id == null) return snackbar(ct: context, ms: "Please select a new room", cl: Colors.red);
+                        if (new_room_number == null) return snackbar(ct: context, ms: "Please select a new room", cl: Colors.red);
 
                         setState(() => is_loading = true);
                         dynamic tmp_fd = await dio.post(
                           endpoint.FRONT_DESK_CHANGE,
                           data: {
-                            Front_Desk.ROOM_ID: room_id, //
-                            "new_room_id": new_room_id, //
+                            Front_Desk.ID: front_desk_id, //
+                            Front_Desk.ROOM_NUMBER: new_room_number, //
                           },
                         );
                         if (tmp_fd == null) {
@@ -159,8 +159,8 @@ class _Main_State extends State<Main_> {
           onPressed: () async {
             final v = await dialog_select_room(
               context: context, //
-              room_id: "111111111122222222223333", //
               lead: "Change Room 201", //
+              front_desk_id: "111111111122222222223333", //
             );
             if (v == null) return;
             tmp = v;

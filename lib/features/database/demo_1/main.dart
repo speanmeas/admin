@@ -1,9 +1,10 @@
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
-
 import "package:speanmeas/core/utility/all.dart";
-import "package:speanmeas/core/widget/dialog/dialog_datetime.dart";
-import "package:speanmeas/core/widget/dialog/select_page.dart";
+
+import "dialog/select_datetime.dart";
+import "dialog/select_page.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK ATTRIBUTE ##########
@@ -55,11 +56,7 @@ class _Main_State extends State<Main_> {
             Positioned.fill(
               child: AbsorbPointer(
                 absorbing: true,
-                child: Container(
-                  color: Colors.black.withValues(alpha: 0.10),
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(),
-                ),
+                child: Container(color: Colors.black.withValues(alpha: 0.10), alignment: Alignment.center, child: CircularProgressIndicator()),
               ),
             ),
         ],
@@ -71,6 +68,16 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     return _layout(
       header: [
+        IconButton(
+          tooltip: "Debug", //
+          icon: Icon(Icons.bug_report_outlined, size: 30), //
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(),
+          onPressed: () async {
+            print("Hello Debug");
+          },
+        ),
+
         IconButton(
           tooltip: "First Page", //
           icon: Icon(Icons.first_page, size: 30), //
@@ -163,15 +170,6 @@ class _Main_State extends State<Main_> {
         rows: [], //
         columns: [
           PlutoColumn(
-            field: Demo_1.ID, //
-            title: "ID",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 0,
-            // width: kDebugMode ? 220 : 0,
-          ),
-
-          PlutoColumn(
             field: "action", //
             title: "",
             titleSpan: WidgetSpan(
@@ -218,6 +216,14 @@ class _Main_State extends State<Main_> {
                 ],
               );
             },
+          ),
+
+          PlutoColumn(
+            field: Demo_1.ID, //
+            title: "ID",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: kDebugMode ? 220 : 0,
           ),
 
           PlutoColumn(
@@ -333,11 +339,11 @@ class _Main_State extends State<Main_> {
           ),
         ], //
         configuration: PlutoGridConfiguration(
-          scrollbar: PlutoGridScrollbarConfig(
-            isAlwaysShown: true, //
-            scrollbarThickness: 12,
-            scrollbarThicknessWhileDragging: 12,
-          ),
+          // scrollbar: PlutoGridScrollbarConfig(
+          //   isAlwaysShown: true, //
+          //   scrollbarThickness: 12,
+          //   scrollbarThicknessWhileDragging: 12,
+          // ),
           style: PlutoGridStyleConfig(
             rowHeight: 28, //
             columnHeight: 32, //

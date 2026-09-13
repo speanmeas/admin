@@ -794,12 +794,12 @@ class _Main_State extends State<Main_> {
                 if (c == "index") return PlutoCell(value: i + 1);
                 if (c == "action") return PlutoCell(value: "");
                 if (c == Front_Desk.SHIFT_DATE) return PlutoCell(value: d.shift_date);
-                if (c == "room") return PlutoCell(value: fd_room(d)?.number ?? "");
+                if (c == "room") return PlutoCell(value: d.room_number ?? "");
                 if (c == Front_Desk.CHECK_IN_AT) return PlutoCell(value: d.check_in_at);
                 if (c == "duration") return PlutoCell(value: duration_text(d.check_in_at, d.check_out_at));
                 if (c == Front_Desk.CHECK_OUT_AT) return PlutoCell(value: d.check_out_at);
-                if (c == "guest_name") return PlutoCell(value: fd_guest(d)?.full_name ?? "");
-                if (c == "guest_phone") return PlutoCell(value: fd_guest(d)?.phone_number ?? "");
+                if (c == "guest_name") return PlutoCell(value: d.guest_name ?? "");
+                if (c == "guest_phone") return PlutoCell(value: d.guest_phone ?? "");
                 if (c == Front_Desk.NUMBER_OF_GUEST) return PlutoCell(value: d.number_of_guest ?? 0);
                 if (c == Front_Desk.ROOM_PRICE) return PlutoCell(value: d.room_price ?? 0.0);
                 if (c == Front_Desk.MINI_BAR_PRICE) return PlutoCell(value: d.mini_bar_price ?? 0.0);
@@ -841,12 +841,12 @@ class _Main_State extends State<Main_> {
   Future<void> on_changed(PlutoGridOnChangedEvent e) async {
     final id = e.row.cells[Front_Desk.ID]?.value;
 
-    // * guest_name / guest_phone មិនមែនជា field របស់ Front_Desk ទេ → បញ្ជូនទៅ update guest info
+    // * guest_name / guest_phone ជា field របស់ Front_Desk → បញ្ជូនទៅ update guest info
     dynamic tmp;
     if (e.column.field == "guest_name") {
-      tmp = await dio.post(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, data: {Front_Desk.ID: id, Guest.FULL_NAME: e.value});
+      tmp = await dio.post(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, data: {Front_Desk.ID: id, Front_Desk.GUEST_NAME: e.value});
     } else if (e.column.field == "guest_phone") {
-      tmp = await dio.post(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, data: {Front_Desk.ID: id, Guest.PHONE_NUMBER: e.value});
+      tmp = await dio.post(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, data: {Front_Desk.ID: id, Front_Desk.GUEST_PHONE: e.value});
     } else {
       tmp = await dio.post(endpoint.FRONT_DESK_UPDATE, data: {Front_Desk.ID: id, e.column.field: e.value});
     }
@@ -977,12 +977,8 @@ class _Main_State extends State<Main_> {
     String? fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return false;
     Front_Desk? fd = data.where((x) => x.id == fd_id).firstOrNull;
-    Room? room = fd == null ? null : fd_room(fd);
-    if (room != null) {
-      final n = (room.number ?? "").toLowerCase();
-      return n == "walk-in" || n == "mini bar";
-    }
-    return false;
+    final n = (fd?.room_number ?? "").toLowerCase();
+    return n == "walk-in" || n == "mini bar";
   }
 
   // * ផ្លាស់បន្ទប់ — ប្រើតែ CRUD endpoints ប៉ុណ្ណោះ (ROOM_READ + FRONT_DESK_UPDATE)
@@ -995,10 +991,10 @@ class _Main_State extends State<Main_> {
     await on_load_page(current_page);
   }
 
-  // * accessors for Front_Desk linked/expanded fields
-  Room? fd_room(Front_Desk fd) => fd.room_id is Room ? fd.room_id as Room : null;
+  // * accessors for Front_Desk fields
+  Room? fd_room(Front_Desk fd) => null;
 
-  Guest? fd_guest(Front_Desk fd) => fd.guest_id is Guest ? fd.guest_id as Guest : null;
+  Guest? fd_guest(Front_Desk fd) => null;
 
   String user_name(dynamic v) {
     if (v is User_Show) return v.full_name ?? "";

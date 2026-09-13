@@ -3,7 +3,6 @@ import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 import "package:speanmeas/core/widget/dialog/select_page.dart";
-import "package:speanmeas/features/database/guest/dialog/search_nationality.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK ATTRIBUTE ##########
@@ -304,35 +303,17 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: Guest.NATIONALITY_ID, //
+            field: Guest.NATIONALITY, //
             title: "Nationality",
             type: PlutoColumnType.text(),
-            enableEditingMode: false,
             width: 140,
             renderer: (rc) {
-              return Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(
-                        format_string(rc.cell.value), //
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-
-                  IconButton(
-                    icon: Icon(Icons.search), //
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () async {
-                      setState(() => is_load = true);
-                      await on_search_nationality(rc); // implemented
-                      setState(() => is_load = false);
-                    },
-                  ),
-                ],
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(
+                  format_string(rc.cell.value), //
+                  overflow: TextOverflow.ellipsis,
+                ),
               );
             },
           ),
@@ -436,9 +417,7 @@ class _Main_State extends State<Main_> {
                 if (c == Guest.FULL_NAME) return PlutoCell(value: d.full_name ?? "");
                 if (c == Guest.PHONE_NUMBER) return PlutoCell(value: d.phone_number ?? "");
                 if (c == Guest.GENDER) return PlutoCell(value: d.gender ?? "");
-                if (c == Guest.NATIONALITY_ID) {
-                  return PlutoCell(value: d.nationality_id?.name ?? "");
-                }
+                if (c == Guest.NATIONALITY) return PlutoCell(value: d.nationality ?? "");
                 if (c == Guest.NOTE) return PlutoCell(value: d.note ?? "");
 
                 return PlutoCell(value: "");
@@ -489,34 +468,6 @@ class _Main_State extends State<Main_> {
     final id = rc.row.cells[Guest.ID]?.value;
     if (id == null) return;
     final tmp = await dio.post(endpoint.GUEST_UPDATE, data: {Guest.ID: id, field: v});
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    snackbar(ct: context, ms: "Updated", cl: Colors.green);
-    await on_reload();
-  }
-
-  // void on_change_nationality(PlutoColumnRendererContext rc, String id, String name) async {
-  //   final row_id = rc.row.cells[Guest.ID]?.value;
-  //   if (row_id == null) return;
-  //   final tmp = await dio.post(endpoint.GUEST_UPDATE, data: {Guest.ID: row_id, Guest.NATIONALITY_ID: id});
-  //   if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-  //   state_manager.changeCellValue(rc.cell, name, callOnChangedEvent: false);
-  //   snackbar(ct: context, ms: "Updated", cl: Colors.green);
-  // }
-
-  Future<void> on_search_nationality(PlutoColumnRendererContext rc) async {
-    //
-    final v = await dialog_search_nationality(context: context);
-    if (v == null) return;
-
-    final tmp = await dio.post(
-      endpoint.GUEST_UPDATE, //
-      data: {
-        Guest.ID: rc.row.cells[Guest.ID]?.value, //
-        Guest.NATIONALITY_ID: v,
-      },
-    );
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     snackbar(ct: context, ms: "Updated", cl: Colors.green);

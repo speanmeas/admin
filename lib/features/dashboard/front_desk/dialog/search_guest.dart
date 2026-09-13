@@ -3,18 +3,18 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog សម្រាប់ស្វែងរកភ្ញៀវ ហើយភ្ជាប់ទៅ front desk
-// * — ប្រើតែ CRUD endpoints ប៉ុណ្ណោះ (GUEST_READ_SEARCH / FRONT_DESK_UPDATE); Confirm ធ្វើ request
+// * បង្ហាញ dialog សម្រាប់ស្វែងរកភ្ញៀវ ហើយកំណត់ឈ្មោះ និងលេខទូរស័ព្ទទៅ front desk
+// * — Confirm ធ្វើ request តែប៉ុណ្ណោះ (FRONT_DESK_UPDATE_GUEST_INFO)
 Future<bool?> dialog_search_guest({
   required BuildContext context, //
   required String? front_desk_id, //
 }) async {
-  String? guest_id;
+  String? selected_guest_name;
+  String? selected_guest_phone;
   List<dynamic> guests = [];
   bool is_loading = false;
   TextEditingController? guest_ctrl;
 
-  // * ស្វែងរកភ្ញៀវពី server
   Future<List<String>> search(String q) async {
     dynamic tmp_g = await dio.post(
       endpoint.GUEST_READ_SEARCH,
@@ -89,7 +89,8 @@ Future<bool?> dialog_search_guest({
                       guest_ctrl?.text = v;
                       for (var e in guests) {
                         if ("${e[Guest.FULL_NAME] ?? ""} (${e[Guest.PHONE_NUMBER] ?? "N/A"})" == v) {
-                          guest_id = e[Guest.ID] as String?;
+                          selected_guest_name = e[Guest.FULL_NAME] as String?;
+                          selected_guest_phone = e[Guest.PHONE_NUMBER] as String?;
                           break;
                         }
                       }
@@ -111,14 +112,17 @@ Future<bool?> dialog_search_guest({
                 onPressed: is_loading
                     ? null
                     : () async {
-                        if (guest_id == null) return snackbar(ct: context, ms: "Please select a guest", cl: Colors.red);
+                        if (selected_guest_name == null && selected_guest_phone == null) {
+                          return snackbar(ct: context, ms: "Please select a guest", cl: Colors.red);
+                        }
 
                         setState(() => is_loading = true);
                         dynamic tmp_fd = await dio.post(
-                          endpoint.FRONT_DESK_UPDATE,
+                          endpoint.FRONT_DESK_UPDATE_GUEST_INFO,
                           data: {
                             Front_Desk.ID: front_desk_id, //
-                            Front_Desk.GUEST_ID: guest_id, //
+                            Front_Desk.GUEST_NAME: selected_guest_name, //
+                            Front_Desk.GUEST_PHONE: selected_guest_phone, //
                           },
                         );
                         if (tmp_fd == null) {

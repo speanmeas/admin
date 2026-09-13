@@ -1,4 +1,6 @@
-# auto commit and push changes to git
+# auto commit and push
+$msg = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+
 git add .
-git commit -m "update"
+git commit -m "$msg"
 git push

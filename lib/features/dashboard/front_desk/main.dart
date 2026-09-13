@@ -932,9 +932,9 @@ class _Main_State extends State<Main_> {
                 c: (() {
                   if (c == "_id") return PlutoCell(value: fd.id ?? "");
                   if (c == "index") return PlutoCell(value: ++index);
-                  if (c == "room") return PlutoCell(value: fd_room(fd)?.number ?? "");
-                  if (c == "guest_name") return PlutoCell(value: fd_guest(fd)?.full_name ?? "");
-                  if (c == "guest_phone") return PlutoCell(value: fd_guest(fd)?.phone_number ?? "");
+if (c == "room") return PlutoCell(value: fd.room_number ?? "");
+              if (c == "guest_name") return PlutoCell(value: fd.guest_name ?? "");
+              if (c == "guest_phone") return PlutoCell(value: fd.guest_phone ?? "");
                   if (c == "check_in_people") return PlutoCell(value: fd.number_of_guest ?? 0);
                   if (c == "check_in_at") return PlutoCell(value: fd.check_in_at);
                   if (c == "check_in_duration") return PlutoCell(value: check_in_duration(fd));
@@ -970,14 +970,10 @@ class _Main_State extends State<Main_> {
     return DateTime(shift_day.year, shift_day.month, shift_day.day).add(const Duration(days: 1)).toIso8601String();
   }
 
-  // * accessors for Front_Desk linked/expanded fields
-  Room? fd_room(Front_Desk fd) {
-    return fd.room_id is Room ? fd.room_id as Room : null;
-  }
+  // * accessors for Front_Desk fields
+  Room? fd_room(Front_Desk fd) => null;
 
-  Guest? fd_guest(Front_Desk fd) {
-    return fd.guest_id is Guest ? fd.guest_id as Guest : null;
-  }
+  Guest? fd_guest(Front_Desk fd) => null;
 
   // * គណនារយៈពេលស្នាក់នៅ (check-in → check-out; បើមិនទាន់ចេញ → ដល់ពេលបច្ចុប្បន្ន)
   int check_in_duration(Front_Desk fd) {
@@ -991,17 +987,7 @@ class _Main_State extends State<Main_> {
 
   // * ពិនិត្យថា stay ជា Walk-In / Mini Bar only (លក់ minibar តែប៉ុណ្ណោះ) — មិនអាស្រ័យតែលើ expanded room ទេ
   bool is_walkin(Front_Desk fd) {
-    Room? room = fd_room(fd);
-    if (room != null) return _is_mini_bar_room(room.number);
-    // * room_id អាចមកជា string id (មិន expanded) → រកក្នុងបញ្ជី rooms
-    String rid = (fd.room_id ?? "").toString();
-    if (rid.isEmpty) return false;
-    for (var r in rooms) {
-      if ((r[Room.ID] ?? "").toString() == rid && _is_mini_bar_room(r[Room.NUMBER]?.toString())) {
-        return true;
-      }
-    }
-    return false;
+    return _is_mini_bar_room(fd.room_number);
   }
 
   // * ពិនិត្យថាឈ្មោះបន្ទប់ជា Walk-In ឬ Mini Bar (minibar only)
@@ -1078,8 +1064,8 @@ class _Main_State extends State<Main_> {
     }
 
     dynamic updated;
-    if (e.column.field == "guest_name") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, {Front_Desk.ID: fd_id, Guest.FULL_NAME: e.value});
-    if (e.column.field == "guest_phone") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, {Front_Desk.ID: fd_id, Guest.PHONE_NUMBER: e.value});
+    if (e.column.field == "guest_name") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, {Front_Desk.ID: fd_id, Front_Desk.GUEST_NAME: e.value});
+    if (e.column.field == "guest_phone") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, {Front_Desk.ID: fd_id, Front_Desk.GUEST_PHONE: e.value});
     if (e.column.field == "check_in_people") updated = await _update(endpoint.FRONT_DESK_UPDATE, {Front_Desk.ID: fd_id, Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? "")});
 
     // * កែ room_price → endpoint update_room_price; cash / bank / note → update_payment (បន្ទាប់ពីដកចេញពី update_payment)
@@ -1132,7 +1118,7 @@ class _Main_State extends State<Main_> {
     var v = await dialog_check_in(
       context: context, //
       lead: "Room ${r[Room.NUMBER]}", //
-      room_id: r[Room.ID], //
+      room_number: r[Room.NUMBER], //
     );
     if (v == null) return;
     await Future.wait([on_load_room(), on_load_front_desk()]);
@@ -1161,7 +1147,7 @@ class _Main_State extends State<Main_> {
     var v = await dialog_check_out(
       context: context, //
       lead: "Room ${r[Room.NUMBER]}", //
-      room_id: r[Room.ID], //
+      front_desk_id: fd_id, //
     );
     if (v == null) return;
 
@@ -1172,7 +1158,7 @@ class _Main_State extends State<Main_> {
     var v = await dialog_clean(
       context: context, //
       lead: "Room ${r[Room.NUMBER]}", //
-      room_id: r[Room.ID], //
+      room_number: r[Room.NUMBER], //
     );
     if (v == null) return;
 
@@ -1203,14 +1189,12 @@ class _Main_State extends State<Main_> {
   }
 
   Future<void> on_change_room(PlutoColumnRendererContext rc) async {
-    Front_Desk? fd = row_stay(rc);
-    String? room_id = fd == null ? null : fd_room(fd)?.id;
-    if (room_id == null) return snackbar(ct: context, ms: "No stay to change room", cl: Colors.red);
-
+    String? fd_id = rc.row.cells["_id"]?.value;
+    if (fd_id == null) return;
     var v = await dialog_select_room(
       context: context, //
       lead: "Room ${rc.row.cells["room"]?.value}", //
-      room_id: room_id, //
+      front_desk_id: fd_id, //
     );
     if (v == null) return;
     await Future.wait([on_load_room(), on_load_front_desk()]);

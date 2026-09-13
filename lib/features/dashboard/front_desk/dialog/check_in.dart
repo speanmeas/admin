@@ -7,7 +7,7 @@ import "package:speanmeas/core/utility/all.dart";
 Future<bool?> dialog_check_in({
   required BuildContext context, //
   required String lead,
-  required String room_id, //
+  required String room_number, //
 }) async {
   bool is_loading = false;
 
@@ -63,7 +63,7 @@ Future<bool?> dialog_check_in({
                         dynamic tmp_fd = await dio.post(
                           endpoint.FRONT_DESK_CHECK_IN,
                           data: {
-                            Front_Desk.ROOM_ID: room_id, //
+                            Front_Desk.ROOM_NUMBER: room_number, //
                           },
                         );
                         if (tmp_fd == null) {
@@ -92,10 +92,10 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_check_in(
+final v = await dialog_check_in(
               context: context, //
-              room_id: "111111111122222222223333", //
-              lead: "Check-In to Room 201", //
+              room_number: "201", //
+              lead: "Check-In Room 201", //
             );
             if (v == null) return;
             // page = v;

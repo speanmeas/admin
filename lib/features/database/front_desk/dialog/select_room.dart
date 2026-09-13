@@ -9,7 +9,6 @@ Future<bool?> dialog_select_room({
   required BuildContext context, //
   required String? front_desk_id, //
 }) async {
-  // * ទាញបន្ទប់ទាំងអស់ពី server (CRUD read)
   dynamic tmp_r = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
   if (tmp_r == null) {
     snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
@@ -18,11 +17,10 @@ Future<bool?> dialog_select_room({
 
   final rooms = tmp_r.data as List<dynamic>? ?? [];
 
-  String? new_room_id;
+  String? selected_room_number;
   bool is_loading = false;
   TextEditingController? room_ctrl;
 
-  // * ស្វែងរកបន្ទប់ដោយលេខបន្ទប់
   List<String> search(String q) {
     final query = q.trim().toLowerCase();
     final options = <String>[];
@@ -91,7 +89,7 @@ Future<bool?> dialog_select_room({
                       room_ctrl?.text = v;
                       for (var r in rooms) {
                         if ((r[Room.NUMBER] ?? "").toString() == v) {
-                          new_room_id = r[Room.ID];
+                          selected_room_number = r[Room.NUMBER];
                           break;
                         }
                       }
@@ -113,15 +111,14 @@ Future<bool?> dialog_select_room({
                 onPressed: is_loading
                     ? null
                     : () async {
-                        if (new_room_id == null) return snackbar(ct: context, ms: "Please select a room", cl: Colors.red);
+                        if (selected_room_number == null) return snackbar(ct: context, ms: "Please select a room", cl: Colors.red);
 
-                        // * ធ្វើបច្ចុប្បន្នភាព room_id របស់ stay (CRUD update)
                         setState(() => is_loading = true);
                         dynamic tmp_fd = await dio.post(
                           endpoint.FRONT_DESK_UPDATE,
                           data: {
                             Front_Desk.ID: front_desk_id, //
-                            Front_Desk.ROOM_ID: new_room_id, //
+                            Front_Desk.ROOM_NUMBER: selected_room_number, //
                           },
                         );
                         if (tmp_fd == null) {
