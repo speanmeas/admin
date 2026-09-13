@@ -16,7 +16,7 @@ class Order_Mini_Bar {
 }
 
 // * dialog ជ្រើសរើសទំនិញ mini bar ជាមួយ stepper +/- ក្នុងមួយទំនិញ
-Future<bool?> dialog_select_mini_bar({
+Future<double?> dialog_select_mini_bar({
   required BuildContext context, //
   required List<Order_Mini_Bar> list_order_mini_bar,
   required String? front_desk_id, //
@@ -87,7 +87,7 @@ Future<bool?> dialog_select_mini_bar({
   }
 
   // * រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
-  Future<bool?> on_confirm() async {
+  Future<double?> on_confirm() async {
     is_loading = true;
 
     List<String> ids = [];
@@ -126,12 +126,12 @@ Future<bool?> dialog_select_mini_bar({
     if (tmp_fd == null) return null;
 
     snackbar(ct: context, ms: "Mini Bar Updated", cl: Colors.green);
-    return true;
+    return orders.fold<double>(0.0, (sum, o) => sum + o.total);
   }
 
   await load();
 
-  final result = await showDialog<bool>(
+  final result = await showDialog<double>(
     context: context,
     builder: (context) {
       return StatefulBuilder(
@@ -275,7 +275,7 @@ Future<bool?> dialog_select_mini_bar({
               OutlinedButton.icon(
                 icon: const Icon(Icons.close, color: Colors.red), //
                 label: const Text("Cancel", style: TextStyle(color: Colors.red)),
-                onPressed: () => Navigator.pop(context, false),
+                onPressed: () => Navigator.pop(context),
               ),
               // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស និងរក្សាទុកទំនិញ
               OutlinedButton.icon(
@@ -302,7 +302,7 @@ Future<bool?> dialog_select_mini_bar({
 }
 
 class _Main_State extends State<Main_> {
-  bool? tmp;
+  double? tmp;
 
   @override
   Widget build(BuildContext context) {

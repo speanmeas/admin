@@ -3,148 +3,85 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog សម្រាប់ស្វែងរកភ្ញៀវ ហើយកំណត់ឈ្មោះ និងលេខទូរស័ព្ទទៅ front desk
-// * — Confirm ធ្វើ request តែប៉ុណ្ណោះ (FRONT_DESK_UPDATE_GUEST_INFO)
-Future<bool?> dialog_search_guest({
+Future<Map<String, String>?> dialog_search_guest({
   required BuildContext context, //
-  required String? front_desk_id, //
 }) async {
-  String? selected_guest_name;
-  String? selected_guest_phone;
   List<dynamic> guests = [];
-  bool is_loading = false;
-  TextEditingController? guest_ctrl;
 
   Future<List<String>> search(String q) async {
-    dynamic tmp_g = await dio.post(
-      endpoint.GUEST_READ_SEARCH,
-      data: {
-        "query": q, //
-        "limit": 1000, //
-      },
-    );
-
+    dynamic tmp_g = await dio.post(endpoint.GUEST_READ_SEARCH, data: {"query": q, "limit": 1000});
     guests = tmp_g.data as List<dynamic>? ?? [];
-
     final options = <String>[];
-
     for (var g in guests) {
       final text = "${g[Guest.FULL_NAME] ?? ""} (${g[Guest.PHONE_NUMBER] ?? "N/A"})";
       options.add(text);
     }
-
     return options;
   }
 
-  final result = await showDialog<bool>(
+  return await showDialog<Map<String, String>>(
     context: context,
     builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-            alignment: Alignment.topCenter,
-            titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
-            contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
-            actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-            actionsAlignment: MainAxisAlignment.center,
-            title: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Search Guest", //
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ],
+      return AlertDialog(
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        alignment: Alignment.topCenter,
+        titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+        contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Search Guest", //
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            content: SizedBox(
-              width: 400,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Divider(height: 0, color: Colors.grey),
-                  const SizedBox(height: 8),
-                  TypeAheadField<String>(
-                    animationDuration: Duration.zero, //
-                    itemBuilder: (context, item) => ListTile(title: Text(item)),
-                    suggestionsCallback: search,
-                    builder: (context, controller, focusNode) {
-                      guest_ctrl = controller;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (!focusNode.hasFocus) focusNode.requestFocus();
-                      });
-                      return TextField(
-                        autofocus: true,
-                        controller: controller,
-                        focusNode: focusNode,
-                        decoration: const InputDecoration(
-                          labelText: "Search Guest:",
-                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          prefixIcon: Icon(Icons.search, color: Colors.blue),
-                        ),
-                      );
-                    },
-                    onSelected: (v) {
-                      guest_ctrl?.text = v;
-                      for (var e in guests) {
-                        if ("${e[Guest.FULL_NAME] ?? ""} (${e[Guest.PHONE_NUMBER] ?? "N/A"})" == v) {
-                          selected_guest_name = e[Guest.FULL_NAME] as String?;
-                          selected_guest_phone = e[Guest.PHONE_NUMBER] as String?;
-                          break;
-                        }
-                      }
-                      setState(() {});
-                    },
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              OutlinedButton.icon(
-                icon: const Icon(Icons.close, color: Colors.red), //
-                label: const Text("Cancel", style: TextStyle(color: Colors.red)),
-                onPressed: is_loading ? null : () => Navigator.pop(context, false),
-              ),
-              OutlinedButton.icon(
-                icon: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check), //
-                label: const Text("Confirm"),
-                onPressed: is_loading
-                    ? null
-                    : () async {
-                        if (selected_guest_name == null && selected_guest_phone == null) {
-                          return snackbar(ct: context, ms: "Please select a guest", cl: Colors.red);
-                        }
-
-                        setState(() => is_loading = true);
-                        dynamic tmp_fd = await dio.post(
-                          endpoint.FRONT_DESK_UPDATE_GUEST_INFO,
-                          data: {
-                            Front_Desk.ID: front_desk_id, //
-                            Front_Desk.GUEST_NAME: selected_guest_name, //
-                            Front_Desk.GUEST_PHONE: selected_guest_phone, //
-                          },
-                        );
-                        if (tmp_fd == null) {
-                          if (context.mounted) setState(() => is_loading = false);
-                          return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-                        }
-
-                        snackbar(ct: context, ms: "Success", cl: Colors.green);
-                        if (context.mounted) Navigator.pop(context, true);
-                      },
+          ],
+        ),
+        content: SizedBox(
+          width: 400,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Divider(height: 0, color: Colors.grey),
+              const SizedBox(height: 8),
+              TypeAheadField<String>(
+                animationDuration: Duration.zero, //
+                itemBuilder: (context, item) => ListTile(title: Text(item)),
+                suggestionsCallback: search,
+                builder: (context, controller, focusNode) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (!focusNode.hasFocus) focusNode.requestFocus();
+                  });
+                  return TextField(
+                    autofocus: true,
+                    controller: controller,
+                    focusNode: focusNode,
+                    decoration: const InputDecoration(
+                      labelText: "Search:",
+                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      prefixIcon: Icon(Icons.search, color: Colors.blue),
+                    ),
+                  );
+                },
+                onSelected: (v) {
+                  for (var e in guests) {
+                    if ("${e[Guest.FULL_NAME] ?? ""} (${e[Guest.PHONE_NUMBER] ?? "N/A"})" == v) {
+                      Navigator.pop(context, {"id": e[Guest.ID] as String? ?? "", "name": e[Guest.FULL_NAME] as String? ?? "", "phone": e[Guest.PHONE_NUMBER] as String? ?? ""});
+                      return;
+                    }
+                  }
+                },
               ),
             ],
-          );
-        },
+          ),
+        ),
       );
     },
   );
-  return result;
 }
 
 class _Main_State extends State<Main_> {
-  bool? tmp;
+  Map<String, String>? tmp;
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +90,7 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_search_guest(context: context, front_desk_id: "test");
+            final v = await dialog_search_guest(context: context);
             if (v == null) return;
             tmp = v;
             setState(() {});

@@ -16,7 +16,7 @@ class Order_Penalty {
 }
 
 // * dialog ជ្រើសរើសទំនិញ penalty ជាមួយ stepper +/- ក្នុងមួយទំនិញ
-Future<bool?> dialog_select_penalty({
+Future<double?> dialog_select_penalty({
   required BuildContext context, //
   required List<Order_Penalty> list_order_penalty,
   required String? front_desk_id, //
@@ -86,7 +86,7 @@ Future<bool?> dialog_select_penalty({
   }
 
   // * រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
-  Future<bool?> on_confirm() async {
+  Future<double?> on_confirm() async {
     is_loading = true;
 
     List<String> ids = [];
@@ -124,12 +124,12 @@ Future<bool?> dialog_select_penalty({
     if (tmp_fd == null) return null;
 
     snackbar(ct: context, ms: "Penalty Updated", cl: Colors.green);
-    return true;
+    return orders.fold<double>(0.0, (sum, o) => sum + o.total);
   }
 
   await load();
 
-  final result = await showDialog<bool>(
+  final result = await showDialog<double>(
     context: context,
     builder: (context) {
       return StatefulBuilder(
@@ -300,7 +300,7 @@ Future<bool?> dialog_select_penalty({
 }
 
 class _Main_State extends State<Main_> {
-  bool? tmp;
+  double? tmp;
 
   @override
   Widget build(BuildContext context) {

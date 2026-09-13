@@ -2,17 +2,17 @@ import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/utility/all.dart";
-import "package:speanmeas/core/widget/dialog/select_page.dart";
+
+import "dialog/select_page.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK ATTRIBUTE ##########
   int reload = 0;
-  bool is_load = false;
-  bool is_filter = false;
-  int current_page = 1;
   int total_row = 0;
+  int current_page = 1;
+  bool filter = false;
 
-  late List<String> list_column;
+  late List<PlutoColumn> list_column_pluto;
   late PlutoGridStateManager state_manager;
 
   List<String> kinds = ["Single", "Double", "VIP"];
@@ -41,9 +41,8 @@ class _Main_State extends State<Main_> {
               ),
             ),
 
-          if (is_load) LinearProgressIndicator(minHeight: 2, color: Colors.blue),
-
-          Expanded(child: body ?? Container()),
+          if (body != null) //
+            Expanded(child: body),
         ],
       ),
     );
@@ -58,7 +57,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.first_page, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: is_load ? null : on_first_page,
+          onPressed: on_first_page,
         ),
 
         IconButton(
@@ -66,7 +65,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.navigate_before, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: is_load ? null : on_previous_page,
+          onPressed: on_previous_page,
         ),
 
         TextButton(
@@ -74,7 +73,7 @@ class _Main_State extends State<Main_> {
             "$current_page / $total_pages", //
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          onPressed: is_load ? null : on_goto_page,
+          onPressed: on_goto_page,
         ),
 
         IconButton(
@@ -82,7 +81,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.navigate_next, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: is_load ? null : on_next_page,
+          onPressed: on_next_page,
         ),
 
         IconButton(
@@ -90,17 +89,17 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.last_page, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: is_load ? null : on_last_page,
+          onPressed: on_last_page,
         ),
 
         const Spacer(),
 
         IconButton(
-          tooltip: is_filter ? "Hide Filter" : "Show Filter", //
-          icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
+          tooltip: filter ? "Hide Filter" : "Show Filter", //
+          icon: Icon(filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: is_load ? null : on_filter, // not yet implemented
+          onPressed: on_filter,
         ),
 
         IconButton(
@@ -108,7 +107,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.refresh, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: is_load ? null : on_reload,
+          onPressed: on_reload,
         ),
       ],
 
@@ -136,12 +135,12 @@ class _Main_State extends State<Main_> {
                   icon: Icon(Icons.add_circle_outline, size: 28), //
                   padding: EdgeInsets.all(0),
                   constraints: BoxConstraints(),
-                  onPressed: is_load ? null : on_create, // implemented
+                  onPressed: on_create,
                 ),
               ),
             ),
             titlePadding: EdgeInsets.all(0),
-            type: PlutoColumnType.number(),
+            type: PlutoColumnType.text(),
             width: 40,
             enableEditingMode: false,
             enableColumnDrag: false,
@@ -326,32 +325,24 @@ class _Main_State extends State<Main_> {
           ),
         ),
 
-        onLoaded: init,
-        onChanged: on_changed,
+        onLoaded: on_loaded,
+        onChanged: on_updated,
       ),
     );
   }
   // * ########## BLOCK DESIGN END ##########
 
   // * ########## BLOCK METHODS ##########
-  void init(PlutoGridOnLoadedEvent e) async {
+  void on_loaded(PlutoGridOnLoadedEvent e) async {
     state_manager = e.stateManager;
-
-    state_manager.addListener(() {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() {});
-      });
-    });
     state_manager.setAutoEditing(true);
-    list_column = state_manager.refColumns.map((c) => c.field).toList();
+    list_column_pluto = state_manager.refColumns.toList();
 
-    on_reload();
+    await on_reload();
   }
 
-  void on_reload() async {
-    setState(() => is_load = true);
+  Future<void> on_reload() async {
     final tmp = await dio.post(endpoint.ROOM_READ_COUNT);
-    setState(() => is_load = false);
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     total_row = parse_int(tmp.data) ?? 0;
@@ -361,10 +352,10 @@ class _Main_State extends State<Main_> {
     if (current_page < 1) current_page = 1;
 
     on_load_page(current_page);
+    snackbar(ct: context, ms: "Reloaded", cl: Colors.green);
   }
 
-  void on_load_page(int p) async {
-    setState(() => is_load = true);
+  Future<void> on_load_page(int p) async {
     final tmp = await dio.post(
       endpoint.ROOM_READ, //
       data: {
@@ -374,9 +365,8 @@ class _Main_State extends State<Main_> {
         "limit": DEFAULT_LIMIT_ROW,
       },
     );
-    setState(() => is_load = false);
-
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
     data = List<Room>.from((tmp.data ?? const []).map((d) => Room.fromJson(d)));
 
     // * រក្សាទុក sort និង filter មុនពេលផ្ទុកឡើងវិញ
@@ -389,17 +379,17 @@ class _Main_State extends State<Main_> {
       for (var (i, d) in data.indexed)
         PlutoRow(
           cells: {
-            for (var c in list_column) //
-              c: (() {
-                if (c == Room.ID) return PlutoCell(value: d.id ?? "");
-                if (c == "index") return PlutoCell(value: i + 1);
-                if (c == "action") return PlutoCell(value: "");
-                if (c == Room.NUMBER) return PlutoCell(value: d.number ?? "");
-                if (c == Room.PRICE_PER_DAY) return PlutoCell(value: d.price_per_day ?? 0.0);
-                if (c == Room.PRICE_PER_3H) return PlutoCell(value: d.price_per_3h ?? 0.0);
-                if (c == Room.KIND) return PlutoCell(value: d.kind ?? "");
-                if (c == Room.STATUS) return PlutoCell(value: d.status ?? "");
-                if (c == Room.NOTE) return PlutoCell(value: d.note ?? "");
+            for (var c in list_column_pluto) //
+              c.field: (() {
+                if (c.field == "action") return PlutoCell(value: "");
+                if (c.field == Room.ID) return PlutoCell(value: d.id ?? "");
+                if (c.field == "index") return PlutoCell(value: i + 1);
+                if (c.field == Room.NUMBER) return PlutoCell(value: d.number ?? "");
+                if (c.field == Room.PRICE_PER_DAY) return PlutoCell(value: d.price_per_day ?? 0.0);
+                if (c.field == Room.PRICE_PER_3H) return PlutoCell(value: d.price_per_3h ?? 0.0);
+                if (c.field == Room.KIND) return PlutoCell(value: d.kind ?? "");
+                if (c.field == Room.STATUS) return PlutoCell(value: d.status ?? "");
+                if (c.field == Room.NOTE) return PlutoCell(value: d.note ?? "");
 
                 return PlutoCell(value: "");
               })(),
@@ -411,52 +401,89 @@ class _Main_State extends State<Main_> {
     if (sorted_column != null) state_manager.sortBySortIdx(sorted_column);
     state_manager.setFilterWithFilterRows(filter_rows);
 
+    re_index();
     setState(() {});
   }
 
-  void on_create() async {
-    setState(() => is_load = true);
-    final tmp = await dio.post(endpoint.ROOM_CREATE);
-    setState(() => is_load = false);
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    snackbar(ct: context, ms: "Created", cl: Colors.green);
-    on_reload();
-  }
-
-  void on_delete(PlutoColumnRendererContext rc) async {
-    final id = rc.row.cells[Room.ID]?.value;
-    setState(() => is_load = true);
-    final tmp = await dio.post(endpoint.ROOM_DELETE, data: {Room.ID: id});
-    setState(() => is_load = false);
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    snackbar(ct: context, ms: "Deleted", cl: Colors.green);
-    on_reload();
-  }
-
-  void on_changed(PlutoGridOnChangedEvent e) async {
-    final id = e.row.cells[Room.ID]?.value;
-    final tmp = await dio.post(endpoint.ROOM_UPDATE, data: {Room.ID: id, e.column.field: e.value});
-
-    if (tmp == null) {
-      on_reload();
-      return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+  void re_index() {
+    for (int i = 0; i < state_manager.rows.length; i++) {
+      final row = state_manager.rows[i];
+      state_manager.changeCellValue(row.cells["index"]!, i + 1, force: true, callOnChangedEvent: false);
     }
-
-    snackbar(ct: context, ms: "Updated", cl: Colors.green);
-    // * ផ្ទុកឡើងវិញ ដើម្បីរក្សា និងអនុវត្ត sort / filter ឡើងវិញ (PlutoGrid មិន re-sort/filter ដោយស្វ័យប្រវត្តិ)
-    on_reload();
   }
 
-  void on_change_field(PlutoColumnRendererContext rc, String field, String v) async {
+  void on_create() {
+    final row = PlutoRow(
+      cells: {
+        for (var c in list_column_pluto) //
+          c.field: PlutoCell(
+            value: (() {
+              if (c.type is PlutoColumnTypeNumber) return 0;
+              if (c.type is PlutoColumnTypeText) return "";
+              return null;
+            })(),
+          ),
+      },
+    );
+    state_manager.insertRows(0, [row]);
+    re_index();
+    do_create(row);
+  }
+
+  Future<void> do_create(PlutoRow row) async {
+    final tmp = await dio.post(endpoint.ROOM_CREATE);
+    if (tmp == null) {
+      await on_reload();
+      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      return;
+    }
+    final created_id = (tmp.data as List?)?.firstOrNull?["_id"] as String?;
+    if (created_id != null) {
+      row.cells[Room.ID]!.value = created_id;
+      state_manager.notifyListeners();
+    }
+    snackbar(ct: context, ms: "Created", cl: Colors.green);
+  }
+
+  void on_delete(PlutoColumnRendererContext rc) {
+    state_manager.removeRows([rc.row]);
+    re_index();
+
     final id = rc.row.cells[Room.ID]?.value;
     if (id == null) return;
-    final tmp = await dio.post(endpoint.ROOM_UPDATE, data: {Room.ID: id, field: v});
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    do_delete(id);
+  }
 
+  Future<void> do_delete(String? id) async {
+    final tmp = await dio.post(endpoint.ROOM_DELETE, data: {Room.ID: id});
+    if (tmp == null) {
+      await on_reload();
+      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      return;
+    }
+    snackbar(ct: context, ms: "Deleted", cl: Colors.green);
+  }
+
+  void on_updated(PlutoGridOnChangedEvent e) {
+    final id = e.row.cells[Room.ID]?.value;
+    do_updated(id, e.column.field, e.value);
+  }
+
+  void on_change_field(PlutoColumnRendererContext rc, String field, String v) {
+    final id = rc.row.cells[Room.ID]?.value;
+    if (id == null) return;
+    rc.cell.value = v;
+    state_manager.notifyListeners();
+    do_updated(id, field, v);
+  }
+
+  Future<void> do_updated(String? id, String field, dynamic value) async {
+    final tmp = await dio.post(endpoint.ROOM_UPDATE, data: {Room.ID: id, field: value});
+    if (tmp == null) {
+      await on_reload();
+      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
-    on_reload();
   }
 
   void on_first_page() {
@@ -480,25 +507,25 @@ class _Main_State extends State<Main_> {
     );
     if (v == null) return;
     current_page = v;
-    on_load_page(current_page);
+    await on_load_page(current_page);
   }
 
-  void on_last_page() {
+  void on_last_page() async {
     if (current_page == total_pages) return;
     current_page = total_pages;
-    on_load_page(current_page);
+    await on_load_page(current_page);
   }
 
-  void on_next_page() {
+  void on_next_page() async {
     if (current_page == total_pages) return;
     current_page = current_page + 1;
-    on_load_page(current_page);
+    await on_load_page(current_page);
   }
 
   void on_filter() {
-    state_manager.setShowColumnFilter(!is_filter);
-    if (!is_filter) state_manager.setFilterWithFilterRows([]);
-    is_filter = !is_filter;
+    state_manager.setShowColumnFilter(!filter);
+    if (!filter) state_manager.setFilterWithFilterRows([]);
+    filter = !filter;
     setState(() {});
   }
 

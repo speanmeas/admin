@@ -16,19 +16,18 @@ import "dialog/update_check_out_at.dart";
 import "dialog/search_guest.dart";
 
 class _Main_State extends State<Main_> {
-  // * ########## BLOCK VARIABLES ##########
+  // * ########## BLOCK ATTRIBUTE ##########
   int reload = 0; // to reload pluto grid
   bool is_admin = false;
-  bool is_load = false; // * block all clicks centrally while loading
-  bool is_filter = false;
-  bool show_carry_over = true; // * លាក់/បង្ហាញ stay ដែលចូលពីថ្ងៃមុន
+  bool filter = false;
+  bool show_co = true; // hide/show carry-over
 
   List<dynamic> rooms = [];
   List<Front_Desk> front_desks = [];
 
-  late List<String> list_column; // to store column id for pluto grid
+  late List<PlutoColumn> list_column_pluto; // to store column id for pluto grid
   late PlutoGridStateManager state_manager;
-  // * ########## BLOCK VARIABLES END ##########
+  // * ########## BLOCK ATTRIBUTE END ##########
 
   // * ########## BLOCK DESIGN ##########
   Widget _layout({
@@ -40,83 +39,61 @@ class _Main_State extends State<Main_> {
     List<Widget>? footer, //
   }) {
     return Scaffold(
-      body: Stack(
+      body: Column(
+        spacing: 1,
         children: [
-          Column(
-            spacing: 1,
-            children: [
-              if (check_in != null && check_in.isNotEmpty)
-                Container(
-                  alignment: Alignment.centerLeft, //
-                  padding: const EdgeInsets.only(top: 1),
-                  child: Wrap(
-                    spacing: 1, //
-                    runSpacing: 1,
-                    children: check_in,
-                  ),
-                ),
-
-              if (check_out != null && check_out.isNotEmpty)
-                Container(
-                  alignment: Alignment.centerLeft, //
-                  padding: const EdgeInsets.only(top: 1),
-                  child: Wrap(
-                    spacing: 1, //
-                    runSpacing: 1,
-                    children: check_out,
-                  ),
-                ),
-
-              if (clean != null && clean.isNotEmpty)
-                Container(
-                  alignment: Alignment.centerLeft, //
-                  padding: const EdgeInsets.only(top: 1),
-                  child: Wrap(
-                    spacing: 1, //
-                    runSpacing: 1,
-                    children: [...clean],
-                  ),
-                ),
-
-              if (header != null && header.isNotEmpty)
-                Container(
-                  height: 34, //
-                  padding: const EdgeInsets.only(top: 1),
-                  child: Row(
-                    spacing: 1, //
-                    children: header,
-                  ),
-                ),
-
-              Expanded(
-                child: AbsorbPointer(
-                  absorbing: is_load, // * block all clicks (incl. Pluto cells) while loading
-                  child: body ?? Container(),
-                ),
+          if (check_in != null && check_in.isNotEmpty)
+            Container(
+              alignment: Alignment.centerLeft, //
+              padding: const EdgeInsets.only(top: 1),
+              child: Wrap(
+                spacing: 1, //
+                runSpacing: 1,
+                children: check_in,
               ),
+            ),
 
-              if (footer != null && footer.isNotEmpty)
-                Container(
-                  height: 34, //
-                  padding: const EdgeInsets.only(top: 1),
-                  child: Row(
-                    spacing: 2, //
-                    children: footer,
-                  ),
-                ),
-            ],
-          ),
+          if (check_out != null && check_out.isNotEmpty)
+            Container(
+              alignment: Alignment.centerLeft, //
+              padding: const EdgeInsets.only(top: 1),
+              child: Wrap(
+                spacing: 1, //
+                runSpacing: 1,
+                children: check_out,
+              ),
+            ),
 
-          // * overlay to block clicks centrally while loading — no per-button guard needed
-          if (is_load)
-            Positioned.fill(
-              child: AbsorbPointer(
-                absorbing: true,
-                child: Container(
-                  color: Colors.black.withValues(alpha: 0.10),
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(),
-                ),
+          if (clean != null && clean.isNotEmpty)
+            Container(
+              alignment: Alignment.centerLeft, //
+              padding: const EdgeInsets.only(top: 1),
+              child: Wrap(
+                spacing: 1, //
+                runSpacing: 1,
+                children: [...clean],
+              ),
+            ),
+
+          if (header != null && header.isNotEmpty)
+            Container(
+              height: 34, //
+              padding: const EdgeInsets.only(top: 1),
+              child: Row(
+                spacing: 1, //
+                children: header,
+              ),
+            ),
+
+          Expanded(child: body ?? Container()),
+
+          if (footer != null && footer.isNotEmpty)
+            Container(
+              height: 34, //
+              padding: const EdgeInsets.only(top: 1),
+              child: Row(
+                spacing: 2, //
+                children: footer,
               ),
             ),
         ],
@@ -135,11 +112,7 @@ class _Main_State extends State<Main_> {
               icon: Icon(Icons.bed_outlined), //
               label: Text("${r[Room.NUMBER]}"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
-              onPressed: () async {
-                setState(() => is_load = true);
-                await on_check_in(r);
-                setState(() => is_load = false);
-              }, //
+              onPressed: () => on_check_in(r), //
             ),
           ),
 
@@ -149,11 +122,7 @@ class _Main_State extends State<Main_> {
             label: Text("Mini Bar"), //
             icon: Icon(Icons.local_bar_outlined), //
             style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
-            onPressed: () async {
-              setState(() => is_load = true);
-              await on_mini_bar_only();
-              setState(() => is_load = false);
-            }, //
+            onPressed: () => on_mini_bar_only(), //
           ),
         ),
       ],
@@ -166,11 +135,7 @@ class _Main_State extends State<Main_> {
               icon: Icon(Icons.hotel_outlined), //
               label: Text("${r[Room.NUMBER]}"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-              onPressed: () async {
-                setState(() => is_load = true);
-                await on_check_out(r);
-                setState(() => is_load = false);
-              }, //
+              onPressed: () => on_check_out(r), //
             ),
           ),
       ],
@@ -183,11 +148,7 @@ class _Main_State extends State<Main_> {
               icon: Icon(Icons.cleaning_services_outlined), //
               label: Text("${r[Room.NUMBER]}"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.grey),
-              onPressed: () async {
-                setState(() => is_load = true);
-                await on_clean(r);
-                setState(() => is_load = false);
-              }, //
+              onPressed: () => on_clean(r), //
             ),
           ),
       ],
@@ -212,11 +173,7 @@ class _Main_State extends State<Main_> {
             icon: Icon(Icons.event_repeat_outlined, size: 30), //
             padding: EdgeInsets.all(0),
             constraints: BoxConstraints(),
-            onPressed: () async {
-              setState(() => is_load = true);
-              await on_carry_over();
-              setState(() => is_load = false);
-            }, //
+            onPressed: on_carry_over, //
           ),
 
         if (is_admin || kDebugMode)
@@ -225,37 +182,25 @@ class _Main_State extends State<Main_> {
             icon: Icon(Icons.schedule_outlined, size: 30), //
             padding: EdgeInsets.all(0),
             constraints: BoxConstraints(),
-            onPressed: () async {
-              setState(() => is_load = true);
-              await on_over_time();
-              setState(() => is_load = false);
-            }, //
+            onPressed: on_over_time, //
           ),
 
         /// បង្ហាញ/លាក់ carry-over
         IconButton(
-          tooltip: show_carry_over ? "Hide Carry-over" : "Show Carry-over", //
-          icon: Icon(show_carry_over ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 30), //
+          tooltip: show_co ? "Hide Carry-over" : "Show Carry-over", //
+          icon: Icon(show_co ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            on_toggle_carry_over();
-            setState(() => is_load = false);
-          }, //
+          onPressed: on_toggle_carry_over, //
         ),
 
         ///
         IconButton(
-          tooltip: is_filter ? "Hide Filter" : "Show Filter", //
-          icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
+          tooltip: filter ? "Hide Filter" : "Show Filter", //
+          icon: Icon(filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            on_filter(); // not yet implemented (sync, no await)
-            setState(() => is_load = false);
-          }, //
+          onPressed: on_filter,
         ),
 
         ///
@@ -264,11 +209,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.refresh, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            await on_reload();
-            setState(() => is_load = false);
-          }, //
+          onPressed: on_reload,
         ),
       ],
 
@@ -351,11 +292,7 @@ class _Main_State extends State<Main_> {
                       icon: Icon(Icons.swap_horiz_outlined),
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
-                      onPressed: () async {
-                        setState(() => is_load = true);
-                        await on_change_room(rc);
-                        setState(() => is_load = false);
-                      }, //
+                      onPressed: () => on_change_room(rc), //
                     ),
                 ],
               );
@@ -387,11 +324,7 @@ class _Main_State extends State<Main_> {
                       icon: Icon(Icons.calendar_month_outlined),
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
-                      onPressed: () async {
-                        setState(() => is_load = true);
-                        await on_update_check_in_at(rc);
-                        setState(() => is_load = false);
-                      }, //
+                      onPressed: () => on_update_check_in_at(rc), //
                     ),
                 ],
               );
@@ -448,11 +381,7 @@ class _Main_State extends State<Main_> {
                       icon: Icon(Icons.calendar_month_outlined),
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
-                      onPressed: () async {
-                        setState(() => is_load = true);
-                        await on_update_check_out_at(rc);
-                        setState(() => is_load = false);
-                      }, //
+                      onPressed: () => on_update_check_out_at(rc), //
                     ),
                 ],
               );
@@ -510,18 +439,12 @@ class _Main_State extends State<Main_> {
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
                     onPressed: () async {
-                      setState(() => is_load = true);
-                      //   print("Search Guest: ${rc.row.cells["index"]?.value}");
                       var v = await dialog_search_guest(
                         context: context, //
                         front_desk_id: rc.row.cells["_id"]?.value,
                       );
-                      if (v == null) {
-                        setState(() => is_load = false);
-                        return;
-                      }
+                      if (v == null) return;
                       await on_load_front_desk();
-                      setState(() => is_load = false);
                     }, //
                   ),
                 ],
@@ -594,11 +517,7 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.local_bar_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () async {
-                      setState(() => is_load = true);
-                      await on_mini_bar_item(rc);
-                      setState(() => is_load = false);
-                    }, //
+                    onPressed: () => on_mini_bar_item(rc), //
                   ),
                 ],
               );
@@ -635,11 +554,7 @@ class _Main_State extends State<Main_> {
                       icon: Icon(Icons.gavel_outlined),
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
-                      onPressed: () async {
-                        setState(() => is_load = true);
-                        await on_penalty_item(rc);
-                        setState(() => is_load = false);
-                      }, //
+                      onPressed: () => on_penalty_item(rc), //
                     ),
                 ],
               );
@@ -746,7 +661,7 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "check_in_by", //
+            field: Front_Desk.CHECK_IN_BY, //
             title: "ឲចូលដោយ",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
@@ -829,7 +744,7 @@ class _Main_State extends State<Main_> {
           ),
           PlutoColumnGroup(
             title: "ការត្រួតពិនិត្យ", //
-            fields: ["check_in_by", "check_out_by"],
+            fields: [Front_Desk.CHECK_IN_BY, Front_Desk.CHECK_OUT_BY],
           ),
         ],
         configuration: PlutoGridConfiguration(
@@ -849,7 +764,7 @@ class _Main_State extends State<Main_> {
         ),
 
         onLoaded: on_loaded,
-        onChanged: on_changed,
+        onChanged: on_updated,
       ),
     );
   }
@@ -874,10 +789,9 @@ class _Main_State extends State<Main_> {
 
   void on_loaded(PlutoGridOnLoadedEvent e) async {
     state_manager = e.stateManager;
-    state_manager.addListener(() => setState(() {}));
     state_manager.setAutoEditing(true);
     state_manager.columnFooterHeight = 32; // * កម្ពស់ជួរសរុប
-    list_column = state_manager.refColumns.map((c) => c.field).toList();
+    list_column_pluto = state_manager.refColumns.toList();
 
     on_load_room();
     on_load_front_desk();
@@ -925,29 +839,29 @@ class _Main_State extends State<Main_> {
     final cutoff_2pm = DateTime(now.year, now.month, now.day, 14, 0);
     state_manager.appendRows([
       for (var fd in front_desks)
-        if (show_carry_over || !(fd.room_price == 0 && (fd.check_out_at == null || !fd.check_out_at!.isAfter(cutoff_2pm))))
+        if (show_co || !(fd.room_price == 0 && (fd.check_out_at == null || !fd.check_out_at!.isAfter(cutoff_2pm))))
           PlutoRow(
             cells: {
-              for (var c in list_column) //
-                c: (() {
-                  if (c == "_id") return PlutoCell(value: fd.id ?? "");
-                  if (c == "index") return PlutoCell(value: ++index);
-if (c == "room") return PlutoCell(value: fd.room_number ?? "");
-              if (c == "guest_name") return PlutoCell(value: fd.guest_name ?? "");
-              if (c == "guest_phone") return PlutoCell(value: fd.guest_phone ?? "");
-                  if (c == "check_in_people") return PlutoCell(value: fd.number_of_guest ?? 0);
-                  if (c == "check_in_at") return PlutoCell(value: fd.check_in_at);
-                  if (c == "check_in_duration") return PlutoCell(value: check_in_duration(fd));
-                  if (c == "check_out_at") return PlutoCell(value: fd.check_out_at);
-                  if (c == "room_price") return PlutoCell(value: fd.room_price);
-                  if (c == "mini_bar_price") return PlutoCell(value: fd.mini_bar_price);
-                  if (c == "penalty_price") return PlutoCell(value: fd.penalty_price);
-                  if (c == "pay_cash") return PlutoCell(value: fd.pay_cash);
-                  if (c == "pay_bank") return PlutoCell(value: fd.pay_bank);
-                  if (c == "pay_balance") return PlutoCell(value: fd.pay_balance);
-                  if (c == "pay_note") return PlutoCell(value: fd.pay_note ?? "");
-                  if (c == "check_in_by") return PlutoCell(value: fd.check_in_by is User_Show ? (fd.check_in_by as User_Show).full_name : (fd.check_in_by ?? ""));
-                  if (c == "check_out_by") return PlutoCell(value: fd.check_out_by is User_Show ? (fd.check_out_by as User_Show).full_name : (fd.check_out_by ?? ""));
+              for (var c in list_column_pluto) //
+                c.field: (() {
+                  if (c.field == "_id") return PlutoCell(value: fd.id ?? "");
+                  if (c.field == "index") return PlutoCell(value: ++index);
+                  if (c.field == "room") return PlutoCell(value: fd.room_number ?? "");
+                  if (c.field == "guest_name") return PlutoCell(value: fd.guest_id is Guest_Show ? (fd.guest_id as Guest_Show).full_name : "");
+                  if (c.field == "guest_phone") return PlutoCell(value: fd.guest_id is Guest_Show ? (fd.guest_id as Guest_Show).phone_number : "");
+                  if (c.field == "check_in_people") return PlutoCell(value: fd.number_of_guest ?? 0);
+                  if (c.field == "check_in_at") return PlutoCell(value: fd.check_in_at);
+                  if (c.field == "check_in_duration") return PlutoCell(value: check_in_duration(fd));
+                  if (c.field == "check_out_at") return PlutoCell(value: fd.check_out_at);
+                  if (c.field == "room_price") return PlutoCell(value: fd.room_price);
+                  if (c.field == "mini_bar_price") return PlutoCell(value: fd.mini_bar_price);
+                  if (c.field == "penalty_price") return PlutoCell(value: fd.penalty_price);
+                  if (c.field == "pay_cash") return PlutoCell(value: fd.pay_cash);
+                  if (c.field == "pay_bank") return PlutoCell(value: fd.pay_bank);
+                  if (c.field == "pay_balance") return PlutoCell(value: fd.pay_balance);
+                  if (c.field == "pay_note") return PlutoCell(value: fd.pay_note ?? "");
+                  if (c.field == "check_in_by") return PlutoCell(value: fd.check_in_by is User_Show ? (fd.check_in_by as User_Show).full_name : (fd.check_in_by ?? ""));
+                  if (c.field == "check_out_by") return PlutoCell(value: fd.check_out_by is User_Show ? (fd.check_out_by as User_Show).full_name : (fd.check_out_by ?? ""));
 
                   return PlutoCell(value: "");
                 })(),
@@ -1046,7 +960,7 @@ if (c == "room") return PlutoCell(value: fd.room_number ?? "");
   }
 
   // * កែ cell ក្នុង grid ដោយមិន reload ទាំងស្រុង (ដូច demo_1) — reload តែពេលបរាជ័យដើម្បីត្រឡប់តម្លៃដើម
-  void on_changed(PlutoGridOnChangedEvent e) async {
+  void on_updated(PlutoGridOnChangedEvent e) async {
     // pprint("Old: ${e.oldValue} | New: ${e.value} | Row: ${e.row.cells["_id"]?.value} | Column: ${e.column.field}");
     final fd_id = e.row.cells["_id"]?.value;
     if (fd_id == null) return;
@@ -1064,8 +978,8 @@ if (c == "room") return PlutoCell(value: fd.room_number ?? "");
     }
 
     dynamic updated;
-    if (e.column.field == "guest_name") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, {Front_Desk.ID: fd_id, Front_Desk.GUEST_NAME: e.value});
-    if (e.column.field == "guest_phone") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, {Front_Desk.ID: fd_id, Front_Desk.GUEST_PHONE: e.value});
+    if (e.column.field == "guest_name") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, {Front_Desk.ID: fd_id, Front_Desk.GUEST_ID: e.value});
+    if (e.column.field == "guest_phone") updated = await _update(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, {Front_Desk.ID: fd_id, Front_Desk.GUEST_ID: e.value});
     if (e.column.field == "check_in_people") updated = await _update(endpoint.FRONT_DESK_UPDATE, {Front_Desk.ID: fd_id, Front_Desk.NUMBER_OF_GUEST: int.tryParse(e.value?.toString() ?? "")});
 
     // * កែ room_price → endpoint update_room_price; cash / bank / note → update_payment (បន្ទាប់ពីដកចេញពី update_payment)
@@ -1141,7 +1055,7 @@ if (c == "room") return PlutoCell(value: fd.room_number ?? "");
   }
 
   Future<void> on_check_out(dynamic r) async {
-    String? fd_id = r[Room.FRONT_DESK_ID];
+    String? fd_id = (front_desks.where((fd) => (fd.room_number ?? "") == (r[Room.NUMBER] ?? ""))).firstOrNull?.id;
     if (fd_id == null) return snackbar(ct: context, ms: "No stay to check out", cl: Colors.red);
 
     var v = await dialog_check_out(
@@ -1193,7 +1107,7 @@ if (c == "room") return PlutoCell(value: fd.room_number ?? "");
     if (fd_id == null) return;
     var v = await dialog_select_room(
       context: context, //
-      lead: "Room ${rc.row.cells["room"]?.value}", //
+      lead: "Room ${rc.row.cells[Front_Desk.ROOM_NUMBER]?.value}", //
       front_desk_id: fd_id, //
     );
     if (v == null) return;
@@ -1255,13 +1169,13 @@ if (c == "room") return PlutoCell(value: fd.room_number ?? "");
   }
 
   void on_filter() {
-    is_filter = !is_filter;
-    state_manager.setShowColumnFilter(is_filter);
+    filter = !filter;
+    state_manager.setShowColumnFilter(filter);
   }
 
   void on_toggle_carry_over() {
     // * todo: toggle បង្ហាញ stay ដែលចូលពីថ្ងៃមុន (room_price = 0 និង check_out_at = before today 2pm)
-    show_carry_over = !show_carry_over;
+    show_co = !show_co;
     on_update_grid();
     setState(() {});
   }

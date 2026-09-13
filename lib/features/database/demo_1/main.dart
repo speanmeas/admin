@@ -47,13 +47,13 @@ class _Main_State extends State<Main_> {
   Widget build(BuildContext context) {
     return _layout(
       header: [
+        // debug button
         IconButton(
           tooltip: "Debug", //
           icon: Icon(Icons.bug_report_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
           onPressed: () async {
-            // update data in cell ID row 0 silently
             print("Debug: ${state_manager.rows[0].cells[Demo_1.ID]?.value}");
             state_manager.changeCellValue(
               state_manager.rows[0].cells["index"]!, //
@@ -284,7 +284,7 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: Demo_1.SELECT, //
             title: "Select",
-            type: PlutoColumnType.text(),
+            type: PlutoColumnType.select([]),
             enableEditingMode: false,
             width: 100,
             renderer: (rc) {
@@ -433,6 +433,7 @@ class _Main_State extends State<Main_> {
       row.cells[Demo_1.ID]!.value = created_id;
       state_manager.notifyListeners();
     }
+    total_row++;
     snackbar(ct: context, ms: "Created", cl: Colors.green);
   }
 
@@ -452,6 +453,7 @@ class _Main_State extends State<Main_> {
       snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
       return;
     }
+    if (total_row > 0) total_row--;
     snackbar(ct: context, ms: "Deleted", cl: Colors.green);
   }
 

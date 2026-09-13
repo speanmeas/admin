@@ -48,9 +48,9 @@ class _Main_State extends State<Main_> {
   }
 
   // * accessors for Front_Desk linked/expanded fields
-  String? fd_room_number(Front_Desk fd) => fd.room_number;
-  String? fd_guest_name(Front_Desk fd) => fd.guest_name;
-  String? fd_guest_phone(Front_Desk fd) => fd.guest_phone;
+  String? fd_room_number(Front_Desk fd) => fd.room_number ?? "";
+  String? fd_guest_name(Front_Desk fd) => fd.guest_id is Guest_Show ? (fd.guest_id as Guest_Show).full_name : "";
+  String? fd_guest_phone(Front_Desk fd) => fd.guest_id is Guest_Show ? (fd.guest_id as Guest_Show).phone_number : "";
   User_Show? fd_check_in_by(Front_Desk fd) => fd.check_in_by is User_Show ? fd.check_in_by as User_Show : null;
   User_Show? fd_check_out_by(Front_Desk fd) => fd.check_out_by is User_Show ? fd.check_out_by as User_Show : null;
 
@@ -142,7 +142,7 @@ class _Main_State extends State<Main_> {
   // * ពិនិត្យ stay ជា Walk-In តាម id
   bool row_is_walk_in_by_id(String fd_id) {
     Front_Desk? fd = rows.where((x) => x.id == fd_id).firstOrNull;
-    return fd != null && _is_mini_bar_room(fd.room_number);
+    return fd != null && _is_mini_bar_room(fd.room_number ?? "");
   }
 
   // * គណនាតម្លៃពី summary របស់ backend

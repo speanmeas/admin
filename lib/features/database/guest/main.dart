@@ -1,22 +1,19 @@
 import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
-
 import "package:speanmeas/core/utility/all.dart";
-import "package:speanmeas/core/widget/dialog/select_page.dart";
+
+import "dialog/select_page.dart";
+import "dialog/search_nationality.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK ATTRIBUTE ##########
   int reload = 0;
-  bool is_filter = false;
-  bool is_load = false; // * block all clicks centrally while loading
-  int current_page = 1;
   int total_row = 0;
+  int current_page = 1;
+  bool filter = false;
 
-  late List<String> list_column;
+  late List<PlutoColumn> list_column_pluto;
   late PlutoGridStateManager state_manager;
-
-  List<Guest> data = [];
-
   // * ########## BLOCK ATTRIBUTE END ##########
 
   // * ########## BLOCK DESIGN ##########
@@ -25,42 +22,21 @@ class _Main_State extends State<Main_> {
     Widget? body, //
   }) {
     return Scaffold(
-      body: Stack(
+      body: Column(
+        spacing: 1,
         children: [
-          Column(
-            spacing: 1,
-            children: [
-              if (header != null)
-                Container(
-                  height: 32, //
-                  padding: const EdgeInsets.all(1),
-                  child: Row(
-                    spacing: 1, //
-                    children: header,
-                  ),
-                ),
-
-              Expanded(
-                child: AbsorbPointer(
-                  absorbing: is_load, // * block all clicks (incl. Pluto cells) while loading
-                  child: body ?? Container(),
-                ),
-              ),
-            ],
-          ),
-
-          // * overlay to block clicks centrally while loading — no per-button guard needed
-          if (is_load)
-            Positioned.fill(
-              child: AbsorbPointer(
-                absorbing: true,
-                child: Container(
-                  color: Colors.black.withValues(alpha: 0.10),
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(),
-                ),
+          if (header != null)
+            Container(
+              height: 32, //
+              padding: const EdgeInsets.all(1),
+              child: Row(
+                spacing: 1, //
+                children: header,
               ),
             ),
+
+          if (body != null) //
+            Expanded(child: body),
         ],
       ),
     );
@@ -75,11 +51,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.first_page, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            await on_first_page();
-            setState(() => is_load = false);
-          },
+          onPressed: on_first_page,
         ),
 
         IconButton(
@@ -87,11 +59,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.navigate_before, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            await on_previous_page();
-            setState(() => is_load = false);
-          },
+          onPressed: on_previous_page,
         ),
 
         TextButton(
@@ -99,11 +67,7 @@ class _Main_State extends State<Main_> {
             "$current_page / $total_pages", //
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          onPressed: () async {
-            setState(() => is_load = true);
-            await on_goto_page();
-            setState(() => is_load = false);
-          },
+          onPressed: on_goto_page,
         ),
 
         IconButton(
@@ -111,11 +75,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.navigate_next, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            await on_next_page();
-            setState(() => is_load = false);
-          },
+          onPressed: on_next_page,
         ),
 
         IconButton(
@@ -123,25 +83,17 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.last_page, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            await on_last_page();
-            setState(() => is_load = false);
-          },
+          onPressed: on_last_page,
         ),
 
         const Spacer(),
 
         IconButton(
-          tooltip: is_filter ? "Hide Filter" : "Show Filter", //
-          icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
+          tooltip: filter ? "Hide Filter" : "Show Filter", //
+          icon: Icon(filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            on_filter(); // not yet implemented (sync, no await)
-            setState(() => is_load = false);
-          },
+          onPressed: on_filter,
         ),
 
         IconButton(
@@ -149,11 +101,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.refresh, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            await on_reload();
-            setState(() => is_load = false);
-          },
+          onPressed: on_reload,
         ),
       ],
 
@@ -167,7 +115,6 @@ class _Main_State extends State<Main_> {
             type: PlutoColumnType.text(),
             enableEditingMode: false,
             width: 0,
-            // width: kDebugMode ? 220 : 0,
           ),
 
           PlutoColumn(
@@ -181,16 +128,12 @@ class _Main_State extends State<Main_> {
                   icon: Icon(Icons.add_circle_outline, size: 28), //
                   padding: EdgeInsets.all(0),
                   constraints: BoxConstraints(),
-                  onPressed: () async {
-                    setState(() => is_load = true);
-                    await on_create(); // implemented
-                    setState(() => is_load = false);
-                  },
+                  onPressed: on_create,
                 ),
               ),
             ),
             titlePadding: EdgeInsets.all(0),
-            type: PlutoColumnType.number(),
+            type: PlutoColumnType.text(),
             width: 40,
             enableEditingMode: false,
             enableColumnDrag: false,
@@ -208,11 +151,7 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.remove_circle_outline, size: 28, color: Colors.red),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () async {
-                      setState(() => is_load = true);
-                      await on_delete(rc);
-                      setState(() => is_load = false);
-                    },
+                    onPressed: () => on_delete(rc),
                   ),
                 ],
               );
@@ -240,6 +179,7 @@ class _Main_State extends State<Main_> {
             field: Guest.FULL_NAME, //
             title: "Full Name",
             type: PlutoColumnType.text(),
+            width: 120,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.center, //
@@ -255,6 +195,7 @@ class _Main_State extends State<Main_> {
             field: Guest.PHONE_NUMBER, //
             title: "Phone Number",
             type: PlutoColumnType.text(),
+            width: 120,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.center, //
@@ -270,34 +211,38 @@ class _Main_State extends State<Main_> {
             field: Guest.GENDER, //
             title: "Gender",
             type: PlutoColumnType.text(),
-            enableEditingMode: false,
+            enableEditingMode: true,
             width: 100,
             renderer: (rc) {
               String value = rc.cell.value ?? "";
-              return PopupMenuButton<String>(
-                itemBuilder: (context) => [
-                  for (String o in ["Male", "Female", "Other"])
-                    PopupMenuItem(
-                      value: o,
-                      child: Text(o, style: TextStyle(fontSize: 14)),
-                    ),
-                ],
-                child: Row(
-                  children: [
-                    Expanded(
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
                       child: Text(
                         value.isEmpty ? "" : value, //
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Icon(Icons.arrow_drop_down, size: 16),
-                  ],
-                ),
-                onSelected: (v) async {
-                  setState(() => is_load = true);
-                  await on_change_field(rc, Guest.GENDER, v);
-                  setState(() => is_load = false);
-                },
+                  ),
+                  PopupMenuButton<String>(
+                    tooltip: "Select", //
+                    menuPadding: const EdgeInsets.all(0),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                    itemBuilder: (context) => [
+                      for (String o in ["Male", "Female", "Other"]) ...[
+                        PopupMenuItem(
+                          value: o,
+                          child: Text(o, style: TextStyle(fontSize: 14)),
+                        ),
+                        const PopupMenuDivider(height: 0),
+                      ],
+                    ],
+                    child: Icon(Icons.arrow_drop_down, color: Colors.blue),
+                    onSelected: (v) => on_change_field(rc, Guest.GENDER, v),
+                  ),
+                ],
               );
             },
           ),
@@ -306,14 +251,28 @@ class _Main_State extends State<Main_> {
             field: Guest.NATIONALITY, //
             title: "Nationality",
             type: PlutoColumnType.text(),
+            // enableEditingMode: false,
             width: 140,
             renderer: (rc) {
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(
-                  format_string(rc.cell.value), //
-                  overflow: TextOverflow.ellipsis,
-                ),
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(
+                        format_string(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: "Search",
+                    icon: Icon(Icons.search_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () => on_search_nationality(rc), //
+                  ),
+                ],
               );
             },
           ),
@@ -348,27 +307,20 @@ class _Main_State extends State<Main_> {
             defaultCellPadding: EdgeInsets.fromLTRB(2, 0, 2, 0),
           ),
         ),
-
-        onLoaded: init,
-        onChanged: on_changed,
+        onLoaded: on_loaded,
+        onChanged: on_updated,
       ),
     );
   }
   // * ########## BLOCK DESIGN END ##########
 
   // * ########## BLOCK METHODS ##########
-  void init(PlutoGridOnLoadedEvent e) async {
+  void on_loaded(PlutoGridOnLoadedEvent e) async {
     state_manager = e.stateManager;
-
-    state_manager.addListener(() {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() {});
-      });
-    });
     state_manager.setAutoEditing(true);
-    list_column = state_manager.refColumns.map((c) => c.field).toList();
+    list_column_pluto = state_manager.refColumns.toList();
 
-    on_reload();
+    await on_reload();
   }
 
   Future<void> on_reload() async {
@@ -381,7 +333,8 @@ class _Main_State extends State<Main_> {
     if (current_page > total_pages) current_page = total_pages;
     if (current_page < 1) current_page = 1;
 
-    await on_load_page(current_page);
+    on_load_page(current_page);
+    snackbar(ct: context, ms: "Reloaded", cl: Colors.green);
   }
 
   Future<void> on_load_page(int p) async {
@@ -395,98 +348,144 @@ class _Main_State extends State<Main_> {
         "link": true,
       },
     );
-
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-    data = List<Guest>.from((tmp.data ?? const []).map((d) => Guest.fromJson(d)));
 
-    // * រក្សាទុក sort និង filter មុនពេលផ្ទុកឡើងវិញ
-    final sorted_column = state_manager.getSortedColumn;
-    final filter_rows = List<PlutoRow>.from(state_manager.filterRows);
+    final data = List<Guest>.from((tmp.data ?? const []).map((d) => Guest.fromJson(d)));
 
-    // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
     state_manager.removeAllRows();
     state_manager.appendRows([
-      for (var (i, d) in data.indexed)
+      for (var d in data)
         PlutoRow(
           cells: {
-            for (var c in list_column) //
-              c: (() {
-                if (c == Guest.ID) return PlutoCell(value: d.id ?? "");
-                if (c == "index") return PlutoCell(value: i + 1);
-                if (c == "action") return PlutoCell(value: "");
-                if (c == Guest.FULL_NAME) return PlutoCell(value: d.full_name ?? "");
-                if (c == Guest.PHONE_NUMBER) return PlutoCell(value: d.phone_number ?? "");
-                if (c == Guest.GENDER) return PlutoCell(value: d.gender ?? "");
-                if (c == Guest.NATIONALITY) return PlutoCell(value: d.nationality ?? "");
-                if (c == Guest.NOTE) return PlutoCell(value: d.note ?? "");
-
+            for (var c in list_column_pluto) //
+              c.field: (() {
+                if (c.field == "action") return PlutoCell(value: "");
+                if (c.field == "index") return PlutoCell(value: 0);
+                if (c.field == Guest.ID) return PlutoCell(value: d.id ?? "");
+                if (c.field == Guest.FULL_NAME) return PlutoCell(value: d.full_name ?? "");
+                if (c.field == Guest.PHONE_NUMBER) return PlutoCell(value: d.phone_number ?? "");
+                if (c.field == Guest.GENDER) return PlutoCell(value: d.gender ?? "");
+                if (c.field == Guest.NATIONALITY) return PlutoCell(value: d.nationality ?? "");
+                if (c.field == Guest.NOTE) return PlutoCell(value: d.note ?? "");
                 return PlutoCell(value: "");
               })(),
           },
         ),
     ]);
 
-    // * អនុវត្ត sort និង filter ឡើងវិញ
-    if (sorted_column != null) state_manager.sortBySortIdx(sorted_column);
-    state_manager.setFilterWithFilterRows(filter_rows);
-
+    re_index();
     setState(() {});
   }
 
-  Future<void> on_create() async {
+  void re_index() {
+    for (int i = 0; i < state_manager.rows.length; i++) {
+      final row = state_manager.rows[i];
+      state_manager.changeCellValue(row.cells["index"]!, i + 1, force: true, callOnChangedEvent: false);
+    }
+  }
+
+  void on_create() {
+    final row = PlutoRow(
+      cells: {
+        for (var c in list_column_pluto) //
+          c.field: PlutoCell(
+            value: (() {
+              if (c.type is PlutoColumnTypeNumber) return 0;
+              if (c.type is PlutoColumnTypeText) return "";
+              return null;
+            })(),
+          ),
+      },
+    );
+    state_manager.insertRows(0, [row]);
+    re_index();
+    do_create(row);
+  }
+
+  Future<void> do_create(PlutoRow row) async {
     final tmp = await dio.post(endpoint.GUEST_CREATE);
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    snackbar(ct: context, ms: "Created", cl: Colors.green);
-    await on_reload();
-  }
-
-  Future<void> on_delete(PlutoColumnRendererContext rc) async {
-    final id = rc.row.cells[Guest.ID]?.value;
-    final tmp = await dio.post(endpoint.GUEST_DELETE, data: {Guest.ID: id});
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    snackbar(ct: context, ms: "Deleted", cl: Colors.green);
-    await on_reload();
-  }
-
-  Future<void> on_changed(PlutoGridOnChangedEvent e) async {
-    final id = e.row.cells[Guest.ID]?.value;
-    final tmp = await dio.post(endpoint.GUEST_UPDATE, data: {Guest.ID: id, e.column.field: e.value});
-
     if (tmp == null) {
       await on_reload();
-      return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      return;
     }
-
-    snackbar(ct: context, ms: "Updated", cl: Colors.green);
-    // * ផ្ទុកឡើងវិញ ដើម្បីរក្សា និងអនុវត្ត sort / filter ឡើងវិញ (PlutoGrid មិន re-sort/filter ដោយស្វ័យប្រវត្តិ)
-    await on_reload();
+    final created_id = (tmp.data as List?)?.firstOrNull?["_id"] as String?;
+    if (created_id != null) {
+      row.cells[Guest.ID]!.value = created_id;
+      state_manager.notifyListeners();
+    }
+    snackbar(ct: context, ms: "Created", cl: Colors.green);
   }
 
-  Future<void> on_change_field(PlutoColumnRendererContext rc, String field, String v) async {
+  void on_delete(PlutoColumnRendererContext rc) {
+    state_manager.removeRows([rc.row]);
+    re_index();
+
     final id = rc.row.cells[Guest.ID]?.value;
     if (id == null) return;
-    final tmp = await dio.post(endpoint.GUEST_UPDATE, data: {Guest.ID: id, field: v});
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    snackbar(ct: context, ms: "Updated", cl: Colors.green);
-    await on_reload();
+    do_delete(id);
   }
 
-  Future<void> on_first_page() async {
+  Future<void> do_delete(String? id) async {
+    final tmp = await dio.post(endpoint.GUEST_DELETE, data: {Guest.ID: id});
+    if (tmp == null) {
+      await on_reload();
+      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      return;
+    }
+    snackbar(ct: context, ms: "Deleted", cl: Colors.green);
+  }
+
+  void on_updated(PlutoGridOnChangedEvent e) {
+    final id = e.row.cells[Guest.ID]?.value;
+    do_updated(id, e.column.field, e.value);
+  }
+
+  void on_search_nationality(PlutoColumnRendererContext rc) async {
+    final fd_id = rc.row.cells[Guest.ID]?.value;
+    if (fd_id == null) return;
+
+    final v = await dialog_search_nationality(context);
+    if (v == null) return;
+
+    rc.cell.value = v;
+    state_manager.notifyListeners();
+
+    do_updated(fd_id, Guest.NATIONALITY, v);
+  }
+
+  void on_change_field(PlutoColumnRendererContext rc, String field, String v) {
+    final id = rc.row.cells[Guest.ID]?.value;
+    if (id == null) return;
+
+    rc.cell.value = v;
+    state_manager.notifyListeners();
+
+    do_updated(id, field, v);
+  }
+
+  Future<void> do_updated(String? id, String field, dynamic value) async {
+    final tmp = await dio.post(endpoint.GUEST_UPDATE, data: {Guest.ID: id, field: value});
+    if (tmp == null) {
+      await on_reload();
+      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+    snackbar(ct: context, ms: "Updated", cl: Colors.green);
+  }
+
+  void on_first_page() {
     if (current_page == 1) return;
     current_page = 1;
-    await on_load_page(current_page);
+    on_load_page(current_page);
   }
 
-  Future<void> on_previous_page() async {
+  void on_previous_page() {
     if (current_page == 1) return;
     current_page = current_page - 1;
-    await on_load_page(current_page);
+    on_load_page(current_page);
   }
 
-  Future<void> on_goto_page() async {
+  void on_goto_page() async {
     final v = await dialog_select_page(
       context, //
       page: current_page,
@@ -498,22 +497,22 @@ class _Main_State extends State<Main_> {
     await on_load_page(current_page);
   }
 
-  Future<void> on_last_page() async {
+  void on_last_page() async {
     if (current_page == total_pages) return;
     current_page = total_pages;
     await on_load_page(current_page);
   }
 
-  Future<void> on_next_page() async {
+  void on_next_page() async {
     if (current_page == total_pages) return;
     current_page = current_page + 1;
     await on_load_page(current_page);
   }
 
   void on_filter() {
-    state_manager.setShowColumnFilter(!is_filter);
-    if (!is_filter) state_manager.setFilterWithFilterRows([]);
-    is_filter = !is_filter;
+    state_manager.setShowColumnFilter(!filter);
+    if (!filter) state_manager.setFilterWithFilterRows([]);
+    filter = !filter;
     setState(() {});
   }
 

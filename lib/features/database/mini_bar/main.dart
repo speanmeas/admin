@@ -2,21 +2,18 @@ import "package:flutter/material.dart";
 import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/utility/all.dart";
-import "package:speanmeas/core/widget/dialog/select_page.dart";
+
+import "dialog/select_page.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK ATTRIBUTE ##########
   int reload = 0;
-  bool is_filter = false;
-  bool is_load = false; // * block all clicks centrally while loading
-  int current_page = 1;
   int total_row = 0;
+  int current_page = 1;
+  bool filter = false;
 
-  late List<String> list_column;
+  late List<PlutoColumn> list_column_pluto;
   late PlutoGridStateManager state_manager;
-
-  List<Mini_Bar> data = [];
-
   // * ########## BLOCK ATTRIBUTE END ##########
 
   // * ########## BLOCK DESIGN ##########
@@ -25,42 +22,21 @@ class _Main_State extends State<Main_> {
     Widget? body, //
   }) {
     return Scaffold(
-      body: Stack(
+      body: Column(
+        spacing: 1,
         children: [
-          Column(
-            spacing: 1,
-            children: [
-              if (header != null)
-                Container(
-                  height: 32, //
-                  padding: const EdgeInsets.all(1),
-                  child: Row(
-                    spacing: 1, //
-                    children: header,
-                  ),
-                ),
-
-              Expanded(
-                child: AbsorbPointer(
-                  absorbing: is_load, // * block all clicks (incl. Pluto cells) while loading
-                  child: body ?? Container(),
-                ),
-              ),
-            ],
-          ),
-
-          // * overlay to block clicks centrally while loading — no per-button guard needed
-          if (is_load)
-            Positioned.fill(
-              child: AbsorbPointer(
-                absorbing: true,
-                child: Container(
-                  color: Colors.black.withValues(alpha: 0.10),
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(),
-                ),
+          if (header != null)
+            Container(
+              height: 32, //
+              padding: const EdgeInsets.all(1),
+              child: Row(
+                spacing: 1, //
+                children: header,
               ),
             ),
+
+          if (body != null) //
+            Expanded(child: body),
         ],
       ),
     );
@@ -75,11 +51,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.first_page, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            await on_first_page();
-            setState(() => is_load = false);
-          },
+          onPressed: on_first_page,
         ),
 
         IconButton(
@@ -87,11 +59,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.navigate_before, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            await on_previous_page();
-            setState(() => is_load = false);
-          },
+          onPressed: on_previous_page,
         ),
 
         TextButton(
@@ -99,11 +67,7 @@ class _Main_State extends State<Main_> {
             "$current_page / $total_pages", //
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          onPressed: () async {
-            setState(() => is_load = true);
-            await on_goto_page();
-            setState(() => is_load = false);
-          },
+          onPressed: on_goto_page,
         ),
 
         IconButton(
@@ -111,11 +75,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.navigate_next, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            await on_next_page();
-            setState(() => is_load = false);
-          },
+          onPressed: on_next_page,
         ),
 
         IconButton(
@@ -123,25 +83,17 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.last_page, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            await on_last_page();
-            setState(() => is_load = false);
-          },
+          onPressed: on_last_page,
         ),
 
         const Spacer(),
 
         IconButton(
-          tooltip: is_filter ? "Hide Filter" : "Show Filter", //
-          icon: Icon(is_filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
+          tooltip: filter ? "Hide Filter" : "Show Filter", //
+          icon: Icon(filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            on_filter(); // not yet implemented (sync, no await)
-            setState(() => is_load = false);
-          },
+          onPressed: on_filter,
         ),
 
         IconButton(
@@ -149,11 +101,7 @@ class _Main_State extends State<Main_> {
           icon: Icon(Icons.refresh, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: () async {
-            setState(() => is_load = true);
-            await on_reload();
-            setState(() => is_load = false);
-          },
+          onPressed: on_reload,
         ),
       ],
 
@@ -161,15 +109,6 @@ class _Main_State extends State<Main_> {
         key: ValueKey(reload), //
         rows: [], //
         columns: [
-          PlutoColumn(
-            field: Mini_Bar.ID, //
-            title: "ID",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 0,
-            // width: kDebugMode ? 220 : 0,
-          ),
-
           PlutoColumn(
             field: "action", //
             title: "",
@@ -181,16 +120,12 @@ class _Main_State extends State<Main_> {
                   icon: Icon(Icons.add_circle_outline, size: 28), //
                   padding: EdgeInsets.all(0),
                   constraints: BoxConstraints(),
-                  onPressed: () async {
-                    setState(() => is_load = true);
-                    await on_create(); // implemented
-                    setState(() => is_load = false);
-                  },
+                  onPressed: on_create,
                 ),
               ),
             ),
             titlePadding: EdgeInsets.all(0),
-            type: PlutoColumnType.number(),
+            type: PlutoColumnType.text(),
             width: 40,
             enableEditingMode: false,
             enableColumnDrag: false,
@@ -208,15 +143,20 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.remove_circle_outline, size: 28, color: Colors.red),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () async {
-                      setState(() => is_load = true);
-                      await on_delete(rc);
-                      setState(() => is_load = false);
-                    },
+                    onPressed: () => on_delete(rc),
                   ),
                 ],
               );
             },
+          ),
+
+          PlutoColumn(
+            field: Mini_Bar.ID, //
+            title: "ID",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 0,
+            // width: kDebugMode ? 220 : 0,
           ),
 
           PlutoColumn(
@@ -317,26 +257,20 @@ class _Main_State extends State<Main_> {
           ),
         ),
 
-        onLoaded: init,
-        onChanged: on_changed,
+        onLoaded: on_loaded,
+        onChanged: on_updated,
       ),
     );
   }
   // * ########## BLOCK DESIGN END ##########
 
   // * ########## BLOCK METHODS ##########
-  void init(PlutoGridOnLoadedEvent e) async {
+  void on_loaded(PlutoGridOnLoadedEvent e) async {
     state_manager = e.stateManager;
-
-    state_manager.addListener(() {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() {});
-      });
-    });
     state_manager.setAutoEditing(true);
-    list_column = state_manager.refColumns.map((c) => c.field).toList();
+    list_column_pluto = state_manager.refColumns.toList();
 
-    on_reload();
+    await on_reload();
   }
 
   Future<void> on_reload() async {
@@ -349,7 +283,7 @@ class _Main_State extends State<Main_> {
     if (current_page > total_pages) current_page = total_pages;
     if (current_page < 1) current_page = 1;
 
-    await on_load_page(current_page);
+    on_load_page(current_page);
   }
 
   Future<void> on_load_page(int p) async {
@@ -364,27 +298,23 @@ class _Main_State extends State<Main_> {
     );
 
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-    data = List<Mini_Bar>.from((tmp.data ?? const []).map((d) => Mini_Bar.fromJson(d)));
 
-    // * រក្សាទុក sort និង filter មុនពេលផ្ទុកឡើងវិញ
-    final sorted_column = state_manager.getSortedColumn;
-    final filter_rows = List<PlutoRow>.from(state_manager.filterRows);
+    final data = List<Mini_Bar>.from((tmp.data ?? const []).map((d) => Mini_Bar.fromJson(d)));
 
-    // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
     state_manager.removeAllRows();
     state_manager.appendRows([
-      for (var (i, d) in data.indexed)
+      for (var d in data)
         PlutoRow(
           cells: {
-            for (var c in list_column) //
-              c: (() {
-                if (c == Mini_Bar.ID) return PlutoCell(value: d.id ?? "");
-                if (c == "index") return PlutoCell(value: i + 1);
-                if (c == "action") return PlutoCell(value: "");
-                if (c == Mini_Bar.NAME) return PlutoCell(value: d.name ?? "");
-                if (c == Mini_Bar.PRICE) return PlutoCell(value: d.price ?? 0.0);
-                if (c == Mini_Bar.STOCK) return PlutoCell(value: d.stock ?? 0);
-                if (c == Mini_Bar.NOTE) return PlutoCell(value: d.note ?? "");
+            for (var c in list_column_pluto) //
+              c.field: (() {
+                if (c.field == "action") return PlutoCell(value: "");
+                if (c.field == Mini_Bar.ID) return PlutoCell(value: d.id ?? "");
+                if (c.field == "index") return PlutoCell(value: "");
+                if (c.field == Mini_Bar.NAME) return PlutoCell(value: d.name ?? "");
+                if (c.field == Mini_Bar.PRICE) return PlutoCell(value: d.price ?? 0.0);
+                if (c.field == Mini_Bar.STOCK) return PlutoCell(value: d.stock ?? 0);
+                if (c.field == Mini_Bar.NOTE) return PlutoCell(value: d.note ?? "");
 
                 return PlutoCell(value: "");
               })(),
@@ -392,57 +322,95 @@ class _Main_State extends State<Main_> {
         ),
     ]);
 
-    // * អនុវត្ត sort និង filter ឡើងវិញ
-    if (sorted_column != null) state_manager.sortBySortIdx(sorted_column);
-    state_manager.setFilterWithFilterRows(filter_rows);
-
+    re_index();
     setState(() {});
   }
 
-  Future<void> on_create() async {
+  void re_index() {
+    for (int i = 0; i < state_manager.rows.length; i++) {
+      final row = state_manager.rows[i];
+      state_manager.changeCellValue(row.cells["index"]!, i + 1, force: true, callOnChangedEvent: false);
+    }
+  }
+
+  void on_create() {
+    final row = PlutoRow(
+      cells: {
+        for (var c in list_column_pluto) //
+          c.field: PlutoCell(
+            value: (() {
+              if (c.type is PlutoColumnTypeNumber) return 0;
+              if (c.type is PlutoColumnTypeText) return "";
+              return null;
+            })(),
+          ),
+      },
+    );
+    state_manager.insertRows(0, [row]);
+    re_index();
+    do_create(row);
+  }
+
+  Future<void> do_create(PlutoRow row) async {
     final tmp = await dio.post(endpoint.MINI_BAR_CREATE);
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    snackbar(ct: context, ms: "Created", cl: Colors.green);
-    await on_reload();
-  }
-
-  Future<void> on_delete(PlutoColumnRendererContext rc) async {
-    final id = rc.row.cells[Mini_Bar.ID]?.value;
-    final tmp = await dio.post(endpoint.MINI_BAR_DELETE, data: {Mini_Bar.ID: id});
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    snackbar(ct: context, ms: "Deleted", cl: Colors.green);
-    await on_reload();
-  }
-
-  Future<void> on_changed(PlutoGridOnChangedEvent e) async {
-    final id = e.row.cells[Mini_Bar.ID]?.value;
-    final tmp = await dio.post(endpoint.MINI_BAR_UPDATE, data: {Mini_Bar.ID: id, e.column.field: e.value});
-
     if (tmp == null) {
       await on_reload();
-      return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      return;
     }
-
-    snackbar(ct: context, ms: "Updated", cl: Colors.green);
-    // * ផ្ទុកឡើងវិញ ដើម្បីរក្សា និងអនុវត្ត sort / filter ឡើងវិញ (PlutoGrid មិន re-sort/filter ដោយស្វ័យប្រវត្តិ)
-    await on_reload();
+    final created_id = (tmp.data as List?)?.firstOrNull?["_id"] as String?;
+    if (created_id != null) {
+      row.cells[Mini_Bar.ID]!.value = created_id;
+      state_manager.notifyListeners();
+    }
+    snackbar(ct: context, ms: "Created", cl: Colors.green);
   }
 
-  Future<void> on_first_page() async {
+  void on_delete(PlutoColumnRendererContext rc) {
+    state_manager.removeRows([rc.row]);
+    re_index();
+
+    final id = rc.row.cells[Mini_Bar.ID]?.value;
+    if (id == null) return;
+    do_delete(id);
+  }
+
+  Future<void> do_delete(String? id) async {
+    final tmp = await dio.post(endpoint.MINI_BAR_DELETE, data: {Mini_Bar.ID: id});
+    if (tmp == null) {
+      await on_reload();
+      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      return;
+    }
+    snackbar(ct: context, ms: "Deleted", cl: Colors.green);
+  }
+
+  void on_updated(PlutoGridOnChangedEvent e) {
+    final id = e.row.cells[Mini_Bar.ID]?.value;
+    do_updated(id, e.column.field, e.value);
+  }
+
+  Future<void> do_updated(String? id, String field, dynamic value) async {
+    final tmp = await dio.post(endpoint.MINI_BAR_UPDATE, data: {Mini_Bar.ID: id, field: value});
+    if (tmp == null) {
+      await on_reload();
+      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+  }
+
+  void on_first_page() {
     if (current_page == 1) return;
     current_page = 1;
-    await on_load_page(current_page);
+    on_load_page(current_page);
   }
 
-  Future<void> on_previous_page() async {
+  void on_previous_page() {
     if (current_page == 1) return;
     current_page = current_page - 1;
-    await on_load_page(current_page);
+    on_load_page(current_page);
   }
 
-  Future<void> on_goto_page() async {
+  void on_goto_page() async {
     final v = await dialog_select_page(
       context, //
       page: current_page,
@@ -454,22 +422,22 @@ class _Main_State extends State<Main_> {
     await on_load_page(current_page);
   }
 
-  Future<void> on_last_page() async {
+  void on_last_page() async {
     if (current_page == total_pages) return;
     current_page = total_pages;
     await on_load_page(current_page);
   }
 
-  Future<void> on_next_page() async {
+  void on_next_page() async {
     if (current_page == total_pages) return;
     current_page = current_page + 1;
     await on_load_page(current_page);
   }
 
   void on_filter() {
-    state_manager.setShowColumnFilter(!is_filter);
-    if (!is_filter) state_manager.setFilterWithFilterRows([]);
-    is_filter = !is_filter;
+    state_manager.setShowColumnFilter(!filter);
+    if (!filter) state_manager.setFilterWithFilterRows([]);
+    filter = !filter;
     setState(() {});
   }
 

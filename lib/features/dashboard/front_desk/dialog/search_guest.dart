@@ -121,8 +121,8 @@ Future<bool?> dialog_search_guest({
                           endpoint.FRONT_DESK_UPDATE_GUEST_INFO,
                           data: {
                             Front_Desk.ID: front_desk_id, //
-                            Front_Desk.GUEST_NAME: selected_guest_name, //
-                            Front_Desk.GUEST_PHONE: selected_guest_phone, //
+                            Front_Desk.GUEST_ID: selected_guest_name, //
+                            Front_Desk.GUEST_ID: selected_guest_phone, //
                           },
                         );
                         if (tmp_fd == null) {
