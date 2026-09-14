@@ -4,192 +4,51 @@ import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 class _Main_State extends State<Main_> {
-  // * ########## BLOCK VARIABLES ##########
+  // * ########## BLOCK ATTRIBUTE ##########
   int reload = 0;
-  bool is_load = false;
+  bool filter = false;
   double WIDTH = 120;
 
-  late List<String> list_column;
+  late List<PlutoColumn> list_column_pluto;
   late PlutoGridStateManager state_manager;
 
   DateTime date = DateTime.now();
-  dynamic report; // * response របស់ /front_desk/report_daily
-
+  dynamic report;
   List<Front_Desk> rows = [];
   Map<String, dynamic> summary = {};
-
-  // * ########## BLOCK VARIABLES END ##########
-
-  // * ########## BLOCK METHODS ##########
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  Future<void> init() async {
-    setState(() => is_load = true);
-    dynamic tmp = await dio.post(
-      endpoint.FRONT_DESK_REPORT_DAILY,
-      data: {
-        "date": DateFormat("yyyy-MM-dd").format(date), //
-      },
-    );
-    setState(() => is_load = false);
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-
-    report = tmp.data;
-    rows = (report?["rows"] as List<dynamic>? ?? []).map((e) => Front_Desk.fromJson(e)).toList();
-    summary = report?["summary"] ?? {};
-
-    update_grid();
-
-    setState(() {});
-  }
-
-  // * accessors for Front_Desk linked/expanded fields
-  String? fd_room_number(Front_Desk fd) => fd.room_number ?? "";
-  String? fd_guest_name(Front_Desk fd) => fd.guest_id is Guest_Show ? (fd.guest_id as Guest_Show).full_name : "";
-  String? fd_guest_phone(Front_Desk fd) => fd.guest_id is Guest_Show ? (fd.guest_id as Guest_Show).phone_number : "";
-  User_Show? fd_check_in_by(Front_Desk fd) => fd.check_in_by is User_Show ? fd.check_in_by as User_Show : null;
-  User_Show? fd_check_out_by(Front_Desk fd) => fd.check_out_by is User_Show ? fd.check_out_by as User_Show : null;
-
-  bool _is_mini_bar_room(String? number) {
-    String n = (number ?? "").toLowerCase();
-    return n == "walk-in" || n == "mini bar";
-  }
-
-  // * រយៈពេលស្នាក់ជាថ្ងៃ ម៉ោង និងនាទី
-  String duration_text(DateTime? in_at, DateTime? out_at) {
-    if (in_at == null) return "";
-    DateTime end = out_at ?? DateTime.now();
-    int minutes = end.difference(in_at).inMinutes;
-    if (minutes < 0) return "";
-    int day = minutes ~/ 1440;
-    int hour = (minutes % 1440) ~/ 60;
-    int min = minutes % 60;
-    String text = "";
-    if (day > 0) text += "$day ថ្ងៃ ";
-    if (hour > 0) text += "$hour ម៉ោង ";
-    text += "$min នាទី";
-    return text.trim();
-  }
-
-  void update_grid() {
-    state_manager.removeAllRows();
-    state_manager.appendRows([
-      for (var (i, fd) in rows.indexed)
-        PlutoRow(
-          cells: {
-            for (var c in list_column) //
-              c: (() {
-                if (c == "_id") return PlutoCell(value: fd.id ?? "");
-                if (c == "index") return PlutoCell(value: i + 1);
-                if (c == "room") return PlutoCell(value: fd_room_number(fd) ?? "");
-                if (c == "guest_name") return PlutoCell(value: fd_guest_name(fd) ?? "");
-                if (c == "guest_phone") return PlutoCell(value: fd_guest_phone(fd) ?? "");
-                if (c == "number_of_guest") return PlutoCell(value: fd.number_of_guest ?? 0);
-                if (c == "check_in_at") return PlutoCell(value: fd.check_in_at);
-                if (c == "check_out_at") return PlutoCell(value: fd.check_out_at);
-                if (c == "duration") return PlutoCell(value: row_is_walk_in_by_id(fd.id ?? "") ? "" : duration_text(fd.check_in_at, fd.check_out_at));
-                if (c == "check_in_by") return PlutoCell(value: fd_check_in_by(fd)?.full_name ?? "");
-                if (c == "check_out_by") return PlutoCell(value: fd_check_out_by(fd)?.full_name ?? "");
-
-                if (c == "room_price") return PlutoCell(value: fd.room_price);
-                if (c == "penalty_price") return PlutoCell(value: fd.penalty_price);
-                if (c == "mini_bar_price") return PlutoCell(value: fd.mini_bar_price);
-                if (c == "pay_cash") return PlutoCell(value: fd.pay_cash);
-                if (c == "pay_bank") return PlutoCell(value: fd.pay_bank);
-                if (c == "pay_balance") return PlutoCell(value: fd.pay_balance);
-                if (c == "pay_note") return PlutoCell(value: fd.pay_note);
-
-                return PlutoCell(value: "");
-              })(),
-          },
-        ),
-    ]);
-
-    setState(() {});
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    reload++;
-  }
-
-  void on_loaded(PlutoGridOnLoadedEvent e) async {
-    state_manager = e.stateManager;
-    state_manager.columnFooterHeight = 32;
-    list_column = state_manager.refColumns.map((c) => c.field).toList();
-
-    init();
-  }
-
-  // * ជ្រើសរើសកាលបរិច្ឆេទតែប៉ុណ្ណោះ (មិនមានពេលវេលា)
-  Future<void> pick_date() async {
-    final DateTime? picked = await showDatePicker(
-      context: context, //
-      initialDate: date, //
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (picked == null) return;
-    date = picked;
-    init();
-  }
-
-  // * ពិនិត្យ stay ជា Walk-In តាម id
-  bool row_is_walk_in_by_id(String fd_id) {
-    Front_Desk? fd = rows.where((x) => x.id == fd_id).firstOrNull;
-    return fd != null && _is_mini_bar_room(fd.room_number ?? "");
-  }
-
-  // * គណនាតម្លៃពី summary របស់ backend
-  double get total_price => parse_double(summary["total"]?["price"]) ?? 0;
-  double get total_cash => parse_double(summary["total"]?["cash"]) ?? 0;
-  double get total_bank => parse_double(summary["total"]?["bank"]) ?? 0;
-  double get total_income => total_cash + total_bank;
-  // * ########## BLOCK METHODS END ##########
+  // * ########## BLOCK ATTRIBUTE END ##########
 
   // * ########## BLOCK DESIGN ##########
   Widget _layout({
     List<Widget>? header, //
-    // List<Widget>? check_out, //
-    // List<Widget>? clean, //
     Widget? body, //
     List<Widget>? footer, //
   }) {
     return Scaffold(
       body: Column(
+        spacing: 1,
         children: [
-          // header
-          Container(
-            height: 34, //
-            padding: const EdgeInsets.all(1),
-            child: Row(
-              spacing: 2, //
-              mainAxisAlignment: MainAxisAlignment.start, //
-              crossAxisAlignment: CrossAxisAlignment.center, //
-              children: [...?header],
+          if (header != null)
+            Container(
+              height: 34, //
+              padding: const EdgeInsets.all(1),
+              child: Row(
+                spacing: 1, //
+                children: header,
+              ),
             ),
-          ),
-
-          if (is_load) LinearProgressIndicator(minHeight: 4, color: Colors.blue),
 
           Expanded(child: body ?? Container()),
 
-          // FOOTER
-          Container(
-            height: 34, //
-            padding: const EdgeInsets.all(1),
-            child: Row(
-              spacing: 2, //
-              mainAxisAlignment: MainAxisAlignment.center, //
-              crossAxisAlignment: CrossAxisAlignment.center, //
-              children: [...?footer],
+          if (footer != null)
+            Container(
+              height: 34, //
+              padding: const EdgeInsets.all(1),
+              child: Row(
+                spacing: 2, //
+                children: footer,
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -201,12 +60,12 @@ class _Main_State extends State<Main_> {
       header: [
         IconButton(
           tooltip: "Previous", //
-          icon: Icon(Icons.navigate_before, size: 32), //
+          icon: Icon(Icons.navigate_before, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
           onPressed: () {
-            date = date.subtract(Duration(days: 1));
-            init();
+            date = date.subtract(const Duration(days: 1));
+            on_load_page();
           },
         ),
 
@@ -214,32 +73,37 @@ class _Main_State extends State<Main_> {
           onPressed: pick_date,
           child: Text(
             DateFormat("yyyy-MM-dd").format(date), //
-            style: TextStyle(
-              fontSize: 16, //
-              fontWeight: FontWeight.bold, //
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
 
         IconButton(
           tooltip: "Next", //
-          icon: Icon(Icons.navigate_next, size: 32), //
+          icon: Icon(Icons.navigate_next, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
           onPressed: () {
-            date = date.add(Duration(days: 1));
-            init();
+            date = date.add(const Duration(days: 1));
+            on_load_page();
           },
         ),
 
         const Spacer(),
 
         IconButton(
+          tooltip: filter ? "Hide Filter" : "Show Filter", //
+          icon: Icon(filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(),
+          onPressed: on_filter,
+        ),
+
+        IconButton(
           tooltip: "Reload", //
           icon: Icon(Icons.refresh, size: 30), //
           padding: EdgeInsets.all(0),
           constraints: BoxConstraints(),
-          onPressed: init, //
+          onPressed: on_reload,
         ),
       ],
 
@@ -270,7 +134,7 @@ class _Main_State extends State<Main_> {
               return PlutoAggregateColumnFooter(
                 rendererContext: rc, //
                 format: "#,##0.00", //
-                alignment: Alignment.centerRight,
+                alignment: Alignment.center,
                 padding: EdgeInsets.fromLTRB(2, 0, 2, 0),
                 type: PlutoAggregateColumnType.count,
                 titleSpanBuilder: (value) {
@@ -379,7 +243,6 @@ class _Main_State extends State<Main_> {
             },
           ),
 
-          // * ការបង់ប្រាក់ (រួមបន្ទប់ + មីនីបារ + ពិន័យ)
           PlutoColumn(
             field: "room_price", //
             title: "ថ្លៃបន្ទប់",
@@ -399,10 +262,7 @@ class _Main_State extends State<Main_> {
             renderer: (rc) {
               return Align(
                 alignment: Alignment.center, //
-                child: Text(
-                  format_double(parse_double(rc.cell.value) ?? 0, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                ),
+                child: Text(format_double(parse_double(rc.cell.value) ?? 0, digits: 2) + " \$", overflow: TextOverflow.ellipsis),
               );
             },
             footerRenderer: (rc) => _sum_footer(rc),
@@ -417,10 +277,7 @@ class _Main_State extends State<Main_> {
             renderer: (rc) {
               return Align(
                 alignment: Alignment.center, //
-                child: Text(
-                  format_double(parse_double(rc.cell.value) ?? 0, digits: 2) + " \$", //
-                  overflow: TextOverflow.ellipsis,
-                ),
+                child: Text(format_double(parse_double(rc.cell.value) ?? 0, digits: 2) + " \$", overflow: TextOverflow.ellipsis),
               );
             },
             footerRenderer: (rc) => _sum_footer(rc),
@@ -448,7 +305,7 @@ class _Main_State extends State<Main_> {
             field: "pay_balance", //
             title: "សមតុល្យ",
             type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
-            enableEditingMode: false, // * កែសមតុល្យបានតែ admin ប៉ុណ្ណោះ
+            enableEditingMode: false,
             width: 90,
             renderer: (rc) => _money_balance(rc),
             footerRenderer: (rc) => _sum_footer(rc),
@@ -467,7 +324,6 @@ class _Main_State extends State<Main_> {
             },
           ),
 
-          // * ការត្រួតពិនិត្យ
           PlutoColumn(
             field: "check_in_by", //
             title: "ឲចូលដោយ",
@@ -495,7 +351,6 @@ class _Main_State extends State<Main_> {
             },
           ),
 
-          // BUTTON RECEIPT
           PlutoColumn(
             field: "other", //
             title: "ផ្សេងៗ",
@@ -518,7 +373,6 @@ class _Main_State extends State<Main_> {
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
                     onPressed: () {
-                      print("Print Receipt: ${rc.row.cells["index"]?.value}");
                       snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
                     }, //
                   ),
@@ -531,14 +385,8 @@ class _Main_State extends State<Main_> {
           PlutoColumnGroup(title: "", fields: ["index"]),
           PlutoColumnGroup(title: "ការស្នាក់នៅ", fields: ["room", "check_in_at", "duration", "check_out_at"]),
           PlutoColumnGroup(title: "អតិថិជន", fields: ["guest_name", "guest_phone", "number_of_guest"]),
-          PlutoColumnGroup(
-            title: "ការបង់ប្រាក់", //
-            fields: ["room_price", "mini_bar_price", "penalty_price", "pay_cash", "pay_bank", "pay_balance", "pay_note"],
-          ),
-          PlutoColumnGroup(
-            title: "ការត្រួតពិនិត្យ", //
-            fields: ["check_in_by", "check_out_by"],
-          ),
+          PlutoColumnGroup(title: "ការបង់ប្រាក់", fields: ["room_price", "mini_bar_price", "penalty_price", "pay_cash", "pay_bank", "pay_balance", "pay_note"]),
+          PlutoColumnGroup(title: "ការត្រួតពិនិត្យ", fields: ["check_in_by", "check_out_by"]),
         ],
         configuration: PlutoGridConfiguration(
           scrollbar: PlutoGridScrollbarConfig(
@@ -560,149 +408,174 @@ class _Main_State extends State<Main_> {
       ),
 
       footer: [
-        //
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              "ចំណូល: ", //
-              style: TextStyle(
-                fontSize: 16, //
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              "${format_double(total_price, digits: 2)}\$", //
-              style: TextStyle(
-                fontSize: 16, //
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
-            ),
+            Text("ចំណូល: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text("${format_double(total_price, digits: 2)}\$", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue)),
           ],
         ),
 
-        SizedBox(width: 8), //
-        //
+        const SizedBox(width: 8), //
+
         Row(
-          // mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              "ចំណូលសុទ្ធ: ", //
-              style: TextStyle(
-                fontSize: 16, //
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              "${format_double(total_income, digits: 2)}\$", //
-              style: TextStyle(
-                fontSize: 16, //
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-              ),
-            ),
+            Text("ចំណូលសុទ្ធ: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text("${format_double(total_income, digits: 2)}\$", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green)),
           ],
         ),
 
-        // const Spacer(),
-
-        // * ប៊ូតុងបញ្ចេញជា PDF
-        // Tooltip(
-        //   message: "Export as PDF",
-        //   child: InkWell(
-        //     onTap: () {
-        //       snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
-        //     },
-        //     child: Container(
-        //       width: 32,
-        //       height: 32,
-        //       alignment: Alignment.center,
-        //       child: SvgPicture.asset(
-        //         "assets/icon/pdf.svg", //
-        //         width: 30,
-        //         height: 30,
-        //         colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
-        //       ),
-        //     ),
-        //   ),
-        // ),
-
-        // // * ប៊ូតុងបញ្ចេញជា Excel
-        // Tooltip(
-        //   message: "Export as Excel",
-        //   child: InkWell(
-        //     onTap: () {
-        //       snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue);
-        //     },
-        //     child: Container(
-        //       width: 32,
-        //       height: 32,
-        //       alignment: Alignment.center,
-        //       child: SvgPicture.asset(
-        //         "assets/icon/excel.svg", //
-        //         width: 30,
-        //         height: 30,
-        //         colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn),
-        //       ),
-        //     ),
-        //   ),
-        // ),
-
-        // Spacer(), //
-
-        // Spacer(), //
-
-        // OutlinedButton.icon(
-        //   icon: Icon(Icons.restart_alt), //
-        //   label: Text("Carry Over"), //
-        //   onPressed: () {
-        //     setState(() {});
-        //   },
-        // ),
-        Spacer(),
+        const Spacer(),
       ],
     );
   }
+  // * ########## BLOCK DESIGN END ##########
 
-  // * បង្ហាញតម្លៃលុយ (ថ្លៃបន្ទប់ / មីនីបារ / ពិន័យ) — ដូច front_desk (center, no color, null-safe)
+  // * ########## BLOCK METHODS ##########
+  @override
+  void initState() {
+    super.initState();
+    on_load_page();
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    reload++;
+  }
+
+  void on_loaded(PlutoGridOnLoadedEvent e) async {
+    state_manager = e.stateManager;
+    state_manager.setAutoEditing(true);
+    state_manager.columnFooterHeight = 32;
+    list_column_pluto = state_manager.refColumns.toList();
+
+    on_load_page();
+  }
+
+  Future<void> on_load_page() async {
+    dynamic tmp = await dio.post(
+      endpoint.FRONT_DESK_REPORT_DAILY,
+      data: {"date": DateFormat("yyyy-MM-dd").format(date)},
+    );
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    report = tmp.data;
+    rows = (report?["rows"] as List<dynamic>? ?? []).map((e) => Front_Desk.fromJson(e)).toList();
+    summary = report?["summary"] ?? {};
+
+    update_grid();
+    setState(() {});
+  }
+
+  Future<void> on_reload() async {
+    reload++;
+    await on_load_page();
+    snackbar(ct: context, ms: "Reloaded", cl: Colors.green);
+  }
+
+  Future<void> pick_date() async {
+    final DateTime? picked = await showDatePicker(
+      context: context, //
+      initialDate: date, //
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked == null) return;
+    date = picked;
+    on_load_page();
+  }
+
+  void update_grid() {
+    state_manager.removeAllRows();
+    state_manager.appendRows([
+      for (var (i, fd) in rows.indexed)
+        PlutoRow(
+          cells: {
+            for (var c in list_column_pluto) //
+              c.field: (() {
+                if (c.field == "_id") return PlutoCell(value: fd.id ?? "");
+                if (c.field == "index") return PlutoCell(value: i + 1);
+                if (c.field == "room") return PlutoCell(value: fd.room_number ?? "");
+                if (c.field == "guest_name") return PlutoCell(value: fd.guest_id is Guest_Show ? (fd.guest_id as Guest_Show).full_name : "");
+                if (c.field == "guest_phone") return PlutoCell(value: fd.guest_id is Guest_Show ? (fd.guest_id as Guest_Show).phone_number : "");
+                if (c.field == "number_of_guest") return PlutoCell(value: fd.number_of_guest ?? 0);
+                if (c.field == "check_in_at") return PlutoCell(value: fd.check_in_at);
+                if (c.field == "check_out_at") return PlutoCell(value: fd.check_out_at);
+                if (c.field == "duration") return PlutoCell(value: row_is_walk_in_by_id(fd.id ?? "") ? "" : duration_text(fd.check_in_at, fd.check_out_at));
+                if (c.field == "check_in_by") return PlutoCell(value: fd.check_in_by is User_Show ? (fd.check_in_by as User_Show).full_name : "");
+                if (c.field == "check_out_by") return PlutoCell(value: fd.check_out_by is User_Show ? (fd.check_out_by as User_Show).full_name : "");
+
+                if (c.field == "room_price") return PlutoCell(value: fd.room_price);
+                if (c.field == "penalty_price") return PlutoCell(value: fd.penalty_price);
+                if (c.field == "mini_bar_price") return PlutoCell(value: fd.mini_bar_price);
+                if (c.field == "pay_cash") return PlutoCell(value: fd.pay_cash);
+                if (c.field == "pay_bank") return PlutoCell(value: fd.pay_bank);
+                if (c.field == "pay_balance") return PlutoCell(value: fd.pay_balance);
+                if (c.field == "pay_note") return PlutoCell(value: fd.pay_note);
+
+                return PlutoCell(value: "");
+              })(),
+          },
+        ),
+    ]);
+  }
+
+  void on_filter() {
+    filter = !filter;
+    state_manager.setShowColumnFilter(filter);
+  }
+
+  String duration_text(DateTime? in_at, DateTime? out_at) {
+    if (in_at == null) return "";
+    DateTime end = out_at ?? DateTime.now();
+    int minutes = end.difference(in_at).inMinutes;
+    if (minutes < 0) return "";
+    int day = minutes ~/ 1440;
+    int hour = (minutes % 1440) ~/ 60;
+    int min = minutes % 60;
+    String text = "";
+    if (day > 0) text += "$day ថ្ងៃ ";
+    if (hour > 0) text += "$hour ម៉ោង ";
+    text += "$min នាទី";
+    return text.trim();
+  }
+
+  bool row_is_walk_in_by_id(String fd_id) {
+    Front_Desk? fd = rows.where((x) => x.id == fd_id).firstOrNull;
+    if (fd == null) return false;
+    String n = (fd.room_number ?? "").toLowerCase();
+    return n == "walk-in" || n == "mini bar";
+  }
+
+  double get total_price => parse_double(summary["total"]?["price"]) ?? 0;
+  double get total_cash => parse_double(summary["total"]?["cash"]) ?? 0;
+  double get total_bank => parse_double(summary["total"]?["bank"]) ?? 0;
+  double get total_income => total_cash + total_bank;
+
   Widget _money(PlutoColumnRendererContext rc) {
     return Align(
       alignment: Alignment.center, //
-      child: Text(
-        format_double(parse_double(rc.cell.value) ?? 0, digits: 2) + " \$", //
-        overflow: TextOverflow.ellipsis,
-      ),
+      child: Text(format_double(parse_double(rc.cell.value) ?? 0, digits: 2) + " \$", overflow: TextOverflow.ellipsis),
     );
   }
 
-  // * សាច់ប្រាក់/ធនាគារ — ដូច front_desk (center; ខ្មៅ = វិជ្ជមាន, ក្រហម = អវិជ្ជមាន)
   Widget _money_cash_bank(PlutoColumnRendererContext rc) {
     double v = parse_double(rc.cell.value) ?? 0;
     return Align(
       alignment: Alignment.center, //
-      child: Text(
-        format_double(v, digits: 2) + " \$", //
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(color: v >= 0 ? Colors.black : Colors.red),
-      ),
+      child: Text(format_double(v, digits: 2) + " \$", overflow: TextOverflow.ellipsis, style: TextStyle(color: v >= 0 ? Colors.black : Colors.red)),
     );
   }
 
-  // * សមតុល្យ — ដូច front_desk (center; ខ្មៅ = 0, បៃតង = >0, ក្រហម = <0)
   Widget _money_balance(PlutoColumnRendererContext rc) {
     double v = parse_double(rc.cell.value) ?? 0;
     return Align(
       alignment: Alignment.center, //
-      child: Text(
-        format_double(v, digits: 2) + " \$", //
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(color: v == 0 ? Colors.black : (v > 0 ? Colors.green : Colors.red)),
-      ),
+      child: Text(format_double(v, digits: 2) + " \$", overflow: TextOverflow.ellipsis, style: TextStyle(color: v == 0 ? Colors.black : (v > 0 ? Colors.green : Colors.red))),
     );
   }
 
-  // * footer ជួរសរុប (sum) — ដូច front_desk (center, no color)
   Widget _sum_footer(PlutoColumnFooterRendererContext rc) {
     return PlutoAggregateColumnFooter(
       rendererContext: rc, //
@@ -713,22 +586,19 @@ class _Main_State extends State<Main_> {
       titleSpanBuilder: (value) {
         return [
           WidgetSpan(
-            child: Text(
-              "$value \$", //
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
-            ),
+            child: Text("$value \$", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis)),
           ),
         ];
       },
     );
   }
 
-  // * ########## BLOCK DESIGN END ##########
+  // * ########## BLOCK METHODS END ##########
 }
 
 // * ########## BLOCK ARGUMENTS OF MAIN ##########
 class Main_ extends StatefulWidget {
-  Main_({super.key});
+  const Main_({super.key});
 
   @override
   State<Main_> createState() => _Main_State();
@@ -738,7 +608,7 @@ class Main_ extends StatefulWidget {
 void main() {
   runApp(
     MaterialApp(
-      home: Main_(), //
+      home: const Main_(), //
       theme: theme_data, //
       title: "Development", //
       debugShowCheckedModeBanner: false, //
