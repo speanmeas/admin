@@ -66,7 +66,11 @@ Future<Map<String, String>?> dialog_search_guest({
                 onSelected: (v) {
                   for (var e in guests) {
                     if ("${e[Guest.FULL_NAME] ?? ""} (${e[Guest.PHONE_NUMBER] ?? "N/A"})" == v) {
-                      Navigator.pop(context, {"id": e[Guest.ID] as String? ?? "", "name": e[Guest.FULL_NAME] as String? ?? "", "phone": e[Guest.PHONE_NUMBER] as String? ?? ""});
+                      Navigator.pop(context, {
+                        "id": e[Guest.ID] as String? ?? "", //
+                        "full_name": e[Guest.FULL_NAME] as String? ?? "", //
+                        "phone_number": e[Guest.PHONE_NUMBER] as String? ?? "",
+                      });
                       return;
                     }
                   }
