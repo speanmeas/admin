@@ -246,9 +246,7 @@ class _Main_State extends State<Main_> {
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 6),
                       alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade400),
-                      ),
+                      decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade400)),
                       child: Row(
                         children: [
                           Expanded(
@@ -337,7 +335,7 @@ class _Main_State extends State<Main_> {
     // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
     state_manager.removeAllRows();
     state_manager.appendRows([
-      for (var (i, d) in data.indexed)
+      for (var d in data)
         PlutoRow(
           cells: {
             for (var c in list_column_pluto) //

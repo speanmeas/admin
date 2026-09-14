@@ -9,8 +9,7 @@ Future<bool?> dialog_search_guest({
   required BuildContext context, //
   required String? front_desk_id, //
 }) async {
-  String? selected_guest_name;
-  String? selected_guest_phone;
+  String? selected_guest_id;
   List<dynamic> guests = [];
   bool is_loading = false;
   TextEditingController? guest_ctrl;
@@ -89,8 +88,7 @@ Future<bool?> dialog_search_guest({
                       guest_ctrl?.text = v;
                       for (var e in guests) {
                         if ("${e[Guest.FULL_NAME] ?? ""} (${e[Guest.PHONE_NUMBER] ?? "N/A"})" == v) {
-                          selected_guest_name = e[Guest.FULL_NAME] as String?;
-                          selected_guest_phone = e[Guest.PHONE_NUMBER] as String?;
+                          selected_guest_id = e[Guest.ID]?.toString() ?? e["_id"]?.toString();
                           break;
                         }
                       }
@@ -112,7 +110,7 @@ Future<bool?> dialog_search_guest({
                 onPressed: is_loading
                     ? null
                     : () async {
-                        if (selected_guest_name == null && selected_guest_phone == null) {
+                        if (selected_guest_id == null) {
                           return snackbar(ct: context, ms: "Please select a guest", cl: Colors.red);
                         }
 
@@ -121,8 +119,7 @@ Future<bool?> dialog_search_guest({
                           endpoint.FRONT_DESK_UPDATE_GUEST_INFO,
                           data: {
                             Front_Desk.ID: front_desk_id, //
-                            Front_Desk.GUEST_ID: selected_guest_name, //
-                            Front_Desk.GUEST_ID: selected_guest_phone, //
+                            Front_Desk.GUEST_ID: selected_guest_id, //
                           },
                         );
                         if (tmp_fd == null) {

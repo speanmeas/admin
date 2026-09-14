@@ -1,7 +1,6 @@
 // * នាំចូល Flutter material និង services សម្រាប់ dialog
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:provider/provider.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 

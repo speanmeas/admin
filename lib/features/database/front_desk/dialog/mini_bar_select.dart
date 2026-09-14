@@ -87,7 +87,6 @@ Future<double?> dialog_select_mini_bar({
 
   // * រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
   Future<double?> on_confirm() async {
-
     List<String> ids = [];
     for (var o in orders) {
       if (o.id != null) {
@@ -129,12 +128,12 @@ Future<double?> dialog_select_mini_bar({
 
   await load();
 
+  bool is_loading = false;
   final result = await showDialog<double>(
     context: context,
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) {
-          bool is_loading = false;
           return AlertDialog(
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
             titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 4),

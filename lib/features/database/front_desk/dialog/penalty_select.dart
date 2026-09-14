@@ -86,7 +86,6 @@ Future<double?> dialog_select_penalty({
 
   // * រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
   Future<double?> on_confirm() async {
-
     List<String> ids = [];
     for (var o in orders) {
       if (o.id != null) {
@@ -127,12 +126,12 @@ Future<double?> dialog_select_penalty({
 
   await load();
 
+  bool is_loading = false;
   final result = await showDialog<double>(
     context: context,
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) {
-          bool is_loading = false;
           return AlertDialog(
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
             titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
@@ -272,7 +271,7 @@ Future<double?> dialog_select_penalty({
               OutlinedButton.icon(
                 icon: const Icon(Icons.close, color: Colors.red), //
                 label: const Text("Cancel", style: TextStyle(color: Colors.red)),
-                onPressed: () => Navigator.pop(context, false),
+                onPressed: () => Navigator.pop(context),
               ),
               // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស និងរក្សាទុកទំនិញ
               OutlinedButton.icon(
