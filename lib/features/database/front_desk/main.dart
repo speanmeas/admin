@@ -213,7 +213,7 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.search_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () => on_change_room(rc), //
+                    onPressed: () => on_update_room(rc), //
                   ),
                 ],
               );
@@ -258,14 +258,35 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: Front_Desk.NUMBER_OF_GUEST, //
             title: "ចំនួន",
-            type: PlutoColumnType.number(negative: false, format: "#,###"),
-            width: 60,
+            type: PlutoColumnType.select([]),
+            enableEditingMode: false,
+            width: 70,
             renderer: (rc) {
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(
-                  format_double(rc.cell.value, digits: 0) + " នាក់", //
-                  overflow: TextOverflow.ellipsis,
+              double value = rc.cell.value is double ? rc.cell.value as double : 0.0;
+              return PopupMenuButton<double>(
+                menuPadding: const EdgeInsets.all(0),
+                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                itemBuilder: (context) => [
+                  for (double o in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) ...[
+                    PopupMenuItem(
+                      value: o,
+                      child: Text("${o.toInt()} នាក់", style: TextStyle(fontSize: 14)),
+                    ),
+                    const PopupMenuDivider(height: 0),
+                  ],
+                ],
+                onSelected: (v) => on_update_number_of_guest(rc, v), //
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        value == 0 ? "" : "${value.toInt()} នាក់", //
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Icon(Icons.arrow_drop_down, color: Colors.blue),
+                  ],
                 ),
               );
             },
@@ -292,7 +313,7 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.calendar_month_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () => on_change_check_in_datetime(rc), //
+                    onPressed: () => on_update_check_in_at(rc), //
                   ),
                 ],
               );
@@ -345,7 +366,7 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.calendar_month_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () => on_change_check_out_datetime(rc), //
+                    onPressed: () => on_update_check_out_at(rc), //
                   ),
                 ],
               );
@@ -554,7 +575,7 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.calendar_month_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () => on_change_shift_date(rc), //
+                    onPressed: () => on_update_shift_date(rc), //
                   ),
                 ],
               );
@@ -724,15 +745,18 @@ class _Main_State extends State<Main_> {
           cells: {
             for (var c in list_column_pluto) //
               c.field: (() {
-                if (c.field == "action") return PlutoCell(value: "");
-                if (c.field == "index") return PlutoCell(value: i + 1);
+                if (c.field == "action") return PlutoCell(value: ""); //auto
+                if (c.field == "index") return PlutoCell(value: i + 1); // auto
+                if (c.field == "duration") return PlutoCell(value: check_in_duration(d)); // auto
                 if (c.field == Front_Desk.ID) return PlutoCell(value: d.id ?? "");
                 if (c.field == Front_Desk.SHIFT_DATE) return PlutoCell(value: d.shift_date);
                 if (c.field == Front_Desk.ROOM_NUMBER) return PlutoCell(value: d.room_number ?? "");
                 if (c.field == Front_Desk.CHECK_IN_AT) return PlutoCell(value: d.check_in_at);
-                if (c.field == "duration") return PlutoCell(value: check_in_duration(d));
                 if (c.field == Front_Desk.CHECK_OUT_AT) return PlutoCell(value: d.check_out_at);
-                if (c.field == Front_Desk.GUEST_ID) return PlutoCell(value: d.guest_id is Guest_Show ? (d.guest_id as Guest_Show).full_name : "");
+                if (c.field == Front_Desk.GUEST_ID) {
+                  final g = d.guest_id;
+                  return PlutoCell(value: g == null ? "" : "${g.full_name ?? "N/A"} (${g.phone_number ?? "N/A"})");
+                }
                 if (c.field == Front_Desk.NUMBER_OF_GUEST) return PlutoCell(value: d.number_of_guest ?? 0);
                 if (c.field == Front_Desk.ROOM_PRICE) return PlutoCell(value: d.room_price ?? 0.0);
                 if (c.field == Front_Desk.MINI_BAR_PRICE) return PlutoCell(value: d.mini_bar_price ?? 0.0);
@@ -872,17 +896,17 @@ class _Main_State extends State<Main_> {
   void on_updated(PlutoGridOnChangedEvent e) {
     final fd_id = e.row.cells[Front_Desk.ID]?.value;
     if (e.column.field == Front_Desk.ROOM_PRICE) {
-      do_change_room_price(fd_id, e.value);
+      do_update_room_price(fd_id, e.value);
     } else if (e.column.field == Front_Desk.PAY_CASH) {
-      do_change_cash(fd_id, e.value);
+      do_update_cash(fd_id, e.value);
     } else if (e.column.field == Front_Desk.PAY_BANK) {
-      do_change_bank(fd_id, e.value);
+      do_update_bank(fd_id, e.value);
     } else {
       do_updated(fd_id, e.column.field, e.value);
     }
   }
 
-  Future<void> do_change_room_price(String? id, double v) async {
+  Future<void> do_update_room_price(String? id, double v) async {
     final tmp = await dio.post(
       endpoint.FRONT_DESK_UPDATE_ROOM_PRICE, //
       data: {
@@ -899,7 +923,7 @@ class _Main_State extends State<Main_> {
     on_refresh_balanced();
   }
 
-  Future<void> do_change_cash(String? id, double v) async {
+  Future<void> do_update_cash(String? id, double v) async {
     final tmp = await dio.post(
       endpoint.FRONT_DESK_UPDATE_PAYMENT,
       data: {
@@ -916,14 +940,8 @@ class _Main_State extends State<Main_> {
     on_refresh_balanced();
   }
 
-  Future<void> do_change_bank(String? id, double v) async {
-    final tmp = await dio.post(
-      endpoint.FRONT_DESK_UPDATE_PAYMENT,
-      data: {
-        "_id": id, //
-        "pay_bank": v,
-      },
-    );
+  Future<void> do_update_bank(String? id, double v) async {
+    final tmp = await dio.post(endpoint.FRONT_DESK_UPDATE_PAYMENT, data: {"_id": id, "pay_bank": v});
     if (tmp == null) {
       await on_load_page(current_page);
       snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
@@ -933,55 +951,7 @@ class _Main_State extends State<Main_> {
     on_refresh_balanced();
   }
 
-  // this think is too complicated.
-  //   Future<void> do_change_guest_info(String? fd_id, String field, dynamic value) async {
-  //     Front_Desk? fd;
-  //     for (var d in data) {
-  //       if (d.id == fd_id) {
-  //         fd = d;
-  //         break;
-  //       }
-  //     }
-  //     if (fd == null) return;
-
-  //     String? guest_id;
-  //     if (fd.guest_id is Guest_Show) {
-  //       guest_id = (fd.guest_id as Guest_Show).id;
-  //     }
-
-  //     if (guest_id == null) {
-  //       final tmp = await dio.post(
-  //         endpoint.GUEST_CREATE, //
-  //         data: {
-  //           Guest.FULL_NAME: field == "guest_name" ? value : (fd.guest_id is Guest_Show ? (fd.guest_id as Guest_Show).full_name : ""), //
-  //           Guest.PHONE_NUMBER: field == "guest_phone" ? value : (fd.guest_id is Guest_Show ? (fd.guest_id as Guest_Show).phone_number : ""),
-  //         },
-  //       );
-  //       if (tmp == null) {
-  //         await on_load_page(current_page);
-  //         snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-  //         return;
-  //       }
-  //       guest_id = (tmp.data as List?)?.firstOrNull?[Guest.ID] as String?;
-  //       if (guest_id == null) return;
-  //       await do_update_guest(fd_id, guest_id);
-  //     } else {
-  //       final tmp = await dio.post(
-  //         endpoint.GUEST_UPDATE, //
-  //         data: {
-  //           Guest.ID: guest_id, //
-  //           field: value, //
-  //         },
-  //       );
-  //       if (tmp == null) {
-  //         await on_load_page(current_page);
-  //         snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-  //         return;
-  //       }
-  //     }
-  //   }
-
-  Future<void> on_change_check_in_datetime(PlutoColumnRendererContext rc) async {
+  Future<void> on_update_check_in_at(PlutoColumnRendererContext rc) async {
     DateTime? dt = rc.cell.value is DateTime ? rc.cell.value as DateTime : null;
     final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
@@ -992,10 +962,11 @@ class _Main_State extends State<Main_> {
     rc.cell.value = DateTime.tryParse(v);
     state_manager.notifyListeners();
 
+    on_refresh_duration();
     do_updated(id, Front_Desk.CHECK_IN_AT, v);
   }
 
-  Future<void> on_change_check_out_datetime(PlutoColumnRendererContext rc) async {
+  Future<void> on_update_check_out_at(PlutoColumnRendererContext rc) async {
     DateTime? dt = rc.cell.value is DateTime ? rc.cell.value as DateTime : null;
     final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
@@ -1007,10 +978,11 @@ class _Main_State extends State<Main_> {
     rc.cell.value = DateTime.tryParse(v);
     state_manager.notifyListeners();
 
+    on_refresh_duration();
     do_updated(id, Front_Desk.CHECK_OUT_AT, v);
   }
 
-  void on_change_shift_date(PlutoColumnRendererContext rc) async {
+  void on_update_shift_date(PlutoColumnRendererContext rc) async {
     DateTime? dt = rc.cell.value is DateTime ? rc.cell.value as DateTime : null;
     final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
@@ -1087,7 +1059,15 @@ class _Main_State extends State<Main_> {
     on_refresh_balanced();
   }
 
-  void on_change_room(PlutoColumnRendererContext rc) async {
+  void on_update_number_of_guest(PlutoColumnRendererContext rc, double v) {
+    final fd_id = rc.row.cells[Front_Desk.ID]?.value;
+    if (fd_id == null) return;
+    rc.cell.value = v;
+    state_manager.notifyListeners();
+    do_updated(fd_id, Front_Desk.NUMBER_OF_GUEST, v);
+  }
+
+  void on_update_room(PlutoColumnRendererContext rc) async {
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
 
@@ -1121,14 +1101,8 @@ class _Main_State extends State<Main_> {
   Future<void> on_search_guest(PlutoColumnRendererContext rc) async {
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
-    final guest = await dialog_search_guest(context: context);
-    if (guest == null) return;
-
-    rc.row.cells["guest_name"]!.value = guest["name"];
-    rc.row.cells["guest_phone"]!.value = guest["phone"];
-    state_manager.notifyListeners();
-
-    do_update_guest(fd_id, guest["id"]);
+    await dialog_search_guest(context: context, fd_id: fd_id);
+    await on_reload();
   }
 
   Future<void> do_update_guest(String? fd_id, String? guest_id) async {

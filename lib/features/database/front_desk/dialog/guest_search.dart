@@ -3,9 +3,12 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-Future<Map<String, String>?> dialog_search_guest({
+Future<String?> dialog_search_guest({
   required BuildContext context, //
+  required String fd_id, //
 }) async {
+  String? output; // output: full_name (phone_number)
+
   List<dynamic> guests = [];
 
   Future<List<String>> search(String q) async {
@@ -13,13 +16,13 @@ Future<Map<String, String>?> dialog_search_guest({
     guests = tmp_g.data as List<dynamic>? ?? [];
     final options = <String>[];
     for (var g in guests) {
-      final text = "${g[Guest.FULL_NAME] ?? ""} (${g[Guest.PHONE_NUMBER] ?? "N/A"})";
+      final text = "${g[Guest.FULL_NAME] ?? "N/A"} (${g[Guest.PHONE_NUMBER] ?? "N/A"})";
       options.add(text);
     }
     return options;
   }
 
-  return await showDialog<Map<String, String>>(
+  return await showDialog<String?>(
     context: context,
     builder: (context) {
       return AlertDialog(
@@ -63,14 +66,17 @@ Future<Map<String, String>?> dialog_search_guest({
                     ),
                   );
                 },
-                onSelected: (v) {
+                onSelected: (v) async {
                   for (var e in guests) {
                     if ("${e[Guest.FULL_NAME] ?? ""} (${e[Guest.PHONE_NUMBER] ?? "N/A"})" == v) {
-                      Navigator.pop(context, {
-                        "id": e[Guest.ID] as String? ?? "", //
-                        "full_name": e[Guest.FULL_NAME] as String? ?? "", //
-                        "phone_number": e[Guest.PHONE_NUMBER] as String? ?? "",
-                      });
+                      final tmp = await dio.post(
+                        endpoint.FRONT_DESK_UPDATE_GUEST_INFO,
+                        data: {
+                          Front_Desk.ID: fd_id, //
+                          Front_Desk.GUEST_ID: e[Guest.ID], //
+                        },
+                      );
+                      if (tmp != null) Navigator.pop(context, v);
                       return;
                     }
                   }
@@ -85,20 +91,16 @@ Future<Map<String, String>?> dialog_search_guest({
 }
 
 class _Main_State extends State<Main_> {
-  Map<String, String>? tmp;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-          onPressed: () async {
-            final v = await dialog_search_guest(context: context);
-            if (v == null) return;
-            tmp = v;
-            setState(() {});
-          },
+          onPressed: () => dialog_search_guest(
+            context: context, //
+            fd_id: "",
+          ),
           child: const Text("Show"),
         ),
       ),
