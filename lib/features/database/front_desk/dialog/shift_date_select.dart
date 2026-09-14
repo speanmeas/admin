@@ -2,8 +2,6 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog ជ្រើសរើសកាលបរិច្ឆេទតែប៉ុណ្ណោះ (yyyy-MM-dd) — ដូច report
-// * — ប្រើតែ CRUD endpoints ប៉ុណ្ណោះ (FRONT_DESK_UPDATE)
 Future<bool?> dialog_shift_date_select({
   required BuildContext context, //
   required String? front_desk_id, //

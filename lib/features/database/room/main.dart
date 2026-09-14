@@ -240,27 +240,37 @@ class _Main_State extends State<Main_> {
             field: Room.KIND, //
             title: "Kind",
             type: PlutoColumnType.text(),
-            enableEditingMode: false,
+            // enableEditingMode: false,
             width: 120,
             renderer: (rc) {
-              final value = rc.cell.value ?? "";
-              return PopupMenuButton<String>(
-                padding: EdgeInsets.all(0),
-                menuPadding: EdgeInsets.all(0),
-                itemBuilder: (context) => [
-                  for (String k in kinds)
-                    PopupMenuItem(
-                      value: k,
-                      child: Text(k, style: TextStyle(fontSize: 14)),
+              String value = rc.cell.value ?? "";
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(
+                        value.isEmpty ? "" : value, //
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
+                  ),
+                  PopupMenuButton<String>(
+                    menuPadding: const EdgeInsets.all(0),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                    itemBuilder: (context) => [
+                      for (String k in kinds) ...[
+                        PopupMenuItem(
+                          value: k,
+                          child: Text(k, style: TextStyle(fontSize: 14)),
+                        ),
+                        const PopupMenuDivider(height: 0),
+                      ],
+                    ],
+                    onSelected: (v) => on_change_field(rc, Room.KIND, v), //
+                    child: Icon(Icons.arrow_drop_down, color: Colors.blue),
+                  ),
                 ],
-                child: Row(
-                  children: [
-                    Expanded(child: Text(value.isEmpty ? "" : value, overflow: TextOverflow.ellipsis)),
-                    Icon(Icons.arrow_drop_down, size: 20),
-                  ],
-                ),
-                onSelected: (v) => on_change_field(rc, Room.KIND, v),
               );
             },
           ),
@@ -269,27 +279,37 @@ class _Main_State extends State<Main_> {
             field: Room.STATUS, //
             title: "Status",
             type: PlutoColumnType.text(),
-            enableEditingMode: false,
+            // enableEditingMode: false,
             width: 120,
             renderer: (rc) {
-              final value = rc.cell.value ?? "";
-              return PopupMenuButton<String>(
-                padding: EdgeInsets.all(0),
-                menuPadding: EdgeInsets.all(0),
-                itemBuilder: (context) => [
-                  for (String st in statuses)
-                    PopupMenuItem(
-                      value: st,
-                      child: Text(st, style: TextStyle(fontSize: 14)),
+              String value = rc.cell.value ?? "";
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(
+                        value.isEmpty ? "" : value, //
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
+                  ),
+                  PopupMenuButton<String>(
+                    menuPadding: const EdgeInsets.all(0),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                    itemBuilder: (context) => [
+                      for (String st in statuses) ...[
+                        PopupMenuItem(
+                          value: st,
+                          child: Text(st, style: TextStyle(fontSize: 14)),
+                        ),
+                        const PopupMenuDivider(height: 0),
+                      ],
+                    ],
+                    onSelected: (v) => on_change_field(rc, Room.STATUS, v), //
+                    child: Icon(Icons.arrow_drop_down, color: Colors.blue),
+                  ),
                 ],
-                child: Row(
-                  children: [
-                    Expanded(child: Text(value.isEmpty ? "" : value, overflow: TextOverflow.ellipsis)),
-                    Icon(Icons.arrow_drop_down, size: 20),
-                  ],
-                ),
-                onSelected: (v) => on_change_field(rc, Room.STATUS, v),
               );
             },
           ),
@@ -382,8 +402,8 @@ class _Main_State extends State<Main_> {
             for (var c in list_column_pluto) //
               c.field: (() {
                 if (c.field == "action") return PlutoCell(value: "");
-                if (c.field == Room.ID) return PlutoCell(value: d.id ?? "");
                 if (c.field == "index") return PlutoCell(value: i + 1);
+                if (c.field == Room.ID) return PlutoCell(value: d.id ?? "");
                 if (c.field == Room.NUMBER) return PlutoCell(value: d.number ?? "");
                 if (c.field == Room.PRICE_PER_DAY) return PlutoCell(value: d.price_per_day ?? 0.0);
                 if (c.field == Room.PRICE_PER_3H) return PlutoCell(value: d.price_per_3h ?? 0.0);

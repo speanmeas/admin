@@ -3,7 +3,7 @@ import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 import "dialog/select_page.dart";
-import "dialog/search_nationality.dart";
+import "dialog/nationality_search.dart";
 
 class _Main_State extends State<Main_> {
   // * ########## BLOCK ATTRIBUTE ##########
@@ -442,33 +442,35 @@ class _Main_State extends State<Main_> {
   }
 
   void on_search_nationality(PlutoColumnRendererContext rc) async {
-    final fd_id = rc.row.cells[Guest.ID]?.value;
-    if (fd_id == null) return;
+    final id = rc.row.cells[Guest.ID]?.value;
+    if (id == null || id.toString().isEmpty) return;
 
-    final v = await dialog_search_nationality(context);
+    final v = await dialog_nationality_search(
+      context: context, //
+      guest_id: id, //
+    );
     if (v == null) return;
 
-    rc.cell.value = v;
-    state_manager.notifyListeners();
-
-    do_updated(fd_id, Guest.NATIONALITY, v);
+    state_manager.changeCellValue(rc.cell, v, force: true, callOnChangedEvent: false);
+    snackbar(ct: context, ms: "Updated", cl: Colors.green);
   }
 
   void on_change_field(PlutoColumnRendererContext rc, String field, String v) {
     final id = rc.row.cells[Guest.ID]?.value;
-    if (id == null) return;
+    if (id == null || id.toString().isEmpty) return;
 
-    rc.cell.value = v;
-    state_manager.notifyListeners();
+    state_manager.changeCellValue(rc.cell, v, force: true, callOnChangedEvent: false);
 
     do_updated(id, field, v);
   }
 
   Future<void> do_updated(String? id, String field, dynamic value) async {
+    if (id == null || id.isEmpty) return;
     final tmp = await dio.post(endpoint.GUEST_UPDATE, data: {Guest.ID: id, field: value});
     if (tmp == null) {
       await on_reload();
       snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      return;
     }
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
   }

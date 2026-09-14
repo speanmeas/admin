@@ -198,7 +198,7 @@ class _Main_State extends State<Main_> {
             field: Front_Desk.ROOM_NUMBER, //
             title: "បន្ទប់",
             type: PlutoColumnType.text(),
-            enableEditingMode: false,
+            // enableEditingMode: false,
             width: 120,
             renderer: (rc) {
               return Row(
@@ -273,35 +273,35 @@ class _Main_State extends State<Main_> {
             field: Front_Desk.NUMBER_OF_GUEST, //
             title: "ចំនួន",
             type: PlutoColumnType.number(),
-            enableEditingMode: false,
+            // enableEditingMode: false,
             width: 70,
             renderer: (rc) {
               double value = parse_double(rc.cell.value) ?? 0.0;
-              return PopupMenuButton<double>(
-                menuPadding: const EdgeInsets.all(0),
-                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                itemBuilder: (context) => [
-                  for (double o in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) ...[
-                    PopupMenuItem(
-                      value: o,
-                      child: Text("${o.toInt()} នាក់", style: TextStyle(fontSize: 14)),
+              return Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      value == 0 ? "" : "${value.toInt()} នាក់", //
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const PopupMenuDivider(height: 0),
-                  ],
+                  ),
+                  PopupMenuButton<double>(
+                    menuPadding: const EdgeInsets.all(0),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                    itemBuilder: (context) => [
+                      for (double o in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) ...[
+                        PopupMenuItem(
+                          value: o,
+                          child: Text("${o.toInt()} នាក់", style: TextStyle(fontSize: 14)),
+                        ),
+                        const PopupMenuDivider(height: 0),
+                      ],
+                    ],
+                    onSelected: (v) => on_update_number_of_guest(rc, v), //
+                    child: Icon(Icons.arrow_drop_down, color: Colors.blue),
+                  ),
                 ],
-                onSelected: (v) => on_update_number_of_guest(rc, v), //
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        value == 0 ? "" : "${value.toInt()} នាក់", //
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Icon(Icons.arrow_drop_down, color: Colors.blue),
-                  ],
-                ),
               );
             },
           ),
