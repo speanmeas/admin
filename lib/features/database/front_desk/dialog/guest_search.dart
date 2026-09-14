@@ -7,8 +7,6 @@ Future<String?> dialog_search_guest({
   required BuildContext context, //
   required String fd_id, //
 }) async {
-  String? output; // output: full_name (phone_number)
-
   List<dynamic> guests = [];
 
   Future<List<String>> search(String q) async {

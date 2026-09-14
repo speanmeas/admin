@@ -24,7 +24,6 @@ Future<double?> dialog_select_penalty({
   List<Penalty> list_penalty = [];
   List<Order_Penalty> orders = [...list_order_penalty];
   String search = "";
-  bool is_loading = false;
 
   // * ទាញយកបញ្ជីទំនិញ penalty ពី server
   Future<void> load() async {
@@ -87,7 +86,6 @@ Future<double?> dialog_select_penalty({
 
   // * រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
   Future<double?> on_confirm() async {
-    is_loading = true;
 
     List<String> ids = [];
     for (var o in orders) {
@@ -134,6 +132,7 @@ Future<double?> dialog_select_penalty({
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) {
+          bool is_loading = false;
           return AlertDialog(
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
             titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
@@ -268,7 +267,7 @@ Future<double?> dialog_select_penalty({
               ),
             ),
             actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-            actionsAlignment: MainAxisAlignment.center,
+            actionsAlignment: MainAxisAlignment.spaceAround,
             actions: [
               OutlinedButton.icon(
                 icon: const Icon(Icons.close, color: Colors.red), //
@@ -282,6 +281,7 @@ Future<double?> dialog_select_penalty({
                 onPressed: is_loading
                     ? null
                     : () async {
+                        setState(() => is_loading = true);
                         final r = await on_confirm();
                         if (r == null) {
                           if (context.mounted) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);

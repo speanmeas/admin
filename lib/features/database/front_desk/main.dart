@@ -6,6 +6,7 @@ import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
 
+import "dialog/guest_add.dart";
 import "dialog/guest_search.dart";
 import "dialog/check_in_by_search.dart";
 import "dialog/check_in_at_select.dart";
@@ -222,7 +223,7 @@ class _Main_State extends State<Main_> {
 
           PlutoColumn(
             field: Front_Desk.GUEST_ID, //
-            title: "ឈ្មោះ - លេខទូរស័ព្ទ",
+            title: "ឈ្មោះ (លេខទូរស័ព្ទ)",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
             width: 200,
@@ -230,18 +231,18 @@ class _Main_State extends State<Main_> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
                   IconButton(
                     tooltip: "Add Guest", //
                     icon: Icon(Icons.person_add_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () {},
+                    onPressed: () => on_add_guest(rc),
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
                   ),
                   IconButton(
                     tooltip: "Search Guest", //
@@ -747,16 +748,12 @@ class _Main_State extends State<Main_> {
               c.field: (() {
                 if (c.field == "action") return PlutoCell(value: ""); //auto
                 if (c.field == "index") return PlutoCell(value: i + 1); // auto
-                if (c.field == "duration") return PlutoCell(value: check_in_duration(d)); // auto
+                if (c.field == "duration") return PlutoCell(value: check_in_duration(d.check_in_at, d.check_out_at, (d.room_number ?? "").toLowerCase() == "walk-in")); // auto
                 if (c.field == Front_Desk.ID) return PlutoCell(value: d.id ?? "");
-                if (c.field == Front_Desk.SHIFT_DATE) return PlutoCell(value: d.shift_date);
                 if (c.field == Front_Desk.ROOM_NUMBER) return PlutoCell(value: d.room_number ?? "");
                 if (c.field == Front_Desk.CHECK_IN_AT) return PlutoCell(value: d.check_in_at);
                 if (c.field == Front_Desk.CHECK_OUT_AT) return PlutoCell(value: d.check_out_at);
-                if (c.field == Front_Desk.GUEST_ID) {
-                  final g = d.guest_id;
-                  return PlutoCell(value: g == null ? "" : "${g.full_name ?? "N/A"} (${g.phone_number ?? "N/A"})");
-                }
+                if (c.field == Front_Desk.GUEST_ID) return PlutoCell(value: d.guest_id == null ? "" : "${d.guest_id!.full_name ?? "N/A"} (${d.guest_id!.phone_number ?? "N/A"})");
                 if (c.field == Front_Desk.NUMBER_OF_GUEST) return PlutoCell(value: d.number_of_guest ?? 0);
                 if (c.field == Front_Desk.ROOM_PRICE) return PlutoCell(value: d.room_price ?? 0.0);
                 if (c.field == Front_Desk.MINI_BAR_PRICE) return PlutoCell(value: d.mini_bar_price ?? 0.0);
@@ -767,6 +764,7 @@ class _Main_State extends State<Main_> {
                 if (c.field == Front_Desk.PAY_NOTE) return PlutoCell(value: d.pay_note ?? "");
                 if (c.field == Front_Desk.CHECK_IN_BY) return PlutoCell(value: user_name(d.check_in_by));
                 if (c.field == Front_Desk.CHECK_OUT_BY) return PlutoCell(value: user_name(d.check_out_by));
+                if (c.field == Front_Desk.SHIFT_DATE) return PlutoCell(value: d.shift_date);
                 return PlutoCell(value: "");
               })(),
           },
@@ -786,28 +784,20 @@ class _Main_State extends State<Main_> {
 
   Future<void> on_refresh_duration() async {
     for (var row in state_manager.rows) {
-      final id = row.cells[Front_Desk.ID]?.value;
-      Front_Desk? fd;
-      for (var d in data) {
-        if (d.id == id) {
-          fd = d;
-          break;
-        }
-      }
-      if (fd == null) continue;
+      final in_at = row.cells[Front_Desk.CHECK_IN_AT]?.value as DateTime?;
+      final out_at = row.cells[Front_Desk.CHECK_OUT_AT]?.value as DateTime?;
+      final room = row.cells[Front_Desk.ROOM_NUMBER]?.value as String? ?? "";
       state_manager.changeCellValue(
         row.cells["duration"]!, //
-        check_in_duration(fd),
+        check_in_duration(in_at, out_at, room.toLowerCase() == "walk-in"),
         force: true,
         callOnChangedEvent: false,
       );
     }
   }
 
-  int check_in_duration(Front_Desk fd) {
-    if ((fd.room_number ?? "").toLowerCase() == "walk-in") return 0;
-    DateTime? in_at = fd.check_in_at;
-    DateTime? out_at = fd.check_out_at;
+  int check_in_duration(DateTime? in_at, DateTime? out_at, bool is_walking) {
+    if (is_walking) return 0;
     if (in_at == null) return 0;
     if (out_at == null) return DateTime.now().difference(in_at).inMinutes;
     return out_at.difference(in_at).inMinutes;
@@ -1101,8 +1091,22 @@ class _Main_State extends State<Main_> {
   Future<void> on_search_guest(PlutoColumnRendererContext rc) async {
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
-    await dialog_search_guest(context: context, fd_id: fd_id);
-    await on_reload();
+
+    final name_phone = await dialog_search_guest(context: context, fd_id: fd_id);
+    if (name_phone == null) return await on_reload();
+
+    rc.cell.value = name_phone;
+    state_manager.notifyListeners();
+  }
+
+  Future<void> on_add_guest(PlutoColumnRendererContext rc) async {
+    final fd_id = rc.row.cells[Front_Desk.ID]?.value;
+    if (fd_id == null) return;
+    final name_phone = await dialog_add_guest(context: context, fd_id: fd_id);
+    if (name_phone == null) return await on_reload();
+
+    rc.cell.value = name_phone;
+    state_manager.notifyListeners();
   }
 
   Future<void> do_update_guest(String? fd_id, String? guest_id) async {
@@ -1148,7 +1152,6 @@ class _Main_State extends State<Main_> {
     return text.trim();
   }
 
-  // * បង្ហាញតម្លៃលុយ (ថ្លៃបន្ទប់ / មីនីបារ / ពិន័យ) — ដូច report (center, no color, null-safe)
   Widget _money(PlutoColumnRendererContext rc) {
     return Align(
       alignment: Alignment.center, //
@@ -1159,7 +1162,6 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  // * សាច់ប្រាក់/ធនាគារ — ដូច report (center; ខ្មៅ = វិជ្ជមាន, ក្រហម = អវិជ្ជមាន)
   Widget _money_cash_bank(PlutoColumnRendererContext rc) {
     double v = parse_double(rc.cell.value) ?? 0;
     return Align(
@@ -1172,7 +1174,6 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  // * សមតុល្យ — ដូច report (center; ខ្មៅ = 0, បៃតង = >0, ក្រហម = <0)
   Widget _money_balance(PlutoColumnRendererContext rc) {
     double v = parse_double(rc.cell.value) ?? 0;
     return Align(
@@ -1185,7 +1186,6 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  // * footer ជួរសរុប (sum) — ដូច report (center, no color)
   Widget _sum_footer(PlutoColumnFooterRendererContext rc) {
     return PlutoAggregateColumnFooter(
       rendererContext: rc, //
@@ -1206,13 +1206,11 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  // * មើលថ្ងៃម្សិលមិញ (page បន្ទាប់ = ថ្ងៃកន្លងទៅ 1 ថ្ងៃទៀត)
   Future<void> on_previous_day() async {
     current_page = current_page + 1;
     await on_load_page(current_page);
   }
 
-  // * ជ្រើសកាលបរិច្ឆេទដោយផ្ទាល់ → លោតទៅទំព័រនៃថ្ងៃនោះ
   Future<void> on_goto_day() async {
     final picked = await showDatePicker(
       context: context, //
@@ -1227,7 +1225,6 @@ class _Main_State extends State<Main_> {
     await on_load_page(current_page);
   }
 
-  // * មើលថ្ងៃស្អែក (page មុន = ថ្ងៃជិតជាងនេះ, ឈប់នៅថ្ងៃនេះ)
   Future<void> on_next_day() async {
     if (current_page == 1) return;
     current_page = current_page - 1;

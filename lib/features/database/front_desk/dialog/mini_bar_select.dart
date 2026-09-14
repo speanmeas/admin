@@ -25,7 +25,6 @@ Future<double?> dialog_select_mini_bar({
   List<Mini_Bar> list_mini_bar = [];
   List<Order_Mini_Bar> orders = [...list_order_mini_bar];
   String search = "";
-  bool is_loading = false;
 
   // * ទាញយកបញ្ជីទំនិញ mini bar ពី server
   Future<void> load() async {
@@ -88,7 +87,6 @@ Future<double?> dialog_select_mini_bar({
 
   // * រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
   Future<double?> on_confirm() async {
-    is_loading = true;
 
     List<String> ids = [];
     for (var o in orders) {
@@ -136,6 +134,7 @@ Future<double?> dialog_select_mini_bar({
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) {
+          bool is_loading = false;
           return AlertDialog(
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
             titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 4),
@@ -270,7 +269,7 @@ Future<double?> dialog_select_mini_bar({
               ),
             ),
             actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-            actionsAlignment: MainAxisAlignment.center,
+            actionsAlignment: MainAxisAlignment.spaceAround,
             actions: [
               OutlinedButton.icon(
                 icon: const Icon(Icons.close, color: Colors.red), //
@@ -284,6 +283,7 @@ Future<double?> dialog_select_mini_bar({
                 onPressed: is_loading
                     ? null
                     : () async {
+                        setState(() => is_loading = true);
                         final r = await on_confirm();
                         if (r == null) {
                           if (context.mounted) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
