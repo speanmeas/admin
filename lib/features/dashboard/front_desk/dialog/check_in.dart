@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
@@ -8,6 +9,21 @@ Future<bool?> dialog_check_in({
   required String room_number, //
 }) async {
   bool is_loading = false;
+
+  Future<void> on_confirm(StateSetter setState) async {
+    setState(() => is_loading = true);
+    dynamic tmp_fd = await dio.post(
+      endpoint.FRONT_DESK_CHECK_IN,
+      data: {Front_Desk.ROOM_NUMBER: room_number},
+    );
+    if (tmp_fd == null) {
+      if (context.mounted) setState(() => is_loading = false);
+      return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    }
+
+    snackbar(ct: context, ms: "Success", cl: Colors.green);
+    if (context.mounted) Navigator.pop(context, true);
+  }
 
   final result = await showDialog<bool>(
     context: context,
@@ -27,15 +43,26 @@ Future<bool?> dialog_check_in({
                 Text(lead, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ],
             ),
-            content: const SizedBox(
-              width: 400,
-              child: Column(
-                spacing: 8,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Divider(height: 1, color: Colors.grey),
-                  Text("Please confirm the check-in."),
-                ],
+            content: Focus(
+              autofocus: true,
+              onKeyEvent: (node, event) {
+                if (is_loading) return KeyEventResult.ignored;
+                if (event is KeyDownEvent && (event.logicalKey == LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.numpadEnter)) {
+                  on_confirm(setState);
+                  return KeyEventResult.handled;
+                }
+                return KeyEventResult.ignored;
+              },
+              child: const SizedBox(
+                width: 400,
+                child: Column(
+                  spacing: 8,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Divider(height: 1, color: Colors.grey),
+                    Text("Please confirm the check-in."),
+                  ],
+                ),
               ),
             ),
             actions: [
@@ -49,20 +76,7 @@ Future<bool?> dialog_check_in({
                 label: const Text("Confirm"),
                 onPressed: is_loading
                     ? null
-                    : () async {
-                        setState(() => is_loading = true);
-                        dynamic tmp_fd = await dio.post(
-                          endpoint.FRONT_DESK_CHECK_IN,
-                          data: {Front_Desk.ROOM_NUMBER: room_number},
-                        );
-                        if (tmp_fd == null) {
-                          if (context.mounted) setState(() => is_loading = false);
-                          return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-                        }
-
-                        snackbar(ct: context, ms: "Success", cl: Colors.green);
-                        if (context.mounted) Navigator.pop(context, true);
-                      },
+                    : () => on_confirm(setState),
               ),
             ],
           );

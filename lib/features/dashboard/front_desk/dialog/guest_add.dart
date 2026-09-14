@@ -8,6 +8,24 @@ Future<String?> dialog_add_guest({
 }) async {
   String? full_name;
   String? phone_number;
+  final phone_focus = FocusNode();
+
+  Future<void> on_confirm() async {
+    if ((full_name ?? "").isEmpty && (phone_number ?? "").isEmpty) return;
+    final guest = await dio.post(
+      endpoint.GUEST_CREATE,
+      data: {Guest.FULL_NAME: full_name, Guest.PHONE_NUMBER: phone_number},
+    );
+    if (guest == null) return;
+    final guest_id = (guest.data as List?)?.firstOrNull?[Guest.ID] as String?;
+    if (guest_id == null) return;
+    final tmp = await dio.post(
+      endpoint.FRONT_DESK_UPDATE_GUEST_INFO,
+      data: {Front_Desk.ID: fd_id, Front_Desk.GUEST_ID: guest_id},
+    );
+    if (tmp == null) return;
+    if (context.mounted) Navigator.pop(context, "${full_name ?? ""} (${phone_number ?? ""})");
+  }
 
   return await showDialog<String?>(
     context: context,
@@ -39,7 +57,9 @@ Future<String?> dialog_add_guest({
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                     ),
+                    textInputAction: TextInputAction.next,
                     onChanged: (v) => full_name = v,
+                    onSubmitted: (_) => phone_focus.requestFocus(),
                   ),
                   const SizedBox(height: 8),
                   TextField(
@@ -48,7 +68,10 @@ Future<String?> dialog_add_guest({
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                     ),
+                    focusNode: phone_focus,
+                    textInputAction: TextInputAction.done,
                     onChanged: (v) => phone_number = v,
+                    onSubmitted: (_) => on_confirm(),
                   ),
                 ],
               ),
@@ -64,21 +87,8 @@ Future<String?> dialog_add_guest({
               OutlinedButton.icon(
                 icon: const Icon(Icons.check), //
                 label: const Text("Confirm"), //
-                onPressed: () async {
-                    if ((full_name ?? "").isEmpty && (phone_number ?? "").isEmpty) return;
-                    final guest = await dio.post(
-                      endpoint.GUEST_CREATE,
-                      data: {Guest.FULL_NAME: full_name, Guest.PHONE_NUMBER: phone_number},
-                    );
-                    if (guest == null) return;
-                    final guest_id = (guest.data as List?)?.firstOrNull?[Guest.ID] as String?;
-                    if (guest_id == null) return;
-                    final tmp = await dio.post(
-                      endpoint.FRONT_DESK_UPDATE_GUEST_INFO,
-                      data: {Front_Desk.ID: fd_id, Front_Desk.GUEST_ID: guest_id},
-                    );
-                    if (tmp == null) return;
-                    if (context.mounted) Navigator.pop(context, "${full_name ?? ""} (${phone_number ?? ""})");
+onPressed: () async {
+                    await on_confirm();
                   },
               ),
             ],

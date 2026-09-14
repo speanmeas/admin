@@ -1,6 +1,5 @@
 import "dart:async";
 
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
@@ -895,7 +894,17 @@ class _Main_State extends State<Main_> {
   void on_guest_update(PlutoColumnRendererContext rc) async {
     final fd_id = rc.row.cells["_id"]?.value;
     if (fd_id == null) return;
-    final name_phone = await dialog_update_guest(context: context, fd_id: fd_id);
+    Front_Desk? fd = data.where((x) => x.id == fd_id).firstOrNull;
+    if (fd == null) return;
+    final guest = fd.guest_id;
+    if (guest is! Guest_Show) return;
+    final name_phone = await dialog_update_guest(
+      context: context, //
+      fd_id: fd_id, //
+      guest_id: guest.id ?? "", //
+      current_name: guest.full_name, //
+      current_phone: guest.phone_number, //
+    );
     if (name_phone == null) return await on_load_front_desk();
     state_manager.changeCellValue(rc.cell, name_phone, force: true, callOnChangedEvent: false);
   }
