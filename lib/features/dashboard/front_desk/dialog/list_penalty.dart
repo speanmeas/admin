@@ -2,22 +2,18 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ទិន្នន័យការបញ្ជាទំនិញ penalty (ប្រើក្នុង UI មុនពេលរក្សាទុក)
 class Order_Penalty {
-  final String? id; // * id នៃ Penalty_Item ដែលរក្សាទុករួច (null = ថ្មី)
+  final String? id;
   final Penalty_Show_2? penalty_id;
   int quantity;
   Order_Penalty({this.id, this.penalty_id, this.quantity = 1});
 
-  // * តម្លៃសរុប = price × quantity
   double get total => (penalty_id?.price ?? 0) * quantity;
 
   factory Order_Penalty.fromJson(Map<String, dynamic> m) => Order_Penalty(id: parse_string(m["_id"]), penalty_id: m["penalty_id"] == null ? null : Penalty_Show_2.fromJson(m["penalty_id"]), quantity: parse_int(m["quantity"]) ?? 1);
 }
 
-// * dialog ជ្រើសរើសទំនិញ penalty ជាមួយ stepper +/- ក្នុងមួយទំនិញ
-// * — Confirm ធ្វើ request តែប៉ុណ្ណោះ
-Future<bool?> dialog_select_penalty({
+Future<double?> dialog_select_penalty({
   required BuildContext context, //
   required List<Order_Penalty> list_order_penalty,
   required String? front_desk_id, //
@@ -25,9 +21,7 @@ Future<bool?> dialog_select_penalty({
   List<Penalty> list_penalty = [];
   List<Order_Penalty> orders = [...list_order_penalty];
   String search = "";
-  bool is_loading = false;
 
-  // * ទាញយកបញ្ជីទំនិញ penalty ពី server
   Future<void> load() async {
     final tmp = await dio.post(endpoint.PENALTY_READ, data: {});
     if (tmp == null) {
@@ -37,10 +31,8 @@ Future<bool?> dialog_select_penalty({
     list_penalty = (tmp.data as List<dynamic>? ?? []).map((e) => Penalty.fromJson(e)).toList();
   }
 
-  // * ពិនិត្យថាទំនិញបានជ្រើសរើសហើយឬនៅ (មាន order ដែល quantity > 0)
   bool is_selected(Penalty item) => orders.any((o) => o.penalty_id?.id == item.id);
 
-  // * ស្វែងរក order របស់ទំនិញ
   Order_Penalty? order_of(Penalty item) {
     for (var o in orders) {
       if (o.penalty_id?.id == item.id) return o;
@@ -48,28 +40,20 @@ Future<bool?> dialog_select_penalty({
     return null;
   }
 
-  // * ជ្រើស/មិនជ្រើសទំនិញមួយម្តងៗ
   void toggle(Penalty item, bool selected) {
     if (selected) {
       orders.removeWhere((o) => o.penalty_id?.id == item.id);
     } else {
-      orders.add(
-        Order_Penalty(
-          penalty_id: Penalty_Show_2(id: item.id, name: item.name, price: item.price),
-          quantity: 1,
-        ),
-      );
+      orders.add(Order_Penalty(penalty_id: Penalty_Show_2(id: item.id, name: item.name, price: item.price), quantity: 1));
     }
   }
 
-  // * បង្កើនចំនួន
   void increase(Penalty item) {
     var o = order_of(item);
     if (o == null) return;
     o.quantity++;
   }
 
-  // * បន្ថយចំនួន (ដល់ 0 ដកចេញពីបញ្ជី)
   void decrease(Penalty item) {
     var o = order_of(item);
     if (o == null) return;
@@ -79,58 +63,37 @@ Future<bool?> dialog_select_penalty({
     }
   }
 
-  // * តម្រងបញ្ជីទំនិញតាមឈ្មោះដែលស្វែងរក
   List<Penalty> list_show() {
     final q = search.trim().toLowerCase();
     if (q.isEmpty) return list_penalty;
     return list_penalty.where((item) => (item.name ?? "").toLowerCase().contains(q)).toList();
   }
 
-  // * រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
-  Future<bool?> on_confirm() async {
-    is_loading = true;
-
+  Future<double?> on_confirm() async {
     List<String> ids = [];
     for (var o in orders) {
       if (o.id != null) {
-        final tmp_up = await dio.post(
-          endpoint.PENALTY_ITEM_UPDATE,
-          data: {
-            Penalty_Item.ID: o.id, //
-            Penalty_Item.QUANTITY: o.quantity, //
-          },
-        );
+        final tmp_up = await dio.post(endpoint.PENALTY_ITEM_UPDATE, data: {Penalty_Item.ID: o.id, Penalty_Item.QUANTITY: o.quantity});
         if (tmp_up == null) return null;
         ids.add(o.id!);
         continue;
       }
-      final tmp_item = await dio.post(
-        endpoint.PENALTY_ITEM_CREATE,
-        data: {
-          Penalty_Item.PENALTY_ID: o.penalty_id?.id, //
-          Penalty_Item.QUANTITY: o.quantity, //
-        },
-      );
+      final tmp_item = await dio.post(endpoint.PENALTY_ITEM_CREATE, data: {Penalty_Item.PENALTY_ID: o.penalty_id?.id, Penalty_Item.QUANTITY: o.quantity});
       if (tmp_item == null) return null;
       ids.add(tmp_item.data[0][Penalty_Item.ID]);
     }
 
-    final tmp_fd = await dio.post(
-      endpoint.FRONT_DESK_UPDATE_PENALTY_ITEM,
-      data: {
-        Front_Desk.ID: front_desk_id, //
-        Front_Desk.PENALTY_ITEM_ID: ids, //
-      },
-    );
+    final tmp_fd = await dio.post(endpoint.FRONT_DESK_UPDATE_PENALTY_ITEM, data: {Front_Desk.ID: front_desk_id, Front_Desk.PENALTY_ITEM_ID: ids});
     if (tmp_fd == null) return null;
 
     snackbar(ct: context, ms: "Penalty Updated", cl: Colors.green);
-    return true;
+    return orders.fold<double>(0.0, (sum, o) => sum + o.total);
   }
 
   await load();
 
-  final result = await showDialog<bool>(
+  bool is_loading = false;
+  final result = await showDialog<double>(
     context: context,
     builder: (context) {
       return StatefulBuilder(
@@ -142,10 +105,7 @@ Future<bool?> dialog_select_penalty({
             title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  "Select Penalty", //
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+                const Text("Select Penalty", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ],
             ),
             content: SizedBox(
@@ -153,7 +113,6 @@ Future<bool?> dialog_select_penalty({
               height: 480,
               child: Column(
                 children: [
-                  // * ប្រអប់ស្វែងរកទំនិញតាមឈ្មោះ
                   Container(
                     padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
                     child: TextField(
@@ -173,14 +132,11 @@ Future<bool?> dialog_select_penalty({
 
                   const Divider(height: 1),
 
-                  // * បញ្ជីទំនិញដែលបានត្រង
                   Expanded(
                     child: list_penalty.isEmpty
                         ? const Center(child: CircularProgressIndicator())
                         : list_show().isEmpty
-                        ? const Center(
-                            child: Text("No item found", style: TextStyle(color: Colors.grey)),
-                          )
+                        ? const Center(child: Text("No item found", style: TextStyle(color: Colors.grey)))
                         : ListView.separated(
                             padding: const EdgeInsets.fromLTRB(8, 0, 16, 8),
                             itemCount: list_show().length,
@@ -204,59 +160,22 @@ Future<bool?> dialog_select_penalty({
                                   ),
                                   child: Row(
                                     children: [
-                                      // * សញ្ញាធីកបង្ហាញថាបានជ្រើសរើស
                                       Icon(selected ? Icons.check_circle : Icons.radio_button_unchecked, color: selected ? Colors.blue : Colors.grey),
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                              item.name ?? "", //
-                                              style: TextStyle(
-                                                fontSize: 16, //
-                                                fontWeight: FontWeight.bold,
-                                                color: selected ? Colors.blue : Colors.black87,
-                                              ),
-                                            ),
-                                            Text(
-                                              "$price \$ / item", //
-                                              style: const TextStyle(color: Colors.blue),
-                                            ),
+                                            Text(item.name ?? "", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: selected ? Colors.blue : Colors.black87)),
+                                            Text("$price \$ / item", style: const TextStyle(color: Colors.blue)),
                                           ],
                                         ),
                                       ),
 
-                                      // * stepper +/-
                                       if (selected) ...[
-                                        IconButton(
-                                          tooltip: "Decrease", //
-                                          icon: Icon(Icons.remove_circle_outline, color: Colors.red),
-                                          padding: EdgeInsets.zero,
-                                          constraints: const BoxConstraints(),
-                                          onPressed: () {
-                                            decrease(item);
-                                            setState(() {});
-                                          }, //
-                                        ),
-                                        SizedBox(
-                                          width: 32,
-                                          child: Text(
-                                            "$qty", //
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                        IconButton(
-                                          tooltip: "Increase", //
-                                          icon: const Icon(Icons.add_circle_outline, color: Colors.blue),
-                                          padding: EdgeInsets.zero,
-                                          constraints: const BoxConstraints(),
-                                          onPressed: () {
-                                            increase(item);
-                                            setState(() {});
-                                          }, //
-                                        ),
+                                        IconButton(tooltip: "Decrease", icon: Icon(Icons.remove_circle_outline, color: Colors.red), padding: EdgeInsets.zero, constraints: const BoxConstraints(), onPressed: () { decrease(item); setState(() {}); }),
+                                        SizedBox(width: 32, child: Text("$qty", textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                                        IconButton(tooltip: "Increase", icon: const Icon(Icons.add_circle_outline, color: Colors.blue), padding: EdgeInsets.zero, constraints: const BoxConstraints(), onPressed: () { increase(item); setState(() {}); }),
                                       ],
                                     ],
                                   ),
@@ -269,20 +188,20 @@ Future<bool?> dialog_select_penalty({
               ),
             ),
             actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-            actionsAlignment: MainAxisAlignment.center,
+            actionsAlignment: MainAxisAlignment.spaceAround,
             actions: [
               OutlinedButton.icon(
                 icon: const Icon(Icons.close, color: Colors.red), //
                 label: const Text("Cancel", style: TextStyle(color: Colors.red)),
-                onPressed: () => Navigator.pop(context, false),
+                onPressed: () => Navigator.pop(context),
               ),
-              // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស និងរក្សាទុកទំនិញ
               OutlinedButton.icon(
                 icon: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check), //
                 label: const Text("Confirm"), //
                 onPressed: is_loading
                     ? null
                     : () async {
+                        setState(() => is_loading = true);
                         final r = await on_confirm();
                         if (r == null) {
                           if (context.mounted) snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
@@ -301,7 +220,7 @@ Future<bool?> dialog_select_penalty({
 }
 
 class _Main_State extends State<Main_> {
-  bool? tmp;
+  double? tmp;
 
   @override
   Widget build(BuildContext context) {
@@ -310,11 +229,7 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_select_penalty(
-              context: context, //
-              list_order_penalty: [], //
-              front_desk_id: "test", //
-            );
+            final v = await dialog_select_penalty(context: context, list_order_penalty: [], front_desk_id: "test");
             if (v == null) return;
             tmp = v;
             setState(() {});

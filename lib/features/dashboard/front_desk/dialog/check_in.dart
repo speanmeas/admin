@@ -2,8 +2,6 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog បញ្ជាក់ការចូលស្នាក់ (Check-In) — រួមទាំង dio request និង snackbar
-// * — Confirm ធ្វើ request តែប៉ុណ្ណោះ (FRONT_DESK_CHECK_IN)
 Future<bool?> dialog_check_in({
   required BuildContext context, //
   required String lead,
@@ -24,25 +22,19 @@ Future<bool?> dialog_check_in({
             actionsPadding: const EdgeInsets.all(4),
             actionsAlignment: MainAxisAlignment.center,
             title: Row(
-              mainAxisAlignment: .center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  lead, //
-                  style: TextStyle(
-                    fontSize: 20, //
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(lead, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ],
             ),
-            content: SizedBox(
+            content: const SizedBox(
               width: 400,
               child: Column(
                 spacing: 8,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Divider(height: 1, color: Colors.grey),
-                  Text("Please confirm the check-in."), //
+                  Text("Please confirm the check-in."),
                 ],
               ),
             ),
@@ -58,13 +50,10 @@ Future<bool?> dialog_check_in({
                 onPressed: is_loading
                     ? null
                     : () async {
-                        // create the stay + flip room to Occupied (one call: check_in endpoint)
                         setState(() => is_loading = true);
                         dynamic tmp_fd = await dio.post(
                           endpoint.FRONT_DESK_CHECK_IN,
-                          data: {
-                            Front_Desk.ROOM_NUMBER: room_number, //
-                          },
+                          data: {Front_Desk.ROOM_NUMBER: room_number},
                         );
                         if (tmp_fd == null) {
                           if (context.mounted) setState(() => is_loading = false);
@@ -92,13 +81,8 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-final v = await dialog_check_in(
-              context: context, //
-              room_number: "201", //
-              lead: "Check-In Room 201", //
-            );
+            final v = await dialog_check_in(context: context, room_number: "201", lead: "Check-In Room 201");
             if (v == null) return;
-            // page = v;
             pprint(v);
             setState(() {});
           },

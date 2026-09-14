@@ -2,18 +2,13 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog សម្រាប់ជ្រើសរើសពេលចេញ (check_out_at) — កាលបរិច្ឆេទ និងពេលវេលា
-// * — ប្រើតែ CRUD endpoints ប៉ុណ្ណោះ (FRONT_DESK_UPDATE)
-Future<bool?> dialog_update_check_out_at({
+Future<String?> dialog_update_check_out_at({
   required BuildContext context, //
   required String fd_id, //
   DateTime? initial, //
 }) async {
-  // * កំណត់កាលបរិច្ឆេទដំបូង
-  DateTime init = DateTime.now();
-  if (initial is DateTime) init = initial;
+  DateTime init = initial ?? DateTime.now();
 
-  // * ជ្រើសរើសកាលបរិច្ឆេទ
   final DateTime? picked_date = await showDatePicker(
     context: context, //
     initialDate: init, //
@@ -22,8 +17,7 @@ Future<bool?> dialog_update_check_out_at({
   );
   if (picked_date == null) return null;
 
-  // * ជ្រើសរើសពេលវេលា
-  TimeOfDay initial_time = TimeOfDay(hour: 0, minute: 0);
+  TimeOfDay initial_time = TimeOfDay(hour: 12, minute: 0);
   if (initial is DateTime) initial_time = TimeOfDay.fromDateTime(initial);
   final TimeOfDay? picked_time = await showTimePicker(
     context: context, //
@@ -31,7 +25,6 @@ Future<bool?> dialog_update_check_out_at({
   );
   if (picked_time == null) return null;
 
-  // * ផ្សំកាលបរិច្ឆេទ និងពេលវេលា
   final v = DateTime(
     picked_date.year, //
     picked_date.month,
@@ -40,24 +33,11 @@ Future<bool?> dialog_update_check_out_at({
     picked_time.minute,
   );
 
-  final tmp = await dio.post(
-    endpoint.FRONT_DESK_UPDATE,
-    data: {
-      Front_Desk.ID: fd_id, //
-      Front_Desk.CHECK_OUT_AT: v.toIso8601String(), //
-    },
-  );
-  if (tmp == null) {
-    snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-    return null;
-  }
-
-  snackbar(ct: context, ms: "Updated", cl: Colors.green);
-  return true;
+  return v.toIso8601String();
 }
 
 class _Main_State extends State<Main_> {
-  bool? tmp;
+  String? tmp;
 
   @override
   Widget build(BuildContext context) {

@@ -2,8 +2,6 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog បញ្ជាក់ការសម្អាតបន្ទប់ (Clean) — រួមទាំង dio request និង snackbar
-// * — Confirm ធ្វើ request តែប៉ុណ្ណោះ (FRONT_DESK_CLEAN)
 Future<bool?> dialog_clean({
   required BuildContext context, //
   required String lead,
@@ -24,25 +22,19 @@ Future<bool?> dialog_clean({
             actionsPadding: const EdgeInsets.all(4),
             actionsAlignment: MainAxisAlignment.center,
             title: Row(
-              mainAxisAlignment: .center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  lead, //
-                  style: TextStyle(
-                    fontSize: 20, //
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(lead, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ],
             ),
-            content: SizedBox(
+            content: const SizedBox(
               width: 400,
               child: Column(
                 spacing: 8,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Divider(height: 1, color: Colors.grey),
-                  Text("Please confirm the clean.", style: TextStyle(fontSize: 16)), //
+                  Text("Please confirm the clean.", style: TextStyle(fontSize: 16)),
                 ],
               ),
             ),
@@ -58,20 +50,16 @@ Future<bool?> dialog_clean({
                 onPressed: is_loading
                     ? null
                     : () async {
-                        // stamp cleaned on the stay (endpoint auto-sets clean_at/by)
                         setState(() => is_loading = true);
                         dynamic tmp = await dio.post(
                           endpoint.FRONT_DESK_CLEAN,
-                          data: {
-                            Front_Desk.ROOM_NUMBER: room_number, //
-                          },
+                          data: {Front_Desk.ROOM_NUMBER: room_number},
                         );
                         if (tmp == null) {
                           if (context.mounted) setState(() => is_loading = false);
                           return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
                         }
 
-                        // room status auto-flips to Available + clears front_desk_id on the backend
                         snackbar(ct: context, ms: "Success", cl: Colors.green);
                         if (context.mounted) Navigator.pop(context, true);
                       },
@@ -93,13 +81,8 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_clean(
-              context: context, //
-              room_number: "201", //
-              lead: "Clean Room 201", //
-            );
+            final v = await dialog_clean(context: context, room_number: "201", lead: "Clean Room 201");
             if (v == null) return;
-            // page = v;
             pprint(v);
             setState(() {});
           },

@@ -3,14 +3,11 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog សម្រាប់ផ្លាស់ប្តូរបន្ទប់ (change room) — ស្វែងរក + ជ្រើសបន្ទប់ Available ដោយ typeahead
-// * — Confirm ធ្វើ request តែប៉ុណ្ណោះ (FRONT_DESK_CHANGE)
 Future<bool?> dialog_select_room({
   required BuildContext context, //
   required String lead, //
   required String front_desk_id, //
 }) async {
-  // * ទាញបន្ទប់ Available ពី server ដោយខ្លួនឯង
   dynamic tmp = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
   if (tmp == null) {
     snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
@@ -23,7 +20,6 @@ Future<bool?> dialog_select_room({
   bool is_loading = false;
   TextEditingController? room_ctrl;
 
-  // * ស្វែងរកបន្ទប់ដោយលេខបន្ទប់
   List<String> search(String q) {
     final query = q.trim().toLowerCase();
     final options = <String>[];
@@ -49,15 +45,9 @@ Future<bool?> dialog_select_room({
             actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
             actionsAlignment: MainAxisAlignment.center,
             title: Row(
-              mainAxisAlignment: .center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  lead, //
-                  style: TextStyle(
-                    fontSize: 20, //
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(lead, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ],
             ),
             content: SizedBox(
@@ -68,7 +58,6 @@ Future<bool?> dialog_select_room({
                   const Divider(height: 0, color: Colors.grey),
                   const SizedBox(height: 8),
 
-                  // * ស្វែងរក + ជ្រើសបន្ទប់ថ្មីដែល Available
                   TypeAheadField<String>(
                     animationDuration: Duration.zero, //
                     itemBuilder: (context, item) => ListTile(
@@ -124,10 +113,7 @@ Future<bool?> dialog_select_room({
                         setState(() => is_loading = true);
                         dynamic tmp_fd = await dio.post(
                           endpoint.FRONT_DESK_CHANGE,
-                          data: {
-                            Front_Desk.ID: front_desk_id, //
-                            Front_Desk.ROOM_NUMBER: new_room_number, //
-                          },
+                          data: {Front_Desk.ID: front_desk_id, Front_Desk.ROOM_NUMBER: new_room_number},
                         );
                         if (tmp_fd == null) {
                           if (context.mounted) setState(() => is_loading = false);
@@ -157,11 +143,7 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_select_room(
-              context: context, //
-              lead: "Change Room 201", //
-              front_desk_id: "111111111122222222223333", //
-            );
+            final v = await dialog_select_room(context: context, lead: "Change Room 201", front_desk_id: "111111111122222222223333");
             if (v == null) return;
             tmp = v;
             setState(() {});

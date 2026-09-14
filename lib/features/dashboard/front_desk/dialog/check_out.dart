@@ -2,8 +2,6 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog បញ្ជាក់ការចេញស្នាក់ (Check-Out) — រួមទាំង dio request និង snackbar
-// * — Confirm ធ្វើ request តែប៉ុណ្ណោះ (FRONT_DESK_CHECK_OUT)
 Future<bool?> dialog_check_out({
   required BuildContext context, //
   required String lead,
@@ -24,25 +22,19 @@ Future<bool?> dialog_check_out({
             actionsPadding: const EdgeInsets.all(4),
             actionsAlignment: MainAxisAlignment.center,
             title: Row(
-              mainAxisAlignment: .center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  lead, //
-                  style: TextStyle(
-                    fontSize: 20, //
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(lead, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ],
             ),
-            content: SizedBox(
+            content: const SizedBox(
               width: 400,
               child: Column(
                 spacing: 8,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Divider(height: 1, color: Colors.grey),
-                  Text("Please confirm the check-out.", style: TextStyle(fontSize: 16)), //
+                  Text("Please confirm the check-out.", style: TextStyle(fontSize: 16)),
                 ],
               ),
             ),
@@ -58,20 +50,16 @@ Future<bool?> dialog_check_out({
                 onPressed: is_loading
                     ? null
                     : () async {
-                        // stamp check-out on the stay (endpoint auto-sets check_out_at/by)
                         setState(() => is_loading = true);
                         dynamic tmp = await dio.post(
                           endpoint.FRONT_DESK_CHECK_OUT,
-                          data: {
-                            Front_Desk.ID: front_desk_id, //
-                          },
+                          data: {Front_Desk.ID: front_desk_id},
                         );
                         if (tmp == null) {
                           if (context.mounted) setState(() => is_loading = false);
                           return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
                         }
 
-                        // room status auto-flips to Dirty + clears front_desk_id on the backend
                         snackbar(ct: context, ms: "Success", cl: Colors.green);
                         if (context.mounted) Navigator.pop(context, true);
                       },
@@ -93,13 +81,8 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_check_out(
-              context: context, //
-              front_desk_id: "111111111122222222223333", //
-              lead: "Check-Out from Room 201", //
-            );
+            final v = await dialog_check_out(context: context, front_desk_id: "111111111122222222223333", lead: "Check-Out from Room 201");
             if (v == null) return;
-            // page = v;
             pprint(v);
             setState(() {});
           },

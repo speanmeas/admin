@@ -2,14 +2,11 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog បញ្ជាក់ការបន្ថែម Mini Bar (Walk-In) តែប៉ុណ្ណោះ
-// * — Confirm ធ្វើ request តែប៉ុណ្ណោះ (FRONT_DESK_WALK_IN)
 Future<bool?> dialog_add_mini_bar({
   required BuildContext context, //
 }) async {
   bool is_loading = false;
 
-  // * បង្ហាញ dialog បញ្ជាក់
   final saved = await showDialog<bool>(
     context: context,
     builder: (context) {
@@ -25,10 +22,7 @@ Future<bool?> dialog_add_mini_bar({
             title: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  "Mini Bar", //
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
+                Text("Mini Bar", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ],
             ),
             content: const SizedBox(
@@ -38,7 +32,7 @@ Future<bool?> dialog_add_mini_bar({
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Divider(height: 1, color: Colors.grey),
-                  Text("Add mini bar for walk-in?"), //
+                  Text("Add mini bar for walk-in?"),
                 ],
               ),
             ),
@@ -54,7 +48,6 @@ Future<bool?> dialog_add_mini_bar({
                 onPressed: is_loading
                     ? null
                     : () async {
-                        // * បើក (ឬបង្កើត) row Walk-In នៃថ្ងៃ shift នេះ
                         setState(() => is_loading = true);
                         final tmp_walk = await dio.post(endpoint.FRONT_DESK_WALK_IN);
                         if (tmp_walk == null) {
