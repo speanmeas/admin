@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-Future<String?> dialog_update_guest({
+Future<String?> dialog_guest_update({
   required BuildContext context, //
   required String fd_id, //
   required String guest_id, //
@@ -41,9 +41,7 @@ Future<String?> dialog_update_guest({
             contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
             title: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Update Guest", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              ],
+              children: [Text("Update Guest", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))],
             ),
             content: SizedBox(
               width: 400,
@@ -92,8 +90,8 @@ Future<String?> dialog_update_guest({
                 icon: const Icon(Icons.check), //
                 label: const Text("Confirm"), //
                 onPressed: () async {
-                    await on_confirm();
-                  },
+                  await on_confirm();
+                },
               ),
             ],
           );
@@ -113,7 +111,7 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_update_guest(context: context, fd_id: "test", guest_id: "test");
+            final v = await dialog_guest_update(context: context, fd_id: "test", guest_id: "test");
             if (v == null) return;
             tmp = v;
             setState(() {});

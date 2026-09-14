@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-Future<String?> dialog_select_check_out_datetime({
+Future<String?> dialog_check_out_at_select({
   required BuildContext context, //
   DateTime? initial, //
   DateTime? check_in_at, //
@@ -51,7 +51,7 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_select_check_out_datetime(context: context);
+            final v = await dialog_check_out_at_select(context: context);
             if (v == null) return;
             tmp = v;
             setState(() {});

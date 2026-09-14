@@ -3,7 +3,7 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-Future<String?> dialog_select_room({
+Future<String?> dialog_room_search({
   required BuildContext context, //
 }) async {
   dynamic tmp_r = await dio.post(
@@ -42,7 +42,6 @@ Future<String?> dialog_select_room({
               const Divider(height: 0, color: Colors.grey),
               const SizedBox(height: 8),
               TypeAheadField<String>(
-                animationDuration: Duration.zero, //
                 itemBuilder: (context, item) => ListTile(
                   title: Text(item),
                   leading: const Icon(Icons.meeting_room_outlined, color: Colors.blue),
@@ -105,7 +104,7 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_select_room(context: context);
+            final v = await dialog_room_search(context: context);
             if (v == null) return;
             tmp = v;
             setState(() {});

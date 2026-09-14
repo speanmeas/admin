@@ -16,7 +16,7 @@ class Order_Penalty {
 }
 
 // * dialog ជ្រើសរើសទំនិញ penalty ជាមួយ stepper +/- ក្នុងមួយទំនិញ
-Future<double?> dialog_select_penalty({
+Future<double?> dialog_penalty_select({
   required BuildContext context, //
   required List<Order_Penalty> list_order_penalty,
   required String? front_desk_id, //
@@ -308,7 +308,7 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_select_penalty(
+            final v = await dialog_penalty_select(
               context: context, //
               list_order_penalty: [], //
               front_desk_id: "test", //

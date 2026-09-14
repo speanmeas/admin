@@ -16,7 +16,7 @@ class Order_Mini_Bar {
 }
 
 // * dialog ជ្រើសរើសទំនិញ mini bar ជាមួយ stepper +/- ក្នុងមួយទំនិញ
-Future<double?> dialog_select_mini_bar({
+Future<double?> dialog_mini_bar_select({
   required BuildContext context, //
   required List<Order_Mini_Bar> list_order_mini_bar,
   required String? front_desk_id, //
@@ -310,7 +310,7 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_select_mini_bar(
+            final v = await dialog_mini_bar_select(
               context: context, //
               list_order_mini_bar: [], //
               front_desk_id: "test", //

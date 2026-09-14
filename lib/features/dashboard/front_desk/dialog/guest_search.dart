@@ -3,9 +3,9 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-Future<String?> dialog_search_guest({
+Future<String?> dialog_guest_search({
   required BuildContext context, //
-  required String? front_desk_id, //
+  required String fd_id, //
 }) async {
   List<dynamic> guests = [];
 
@@ -31,7 +31,10 @@ Future<String?> dialog_search_guest({
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Search Guest", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(
+              "Search Guest", //
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
           ],
         ),
         content: SizedBox(
@@ -42,13 +45,9 @@ Future<String?> dialog_search_guest({
               const Divider(height: 0, color: Colors.grey),
               const SizedBox(height: 8),
               TypeAheadField<String>(
-                animationDuration: Duration.zero, //
                 itemBuilder: (context, item) => ListTile(title: Text(item)),
                 suggestionsCallback: search,
                 builder: (context, controller, focusNode) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (!focusNode.hasFocus) focusNode.requestFocus();
-                  });
                   return TextField(
                     autofocus: true,
                     controller: controller,
@@ -64,7 +63,13 @@ Future<String?> dialog_search_guest({
                 onSelected: (v) async {
                   for (var e in guests) {
                     if ("${e[Guest.FULL_NAME] ?? ""} (${e[Guest.PHONE_NUMBER] ?? "N/A"})" == v) {
-                      final tmp = await dio.post(endpoint.FRONT_DESK_UPDATE_GUEST_INFO, data: {Front_Desk.ID: front_desk_id, Front_Desk.GUEST_ID: e[Guest.ID]});
+                      final tmp = await dio.post(
+                        endpoint.FRONT_DESK_UPDATE_GUEST_INFO,
+                        data: {
+                          Front_Desk.ID: fd_id, //
+                          Front_Desk.GUEST_ID: e[Guest.ID], //
+                        },
+                      );
                       if (tmp != null) Navigator.pop(context, v);
                       return;
                     }
@@ -80,15 +85,16 @@ Future<String?> dialog_search_guest({
 }
 
 class _Main_State extends State<Main_> {
-  String? tmp;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-          onPressed: () => dialog_search_guest(context: context, front_desk_id: "test"),
+          onPressed: () => dialog_guest_search(
+            context: context, //
+            fd_id: "",
+          ),
           child: const Text("Show"),
         ),
       ),

@@ -3,7 +3,7 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-Future<String?> dialog_select_check_out_by({
+Future<String?> dialog_check_out_by_search({
   required BuildContext context, //
   required String? fd_id, //
 }) async {
@@ -40,7 +40,6 @@ Future<String?> dialog_select_check_out_by({
               const Divider(height: 1, color: Colors.grey),
               const SizedBox(height: 8),
               TypeAheadField<String>(
-                animationDuration: Duration.zero, //
                 itemBuilder: (context, item) => ListTile(title: Text(item)),
                 suggestionsCallback: (q) {
                   final query = q.trim().toLowerCase();
@@ -110,7 +109,7 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_select_check_out_by(context: context, fd_id: "test");
+            final v = await dialog_check_out_by_search(context: context, fd_id: "test");
             if (v == null) return;
             tmp = v;
             setState(() {});

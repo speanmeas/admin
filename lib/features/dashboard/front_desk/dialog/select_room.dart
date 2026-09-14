@@ -59,7 +59,6 @@ Future<bool?> dialog_select_room({
                   const SizedBox(height: 8),
 
                   TypeAheadField<String>(
-                    animationDuration: Duration.zero, //
                     itemBuilder: (context, item) => ListTile(
                       title: Text(item),
                       leading: const Icon(Icons.meeting_room_outlined, color: Colors.blue),

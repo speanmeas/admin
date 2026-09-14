@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-Future<String?> dialog_add_guest({
+Future<String?> dialog_guest_add({
   required BuildContext context, //
   required String fd_id, //
 }) async {
@@ -109,7 +109,7 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_add_guest(context: context, fd_id: "test");
+            final v = await dialog_guest_add(context: context, fd_id: "test");
             if (v == null) return;
             tmp = v;
             setState(() {});

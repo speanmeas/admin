@@ -14,7 +14,7 @@ import "dialog/list_mini_bar.dart";
 import "dialog/list_penalty.dart";
 import "dialog/update_check_in_at.dart";
 import "dialog/update_check_out_at.dart";
-import "dialog/search_guest.dart";
+import "dialog/guest_search.dart";
 import "dialog/guest_add.dart";
 import "dialog/guest_update.dart";
 
@@ -190,7 +190,7 @@ class _Main_State extends State<Main_> {
         rows: [], //
         columns: [
           PlutoColumn(
-            field: "_id", //
+            field: Front_Desk.ID, //
             title: "ID",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
@@ -231,7 +231,7 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "room", //
+            field: Front_Desk.ROOM_NUMBER, //
             title: "បន្ទប់",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
@@ -252,85 +252,6 @@ class _Main_State extends State<Main_> {
                       padding: EdgeInsets.all(0),
                       constraints: BoxConstraints(),
                       onPressed: () => on_change_room(rc), //
-                    ),
-                ],
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "check_in_at", //
-            title: "ពេលចូល",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 160,
-            renderer: (rc) {
-              return Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
-
-                  if (!is_row_mini_bar(rc))
-                    IconButton(
-                      tooltip: "កែពេលចូល", //
-                      icon: Icon(Icons.calendar_month_outlined),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () => on_update_check_in_at(rc), //
-                    ),
-                ],
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "check_in_duration", //
-            title: "រយៈពេល",
-            type: PlutoColumnType.number(negative: false, format: "#,###"),
-            enableEditingMode: false,
-            width: 140,
-            renderer: (rc) {
-              int minutes = parse_int(rc.cell.value) ?? 0;
-              int day = minutes ~/ 1440;
-              int hour = (minutes % 1440) ~/ 60;
-              int minute = minutes % 60;
-              String text = "";
-              if (day > 0) text += "$day ថ្ងៃ ";
-              if (hour > 0) text += "$hour ម៉ោង ";
-              if (minute > 0 || text.isEmpty) text += "$minute នាទី";
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(text, overflow: TextOverflow.ellipsis),
-              );
-            },
-          ),
-
-          PlutoColumn(
-            field: "check_out_at", //
-            title: "ពេលចេញ",
-            enableEditingMode: false,
-            type: PlutoColumnType.text(),
-            width: 160,
-            renderer: (rc) {
-              return Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
-                  if (!is_row_mini_bar(rc) && rc.cell.value != null)
-                    IconButton(
-                      tooltip: "កែពេលចេញ", //
-                      icon: Icon(Icons.calendar_month_outlined),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () => on_update_check_out_at(rc), //
                     ),
                 ],
               );
@@ -372,14 +293,13 @@ class _Main_State extends State<Main_> {
                       child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
                     ),
                   ),
-                  if (has_guest_id)
-                    IconButton(
-                      tooltip: "Search Guest", //
-                      icon: Icon(Icons.search_outlined),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () => on_search_guest(rc), //
-                    ),
+                  IconButton(
+                    tooltip: "Search Guest", //
+                    icon: Icon(Icons.search_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () => on_search_guest(rc), //
+                  ),
                 ],
               );
             },
@@ -388,11 +308,11 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: Front_Desk.NUMBER_OF_GUEST, //
             title: "ចំនួន",
-            type: PlutoColumnType.select([]),
+            type: PlutoColumnType.number(),
             enableEditingMode: false,
             width: 70,
             renderer: (rc) {
-              double value = rc.cell.value is double ? rc.cell.value as double : 0.0;
+              double value = parse_double(rc.cell.value) ?? 0.0;
               return PopupMenuButton<double>(
                 menuPadding: const EdgeInsets.all(0),
                 shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
@@ -423,7 +343,86 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "room_price", //
+            field: Front_Desk.CHECK_IN_AT, //
+            title: "ពេលចូល",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 160,
+            renderer: (rc) {
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+
+                  if (!is_row_mini_bar(rc))
+                    IconButton(
+                      tooltip: "កែពេលចូល", //
+                      icon: Icon(Icons.calendar_month_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_update_check_in_at(rc), //
+                    ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: "duration", //
+            title: "រយៈពេល",
+            type: PlutoColumnType.number(negative: false, format: "#,###"),
+            enableEditingMode: false,
+            width: 140,
+            renderer: (rc) {
+              int minutes = parse_int(rc.cell.value) ?? 0;
+              int day = minutes ~/ 1440;
+              int hour = (minutes % 1440) ~/ 60;
+              int minute = minutes % 60;
+              String text = "";
+              if (day > 0) text += "$day ថ្ងៃ ";
+              if (hour > 0) text += "$hour ម៉ោង ";
+              if (minute > 0 || text.isEmpty) text += "$minute នាទី";
+              return Align(
+                alignment: Alignment.center, //
+                child: Text(text, overflow: TextOverflow.ellipsis),
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: Front_Desk.CHECK_OUT_AT, //
+            title: "ពេលចេញ",
+            enableEditingMode: false,
+            type: PlutoColumnType.text(),
+            width: 160,
+            renderer: (rc) {
+              return Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+                  if (!is_row_mini_bar(rc) && rc.cell.value != null)
+                    IconButton(
+                      tooltip: "កែពេលចេញ", //
+                      icon: Icon(Icons.calendar_month_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_update_check_out_at(rc), //
+                    ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
+            field: Front_Desk.ROOM_PRICE, //
             title: "ថ្លៃបន្ទប់",
             type: PlutoColumnType.number(negative: false, format: "#,##0.00"),
             width: 90,
@@ -437,7 +436,7 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "mini_bar_price", //
+            field: Front_Desk.MINI_BAR_PRICE, //
             title: "ថ្លៃមីនីបារ",
             type: PlutoColumnType.number(negative: false, format: "#,##0.00"),
             enableEditingMode: false,
@@ -467,7 +466,7 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "penalty_price", //
+            field: Front_Desk.PENALTY_PRICE, //
             title: "ថ្លៃពិន័យ",
             type: PlutoColumnType.number(negative: false, format: "#,##0.00"),
             enableEditingMode: false,
@@ -498,7 +497,7 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "pay_cash", //
+            field: Front_Desk.PAY_CASH, //
             title: "សាច់ប្រាក់",
             type: PlutoColumnType.number(format: "#,##0.00"),
             width: 90,
@@ -516,7 +515,7 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "pay_bank", //
+            field: Front_Desk.PAY_BANK, //
             title: "ធនាគារ",
             type: PlutoColumnType.number(format: "#,##0.00"),
             width: 90,
@@ -534,7 +533,7 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "pay_balance", //
+            field: Front_Desk.PAY_BALANCE, //
             title: "សមតុល្យ",
             type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
             enableEditingMode: is_admin,
@@ -552,7 +551,7 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "pay_note", //
+            field: Front_Desk.PAY_NOTE, //
             title: "ចំណាំ",
             type: PlutoColumnType.text(),
             width: 120,
@@ -579,7 +578,7 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "check_out_by", //
+            field: Front_Desk.CHECK_OUT_BY, //
             title: "ឲចេញដោយ",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
@@ -624,10 +623,41 @@ class _Main_State extends State<Main_> {
         ], //
         columnGroups: [
           PlutoColumnGroup(title: "", fields: ["index"]),
-          PlutoColumnGroup(title: "អតិថិជន", fields: [Front_Desk.GUEST_ID, Front_Desk.NUMBER_OF_GUEST]),
-          PlutoColumnGroup(title: "ការស្នាក់នៅ", fields: ["room", "check_in_duration", "check_in_at", "check_out_at"]),
-          PlutoColumnGroup(title: "ការបង់ប្រាក់", fields: ["room_price", "mini_bar_price", "penalty_price", "pay_cash", "pay_bank", "pay_balance", "pay_note"]),
-          PlutoColumnGroup(title: "ការត្រួតពិនិត្យ", fields: [Front_Desk.CHECK_IN_BY, "check_out_by"]),
+          PlutoColumnGroup(
+            title: "អតិថិជន",
+            fields: [
+              Front_Desk.GUEST_ID, //
+              Front_Desk.NUMBER_OF_GUEST,
+            ],
+          ),
+          PlutoColumnGroup(
+            title: "ការស្នាក់នៅ",
+            fields: [
+              Front_Desk.ROOM_NUMBER, //
+              Front_Desk.CHECK_IN_AT, //
+              Front_Desk.CHECK_OUT_AT,
+              "duration", //
+            ],
+          ),
+          PlutoColumnGroup(
+            title: "ការបង់ប្រាក់",
+            fields: [
+              Front_Desk.ROOM_PRICE, //
+              Front_Desk.MINI_BAR_PRICE, //
+              Front_Desk.PENALTY_PRICE, //
+              Front_Desk.PAY_CASH, //
+              Front_Desk.PAY_BANK, //
+              Front_Desk.PAY_BALANCE, //
+              Front_Desk.PAY_NOTE, //
+            ],
+          ),
+          PlutoColumnGroup(
+            title: "ការត្រួតពិនិត្យ",
+            fields: [
+              Front_Desk.CHECK_IN_BY, //
+              Front_Desk.CHECK_OUT_BY,
+            ],
+          ),
         ],
         configuration: PlutoGridConfiguration(
           scrollbar: PlutoGridScrollbarConfig(scrollbarThickness: 12, scrollbarThicknessWhileDragging: 12),
@@ -740,23 +770,22 @@ class _Main_State extends State<Main_> {
             cells: {
               for (var c in list_column_pluto) //
                 c.field: (() {
-                  if (c.field == "_id") return PlutoCell(value: fd.id ?? "");
                   if (c.field == "index") return PlutoCell(value: i + 1);
-                  if (c.field == "room") return PlutoCell(value: fd.room_number ?? "");
+                  if (c.field == Front_Desk.ID) return PlutoCell(value: fd.id ?? "");
+                  if (c.field == Front_Desk.ROOM_NUMBER) return PlutoCell(value: fd.room_number ?? "");
                   if (c.field == Front_Desk.GUEST_ID) return PlutoCell(value: fd.guest_id == null ? "" : "${fd.guest_id!.full_name ?? "N/A"} (${fd.guest_id!.phone_number ?? "N/A"})");
                   if (c.field == Front_Desk.NUMBER_OF_GUEST) return PlutoCell(value: fd.number_of_guest ?? 0);
-                  if (c.field == "check_in_at") return PlutoCell(value: fd.check_in_at);
-                  if (c.field == "check_in_duration") return PlutoCell(value: check_in_duration(fd));
-                  if (c.field == "check_out_at") return PlutoCell(value: fd.check_out_at);
-                  if (c.field == "room_price") return PlutoCell(value: fd.room_price);
-                  if (c.field == "mini_bar_price") return PlutoCell(value: fd.mini_bar_price);
-                  if (c.field == "penalty_price") return PlutoCell(value: fd.penalty_price);
-                  if (c.field == "pay_cash") return PlutoCell(value: fd.pay_cash);
-                  if (c.field == "pay_bank") return PlutoCell(value: fd.pay_bank);
-                  if (c.field == "pay_balance") return PlutoCell(value: fd.pay_balance);
-                  if (c.field == "pay_note") return PlutoCell(value: fd.pay_note ?? "");
-                  if (c.field == "check_in_by") return PlutoCell(value: fd.check_in_by is User_Show ? (fd.check_in_by as User_Show).full_name : (fd.check_in_by ?? ""));
-                  if (c.field == "check_out_by") return PlutoCell(value: fd.check_out_by is User_Show ? (fd.check_out_by as User_Show).full_name : (fd.check_out_by ?? ""));
+                  if (c.field == Front_Desk.CHECK_IN_AT) return PlutoCell(value: fd.check_in_at);
+                  if (c.field == Front_Desk.CHECK_OUT_AT) return PlutoCell(value: fd.check_out_at);
+                  if (c.field == Front_Desk.ROOM_PRICE) return PlutoCell(value: fd.room_price);
+                  if (c.field == Front_Desk.MINI_BAR_PRICE) return PlutoCell(value: fd.mini_bar_price);
+                  if (c.field == Front_Desk.PENALTY_PRICE) return PlutoCell(value: fd.penalty_price);
+                  if (c.field == Front_Desk.PAY_CASH) return PlutoCell(value: fd.pay_cash);
+                  if (c.field == Front_Desk.PAY_BANK) return PlutoCell(value: fd.pay_bank);
+                  if (c.field == Front_Desk.PAY_BALANCE) return PlutoCell(value: fd.pay_balance);
+                  if (c.field == Front_Desk.PAY_NOTE) return PlutoCell(value: fd.pay_note ?? "");
+                  if (c.field == Front_Desk.CHECK_IN_BY) return PlutoCell(value: fd.check_in_by is User_Show ? (fd.check_in_by as User_Show).full_name : (fd.check_in_by ?? ""));
+                  if (c.field == Front_Desk.CHECK_OUT_BY) return PlutoCell(value: fd.check_out_by is User_Show ? (fd.check_out_by as User_Show).full_name : (fd.check_out_by ?? ""));
 
                   return PlutoCell(value: "");
                 })(),
@@ -784,7 +813,7 @@ class _Main_State extends State<Main_> {
 
   bool _is_mini_bar_room(String? number) {
     String n = (number ?? "").toLowerCase();
-    return n == "walk-in" || n == "mini bar";
+    return n == "walk-in";
   }
 
   bool is_walk_in_room(dynamic r) => _is_mini_bar_room(r[Room.NUMBER]?.toString());
@@ -792,11 +821,11 @@ class _Main_State extends State<Main_> {
   // * ធ្វើឲ្យ duration ក្នុងតារាងថ្មីតាមពេលបច្ចុប្បន្ន
   void on_refresh_duration() {
     for (var row in state_manager.rows) {
-      final in_at = row.cells["check_in_at"]?.value as DateTime?;
-      final out_at = row.cells["check_out_at"]?.value as DateTime?;
-      final room = row.cells["room"]?.value as String? ?? "";
+      final in_at = row.cells[Front_Desk.CHECK_IN_AT]?.value as DateTime?;
+      final out_at = row.cells[Front_Desk.CHECK_OUT_AT]?.value as DateTime?;
+      final room = row.cells[Front_Desk.ROOM_NUMBER]?.value as String? ?? "";
       state_manager.changeCellValue(
-        row.cells["check_in_duration"]!, //
+        row.cells["duration"]!, //
         check_in_duration_raw(in_at, out_at, room.toLowerCase() == "walk-in"),
         force: true,
         callOnChangedEvent: false,
@@ -832,7 +861,7 @@ class _Main_State extends State<Main_> {
   }
 
   void on_updated(PlutoGridOnChangedEvent e) {
-    final fd_id = e.row.cells["_id"]?.value;
+    final fd_id = e.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
 
     bool is_walkin_row = false;
@@ -845,22 +874,22 @@ class _Main_State extends State<Main_> {
       }
     }
 
-    if (e.column.field == "room_price") {
+    if (e.column.field == Front_Desk.ROOM_PRICE) {
       do_update_room_price(fd_id, num.tryParse(e.value?.toString() ?? "")?.toDouble());
-    } else if (e.column.field == "pay_cash" || e.column.field == "pay_bank" || e.column.field == "pay_note") {
+    } else if (e.column.field == Front_Desk.PAY_CASH || e.column.field == Front_Desk.PAY_BANK || e.column.field == Front_Desk.PAY_NOTE) {
       final key = switch (e.column.field) {
-        "pay_cash" => Front_Desk.PAY_CASH,
-        "pay_bank" => Front_Desk.PAY_BANK,
+        Front_Desk.PAY_CASH => Front_Desk.PAY_CASH,
+        Front_Desk.PAY_BANK => Front_Desk.PAY_BANK,
         _ => Front_Desk.PAY_NOTE,
       };
-      final value = e.column.field == "pay_note" ? e.value?.toString() : num.tryParse(e.value?.toString() ?? "")?.toDouble();
+      final value = e.column.field == Front_Desk.PAY_NOTE ? e.value?.toString() : num.tryParse(e.value?.toString() ?? "")?.toDouble();
       final ep = is_walkin_row ? endpoint.FRONT_DESK_UPDATE_WALKIN : endpoint.FRONT_DESK_UPDATE_PAYMENT;
       do_update_payment(fd_id, key, value, ep);
-    } else if (e.column.field == "pay_balance" && is_admin) {
+    } else if (e.column.field == Front_Desk.PAY_BALANCE && is_admin) {
       do_update_payment(fd_id, Front_Desk.PAY_BALANCE, num.tryParse(e.value?.toString() ?? "")?.toDouble(), endpoint.FRONT_DESK_UPDATE_PAYMENT);
-    } else if (e.column.field == "mini_bar_price") {
+    } else if (e.column.field == Front_Desk.MINI_BAR_PRICE) {
       do_update_mini_bar(fd_id);
-    } else if (e.column.field == "penalty_price") {
+    } else if (e.column.field == Front_Desk.PENALTY_PRICE) {
       do_update_penalty(fd_id);
     }
   }
@@ -876,44 +905,73 @@ class _Main_State extends State<Main_> {
   }
 
   void on_add_guest(PlutoColumnRendererContext rc) async {
-    final fd_id = rc.row.cells["_id"]?.value;
+    final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
-    final name_phone = await dialog_add_guest(context: context, fd_id: fd_id);
+    final name_phone = await dialog_guest_add(context: context, fd_id: fd_id);
     if (name_phone == null) return await on_load_front_desk();
     state_manager.changeCellValue(rc.cell, name_phone, force: true, callOnChangedEvent: false);
   }
 
   void on_search_guest(PlutoColumnRendererContext rc) async {
-    final fd_id = rc.row.cells["_id"]?.value;
+    final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
-    final name_phone = await dialog_search_guest(context: context, front_desk_id: fd_id);
+    final name_phone = await dialog_guest_search(context: context, fd_id: fd_id);
     if (name_phone == null) return await on_load_front_desk();
     state_manager.changeCellValue(rc.cell, name_phone, force: true, callOnChangedEvent: false);
   }
 
   void on_guest_update(PlutoColumnRendererContext rc) async {
-    final fd_id = rc.row.cells["_id"]?.value;
+    final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
-    Front_Desk? fd = data.where((x) => x.id == fd_id).firstOrNull;
-    if (fd == null) return;
-    final guest = fd.guest_id;
-    if (guest is! Guest_Show) return;
-    final name_phone = await dialog_update_guest(
+    final fd = data.where((x) => x.id == fd_id).firstOrNull;
+    final guest_id = (fd?.guest_id is Guest_Show) ? (fd!.guest_id as Guest_Show).id ?? "" : "";
+
+    String cell_value = rc.cell.value?.toString() ?? "";
+    String? current_name;
+    String? current_phone;
+
+    if (cell_value.contains("(") && cell_value.endsWith(")")) {
+      int idx = cell_value.lastIndexOf("(");
+      current_name = cell_value.substring(0, idx).trim();
+      current_phone = cell_value.substring(idx + 1, cell_value.length - 1).trim();
+    } else {
+      current_name = cell_value.trim();
+    }
+
+    if (current_name == "N/A") current_name = "";
+    if (current_phone == "N/A") current_phone = "";
+
+    final name_phone = await dialog_guest_update(
       context: context, //
       fd_id: fd_id, //
-      guest_id: guest.id ?? "", //
-      current_name: guest.full_name, //
-      current_phone: guest.phone_number, //
+      guest_id: guest_id, //
+      current_name: current_name, //
+      current_phone: current_phone, //
     );
     if (name_phone == null) return await on_load_front_desk();
     state_manager.changeCellValue(rc.cell, name_phone, force: true, callOnChangedEvent: false);
   }
 
   void on_update_number_of_guest(PlutoColumnRendererContext rc, double v) {
-    final fd_id = rc.row.cells["_id"]?.value;
+    final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
-    state_manager.changeCellValue(rc.cell, v, force: true, callOnChangedEvent: false);
-    do_update(fd_id, Front_Desk.NUMBER_OF_GUEST, v);
+    do_update_number_of_guest(fd_id, v);
+  }
+
+  Future<void> do_update_number_of_guest(String? fd_id, double v) async {
+    final tmp = await dio.post(
+      endpoint.FRONT_DESK_UPDATE,
+      data: {
+        Front_Desk.ID: fd_id, //
+        Front_Desk.NUMBER_OF_GUEST: v.toInt(),
+      },
+    );
+    if (tmp == null) {
+      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      return;
+    }
+    snackbar(ct: context, ms: "Updated", cl: Colors.green);
+    await on_load_front_desk();
   }
 
   Future<void> on_fetch_front_desk() async {
@@ -934,7 +992,7 @@ class _Main_State extends State<Main_> {
   Future<void> on_refresh_balanced() async {
     await on_fetch_front_desk();
     for (var row in state_manager.rows) {
-      final id = row.cells["_id"]?.value;
+      final id = row.cells[Front_Desk.ID]?.value;
       Front_Desk? fd;
       for (var d in data) {
         if (d.id == id) {
@@ -944,7 +1002,7 @@ class _Main_State extends State<Main_> {
       }
       if (fd == null) continue;
       state_manager.changeCellValue(
-        row.cells["pay_balance"]!, //
+        row.cells[Front_Desk.PAY_BALANCE]!, //
         fd.pay_balance ?? 0.0,
         force: true,
         callOnChangedEvent: false,
@@ -996,7 +1054,7 @@ class _Main_State extends State<Main_> {
 
   Future<void> on_update_check_in_at(PlutoColumnRendererContext rc) async {
     DateTime? dt = rc.cell.value is DateTime ? rc.cell.value as DateTime : null;
-    final id = rc.row.cells["_id"]?.value;
+    final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
     final v = await dialog_update_check_in_at(context: context, fd_id: id, initial: dt);
     if (v == null) return;
@@ -1007,7 +1065,7 @@ class _Main_State extends State<Main_> {
 
   Future<void> on_update_check_out_at(PlutoColumnRendererContext rc) async {
     DateTime? dt = rc.cell.value is DateTime ? rc.cell.value as DateTime : null;
-    final id = rc.row.cells["_id"]?.value;
+    final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
     final v = await dialog_update_check_out_at(context: context, fd_id: id, initial: dt);
     if (v == null) return;
@@ -1073,7 +1131,7 @@ class _Main_State extends State<Main_> {
     await on_load_front_desk();
   }
 
-  String? row_stay_id(PlutoColumnRendererContext rc) => rc.row.cells["_id"]?.value;
+  String? row_stay_id(PlutoColumnRendererContext rc) => rc.row.cells[Front_Desk.ID]?.value;
 
   Front_Desk? row_stay(PlutoColumnRendererContext rc) {
     String? fd_id = row_stay_id(rc);
@@ -1088,7 +1146,7 @@ class _Main_State extends State<Main_> {
   }
 
   Future<void> on_change_room(PlutoColumnRendererContext rc) async {
-    String? fd_id = rc.row.cells["_id"]?.value;
+    String? fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
     var v = await dialog_select_room(
       context: context, //
@@ -1117,7 +1175,7 @@ class _Main_State extends State<Main_> {
     );
     if (price == null) return;
 
-    state_manager.changeCellValue(rc.row.cells["penalty_price"]!, price, force: true, callOnChangedEvent: false);
+    state_manager.changeCellValue(rc.row.cells[Front_Desk.PENALTY_PRICE]!, price, force: true, callOnChangedEvent: false);
     on_refresh_balanced();
   }
 
@@ -1140,7 +1198,7 @@ class _Main_State extends State<Main_> {
     );
     if (price == null) return;
 
-    state_manager.changeCellValue(rc.row.cells["mini_bar_price"]!, price, force: true, callOnChangedEvent: false);
+    state_manager.changeCellValue(rc.row.cells[Front_Desk.MINI_BAR_PRICE]!, price, force: true, callOnChangedEvent: false);
     on_refresh_balanced();
   }
 

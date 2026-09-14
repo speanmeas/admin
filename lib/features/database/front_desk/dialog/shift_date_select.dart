@@ -4,7 +4,7 @@ import "package:speanmeas/core/utility/all.dart";
 
 // * បង្ហាញ dialog ជ្រើសរើសកាលបរិច្ឆេទតែប៉ុណ្ណោះ (yyyy-MM-dd) — ដូច report
 // * — ប្រើតែ CRUD endpoints ប៉ុណ្ណោះ (FRONT_DESK_UPDATE)
-Future<bool?> dialog_select_shift_date({
+Future<bool?> dialog_shift_date_select({
   required BuildContext context, //
   required String? front_desk_id, //
   DateTime? initial, //
@@ -45,7 +45,7 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_select_shift_date(context: context, front_desk_id: "test");
+            final v = await dialog_shift_date_select(context: context, front_desk_id: "test");
             if (v == null) return;
             tmp = v;
             setState(() {});
@@ -73,4 +73,3 @@ void main() {
     ),
   );
 }
-

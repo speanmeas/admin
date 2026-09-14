@@ -8,6 +8,7 @@ import "package:speanmeas/core/utility/all.dart";
 
 import "dialog/guest_add.dart";
 import "dialog/guest_search.dart";
+import "dialog/guest_update.dart";
 import "dialog/check_in_by_search.dart";
 import "dialog/check_in_at_select.dart";
 import "dialog/check_out_by_search.dart";
@@ -228,16 +229,28 @@ class _Main_State extends State<Main_> {
             enableEditingMode: false,
             width: 200,
             renderer: (rc) {
+              final guest_cell_value = rc.cell.value;
+              final no_guest_id = guest_cell_value == null || (guest_cell_value is String && guest_cell_value.isEmpty);
+              final has_guest_id = !no_guest_id;
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  IconButton(
-                    tooltip: "Add Guest", //
-                    icon: Icon(Icons.person_add_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_add_guest(rc),
-                  ),
+                  if (no_guest_id)
+                    IconButton(
+                      tooltip: "Add Guest", //
+                      icon: Icon(Icons.person_add_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_add_guest(rc),
+                    ),
+                  if (has_guest_id)
+                    IconButton(
+                      tooltip: "Update Guest", //
+                      icon: Icon(Icons.edit_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_guest_update(rc),
+                    ),
                   Expanded(
                     child: Align(
                       alignment: Alignment.center, //
@@ -259,11 +272,11 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: Front_Desk.NUMBER_OF_GUEST, //
             title: "ចំនួន",
-            type: PlutoColumnType.select([]),
+            type: PlutoColumnType.number(),
             enableEditingMode: false,
             width: 70,
             renderer: (rc) {
-              double value = rc.cell.value is double ? rc.cell.value as double : 0.0;
+              double value = parse_double(rc.cell.value) ?? 0.0;
               return PopupMenuButton<double>(
                 menuPadding: const EdgeInsets.all(0),
                 shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
@@ -945,7 +958,7 @@ class _Main_State extends State<Main_> {
     final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
 
-    final v = await dialog_select_check_in_datetime(context: context, initial: dt);
+    final v = await dialog_check_in_at_select(context: context, initial: dt);
     if (v == null) return;
 
     state_manager.changeCellValue(rc.cell, DateTime.tryParse(v), force: true, callOnChangedEvent: false);
@@ -960,7 +973,7 @@ class _Main_State extends State<Main_> {
     if (id == null) return;
     final check_in = rc.row.cells[Front_Desk.CHECK_IN_AT]?.value;
 
-    final v = await dialog_select_check_out_datetime(context: context, initial: dt, check_in_at: check_in);
+    final v = await dialog_check_out_at_select(context: context, initial: dt, check_in_at: check_in);
     if (v == null) return;
 
     state_manager.changeCellValue(rc.cell, DateTime.tryParse(v), force: true, callOnChangedEvent: false);
@@ -974,7 +987,7 @@ class _Main_State extends State<Main_> {
     final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
 
-    final v = await dialog_select_shift_date(context: context, front_desk_id: id, initial: dt);
+    final v = await dialog_shift_date_select(context: context, front_desk_id: id, initial: dt);
     if (v == null) return;
     await on_load_page(current_page);
   }
@@ -982,7 +995,7 @@ class _Main_State extends State<Main_> {
   void on_select_check_in_by(PlutoColumnRendererContext rc) async {
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
-    final full_name = await dialog_select_check_in_by(context: context, front_desk_id: fd_id);
+    final full_name = await dialog_check_in_by_search(context: context, front_desk_id: fd_id);
     if (full_name == null) return;
     state_manager.changeCellValue(rc.cell, full_name, force: true, callOnChangedEvent: false);
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
@@ -991,7 +1004,7 @@ class _Main_State extends State<Main_> {
   void on_select_check_out_by(PlutoColumnRendererContext rc) async {
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
-    final full_name = await dialog_select_check_out_by(context: context, fd_id: fd_id);
+    final full_name = await dialog_check_out_by_search(context: context, fd_id: fd_id);
     if (full_name == null) return;
     state_manager.changeCellValue(rc.cell, full_name, force: true, callOnChangedEvent: false);
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
@@ -1008,7 +1021,7 @@ class _Main_State extends State<Main_> {
         if (it is Mini_Bar_Item) Order_Mini_Bar.fromJson(it.toJson()),
     ];
 
-    final price = await dialog_select_mini_bar(
+    final price = await dialog_mini_bar_select(
       context: context, //
       list_order_mini_bar: orders, //
       front_desk_id: fd_id, //
@@ -1031,7 +1044,7 @@ class _Main_State extends State<Main_> {
         if (it is Penalty_Item) Order_Penalty.fromJson(it.toJson()),
     ];
 
-    final price = await dialog_select_penalty(
+    final price = await dialog_penalty_select(
       context: context, //
       list_order_penalty: orders, //
       front_desk_id: fd_id, //
@@ -1053,7 +1066,7 @@ class _Main_State extends State<Main_> {
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
 
-    final room_number = await dialog_select_room(context: context);
+    final room_number = await dialog_room_search(context: context);
     if (room_number == null) return;
 
     state_manager.changeCellValue(rc.cell, room_number, force: true, callOnChangedEvent: false);
@@ -1083,7 +1096,7 @@ class _Main_State extends State<Main_> {
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
 
-    final name_phone = await dialog_search_guest(context: context, fd_id: fd_id);
+    final name_phone = await dialog_guest_search(context: context, fd_id: fd_id);
     if (name_phone == null) return await on_reload();
 
     state_manager.changeCellValue(rc.cell, name_phone, force: true, callOnChangedEvent: false);
@@ -1092,9 +1105,41 @@ class _Main_State extends State<Main_> {
   Future<void> on_add_guest(PlutoColumnRendererContext rc) async {
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
-    final name_phone = await dialog_add_guest(context: context, fd_id: fd_id);
+    final name_phone = await dialog_guest_add(context: context, fd_id: fd_id);
     if (name_phone == null) return await on_reload();
 
+    state_manager.changeCellValue(rc.cell, name_phone, force: true, callOnChangedEvent: false);
+  }
+
+  void on_guest_update(PlutoColumnRendererContext rc) async {
+    final fd_id = rc.row.cells[Front_Desk.ID]?.value;
+    if (fd_id == null) return;
+    final fd = data.where((x) => x.id == fd_id).firstOrNull;
+    final guest_id = (fd?.guest_id is Guest_Show) ? (fd!.guest_id as Guest_Show).id ?? "" : "";
+
+    String cell_value = rc.cell.value?.toString() ?? "";
+    String? current_name;
+    String? current_phone;
+
+    if (cell_value.contains("(") && cell_value.endsWith(")")) {
+      int idx = cell_value.lastIndexOf("(");
+      current_name = cell_value.substring(0, idx).trim();
+      current_phone = cell_value.substring(idx + 1, cell_value.length - 1).trim();
+    } else {
+      current_name = cell_value.trim();
+    }
+
+    if (current_name == "N/A") current_name = "";
+    if (current_phone == "N/A") current_phone = "";
+
+    final name_phone = await dialog_guest_update(
+      context: context, //
+      fd_id: fd_id, //
+      guest_id: guest_id, //
+      current_name: current_name, //
+      current_phone: current_phone, //
+    );
+    if (name_phone == null) return await on_reload();
     state_manager.changeCellValue(rc.cell, name_phone, force: true, callOnChangedEvent: false);
   }
 
@@ -1106,10 +1151,10 @@ class _Main_State extends State<Main_> {
         Front_Desk.GUEST_ID: guest_id, //
       },
     );
-    if (tmp == null) {
-      await on_reload();
-      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-    }
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+
+    snackbar(ct: context, ms: "Updated", cl: Colors.green);
+    on_reload();
   }
 
   bool is_row_mini_bar(PlutoColumnRendererContext rc) {
@@ -1197,6 +1242,7 @@ class _Main_State extends State<Main_> {
 
   Future<void> on_previous_day() async {
     current_page = current_page + 1;
+    setState(() {});
     await on_load_page(current_page);
   }
 
@@ -1217,6 +1263,7 @@ class _Main_State extends State<Main_> {
   Future<void> on_next_day() async {
     if (current_page == 1) return;
     current_page = current_page - 1;
+    setState(() {});
     await on_load_page(current_page);
   }
 
