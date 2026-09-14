@@ -326,6 +326,7 @@ class _Main_State extends State<Main_> {
       row.cells[Demo_3_2.ID]!.value = created_id;
       state_manager.notifyListeners();
     }
+    total_row++;
     snackbar(ct: context, ms: "Created", cl: Colors.green);
   }
 
@@ -345,6 +346,7 @@ class _Main_State extends State<Main_> {
       snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
       return;
     }
+    if (total_row > 0) total_row--;
     snackbar(ct: context, ms: "Deleted", cl: Colors.green);
   }
 

@@ -296,8 +296,10 @@ class _Main_State extends State<Main_> {
                 if (c.field == Demo_3_1.LIST_DEMO_3_2_ID) {
                   final parts = <String>[];
                   for (final e in (d.list_demo_3_2_id ?? [])) {
-                    if (e is Demo_3_2) parts.add(e.text ?? "");
-                    else if (e is Map) parts.add(e["text"]?.toString() ?? "");
+                    if (e is Demo_3_2)
+                      parts.add(e.text ?? "");
+                    else if (e is Map)
+                      parts.add(e["text"]?.toString() ?? "");
                   }
                   return PlutoCell(value: parts.join(", "));
                 }
@@ -348,6 +350,7 @@ class _Main_State extends State<Main_> {
       row.cells[Demo_3_1.ID]!.value = created_id;
       state_manager.notifyListeners();
     }
+    total_row++;
     snackbar(ct: context, ms: "Created", cl: Colors.green);
   }
 
@@ -366,6 +369,7 @@ class _Main_State extends State<Main_> {
     }
     state_manager.removeRows([rc.row]);
     re_index();
+    if (total_row > 0) total_row--;
     snackbar(ct: context, ms: "Deleted", cl: Colors.green);
   }
 
