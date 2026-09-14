@@ -908,7 +908,7 @@ class _Main_State extends State<Main_> {
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
     final name_phone = await dialog_guest_add(context: context, fd_id: fd_id);
-    if (name_phone == null) return await on_load_front_desk();
+    if (name_phone == null) return;
     state_manager.changeCellValue(rc.cell, name_phone, force: true, callOnChangedEvent: false);
   }
 
@@ -916,7 +916,7 @@ class _Main_State extends State<Main_> {
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
     final name_phone = await dialog_guest_search(context: context, fd_id: fd_id);
-    if (name_phone == null) return await on_load_front_desk();
+    if (name_phone == null) return;
     state_manager.changeCellValue(rc.cell, name_phone, force: true, callOnChangedEvent: false);
   }
 
@@ -948,13 +948,14 @@ class _Main_State extends State<Main_> {
       current_name: current_name, //
       current_phone: current_phone, //
     );
-    if (name_phone == null) return await on_load_front_desk();
+    if (name_phone == null) return;
     state_manager.changeCellValue(rc.cell, name_phone, force: true, callOnChangedEvent: false);
   }
 
   void on_update_number_of_guest(PlutoColumnRendererContext rc, double v) {
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
+    state_manager.changeCellValue(rc.cell, v, force: true, callOnChangedEvent: false);
     do_update_number_of_guest(fd_id, v);
   }
 
@@ -967,11 +968,11 @@ class _Main_State extends State<Main_> {
       },
     );
     if (tmp == null) {
+      await on_load_front_desk();
       snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
       return;
     }
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
-    await on_load_front_desk();
   }
 
   Future<void> on_fetch_front_desk() async {

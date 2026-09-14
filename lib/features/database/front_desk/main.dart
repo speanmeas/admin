@@ -1059,7 +1059,7 @@ class _Main_State extends State<Main_> {
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
     state_manager.changeCellValue(rc.cell, v, force: true, callOnChangedEvent: false);
-    do_updated(fd_id, Front_Desk.NUMBER_OF_GUEST, v);
+    do_updated(fd_id, Front_Desk.NUMBER_OF_GUEST, v.toInt());
   }
 
   void on_update_room(PlutoColumnRendererContext rc) async {
@@ -1097,7 +1097,7 @@ class _Main_State extends State<Main_> {
     if (fd_id == null) return;
 
     final name_phone = await dialog_guest_search(context: context, fd_id: fd_id);
-    if (name_phone == null) return await on_reload();
+    if (name_phone == null) return;
 
     state_manager.changeCellValue(rc.cell, name_phone, force: true, callOnChangedEvent: false);
   }
@@ -1106,7 +1106,7 @@ class _Main_State extends State<Main_> {
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
     final name_phone = await dialog_guest_add(context: context, fd_id: fd_id);
-    if (name_phone == null) return await on_reload();
+    if (name_phone == null) return;
 
     state_manager.changeCellValue(rc.cell, name_phone, force: true, callOnChangedEvent: false);
   }
@@ -1139,7 +1139,7 @@ class _Main_State extends State<Main_> {
       current_name: current_name, //
       current_phone: current_phone, //
     );
-    if (name_phone == null) return await on_reload();
+    if (name_phone == null) return;
     state_manager.changeCellValue(rc.cell, name_phone, force: true, callOnChangedEvent: false);
   }
 
