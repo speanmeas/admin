@@ -242,11 +242,11 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: User.IS_ADMIN, //
             title: "Is Admin",
-            type: PlutoColumnType.select([]),
-            enableEditingMode: false,
+            type: PlutoColumnType.text(),
+            // enableEditingMode: false,
             width: 80,
             renderer: (rc) {
-              bool value = rc.cell.value ?? false;
+              bool value = parse_bool(rc.cell.value);
               return Center(
                 child: SizedBox(
                   height: 24,
@@ -265,11 +265,11 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: User.IS_MANAGER, //
             title: "Is Manager",
-            type: PlutoColumnType.select([]),
-            enableEditingMode: false,
+            type: PlutoColumnType.text(),
+            // enableEditingMode: false,
             width: 80,
             renderer: (rc) {
-              bool value = rc.cell.value ?? false;
+              bool value = parse_bool(rc.cell.value);
               return Center(
                 child: SizedBox(
                   height: 24,
@@ -288,11 +288,11 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: User.IS_RECEPTIONIST, //
             title: "Is Receptionist",
-            type: PlutoColumnType.select([]),
-            enableEditingMode: false,
+            type: PlutoColumnType.text(),
+            // enableEditingMode: false,
             width: 80,
             renderer: (rc) {
-              bool value = rc.cell.value ?? false;
+              bool value = parse_bool(rc.cell.value);
               return Center(
                 child: SizedBox(
                   height: 24,
@@ -311,11 +311,11 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: User.IS_HOUSEKEEPER, //
             title: "Is Housekeeper",
-            type: PlutoColumnType.select([]),
-            enableEditingMode: false,
+            type: PlutoColumnType.text(),
+            // enableEditingMode: false,
             width: 80,
             renderer: (rc) {
-              bool value = rc.cell.value ?? false;
+              bool value = parse_bool(rc.cell.value);
               return Center(
                 child: SizedBox(
                   height: 24,
@@ -412,10 +412,10 @@ class _Main_State extends State<Main_> {
                 if (c.field == User.USERNAME) return PlutoCell(value: d.username ?? "");
                 if (c.field == User.FULL_NAME) return PlutoCell(value: d.full_name ?? "");
                 if (c.field == User.PHONE_NUMBER) return PlutoCell(value: d.phone_number ?? "");
-                if (c.field == User.IS_ADMIN) return PlutoCell(value: d.is_admin ?? false);
-                if (c.field == User.IS_MANAGER) return PlutoCell(value: d.is_manager ?? false);
-                if (c.field == User.IS_RECEPTIONIST) return PlutoCell(value: d.is_receptionist ?? false);
-                if (c.field == User.IS_HOUSEKEEPER) return PlutoCell(value: d.is_housekeeper ?? false);
+                if (c.field == User.IS_ADMIN) return PlutoCell(value: format_bool(d.is_admin));
+                if (c.field == User.IS_MANAGER) return PlutoCell(value: format_bool(d.is_manager));
+                if (c.field == User.IS_RECEPTIONIST) return PlutoCell(value: format_bool(d.is_receptionist));
+                if (c.field == User.IS_HOUSEKEEPER) return PlutoCell(value: format_bool(d.is_housekeeper));
                 if (c.field == User.NOTE) return PlutoCell(value: d.note ?? "");
                 return PlutoCell(value: "");
               })(),
@@ -492,7 +492,7 @@ class _Main_State extends State<Main_> {
   }
 
   void on_change_bool(PlutoColumnRendererContext rc, String field, bool v) {
-    rc.cell.value = v;
+    rc.cell.value = format_bool(v);
     state_manager.notifyListeners();
 
     final id = rc.row.cells[User.ID]?.value;

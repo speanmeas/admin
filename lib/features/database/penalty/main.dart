@@ -156,7 +156,7 @@ class _Main_State extends State<Main_> {
             title: "ID",
             type: PlutoColumnType.text(),
             enableEditingMode: false,
-            width: kDebugMode ? 220 : 0,
+            width: 0,
           ),
 
           PlutoColumn(
@@ -371,7 +371,7 @@ class _Main_State extends State<Main_> {
     final tmp = await dio.post(endpoint.PENALTY_UPDATE, data: {Penalty.ID: id, field: value});
     if (tmp == null) {
       await on_reload();
-      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     }
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
   }

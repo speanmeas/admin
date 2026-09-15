@@ -394,8 +394,9 @@ class _Main_State extends State<Main_> {
     final tmp = await dio.post(endpoint.MINI_BAR_UPDATE, data: {Mini_Bar.ID: id, field: value});
     if (tmp == null) {
       await on_reload();
-      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     }
+    snackbar(ct: context, ms: "Updated", cl: Colors.green);
   }
 
   void on_first_page() {
