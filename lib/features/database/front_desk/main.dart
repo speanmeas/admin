@@ -917,9 +917,8 @@ class _Main_State extends State<Main_> {
       },
     );
     if (tmp == null) {
-      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
       await on_load_page();
-      return;
+      return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     }
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
     on_refresh_balanced();

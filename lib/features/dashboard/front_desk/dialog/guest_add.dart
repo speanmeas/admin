@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
@@ -63,6 +64,8 @@ Future<String?> dialog_guest_add({
                   ),
                   const SizedBox(height: 8),
                   TextField(
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: const InputDecoration(
                       labelText: "Phone Number:",
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -91,10 +94,8 @@ Future<String?> dialog_guest_add({
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                 ),
-                onPressed: () async {
-                  await on_confirm();
-                },
-                child: const Text("Confirm"),
+                onPressed: on_confirm,
+                child: const Text("OK"),
               ),
             ],
           );

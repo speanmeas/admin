@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
@@ -9,24 +10,21 @@ Future<String?> dialog_guest_update({
   String? current_name, //
   String? current_phone, //
 }) async {
-  String? full_name = current_name;
-  String? phone_number = current_phone;
   final name_ctrl = TextEditingController(text: current_name ?? "");
   final phone_ctrl = TextEditingController(text: current_phone ?? "");
   final phone_focus = FocusNode();
 
   Future<void> on_confirm() async {
-    if ((full_name ?? "").isEmpty && (phone_number ?? "").isEmpty) return;
     final tmp = await dio.post(
       endpoint.GUEST_UPDATE,
       data: {
         Guest.ID: guest_id, //
-        Guest.FULL_NAME: full_name, //
-        Guest.PHONE_NUMBER: phone_number,
+        Guest.FULL_NAME: name_ctrl.text, //
+        Guest.PHONE_NUMBER: phone_ctrl.text,
       },
     );
-    if (tmp == null) return;
-    if (context.mounted) Navigator.pop(context, "${full_name ?? ""} (${phone_number ?? ""})");
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    if (context.mounted) Navigator.pop(context, "${name_ctrl.text} (${phone_ctrl.text})");
   }
 
   return await showDialog<String?>(
@@ -59,11 +57,12 @@ Future<String?> dialog_guest_update({
                     ),
                     controller: name_ctrl,
                     textInputAction: TextInputAction.next,
-                    onChanged: (v) => full_name = v,
                     onSubmitted: (_) => phone_focus.requestFocus(),
                   ),
                   const SizedBox(height: 8),
                   TextField(
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: const InputDecoration(
                       labelText: "Phone Number:",
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -72,7 +71,6 @@ Future<String?> dialog_guest_update({
                     controller: phone_ctrl,
                     focusNode: phone_focus,
                     textInputAction: TextInputAction.done,
-                    onChanged: (v) => phone_number = v,
                     onSubmitted: (_) => on_confirm(),
                   ),
                 ],
@@ -82,20 +80,13 @@ Future<String?> dialog_guest_update({
             actionsAlignment: MainAxisAlignment.end,
             actions: [
               OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                ),
+                style: OutlinedButton.styleFrom(foregroundColor: Colors.red, padding: const EdgeInsets.symmetric(horizontal: 16)),
                 onPressed: () => Navigator.pop(context),
                 child: const Text("Cancel"),
               ),
               OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                ),
-                onPressed: () async {
-                  await on_confirm();
-                },
+                style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 16)),
+                onPressed: on_confirm,
                 child: const Text("OK"),
               ),
             ],

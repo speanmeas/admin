@@ -81,7 +81,7 @@ Future<bool?> dialog_check_out({
                 onPressed: is_loading ? null : () => on_confirm(setState),
                 child: is_loading
                     ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text("Confirm"),
+                    : const Text("OK"),
               ),
             ],
           );

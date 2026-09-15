@@ -239,12 +239,6 @@ class _Main_State extends State<Main_> {
             renderer: (rc) {
               return Row(
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
                   if (!is_row_mini_bar(rc))
                     IconButton(
                       tooltip: "Change Room", //
@@ -253,6 +247,12 @@ class _Main_State extends State<Main_> {
                       constraints: BoxConstraints(),
                       onPressed: () => on_change_room(rc), //
                     ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                 ],
               );
             },
@@ -271,6 +271,19 @@ class _Main_State extends State<Main_> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
+                  IconButton(
+                    tooltip: "Search Guest", //
+                    icon: Icon(Icons.search_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () => on_search_guest(rc), //
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                   if (no_guest_id)
                     IconButton(
                       tooltip: "Add Guest", //
@@ -287,19 +300,6 @@ class _Main_State extends State<Main_> {
                       constraints: BoxConstraints(),
                       onPressed: () => on_guest_update(rc),
                     ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
-                  IconButton(
-                    tooltip: "Search Guest", //
-                    icon: Icon(Icons.search_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_search_guest(rc), //
-                  ),
                 ],
               );
             },
@@ -351,13 +351,6 @@ class _Main_State extends State<Main_> {
             renderer: (rc) {
               return Row(
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
-
                   if (!is_row_mini_bar(rc))
                     IconButton(
                       tooltip: "កែពេលចូល", //
@@ -366,6 +359,12 @@ class _Main_State extends State<Main_> {
                       constraints: BoxConstraints(),
                       onPressed: () => on_update_check_in_at(rc), //
                     ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                 ],
               );
             },
@@ -402,12 +401,6 @@ class _Main_State extends State<Main_> {
             renderer: (rc) {
               return Row(
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
                   if (!is_row_mini_bar(rc) && rc.cell.value != null)
                     IconButton(
                       tooltip: "កែពេលចេញ", //
@@ -416,6 +409,12 @@ class _Main_State extends State<Main_> {
                       constraints: BoxConstraints(),
                       onPressed: () => on_update_check_out_at(rc), //
                     ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                 ],
               );
             },
@@ -445,19 +444,18 @@ class _Main_State extends State<Main_> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_double(rc.cell.value, digits: 2) + " \$", overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
-
                   IconButton(
                     tooltip: "Mini Bar Items", //
                     icon: Icon(Icons.local_bar_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
                     onPressed: () => on_mini_bar_item(rc), //
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_double(rc.cell.value, digits: 2) + " \$", overflow: TextOverflow.ellipsis),
+                    ),
                   ),
                 ],
               );
@@ -475,13 +473,6 @@ class _Main_State extends State<Main_> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_double(rc.cell.value, digits: 2) + " \$", overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
-
                   if (!is_row_mini_bar(rc))
                     IconButton(
                       tooltip: "Penalty Items", //
@@ -490,6 +481,12 @@ class _Main_State extends State<Main_> {
                       constraints: BoxConstraints(),
                       onPressed: () => on_penalty_item(rc), //
                     ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_double(rc.cell.value, digits: 2) + " \$", overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                 ],
               );
             },
@@ -776,6 +773,7 @@ class _Main_State extends State<Main_> {
                   if (c.field == Front_Desk.GUEST_ID) return PlutoCell(value: fd.guest_id == null ? "" : "${fd.guest_id!.full_name ?? "N/A"} (${fd.guest_id!.phone_number ?? "N/A"})");
                   if (c.field == Front_Desk.NUMBER_OF_GUEST) return PlutoCell(value: fd.number_of_guest ?? 0);
                   if (c.field == Front_Desk.CHECK_IN_AT) return PlutoCell(value: fd.check_in_at);
+                  if (c.field == "duration") return PlutoCell(value: check_in_duration(fd.check_in_at, fd.check_out_at, fd.room_number));
                   if (c.field == Front_Desk.CHECK_OUT_AT) return PlutoCell(value: fd.check_out_at);
                   if (c.field == Front_Desk.ROOM_PRICE) return PlutoCell(value: fd.room_price);
                   if (c.field == Front_Desk.MINI_BAR_PRICE) return PlutoCell(value: fd.mini_bar_price);
@@ -796,19 +794,12 @@ class _Main_State extends State<Main_> {
     setState(() {});
   }
 
-  int check_in_duration(Front_Desk fd) {
-    return check_in_duration_raw(fd.check_in_at, fd.check_out_at, is_walkin(fd));
-  }
-
-  int check_in_duration_raw(DateTime? in_at, DateTime? out_at, bool is_walkin) {
-    if (is_walkin) return 0;
+  int check_in_duration(DateTime? in_at, DateTime? out_at, String? room_number) {
+    final is_walking = (room_number ?? "").toLowerCase() == "walk-in";
+    if (is_walking) return 0;
     if (in_at == null) return 0;
     if (out_at == null) return DateTime.now().difference(in_at).inMinutes;
     return out_at.difference(in_at).inMinutes;
-  }
-
-  bool is_walkin(Front_Desk fd) {
-    return _is_mini_bar_room(fd.room_number);
   }
 
   bool _is_mini_bar_room(String? number) {
@@ -816,17 +807,19 @@ class _Main_State extends State<Main_> {
     return n == "walk-in";
   }
 
+  bool is_walkin(Front_Desk fd) => _is_mini_bar_room(fd.room_number);
+
   bool is_walk_in_room(dynamic r) => _is_mini_bar_room(r[Room.NUMBER]?.toString());
 
   // * ធ្វើឲ្យ duration ក្នុងតារាងថ្មីតាមពេលបច្ចុប្បន្ន
   void on_refresh_duration() {
     for (var row in state_manager.rows) {
-      final in_at = row.cells[Front_Desk.CHECK_IN_AT]?.value as DateTime?;
-      final out_at = row.cells[Front_Desk.CHECK_OUT_AT]?.value as DateTime?;
-      final room = row.cells[Front_Desk.ROOM_NUMBER]?.value as String? ?? "";
+      final in_at = parse_datetime(row.cells[Front_Desk.CHECK_IN_AT]?.value);
+      final out_at = parse_datetime(row.cells[Front_Desk.CHECK_OUT_AT]?.value);
+      final room = format_string(row.cells[Front_Desk.ROOM_NUMBER]?.value);
       state_manager.changeCellValue(
         row.cells["duration"]!, //
-        check_in_duration_raw(in_at, out_at, room.toLowerCase() == "walk-in"),
+        check_in_duration(in_at, out_at, room),
         force: true,
         callOnChangedEvent: false,
       );
