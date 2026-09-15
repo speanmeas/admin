@@ -702,7 +702,7 @@ class _Main_State extends State<Main_> {
 
   void on_loaded(PlutoGridOnLoadedEvent e) async {
     state_manager = e.stateManager;
-    state_manager.setAutoEditing(true);
+    // state_manager.setAutoEditing(true);
     state_manager.columnFooterHeight = 32;
     list_column_pluto = state_manager.refColumns.toList();
 

@@ -48,23 +48,22 @@ class _Main_State extends State<Main_> {
     return _layout(
       header: [
         // debug button
-        IconButton(
-          tooltip: "Debug", //
-          icon: Icon(Icons.bug_report_outlined, size: 30), //
-          padding: EdgeInsets.all(0),
-          constraints: BoxConstraints(),
-          onPressed: () async {
-            print("Debug: ${state_manager.rows[0].cells[Demo_1.ID]?.value}");
-            state_manager.changeCellValue(
-              state_manager.rows[0].cells["index"]!, //
-              100,
-              force: true,
-              // notify: true,
-              callOnChangedEvent: false,
-            );
-          },
-        ),
-
+        // IconButton(
+        //   tooltip: "Debug", //
+        //   icon: Icon(Icons.bug_report_outlined, size: 30), //
+        //   padding: EdgeInsets.all(0),
+        //   constraints: BoxConstraints(),
+        //   onPressed: () async {
+        //     print("Debug: ${state_manager.rows[0].cells[Demo_1.ID]?.value}");
+        //     state_manager.changeCellValue(
+        //       state_manager.rows[0].cells["index"]!, //
+        //       100,
+        //       force: true,
+        //       // notify: true,
+        //       callOnChangedEvent: false,
+        //     );
+        //   },
+        // ),
         IconButton(
           tooltip: "First Page", //
           icon: Icon(Icons.first_page, size: 30), //
@@ -232,7 +231,7 @@ class _Main_State extends State<Main_> {
             field: Demo_1.DATE_TIME, //
             title: "Date Time",
             type: PlutoColumnType.text(),
-            enableEditingMode: false,
+            // enableEditingMode: false,
             width: 150,
             renderer: (rc) {
               return Row(
@@ -251,7 +250,7 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.calendar_month_outlined), //
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () => on_change_datetime(rc),
+                    onPressed: () => on_update_datetime(rc),
                   ),
                 ],
               );
@@ -261,11 +260,11 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: Demo_1.LOGIC, //
             title: "Logic",
-            type: PlutoColumnType.select([]),
-            enableEditingMode: false,
+            type: PlutoColumnType.number(),
+            // enableEditingMode: false,
             width: 80,
             renderer: (rc) {
-              bool value = rc.cell.value ?? false;
+              bool value = parse_bool_01(rc.cell.value);
               return Center(
                 child: SizedBox(
                   height: 24,
@@ -273,7 +272,7 @@ class _Main_State extends State<Main_> {
                     fit: BoxFit.contain,
                     child: Switch(
                       value: value,
-                      onChanged: (v) => on_change_bool(rc, v), //
+                      onChanged: (v) => on_update_bool(rc, v), //
                     ),
                   ),
                 ),
@@ -284,36 +283,36 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: Demo_1.SELECT, //
             title: "Select",
-            type: PlutoColumnType.select([]),
-            enableEditingMode: false,
+            type: PlutoColumnType.text(),
+            // enableEditingMode: false,
             width: 100,
             renderer: (rc) {
               String value = rc.cell.value ?? "";
-              return PopupMenuButton<String>(
-                menuPadding: const EdgeInsets.all(0),
-                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                itemBuilder: (context) => [
-                  for (String o in ["A", "B", "C"]) ...[
-                    PopupMenuItem(
-                      value: o,
-                      child: Text(o, style: TextStyle(fontSize: 14)),
+              return Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      value.isEmpty ? "" : value, //
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const PopupMenuDivider(height: 0),
-                  ],
+                  ),
+                  PopupMenuButton<String>(
+                    menuPadding: const EdgeInsets.all(0),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                    itemBuilder: (context) => [
+                      for (String o in ["A", "B", "C"]) ...[
+                        PopupMenuItem(
+                          value: o,
+                          child: Text(o, style: TextStyle(fontSize: 14)),
+                        ),
+                        const PopupMenuDivider(height: 0),
+                      ],
+                    ],
+                    onSelected: (v) => on_update_select(rc, v), //
+                    child: Icon(Icons.arrow_drop_down, color: Colors.blue),
+                  ),
                 ],
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        value.isEmpty ? "" : value, //
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Icon(Icons.arrow_drop_down, size: 16),
-                  ],
-                ),
-                onSelected: (v) => on_change_select(rc, v),
               );
             },
           ),
@@ -338,7 +337,7 @@ class _Main_State extends State<Main_> {
   // * ########## BLOCK METHODS ##########
   void on_loaded(PlutoGridOnLoadedEvent e) async {
     state_manager = e.stateManager;
-    state_manager.setAutoEditing(true);
+    // state_manager.setAutoEditing(true);
     list_column_pluto = state_manager.refColumns.toList();
 
     await on_reload();
@@ -384,8 +383,8 @@ class _Main_State extends State<Main_> {
                 if (c.field == Demo_1.TEXT) return PlutoCell(value: d.text ?? "");
                 if (c.field == Demo_1.SELECT) return PlutoCell(value: d.select ?? "");
                 if (c.field == Demo_1.NUMBER) return PlutoCell(value: d.number ?? 0.0);
-                if (c.field == Demo_1.DATE_TIME) return PlutoCell(value: d.date_time);
-                if (c.field == Demo_1.LOGIC) return PlutoCell(value: d.logic ?? false);
+                if (c.field == Demo_1.DATE_TIME) return PlutoCell(value: format_datetime(d.date_time));
+                if (c.field == Demo_1.LOGIC) return PlutoCell(value: format_bool_01(d.logic));
                 return PlutoCell(value: "");
               })(),
           },
@@ -459,10 +458,11 @@ class _Main_State extends State<Main_> {
 
   void on_updated(PlutoGridOnChangedEvent e) {
     final id = e.row.cells[Demo_1.ID]?.value;
+    state_manager.notifyListeners();
     do_updated(id, e.column.field, e.value);
   }
 
-  void on_change_datetime(PlutoColumnRendererContext rc) async {
+  void on_update_datetime(PlutoColumnRendererContext rc) async {
     DateTime? dt = rc.cell.value;
     final v = await dialog_datetime(context, initial: dt);
     if (v == null) return;
@@ -474,8 +474,8 @@ class _Main_State extends State<Main_> {
     do_updated(id, Demo_1.DATE_TIME, v.toIso8601String());
   }
 
-  void on_change_bool(PlutoColumnRendererContext rc, bool v) {
-    rc.cell.value = v;
+  void on_update_bool(PlutoColumnRendererContext rc, bool v) {
+    rc.cell.value = format_bool_01(v);
     state_manager.notifyListeners();
 
     final id = rc.row.cells[Demo_1.ID]?.value;
@@ -483,7 +483,7 @@ class _Main_State extends State<Main_> {
     do_updated(id, Demo_1.LOGIC, v);
   }
 
-  void on_change_select(PlutoColumnRendererContext rc, String v) {
+  void on_update_select(PlutoColumnRendererContext rc, String v) {
     final id = rc.row.cells[Demo_1.ID]?.value;
     if (id == null) return;
     rc.cell.value = v;
@@ -494,8 +494,9 @@ class _Main_State extends State<Main_> {
   Future<void> do_updated(String? id, String field, dynamic value) async {
     final tmp = await dio.post(endpoint.DEMO_1_UPDATE, data: {Demo_1.ID: id, field: value});
     if (tmp == null) {
-      await on_reload();
       snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      await on_reload();
+      return;
     }
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
   }

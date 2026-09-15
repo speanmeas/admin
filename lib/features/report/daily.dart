@@ -412,7 +412,10 @@ class _Main_State extends State<Main_> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text("ចំណូល: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            Text("${format_double(total_price, digits: 2)}\$", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue)),
+            Text(
+              "${format_double(total_price, digits: 2)}\$",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+            ),
           ],
         ),
 
@@ -421,7 +424,10 @@ class _Main_State extends State<Main_> {
         Row(
           children: [
             Text("ចំណូលសុទ្ធ: ", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            Text("${format_double(total_income, digits: 2)}\$", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green)),
+            Text(
+              "${format_double(total_income, digits: 2)}\$",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+            ),
           ],
         ),
 
@@ -446,7 +452,7 @@ class _Main_State extends State<Main_> {
 
   void on_loaded(PlutoGridOnLoadedEvent e) async {
     state_manager = e.stateManager;
-    state_manager.setAutoEditing(true);
+    // state_manager.setAutoEditing(true);
     state_manager.columnFooterHeight = 32;
     list_column_pluto = state_manager.refColumns.toList();
 
@@ -454,10 +460,7 @@ class _Main_State extends State<Main_> {
   }
 
   Future<void> on_load_page() async {
-    dynamic tmp = await dio.post(
-      endpoint.FRONT_DESK_REPORT_DAILY,
-      data: {"date": DateFormat("yyyy-MM-dd").format(date)},
-    );
+    dynamic tmp = await dio.post(endpoint.FRONT_DESK_REPORT_DAILY, data: {"date": DateFormat("yyyy-MM-dd").format(date)});
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     report = tmp.data;
@@ -564,7 +567,11 @@ class _Main_State extends State<Main_> {
     double v = parse_double(rc.cell.value) ?? 0;
     return Align(
       alignment: Alignment.center, //
-      child: Text(format_double(v, digits: 2) + " \$", overflow: TextOverflow.ellipsis, style: TextStyle(color: v >= 0 ? Colors.black : Colors.red)),
+      child: Text(
+        format_double(v, digits: 2) + " \$",
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(color: v >= 0 ? Colors.black : Colors.red),
+      ),
     );
   }
 
@@ -572,7 +579,11 @@ class _Main_State extends State<Main_> {
     double v = parse_double(rc.cell.value) ?? 0;
     return Align(
       alignment: Alignment.center, //
-      child: Text(format_double(v, digits: 2) + " \$", overflow: TextOverflow.ellipsis, style: TextStyle(color: v == 0 ? Colors.black : (v > 0 ? Colors.green : Colors.red))),
+      child: Text(
+        format_double(v, digits: 2) + " \$",
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(color: v == 0 ? Colors.black : (v > 0 ? Colors.green : Colors.red)),
+      ),
     );
   }
 
@@ -586,7 +597,10 @@ class _Main_State extends State<Main_> {
       titleSpanBuilder: (value) {
         return [
           WidgetSpan(
-            child: Text("$value \$", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis)),
+            child: Text(
+              "$value \$",
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
+            ),
           ),
         ];
       },

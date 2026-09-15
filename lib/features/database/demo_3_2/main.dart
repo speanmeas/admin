@@ -233,7 +233,7 @@ class _Main_State extends State<Main_> {
   // * ########## BLOCK METHODS ##########
   void on_loaded(PlutoGridOnLoadedEvent e) async {
     state_manager = e.stateManager;
-    state_manager.setAutoEditing(true);
+    // state_manager.setAutoEditing(true);
     list_column_pluto = state_manager.refColumns.toList();
 
     await on_reload();

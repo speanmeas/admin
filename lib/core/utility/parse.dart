@@ -107,6 +107,20 @@ String format_datetime(dynamic v, {String fallback = "", String format = DEFAULT
   return DateFormat(format).format(dt.toLocal());
 }
 
+//
+int format_bool_01(dynamic v, {int fallback = 0, int true_val = 1, int false_val = 0}) {
+  if (v == null) return fallback;
+  final b = parse_bool(v);
+  if (b == null) return fallback;
+  return b ? true_val : false_val;
+}
+
+bool parse_bool_01(dynamic v, {bool fallback = false, int true_val = 1}) {
+  if (v == null) return fallback;
+  if (parse_int(v) == true_val) return true;
+  return parse_bool(v) ?? fallback;
+}
+
 // // * បម្លែងទៅជា List<dynamic> (null-safe)
 // List<dynamic>? parse_list(dynamic v) {
 //   if (v == null) return null;
