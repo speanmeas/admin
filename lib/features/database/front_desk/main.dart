@@ -746,7 +746,7 @@ class _Main_State extends State<Main_> {
 
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     data = List<Front_Desk>.from((tmp.data ?? const []).map((d) => Front_Desk.fromJson(d)));
-    data.sort((a, b) => (a.created_at ?? DateTime(0)).compareTo(b.created_at ?? DateTime(0)));
+    data.sort((a, b) => (b.created_at ?? DateTime(0)).compareTo(a.created_at ?? DateTime(0)));
   }
 
   Future<void> on_load_page() async {
