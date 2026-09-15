@@ -79,19 +79,24 @@ Future<String?> dialog_guest_update({
               ),
             ),
             actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-            actionsAlignment: MainAxisAlignment.spaceAround,
+            actionsAlignment: MainAxisAlignment.end,
             actions: [
-              OutlinedButton.icon(
-                icon: const Icon(Icons.close, color: Colors.red), //
-                label: const Text("Cancel", style: TextStyle(color: Colors.red)),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
                 onPressed: () => Navigator.pop(context),
+                child: const Text("Cancel"),
               ),
-              OutlinedButton.icon(
-                icon: const Icon(Icons.check), //
-                label: const Text("Confirm"), //
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
                 onPressed: () async {
                   await on_confirm();
                 },
+                child: const Text("OK"),
               ),
             ],
           );

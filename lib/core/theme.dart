@@ -75,6 +75,40 @@ ThemeData theme_data = ThemeData(
     ),
   ),
 
+  // * theme របស់ DatePicker
+  datePickerTheme: DatePickerThemeData(
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.zero, //
+    ),
+    cancelButtonStyle: OutlinedButton.styleFrom(
+      foregroundColor: Colors.red,
+      side: const BorderSide(color: Colors.red),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+    ),
+    confirmButtonStyle: OutlinedButton.styleFrom(
+      foregroundColor: Colors.blue,
+      side: const BorderSide(color: Colors.blue),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+    ),
+  ),
+
+  // * theme របស់ TimePicker
+  timePickerTheme: TimePickerThemeData(
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.zero, //
+    ),
+    cancelButtonStyle: OutlinedButton.styleFrom(
+      foregroundColor: Colors.red,
+      side: const BorderSide(color: Colors.red),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+    ),
+    confirmButtonStyle: OutlinedButton.styleFrom(
+      foregroundColor: Colors.blue,
+      side: const BorderSide(color: Colors.blue),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+    ),
+  ),
+
   //
   // * theme របស់ Drawer
   drawerTheme: DrawerThemeData(

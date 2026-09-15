@@ -70,7 +70,11 @@ Future<String?> dialog_guest_search({
                           Front_Desk.GUEST_ID: e[Guest.ID], //
                         },
                       );
-                      if (tmp != null) Navigator.pop(context, v);
+                      if (tmp != null && context.mounted) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (context.mounted) Navigator.pop(context, v);
+                        });
+                      }
                       return;
                     }
                   }
@@ -79,6 +83,18 @@ Future<String?> dialog_guest_search({
             ],
           ),
         ),
+        actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+        actionsAlignment: MainAxisAlignment.end,
+        actions: [
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.red,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+            ),
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+        ],
       );
     },
   );

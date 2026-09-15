@@ -27,12 +27,7 @@ Future<String?> dialog_room_search({
         contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Search:", //
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ],
+          children: [Text("Search:", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))],
         ),
         content: SizedBox(
           width: 400,
@@ -58,9 +53,6 @@ Future<String?> dialog_room_search({
                   return options;
                 },
                 builder: (context, controller, focusNode) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (!focusNode.hasFocus) focusNode.requestFocus();
-                  });
                   return TextField(
                     autofocus: true,
                     controller: controller,
@@ -82,7 +74,9 @@ Future<String?> dialog_room_search({
                     }
                   }
                   if (room_number == null) return;
-                  Navigator.pop(context, room_number);
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (context.mounted) Navigator.pop(context, room_number);
+                  });
                 },
               ),
             ],

@@ -10,8 +10,8 @@ Future<DateTime?> dialog_datetime(
   final DateTime? picked_date = await showDatePicker(
     context: context, //
     initialDate: init, //
-    firstDate: DateTime(2000),
-    lastDate: DateTime(2100),
+    firstDate: DateTime(2000), //
+    lastDate: DateTime(2100), //
   );
   if (picked_date == null) return null;
 
@@ -19,15 +19,15 @@ Future<DateTime?> dialog_datetime(
   if (initial is DateTime) initial_time = TimeOfDay.fromDateTime(initial);
   final TimeOfDay? picked_time = await showTimePicker(
     context: context, //
-    initialTime: initial_time,
+    initialTime: initial_time, //
   );
   if (picked_time == null) return null;
 
   return DateTime(
     picked_date.year, //
-    picked_date.month,
-    picked_date.day,
-    picked_time.hour,
-    picked_time.minute,
+    picked_date.month, //
+    picked_date.day, //
+    picked_time.hour, //
+    picked_time.minute, //
   );
 }

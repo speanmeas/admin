@@ -27,7 +27,7 @@ Future<String?> dialog_check_out_by_search({
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Select Check-out User", //
+              "Check-out By", //
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],
@@ -53,15 +53,12 @@ Future<String?> dialog_check_out_by_search({
                   return options;
                 },
                 builder: (context, controller, focusNode) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (!focusNode.hasFocus) focusNode.requestFocus();
-                  });
                   return TextField(
                     autofocus: true,
                     controller: controller,
                     focusNode: focusNode,
                     decoration: const InputDecoration(
-                      labelText: "Search User:",
+                      labelText: "Search:",
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: Icon(Icons.search, color: Colors.blue),
@@ -80,7 +77,9 @@ Future<String?> dialog_check_out_by_search({
                   }
                   if (user_id == null || fd_id == null) return;
 
-                  Navigator.pop(context, full_name);
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (context.mounted) Navigator.pop(context, full_name);
+                  });
 
                   await dio.post(
                     endpoint.FRONT_DESK_UPDATE,

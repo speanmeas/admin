@@ -266,17 +266,21 @@ Future<double?> dialog_penalty_select({
               ),
             ),
             actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-            actionsAlignment: MainAxisAlignment.spaceAround,
+            actionsAlignment: MainAxisAlignment.end,
             actions: [
-              OutlinedButton.icon(
-                icon: const Icon(Icons.close, color: Colors.red), //
-                label: const Text("Cancel", style: TextStyle(color: Colors.red)),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
                 onPressed: () => Navigator.pop(context),
+                child: const Text("Cancel"),
               ),
               // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស និងរក្សាទុកទំនិញ
-              OutlinedButton.icon(
-                icon: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check), //
-                label: const Text("Confirm"), //
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
                 onPressed: is_loading
                     ? null
                     : () async {
@@ -288,6 +292,9 @@ Future<double?> dialog_penalty_select({
                         }
                         if (context.mounted) Navigator.pop(context, r);
                       },
+                child: is_loading
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text("OK"),
               ),
             ],
           );

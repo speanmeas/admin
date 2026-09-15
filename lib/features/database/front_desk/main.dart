@@ -23,7 +23,7 @@ class _Main_State extends State<Main_> {
   int reload = 0;
   bool filter = false;
   bool is_admin = false;
-  int current_page = 1;
+  late DateTime current_shift;
 
   late List<PlutoColumn> list_column_pluto;
   late PlutoGridStateManager state_manager;
@@ -74,7 +74,7 @@ class _Main_State extends State<Main_> {
 
         TextButton(
           child: Text(
-            DateFormat("yyyy-MM-dd").format(page_day(current_page)), //
+            DateFormat("yyyy-MM-dd").format(current_shift), //
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           onPressed: on_goto_day,
@@ -204,18 +204,18 @@ class _Main_State extends State<Main_> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
                   IconButton(
                     tooltip: "ស្វែងរក", //
                     icon: Icon(Icons.search_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
                     onPressed: () => on_update_room(rc), //
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
                   ),
                 ],
               );
@@ -235,6 +235,19 @@ class _Main_State extends State<Main_> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
+                  IconButton(
+                    tooltip: "Search Guest", //
+                    icon: Icon(Icons.search_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () => on_search_guest(rc), //
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                   if (no_guest_id)
                     IconButton(
                       tooltip: "Add Guest", //
@@ -251,19 +264,6 @@ class _Main_State extends State<Main_> {
                       constraints: BoxConstraints(),
                       onPressed: () => on_guest_update(rc),
                     ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
-                  IconButton(
-                    tooltip: "Search Guest", //
-                    icon: Icon(Icons.search_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_search_guest(rc), //
-                  ),
                 ],
               );
             },
@@ -310,24 +310,24 @@ class _Main_State extends State<Main_> {
             field: Front_Desk.CHECK_IN_AT, //
             title: "ពេលចូល",
             type: PlutoColumnType.text(),
-            enableEditingMode: false,
+            // enableEditingMode: false,
             width: 160,
             renderer: (rc) {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
                   IconButton(
                     tooltip: "កែពេលចូល", //
                     icon: Icon(Icons.calendar_month_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
                     onPressed: () => on_update_check_in_at(rc), //
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
                   ),
                 ],
               );
@@ -347,8 +347,8 @@ class _Main_State extends State<Main_> {
               int minute = minutes % 60;
               String text = "";
               if (day > 0) text += "$day ថ្ងៃ ";
-              if (hour > 0) text += "$hour ម៉ោង ";
-              if (minute > 0 || text.isEmpty) text += "$minute នាទី";
+              if (day > 0 || hour > 0) text += "$hour ម៉ោង ";
+              text += "$minute នាទី";
               return Align(
                 alignment: Alignment.center, //
                 child: Text(
@@ -363,24 +363,24 @@ class _Main_State extends State<Main_> {
             field: Front_Desk.CHECK_OUT_AT, //
             title: "ពេលចេញ",
             type: PlutoColumnType.text(),
-            enableEditingMode: false,
+            // enableEditingMode: false,
             width: 160,
             renderer: (rc) {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
                   IconButton(
                     tooltip: "កែពេលចេញ", //
                     icon: Icon(Icons.calendar_month_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
                     onPressed: () => on_update_check_out_at(rc), //
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
                   ),
                 ],
               );
@@ -407,18 +407,18 @@ class _Main_State extends State<Main_> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_double(parse_double(rc.cell.value) ?? 0, digits: 2) + " \$", overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
                   IconButton(
                     tooltip: "Mini Bar Items", //
                     icon: Icon(Icons.local_bar_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
                     onPressed: () => on_mini_bar_item(rc), //
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_double(parse_double(rc.cell.value) ?? 0, digits: 2) + " \$", overflow: TextOverflow.ellipsis),
+                    ),
                   ),
                 ],
               );
@@ -436,18 +436,18 @@ class _Main_State extends State<Main_> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_double(parse_double(rc.cell.value) ?? 0, digits: 2) + " \$", overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
                   IconButton(
                     tooltip: "Penalty Items", //
                     icon: Icon(Icons.gavel_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
                     onPressed: () => on_penalty_item(rc), //
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_double(parse_double(rc.cell.value) ?? 0, digits: 2) + " \$", overflow: TextOverflow.ellipsis),
+                    ),
                   ),
                 ],
               );
@@ -516,12 +516,6 @@ class _Main_State extends State<Main_> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
                   if (is_admin || kDebugMode)
                     IconButton(
                       tooltip: "ជ្រើសអ្នកចូល", //
@@ -530,6 +524,12 @@ class _Main_State extends State<Main_> {
                       constraints: BoxConstraints(),
                       onPressed: () => on_select_check_in_by(rc), //
                     ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                 ],
               );
             },
@@ -545,12 +545,6 @@ class _Main_State extends State<Main_> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
                   if (is_admin || kDebugMode)
                     IconButton(
                       tooltip: "ជ្រើសអ្នកចេញ", //
@@ -559,6 +553,12 @@ class _Main_State extends State<Main_> {
                       constraints: BoxConstraints(),
                       onPressed: () => on_select_check_out_by(rc), //
                     ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                 ],
               );
             },
@@ -571,10 +571,17 @@ class _Main_State extends State<Main_> {
             enableEditingMode: false,
             width: 120,
             renderer: (rc) {
-              final v = rc.cell.value is DateTime ? rc.cell.value as DateTime : null;
+              final v = parse_datetime(rc.cell.value);
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
+                  IconButton(
+                    tooltip: "កែថ្ងៃ", //
+                    icon: Icon(Icons.calendar_month_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () => on_update_shift_date(rc), //
+                  ),
                   Expanded(
                     child: Align(
                       alignment: Alignment.center, //
@@ -583,13 +590,6 @@ class _Main_State extends State<Main_> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ),
-                  IconButton(
-                    tooltip: "កែថ្ងៃ", //
-                    icon: Icon(Icons.calendar_month_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_update_shift_date(rc), //
                   ),
                 ],
               );
@@ -698,12 +698,11 @@ class _Main_State extends State<Main_> {
   // * ########## BLOCK METHODS ##########
   void on_loaded(PlutoGridOnLoadedEvent e) async {
     state_manager = e.stateManager;
-
     // state_manager.setAutoEditing(true);
     state_manager.columnFooterHeight = 32;
     list_column_pluto = state_manager.refColumns.toList();
 
-    on_load_page(current_page);
+    on_load_page();
   }
 
   // * ទាញតួនាទីអ្នកប្រើសម្រាប់កំណត់ការកែប្រែ cell
@@ -720,7 +719,7 @@ class _Main_State extends State<Main_> {
 
   Future<void> on_reload() async {
     await load_auth();
-    await on_load_page(current_page);
+    await on_load_page();
     snackbar(ct: context, ms: "Reloaded", cl: Colors.green);
   }
 
@@ -729,10 +728,8 @@ class _Main_State extends State<Main_> {
     return DateTime(d.year, d.month, d.day);
   }
 
-  DateTime page_day(int p) => shift_day().subtract(Duration(days: p - 1));
-
-  Future<void> on_fetch_page(int p) async {
-    final day = page_day(p);
+  Future<void> on_fetch_page() async {
+    final day = current_shift;
     final start = DateTime(day.year, day.month, day.day);
     final stop = DateTime(day.year, day.month, day.day, 23, 59, 59, 999);
 
@@ -751,8 +748,8 @@ class _Main_State extends State<Main_> {
     data = List<Front_Desk>.from((tmp.data ?? const []).map((d) => Front_Desk.fromJson(d)));
   }
 
-  Future<void> on_load_page(int p) async {
-    await on_fetch_page(p);
+  Future<void> on_load_page() async {
+    await on_fetch_page();
 
     // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
     state_manager.removeAllRows();
@@ -764,12 +761,12 @@ class _Main_State extends State<Main_> {
               c.field: (() {
                 if (c.field == "action") return PlutoCell(value: ""); //auto
                 if (c.field == "index") return PlutoCell(value: i + 1); // auto
-                if (c.field == "duration") return PlutoCell(value: check_in_duration(d.check_in_at, d.check_out_at, (d.room_number ?? "").toLowerCase() == "walk-in")); // auto
                 if (c.field == Front_Desk.ID) return PlutoCell(value: d.id ?? "");
                 if (c.field == Front_Desk.ROOM_NUMBER) return PlutoCell(value: d.room_number ?? "");
-                if (c.field == Front_Desk.CHECK_IN_AT) return PlutoCell(value: d.check_in_at);
-                if (c.field == Front_Desk.CHECK_OUT_AT) return PlutoCell(value: d.check_out_at);
-                if (c.field == Front_Desk.GUEST_ID) return PlutoCell(value: d.guest_id == null ? "" : "${d.guest_id!.full_name ?? "N/A"} (${d.guest_id!.phone_number ?? "N/A"})");
+                if (c.field == Front_Desk.CHECK_IN_AT) return PlutoCell(value: format_datetime(d.check_in_at));
+                if (c.field == "duration") return PlutoCell(value: check_in_duration(d.check_in_at, d.check_out_at, d.room_number)); // auto
+                if (c.field == Front_Desk.CHECK_OUT_AT) return PlutoCell(value: format_datetime(d.check_out_at));
+                if (c.field == Front_Desk.GUEST_ID) return PlutoCell(value: guest_name_phone(d.guest_id));
                 if (c.field == Front_Desk.NUMBER_OF_GUEST) return PlutoCell(value: d.number_of_guest ?? 0);
                 if (c.field == Front_Desk.ROOM_PRICE) return PlutoCell(value: d.room_price ?? 0.0);
                 if (c.field == Front_Desk.MINI_BAR_PRICE) return PlutoCell(value: d.mini_bar_price ?? 0.0);
@@ -780,7 +777,7 @@ class _Main_State extends State<Main_> {
                 if (c.field == Front_Desk.PAY_NOTE) return PlutoCell(value: d.pay_note ?? "");
                 if (c.field == Front_Desk.CHECK_IN_BY) return PlutoCell(value: user_name(d.check_in_by));
                 if (c.field == Front_Desk.CHECK_OUT_BY) return PlutoCell(value: user_name(d.check_out_by));
-                if (c.field == Front_Desk.SHIFT_DATE) return PlutoCell(value: d.shift_date);
+                if (c.field == Front_Desk.SHIFT_DATE) return PlutoCell(value: format_datetime(d.shift_date));
                 return PlutoCell(value: "");
               })(),
           },
@@ -797,19 +794,20 @@ class _Main_State extends State<Main_> {
 
   Future<void> on_refresh_duration() async {
     for (var row in state_manager.rows) {
-      final in_at = row.cells[Front_Desk.CHECK_IN_AT]?.value as DateTime?;
-      final out_at = row.cells[Front_Desk.CHECK_OUT_AT]?.value as DateTime?;
-      final room = row.cells[Front_Desk.ROOM_NUMBER]?.value as String? ?? "";
+      final in_at = parse_datetime(row.cells[Front_Desk.CHECK_IN_AT]?.value);
+      final out_at = parse_datetime(row.cells[Front_Desk.CHECK_OUT_AT]?.value);
+      final room = format_string(row.cells[Front_Desk.ROOM_NUMBER]?.value);
       state_manager.changeCellValue(
         row.cells["duration"]!, //
-        check_in_duration(in_at, out_at, room.toLowerCase() == "walk-in"),
+        check_in_duration(in_at, out_at, room),
         force: true,
         callOnChangedEvent: false,
       );
     }
   }
 
-  int check_in_duration(DateTime? in_at, DateTime? out_at, bool is_walking) {
+  int check_in_duration(DateTime? in_at, DateTime? out_at, String? room_number) {
+    final is_walking = (room_number ?? "").toLowerCase() == "walk-in";
     if (is_walking) return 0;
     if (in_at == null) return 0;
     if (out_at == null) return DateTime.now().difference(in_at).inMinutes;
@@ -817,7 +815,7 @@ class _Main_State extends State<Main_> {
   }
 
   Future<void> on_refresh_balanced() async {
-    await on_fetch_page(current_page);
+    await on_fetch_page();
     for (var row in state_manager.rows) {
       final id = row.cells[Front_Desk.ID]?.value;
       Front_Desk? fd;
@@ -844,6 +842,7 @@ class _Main_State extends State<Main_> {
           c.field: PlutoCell(
             value: (() {
               if (c.field == Front_Desk.NUMBER_OF_GUEST) return 1;
+              if (c.field == Front_Desk.SHIFT_DATE) return format_datetime(current_shift);
               if (c.type is PlutoColumnTypeNumber) return 0;
               if (c.type is PlutoColumnTypeText) return "";
               return null;
@@ -861,12 +860,12 @@ class _Main_State extends State<Main_> {
       endpoint.FRONT_DESK_CREATE,
       data: {
         Front_Desk.NUMBER_OF_GUEST: 1, //
-        Front_Desk.SHIFT_DATE: page_day(current_page).toIso8601String(), //
+        Front_Desk.SHIFT_DATE: current_shift.toIso8601String(), //
       },
     );
     if (tmp == null) {
-      await on_load_page(current_page);
       snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      await on_load_page();
       return;
     }
     final created_id = (tmp.data as List?)?.firstOrNull?["_id"] as String?;
@@ -888,8 +887,8 @@ class _Main_State extends State<Main_> {
   Future<void> do_delete(String? id) async {
     final tmp = await dio.post(endpoint.FRONT_DESK_DELETE, data: {Front_Desk.ID: id});
     if (tmp == null) {
-      await on_load_page(current_page);
       snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      await on_load_page();
       return;
     }
     snackbar(ct: context, ms: "Deleted", cl: Colors.green);
@@ -897,12 +896,13 @@ class _Main_State extends State<Main_> {
 
   void on_updated(PlutoGridOnChangedEvent e) {
     final fd_id = e.row.cells[Front_Desk.ID]?.value;
+    state_manager.notifyListeners();
     if (e.column.field == Front_Desk.ROOM_PRICE) {
-      do_update_room_price(fd_id, e.value);
+      do_update_room_price(fd_id, parse_double(e.value) ?? 0.0);
     } else if (e.column.field == Front_Desk.PAY_CASH) {
-      do_update_cash(fd_id, e.value);
+      do_update_cash(fd_id, parse_double(e.value) ?? 0.0);
     } else if (e.column.field == Front_Desk.PAY_BANK) {
-      do_update_bank(fd_id, e.value);
+      do_update_bank(fd_id, parse_double(e.value) ?? 0.0);
     } else {
       do_updated(fd_id, e.column.field, e.value);
     }
@@ -917,8 +917,8 @@ class _Main_State extends State<Main_> {
       },
     );
     if (tmp == null) {
-      await on_load_page(current_page);
       snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      await on_load_page();
       return;
     }
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
@@ -934,8 +934,8 @@ class _Main_State extends State<Main_> {
       },
     );
     if (tmp == null) {
-      await on_load_page(current_page);
       snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      await on_load_page();
       return;
     }
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
@@ -945,8 +945,8 @@ class _Main_State extends State<Main_> {
   Future<void> do_update_bank(String? id, double v) async {
     final tmp = await dio.post(endpoint.FRONT_DESK_UPDATE_PAYMENT, data: {"_id": id, "pay_bank": v});
     if (tmp == null) {
-      await on_load_page(current_page);
       snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      await on_load_page();
       return;
     }
     snackbar(ct: context, ms: "Updated", cl: Colors.green);
@@ -954,42 +954,42 @@ class _Main_State extends State<Main_> {
   }
 
   Future<void> on_update_check_in_at(PlutoColumnRendererContext rc) async {
-    DateTime? dt = rc.cell.value is DateTime ? rc.cell.value as DateTime : null;
+    DateTime dt = parse_datetime(rc.cell.value) ?? DateTime.now();
     final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
 
     final v = await dialog_check_in_at_select(context: context, initial: dt);
     if (v == null) return;
 
-    state_manager.changeCellValue(rc.cell, DateTime.tryParse(v), force: true, callOnChangedEvent: false);
+    state_manager.changeCellValue(rc.cell, format_datetime(v), force: true, callOnChangedEvent: false);
 
     on_refresh_duration();
     do_updated(id, Front_Desk.CHECK_IN_AT, v);
   }
 
   Future<void> on_update_check_out_at(PlutoColumnRendererContext rc) async {
-    DateTime? dt = rc.cell.value is DateTime ? rc.cell.value as DateTime : null;
+    DateTime dt = parse_datetime(rc.cell.value) ?? DateTime.now();
     final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
-    final check_in = rc.row.cells[Front_Desk.CHECK_IN_AT]?.value;
+    final check_in = parse_datetime(rc.row.cells[Front_Desk.CHECK_IN_AT]?.value);
 
     final v = await dialog_check_out_at_select(context: context, initial: dt, check_in_at: check_in);
     if (v == null) return;
 
-    state_manager.changeCellValue(rc.cell, DateTime.tryParse(v), force: true, callOnChangedEvent: false);
+    state_manager.changeCellValue(rc.cell, format_datetime(v), force: true, callOnChangedEvent: false);
 
     on_refresh_duration();
     do_updated(id, Front_Desk.CHECK_OUT_AT, v);
   }
 
   void on_update_shift_date(PlutoColumnRendererContext rc) async {
-    DateTime? dt = rc.cell.value is DateTime ? rc.cell.value as DateTime : null;
+    DateTime dt = parse_datetime(rc.cell.value) ?? DateTime.now();
     final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
 
     final v = await dialog_shift_date_select(context: context, front_desk_id: id, initial: dt);
     if (v == null) return;
-    await on_load_page(current_page);
+    await on_load_page();
   }
 
   void on_select_check_in_by(PlutoColumnRendererContext rc) async {
@@ -1084,8 +1084,8 @@ class _Main_State extends State<Main_> {
     );
 
     if (tmp == null) {
-      await on_load_page(current_page);
       snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+      await on_load_page();
       return;
     }
 
@@ -1170,6 +1170,12 @@ class _Main_State extends State<Main_> {
     return format_string(v);
   }
 
+  String guest_name_phone(dynamic v) {
+    if (v == null) return "";
+    if (v is Guest_Show) return "${v.full_name ?? "N/A"} (${v.phone_number ?? "N/A"})";
+    return format_string(v);
+  }
+
   // * រយៈពេលស្នាក់ជាថ្ងៃ ម៉ោង និងនាទី
   String duration_text(DateTime? in_at, DateTime? out_at) {
     if (in_at == null) return "";
@@ -1241,30 +1247,28 @@ class _Main_State extends State<Main_> {
   }
 
   Future<void> on_previous_day() async {
-    current_page = current_page + 1;
+    current_shift = current_shift.subtract(const Duration(days: 1));
     setState(() {});
-    await on_load_page(current_page);
+    await on_load_page();
   }
 
   Future<void> on_goto_day() async {
     final picked = await showDatePicker(
       context: context, //
-      initialDate: page_day(current_page), //
+      initialDate: current_shift, //
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
     if (picked == null) return;
-    final picked_day = DateTime(picked.year, picked.month, picked.day);
-    current_page = shift_day().difference(picked_day).inDays + 1;
-    if (current_page < 1) current_page = 1;
-    await on_load_page(current_page);
+    current_shift = DateTime(picked.year, picked.month, picked.day);
+    setState(() {});
+    await on_load_page();
   }
 
   Future<void> on_next_day() async {
-    if (current_page == 1) return;
-    current_page = current_page - 1;
+    current_shift = current_shift.add(const Duration(days: 1));
     setState(() {});
-    await on_load_page(current_page);
+    await on_load_page();
   }
 
   void on_filter() {
@@ -1277,6 +1281,7 @@ class _Main_State extends State<Main_> {
   @override
   void initState() {
     super.initState();
+    current_shift = shift_day();
     load_auth();
     _timer = Timer.periodic(const Duration(minutes: 1), (_) {
       on_refresh_duration();

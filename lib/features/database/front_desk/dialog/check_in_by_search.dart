@@ -27,7 +27,7 @@ Future<String?> dialog_check_in_by_search({
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Select Check-in User", //
+              "Check-in By", //
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],
@@ -53,15 +53,12 @@ Future<String?> dialog_check_in_by_search({
                   return options;
                 },
                 builder: (context, controller, focusNode) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (!focusNode.hasFocus) focusNode.requestFocus();
-                  });
                   return TextField(
                     autofocus: true,
                     controller: controller,
                     focusNode: focusNode,
                     decoration: const InputDecoration(
-                      labelText: "Search User:",
+                      labelText: "Search:",
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: Icon(Icons.search, color: Colors.blue),
@@ -80,7 +77,9 @@ Future<String?> dialog_check_in_by_search({
                   }
                   if (user_id == null || front_desk_id == null) return;
 
-                  Navigator.pop(context, full_name);
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (context.mounted) Navigator.pop(context, full_name);
+                  });
 
                   await dio.post(
                     endpoint.FRONT_DESK_UPDATE,
@@ -100,8 +99,6 @@ Future<String?> dialog_check_in_by_search({
 }
 
 class _Main_State extends State<Main_> {
-  String? tmp;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,10 +106,7 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_check_in_by_search(context: context, front_desk_id: "test");
-            if (v == null) return;
-            tmp = v;
-            setState(() {});
+            await dialog_check_in_by_search(context: context, front_desk_id: "test");
           },
           child: const Text("Show"),
         ),

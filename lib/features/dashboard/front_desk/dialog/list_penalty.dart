@@ -188,16 +188,20 @@ Future<double?> dialog_select_penalty({
               ),
             ),
             actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-            actionsAlignment: MainAxisAlignment.spaceAround,
+            actionsAlignment: MainAxisAlignment.end,
             actions: [
-              OutlinedButton.icon(
-                icon: const Icon(Icons.close, color: Colors.red), //
-                label: const Text("Cancel", style: TextStyle(color: Colors.red)),
-                onPressed: () => Navigator.pop(context),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
+                onPressed: is_loading ? null : () => Navigator.pop(context),
+                child: const Text("Cancel"),
               ),
-              OutlinedButton.icon(
-                icon: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check), //
-                label: const Text("Confirm"), //
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
                 onPressed: is_loading
                     ? null
                     : () async {
@@ -209,6 +213,9 @@ Future<double?> dialog_select_penalty({
                         }
                         if (context.mounted) Navigator.pop(context, r);
                       },
+                child: is_loading
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text("Confirm"),
               ),
             ],
           );

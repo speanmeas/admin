@@ -57,16 +57,20 @@ Future<String?> dialog_guest_add({
               ),
             ),
             actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-            actionsAlignment: MainAxisAlignment.spaceAround,
+            actionsAlignment: MainAxisAlignment.end,
             actions: [
-              OutlinedButton.icon(
-                icon: const Icon(Icons.close, color: Colors.red), //
-                label: const Text("Cancel", style: TextStyle(color: Colors.red)),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
                 onPressed: () => Navigator.pop(context),
+                child: const Text("Cancel"),
               ),
-              OutlinedButton.icon(
-                icon: const Icon(Icons.check), //
-                label: const Text("Confirm"), //
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
                 onPressed: () async {
                   if ((full_name ?? "").isEmpty && (phone_number ?? "").isEmpty) return;
                   final guest = await dio.post(
@@ -89,6 +93,7 @@ Future<String?> dialog_guest_add({
                   if (tmp == null) return;
                   if (context.mounted) Navigator.pop(context, "${full_name ?? ""} (${phone_number ?? ""})");
                 },
+                child: const Text("OK"),
               ),
             ],
           );

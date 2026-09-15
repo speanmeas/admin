@@ -43,7 +43,7 @@ Future<bool?> dialog_select_room({
             titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
             contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
             actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-            actionsAlignment: MainAxisAlignment.center,
+            actionsAlignment: MainAxisAlignment.end,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -66,9 +66,6 @@ Future<bool?> dialog_select_room({
                     suggestionsCallback: search,
                     builder: (context, controller, focusNode) {
                       room_ctrl = controller;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (!focusNode.hasFocus) focusNode.requestFocus();
-                      });
                       return TextField(
                         autofocus: true,
                         controller: controller,
@@ -96,14 +93,18 @@ Future<bool?> dialog_select_room({
               ),
             ),
             actions: [
-              OutlinedButton.icon(
-                icon: const Icon(Icons.close, color: Colors.red), //
-                label: const Text("Cancel", style: TextStyle(color: Colors.red)),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
                 onPressed: is_loading ? null : () => Navigator.pop(context, false),
+                child: const Text("Cancel"),
               ),
-              OutlinedButton.icon(
-                icon: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check), //
-                label: const Text("Confirm"),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
                 onPressed: is_loading
                     ? null
                     : () async {
@@ -122,6 +123,9 @@ Future<bool?> dialog_select_room({
                         snackbar(ct: context, ms: "Success", cl: Colors.green);
                         if (context.mounted) Navigator.pop(context, true);
                       },
+                child: is_loading
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text("Confirm"),
               ),
             ],
           );

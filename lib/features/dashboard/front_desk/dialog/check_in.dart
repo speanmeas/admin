@@ -35,8 +35,8 @@ Future<bool?> dialog_check_in({
             alignment: Alignment.topCenter,
             titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
             contentPadding: const EdgeInsets.all(4),
-            actionsPadding: const EdgeInsets.all(4),
-            actionsAlignment: MainAxisAlignment.center,
+            actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+            actionsAlignment: MainAxisAlignment.end,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -66,17 +66,22 @@ Future<bool?> dialog_check_in({
               ),
             ),
             actions: [
-              OutlinedButton.icon(
-                icon: const Icon(Icons.close, color: Colors.red), //
-                label: const Text("Cancel", style: TextStyle(color: Colors.red)),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
                 onPressed: is_loading ? null : () => Navigator.pop(context, false),
+                child: const Text("Cancel"),
               ),
-              OutlinedButton.icon(
-                icon: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check), //
-                label: const Text("Confirm"),
-                onPressed: is_loading
-                    ? null
-                    : () => on_confirm(setState),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                ),
+                onPressed: is_loading ? null : () => on_confirm(setState),
+                child: is_loading
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text("Confirm"),
               ),
             ],
           );

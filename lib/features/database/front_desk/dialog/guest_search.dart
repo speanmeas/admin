@@ -70,7 +70,11 @@ Future<String?> dialog_guest_search({
                           Front_Desk.GUEST_ID: e[Guest.ID], //
                         },
                       );
-                      if (tmp != null) Navigator.pop(context, v);
+                      if (tmp != null && context.mounted) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (context.mounted) Navigator.pop(context, v);
+                        });
+                      }
                       return;
                     }
                   }

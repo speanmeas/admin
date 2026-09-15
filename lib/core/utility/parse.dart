@@ -18,7 +18,6 @@ String format_string(dynamic v, {String fallback = ""}) {
   return s;
 }
 
-// * បម្លែងទៅជា int (null-safe, web-safe)
 int? parse_int(dynamic v, {int fallback = 0}) {
   if (v == null) return fallback;
   if (v is int) return v;
@@ -30,7 +29,6 @@ int? parse_int(dynamic v, {int fallback = 0}) {
   }
 }
 
-// * បម្លែងទៅជា String ដែលបាន format ពី int (null-safe, web-safe)
 String format_int(dynamic v, {String fallback = "0"}) {
   if (v == null) return fallback;
   final i = parse_int(v);
@@ -38,7 +36,6 @@ String format_int(dynamic v, {String fallback = "0"}) {
   return i.toString();
 }
 
-// * បម្លែងទៅជា double (null-safe, web-safe)
 double? parse_double(dynamic v) {
   if (v == null) return null;
   if (v is double) return v;
@@ -50,7 +47,6 @@ double? parse_double(dynamic v) {
   }
 }
 
-// * បម្លែងទៅជា String ដែលបាន format ពី double (null-safe, web-safe)
 String format_double(dynamic v, {String fallback = "0.00", int digits = 2}) {
   if (v == null) return fallback;
   final d = parse_double(v);
@@ -58,7 +54,6 @@ String format_double(dynamic v, {String fallback = "0.00", int digits = 2}) {
   return d.toStringAsFixed(digits);
 }
 
-// * បម្លែងទៅជា num (null-safe, web-safe)
 num? parse_num(dynamic v) {
   if (v == null) return null;
   if (v is num) return v;
@@ -69,26 +64,22 @@ num? parse_num(dynamic v) {
   }
 }
 
-// * បម្លែងទៅជា bool (null-safe)
-// * ទទួល bool, "true"/"false", 1/0, "1"/"0"; ត្រឡប់ null ពេលមិនស្គាល់
-bool? parse_bool(dynamic v) {
-  if (v == null) return null;
+String format_bool(dynamic v, {String fallback = "0", String true_val = "1", String false_val = "0"}) {
+  if (v == null) return fallback;
+  final b = parse_bool(v);
+  return b ? true_val : false_val;
+}
+
+bool parse_bool(dynamic v, {bool fallback = false}) {
+  if (v == null) return fallback;
   if (v is bool) return v;
   if (v is num) return v != 0;
   final s = v?.toString().trim().toLowerCase() ?? "";
   if (s == "true" || s == "1" || s == "yes") return true;
   if (s == "false" || s == "0" || s == "no") return false;
-  return null;
+  return fallback;
 }
 
-String format_bool(dynamic v, {String true_str = "True", String false_str = "False", String fallback = ""}) {
-  if (v == null) return fallback;
-  final b = parse_bool(v);
-  if (b == null) return fallback;
-  return b ? true_str : false_str;
-}
-
-// * បម្លែងទៅជា DateTime (null-safe, web-safe)
 DateTime? parse_datetime(dynamic v) {
   if (v == null) return null;
   if (v is DateTime) return v;
@@ -99,26 +90,11 @@ DateTime? parse_datetime(dynamic v) {
   }
 }
 
-// * បម្លែងទៅជា String ដែលបាន format ពី DateTime (null-safe, web-safe)
 String format_datetime(dynamic v, {String fallback = "", String format = DEFAULT_DATE_FORMAT}) {
   if (v == null) return fallback;
   final dt = parse_datetime(v);
   if (dt == null) return fallback;
   return DateFormat(format).format(dt.toLocal());
-}
-
-//
-int format_bool_01(dynamic v, {int fallback = 0, int true_val = 1, int false_val = 0}) {
-  if (v == null) return fallback;
-  final b = parse_bool(v);
-  if (b == null) return fallback;
-  return b ? true_val : false_val;
-}
-
-bool parse_bool_01(dynamic v, {bool fallback = false, int true_val = 1}) {
-  if (v == null) return fallback;
-  if (parse_int(v) == true_val) return true;
-  return parse_bool(v) ?? fallback;
 }
 
 // // * បម្លែងទៅជា List<dynamic> (null-safe)

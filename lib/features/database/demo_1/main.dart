@@ -260,11 +260,11 @@ class _Main_State extends State<Main_> {
           PlutoColumn(
             field: Demo_1.LOGIC, //
             title: "Logic",
-            type: PlutoColumnType.number(),
+            type: PlutoColumnType.text(),
             // enableEditingMode: false,
             width: 80,
             renderer: (rc) {
-              bool value = parse_bool_01(rc.cell.value);
+              bool value = parse_bool(rc.cell.value);
               return Center(
                 child: SizedBox(
                   height: 24,
@@ -384,7 +384,7 @@ class _Main_State extends State<Main_> {
                 if (c.field == Demo_1.SELECT) return PlutoCell(value: d.select ?? "");
                 if (c.field == Demo_1.NUMBER) return PlutoCell(value: d.number ?? 0.0);
                 if (c.field == Demo_1.DATE_TIME) return PlutoCell(value: format_datetime(d.date_time));
-                if (c.field == Demo_1.LOGIC) return PlutoCell(value: format_bool_01(d.logic));
+                if (c.field == Demo_1.LOGIC) return PlutoCell(value: format_bool(d.logic));
                 return PlutoCell(value: "");
               })(),
           },
@@ -463,10 +463,10 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update_datetime(PlutoColumnRendererContext rc) async {
-    DateTime? dt = rc.cell.value;
+    DateTime dt = parse_datetime(rc.cell.value) ?? DateTime.now();
     final v = await dialog_datetime(context, initial: dt);
     if (v == null) return;
-    rc.cell.value = v;
+    rc.cell.value = format_datetime(v);
     state_manager.notifyListeners();
 
     final id = rc.row.cells[Demo_1.ID]?.value;
@@ -475,7 +475,7 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update_bool(PlutoColumnRendererContext rc, bool v) {
-    rc.cell.value = format_bool_01(v);
+    rc.cell.value = format_bool(v);
     state_manager.notifyListeners();
 
     final id = rc.row.cells[Demo_1.ID]?.value;
