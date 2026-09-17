@@ -165,6 +165,7 @@ class _Main_State extends State<Main_> {
             type: PlutoColumnType.number(),
             width: 60,
             enableEditingMode: false,
+            enableRowDrag: true,
             renderer: (rc) {
               return Align(
                 alignment: Alignment.center, //
@@ -237,6 +238,7 @@ class _Main_State extends State<Main_> {
         ),
         onLoaded: on_loaded,
         onChanged: on_updated,
+        onRowsMoved: on_rows_moved,
       ),
     );
   }
@@ -249,6 +251,29 @@ class _Main_State extends State<Main_> {
     list_column_pluto = state_manager.refColumns.toList();
 
     await on_reload();
+  }
+
+  Future<void> on_rows_moved(PlutoGridOnRowsMovedEvent e) async {
+    re_index();
+
+    final List<Map<String, dynamic>> items = [];
+    final int start_offset = (current_page - 1) * DEFAULT_LIMIT_ROW;
+
+    for (int i = 0; i < state_manager.rows.length; i++) {
+      final row = state_manager.rows[i];
+      final String id = row.cells[Penalty.ID]?.value?.toString() ?? "";
+      if (id.isNotEmpty) items.add({"_id": id, "order": (start_offset + i + 1).toDouble()});
+    }
+
+    if (items.isEmpty) return;
+
+    final res = await dio.post(endpoint.PENALTY_UPDATE_ORDER, data: {"items": items});
+
+    if (res == null) {
+      snackbar(ct: context, ms: dio.error_msg ?? "Failed to update order", cl: Colors.red);
+    } else {
+      snackbar(ct: context, ms: "Order updated", cl: Colors.green);
+    }
   }
 
   Future<void> on_reload() async {
@@ -269,8 +294,8 @@ class _Main_State extends State<Main_> {
     final tmp = await dio.post(
       endpoint.PENALTY_READ, //
       data: {
-        "key": DEFAULT_KEY, //
-        "order": DEFAULT_ORDER, //
+        "key": "order", //
+        "order": 1, //
         "offset": (p - 1) * DEFAULT_LIMIT_ROW, //
         "limit": DEFAULT_LIMIT_ROW,
       },

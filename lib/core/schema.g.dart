@@ -8,6 +8,7 @@ class Bank {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const NAME = 'name';
   static const NOTE = 'note';
 
@@ -18,10 +19,11 @@ class Bank {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? name;
   final String? note;
 
-  Bank({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.name, this.note});
+  Bank({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.name, this.note});
 
   factory Bank.fromJson(Map<String, dynamic> json) => Bank(
     id: json['_id'] as String?,
@@ -31,6 +33,7 @@ class Bank {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     name: json['name'] as String?,
     note: json['note'] as String?,
   );
@@ -44,6 +47,7 @@ class Bank {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['name'] = name;
     json['note'] = note;
     return json;
@@ -58,6 +62,7 @@ class Base {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
 
   final String? id;
   final DateTime? created_at;
@@ -66,8 +71,9 @@ class Base {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
 
-  Base({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by});
+  Base({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order});
 
   factory Base.fromJson(Map<String, dynamic> json) => Base(
     id: json['_id'] as String?,
@@ -77,6 +83,7 @@ class Base {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
   );
 
   Map<String, dynamic> toJson() {
@@ -88,6 +95,7 @@ class Base {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     return json;
   }
 }
@@ -100,6 +108,7 @@ class Log_Bank {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const NAME = 'name';
   static const NOTE = 'note';
   static const BID = 'bid';
@@ -112,12 +121,13 @@ class Log_Bank {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? name;
   final String? note;
   final dynamic bid;
   final String? op;
 
-  Log_Bank({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.name, this.note, this.bid, this.op});
+  Log_Bank({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.name, this.note, this.bid, this.op});
 
   factory Log_Bank.fromJson(Map<String, dynamic> json) => Log_Bank(
     id: json['_id'] as String?,
@@ -127,6 +137,7 @@ class Log_Bank {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     name: json['name'] as String?,
     note: json['note'] as String?,
     bid: json['bid'] == null ? null : (json['bid'] is Map<String, dynamic> ? Bank_Show.fromJson(json['bid'] as Map<String, dynamic>) : json['bid']),
@@ -142,6 +153,7 @@ class Log_Bank {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['name'] = name;
     json['note'] = note;
     json['bid'] = bid == null ? null : bid is Bank_Show ? bid.toJson() : bid;
@@ -158,6 +170,7 @@ class Demo_1 {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const TEXT = 'text';
   static const NUMBER = 'number';
   static const DATE_TIME = 'date_time';
@@ -171,13 +184,14 @@ class Demo_1 {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? text;
   final double? number;
   final DateTime? date_time;
   final bool? logic;
   final String? select;
 
-  Demo_1({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.text, this.number, this.date_time, this.logic, this.select});
+  Demo_1({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.text, this.number, this.date_time, this.logic, this.select});
 
   factory Demo_1.fromJson(Map<String, dynamic> json) => Demo_1(
     id: json['_id'] as String?,
@@ -187,6 +201,7 @@ class Demo_1 {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     text: json['text'] as String?,
     number: json['number'] as double?,
     date_time: json['date_time'] == null ? null : DateTime.tryParse(json['date_time'] as String),
@@ -203,6 +218,7 @@ class Demo_1 {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['text'] = text;
     json['number'] = number;
     json['date_time'] = date_time?.toIso8601String();
@@ -220,6 +236,7 @@ class Log_Demo_1 {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const TEXT = 'text';
   static const NUMBER = 'number';
   static const DATE_TIME = 'date_time';
@@ -235,6 +252,7 @@ class Log_Demo_1 {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? text;
   final double? number;
   final DateTime? date_time;
@@ -243,7 +261,7 @@ class Log_Demo_1 {
   final dynamic bid;
   final String? op;
 
-  Log_Demo_1({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.text, this.number, this.date_time, this.logic, this.select, this.bid, this.op});
+  Log_Demo_1({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.text, this.number, this.date_time, this.logic, this.select, this.bid, this.op});
 
   factory Log_Demo_1.fromJson(Map<String, dynamic> json) => Log_Demo_1(
     id: json['_id'] as String?,
@@ -253,6 +271,7 @@ class Log_Demo_1 {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     text: json['text'] as String?,
     number: json['number'] as double?,
     date_time: json['date_time'] == null ? null : DateTime.tryParse(json['date_time'] as String),
@@ -271,6 +290,7 @@ class Log_Demo_1 {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['text'] = text;
     json['number'] = number;
     json['date_time'] = date_time?.toIso8601String();
@@ -290,6 +310,7 @@ class Demo_2_1 {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const TEXT = 'text';
   static const NUMBER = 'number';
   static const DEMO_2_2_ID = 'demo_2_2_id';
@@ -301,11 +322,12 @@ class Demo_2_1 {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? text;
   final int? number;
   final dynamic demo_2_2_id;
 
-  Demo_2_1({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.text, this.number, this.demo_2_2_id});
+  Demo_2_1({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.text, this.number, this.demo_2_2_id});
 
   factory Demo_2_1.fromJson(Map<String, dynamic> json) => Demo_2_1(
     id: json['_id'] as String?,
@@ -315,6 +337,7 @@ class Demo_2_1 {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     text: json['text'] as String?,
     number: json['number'] as int?,
     demo_2_2_id: json['demo_2_2_id'] == null ? null : (json['demo_2_2_id'] is Map<String, dynamic> ? Demo_2_2.fromJson(json['demo_2_2_id'] as Map<String, dynamic>) : json['demo_2_2_id']),
@@ -329,6 +352,7 @@ class Demo_2_1 {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['text'] = text;
     json['number'] = number;
     json['demo_2_2_id'] = demo_2_2_id == null ? null : demo_2_2_id is Demo_2_2 ? demo_2_2_id.toJson() : demo_2_2_id;
@@ -344,6 +368,7 @@ class Log_Demo_2_1 {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const TEXT = 'text';
   static const NUMBER = 'number';
   static const DEMO_2_2_ID = 'demo_2_2_id';
@@ -357,13 +382,14 @@ class Log_Demo_2_1 {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? text;
   final int? number;
   final dynamic demo_2_2_id;
   final dynamic bid;
   final String? op;
 
-  Log_Demo_2_1({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.text, this.number, this.demo_2_2_id, this.bid, this.op});
+  Log_Demo_2_1({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.text, this.number, this.demo_2_2_id, this.bid, this.op});
 
   factory Log_Demo_2_1.fromJson(Map<String, dynamic> json) => Log_Demo_2_1(
     id: json['_id'] as String?,
@@ -373,6 +399,7 @@ class Log_Demo_2_1 {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     text: json['text'] as String?,
     number: json['number'] as int?,
     demo_2_2_id: json['demo_2_2_id'] == null ? null : (json['demo_2_2_id'] is Map<String, dynamic> ? Demo_2_2.fromJson(json['demo_2_2_id'] as Map<String, dynamic>) : json['demo_2_2_id']),
@@ -389,6 +416,7 @@ class Log_Demo_2_1 {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['text'] = text;
     json['number'] = number;
     json['demo_2_2_id'] = demo_2_2_id == null ? null : demo_2_2_id is Demo_2_2 ? demo_2_2_id.toJson() : demo_2_2_id;
@@ -406,6 +434,7 @@ class Demo_2_2 {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const TEXT = 'text';
   static const NUMBER = 'number';
 
@@ -416,10 +445,11 @@ class Demo_2_2 {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? text;
   final int? number;
 
-  Demo_2_2({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.text, this.number});
+  Demo_2_2({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.text, this.number});
 
   factory Demo_2_2.fromJson(Map<String, dynamic> json) => Demo_2_2(
     id: json['_id'] as String?,
@@ -429,6 +459,7 @@ class Demo_2_2 {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     text: json['text'] as String?,
     number: json['number'] as int?,
   );
@@ -442,6 +473,7 @@ class Demo_2_2 {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['text'] = text;
     json['number'] = number;
     return json;
@@ -456,6 +488,7 @@ class Log_Demo_2_2 {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const TEXT = 'text';
   static const NUMBER = 'number';
   static const BID = 'bid';
@@ -468,12 +501,13 @@ class Log_Demo_2_2 {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? text;
   final int? number;
   final dynamic bid;
   final String? op;
 
-  Log_Demo_2_2({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.text, this.number, this.bid, this.op});
+  Log_Demo_2_2({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.text, this.number, this.bid, this.op});
 
   factory Log_Demo_2_2.fromJson(Map<String, dynamic> json) => Log_Demo_2_2(
     id: json['_id'] as String?,
@@ -483,6 +517,7 @@ class Log_Demo_2_2 {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     text: json['text'] as String?,
     number: json['number'] as int?,
     bid: json['bid'] == null ? null : (json['bid'] is Map<String, dynamic> ? Demo_2_2_Show.fromJson(json['bid'] as Map<String, dynamic>) : json['bid']),
@@ -498,6 +533,7 @@ class Log_Demo_2_2 {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['text'] = text;
     json['number'] = number;
     json['bid'] = bid == null ? null : bid is Demo_2_2_Show ? bid.toJson() : bid;
@@ -514,6 +550,7 @@ class Demo_3_1 {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const TEXT = 'text';
   static const NUMBER = 'number';
   static const LIST_DEMO_3_2_ID = 'list_demo_3_2_id';
@@ -525,11 +562,12 @@ class Demo_3_1 {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? text;
   final int? number;
   final List<dynamic>? list_demo_3_2_id;
 
-  Demo_3_1({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.text, this.number, this.list_demo_3_2_id});
+  Demo_3_1({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.text, this.number, this.list_demo_3_2_id});
 
   factory Demo_3_1.fromJson(Map<String, dynamic> json) => Demo_3_1(
     id: json['_id'] as String?,
@@ -539,6 +577,7 @@ class Demo_3_1 {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     text: json['text'] as String?,
     number: json['number'] as int?,
     list_demo_3_2_id: (json['list_demo_3_2_id'] as List<dynamic>?)?.map((e) => e is Map<String, dynamic> ? Demo_3_2.fromJson(e) : e).toList(),
@@ -553,6 +592,7 @@ class Demo_3_1 {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['text'] = text;
     json['number'] = number;
     json['list_demo_3_2_id'] = list_demo_3_2_id?.map((e) => e is Demo_3_2 ? e.toJson() : e).toList();
@@ -568,6 +608,7 @@ class Log_Demo_3_1 {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const TEXT = 'text';
   static const NUMBER = 'number';
   static const LIST_DEMO_3_2_ID = 'list_demo_3_2_id';
@@ -581,13 +622,14 @@ class Log_Demo_3_1 {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? text;
   final int? number;
   final List<dynamic>? list_demo_3_2_id;
   final dynamic bid;
   final String? op;
 
-  Log_Demo_3_1({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.text, this.number, this.list_demo_3_2_id, this.bid, this.op});
+  Log_Demo_3_1({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.text, this.number, this.list_demo_3_2_id, this.bid, this.op});
 
   factory Log_Demo_3_1.fromJson(Map<String, dynamic> json) => Log_Demo_3_1(
     id: json['_id'] as String?,
@@ -597,6 +639,7 @@ class Log_Demo_3_1 {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     text: json['text'] as String?,
     number: json['number'] as int?,
     list_demo_3_2_id: (json['list_demo_3_2_id'] as List<dynamic>?)?.map((e) => e is Map<String, dynamic> ? Demo_3_2.fromJson(e) : e).toList(),
@@ -613,6 +656,7 @@ class Log_Demo_3_1 {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['text'] = text;
     json['number'] = number;
     json['list_demo_3_2_id'] = list_demo_3_2_id?.map((e) => e is Demo_3_2 ? e.toJson() : e).toList();
@@ -630,6 +674,7 @@ class Demo_3_2 {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const TEXT = 'text';
   static const NUMBER = 'number';
 
@@ -640,10 +685,11 @@ class Demo_3_2 {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? text;
   final int? number;
 
-  Demo_3_2({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.text, this.number});
+  Demo_3_2({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.text, this.number});
 
   factory Demo_3_2.fromJson(Map<String, dynamic> json) => Demo_3_2(
     id: json['_id'] as String?,
@@ -653,6 +699,7 @@ class Demo_3_2 {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     text: json['text'] as String?,
     number: json['number'] as int?,
   );
@@ -666,6 +713,7 @@ class Demo_3_2 {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['text'] = text;
     json['number'] = number;
     return json;
@@ -680,6 +728,7 @@ class Log_Demo_3_2 {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const TEXT = 'text';
   static const NUMBER = 'number';
   static const BID = 'bid';
@@ -692,12 +741,13 @@ class Log_Demo_3_2 {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? text;
   final int? number;
   final dynamic bid;
   final String? op;
 
-  Log_Demo_3_2({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.text, this.number, this.bid, this.op});
+  Log_Demo_3_2({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.text, this.number, this.bid, this.op});
 
   factory Log_Demo_3_2.fromJson(Map<String, dynamic> json) => Log_Demo_3_2(
     id: json['_id'] as String?,
@@ -707,6 +757,7 @@ class Log_Demo_3_2 {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     text: json['text'] as String?,
     number: json['number'] as int?,
     bid: json['bid'] == null ? null : (json['bid'] is Map<String, dynamic> ? Demo_3_2_Show.fromJson(json['bid'] as Map<String, dynamic>) : json['bid']),
@@ -722,6 +773,7 @@ class Log_Demo_3_2 {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['text'] = text;
     json['number'] = number;
     json['bid'] = bid == null ? null : bid is Demo_3_2_Show ? bid.toJson() : bid;
@@ -738,6 +790,7 @@ class Front_Desk {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const ROOM_NUMBER = 'room_number';
   static const GUEST_ID = 'guest_id';
   static const NUMBER_OF_GUEST = 'number_of_guest';
@@ -769,6 +822,7 @@ class Front_Desk {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? room_number;
   final dynamic guest_id;
   final int? number_of_guest;
@@ -793,7 +847,7 @@ class Front_Desk {
   final DateTime? change_at;
   final dynamic change_by;
 
-  Front_Desk({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.room_number, this.guest_id, this.number_of_guest, this.room_price, this.penalty_item_id, this.penalty_price, this.mini_bar_item_id, this.mini_bar_price, this.pay_cash, this.pay_bank, this.pay_balance, this.pay_note, this.shift_date, this.check_in_at, this.check_in_by, this.pay_at, this.pay_by, this.check_out_at, this.check_out_by, this.clean_at, this.clean_by, this.change_at, this.change_by});
+  Front_Desk({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.room_number, this.guest_id, this.number_of_guest, this.room_price, this.penalty_item_id, this.penalty_price, this.mini_bar_item_id, this.mini_bar_price, this.pay_cash, this.pay_bank, this.pay_balance, this.pay_note, this.shift_date, this.check_in_at, this.check_in_by, this.pay_at, this.pay_by, this.check_out_at, this.check_out_by, this.clean_at, this.clean_by, this.change_at, this.change_by});
 
   factory Front_Desk.fromJson(Map<String, dynamic> json) => Front_Desk(
     id: json['_id'] as String?,
@@ -803,6 +857,7 @@ class Front_Desk {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     room_number: json['room_number'] as String?,
     guest_id: json['guest_id'] == null ? null : (json['guest_id'] is Map<String, dynamic> ? Guest_Show.fromJson(json['guest_id'] as Map<String, dynamic>) : json['guest_id']),
     number_of_guest: json['number_of_guest'] as int?,
@@ -837,6 +892,7 @@ class Front_Desk {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['room_number'] = room_number;
     json['guest_id'] = guest_id == null ? null : guest_id is Guest_Show ? guest_id.toJson() : guest_id;
     json['number_of_guest'] = number_of_guest;
@@ -872,6 +928,7 @@ class Log_Front_Desk {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const ROOM_NUMBER = 'room_number';
   static const GUEST_ID = 'guest_id';
   static const NUMBER_OF_GUEST = 'number_of_guest';
@@ -905,6 +962,7 @@ class Log_Front_Desk {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? room_number;
   final dynamic guest_id;
   final int? number_of_guest;
@@ -931,7 +989,7 @@ class Log_Front_Desk {
   final dynamic bid;
   final String? op;
 
-  Log_Front_Desk({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.room_number, this.guest_id, this.number_of_guest, this.room_price, this.penalty_item_id, this.penalty_price, this.mini_bar_item_id, this.mini_bar_price, this.pay_cash, this.pay_bank, this.pay_balance, this.pay_note, this.shift_date, this.check_in_at, this.check_in_by, this.pay_at, this.pay_by, this.check_out_at, this.check_out_by, this.clean_at, this.clean_by, this.change_at, this.change_by, this.bid, this.op});
+  Log_Front_Desk({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.room_number, this.guest_id, this.number_of_guest, this.room_price, this.penalty_item_id, this.penalty_price, this.mini_bar_item_id, this.mini_bar_price, this.pay_cash, this.pay_bank, this.pay_balance, this.pay_note, this.shift_date, this.check_in_at, this.check_in_by, this.pay_at, this.pay_by, this.check_out_at, this.check_out_by, this.clean_at, this.clean_by, this.change_at, this.change_by, this.bid, this.op});
 
   factory Log_Front_Desk.fromJson(Map<String, dynamic> json) => Log_Front_Desk(
     id: json['_id'] as String?,
@@ -941,6 +999,7 @@ class Log_Front_Desk {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     room_number: json['room_number'] as String?,
     guest_id: json['guest_id'] == null ? null : (json['guest_id'] is Map<String, dynamic> ? Guest_Show.fromJson(json['guest_id'] as Map<String, dynamic>) : json['guest_id']),
     number_of_guest: json['number_of_guest'] as int?,
@@ -977,6 +1036,7 @@ class Log_Front_Desk {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['room_number'] = room_number;
     json['guest_id'] = guest_id == null ? null : guest_id is Guest_Show ? guest_id.toJson() : guest_id;
     json['number_of_guest'] = number_of_guest;
@@ -1014,6 +1074,7 @@ class Guest {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const FULL_NAME = 'full_name';
   static const PHONE_NUMBER = 'phone_number';
   static const GENDER = 'gender';
@@ -1027,13 +1088,14 @@ class Guest {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? full_name;
   final String? phone_number;
   final String? gender;
   final String? nationality;
   final String? note;
 
-  Guest({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.full_name, this.phone_number, this.gender, this.nationality, this.note});
+  Guest({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.full_name, this.phone_number, this.gender, this.nationality, this.note});
 
   factory Guest.fromJson(Map<String, dynamic> json) => Guest(
     id: json['_id'] as String?,
@@ -1043,6 +1105,7 @@ class Guest {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     full_name: json['full_name'] as String?,
     phone_number: json['phone_number'] as String?,
     gender: json['gender'] as String?,
@@ -1059,6 +1122,7 @@ class Guest {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['full_name'] = full_name;
     json['phone_number'] = phone_number;
     json['gender'] = gender;
@@ -1076,6 +1140,7 @@ class Log_Guest {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const FULL_NAME = 'full_name';
   static const PHONE_NUMBER = 'phone_number';
   static const GENDER = 'gender';
@@ -1091,6 +1156,7 @@ class Log_Guest {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? full_name;
   final String? phone_number;
   final String? gender;
@@ -1099,7 +1165,7 @@ class Log_Guest {
   final dynamic bid;
   final String? op;
 
-  Log_Guest({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.full_name, this.phone_number, this.gender, this.nationality, this.note, this.bid, this.op});
+  Log_Guest({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.full_name, this.phone_number, this.gender, this.nationality, this.note, this.bid, this.op});
 
   factory Log_Guest.fromJson(Map<String, dynamic> json) => Log_Guest(
     id: json['_id'] as String?,
@@ -1109,6 +1175,7 @@ class Log_Guest {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     full_name: json['full_name'] as String?,
     phone_number: json['phone_number'] as String?,
     gender: json['gender'] as String?,
@@ -1127,6 +1194,7 @@ class Log_Guest {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['full_name'] = full_name;
     json['phone_number'] = phone_number;
     json['gender'] = gender;
@@ -1146,6 +1214,7 @@ class Log_Mini_Bar {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const NAME = 'name';
   static const PRICE = 'price';
   static const STOCK = 'stock';
@@ -1160,6 +1229,7 @@ class Log_Mini_Bar {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? name;
   final double? price;
   final int? stock;
@@ -1167,7 +1237,7 @@ class Log_Mini_Bar {
   final dynamic bid;
   final String? op;
 
-  Log_Mini_Bar({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.name, this.price, this.stock, this.note, this.bid, this.op});
+  Log_Mini_Bar({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.name, this.price, this.stock, this.note, this.bid, this.op});
 
   factory Log_Mini_Bar.fromJson(Map<String, dynamic> json) => Log_Mini_Bar(
     id: json['_id'] as String?,
@@ -1177,6 +1247,7 @@ class Log_Mini_Bar {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     name: json['name'] as String?,
     price: json['price'] as double?,
     stock: json['stock'] as int?,
@@ -1194,6 +1265,7 @@ class Log_Mini_Bar {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['name'] = name;
     json['price'] = price;
     json['stock'] = stock;
@@ -1212,6 +1284,7 @@ class Mini_Bar {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const NAME = 'name';
   static const PRICE = 'price';
   static const STOCK = 'stock';
@@ -1224,12 +1297,13 @@ class Mini_Bar {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? name;
   final double? price;
   final int? stock;
   final String? note;
 
-  Mini_Bar({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.name, this.price, this.stock, this.note});
+  Mini_Bar({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.name, this.price, this.stock, this.note});
 
   factory Mini_Bar.fromJson(Map<String, dynamic> json) => Mini_Bar(
     id: json['_id'] as String?,
@@ -1239,6 +1313,7 @@ class Mini_Bar {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     name: json['name'] as String?,
     price: json['price'] as double?,
     stock: json['stock'] as int?,
@@ -1254,6 +1329,7 @@ class Mini_Bar {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['name'] = name;
     json['price'] = price;
     json['stock'] = stock;
@@ -1270,6 +1346,7 @@ class Log_Mini_Bar_Item {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const MINI_BAR_ID = 'mini_bar_id';
   static const QUANTITY = 'quantity';
   static const BID = 'bid';
@@ -1282,12 +1359,13 @@ class Log_Mini_Bar_Item {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final dynamic mini_bar_id;
   final int? quantity;
   final dynamic bid;
   final String? op;
 
-  Log_Mini_Bar_Item({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.mini_bar_id, this.quantity, this.bid, this.op});
+  Log_Mini_Bar_Item({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.mini_bar_id, this.quantity, this.bid, this.op});
 
   factory Log_Mini_Bar_Item.fromJson(Map<String, dynamic> json) => Log_Mini_Bar_Item(
     id: json['_id'] as String?,
@@ -1297,6 +1375,7 @@ class Log_Mini_Bar_Item {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     mini_bar_id: json['mini_bar_id'] == null ? null : (json['mini_bar_id'] is Map<String, dynamic> ? Mini_Bar_Show_2.fromJson(json['mini_bar_id'] as Map<String, dynamic>) : json['mini_bar_id']),
     quantity: json['quantity'] as int?,
     bid: json['bid'] == null ? null : (json['bid'] is Map<String, dynamic> ? Mini_Bar_Item_Show.fromJson(json['bid'] as Map<String, dynamic>) : json['bid']),
@@ -1312,6 +1391,7 @@ class Log_Mini_Bar_Item {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['mini_bar_id'] = mini_bar_id == null ? null : mini_bar_id is Mini_Bar_Show_2 ? mini_bar_id.toJson() : mini_bar_id;
     json['quantity'] = quantity;
     json['bid'] = bid == null ? null : bid is Mini_Bar_Item_Show ? bid.toJson() : bid;
@@ -1328,6 +1408,7 @@ class Mini_Bar_Item {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const MINI_BAR_ID = 'mini_bar_id';
   static const QUANTITY = 'quantity';
 
@@ -1338,10 +1419,11 @@ class Mini_Bar_Item {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final dynamic mini_bar_id;
   final int? quantity;
 
-  Mini_Bar_Item({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.mini_bar_id, this.quantity});
+  Mini_Bar_Item({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.mini_bar_id, this.quantity});
 
   factory Mini_Bar_Item.fromJson(Map<String, dynamic> json) => Mini_Bar_Item(
     id: json['_id'] as String?,
@@ -1351,6 +1433,7 @@ class Mini_Bar_Item {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     mini_bar_id: json['mini_bar_id'] == null ? null : (json['mini_bar_id'] is Map<String, dynamic> ? Mini_Bar_Show_2.fromJson(json['mini_bar_id'] as Map<String, dynamic>) : json['mini_bar_id']),
     quantity: json['quantity'] as int?,
   );
@@ -1364,6 +1447,7 @@ class Mini_Bar_Item {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['mini_bar_id'] = mini_bar_id == null ? null : mini_bar_id is Mini_Bar_Show_2 ? mini_bar_id.toJson() : mini_bar_id;
     json['quantity'] = quantity;
     return json;
@@ -1378,6 +1462,7 @@ class Log_Nationality {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const NAME = 'name';
   static const NOTE = 'note';
   static const BID = 'bid';
@@ -1390,12 +1475,13 @@ class Log_Nationality {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? name;
   final String? note;
   final dynamic bid;
   final String? op;
 
-  Log_Nationality({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.name, this.note, this.bid, this.op});
+  Log_Nationality({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.name, this.note, this.bid, this.op});
 
   factory Log_Nationality.fromJson(Map<String, dynamic> json) => Log_Nationality(
     id: json['_id'] as String?,
@@ -1405,6 +1491,7 @@ class Log_Nationality {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     name: json['name'] as String?,
     note: json['note'] as String?,
     bid: json['bid'] == null ? null : (json['bid'] is Map<String, dynamic> ? Nationality_Show.fromJson(json['bid'] as Map<String, dynamic>) : json['bid']),
@@ -1420,6 +1507,7 @@ class Log_Nationality {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['name'] = name;
     json['note'] = note;
     json['bid'] = bid == null ? null : bid is Nationality_Show ? bid.toJson() : bid;
@@ -1436,6 +1524,7 @@ class Nationality {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const NAME = 'name';
   static const NOTE = 'note';
 
@@ -1446,10 +1535,11 @@ class Nationality {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? name;
   final String? note;
 
-  Nationality({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.name, this.note});
+  Nationality({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.name, this.note});
 
   factory Nationality.fromJson(Map<String, dynamic> json) => Nationality(
     id: json['_id'] as String?,
@@ -1459,6 +1549,7 @@ class Nationality {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     name: json['name'] as String?,
     note: json['note'] as String?,
   );
@@ -1472,6 +1563,7 @@ class Nationality {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['name'] = name;
     json['note'] = note;
     return json;
@@ -1486,6 +1578,7 @@ class Log_Penalty {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const NAME = 'name';
   static const PRICE = 'price';
   static const NOTE = 'note';
@@ -1499,13 +1592,14 @@ class Log_Penalty {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? name;
   final double? price;
   final String? note;
   final dynamic bid;
   final String? op;
 
-  Log_Penalty({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.name, this.price, this.note, this.bid, this.op});
+  Log_Penalty({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.name, this.price, this.note, this.bid, this.op});
 
   factory Log_Penalty.fromJson(Map<String, dynamic> json) => Log_Penalty(
     id: json['_id'] as String?,
@@ -1515,6 +1609,7 @@ class Log_Penalty {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     name: json['name'] as String?,
     price: json['price'] as double?,
     note: json['note'] as String?,
@@ -1531,6 +1626,7 @@ class Log_Penalty {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['name'] = name;
     json['price'] = price;
     json['note'] = note;
@@ -1548,6 +1644,7 @@ class Penalty {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const NAME = 'name';
   static const PRICE = 'price';
   static const NOTE = 'note';
@@ -1559,11 +1656,12 @@ class Penalty {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? name;
   final double? price;
   final String? note;
 
-  Penalty({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.name, this.price, this.note});
+  Penalty({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.name, this.price, this.note});
 
   factory Penalty.fromJson(Map<String, dynamic> json) => Penalty(
     id: json['_id'] as String?,
@@ -1573,6 +1671,7 @@ class Penalty {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     name: json['name'] as String?,
     price: json['price'] as double?,
     note: json['note'] as String?,
@@ -1587,6 +1686,7 @@ class Penalty {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['name'] = name;
     json['price'] = price;
     json['note'] = note;
@@ -1602,6 +1702,7 @@ class Log_Penalty_Item {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const PENALTY_ID = 'penalty_id';
   static const QUANTITY = 'quantity';
   static const BID = 'bid';
@@ -1614,12 +1715,13 @@ class Log_Penalty_Item {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final dynamic penalty_id;
   final int? quantity;
   final dynamic bid;
   final String? op;
 
-  Log_Penalty_Item({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.penalty_id, this.quantity, this.bid, this.op});
+  Log_Penalty_Item({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.penalty_id, this.quantity, this.bid, this.op});
 
   factory Log_Penalty_Item.fromJson(Map<String, dynamic> json) => Log_Penalty_Item(
     id: json['_id'] as String?,
@@ -1629,6 +1731,7 @@ class Log_Penalty_Item {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     penalty_id: json['penalty_id'] == null ? null : (json['penalty_id'] is Map<String, dynamic> ? Penalty_Show_2.fromJson(json['penalty_id'] as Map<String, dynamic>) : json['penalty_id']),
     quantity: json['quantity'] as int?,
     bid: json['bid'] == null ? null : (json['bid'] is Map<String, dynamic> ? Penalty_Item_Show.fromJson(json['bid'] as Map<String, dynamic>) : json['bid']),
@@ -1644,6 +1747,7 @@ class Log_Penalty_Item {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['penalty_id'] = penalty_id == null ? null : penalty_id is Penalty_Show_2 ? penalty_id.toJson() : penalty_id;
     json['quantity'] = quantity;
     json['bid'] = bid == null ? null : bid is Penalty_Item_Show ? bid.toJson() : bid;
@@ -1660,6 +1764,7 @@ class Penalty_Item {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const PENALTY_ID = 'penalty_id';
   static const QUANTITY = 'quantity';
 
@@ -1670,10 +1775,11 @@ class Penalty_Item {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final dynamic penalty_id;
   final int? quantity;
 
-  Penalty_Item({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.penalty_id, this.quantity});
+  Penalty_Item({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.penalty_id, this.quantity});
 
   factory Penalty_Item.fromJson(Map<String, dynamic> json) => Penalty_Item(
     id: json['_id'] as String?,
@@ -1683,6 +1789,7 @@ class Penalty_Item {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     penalty_id: json['penalty_id'] == null ? null : (json['penalty_id'] is Map<String, dynamic> ? Penalty_Show_2.fromJson(json['penalty_id'] as Map<String, dynamic>) : json['penalty_id']),
     quantity: json['quantity'] as int?,
   );
@@ -1696,6 +1803,7 @@ class Penalty_Item {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['penalty_id'] = penalty_id == null ? null : penalty_id is Penalty_Show_2 ? penalty_id.toJson() : penalty_id;
     json['quantity'] = quantity;
     return json;
@@ -1710,6 +1818,7 @@ class Log_Room {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const NUMBER = 'number';
   static const KIND = 'kind';
   static const PRICE_PER_DAY = 'price_per_day';
@@ -1726,6 +1835,7 @@ class Log_Room {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? number;
   final String? kind;
   final double? price_per_day;
@@ -1735,7 +1845,7 @@ class Log_Room {
   final dynamic bid;
   final String? op;
 
-  Log_Room({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.number, this.kind, this.price_per_day, this.price_per_3h, this.status, this.note, this.bid, this.op});
+  Log_Room({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.number, this.kind, this.price_per_day, this.price_per_3h, this.status, this.note, this.bid, this.op});
 
   factory Log_Room.fromJson(Map<String, dynamic> json) => Log_Room(
     id: json['_id'] as String?,
@@ -1745,6 +1855,7 @@ class Log_Room {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     number: json['number'] as String?,
     kind: json['kind'] as String?,
     price_per_day: json['price_per_day'] as double?,
@@ -1764,6 +1875,7 @@ class Log_Room {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['number'] = number;
     json['kind'] = kind;
     json['price_per_day'] = price_per_day;
@@ -1784,6 +1896,7 @@ class Room {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const NUMBER = 'number';
   static const KIND = 'kind';
   static const PRICE_PER_DAY = 'price_per_day';
@@ -1798,6 +1911,7 @@ class Room {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? number;
   final String? kind;
   final double? price_per_day;
@@ -1805,7 +1919,7 @@ class Room {
   final String? status;
   final String? note;
 
-  Room({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.number, this.kind, this.price_per_day, this.price_per_3h, this.status, this.note});
+  Room({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.number, this.kind, this.price_per_day, this.price_per_3h, this.status, this.note});
 
   factory Room.fromJson(Map<String, dynamic> json) => Room(
     id: json['_id'] as String?,
@@ -1815,6 +1929,7 @@ class Room {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     number: json['number'] as String?,
     kind: json['kind'] as String?,
     price_per_day: json['price_per_day'] as double?,
@@ -1832,6 +1947,7 @@ class Room {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['number'] = number;
     json['kind'] = kind;
     json['price_per_day'] = price_per_day;
@@ -1850,6 +1966,7 @@ class Log_Server_Side_Event {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const NOTE = 'note';
   static const BID = 'bid';
   static const OP = 'op';
@@ -1861,11 +1978,12 @@ class Log_Server_Side_Event {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? note;
   final dynamic bid;
   final String? op;
 
-  Log_Server_Side_Event({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.note, this.bid, this.op});
+  Log_Server_Side_Event({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.note, this.bid, this.op});
 
   factory Log_Server_Side_Event.fromJson(Map<String, dynamic> json) => Log_Server_Side_Event(
     id: json['_id'] as String?,
@@ -1875,6 +1993,7 @@ class Log_Server_Side_Event {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     note: json['note'] as String?,
     bid: json['bid'] == null ? null : (json['bid'] is Map<String, dynamic> ? Server_Side_Event_Show.fromJson(json['bid'] as Map<String, dynamic>) : json['bid']),
     op: json['op'] as String?,
@@ -1889,6 +2008,7 @@ class Log_Server_Side_Event {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['note'] = note;
     json['bid'] = bid == null ? null : bid is Server_Side_Event_Show ? bid.toJson() : bid;
     json['op'] = op;
@@ -1904,6 +2024,7 @@ class Server_Side_Event {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const NOTE = 'note';
 
   final String? id;
@@ -1913,9 +2034,10 @@ class Server_Side_Event {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? note;
 
-  Server_Side_Event({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.note});
+  Server_Side_Event({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.note});
 
   factory Server_Side_Event.fromJson(Map<String, dynamic> json) => Server_Side_Event(
     id: json['_id'] as String?,
@@ -1925,6 +2047,7 @@ class Server_Side_Event {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     note: json['note'] as String?,
   );
 
@@ -1937,6 +2060,7 @@ class Server_Side_Event {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['note'] = note;
     return json;
   }
@@ -1950,6 +2074,7 @@ class Log_Setting {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const KEY = 'key';
   static const VALUE = 'value';
   static const NOTE = 'note';
@@ -1963,13 +2088,14 @@ class Log_Setting {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? key;
   final dynamic value;
   final String? note;
   final dynamic bid;
   final String? op;
 
-  Log_Setting({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.key, this.value, this.note, this.bid, this.op});
+  Log_Setting({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.key, this.value, this.note, this.bid, this.op});
 
   factory Log_Setting.fromJson(Map<String, dynamic> json) => Log_Setting(
     id: json['_id'] as String?,
@@ -1979,6 +2105,7 @@ class Log_Setting {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     key: json['key'] as String?,
     value: json['value'],
     note: json['note'] as String?,
@@ -1995,6 +2122,7 @@ class Log_Setting {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['key'] = key;
     json['value'] = value;
     json['note'] = note;
@@ -2012,6 +2140,7 @@ class Setting {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const KEY = 'key';
   static const VALUE = 'value';
   static const NOTE = 'note';
@@ -2023,11 +2152,12 @@ class Setting {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? key;
   final dynamic value;
   final String? note;
 
-  Setting({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.key, this.value, this.note});
+  Setting({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.key, this.value, this.note});
 
   factory Setting.fromJson(Map<String, dynamic> json) => Setting(
     id: json['_id'] as String?,
@@ -2037,6 +2167,7 @@ class Setting {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     key: json['key'] as String?,
     value: json['value'],
     note: json['note'] as String?,
@@ -2051,6 +2182,7 @@ class Setting {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['key'] = key;
     json['value'] = value;
     json['note'] = note;
@@ -2066,6 +2198,7 @@ class Log_User {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const USERNAME = 'username';
   static const PASSWORD = 'password';
   static const FULL_NAME = 'full_name';
@@ -2087,6 +2220,7 @@ class Log_User {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? username;
   final String? password;
   final String? full_name;
@@ -2101,7 +2235,7 @@ class Log_User {
   final dynamic bid;
   final String? op;
 
-  Log_User({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.username, this.password, this.full_name, this.phone_number, this.is_admin, this.is_manager, this.is_receptionist, this.is_housekeeper, this.note, this.token_type, this.access_token, this.bid, this.op});
+  Log_User({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.username, this.password, this.full_name, this.phone_number, this.is_admin, this.is_manager, this.is_receptionist, this.is_housekeeper, this.note, this.token_type, this.access_token, this.bid, this.op});
 
   factory Log_User.fromJson(Map<String, dynamic> json) => Log_User(
     id: json['_id'] as String?,
@@ -2111,6 +2245,7 @@ class Log_User {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     username: json['username'] as String?,
     password: json['password'] as String?,
     full_name: json['full_name'] as String?,
@@ -2135,6 +2270,7 @@ class Log_User {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['username'] = username;
     json['password'] = password;
     json['full_name'] = full_name;
@@ -2160,6 +2296,7 @@ class User {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const USERNAME = 'username';
   static const PASSWORD = 'password';
   static const FULL_NAME = 'full_name';
@@ -2179,6 +2316,7 @@ class User {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? username;
   final String? password;
   final String? full_name;
@@ -2191,7 +2329,7 @@ class User {
   final String? token_type;
   final String? access_token;
 
-  User({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.username, this.password, this.full_name, this.phone_number, this.is_admin, this.is_manager, this.is_receptionist, this.is_housekeeper, this.note, this.token_type, this.access_token});
+  User({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.username, this.password, this.full_name, this.phone_number, this.is_admin, this.is_manager, this.is_receptionist, this.is_housekeeper, this.note, this.token_type, this.access_token});
 
   factory User.fromJson(Map<String, dynamic> json) => User(
     id: json['_id'] as String?,
@@ -2201,6 +2339,7 @@ class User {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     username: json['username'] as String?,
     password: json['password'] as String?,
     full_name: json['full_name'] as String?,
@@ -2223,6 +2362,7 @@ class User {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['username'] = username;
     json['password'] = password;
     json['full_name'] = full_name;
@@ -2246,6 +2386,7 @@ class Log_User_Client {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const USERNAME = 'username';
   static const PASSWORD = 'password';
   static const FULL_NAME = 'full_name';
@@ -2263,6 +2404,7 @@ class Log_User_Client {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? username;
   final String? password;
   final String? full_name;
@@ -2273,7 +2415,7 @@ class Log_User_Client {
   final dynamic bid;
   final String? op;
 
-  Log_User_Client({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.username, this.password, this.full_name, this.phone_number, this.note, this.access_token, this.token_type, this.bid, this.op});
+  Log_User_Client({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.username, this.password, this.full_name, this.phone_number, this.note, this.access_token, this.token_type, this.bid, this.op});
 
   factory Log_User_Client.fromJson(Map<String, dynamic> json) => Log_User_Client(
     id: json['_id'] as String?,
@@ -2283,6 +2425,7 @@ class Log_User_Client {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     username: json['username'] as String?,
     password: json['password'] as String?,
     full_name: json['full_name'] as String?,
@@ -2303,6 +2446,7 @@ class Log_User_Client {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['username'] = username;
     json['password'] = password;
     json['full_name'] = full_name;
@@ -2324,6 +2468,7 @@ class User_Client {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const USERNAME = 'username';
   static const PASSWORD = 'password';
   static const FULL_NAME = 'full_name';
@@ -2339,6 +2484,7 @@ class User_Client {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? username;
   final String? password;
   final String? full_name;
@@ -2347,7 +2493,7 @@ class User_Client {
   final String? access_token;
   final String? token_type;
 
-  User_Client({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.username, this.password, this.full_name, this.phone_number, this.note, this.access_token, this.token_type});
+  User_Client({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.username, this.password, this.full_name, this.phone_number, this.note, this.access_token, this.token_type});
 
   factory User_Client.fromJson(Map<String, dynamic> json) => User_Client(
     id: json['_id'] as String?,
@@ -2357,6 +2503,7 @@ class User_Client {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     username: json['username'] as String?,
     password: json['password'] as String?,
     full_name: json['full_name'] as String?,
@@ -2375,6 +2522,7 @@ class User_Client {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['username'] = username;
     json['password'] = password;
     json['full_name'] = full_name;
@@ -2394,6 +2542,7 @@ class Log_Web_Socket {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const NOTE = 'note';
   static const BID = 'bid';
   static const OP = 'op';
@@ -2405,11 +2554,12 @@ class Log_Web_Socket {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? note;
   final dynamic bid;
   final String? op;
 
-  Log_Web_Socket({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.note, this.bid, this.op});
+  Log_Web_Socket({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.note, this.bid, this.op});
 
   factory Log_Web_Socket.fromJson(Map<String, dynamic> json) => Log_Web_Socket(
     id: json['_id'] as String?,
@@ -2419,6 +2569,7 @@ class Log_Web_Socket {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     note: json['note'] as String?,
     bid: json['bid'] == null ? null : (json['bid'] is Map<String, dynamic> ? Web_Socket_Show.fromJson(json['bid'] as Map<String, dynamic>) : json['bid']),
     op: json['op'] as String?,
@@ -2433,6 +2584,7 @@ class Log_Web_Socket {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['note'] = note;
     json['bid'] = bid == null ? null : bid is Web_Socket_Show ? bid.toJson() : bid;
     json['op'] = op;
@@ -2448,6 +2600,7 @@ class Web_Socket {
   static const UPDATED_BY = 'updated_by';
   static const DELETED_AT = 'deleted_at';
   static const DELETED_BY = 'deleted_by';
+  static const ORDER = 'order';
   static const NOTE = 'note';
 
   final String? id;
@@ -2457,9 +2610,10 @@ class Web_Socket {
   final dynamic updated_by;
   final DateTime? deleted_at;
   final dynamic deleted_by;
+  final double? order;
   final String? note;
 
-  Web_Socket({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.note});
+  Web_Socket({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.note});
 
   factory Web_Socket.fromJson(Map<String, dynamic> json) => Web_Socket(
     id: json['_id'] as String?,
@@ -2469,6 +2623,7 @@ class Web_Socket {
     updated_by: json['updated_by'] == null ? null : (json['updated_by'] is Map<String, dynamic> ? User_Show.fromJson(json['updated_by'] as Map<String, dynamic>) : json['updated_by']),
     deleted_at: json['deleted_at'] == null ? null : DateTime.tryParse(json['deleted_at'] as String),
     deleted_by: json['deleted_by'] == null ? null : (json['deleted_by'] is Map<String, dynamic> ? User_Show.fromJson(json['deleted_by'] as Map<String, dynamic>) : json['deleted_by']),
+    order: json['order'] as double?,
     note: json['note'] as String?,
   );
 
@@ -2481,6 +2636,7 @@ class Web_Socket {
     json['updated_by'] = updated_by == null ? null : updated_by is User_Show ? updated_by.toJson() : updated_by;
     json['deleted_at'] = deleted_at?.toIso8601String();
     json['deleted_by'] = deleted_by == null ? null : deleted_by is User_Show ? deleted_by.toJson() : deleted_by;
+    json['order'] = order;
     json['note'] = note;
     return json;
   }

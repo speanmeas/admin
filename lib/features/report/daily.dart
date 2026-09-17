@@ -460,8 +460,9 @@ class _Main_State extends State<Main_> {
   }
 
   Future<void> on_load_page() async {
-    dynamic tmp = await dio.post(endpoint.FRONT_DESK_REPORT_DAILY, data: {"date": DateFormat("yyyy-MM-dd").format(date)});
-    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    final String formatted_date = DateFormat("yyyy-MM-dd").format(date);
+    dynamic tmp = await dio.post(endpoint.FRONT_DESK_REPORT_DAILY, data: {"date": formatted_date});
+    if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "Failed to load report", cl: Colors.red);
 
     report = tmp.data;
     rows = (report?["rows"] as List<dynamic>? ?? []).map((e) => Front_Desk.fromJson(e)).toList();

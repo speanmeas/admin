@@ -202,6 +202,7 @@ class _Main_State extends State<Main_> {
             title: "ល.រ.",
             type: PlutoColumnType.number(),
             enableEditingMode: false,
+            enableRowDrag: true,
             width: 60,
             renderer: (rc) {
               return Align(
@@ -670,6 +671,7 @@ class _Main_State extends State<Main_> {
 
         onLoaded: on_loaded,
         onChanged: on_updated,
+        onRowsMoved: on_rows_moved,
       ),
     );
   }
@@ -830,6 +832,28 @@ class _Main_State extends State<Main_> {
     for (int i = 0; i < state_manager.rows.length; i++) {
       final row = state_manager.rows[i];
       state_manager.changeCellValue(row.cells["index"]!, i + 1, force: true, callOnChangedEvent: false);
+    }
+  }
+
+  Future<void> on_rows_moved(PlutoGridOnRowsMovedEvent e) async {
+    await on_reindex();
+
+    final List<Map<String, dynamic>> items = [];
+
+    for (int i = 0; i < state_manager.rows.length; i++) {
+      final row = state_manager.rows[i];
+      final String id = row.cells[Front_Desk.ID]?.value?.toString() ?? "";
+      if (id.isNotEmpty) items.add({"_id": id, "order": (i + 1).toDouble()});
+    }
+
+    if (items.isEmpty) return;
+
+    final res = await dio.post(endpoint.FRONT_DESK_UPDATE_ORDER, data: {"items": items});
+
+    if (res == null) {
+      snackbar(ct: context, ms: dio.error_msg ?? "Failed to update order", cl: Colors.red);
+    } else {
+      snackbar(ct: context, ms: "Order updated", cl: Colors.green);
     }
   }
 
