@@ -208,49 +208,6 @@ class _Main_State extends State<Main_> {
         key: ValueKey(reload), //
         rows: [], //
         columns: [
-          // check in
-          PlutoColumn(
-            field: "action", //
-            title: "",
-            // titleSpan: WidgetSpan(
-            //   child: Container(
-            //     alignment: Alignment.center, //
-            //     child: IconButton(
-            //       tooltip: "Check In", //
-            //       icon: Icon(Icons.add_circle_outline, size: 28), //
-            //       padding: EdgeInsets.all(0),
-            //       constraints: BoxConstraints(),
-            //       // onPressed: on_create,
-            //       onPressed: () {},
-            //     ),
-            //   ),
-            // ),
-            titlePadding: EdgeInsets.all(0),
-            type: PlutoColumnType.number(),
-            width: 40,
-            enableEditingMode: false,
-            enableColumnDrag: false,
-            enableContextMenu: false,
-            enableDropToResize: false,
-            enableFilterMenuItem: false,
-            enableSorting: false,
-            cellPadding: EdgeInsets.all(0),
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center, //
-                children: [
-                  IconButton(
-                    tooltip: "Remove", //
-                    icon: Icon(Icons.remove_circle_outline, size: 28, color: Colors.red),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_delete(rc),
-                  ),
-                ],
-              );
-            },
-          ),
-
           PlutoColumn(
             field: Front_Desk.ID, //
             title: "ID",
@@ -300,6 +257,7 @@ class _Main_State extends State<Main_> {
             // enableEditingMode: false,
             width: 80,
             renderer: (rc) {
+              final is_walk_in = is_row_mini_bar(rc);
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
@@ -309,13 +267,14 @@ class _Main_State extends State<Main_> {
                       child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
                     ),
                   ),
-                  IconButton(
-                    tooltip: "ផ្លាស់ប្តូរបន្ទប់", //
-                    icon: Icon(Icons.swap_horiz_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_update_room(rc), //
-                  ),
+                  if (!is_walk_in)
+                    IconButton(
+                      tooltip: "ផ្លាស់ប្តូរបន្ទប់", //
+                      icon: Icon(Icons.swap_horiz_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_update_room(rc), //
+                    ),
                 ],
               );
             },
@@ -375,6 +334,9 @@ class _Main_State extends State<Main_> {
             // enableEditingMode: false,
             width: 70,
             renderer: (rc) {
+              if (is_row_mini_bar(rc)) {
+                return const SizedBox();
+              }
               double value = parse_double(rc.cell.value) ?? 0.0;
               return Row(
                 children: [
@@ -412,16 +374,18 @@ class _Main_State extends State<Main_> {
             // enableEditingMode: false,
             width: 160,
             renderer: (rc) {
+              final is_walk_in = is_row_mini_bar(rc);
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  IconButton(
-                    tooltip: "កែពេលចូល", //
-                    icon: Icon(Icons.calendar_month_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_update_check_in_at(rc), //
-                  ),
+                  if (!is_walk_in)
+                    IconButton(
+                      tooltip: "កែពេលចូល", //
+                      icon: Icon(Icons.calendar_month_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_update_check_in_at(rc), //
+                    ),
                   Expanded(
                     child: Align(
                       alignment: Alignment.center, //
@@ -439,6 +403,10 @@ class _Main_State extends State<Main_> {
             type: PlutoColumnType.text(),
             width: 160,
             renderer: (rc) {
+              final is_walk_in = is_row_mini_bar(rc);
+              if (is_walk_in) {
+                return const SizedBox();
+              }
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
@@ -474,6 +442,7 @@ class _Main_State extends State<Main_> {
             title: "ថ្លៃបន្ទប់",
             type: PlutoColumnType.number(negative: false, format: "#,##0.00"),
             enableEditingMode: true,
+            checkReadOnly: (row, cell) => is_walk_in_row(row),
             width: 90,
             renderer: (rc) => _money(rc),
             footerRenderer: (rc) => _sum_footer(rc),
@@ -515,6 +484,12 @@ class _Main_State extends State<Main_> {
             enableEditingMode: false,
             width: 90,
             renderer: (rc) {
+              if (is_row_mini_bar(rc)) {
+                return Align(
+                  alignment: Alignment.center,
+                  child: Text("-", style: TextStyle(color: Colors.grey)),
+                );
+              }
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
@@ -568,6 +543,7 @@ class _Main_State extends State<Main_> {
             title: "សមតុល្យ",
             type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
             enableEditingMode: true,
+            checkReadOnly: (row, cell) => is_walk_in_row(row),
             width: 90,
             renderer: (rc) => _money_balance(rc),
             footerRenderer: (rc) => _sum_footer(rc),
@@ -653,17 +629,19 @@ class _Main_State extends State<Main_> {
               enableEditingMode: false,
               width: 120,
               renderer: (rc) {
+                final is_walk_in = is_row_mini_bar(rc);
                 final v = parse_datetime(rc.cell.value);
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center, //
                   children: [
-                    IconButton(
-                      tooltip: "កែថ្ងៃ", //
-                      icon: Icon(Icons.calendar_month_outlined),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () => on_update_shift_date(rc), //
-                    ),
+                    if (!is_walk_in)
+                      IconButton(
+                        tooltip: "កែថ្ងៃ", //
+                        icon: Icon(Icons.calendar_month_outlined),
+                        padding: EdgeInsets.all(0),
+                        constraints: BoxConstraints(),
+                        onPressed: () => on_update_shift_date(rc), //
+                      ),
                     Expanded(
                       child: Align(
                         alignment: Alignment.center, //
@@ -714,7 +692,6 @@ class _Main_State extends State<Main_> {
               Front_Desk.ID, //
               Front_Desk.SHIFT_DATE, //
               Front_Desk.ROOM_NUMBER, //
-              "action", //
               "index", //
               "other",
             ],
@@ -876,7 +853,6 @@ class _Main_State extends State<Main_> {
           cells: {
             for (var c in list_column_pluto) //
               c.field: (() {
-                if (c.field == "action") return PlutoCell(value: ""); //auto
                 if (c.field == "index") return PlutoCell(value: i + 1); // auto
                 if (c.field == Front_Desk.ID) return PlutoCell(value: d.id ?? "");
                 if (c.field == Front_Desk.ROOM_NUMBER) return PlutoCell(value: d.room_number ?? "");
@@ -970,34 +946,29 @@ class _Main_State extends State<Main_> {
     snackbar(ct: context, ms: "Created", cl: Colors.green);
   }
 
-  void on_delete(PlutoColumnRendererContext rc) {
-    state_manager.removeRows([rc.row]);
-    on_reindex();
-
-    final id = rc.row.cells[Front_Desk.ID]?.value;
-    if (id == null) return;
-    do_delete(id);
-  }
-
-  Future<void> do_delete(String? id) async {
-    final tmp = await dio.post(endpoint.FRONT_DESK_DELETE, data: {Front_Desk.ID: id});
-    if (tmp == null) {
-      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-      await on_load_page();
-      return;
-    }
-    snackbar(ct: context, ms: "Deleted", cl: Colors.green);
-  }
 
   void on_updated(PlutoGridOnChangedEvent e) {
     final fd_id = e.row.cells[Front_Desk.ID]?.value;
+    final is_walk_in = is_walk_in_row(e.row);
     state_manager.notifyListeners();
+
+    if (is_walk_in) {
+      if (e.column.field == Front_Desk.ROOM_PRICE ||
+          e.column.field == Front_Desk.PAY_BALANCE ||
+          e.column.field == Front_Desk.ROOM_NUMBER ||
+          e.column.field == Front_Desk.NUMBER_OF_GUEST ||
+          e.column.field == Front_Desk.PENALTY_PRICE) {
+        state_manager.changeCellValue(e.row.cells[e.column.field]!, e.oldValue, callOnChangedEvent: false);
+        return;
+      }
+    }
+
     if (e.column.field == Front_Desk.ROOM_PRICE) {
       do_update_room_price(fd_id, parse_double(e.value) ?? 0.0);
     } else if (e.column.field == Front_Desk.PAY_CASH) {
-      do_update_cash(fd_id, parse_double(e.value) ?? 0.0);
+      do_update_cash(fd_id, parse_double(e.value) ?? 0.0, is_walk_in: is_walk_in);
     } else if (e.column.field == Front_Desk.PAY_BANK) {
-      do_update_bank(fd_id, parse_double(e.value) ?? 0.0);
+      do_update_bank(fd_id, parse_double(e.value) ?? 0.0, is_walk_in: is_walk_in);
     } else {
       do_updated(fd_id, e.column.field, e.value);
     }
@@ -1019,9 +990,10 @@ class _Main_State extends State<Main_> {
     on_refresh_balanced();
   }
 
-  Future<void> do_update_cash(String? id, double v) async {
+  Future<void> do_update_cash(String? id, double v, {bool is_walk_in = false}) async {
+    final ep = is_walk_in ? endpoint.FRONT_DESK_UPDATE_WALKIN : endpoint.FRONT_DESK_UPDATE_PAYMENT;
     final tmp = await dio.post(
-      endpoint.FRONT_DESK_UPDATE_PAYMENT,
+      ep,
       data: {
         "_id": id, //
         "pay_cash": v,
@@ -1036,8 +1008,9 @@ class _Main_State extends State<Main_> {
     on_refresh_balanced();
   }
 
-  Future<void> do_update_bank(String? id, double v) async {
-    final tmp = await dio.post(endpoint.FRONT_DESK_UPDATE_PAYMENT, data: {"_id": id, "pay_bank": v});
+  Future<void> do_update_bank(String? id, double v, {bool is_walk_in = false}) async {
+    final ep = is_walk_in ? endpoint.FRONT_DESK_UPDATE_WALKIN : endpoint.FRONT_DESK_UPDATE_PAYMENT;
+    final tmp = await dio.post(ep, data: {"_id": id, "pay_bank": v});
     if (tmp == null) {
       snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
       await on_load_page();
@@ -1048,6 +1021,7 @@ class _Main_State extends State<Main_> {
   }
 
   Future<void> on_update_check_in_at(PlutoColumnRendererContext rc) async {
+    if (is_row_mini_bar(rc)) return;
     DateTime dt = parse_datetime(rc.cell.value) ?? DateTime.now();
     final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
@@ -1061,6 +1035,7 @@ class _Main_State extends State<Main_> {
   }
 
   Future<void> on_update_check_out_at(PlutoColumnRendererContext rc) async {
+    if (is_row_mini_bar(rc)) return;
     DateTime dt = parse_datetime(rc.cell.value) ?? DateTime.now();
     final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
@@ -1075,6 +1050,7 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update_shift_date(PlutoColumnRendererContext rc) async {
+    if (is_row_mini_bar(rc)) return;
     DateTime dt = parse_datetime(rc.cell.value) ?? DateTime.now();
     final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
@@ -1126,6 +1102,7 @@ class _Main_State extends State<Main_> {
   }
 
   void on_penalty_item(PlutoColumnRendererContext rc) async {
+    if (is_row_mini_bar(rc)) return;
     String? fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return snackbar(ct: context, ms: "No stay to update penalty", cl: Colors.red);
 
@@ -1148,6 +1125,7 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update_number_of_guest(PlutoColumnRendererContext rc, double v) {
+    if (is_row_mini_bar(rc)) return;
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
     state_manager.changeCellValue(rc.cell, v, force: true, callOnChangedEvent: false);
@@ -1155,6 +1133,7 @@ class _Main_State extends State<Main_> {
   }
 
   void on_update_room(PlutoColumnRendererContext rc) async {
+    if (is_row_mini_bar(rc)) return;
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
 
@@ -1249,13 +1228,18 @@ class _Main_State extends State<Main_> {
     on_reload();
   }
 
-  bool is_row_mini_bar(PlutoColumnRendererContext rc) {
-    String? fd_id = rc.row.cells[Front_Desk.ID]?.value;
-    if (fd_id == null) return false;
-    Front_Desk? fd = data.where((x) => x.id == fd_id).firstOrNull;
-    final n = (fd?.room_number ?? "").toLowerCase();
-    return n == "walk-in";
+  bool is_walk_in_row(PlutoRow row) {
+    final rn = (row.cells[Front_Desk.ROOM_NUMBER]?.value ?? "").toString().toLowerCase();
+    if (rn == "walk-in") return true;
+    final fd_id = row.cells[Front_Desk.ID]?.value;
+    if (fd_id != null) {
+      final fd = data.where((x) => x.id == fd_id).firstOrNull;
+      if ((fd?.room_number ?? "").toLowerCase() == "walk-in") return true;
+    }
+    return false;
   }
+
+  bool is_row_mini_bar(PlutoColumnRendererContext rc) => is_walk_in_row(rc.row);
 
   String user_name(dynamic v) {
     if (v is User_Show) return v.full_name ?? "";
@@ -1269,6 +1253,12 @@ class _Main_State extends State<Main_> {
   }
 
   Widget _money(PlutoColumnRendererContext rc) {
+    if (is_row_mini_bar(rc)) {
+      return const Align(
+        alignment: Alignment.center, //
+        child: Text("-", style: TextStyle(color: Colors.grey)),
+      );
+    }
     return Align(
       alignment: Alignment.center, //
       child: Text(
@@ -1424,6 +1414,7 @@ class _Main_State extends State<Main_> {
   }
 
   Future<void> on_update_carry_over(PlutoColumnRendererContext rc) async {
+    if (is_row_mini_bar(rc)) return;
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
 
