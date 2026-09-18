@@ -1,19 +1,19 @@
-// * នាំចូល Flutter material សម្រាប់ dialog
+// នាំចូល Flutter material សម្រាប់ dialog
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog សម្រាប់ជ្រើសរើសកាលបរិច្ឆេទ និងពេលវេលា
+// បង្ហាញ dialog សម្រាប់ជ្រើសរើសកាលបរិច្ឆេទ និងពេលវេលា
 Future<DateTime?> dialog_datetime(
   BuildContext context, {
   DateTime? initial, //
 }) async {
-  // * កំណត់កាលបរិច្ឆេទដំបូង
+  // កំណត់កាលបរិច្ឆេទដំបូង
   DateTime init = DateTime.now();
   if (initial is DateTime) init = initial;
 
-  // * ជ្រើសរើសកាលបរិច្ឆេទ
+  // ជ្រើសរើសកាលបរិច្ឆេទ
   final DateTime? picked_date = await showDatePicker(
     context: context, //
     initialDate: init, //
@@ -22,7 +22,7 @@ Future<DateTime?> dialog_datetime(
   );
   if (picked_date == null) return null;
 
-  // * ជ្រើសរើសពេលវេលា
+  // ជ្រើសរើសពេលវេលា
   TimeOfDay initial_time = TimeOfDay(hour: 0, minute: 0);
   if (initial is DateTime) initial_time = TimeOfDay.fromDateTime(initial);
   final TimeOfDay? picked_time = await showTimePicker(
@@ -31,7 +31,7 @@ Future<DateTime?> dialog_datetime(
   );
   if (picked_time == null) return null;
 
-  // * ផ្សំកាលបរិច្ឆេទ និងពេលវេលា
+  // ផ្សំកាលបរិច្ឆេទ និងពេលវេលា
   return DateTime(
     picked_date.year, //
     picked_date.month,

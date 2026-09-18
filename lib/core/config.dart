@@ -1,4 +1,4 @@
-// * នាំចូល Flutter foundation សម្រាប់ kDebugMode
+// នាំចូល Flutter foundation សម្រាប់ kDebugMode
 import "package:flutter/foundation.dart";
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
 import "package:speanmeas/core/utility/dio.dart"; // ignore: unused_import
@@ -6,28 +6,28 @@ import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 
-// * ចំណងជើងរបស់កម្មវិធី
+// ចំណងជើងរបស់កម្មវិធី
 const TITLE = "Spean Meas";
 
-// * ទទឹងអេក្រង់សម្រាប់ឧបករណ៍ចល័ត
+// ទទឹងអេក្រង់សម្រាប់ឧបករណ៍ចល័ត
 const MOBILE_SCREEN_WIDTH = 1000;
 
-// * ទម្រង់កាលបរិច្ឆេទលំនាំដើម
+// ទម្រង់កាលបរិច្ឆេទលំនាំដើម
 // final DEFAULT_DATE_FORMAT = "EEEE dd-MM-yyyy h:mm a";
 const DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm";
 
-// * ចំនួនជួរដេកលំនាំដើមសម្រាប់ការទាញទិន្នន័យ
+// ចំនួនជួរដេកលំនាំដើមសម្រាប់ការទាញទិន្នន័យ
 const DEFAULT_LIMIT_ROW = 1000;
-// * ឈ្នះដែលប្រើសម្រាប់តម្រៀបលំនាំដើម
+// ឈ្នះដែលប្រើសម្រាប់តម្រៀបលំនាំដើម
 const DEFAULT_KEY = "created_at";
-// * លំដាប់តម្រៀបលំនាំដើម (ចុះ)
+// លំដាប់តម្រៀបលំនាំដើម (ចុះ)
 const DEFAULT_ORDER = -1;
 
-// * ការកំណត់បរិស្ថាន
+// ការកំណត់បរិស្ថាន
 const is_local = false;
 const is_github = false;
 
-// * ទទួលបាន API host អាស្រ័យលើបរិស្ថាន
+// ទទួលបាន API host អាស្រ័យលើបរិស្ថាន
 String get_api_host() {
   if (kDebugMode) return "http://localhost:8000";
   if (is_local) return "http://192.168.1.100:8000";
@@ -35,11 +35,11 @@ String get_api_host() {
   return "https://api.speanmeas.com";
 }
 
-// * API host ដែលបានកំណត់
+// API host ដែលបានកំណត់
 final API_HOST = get_api_host();
 
 // TODO: later
-// * ទទួលបាន MinIO public URL សម្រាប់ផ្ទុកឯកសារ
+// ទទួលបាន MinIO public URL សម្រាប់ផ្ទុកឯកសារ
 String get_minio_public() {
   if (kDebugMode) return "http://localhost:9000/public";
   if (is_local) return "http://192.168.1.100:9000/public";
@@ -47,5 +47,5 @@ String get_minio_public() {
   return "https://sss.speanmeas.com/public";
 }
 
-// * MinIO public URL ដែលបានកំណត់
+// MinIO public URL ដែលបានកំណត់
 final MINIO_PUBLIC = get_minio_public();

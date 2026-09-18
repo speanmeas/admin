@@ -1,13 +1,13 @@
-// * នាំចូល Flutter material សម្រាប់បង្កើត UI
+// នាំចូល Flutter material សម្រាប់បង្កើត UI
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ state របស់ Menu_Button_Icon គ្រប់គ្រងប៊ូតុងរូបតំណាង
+// ថ្នាក់ state របស់ Menu_Button_Icon គ្រប់គ្រងប៊ូតុងរូបតំណាង
 class _Menu_Button_Icon_TextState extends State<Menu_Button_Icon_Text> {
   @override
   Widget build(BuildContext context) {
-    // * បង្កើតប៊ូតុងរូបតំណាងជាមួយ tooltip និងអត្ថបទ
+    // បង្កើតប៊ូតុងរូបតំណាងជាមួយ tooltip និងអត្ថបទ
     return Tooltip(
       message: widget.tip,
       child: InkWell(
@@ -37,7 +37,7 @@ class _Menu_Button_Icon_TextState extends State<Menu_Button_Icon_Text> {
   }
 }
 
-// * ថ្នាក់ Menu_Button_Icon ជា widget ប៊ូតុងរូបតំណាង
+// ថ្នាក់ Menu_Button_Icon ជា widget ប៊ូតុងរូបតំណាង
 class Menu_Button_Icon_Text extends StatefulWidget {
   const Menu_Button_Icon_Text({
     super.key, //

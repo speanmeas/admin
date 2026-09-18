@@ -6,7 +6,7 @@ import "package:speanmeas/core/utility/all.dart";
 import "dialog/select_page.dart";
 
 class _Main_State extends State<Main_> {
-  // * ########## BLOCK ATTRIBUTE ##########
+  // ########## BLOCK ATTRIBUTE ##########
   int reload = 0;
   int total_row = 0;
   int current_page = 1;
@@ -18,9 +18,9 @@ class _Main_State extends State<Main_> {
   List<Demo_2_1> data = [];
   List<Demo_2_2> demos = [];
 
-  // * ########## BLOCK ATTRIBUTE END ##########
+  // ########## BLOCK ATTRIBUTE END ##########
 
-  // * ########## BLOCK DESIGN ##########
+  // ########## BLOCK DESIGN ##########
   Widget _layout({
     List<Widget>? header, //
     Widget? body, //
@@ -288,9 +288,9 @@ class _Main_State extends State<Main_> {
       ),
     );
   }
-  // * ########## BLOCK DESIGN END ##########
+  // ########## BLOCK DESIGN END ##########
 
-  // * ########## BLOCK METHODS ##########
+  // ########## BLOCK METHODS ##########
   void on_loaded(PlutoGridOnLoadedEvent e) async {
     state_manager = e.stateManager;
     // state_manager.setAutoEditing(true);
@@ -353,11 +353,11 @@ class _Main_State extends State<Main_> {
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     data = List<Demo_2_1>.from((tmp.data ?? const []).map((d) => Demo_2_1.fromJson(d)));
 
-    // * រក្សាទុក sort និង filter មុនពេលផ្ទុកឡើងវិញ
+    // រក្សាទុក sort និង filter មុនពេលផ្ទុកឡើងវិញ
     final sorted_column = state_manager.getSortedColumn;
     final filter_rows = List<PlutoRow>.from(state_manager.filterRows);
 
-    // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
+    // បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
     state_manager.removeAllRows();
     state_manager.appendRows([
       for (var d in data)
@@ -379,7 +379,7 @@ class _Main_State extends State<Main_> {
         ),
     ]);
 
-    // * អនុវត្ត sort និង filter ឡើងវិញ
+    // អនុវត្ត sort និង filter ឡើងវិញ
     if (sorted_column != null) state_manager.sortBySortIdx(sorted_column);
     state_manager.setFilterWithFilterRows(filter_rows);
 
@@ -529,17 +529,17 @@ class _Main_State extends State<Main_> {
     reload++;
   }
 
-  // * ########## BLOCK METHODS END ##########
+  // ########## BLOCK METHODS END ##########
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រគ្រប់គ្រងឧទាហរណ៍ (Demo 2-1)
+// ថ្នាក់ Main_ ជាទំព័រគ្រប់គ្រងឧទាហរណ៍ (Demo 2-1)
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
 
-// * ចំណុចចាប់ផ្តើមកម្មវិធី
+// ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() {
   runApp(
     MaterialApp(

@@ -1,4 +1,4 @@
-// * ទំព័រការកំណត់ (Setting)
+// ទំព័រការកំណត់ (Setting)
 
 // TODO: make setting
 
@@ -6,7 +6,7 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទំព័រការកំណត់
+// ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទំព័រការកំណត់
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
@@ -27,7 +27,7 @@ class _Main_State extends State<Main_> {
             margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
             child: Column(
               children: [
-                // * សារជូនដំណឹងថាកំពុងអភិវឌ្ឍន៍
+                // សារជូនដំណឹងថាកំពុងអភិវឌ្ឍន៍
                 Text("Setting is under development."), //
               ],
             ),
@@ -38,7 +38,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រការកំណត់
+// ថ្នាក់ Main_ ជាទំព័រការកំណត់
 class Main_ extends StatefulWidget {
   const Main_({super.key});
 
@@ -46,7 +46,7 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-// * ចំណុចចាប់ផ្តើមកម្មវិធី
+// ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

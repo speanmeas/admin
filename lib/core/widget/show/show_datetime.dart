@@ -1,15 +1,15 @@
-// * នាំចូល Flutter material និង intl សម្រាប់ទម្រង់កាលបរិច្ឆេទ
+// នាំចូល Flutter material និង intl សម្រាប់ទម្រង់កាលបរិច្ឆេទ
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:intl/intl.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ state របស់ Show_Datetime គ្រប់គ្រងការបង្ហាញកាលបរិច្ឆេទ
+// ថ្នាក់ state របស់ Show_Datetime គ្រប់គ្រងការបង្ហាញកាលបរិច្ឆេទ
 class _Show_DatetimeState extends State<Show_Datetime> {
   @override
   Widget build(BuildContext context) {
-    // * ធ្វើទ្រង់ទ្រាយកាលបរិច្ឆេទ
+    // ធ្វើទ្រង់ទ្រាយកាលបរិច្ឆេទ
     String value = "";
     if (widget.value != null) {
       value = DateFormat(DEFAULT_DATE_FORMAT).format(widget.value!.toLocal());
@@ -18,20 +18,20 @@ class _Show_DatetimeState extends State<Show_Datetime> {
     return Row(
       spacing: 4,
       children: [
-        // * រូបតំណាងមុន
+        // រូបតំណាងមុន
         if (widget.prefixIcon != null) Icon(widget.prefixIcon!, color: Colors.blue),
-        // * អត្ថបទមុន
+        // អត្ថបទមុន
         if (widget.prefixText != null)
           Text(
             widget.prefixText ?? "", //
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
           ),
-        // * អត្ថបទដឹកនាំ
+        // អត្ថបទដឹកនាំ
         Text(
           widget.leading ?? "", //
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        // * តម្លៃកាលបរិច្ឆេទដែលបានបង្ហាញ
+        // តម្លៃកាលបរិច្ឆេទដែលបានបង្ហាញ
         Expanded(
           child: Text(
             value, //
@@ -44,7 +44,7 @@ class _Show_DatetimeState extends State<Show_Datetime> {
   }
 }
 
-// * ថ្នាក់ Show_Datetime ជា widget សម្រាប់បង្ហាញកាលបរិច្ឆេទ
+// ថ្នាក់ Show_Datetime ជា widget សម្រាប់បង្ហាញកាលបរិច្ឆេទ
 class Show_Datetime extends StatefulWidget {
   const Show_Datetime({
     super.key, //

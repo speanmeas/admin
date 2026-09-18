@@ -4,7 +4,7 @@ import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 class _Main_State extends State<Main_> {
-  // * ########## BLOCK ATTRIBUTE ##########
+  // ########## BLOCK ATTRIBUTE ##########
   int reload = 0;
   bool filter = false;
   double WIDTH = 120;
@@ -16,9 +16,9 @@ class _Main_State extends State<Main_> {
   dynamic report;
   List<Front_Desk> rows = [];
   Map<String, dynamic> summary = {};
-  // * ########## BLOCK ATTRIBUTE END ##########
+  // ########## BLOCK ATTRIBUTE END ##########
 
-  // * ########## BLOCK DESIGN ##########
+  // ########## BLOCK DESIGN ##########
   Widget _layout({
     List<Widget>? header, //
     Widget? body, //
@@ -435,9 +435,9 @@ class _Main_State extends State<Main_> {
       ],
     );
   }
-  // * ########## BLOCK DESIGN END ##########
+  // ########## BLOCK DESIGN END ##########
 
-  // * ########## BLOCK METHODS ##########
+  // ########## BLOCK METHODS ##########
   @override
   void initState() {
     super.initState();
@@ -608,17 +608,17 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  // * ########## BLOCK METHODS END ##########
+  // ########## BLOCK METHODS END ##########
 }
 
-// * ########## BLOCK ARGUMENTS OF MAIN ##########
+// ########## BLOCK ARGUMENTS OF MAIN ##########
 class Main_ extends StatefulWidget {
   const Main_({super.key});
 
   @override
   State<Main_> createState() => _Main_State();
 }
-// * ########## BLOCK ARGUMENTS OF MAIN END ##########
+// ########## BLOCK ARGUMENTS OF MAIN END ##########
 
 void main() {
   runApp(

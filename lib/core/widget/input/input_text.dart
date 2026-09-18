@@ -1,15 +1,15 @@
-// * នាំចូល Flutter material សម្រាប់បង្កើត UI
+// នាំចូល Flutter material សម្រាប់បង្កើត UI
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ state របស់ Input_Text គ្រប់គ្រងការបញ្ចូលអត្ថបទ
+// ថ្នាក់ state របស់ Input_Text គ្រប់គ្រងការបញ្ចូលអត្ថបទ
 class _Input_TextState extends State<Input_Text> {
   //
   final controller = TextEditingController();
   final focusNode = FocusNode();
 
-  // * ចាប់ផ្តើមតម្លៃដំបូង
+  // ចាប់ផ្តើមតម្លៃដំបូង
   void init() {
     if (widget.init != null) {
       controller.text = widget.init!;
@@ -19,7 +19,7 @@ class _Input_TextState extends State<Input_Text> {
 
   @override
   Widget build(BuildContext context) {
-    // * បង្កើត TextField សម្រាប់បញ្ចូលអត្ថបទ
+    // បង្កើត TextField សម្រាប់បញ្ចូលអត្ថបទ
     return TextField(
       focusNode: focusNode,
       controller: controller,
@@ -29,7 +29,7 @@ class _Input_TextState extends State<Input_Text> {
         labelStyle: TextStyle(fontWeight: FontWeight.bold),
         floatingLabelBehavior: FloatingLabelBehavior.always,
         prefixIcon: Icon(widget.prefixIcon ?? Icons.text_fields), //
-        // * ប៊ូតុងសម្អាតតម្លៃ
+        // ប៊ូតុងសម្អាតតម្លៃ
         suffixIcon: ExcludeFocus(
           child: Padding(
             padding: EdgeInsets.only(right: 4),
@@ -58,7 +58,7 @@ class _Input_TextState extends State<Input_Text> {
   }
 }
 
-// * ថ្នាក់ Input_Text ជា widget សម្រាប់បញ្ចូលអត្ថបទ
+// ថ្នាក់ Input_Text ជា widget សម្រាប់បញ្ចូលអត្ថបទ
 class Input_Text extends StatefulWidget {
   const Input_Text({
     super.key, //

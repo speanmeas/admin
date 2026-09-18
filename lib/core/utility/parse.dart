@@ -1,8 +1,8 @@
-// * ឧបករណ៍បម្លែងតម្លៃដោយសុវត្ថិភាព (safe parse) សម្រាប់គ្រប់ប្រភេទទិន្នន័យ
-// * ប្រើសម្រាប់អានតម្លៃពី Map/dynamic ដោយមិនបាក់កម្មវិធី
-// * រាល់ function ត្រឡប់ null ពេលតម្លៃមិនអាចបម្លែងបាន ឬអវត្តមាន
+// ឧបករណ៍បម្លែងតម្លៃដោយសុវត្ថិភាព (safe parse) សម្រាប់គ្រប់ប្រភេទទិន្នន័យ
+// ប្រើសម្រាប់អានតម្លៃពី Map/dynamic ដោយមិនបាក់កម្មវិធី
+// រាល់ function ត្រឡប់ null ពេលតម្លៃមិនអាចបម្លែងបាន ឬអវត្តមាន
 
-// * បម្លែងទៅជា String (null-safe)
+// បម្លែងទៅជា String (null-safe)
 import 'package:intl/intl.dart';
 import 'package:speanmeas/core/config.dart';
 
@@ -97,22 +97,22 @@ String format_datetime(dynamic v, {String fallback = "", String format = DEFAULT
   return DateFormat(format).format(dt.toLocal());
 }
 
-// // * បម្លែងទៅជា List<dynamic> (null-safe)
+// // បម្លែងទៅជា List<dynamic> (null-safe)
 // List<dynamic>? parse_list(dynamic v) {
 //   if (v == null) return null;
 //   if (v is List) return v;
 //   return null;
 // }
 
-// // * បម្លែងទៅជា Map<String, dynamic> (null-safe)
+// // បម្លែងទៅជា Map<String, dynamic> (null-safe)
 // Map<String, dynamic>? parse_map(dynamic v) {
 //   if (v == null) return null;
 //   if (v is Map) return Map<String, dynamic>.from(v);
 //   return null;
 // }
 
-// // * អានតម្លៃ nested ពី Map ដោយសុវត្ថិភាព (guard គ្រប់កម្រិត)
-// // * ឧទាហរណ៍: parse_nested(m, ["guest", "name"]) ?? ""
+// // អានតម្លៃ nested ពី Map ដោយសុវត្ថិភាព (guard គ្រប់កម្រិត)
+// // ឧទាហរណ៍: parse_nested(m, ["guest", "name"]) ?? ""
 // dynamic parse_nested(dynamic root, List<String> keys) {
 //   dynamic cur = root;
 //   for (final k in keys) {

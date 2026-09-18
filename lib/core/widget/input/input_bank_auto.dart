@@ -1,29 +1,29 @@
-// * នាំចូល Flutter material និង flutter_typeahead សម្រាប់ autocomplete
+// នាំចូល Flutter material និង flutter_typeahead សម្រាប់ autocomplete
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ state របស់ Input_Bank_Auto គ្រប់គ្រងការបញ្ចូលធនាគារដោយស្វ័យប្រវត្តិ
+// ថ្នាក់ state របស់ Input_Bank_Auto គ្រប់គ្រងការបញ្ចូលធនាគារដោយស្វ័យប្រវត្តិ
 class _Input_Bank_AutoState extends State<Input_Bank_Auto> {
   dynamic tmp;
   dynamic data;
 
-  // * បញ្ជីជម្រើស និងធនាគាររបស់យើង
+  // បញ្ជីជម្រើស និងធនាគាររបស់យើង
   List<String> options = [];
   List<String> our_banks = ["ABA Bank", "ACLEDA Bank"];
 
   final controller = TextEditingController();
 
-  // * ចាប់ផ្តើមទាញយកបញ្ជីធនាគារ
+  // ចាប់ផ្តើមទាញយកបញ្ជីធនាគារ
   void init() async {
     try {
-      // * ទាញយកបញ្ជីធនាគារពី server
+      // ទាញយកបញ្ជីធនាគារពី server
       tmp = await dio.post(endpoint.BANK_READ);
       data = tmp.data as List<dynamic>;
 
-      // * បង្កើតជម្រើស "ពីធនាគារ ទៅធនាគាររបស់យើង"
+      // បង្កើតជម្រើស "ពីធនាគារ ទៅធនាគាររបស់យើង"
       for (var to in our_banks)
         for (var from in data.map((e) => e["name"])) //
           if (from.isNotEmpty) options.add("$from to $to");
@@ -31,17 +31,17 @@ class _Input_Bank_AutoState extends State<Input_Bank_Auto> {
       pprint(st);
     }
 
-    // * កំណត់តម្លៃដំបូង
+    // កំណត់តម្លៃដំបូង
     if (widget.init != null) controller.text = widget.init!;
   }
 
   @override
   Widget build(BuildContext context) {
-    // * បង្កើត TypeAheadField សម្រាប់បញ្ចូលធនាគារដោយស្វ័យប្រវត្តិ
+    // បង្កើត TypeAheadField សម្រាប់បញ្ចូលធនាគារដោយស្វ័យប្រវត្តិ
     return TypeAheadField<dynamic>(
       controller: controller,
       itemBuilder: (context, item) => ListTile(title: Text(item)),
-      // * ត្រងជម្រើសតាមអត្ថបទដែលបានបញ្ចូល
+      // ត្រងជម្រើសតាមអត្ថបទដែលបានបញ្ចូល
       suggestionsCallback: (q) {
         List<dynamic> opts = [];
         for (var e in options) {
@@ -61,7 +61,7 @@ class _Input_Bank_AutoState extends State<Input_Bank_Auto> {
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             prefixIcon: Icon(widget.prefixIcon ?? Icons.note_alt_outlined, color: Colors.blue),
-            // * ប៊ូតុងសម្អាតតម្លៃ
+            // ប៊ូតុងសម្អាតតម្លៃ
             suffixIcon: ExcludeFocus(
               child: Padding(
                 padding: EdgeInsets.only(right: 4),
@@ -83,7 +83,7 @@ class _Input_Bank_AutoState extends State<Input_Bank_Auto> {
         );
       },
       onSelected: (v) {
-        // * កំណត់តម្លៃដែលបានជ្រើសរើស
+        // កំណត់តម្លៃដែលបានជ្រើសរើស
         controller.text = v.toString();
         widget.onChanged?.call(v);
       },
@@ -97,7 +97,7 @@ class _Input_Bank_AutoState extends State<Input_Bank_Auto> {
   }
 }
 
-// * ថ្នាក់ Input_Bank_Auto ជា widget សម្រាប់បញ្ចូលធនាគារដោយស្វ័យប្រវត្តិ
+// ថ្នាក់ Input_Bank_Auto ជា widget សម្រាប់បញ្ចូលធនាគារដោយស្វ័យប្រវត្តិ
 class Input_Bank_Auto extends StatefulWidget {
   const Input_Bank_Auto({
     super.key, //

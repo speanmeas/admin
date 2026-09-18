@@ -1,4 +1,4 @@
-// * នាំចូល Flutter material និង Provider សម្រាប់ state management
+// នាំចូល Flutter material និង Provider សម្រាប់ state management
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
@@ -7,17 +7,17 @@ import "panel_body.dart" as body;
 import "panel_left.dart" as left;
 import "panel_top.dart" as top;
 
-// * ថ្នាក់ state របស់ Layout គ្រប់គ្រងប្លង់ទូទៅរបស់កម្មវិធី
+// ថ្នាក់ state របស់ Layout គ្រប់គ្រងប្លង់ទូទៅរបស់កម្មវិធី
 class _LayoutState extends State<Layout> {
-  // * កំណត់ថាតើជាឧបករណ៍ចល័តឬអត់
+  // កំណត់ថាតើជាឧបករណ៍ចល័តឬអត់
   bool is_mobile = false;
 
   @override
   Widget build(BuildContext context) {
-    // * ពិនិត្យទទឹងអេក្រង់ដើម្បីកំណត់របៀបបង្ហាញ
+    // ពិនិត្យទទឹងអេក្រង់ដើម្បីកំណត់របៀបបង្ហាញ
     is_mobile = MediaQuery.of(context).size.width < MOBILE_SCREEN_WIDTH;
     return Scaffold(
-      // * បន្ទះខាងលើ
+      // បន្ទះខាងលើ
       appBar: AppBar(
         title: top.Panel_Top(), //
         titleSpacing: 0,
@@ -33,7 +33,7 @@ class _LayoutState extends State<Layout> {
           Expanded(
             child: Row(
               children: [
-                // * បន្ទះខាងឆ្វេង (menu)
+                // បន្ទះខាងឆ្វេង (menu)
                 if (!is_mobile)
                   Container(
                     width: 250,
@@ -41,7 +41,7 @@ class _LayoutState extends State<Layout> {
                     child: left.Panel_Left(), //
                   ),
 
-                // * បន្ទះខ្លឹមសារ
+                // បន្ទះខ្លឹមសារ
                 Expanded(
                   child: body.Panel_Body(), //
                 ),
@@ -51,20 +51,20 @@ class _LayoutState extends State<Layout> {
         ],
       ),
 
-      // * drawer សម្រាប់ឧបករណ៍ចល័ត
+      // drawer សម្រាប់ឧបករណ៍ចល័ត
       drawer: is_mobile ? Drawer(child: left.Panel_Left()) : null,
     );
   }
 }
 
-// * ថ្នាក់ Layout ជា widget ចម្បងរបស់កម្មវិធី
+// ថ្នាក់ Layout ជា widget ចម្បងរបស់កម្មវិធី
 class Layout extends StatefulWidget {
   const Layout({super.key});
   @override
   State<Layout> createState() => _LayoutState();
 }
 
-// * ចំណុចចាប់ផ្តើមសម្រាប់ការអភិវឌ្ឍន៍
+// ចំណុចចាប់ផ្តើមសម្រាប់ការអភិវឌ្ឍន៍
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

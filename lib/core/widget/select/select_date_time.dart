@@ -1,18 +1,18 @@
-// * នាំចូល Flutter material និង intl សម្រាប់ទម្រង់កាលបរិច្ឆេទ
+// នាំចូល Flutter material និង intl សម្រាប់ទម្រង់កាលបរិច្ឆេទ
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:intl/intl.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ state របស់ Select_Date_Time គ្រប់គ្រងការជ្រើសរើសកាលបរិច្ឆេទ
+// ថ្នាក់ state របស់ Select_Date_Time គ្រប់គ្រងការជ្រើសរើសកាលបរិច្ឆេទ
 class _Select_Date_TimeState extends State<Select_Date_Time> {
   //
   dynamic tmp;
-  // * controller សម្រាប់អត្ថបទ
+  // controller សម្រាប់អត្ថបទ
   final controller = TextEditingController();
 
-  // * ចាប់ផ្តើមតម្លៃដំបូង
+  // ចាប់ផ្តើមតម្លៃដំបូង
   void init() {
     if (widget.init != null) {
       controller.text = DateFormat(DEFAULT_DATE_FORMAT).format(widget.init!);
@@ -36,7 +36,7 @@ class _Select_Date_TimeState extends State<Select_Date_Time> {
           contentPadding: EdgeInsets.fromLTRB(4, 8, 4, 8),
         ),
         readOnly: true,
-        // * បើកទំព័រជ្រើសរើសកាលបរិច្ឆេទនៅពេលចុច
+        // បើកទំព័រជ្រើសរើសកាលបរិច្ឆេទនៅពេលចុច
         onTap: () async {
           final v = await select_page(context);
           if (v == null) return;
@@ -48,14 +48,14 @@ class _Select_Date_TimeState extends State<Select_Date_Time> {
     );
   }
 
-  // * បើកទំព័រជ្រើសរើសកាលបរិច្ឆេទ និងពេលវេលា
+  // បើកទំព័រជ្រើសរើសកាលបរិច្ឆេទ និងពេលវេលា
   Future<DateTime?>? select_page(BuildContext context) async {
-    // * កំណត់កាលបរិច្ឆេទដំបូង
+    // កំណត់កាលបរិច្ឆេទដំបូង
     DateTime init = DateTime.now();
     if (widget.init != null) init = widget.init!;
     if (controller.text.isNotEmpty) init = DateTime.tryParse(controller.text)?.toLocal() ?? DateTime.now();
 
-    // * ជ្រើសរើសកាលបរិច្ឆេទ
+    // ជ្រើសរើសកាលបរិច្ឆេទ
     final DateTime? picked_date = await showDatePicker(
       context: context, //
       initialDate: init, //
@@ -65,7 +65,7 @@ class _Select_Date_TimeState extends State<Select_Date_Time> {
 
     if (picked_date == null) return null;
 
-    // * ជ្រើសរើសពេលវេលា
+    // ជ្រើសរើសពេលវេលា
     final TimeOfDay? picked_time = await showTimePicker(
       context: context, //
       initialTime: TimeOfDay(hour: 0, minute: 0),
@@ -73,7 +73,7 @@ class _Select_Date_TimeState extends State<Select_Date_Time> {
 
     if (picked_time == null) return null;
 
-    // * ផ្សំកាលបរិច្ឆេទ និងពេលវេលា
+    // ផ្សំកាលបរិច្ឆេទ និងពេលវេលា
     final DateTime picked_datetime = DateTime(
       picked_date.year, //
       picked_date.month,
@@ -92,7 +92,7 @@ class _Select_Date_TimeState extends State<Select_Date_Time> {
   }
 }
 
-// * ថ្នាក់ Select_Date_Time ជា widget សម្រាប់ជ្រើសរើសកាលបរិច្ឆេទ
+// ថ្នាក់ Select_Date_Time ជា widget សម្រាប់ជ្រើសរើសកាលបរិច្ឆេទ
 class Select_Date_Time extends StatefulWidget {
   const Select_Date_Time({
     super.key, //

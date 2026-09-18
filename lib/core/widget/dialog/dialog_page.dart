@@ -1,10 +1,10 @@
-// * នាំចូល Flutter material និង services សម្រាប់ dialog
+// នាំចូល Flutter material និង services សម្រាប់ dialog
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog សម្រាប់ជ្រើសរើសលេខទំព័រ
+// បង្ហាញ dialog សម្រាប់ជ្រើសរើសលេខទំព័រ
 Future<int?> select_page(
   BuildContext context, {
   required int page, //
@@ -12,7 +12,7 @@ Future<int?> select_page(
   required int limit,
 }) async {
   final ITEM_HEIGHT = 38.0;
-  // * គណនាចំនួនទំព័រសរុប
+  // គណនាចំនួនទំព័រសរុប
   final total_pages = row_total == 0 ? 1 : (row_total + limit - 1) ~/ limit;
   final controller = ScrollController(initialScrollOffset: ((page - 1) * ITEM_HEIGHT).clamp(0.0, double.infinity));
   final input_controller = TextEditingController();
@@ -31,7 +31,7 @@ Future<int?> select_page(
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(width: 8),
-            // * បង្ហាញចំនួនទំព័រ និងជួរដេកសរុប
+            // បង្ហាញចំនួនទំព័រ និងជួរដេកសរុប
             Container(
               padding: const EdgeInsets.fromLTRB(8, 6, 8, 4),
               decoration: BoxDecoration(
@@ -48,7 +48,7 @@ Future<int?> select_page(
               ),
             ),
             const Spacer(),
-            // * ប៊ូតុងបិទ dialog
+            // ប៊ូតុងបិទ dialog
             IconButton(
               icon: const Icon(Icons.close, size: 24, color: Colors.red),
               padding: EdgeInsets.all(4),
@@ -62,7 +62,7 @@ Future<int?> select_page(
           height: 520,
           child: Column(
             children: [
-              // * ប្រអប់បញ្ចូលលេខទំព័រសម្រាប់លោតរហ័ស
+              // ប្រអប់បញ្ចូលលេខទំព័រសម្រាប់លោតរហ័ស
               Container(
                 padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
                 child: Row(
@@ -85,7 +85,7 @@ Future<int?> select_page(
                               constraints: const BoxConstraints(),
                               tooltip: "Go",
                               onPressed: () {
-                                // * លោតទៅទំព័រដែលបានបញ្ចូល
+                                // លោតទៅទំព័រដែលបានបញ្ចូល
                                 final p = int.tryParse(input_controller.text);
                                 if (p != null && p >= 1 && p <= total_pages) {
                                   Navigator.pop(context, p);
@@ -107,7 +107,7 @@ Future<int?> select_page(
               ),
               const Divider(height: 1),
 
-              // * បញ្ជីទំព័រទាំងអស់
+              // បញ្ជីទំព័រទាំងអស់
               Expanded(
                 child: ListView.builder(
                   controller: controller,

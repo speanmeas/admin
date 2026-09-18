@@ -1,10 +1,10 @@
-// * នាំចូល Flutter material និង services សម្រាប់ dialog
+// នាំចូល Flutter material និង services សម្រាប់ dialog
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ state របស់ Dialog_ គ្រប់គ្រង dialog កែលេខទូរស័ព្ទ
+// ថ្នាក់ state របស់ Dialog_ គ្រប់គ្រង dialog កែលេខទូរស័ព្ទ
 class _Dialog_State extends State<Dialog_> {
   dynamic tmp;
 
@@ -16,7 +16,7 @@ class _Dialog_State extends State<Dialog_> {
 
   @override
   Widget build(BuildContext context) {
-    // * បង្កើត AlertDialog សម្រាប់បញ្ចូលលេខទូរស័ព្ទ
+    // បង្កើត AlertDialog សម្រាប់បញ្ចូលលេខទូរស័ព្ទ
     return AlertDialog(
       titlePadding: EdgeInsets.all(8),
       contentPadding: EdgeInsets.all(4),
@@ -33,18 +33,18 @@ class _Dialog_State extends State<Dialog_> {
         spacing: 8,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // * ប្រអប់បញ្ចូលលេខទូរស័ព្ទ
+          // ប្រអប់បញ្ចូលលេខទូរស័ព្ទ
           TextField(
             autofocus: true,
 
             keyboardType: TextInputType.numberWithOptions(decimal: false),
-            // * អនុញ្ញាតតែលេខ និងសញ្ញាបូក
+            // អនុញ្ញាតតែលេខ និងសញ្ញាបូក
             inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9+]"))],
             decoration: InputDecoration(
               labelText: "Phone Number:", //
               labelStyle: TextStyle(fontWeight: FontWeight.bold),
               floatingLabelBehavior: FloatingLabelBehavior.always,
-              // * ប៊ូតុងសម្អាតតម្លៃ
+              // ប៊ូតុងសម្អាតតម្លៃ
               suffixIcon: ExcludeFocus(
                 child: Padding(
                   padding: EdgeInsets.only(right: 4),
@@ -67,7 +67,7 @@ class _Dialog_State extends State<Dialog_> {
         ],
       ),
       actions: [
-        // * ប៊ូតុងបោះបង់
+        // ប៊ូតុងបោះបង់
         OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
           onPressed: () {
@@ -75,7 +75,7 @@ class _Dialog_State extends State<Dialog_> {
           },
           child: Text("Cancel"), //
         ),
-        // * ប៊ូតុងយល់ព្រម
+        // ប៊ូតុងយល់ព្រម
         OutlinedButton(
           onPressed: on_okay, //
           child: Text("Okay"), //
@@ -84,9 +84,9 @@ class _Dialog_State extends State<Dialog_> {
     );
   }
 
-  // * រក្សាទុកលេខទូរស័ព្ទថ្មី
+  // រក្សាទុកលេខទូរស័ព្ទថ្មី
   void on_okay() async {
-    // * ផ្ញើសំណើធ្វើបច្ចុប្បន្នភាពលេខទូរស័ព្ទ
+    // ផ្ញើសំណើធ្វើបច្ចុប្បន្នភាពលេខទូរស័ព្ទ
     tmp = await dio.post(
       endpoint.USER_UPDATE, //
       data: {
@@ -108,7 +108,7 @@ class _Dialog_State extends State<Dialog_> {
   }
 }
 
-// * ថ្នាក់ Dialog_ ជា dialog កែលេខទូរស័ព្ទ
+// ថ្នាក់ Dialog_ ជា dialog កែលេខទូរស័ព្ទ
 class Dialog_ extends StatefulWidget {
   const Dialog_({
     super.key, //
@@ -121,7 +121,7 @@ class Dialog_ extends StatefulWidget {
   State<Dialog_> createState() => _Dialog_State();
 }
 
-// * បង្ហាញ dialog កែលេខទូរស័ព្ទ
+// បង្ហាញ dialog កែលេខទូរស័ព្ទ
 Future<dynamic> view({
   required BuildContext context, //
   dynamic input, //

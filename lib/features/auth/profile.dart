@@ -1,4 +1,4 @@
-// * នាំចូល Flutter material និងធនធានចាំបាច់សម្រាប់ទំព័រប្រវត្តិរូប
+// នាំចូល Flutter material និងធនធានចាំបាច់សម្រាប់ទំព័រប្រវត្តិរូប
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
@@ -10,7 +10,7 @@ import "dialog/dialog_password.dart" as dialog_pw;
 
 import "sign_in.dart" as sign_in;
 
-// * បង្កើត layout មូលដ្ឋានសម្រាប់ទំព័រប្រវត្តិរូប
+// បង្កើត layout មូលដ្ឋានសម្រាប់ទំព័រប្រវត្តិរូប
 Widget _layout(List<Widget> children) {
   return Scaffold(
     appBar: AppBar(
@@ -43,32 +43,32 @@ Widget _layout(List<Widget> children) {
   );
 }
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទំព័រប្រវត្តិរូបអ្នកប្រើ
+// ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទំព័រប្រវត្តិរូបអ្នកប្រើ
 class _ProfileState extends State<Profile> {
   //
   dynamic tmp;
 
-  // * ព័ត៌មានអ្នកប្រើ
+  // ព័ត៌មានអ្នកប្រើ
   String? full_name;
   String? phone_number;
   String? username;
   String? password;
 
-  // * តួនាទីរបស់អ្នកប្រើ
+  // តួនាទីរបស់អ្នកប្រើ
   bool? is_admin;
   bool? is_manager;
   bool? is_receptionist;
   bool? is_housekeeper;
 
-  // * ចាប់ផ្តើមទាញយកព័ត៌មានអ្នកប្រើ
+  // ចាប់ផ្តើមទាញយកព័ត៌មានអ្នកប្រើ
   void init() async {
     try {
       //
-      // * ផ្ទៀងផ្ទាត់ access token (ទាញយកថ្មីជានិច្ច ដើម្បីបង្ហាញទិន្នន័យបច្ចុប្បន្ន)
+      // ផ្ទៀងផ្ទាត់ access token (ទាញយកថ្មីជានិច្ច ដើម្បីបង្ហាញទិន្នន័យបច្ចុប្បន្ន)
       final user = await auth.refresh();
       if (user == null) throw Exception("Invalid Access Token");
 
-      // * កំណត់ព័ត៌មានអ្នកប្រើ
+      // កំណត់ព័ត៌មានអ្នកប្រើ
       full_name = user.full_name;
       phone_number = user.phone_number;
       username = user.username;
@@ -81,7 +81,7 @@ class _ProfileState extends State<Profile> {
 
       setState(() {});
     } catch (e, st) {
-      // * បង្ហាញកំហុស និងត្រឡប់ទៅទំព័រចូលប្រព័ន្ធ
+      // បង្ហាញកំហុស និងត្រឡប់ទៅទំព័រចូលប្រព័ន្ធ
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
       nav_replace(context, sign_in.Main_());
@@ -94,7 +94,7 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return _layout([
-      // * បង្ហាញតួនាទីរបស់អ្នកប្រើ
+      // បង្ហាញតួនាទីរបស់អ្នកប្រើ
       (() {
         String value = "N/A";
         if (is_admin == true) value = "Administrator";
@@ -114,7 +114,7 @@ class _ProfileState extends State<Profile> {
 
       SizedBox(height: 4),
 
-      // * បង្ហាញឈ្មោះពេញ និងប៊ូតុងកែសម្រួល
+      // បង្ហាញឈ្មោះពេញ និងប៊ូតុងកែសម្រួល
       (() {
         String value = "N/A";
         if (full_name != null) //
@@ -136,7 +136,7 @@ class _ProfileState extends State<Profile> {
         );
       })(),
 
-      // * បង្ហាញលេខទូរស័ព្ទ និងប៊ូតុងកែសម្រួល
+      // បង្ហាញលេខទូរស័ព្ទ និងប៊ូតុងកែសម្រួល
       (() {
         String value = "N/A";
         if (phone_number != null) //
@@ -158,7 +158,7 @@ class _ProfileState extends State<Profile> {
         );
       })(),
 
-      // * បង្ហាញឈ្មោះអ្នកប្រើ និងប៊ូតុងកែសម្រួល
+      // បង្ហាញឈ្មោះអ្នកប្រើ និងប៊ូតុងកែសម្រួល
       (() {
         String value = "N/A";
         if (username != null) //
@@ -180,7 +180,7 @@ class _ProfileState extends State<Profile> {
         );
       })(),
 
-      // * បង្ហាញពាក្យសម្ងាត់ និងប៊ូតុងកែសម្រួល
+      // បង្ហាញពាក្យសម្ងាត់ និងប៊ូតុងកែសម្រួល
       (() {
         String value = "**********";
         return Row(
@@ -202,7 +202,7 @@ class _ProfileState extends State<Profile> {
 
       SizedBox(height: 8),
 
-      // * ប៊ូតុងចាកចេញពីប្រព័ន្ធ
+      // ប៊ូតុងចាកចេញពីប្រព័ន្ធ
       OutlinedButton.icon(
         icon: Icon(Icons.logout), //
         label: Text("Sign Out"),
@@ -214,18 +214,18 @@ class _ProfileState extends State<Profile> {
     ]);
   }
 
-  // * ដំណើរការចាកចេញពីប្រព័ន្ធ
+  // ដំណើរការចាកចេញពីប្រព័ន្ធ
   void on_sign_out() async {
     try {
       //
-      // * លុប token និងព័ត៌មានចូលប្រព័ន្ធ
+      // លុប token និងព័ត៌មានចូលប្រព័ន្ធ
       // await dio.options.headers.remove("Authorization");
       dio.clear_token();
       auth.clear();
       await secure.delete(key: "access_token");
       await secure.delete(key: "_id");
 
-      // * ត្រឡប់ទៅទំព័រចូលប្រព័ន្ធ
+      // ត្រឡប់ទៅទំព័រចូលប្រព័ន្ធ
       nav_replace(context, sign_in.Main_());
 
       //
@@ -244,7 +244,7 @@ class _ProfileState extends State<Profile> {
   }
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រប្រវត្តិរូបអ្នកប្រើ
+// ថ្នាក់ Main_ ជាទំព័រប្រវត្តិរូបអ្នកប្រើ
 class Profile extends StatefulWidget {
   const Profile({super.key});
   @override

@@ -2,20 +2,20 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ទិន្នន័យការបញ្ជាទំនិញ mini bar (ប្រើក្នុង UI មុនពេលរក្សាទុក)
+// ថ្នាក់ទិន្នន័យការបញ្ជាទំនិញ mini bar (ប្រើក្នុង UI មុនពេលរក្សាទុក)
 class Order_Mini_Bar {
-  final String? id; // * id នៃ Mini_Bar_Item ដែលរក្សាទុករួច (null = ថ្មី)
+  final String? id; // id នៃ Mini_Bar_Item ដែលរក្សាទុករួច (null = ថ្មី)
   final Mini_Bar_Show_2? mini_bar_id;
   int quantity;
   Order_Mini_Bar({this.id, this.mini_bar_id, this.quantity = 1});
 
-  // * តម្លៃសរុប = price × quantity
+  // តម្លៃសរុប = price × quantity
   double get total => (mini_bar_id?.price ?? 0) * quantity;
 
   factory Order_Mini_Bar.fromJson(Map<String, dynamic> m) => Order_Mini_Bar(id: parse_string(m["_id"]), mini_bar_id: m["mini_bar_id"] == null ? null : Mini_Bar_Show_2.fromJson(m["mini_bar_id"]), quantity: parse_int(m["quantity"]) ?? 1);
 }
 
-// * dialog ជ្រើសរើសទំនិញ mini bar ជាមួយ stepper +/- ក្នុងមួយទំនិញ
+// dialog ជ្រើសរើសទំនិញ mini bar ជាមួយ stepper +/- ក្នុងមួយទំនិញ
 Future<double?> dialog_mini_bar_select({
   required BuildContext context, //
   required List<Order_Mini_Bar> list_order_mini_bar,
@@ -26,7 +26,7 @@ Future<double?> dialog_mini_bar_select({
   List<Order_Mini_Bar> orders = [...list_order_mini_bar];
   String search = "";
 
-  // * ទាញយកបញ្ជីទំនិញ mini bar ពី server
+  // ទាញយកបញ្ជីទំនិញ mini bar ពី server
   Future<void> load() async {
     final tmp = await dio.post(endpoint.MINI_BAR_READ, data: {});
     if (tmp == null) {
@@ -36,10 +36,10 @@ Future<double?> dialog_mini_bar_select({
     list_mini_bar = (tmp.data as List<dynamic>? ?? []).map((e) => Mini_Bar.fromJson(e)).toList();
   }
 
-  // * ពិនិត្យថាទំនិញបានជ្រើសរើសហើយឬនៅ (មាន order ដែល quantity > 0)
+  // ពិនិត្យថាទំនិញបានជ្រើសរើសហើយឬនៅ (មាន order ដែល quantity > 0)
   bool is_selected(Mini_Bar item) => orders.any((o) => o.mini_bar_id?.id == item.id);
 
-  // * ស្វែងរក order របស់ទំនិញ
+  // ស្វែងរក order របស់ទំនិញ
   Order_Mini_Bar? order_of(Mini_Bar item) {
     for (var o in orders) {
       if (o.mini_bar_id?.id == item.id) return o;
@@ -47,7 +47,7 @@ Future<double?> dialog_mini_bar_select({
     return null;
   }
 
-  // * ជ្រើស/មិនជ្រើសទំនិញមួយម្តងៗ
+  // ជ្រើស/មិនជ្រើសទំនិញមួយម្តងៗ
   void toggle(Mini_Bar item, bool selected) {
     if (selected) {
       orders.removeWhere((o) => o.mini_bar_id?.id == item.id);
@@ -61,14 +61,14 @@ Future<double?> dialog_mini_bar_select({
     }
   }
 
-  // * បង្កើនចំនួន
+  // បង្កើនចំនួន
   void increase(Mini_Bar item) {
     var o = order_of(item);
     if (o == null) return;
     o.quantity++;
   }
 
-  // * បន្ថយចំនួន (ដល់ 0 ដកចេញពីបញ្ជី)
+  // បន្ថយចំនួន (ដល់ 0 ដកចេញពីបញ្ជី)
   void decrease(Mini_Bar item) {
     var o = order_of(item);
     if (o == null) return;
@@ -78,14 +78,14 @@ Future<double?> dialog_mini_bar_select({
     }
   }
 
-  // * តម្រងបញ្ជីទំនិញតាមឈ្មោះដែលស្វែងរក
+  // តម្រងបញ្ជីទំនិញតាមឈ្មោះដែលស្វែងរក
   List<Mini_Bar> list_show() {
     final q = search.trim().toLowerCase();
     if (q.isEmpty) return list_mini_bar;
     return list_mini_bar.where((item) => (item.name ?? "").toLowerCase().contains(q)).toList();
   }
 
-  // * រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
+  // រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
   Future<double?> on_confirm() async {
     List<String> ids = [];
     for (var o in orders) {
@@ -112,7 +112,7 @@ Future<double?> dialog_mini_bar_select({
       ids.add(tmp_item.data[0][Mini_Bar_Item.ID]);
     }
 
-    // * Walk-In: ប្រើ endpoint ដាច់ដោយឡែក (update_walkin)
+    // Walk-In: ប្រើ endpoint ដាច់ដោយឡែក (update_walkin)
     final tmp_fd = await dio.post(
       is_walk_in ? endpoint.FRONT_DESK_UPDATE_WALKIN : endpoint.FRONT_DESK_UPDATE_MINI_BAR_ITEM,
       data: {
@@ -152,7 +152,7 @@ Future<double?> dialog_mini_bar_select({
               height: 480,
               child: Column(
                 children: [
-                  // * ប្រអប់ស្វែងរកទំនិញតាមឈ្មោះ
+                  // ប្រអប់ស្វែងរកទំនិញតាមឈ្មោះ
                   Container(
                     padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
                     child: TextField(
@@ -172,7 +172,7 @@ Future<double?> dialog_mini_bar_select({
 
                   const Divider(height: 1),
 
-                  // * បញ្ជីទំនិញដែលបានត្រង
+                  // បញ្ជីទំនិញដែលបានត្រង
                   Expanded(
                     child: list_mini_bar.isEmpty
                         ? const Center(child: CircularProgressIndicator())
@@ -203,7 +203,7 @@ Future<double?> dialog_mini_bar_select({
                                   ),
                                   child: Row(
                                     children: [
-                                      // * សញ្ញាធីកបង្ហាញថាបានជ្រើសរើស
+                                      // សញ្ញាធីកបង្ហាញថាបានជ្រើសរើស
                                       Icon(selected ? Icons.check_circle : Icons.radio_button_unchecked, color: selected ? Colors.blue : Colors.grey),
                                       const SizedBox(width: 8),
                                       Expanded(
@@ -226,7 +226,7 @@ Future<double?> dialog_mini_bar_select({
                                         ),
                                       ),
 
-                                      // * stepper +/-
+                                      // stepper +/-
                                       if (selected) ...[
                                         IconButton(
                                           tooltip: "Decrease", //
@@ -271,18 +271,13 @@ Future<double?> dialog_mini_bar_select({
             actionsAlignment: MainAxisAlignment.end,
             actions: [
               OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                ),
+                style: OutlinedButton.styleFrom(foregroundColor: Colors.red, padding: const EdgeInsets.symmetric(horizontal: 16)),
                 onPressed: () => Navigator.pop(context),
                 child: const Text("Cancel"),
               ),
-              // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស និងរក្សាទុកទំនិញ
+              // ប៊ូតុងបញ្ជាក់ការជ្រើសរើស និងរក្សាទុកទំនិញ
               OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                ),
+                style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 16)),
                 onPressed: is_loading
                     ? null
                     : () async {
@@ -294,9 +289,7 @@ Future<double?> dialog_mini_bar_select({
                         }
                         if (context.mounted) Navigator.pop(context, r);
                       },
-                child: is_loading
-                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text("OK"),
+                child: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Text("OK"),
               ),
             ],
           );

@@ -19,7 +19,7 @@ import "dialog/guest_add.dart";
 import "dialog/guest_update.dart";
 
 class _Main_State extends State<Main_> {
-  // * ########## BLOCK ATTRIBUTE ##########
+  // ########## BLOCK ATTRIBUTE ##########
   int reload = 0;
   bool filter = false;
   bool is_admin = false;
@@ -32,9 +32,9 @@ class _Main_State extends State<Main_> {
   late PlutoGridStateManager state_manager;
 
   Timer? _timer;
-  // * ########## BLOCK ATTRIBUTE END ##########
+  // ########## BLOCK ATTRIBUTE END ##########
 
-  // * ########## BLOCK DESIGN ##########
+  // ########## BLOCK DESIGN ##########
   Widget _layout({
     List<Widget>? check_in, //
     List<Widget>? check_out, //
@@ -675,9 +675,9 @@ class _Main_State extends State<Main_> {
       ),
     );
   }
-  // * ########## BLOCK DESIGN END ##########
+  // ########## BLOCK DESIGN END ##########
 
-  // * ########## BLOCK METHODS ##########
+  // ########## BLOCK METHODS ##########
   @override
   void initState() {
     super.initState();
@@ -758,6 +758,12 @@ class _Main_State extends State<Main_> {
     if (tmp_fd == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
     data = (tmp_fd.data as List<dynamic>? ?? []).map<Front_Desk>((e) => Front_Desk.fromJson(e)).toList();
+    data.sort((a, b) {
+      if (a.order != null && b.order != null) return a.order!.compareTo(b.order!);
+      if (a.order != null) return -1;
+      if (b.order != null) return 1;
+      return 0;
+    });
 
     state_manager.removeAllRows();
     final now = DateTime.now();
@@ -813,7 +819,7 @@ class _Main_State extends State<Main_> {
 
   bool is_walk_in_room(dynamic r) => _is_mini_bar_room(r[Room.NUMBER]?.toString());
 
-  // * ធ្វើឲ្យ duration ក្នុងតារាងថ្មីតាមពេលបច្ចុប្បន្ន
+  // ធ្វើឲ្យ duration ក្នុងតារាងថ្មីតាមពេលបច្ចុប្បន្ន
   void on_refresh_duration() {
     for (var row in state_manager.rows) {
       final in_at = parse_datetime(row.cells[Front_Desk.CHECK_IN_AT]?.value);
@@ -1231,16 +1237,16 @@ class _Main_State extends State<Main_> {
     setState(() {});
   }
 
-  // * ########## BLOCK METHODS END ##########
+  // ########## BLOCK METHODS END ##########
 }
 
-// * ########## BLOCK ARGUMENTS OF MAIN ##########
+// ########## BLOCK ARGUMENTS OF MAIN ##########
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
-// * ########## BLOCK ARGUMENTS OF MAIN END ##########
+// ########## BLOCK ARGUMENTS OF MAIN END ##########
 
 void main() {
   runApp(

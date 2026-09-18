@@ -1,4 +1,4 @@
-// * នាំចូល Flutter material សម្រាប់ UI components
+// នាំចូល Flutter material សម្រាប់ UI components
 import "package:flutter/material.dart";
 import "dart:math" as math; // ignore: unused_import
 import "package:speanmeas/core/endpoint.g.dart"; // ignore: unused_import
@@ -7,7 +7,7 @@ import "package:speanmeas/core/utility/pprint.dart"; // ignore: unused_import
 import "package:speanmeas/core/widget/snackbar.dart"; // ignore: unused_import
 import "package:speanmeas/core/theme.dart"; // ignore: unused_import
 
-// * បង្ហាញ snackbar ជូនដំណឹងដល់អ្នកប្រើប្រាស់
+// បង្ហាញ snackbar ជូនដំណឹងដល់អ្នកប្រើប្រាស់
 void snackbar({
   required BuildContext ct, //
   required String ms, //
@@ -22,10 +22,10 @@ void snackbar({
 
         content: Row(
           children: [
-            // * រូបតំណាងព័ត៌មាន
+            // រូបតំណាងព័ត៌មាន
             Icon(Icons.info_outline, color: Colors.white),
             SizedBox(width: 8),
-            // * អត្ថបទសារ
+            // អត្ថបទសារ
             Expanded(
               child: Text(
                 ms, //
@@ -53,7 +53,7 @@ void snackbar({
     );
 }
 
-// * Widget សម្រាប់សាកល្បង snackbar
+// Widget សម្រាប់សាកល្បង snackbar
 class SnackbarTester extends StatefulWidget {
   const SnackbarTester({super.key});
 
@@ -91,7 +91,7 @@ class _SnackbarTesterState extends State<SnackbarTester> {
   }
 }
 
-// * ចំណុចចូលកម្មវិធីសម្រាប់សាកល្បង snackbar
+// ចំណុចចូលកម្មវិធីសម្រាប់សាកល្បង snackbar
 void main() {
   runApp(const MaterialApp(home: SnackbarTester(), debugShowCheckedModeBanner: false));
 }

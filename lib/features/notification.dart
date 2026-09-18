@@ -1,10 +1,10 @@
-// * ទំព័រការជូនដំណឹង (Notification)
+// ទំព័រការជូនដំណឹង (Notification)
 
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទំព័រការជូនដំណឹង
+// ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទំព័រការជូនដំណឹង
 class _Main_State extends State<Main_> {
   //
   dynamic tmp;
@@ -12,7 +12,7 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // * របារចំណងជើងរបស់ទំព័រ
+      // របារចំណងជើងរបស់ទំព័រ
       appBar: AppBar(
         title: Text("Notification"), //
         centerTitle: false,
@@ -31,7 +31,7 @@ class _Main_State extends State<Main_> {
             margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
             child: Column(
               children: [
-                // * សារជូនដំណឹងថាកំពុងអភិវឌ្ឍន៍
+                // សារជូនដំណឹងថាកំពុងអភិវឌ្ឍន៍
                 Text("Notification is under development."), //
               ],
             ),
@@ -42,7 +42,7 @@ class _Main_State extends State<Main_> {
   }
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រការជូនដំណឹង
+// ថ្នាក់ Main_ ជាទំព័រការជូនដំណឹង
 class Main_ extends StatefulWidget {
   const Main_({super.key});
 
@@ -50,7 +50,7 @@ class Main_ extends StatefulWidget {
   State<Main_> createState() => _Main_State();
 }
 
-// * ចំណុចចាប់ផ្តើមកម្មវិធី
+// ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   glob.init();

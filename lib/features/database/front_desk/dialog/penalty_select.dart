@@ -2,20 +2,20 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ទិន្នន័យការបញ្ជាទំនិញ penalty (ប្រើក្នុង UI មុនពេលរក្សាទុក)
+// ថ្នាក់ទិន្នន័យការបញ្ជាទំនិញ penalty (ប្រើក្នុង UI មុនពេលរក្សាទុក)
 class Order_Penalty {
-  final String? id; // * id នៃ Penalty_Item ដែលរក្សាទុករួច (null = ថ្មី)
+  final String? id; // id នៃ Penalty_Item ដែលរក្សាទុករួច (null = ថ្មី)
   final Penalty_Show_2? penalty_id;
   int quantity;
   Order_Penalty({this.id, this.penalty_id, this.quantity = 1});
 
-  // * តម្លៃសរុប = price × quantity
+  // តម្លៃសរុប = price × quantity
   double get total => (penalty_id?.price ?? 0) * quantity;
 
   factory Order_Penalty.fromJson(Map<String, dynamic> m) => Order_Penalty(id: parse_string(m["_id"]), penalty_id: m["penalty_id"] == null ? null : Penalty_Show_2.fromJson(m["penalty_id"]), quantity: parse_int(m["quantity"]) ?? 1);
 }
 
-// * dialog ជ្រើសរើសទំនិញ penalty ជាមួយ stepper +/- ក្នុងមួយទំនិញ
+// dialog ជ្រើសរើសទំនិញ penalty ជាមួយ stepper +/- ក្នុងមួយទំនិញ
 Future<double?> dialog_penalty_select({
   required BuildContext context, //
   required List<Order_Penalty> list_order_penalty,
@@ -25,7 +25,7 @@ Future<double?> dialog_penalty_select({
   List<Order_Penalty> orders = [...list_order_penalty];
   String search = "";
 
-  // * ទាញយកបញ្ជីទំនិញ penalty ពី server
+  // ទាញយកបញ្ជីទំនិញ penalty ពី server
   Future<void> load() async {
     final tmp = await dio.post(endpoint.PENALTY_READ, data: {});
     if (tmp == null) {
@@ -35,10 +35,10 @@ Future<double?> dialog_penalty_select({
     list_penalty = (tmp.data as List<dynamic>? ?? []).map((e) => Penalty.fromJson(e)).toList();
   }
 
-  // * ពិនិត្យថាទំនិញបានជ្រើសរើសហើយឬនៅ (មាន order ដែល quantity > 0)
+  // ពិនិត្យថាទំនិញបានជ្រើសរើសហើយឬនៅ (មាន order ដែល quantity > 0)
   bool is_selected(Penalty item) => orders.any((o) => o.penalty_id?.id == item.id);
 
-  // * ស្វែងរក order របស់ទំនិញ
+  // ស្វែងរក order របស់ទំនិញ
   Order_Penalty? order_of(Penalty item) {
     for (var o in orders) {
       if (o.penalty_id?.id == item.id) return o;
@@ -46,7 +46,7 @@ Future<double?> dialog_penalty_select({
     return null;
   }
 
-  // * ជ្រើស/មិនជ្រើសទំនិញមួយម្តងៗ
+  // ជ្រើស/មិនជ្រើសទំនិញមួយម្តងៗ
   void toggle(Penalty item, bool selected) {
     if (selected) {
       orders.removeWhere((o) => o.penalty_id?.id == item.id);
@@ -60,14 +60,14 @@ Future<double?> dialog_penalty_select({
     }
   }
 
-  // * បង្កើនចំនួន
+  // បង្កើនចំនួន
   void increase(Penalty item) {
     var o = order_of(item);
     if (o == null) return;
     o.quantity++;
   }
 
-  // * បន្ថយចំនួន (ដល់ 0 ដកចេញពីបញ្ជី)
+  // បន្ថយចំនួន (ដល់ 0 ដកចេញពីបញ្ជី)
   void decrease(Penalty item) {
     var o = order_of(item);
     if (o == null) return;
@@ -77,14 +77,14 @@ Future<double?> dialog_penalty_select({
     }
   }
 
-  // * តម្រងបញ្ជីទំនិញតាមឈ្មោះដែលស្វែងរក
+  // តម្រងបញ្ជីទំនិញតាមឈ្មោះដែលស្វែងរក
   List<Penalty> list_show() {
     final q = search.trim().toLowerCase();
     if (q.isEmpty) return list_penalty;
     return list_penalty.where((item) => (item.name ?? "").toLowerCase().contains(q)).toList();
   }
 
-  // * រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
+  // រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
   Future<double?> on_confirm() async {
     List<String> ids = [];
     for (var o in orders) {
@@ -150,7 +150,7 @@ Future<double?> dialog_penalty_select({
               height: 480,
               child: Column(
                 children: [
-                  // * ប្រអប់ស្វែងរកទំនិញតាមឈ្មោះ
+                  // ប្រអប់ស្វែងរកទំនិញតាមឈ្មោះ
                   Container(
                     padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
                     child: TextField(
@@ -170,7 +170,7 @@ Future<double?> dialog_penalty_select({
 
                   const Divider(height: 1),
 
-                  // * បញ្ជីទំនិញដែលបានត្រង
+                  // បញ្ជីទំនិញដែលបានត្រង
                   Expanded(
                     child: list_penalty.isEmpty
                         ? const Center(child: CircularProgressIndicator())
@@ -201,7 +201,7 @@ Future<double?> dialog_penalty_select({
                                   ),
                                   child: Row(
                                     children: [
-                                      // * សញ្ញាធីកបង្ហាញថាបានជ្រើសរើស
+                                      // សញ្ញាធីកបង្ហាញថាបានជ្រើសរើស
                                       Icon(selected ? Icons.check_circle : Icons.radio_button_unchecked, color: selected ? Colors.blue : Colors.grey),
                                       const SizedBox(width: 8),
                                       Expanded(
@@ -224,7 +224,7 @@ Future<double?> dialog_penalty_select({
                                         ),
                                       ),
 
-                                      // * stepper +/-
+                                      // stepper +/-
                                       if (selected) ...[
                                         IconButton(
                                           tooltip: "Decrease", //
@@ -269,18 +269,13 @@ Future<double?> dialog_penalty_select({
             actionsAlignment: MainAxisAlignment.end,
             actions: [
               OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                ),
+                style: OutlinedButton.styleFrom(foregroundColor: Colors.red, padding: const EdgeInsets.symmetric(horizontal: 16)),
                 onPressed: () => Navigator.pop(context),
                 child: const Text("Cancel"),
               ),
-              // * ប៊ូតុងបញ្ជាក់ការជ្រើសរើស និងរក្សាទុកទំនិញ
+              // ប៊ូតុងបញ្ជាក់ការជ្រើសរើស និងរក្សាទុកទំនិញ
               OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                ),
+                style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 16)),
                 onPressed: is_loading
                     ? null
                     : () async {
@@ -292,9 +287,7 @@ Future<double?> dialog_penalty_select({
                         }
                         if (context.mounted) Navigator.pop(context, r);
                       },
-                child: is_loading
-                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text("OK"),
+                child: is_loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Text("OK"),
               ),
             ],
           );

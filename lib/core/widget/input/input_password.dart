@@ -1,14 +1,14 @@
-// * នាំចូល Flutter material សម្រាប់បង្កើត UI
+// នាំចូល Flutter material សម្រាប់បង្កើត UI
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ state របស់ Input_Password គ្រប់គ្រងការបញ្ចូលពាក្យសម្ងាត់
+// ថ្នាក់ state របស់ Input_Password គ្រប់គ្រងការបញ្ចូលពាក្យសម្ងាត់
 class _Input_PasswordState extends State<Input_Password> {
   //
   final controller = TextEditingController();
 
-  // * ចាប់ផ្តើមតម្លៃដំបូង
+  // ចាប់ផ្តើមតម្លៃដំបូង
   void init() {
     if (widget.initial != null) {
       controller.text = widget.initial!;
@@ -18,7 +18,7 @@ class _Input_PasswordState extends State<Input_Password> {
 
   @override
   Widget build(BuildContext context) {
-    // * បង្កើត TextField សម្រាប់បញ្ចូលពាក្យសម្ងាត់ (លាក់អត្ថបទ)
+    // បង្កើត TextField សម្រាប់បញ្ចូលពាក្យសម្ងាត់ (លាក់អត្ថបទ)
     return TextField(
       controller: controller,
       obscureText: true,
@@ -28,7 +28,7 @@ class _Input_PasswordState extends State<Input_Password> {
         labelStyle: TextStyle(fontWeight: FontWeight.bold),
         floatingLabelBehavior: FloatingLabelBehavior.always,
         prefixIcon: Icon(Icons.lock_outline, color: Colors.blue),
-        // * ប៊ូតុងសម្អាតតម្លៃ
+        // ប៊ូតុងសម្អាតតម្លៃ
         suffixIcon: ExcludeFocus(
           child: Padding(
             padding: EdgeInsets.only(right: 4),
@@ -56,7 +56,7 @@ class _Input_PasswordState extends State<Input_Password> {
   }
 }
 
-// * ថ្នាក់ Input_Password ជា widget សម្រាប់បញ្ចូលពាក្យសម្ងាត់
+// ថ្នាក់ Input_Password ជា widget សម្រាប់បញ្ចូលពាក្យសម្ងាត់
 class Input_Password extends StatefulWidget {
   const Input_Password({
     super.key, //

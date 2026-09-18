@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog សម្រាប់បង្កើត Demo 2-2 ថ្មី
+// បង្ហាញ dialog សម្រាប់បង្កើត Demo 2-2 ថ្មី
 Future<Map<String, dynamic>?> dialog_create_demo_2_2({
   required BuildContext context, //
 }) async {

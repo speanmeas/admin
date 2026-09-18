@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:speanmeas/core/utility/all.dart';
 
-// * បង្កើតទិន្នន័យសាកល្បង 30 rows ដោយចៃដន្យ
+// បង្កើតទិន្នន័យសាកល្បង 30 rows ដោយចៃដន្យ
 class DummyData {
   static final List<String> _names = ['Sokha', 'Dara', 'Srey Leak', 'Bunthoeun', 'Channary', 'Rithy', 'Malis', 'Vichea', 'Piseth', 'Kunthea'];
 

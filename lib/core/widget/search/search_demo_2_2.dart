@@ -1,4 +1,4 @@
-// * នាំចូល Flutter foundation និង flutter_typeahead សម្រាប់ autocomplete
+// នាំចូល Flutter foundation និង flutter_typeahead សម្រាប់ autocomplete
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -9,17 +9,17 @@ import "package:speanmeas/core/utility/all.dart";
 import "package:speanmeas/core/widget/show/show_text.dart";
 import "package:speanmeas/features/database/demo_2_2/dialog/create.dart" as create_demo_2_2;
 
-// * ថ្នាក់ state របស់ Search_Demo_2_2 គ្រប់គ្រងការស្វែងរក Demo 2-2
+// ថ្នាក់ state របស់ Search_Demo_2_2 គ្រប់គ្រងការស្វែងរក Demo 2-2
 class _Search_Demo_2_2State extends State<Search_Demo_2_2> {
   //
-  // * កំណត់ថាតើបានជ្រើសរើសហើយឬអត់
+  // កំណត់ថាតើបានជ្រើសរើសហើយឬអត់
   bool is_selected = false;
   FocusNode focusNode = FocusNode();
   FocusNode clear_focus = FocusNode();
 
   final controller = TextEditingController();
 
-  // * ព័ត៌មាន Demo 2-2 ដែលបានជ្រើសរើស
+  // ព័ត៌មាន Demo 2-2 ដែលបានជ្រើសរើស
   String? id;
   String? text;
   int? number;
@@ -27,10 +27,10 @@ class _Search_Demo_2_2State extends State<Search_Demo_2_2> {
   dynamic tmp;
   List<Demo_2_2> data = [];
 
-  // * ចាប់ផ្តើមស្វែងរក
+  // ចាប់ផ្តើមស្វែងរក
   void init() async {
     //
-    // * សម្អាតតម្លៃនៅពេលបាត់បង់ focus
+    // សម្អាតតម្លៃនៅពេលបាត់បង់ focus
     focusNode.addListener(() {
       if (!focusNode.hasFocus && !clear_focus.hasFocus && !is_selected && controller.text.isNotEmpty) {
         controller.clear();
@@ -41,11 +41,11 @@ class _Search_Demo_2_2State extends State<Search_Demo_2_2> {
       }
     });
 
-    // * បើគ្មានតម្លៃដំបូង ឈប់
+    // បើគ្មានតម្លៃដំបូង ឈប់
     if (widget.init == null || widget.init!.isEmpty) return;
 
     try {
-      // * ទាញយកព័ត៌មាន Demo 2-2 តាមអត្ថបទ
+      // ទាញយកព័ត៌មាន Demo 2-2 តាមអត្ថបទ
       tmp = await dio.post(
         endpoint.DEMO_2_2_READ_STRING, //
         data: {
@@ -57,7 +57,7 @@ class _Search_Demo_2_2State extends State<Search_Demo_2_2> {
 
       final list = List<Demo_2_2>.from((tmp.data ?? const []).map((d) => Demo_2_2.fromJson(d)));
 
-      // * កំណត់ព័ត៌មាន Demo 2-2
+      // កំណត់ព័ត៌មាន Demo 2-2
       id = list.first.id;
       text = list.first.text;
       number = list.first.number;
@@ -66,7 +66,7 @@ class _Search_Demo_2_2State extends State<Search_Demo_2_2> {
       widget.onChanged?.call(id);
       setState(() {});
     } catch (e, st) {
-      // * បង្ហាញកំហុសប្រសិនបើមាន
+      // បង្ហាញកំហុសប្រសិនបើមាន
       pprint(st);
       snackbar(ct: context, ms: e.toString(), cl: Colors.red);
     }
@@ -80,12 +80,12 @@ class _Search_Demo_2_2State extends State<Search_Demo_2_2> {
         Row(
           children: [
             Expanded(
-              // * បង្កើត TypeAheadField សម្រាប់ស្វែងរក Demo 2-2
+              // បង្កើត TypeAheadField សម្រាប់ស្វែងរក Demo 2-2
               child: TypeAheadField<String>(
                 controller: controller,
                 focusNode: focusNode,
                 itemBuilder: (context, item) => ListTile(title: Text(item)),
-                // * ស្វែងរក Demo 2-2 ពី server
+                // ស្វែងរក Demo 2-2 ពី server
                 suggestionsCallback: (q) async {
                   try {
                     //
@@ -101,7 +101,7 @@ class _Search_Demo_2_2State extends State<Search_Demo_2_2> {
 
                     data = List<Demo_2_2>.from((tmp.data ?? const []).map((d) => Demo_2_2.fromJson(d)));
 
-                    // * បង្កើតបញ្ជីជម្រើសដោយគ្មានអត្ថបទស្ទួន
+                    // បង្កើតបញ្ជីជម្រើសដោយគ្មានអត្ថបទស្ទួន
                     final options = <String>[];
                     for (var n in data) {
                       final v = n.text ?? "";
@@ -127,7 +127,7 @@ class _Search_Demo_2_2State extends State<Search_Demo_2_2> {
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: Icon(Icons.search, color: Colors.blue),
-                      // * ប៊ូតុងសម្អាតតម្លៃ
+                      // ប៊ូតុងសម្អាតតម្លៃ
                       suffixIcon: ExcludeFocus(
                         child: Padding(
                           padding: EdgeInsets.only(right: 4),
@@ -151,7 +151,7 @@ class _Search_Demo_2_2State extends State<Search_Demo_2_2> {
                 onSelected: (v) {
                   is_selected = true;
                   controller.text = v;
-                  // * កំណត់ព័ត៌មាន Demo 2-2 ដែលបានជ្រើសរើស
+                  // កំណត់ព័ត៌មាន Demo 2-2 ដែលបានជ្រើសរើស
                   for (final n in data) {
                     if (n.text == v) {
                       id = n.id;
@@ -175,11 +175,11 @@ class _Search_Demo_2_2State extends State<Search_Demo_2_2> {
               label: Text("New"),
               style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
               onPressed: () async {
-                // * បើកទម្រង់បង្កើត Demo 2-2 ថ្មី
+                // បើកទម្រង់បង្កើត Demo 2-2 ថ្មី
                 final v = await create_demo_2_2.dialog_create_demo_2_2(context: context);
                 if (v == null) return;
 
-                // * បង្ហាញអត្ថបទ Demo 2-2 ថ្មី និងជ្រើសរើសភ្លាមៗ
+                // បង្ហាញអត្ថបទ Demo 2-2 ថ្មី និងជ្រើសរើសភ្លាមៗ
                 is_selected = true;
                 final n = Demo_2_2.fromJson(v);
                 id = n.id;
@@ -232,8 +232,8 @@ class Search_Demo_2_2 extends StatefulWidget {
     this.init,
   });
 
-  final ValueChanged<String?>? onChanged; // * ត្រឡប់ id របស់ Demo 2-2
-  final String? init; // * តម្លៃដំបូង (អត្ថបទ Demo 2-2)
+  final ValueChanged<String?>? onChanged; // ត្រឡប់ id របស់ Demo 2-2
+  final String? init; // តម្លៃដំបូង (អត្ថបទ Demo 2-2)
 
   @override
   State<Search_Demo_2_2> createState() => _Search_Demo_2_2State();

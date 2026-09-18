@@ -1,13 +1,13 @@
-// * នាំចូល Flutter material និង Provider សម្រាប់ state management
+// នាំចូល Flutter material និង Provider សម្រាប់ state management
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ state របស់ Show_Boolean គ្រប់គ្រងការបង្ហាញតម្លៃ boolean
+// ថ្នាក់ state របស់ Show_Boolean គ្រប់គ្រងការបង្ហាញតម្លៃ boolean
 class _Show_BooleanState extends State<Show_Boolean> {
   @override
   Widget build(BuildContext context) {
-    // * កំណត់អត្ថបទពីតម្លៃ boolean
+    // កំណត់អត្ថបទពីតម្លៃ boolean
     String value = "";
     if (widget.value == true) value = "Yes";
     if (widget.value == false) value = "No";
@@ -15,20 +15,20 @@ class _Show_BooleanState extends State<Show_Boolean> {
     return Row(
       spacing: 4,
       children: [
-        // * រូបតំណាងមុន
+        // រូបតំណាងមុន
         if (widget.prefixIcon != null) Icon(widget.prefixIcon!, color: Colors.blue),
-        // * អត្ថបទមុន
+        // អត្ថបទមុន
         if (widget.prefixText != null)
           Text(
             widget.prefixText ?? "", //
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
           ),
-        // * អត្ថបទដឹកនាំ
+        // អត្ថបទដឹកនាំ
         Text(
           widget.leading ?? "", //
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        // * តម្លៃ boolean ដែលបានបង្ហាញ
+        // តម្លៃ boolean ដែលបានបង្ហាញ
         Expanded(
           child: Text(
             '$value ${widget.suffixText ?? ""}',
@@ -42,7 +42,7 @@ class _Show_BooleanState extends State<Show_Boolean> {
   }
 }
 
-// * ថ្នាក់ Show_Boolean ជា widget សម្រាប់បង្ហាញតម្លៃ boolean
+// ថ្នាក់ Show_Boolean ជា widget សម្រាប់បង្ហាញតម្លៃ boolean
 class Show_Boolean extends StatefulWidget {
   const Show_Boolean({
     super.key, //

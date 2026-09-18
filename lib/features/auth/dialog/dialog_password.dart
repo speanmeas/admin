@@ -1,16 +1,16 @@
-// * នាំចូល Flutter material និងធនធានចាំបាច់សម្រាប់ dialog
+// នាំចូល Flutter material និងធនធានចាំបាច់សម្រាប់ dialog
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ state របស់ Dialog_ គ្រប់គ្រង dialog កែពាក្យសម្ងាត់
+// ថ្នាក់ state របស់ Dialog_ គ្រប់គ្រង dialog កែពាក្យសម្ងាត់
 class _Dialog_State extends State<Dialog_> {
   dynamic tmp;
 
   String password = "";
   String confirmed_password = "";
 
-  // * កំណត់ការបង្ហាញ/លាក់ពាក្យសម្ងាត់
+  // កំណត់ការបង្ហាញ/លាក់ពាក្យសម្ងាត់
   bool is_obscure_pw = true;
   bool is_obscure_cf_pw = true;
 
@@ -21,7 +21,7 @@ class _Dialog_State extends State<Dialog_> {
 
   @override
   Widget build(BuildContext context) {
-    // * បង្កើត AlertDialog សម្រាប់បញ្ចូលពាក្យសម្ងាត់ថ្មី
+    // បង្កើត AlertDialog សម្រាប់បញ្ចូលពាក្យសម្ងាត់ថ្មី
     return AlertDialog(
       titlePadding: EdgeInsets.all(8),
       contentPadding: EdgeInsets.all(4),
@@ -38,13 +38,13 @@ class _Dialog_State extends State<Dialog_> {
         spacing: 8,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // * ប្រអប់បញ្ចូលពាក្យសម្ងាត់ថ្មី
+          // ប្រអប់បញ្ចូលពាក្យសម្ងាត់ថ្មី
           TextField(
             decoration: InputDecoration(
               labelText: "New Password:", //
               labelStyle: TextStyle(fontWeight: FontWeight.bold),
               floatingLabelBehavior: FloatingLabelBehavior.always,
-              // * ប៊ូតុងបង្ហាញ/លាក់ពាក្យសម្ងាត់
+              // ប៊ូតុងបង្ហាញ/លាក់ពាក្យសម្ងាត់
               suffixIcon: ExcludeFocus(
                 child: Padding(
                   padding: EdgeInsets.only(right: 4),
@@ -67,13 +67,13 @@ class _Dialog_State extends State<Dialog_> {
             onSubmitted: (v) => can_okay() ? on_okay() : null,
           ),
 
-          // * ប្រអប់បញ្ចូលពាក្យសម្ងាត់បញ្ជាក់
+          // ប្រអប់បញ្ចូលពាក្យសម្ងាត់បញ្ជាក់
           TextField(
             decoration: InputDecoration(
               labelText: "Confirm New Password:", //
               labelStyle: TextStyle(fontWeight: FontWeight.bold),
               floatingLabelBehavior: FloatingLabelBehavior.always,
-              // * ប៊ូតុងបង្ហាញ/លាក់ពាក្យសម្ងាត់
+              // ប៊ូតុងបង្ហាញ/លាក់ពាក្យសម្ងាត់
               suffixIcon: ExcludeFocus(
                 child: Padding(
                   padding: EdgeInsets.only(right: 4),
@@ -97,7 +97,7 @@ class _Dialog_State extends State<Dialog_> {
         ],
       ),
       actions: [
-        // * ប៊ូតុងបោះបង់
+        // ប៊ូតុងបោះបង់
         OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
           onPressed: () {
@@ -105,7 +105,7 @@ class _Dialog_State extends State<Dialog_> {
           },
           child: Text("Cancel"), //
         ),
-        // * ប៊ូតុងយល់ព្រម
+        // ប៊ូតុងយល់ព្រម
         OutlinedButton(
           onPressed: can_okay() ? on_okay : null,
           child: Text("Okay"), //
@@ -114,7 +114,7 @@ class _Dialog_State extends State<Dialog_> {
     );
   }
 
-  // * ពិនិត្យថាតើអាចរក្សាទុកបានឬអត់
+  // ពិនិត្យថាតើអាចរក្សាទុកបានឬអត់
   bool can_okay() {
     if (password.isEmpty) return false;
     if (confirmed_password.isEmpty) return false;
@@ -122,9 +122,9 @@ class _Dialog_State extends State<Dialog_> {
     return true;
   }
 
-  // * រក្សាទុកពាក្យសម្ងាត់ថ្មី
+  // រក្សាទុកពាក្យសម្ងាត់ថ្មី
   void on_okay() async {
-    // * ផ្ញើសំណើធ្វើបច្ចុប្បន្នភាពពាក្យសម្ងាត់
+    // ផ្ញើសំណើធ្វើបច្ចុប្បន្នភាពពាក្យសម្ងាត់
     tmp = await dio.post(
       endpoint.USER_UPDATE, //
       data: {
@@ -145,7 +145,7 @@ class _Dialog_State extends State<Dialog_> {
   }
 }
 
-// * ថ្នាក់ Dialog_ ជា dialog កែពាក្យសម្ងាត់
+// ថ្នាក់ Dialog_ ជា dialog កែពាក្យសម្ងាត់
 class Dialog_ extends StatefulWidget {
   const Dialog_({super.key});
 
@@ -153,7 +153,7 @@ class Dialog_ extends StatefulWidget {
   State<Dialog_> createState() => _Dialog_State();
 }
 
-// * បង្ហាញ dialog កែពាក្យសម្ងាត់
+// បង្ហាញ dialog កែពាក្យសម្ងាត់
 Future<dynamic> view({required BuildContext context}) {
   return showDialog<dynamic>(
     context: context,

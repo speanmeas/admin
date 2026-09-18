@@ -19,7 +19,7 @@ import "dialog/room_search.dart";
 import "dialog/shift_date_select.dart";
 
 class _Main_State extends State<Main_> {
-  // * ########## BLOCK ATTRIBUTE ##########
+  // ########## BLOCK ATTRIBUTE ##########
   int reload = 0;
   bool filter = false;
   bool is_admin = false;
@@ -32,9 +32,9 @@ class _Main_State extends State<Main_> {
 
   Timer? _timer;
 
-  // * ########## BLOCK ATTRIBUTE END ##########
+  // ########## BLOCK ATTRIBUTE END ##########
 
-  // * ########## BLOCK DESIGN ##########
+  // ########## BLOCK DESIGN ##########
   Widget _layout({
     List<Widget>? header, //
     Widget? body, //
@@ -111,7 +111,7 @@ class _Main_State extends State<Main_> {
         key: ValueKey(reload), //
         rows: [], //
         columns: [
-          // * action: add / delete (first column)
+          // action: add / delete (first column)
           PlutoColumn(
             field: "action", //
             title: "",
@@ -506,7 +506,7 @@ class _Main_State extends State<Main_> {
             },
           ),
 
-          // * ការត្រួតពិនិត្យ
+          // ការត្រួតពិនិត្យ
           PlutoColumn(
             field: Front_Desk.CHECK_IN_BY, //
             title: "ឲចូលដោយ",
@@ -695,9 +695,9 @@ class _Main_State extends State<Main_> {
       ),
     );
   }
-  // * ########## BLOCK DESIGN END ##########
+  // ########## BLOCK DESIGN END ##########
 
-  // * ########## BLOCK METHODS ##########
+  // ########## BLOCK METHODS ##########
   void on_loaded(PlutoGridOnLoadedEvent e) async {
     state_manager = e.stateManager;
     // state_manager.setAutoEditing(true);
@@ -736,7 +736,7 @@ class _Main_State extends State<Main_> {
     }
   }
 
-  // * ទាញតួនាទីអ្នកប្រើសម្រាប់កំណត់ការកែប្រែ cell
+  // ទាញតួនាទីអ្នកប្រើសម្រាប់កំណត់ការកែប្រែ cell
   Future<void> load_auth() async {
     final user = await auth.fetch();
     if (user == null) return;
@@ -777,13 +777,18 @@ class _Main_State extends State<Main_> {
 
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     data = List<Front_Desk>.from((tmp.data ?? const []).map((d) => Front_Desk.fromJson(d)));
-    data.sort((a, b) => (b.created_at ?? DateTime(0)).compareTo(a.created_at ?? DateTime(0)));
+    data.sort((a, b) {
+      if (a.order != null && b.order != null) return a.order!.compareTo(b.order!);
+      if (a.order != null) return -1;
+      if (b.order != null) return 1;
+      return (b.created_at ?? DateTime(0)).compareTo(a.created_at ?? DateTime(0));
+    });
   }
 
   Future<void> on_load_page() async {
     await on_fetch_page();
 
-    // * បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
+    // បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
     state_manager.removeAllRows();
     state_manager.appendRows([
       for (var (i, d) in data.indexed)
@@ -1207,7 +1212,7 @@ class _Main_State extends State<Main_> {
     return format_string(v);
   }
 
-  // * រយៈពេលស្នាក់ជាថ្ងៃ ម៉ោង និងនាទី
+  // រយៈពេលស្នាក់ជាថ្ងៃ ម៉ោង និងនាទី
   String duration_text(DateTime? in_at, DateTime? out_at) {
     if (in_at == null) return "";
     DateTime end = out_at ?? DateTime.now();
@@ -1331,17 +1336,17 @@ class _Main_State extends State<Main_> {
     reload++;
   }
 
-  // * ########## BLOCK METHODS END ##########
+  // ########## BLOCK METHODS END ##########
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រគ្រប់គ្រង front desk
+// ថ្នាក់ Main_ ជាទំព័រគ្រប់គ្រង front desk
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override
   State<Main_> createState() => _Main_State();
 }
 
-// * ចំណុចចាប់ផ្តើមកម្មវិធី
+// ចំណុចចាប់ផ្តើមកម្មវិធី
 void main() {
   runApp(
     MaterialApp(

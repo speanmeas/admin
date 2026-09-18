@@ -1,11 +1,11 @@
-// * នាំចូល Flutter material និងធនធានចាំបាច់សម្រាប់ការចូលប្រព័ន្ធ
+// នាំចូល Flutter material និងធនធានចាំបាច់សម្រាប់ការចូលប្រព័ន្ធ
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 import "package:speanmeas/core/layout/layout.dart";
 
-// * ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទំព័រចូលប្រព័ន្ធ
+// ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទំព័រចូលប្រព័ន្ធ
 class _Main_State extends State<Main_> {
   dynamic tmp;
 
@@ -24,14 +24,14 @@ class _Main_State extends State<Main_> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // * បង្ហាញរូបសញ្ញាសណ្ឋាគារ
+              // បង្ហាញរូបសញ្ញាសណ្ឋាគារ
               Container(
                 height: 160, //
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: Image.asset("assets/logo.png"),
               ),
 
-              // * បង្ហាញឈ្មោះសណ្ឋាគារ
+              // បង្ហាញឈ្មោះសណ្ឋាគារ
               Container(
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -42,7 +42,7 @@ class _Main_State extends State<Main_> {
                 ),
               ),
 
-              // * បង្ហាញលេខកំណែកម្មវិធី
+              // បង្ហាញលេខកំណែកម្មវិធី
               Container(
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -52,7 +52,7 @@ class _Main_State extends State<Main_> {
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blue),
                 ), //
               ), //
-              // * ប្រអប់បញ្ចូលឈ្មោះអ្នកប្រើ
+              // ប្រអប់បញ្ចូលឈ្មោះអ្នកប្រើ
               Container(
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -71,7 +71,7 @@ class _Main_State extends State<Main_> {
                 ),
               ),
 
-              // * ប្រអប់បញ្ចូលពាក្យសម្ងាត់
+              // ប្រអប់បញ្ចូលពាក្យសម្ងាត់
               Container(
                 width: 600,
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
@@ -80,7 +80,7 @@ class _Main_State extends State<Main_> {
                     labelText: "Password:", //
                     labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
-                    // * ប៊ូតុងបង្ហាញ/លាក់ពាក្យសម្ងាត់
+                    // ប៊ូតុងបង្ហាញ/លាក់ពាក្យសម្ងាត់
                     suffixIcon: InkWell(
                       onTap: () {
                         is_password_visible = !is_password_visible;
@@ -98,7 +98,7 @@ class _Main_State extends State<Main_> {
                 ),
               ),
 
-              // * ប៊ូតុងចូលប្រព័ន្ធ
+              // ប៊ូតុងចូលប្រព័ន្ធ
               Container(
                 margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: OutlinedButton.icon(
@@ -116,9 +116,9 @@ class _Main_State extends State<Main_> {
     );
   }
 
-  // * ដំណើរការចូលប្រព័ន្ធ
+  // ដំណើរការចូលប្រព័ន្ធ
   void on_sign_in() async {
-    // * ផ្ញើសំណើចូលប្រព័ន្ធទៅ server
+    // ផ្ញើសំណើចូលប្រព័ន្ធទៅ server
     tmp = await dio.post(
       endpoint.AUTH_SIGN_IN, //
       data: {
@@ -128,7 +128,7 @@ class _Main_State extends State<Main_> {
     );
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
 
-    // * រក្សាទុក token និង id អ្នកប្រើ
+    // រក្សាទុក token និង id អ្នកប្រើ
     final data = tmp.data;
     await secure.write(key: "_id", value: data?["_id"]?.toString() ?? "");
     await secure.write(key: "access_token", value: data?["access_token"]?.toString() ?? "");
@@ -138,12 +138,12 @@ class _Main_State extends State<Main_> {
     await glob.init();
     snackbar(ct: context, ms: "Success", cl: Colors.green);
 
-    // * ប្តូរទៅទំព័រមេ
+    // ប្តូរទៅទំព័រមេ
     nav_replace(context, Layout());
   }
 }
 
-// * ថ្នាក់ Main_ ជាទំព័រចូលប្រព័ន្ធ
+// ថ្នាក់ Main_ ជាទំព័រចូលប្រព័ន្ធ
 class Main_ extends StatefulWidget {
   const Main_({super.key});
   @override

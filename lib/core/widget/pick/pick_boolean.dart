@@ -1,17 +1,17 @@
-// * នាំចូល Flutter material និង flutter_typeahead សម្រាប់ autocomplete
+// នាំចូល Flutter material និង flutter_typeahead សម្រាប់ autocomplete
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ state របស់ Picker_Boolean គ្រប់គ្រងការជ្រើសរើសតម្លៃ boolean
+// ថ្នាក់ state របស់ Picker_Boolean គ្រប់គ្រងការជ្រើសរើសតម្លៃ boolean
 class _Picker_BooleanState extends State<Picker_Boolean> {
   //
-  // * controller សម្រាប់អត្ថបទ
+  // controller សម្រាប់អត្ថបទ
   final controller = TextEditingController();
 
-  // * ចាប់ផ្តើមតម្លៃដំបូង
+  // ចាប់ផ្តើមតម្លៃដំបូង
   void init() {
     if (widget.initial != null) {
       if (widget.initial == true) controller.text = "Yes";
@@ -22,7 +22,7 @@ class _Picker_BooleanState extends State<Picker_Boolean> {
 
   @override
   Widget build(BuildContext context) {
-    // * បង្កើត TypeAheadField សម្រាប់ជ្រើសរើស Yes/No
+    // បង្កើត TypeAheadField សម្រាប់ជ្រើសរើស Yes/No
     return TypeAheadField<String>(
       controller: controller,
       suggestionsCallback: (query) => ["Yes", "No"],
@@ -34,9 +34,9 @@ class _Picker_BooleanState extends State<Picker_Boolean> {
             labelText: widget.title ?? "Logic 1:", //
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
             floatingLabelBehavior: FloatingLabelBehavior.always,
-            // * រូបតំណាង toggle អាស្រ័យលើតម្លៃ
+            // រូបតំណាង toggle អាស្រ័យលើតម្លៃ
             prefixIcon: Icon(controller.text == "Yes" ? Icons.toggle_on : Icons.toggle_off_outlined),
-            // * ប៊ូតុងសម្អាតតម្លៃ
+            // ប៊ូតុងសម្អាតតម្លៃ
             suffixIcon: ExcludeFocus(
               child: Padding(
                 padding: EdgeInsets.only(right: 4),
@@ -55,7 +55,7 @@ class _Picker_BooleanState extends State<Picker_Boolean> {
       },
       itemBuilder: (context, item) => ListTile(title: Text(item)),
       onSelected: (v) {
-        // * កំណត់តម្លៃដែលបានជ្រើសរើស
+        // កំណត់តម្លៃដែលបានជ្រើសរើស
         controller.text = v;
         if (v == "Yes") widget.onChanged?.call(true);
         if (v == "No") widget.onChanged?.call(false);
@@ -71,7 +71,7 @@ class _Picker_BooleanState extends State<Picker_Boolean> {
   }
 }
 
-// * ថ្នាក់ Picker_Boolean ជា widget សម្រាប់ជ្រើសរើសតម្លៃ boolean
+// ថ្នាក់ Picker_Boolean ជា widget សម្រាប់ជ្រើសរើសតម្លៃ boolean
 class Picker_Boolean extends StatefulWidget {
   const Picker_Boolean({
     super.key, //

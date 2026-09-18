@@ -1,11 +1,11 @@
-// * នាំចូល Flutter material និង services សម្រាប់ dialog
+// នាំចូល Flutter material និង services សម្រាប់ dialog
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:provider/provider.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-// * បង្ហាញ dialog សម្រាប់ជ្រើសរើសលេខទំព័រ
+// បង្ហាញ dialog សម្រាប់ជ្រើសរើសលេខទំព័រ
 Future<int?> dialog_select_page(
   BuildContext context, {
   required int page, //
@@ -13,7 +13,7 @@ Future<int?> dialog_select_page(
   required int limit,
 }) async {
   final ITEM_HEIGHT = 32.0;
-  // * គណនាចំនួនទំព័រសរុប
+  // គណនាចំនួនទំព័រសរុប
   final total_pages = total_row == 0 ? 1 : (total_row + limit - 1) ~/ limit;
   final controller = ScrollController(initialScrollOffset: ((page - 1) * ITEM_HEIGHT).clamp(0.0, double.infinity));
   final input_controller = TextEditingController();
@@ -46,7 +46,7 @@ Future<int?> dialog_select_page(
           height: 600,
           child: Column(
             children: [
-              // * ប្រអប់បញ្ចូលលេខទំព័រសម្រាប់លោតរហ័ស
+              // ប្រអប់បញ្ចូលលេខទំព័រសម្រាប់លោតរហ័ស
               Container(
                 padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
                 child: Row(
@@ -78,7 +78,7 @@ Future<int?> dialog_select_page(
               ),
               const Divider(height: 1),
 
-              // * បញ្ជីទំព័រទាំងអស់
+              // បញ្ជីទំព័រទាំងអស់
               Expanded(
                 child: ListView.builder(
                   controller: controller,

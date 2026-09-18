@@ -1,9 +1,9 @@
-// * នាំចូល Flutter material និងធនធានចាំបាច់សម្រាប់ dialog
+// នាំចូល Flutter material និងធនធានចាំបាច់សម្រាប់ dialog
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-// * ថ្នាក់ state របស់ Dialog_ គ្រប់គ្រង dialog កែឈ្មោះពេញ
+// ថ្នាក់ state របស់ Dialog_ គ្រប់គ្រង dialog កែឈ្មោះពេញ
 class _Dialog_State extends State<Dialog_> {
   dynamic tmp;
 
@@ -15,7 +15,7 @@ class _Dialog_State extends State<Dialog_> {
 
   @override
   Widget build(BuildContext context) {
-    // * បង្កើត AlertDialog សម្រាប់បញ្ចូលឈ្មោះពេញ
+    // បង្កើត AlertDialog សម្រាប់បញ្ចូលឈ្មោះពេញ
     return AlertDialog(
       titlePadding: EdgeInsets.all(8),
       contentPadding: EdgeInsets.all(4),
@@ -32,13 +32,13 @@ class _Dialog_State extends State<Dialog_> {
         spacing: 8,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // * ប្រអប់បញ្ចូលឈ្មោះពេញ
+          // ប្រអប់បញ្ចូលឈ្មោះពេញ
           TextField(
             decoration: InputDecoration(
               labelText: "Full Name:", //
               labelStyle: TextStyle(fontWeight: FontWeight.bold),
               floatingLabelBehavior: FloatingLabelBehavior.always,
-              // * ប៊ូតុងសម្អាតតម្លៃ
+              // ប៊ូតុងសម្អាតតម្លៃ
               suffixIcon: ExcludeFocus(
                 child: Padding(
                   padding: EdgeInsets.only(right: 4),
@@ -62,7 +62,7 @@ class _Dialog_State extends State<Dialog_> {
         ],
       ),
       actions: [
-        // * ប៊ូតុងបោះបង់
+        // ប៊ូតុងបោះបង់
         OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
           onPressed: () {
@@ -70,7 +70,7 @@ class _Dialog_State extends State<Dialog_> {
           },
           child: Text("Cancel"), //
         ),
-        // * ប៊ូតុងយល់ព្រម
+        // ប៊ូតុងយល់ព្រម
         OutlinedButton(
           onPressed: on_okay, //
           child: Text("Okay"), //
@@ -79,9 +79,9 @@ class _Dialog_State extends State<Dialog_> {
     );
   }
 
-  // * រក្សាទុកឈ្មោះពេញថ្មី
+  // រក្សាទុកឈ្មោះពេញថ្មី
   void on_okay() async {
-    // * ផ្ញើសំណើធ្វើបច្ចុប្បន្នភាពឈ្មោះពេញ
+    // ផ្ញើសំណើធ្វើបច្ចុប្បន្នភាពឈ្មោះពេញ
     tmp = await dio.post(
       endpoint.USER_UPDATE, //
       data: {
@@ -104,7 +104,7 @@ class _Dialog_State extends State<Dialog_> {
   }
 }
 
-// * ថ្នាក់ Dialog_ ជា dialog កែឈ្មោះពេញ
+// ថ្នាក់ Dialog_ ជា dialog កែឈ្មោះពេញ
 class Dialog_ extends StatefulWidget {
   const Dialog_({
     super.key, //
@@ -117,7 +117,7 @@ class Dialog_ extends StatefulWidget {
   State<Dialog_> createState() => _Dialog_State();
 }
 
-// * បង្ហាញ dialog កែឈ្មោះពេញ
+// បង្ហាញ dialog កែឈ្មោះពេញ
 Future<dynamic> view({
   required BuildContext context, //
   dynamic input, //
