@@ -3,21 +3,24 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-Future<String?> dialog_room_search({
+Future<String?> dialog_guest_search({
   required BuildContext context, //
+  required String fd_id, //
 }) async {
-  dynamic tmp_r = await dio.post(
-    endpoint.ROOM_READ, //
-    data: {"key": Room.NUMBER, "order": 1},
-  );
-  if (tmp_r == null) {
-    snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-    return null;
+  List<dynamic> guests = [];
+
+  Future<List<String>> search(String q) async {
+    dynamic tmp_g = await dio.post(endpoint.GUEST_READ_SEARCH, data: {"query": q, "limit": 1000});
+    guests = tmp_g.data as List<dynamic>? ?? [];
+    final options = <String>[];
+    for (var g in guests) {
+      final text = "${g[Guest.FULL_NAME] ?? "N/A"} (${g[Guest.PHONE_NUMBER] ?? "N/A"})";
+      options.add(text);
+    }
+    return options;
   }
 
-  final rooms = tmp_r.data as List<dynamic>? ?? []; // this one has to show all room because it for manual change room
-
-  final v = await showDialog<String>(
+  return await showDialog<String?>(
     context: context,
     builder: (context) {
       return AlertDialog(
@@ -27,7 +30,12 @@ Future<String?> dialog_room_search({
         contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text("Search:", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))],
+          children: [
+            Text(
+              "Search Guest", //
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
         content: SizedBox(
           width: 400,
@@ -37,46 +45,40 @@ Future<String?> dialog_room_search({
               const Divider(height: 0, color: Colors.grey),
               const SizedBox(height: 8),
               TypeAheadField<String>(
-                itemBuilder: (context, item) => ListTile(
-                  title: Text(item),
-                  leading: const Icon(Icons.meeting_room_outlined, color: Colors.blue),
-                ),
-                suggestionsCallback: (q) {
-                  final query = q.trim().toLowerCase();
-                  final options = <String>[];
-                  for (var r in rooms) {
-                    final number = (r[Room.NUMBER] ?? "").toString();
-                    if (query.isEmpty || number.toLowerCase().contains(query)) {
-                      options.add(number);
-                    }
-                  }
-                  return options;
-                },
+                hideOnUnfocus: false,
+                itemBuilder: (context, item) => ListTile(title: Text(item)),
+                suggestionsCallback: search,
                 builder: (context, controller, focusNode) {
                   return TextField(
                     autofocus: true,
                     controller: controller,
                     focusNode: focusNode,
                     decoration: const InputDecoration(
-                      labelText: "Room:",
+                      labelText: "Search:",
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: Icon(Icons.search, color: Colors.blue),
                     ),
                   );
                 },
-                onSelected: (v) {
-                  String? room_number;
-                  for (var r in rooms) {
-                    if ((r[Room.NUMBER] ?? "").toString() == v) {
-                      room_number = r[Room.NUMBER];
-                      break;
+                onSelected: (v) async {
+                  for (var e in guests) {
+                    if ("${e[Guest.FULL_NAME] ?? ""} (${e[Guest.PHONE_NUMBER] ?? "N/A"})" == v) {
+                      final tmp = await dio.post(
+                        endpoint.FRONT_DESK_UPDATE_GUEST_INFO,
+                        data: {
+                          Front_Desk.ID: fd_id, //
+                          Front_Desk.GUEST_ID: e[Guest.ID], //
+                        },
+                      );
+                      if (tmp != null && context.mounted) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (context.mounted) Navigator.pop(context, v);
+                        });
+                      }
+                      return;
                     }
                   }
-                  if (room_number == null) return;
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (context.mounted) Navigator.pop(context, room_number);
-                  });
                 },
               ),
             ],
@@ -85,24 +87,19 @@ Future<String?> dialog_room_search({
       );
     },
   );
-  return v;
 }
 
 class _Main_State extends State<Main_> {
-  String? tmp;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-          onPressed: () async {
-            final v = await dialog_room_search(context: context);
-            if (v == null) return;
-            tmp = v;
-            setState(() {});
-          },
+          onPressed: () => dialog_guest_search(
+            context: context, //
+            fd_id: "",
+          ),
           child: const Text("Show"),
         ),
       ),

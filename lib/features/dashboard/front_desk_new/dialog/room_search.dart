@@ -37,6 +37,7 @@ Future<String?> dialog_room_search({
               const Divider(height: 0, color: Colors.grey),
               const SizedBox(height: 8),
               TypeAheadField<String>(
+                hideOnUnfocus: false,
                 itemBuilder: (context, item) => ListTile(
                   title: Text(item),
                   leading: const Icon(Icons.meeting_room_outlined, color: Colors.blue),

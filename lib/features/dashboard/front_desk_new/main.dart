@@ -6,6 +6,10 @@ import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
 
+import "dialog/add_mini_bar.dart";
+import "dialog/check_in.dart";
+import "dialog/check_out.dart";
+import "dialog/clean.dart";
 import "dialog/guest_add.dart";
 import "dialog/guest_search.dart";
 import "dialog/guest_update.dart";
@@ -23,20 +27,24 @@ class _Main_State extends State<Main_> {
   int reload = 0;
   bool filter = false;
   bool is_admin = false;
-  bool show_co = true;
+  bool show_check_in = true;
+  bool show_check_out = true;
+  bool show_clean = true;
   late DateTime current_shift;
 
   late List<PlutoColumn> list_column_pluto;
   late PlutoGridStateManager state_manager;
 
+  List<dynamic> rooms = [];
   List<Front_Desk> data = [];
-
-  Timer? _timer;
 
   // ########## BLOCK ATTRIBUTE END ##########
 
   // ########## BLOCK DESIGN ##########
   Widget _layout({
+    List<Widget>? check_in, //
+    List<Widget>? check_out, //
+    List<Widget>? clean, //
     List<Widget>? header, //
     Widget? body, //
   }) {
@@ -44,7 +52,40 @@ class _Main_State extends State<Main_> {
       body: Column(
         spacing: 1,
         children: [
-          if (header != null)
+          if (check_in != null && check_in.isNotEmpty)
+            Container(
+              alignment: Alignment.centerLeft, //
+              padding: const EdgeInsets.only(top: 1),
+              child: Wrap(
+                spacing: 1, //
+                runSpacing: 1,
+                children: check_in,
+              ),
+            ),
+
+          if (check_out != null && check_out.isNotEmpty)
+            Container(
+              alignment: Alignment.centerLeft, //
+              padding: const EdgeInsets.only(top: 1),
+              child: Wrap(
+                spacing: 1, //
+                runSpacing: 1,
+                children: check_out,
+              ),
+            ),
+
+          if (clean != null && clean.isNotEmpty)
+            Container(
+              alignment: Alignment.centerLeft, //
+              padding: const EdgeInsets.only(top: 1),
+              child: Wrap(
+                spacing: 1, //
+                runSpacing: 1,
+                children: [...clean],
+              ),
+            ),
+
+          if (header != null && header.isNotEmpty)
             Container(
               height: 32, //
               padding: const EdgeInsets.all(1),
@@ -64,6 +105,61 @@ class _Main_State extends State<Main_> {
   @override
   Widget build(BuildContext context) {
     return _layout(
+      check_in: [
+        if (show_check_in) ...[
+          for (var r in rooms.where((r) => r[Room.STATUS] == "Available" && !is_walk_in_room(r)))
+            Tooltip(
+              message: "Check-in ${r[Room.NUMBER]}",
+              child: OutlinedButton.icon(
+                icon: Icon(Icons.bed_outlined), //
+                label: Text("${r[Room.NUMBER]}"),
+                style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
+                onPressed: () => on_check_in(r), //
+              ),
+            ),
+
+          Tooltip(
+            message: "Add Mini Bar", //
+            child: OutlinedButton.icon(
+              label: Text("Mini Bar"), //
+              icon: Icon(Icons.local_bar_outlined), //
+              style: OutlinedButton.styleFrom(foregroundColor: Colors.green),
+              onPressed: () => on_mini_bar_only(), //
+            ),
+          ),
+        ],
+      ],
+
+      check_out: [
+        if (show_check_out) ...[
+          for (var r in rooms.where((r) => r[Room.STATUS] == "Occupied"))
+            Tooltip(
+              message: "Check-out ${r[Room.NUMBER]}",
+              child: OutlinedButton.icon(
+                icon: Icon(Icons.hotel_outlined), //
+                label: Text("${r[Room.NUMBER]}"),
+                style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                onPressed: () => on_check_out(r), //
+              ),
+            ),
+        ],
+      ],
+
+      clean: [
+        if (show_clean) ...[
+          for (var r in rooms.where((r) => r[Room.STATUS] == "Dirty"))
+            Tooltip(
+              message: "Clean ${r[Room.NUMBER]}",
+              child: OutlinedButton.icon(
+                icon: Icon(Icons.cleaning_services_outlined), //
+                label: Text("${r[Room.NUMBER]}"),
+                style: OutlinedButton.styleFrom(foregroundColor: Colors.grey),
+                onPressed: () => on_clean(r), //
+              ),
+            ),
+        ],
+      ],
+
       header: [
         IconButton(
           tooltip: "Goto Previous Day", //
@@ -92,14 +188,6 @@ class _Main_State extends State<Main_> {
         const Spacer(),
 
         IconButton(
-          tooltip: show_co ? "Hide Carry-over" : "Show Carry-over", //
-          icon: Icon(show_co ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 30), //
-          padding: EdgeInsets.all(0),
-          constraints: BoxConstraints(),
-          onPressed: on_toggle_carry_over, //
-        ),
-
-        IconButton(
           tooltip: filter ? "Hide Filter" : "Show Filter", //
           icon: Icon(filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), //
           padding: EdgeInsets.all(0),
@@ -120,22 +208,23 @@ class _Main_State extends State<Main_> {
         key: ValueKey(reload), //
         rows: [], //
         columns: [
-          // action: add / delete (first column)
+          // check in
           PlutoColumn(
             field: "action", //
             title: "",
-            titleSpan: WidgetSpan(
-              child: Container(
-                alignment: Alignment.center, //
-                child: IconButton(
-                  tooltip: "Add Row", //
-                  icon: Icon(Icons.add_circle_outline, size: 28), //
-                  padding: EdgeInsets.all(0),
-                  constraints: BoxConstraints(),
-                  onPressed: on_create,
-                ),
-              ),
-            ),
+            // titleSpan: WidgetSpan(
+            //   child: Container(
+            //     alignment: Alignment.center, //
+            //     child: IconButton(
+            //       tooltip: "Check In", //
+            //       icon: Icon(Icons.add_circle_outline, size: 28), //
+            //       padding: EdgeInsets.all(0),
+            //       constraints: BoxConstraints(),
+            //       // onPressed: on_create,
+            //       onPressed: () {},
+            //     ),
+            //   ),
+            // ),
             titlePadding: EdgeInsets.all(0),
             type: PlutoColumnType.number(),
             width: 40,
@@ -151,7 +240,7 @@ class _Main_State extends State<Main_> {
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
                   IconButton(
-                    tooltip: "Remove Row", //
+                    tooltip: "Remove", //
                     icon: Icon(Icons.remove_circle_outline, size: 28, color: Colors.red),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
@@ -209,23 +298,23 @@ class _Main_State extends State<Main_> {
             title: "បន្ទប់",
             type: PlutoColumnType.text(),
             // enableEditingMode: false,
-            width: 120,
+            width: 80,
             renderer: (rc) {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  IconButton(
-                    tooltip: "ស្វែងរក", //
-                    icon: Icon(Icons.search_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_update_room(rc), //
-                  ),
                   Expanded(
                     child: Align(
                       alignment: Alignment.center, //
                       child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
                     ),
+                  ),
+                  IconButton(
+                    tooltip: "ផ្លាស់ប្តូរបន្ទប់", //
+                    icon: Icon(Icons.swap_horiz_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: BoxConstraints(),
+                    onPressed: () => on_update_room(rc), //
                   ),
                 ],
               );
@@ -345,35 +434,9 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
-            field: "duration", //
-            title: "រយៈពេល",
-            type: PlutoColumnType.number(negative: false, format: "#,###"),
-            enableEditingMode: false,
-            width: 140,
-            renderer: (rc) {
-              int minutes = parse_int(rc.cell.value) ?? 0;
-              int day = minutes ~/ 1440;
-              int hour = (minutes % 1440) ~/ 60;
-              int minute = minutes % 60;
-              String text = "";
-              if (day > 0) text += "$day ថ្ងៃ ";
-              if (day > 0 || hour > 0) text += "$hour ម៉ោង ";
-              text += "$minute នាទី";
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(
-                  text, //
-                  overflow: TextOverflow.ellipsis,
-                ),
-              );
-            },
-          ),
-
-          PlutoColumn(
             field: Front_Desk.CHECK_OUT_AT, //
             title: "ពេលចេញ",
             type: PlutoColumnType.text(),
-            // enableEditingMode: false,
             width: 160,
             renderer: (rc) {
               return Row(
@@ -392,6 +455,15 @@ class _Main_State extends State<Main_> {
                       child: Text(format_datetime(rc.cell.value), overflow: TextOverflow.ellipsis),
                     ),
                   ),
+                  if (rc.cell.value == null || rc.cell.value == "")
+                    IconButton(
+                      tooltip: "ស្នាក់នៅបន្ត", //
+                      icon: Icon(Icons.navigate_next_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      // onPressed: () => on_update_check_out_at(rc), //
+                      onPressed: () {},
+                    ),
                 ],
               );
             },
@@ -515,96 +587,96 @@ class _Main_State extends State<Main_> {
             },
           ),
 
-          // ការត្រួតពិនិត្យ
-          PlutoColumn(
-            field: Front_Desk.CHECK_IN_BY, //
-            title: "ឲចូលដោយ",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 140,
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center, //
-                children: [
-                  if (is_admin || kDebugMode)
-                    IconButton(
-                      tooltip: "ជ្រើសអ្នកចូល", //
-                      icon: Icon(Icons.search_outlined),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () => on_select_check_in_by(rc), //
-                    ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
+          // // ការត្រួតពិនិត្យ
+          // PlutoColumn(
+          //   field: Front_Desk.CHECK_IN_BY, //
+          //   title: "ឲចូលដោយ",
+          //   type: PlutoColumnType.text(),
+          //   enableEditingMode: false,
+          //   width: 140,
+          //   renderer: (rc) {
+          //     return Row(
+          //       mainAxisAlignment: MainAxisAlignment.center, //
+          //       children: [
+          //         if (is_admin || kDebugMode)
+          //           IconButton(
+          //             tooltip: "ជ្រើសអ្នកចូល", //
+          //             icon: Icon(Icons.search_outlined),
+          //             padding: EdgeInsets.all(0),
+          //             constraints: BoxConstraints(),
+          //             onPressed: () => on_select_check_in_by(rc), //
+          //           ),
+          //         Expanded(
+          //           child: Align(
+          //             alignment: Alignment.center, //
+          //             child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+          //           ),
+          //         ),
+          //       ],
+          //     );
+          //   },
+          // ),
 
-          PlutoColumn(
-            field: Front_Desk.CHECK_OUT_BY, //
-            title: "ឲចេញដោយ",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 140,
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center, //
-                children: [
-                  if (is_admin || kDebugMode)
-                    IconButton(
-                      tooltip: "ជ្រើសអ្នកចេញ", //
-                      icon: Icon(Icons.search_outlined),
-                      padding: EdgeInsets.all(0),
-                      constraints: BoxConstraints(),
-                      onPressed: () => on_select_check_out_by(rc), //
-                    ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
+          // PlutoColumn(
+          //   field: Front_Desk.CHECK_OUT_BY, //
+          //   title: "ឲចេញដោយ",
+          //   type: PlutoColumnType.text(),
+          //   enableEditingMode: false,
+          //   width: 140,
+          //   renderer: (rc) {
+          //     return Row(
+          //       mainAxisAlignment: MainAxisAlignment.center, //
+          //       children: [
+          //         if (is_admin || kDebugMode)
+          //           IconButton(
+          //             tooltip: "ជ្រើសអ្នកចេញ", //
+          //             icon: Icon(Icons.search_outlined),
+          //             padding: EdgeInsets.all(0),
+          //             constraints: BoxConstraints(),
+          //             onPressed: () => on_select_check_out_by(rc), //
+          //           ),
+          //         Expanded(
+          //           child: Align(
+          //             alignment: Alignment.center, //
+          //             child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
+          //           ),
+          //         ),
+          //       ],
+          //     );
+          //   },
+          // ),
 
-          PlutoColumn(
-            field: Front_Desk.SHIFT_DATE, //
-            title: "របាយការណ៍ថ្ងៃ",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 120,
-            renderer: (rc) {
-              final v = parse_datetime(rc.cell.value);
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center, //
-                children: [
-                  IconButton(
-                    tooltip: "កែថ្ងៃ", //
-                    icon: Icon(Icons.calendar_month_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_update_shift_date(rc), //
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center, //
-                      child: Text(
-                        v == null ? "" : DateFormat("yyyy-MM-dd").format(v), //
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
+          // PlutoColumn(
+          //   field: Front_Desk.SHIFT_DATE, //
+          //   title: "របាយការណ៍ថ្ងៃ",
+          //   type: PlutoColumnType.text(),
+          //   enableEditingMode: false,
+          //   width: 120,
+          //   renderer: (rc) {
+          //     final v = parse_datetime(rc.cell.value);
+          //     return Row(
+          //       mainAxisAlignment: MainAxisAlignment.center, //
+          //       children: [
+          //         IconButton(
+          //           tooltip: "កែថ្ងៃ", //
+          //           icon: Icon(Icons.calendar_month_outlined),
+          //           padding: EdgeInsets.all(0),
+          //           constraints: BoxConstraints(),
+          //           onPressed: () => on_update_shift_date(rc), //
+          //         ),
+          //         Expanded(
+          //           child: Align(
+          //             alignment: Alignment.center, //
+          //             child: Text(
+          //               v == null ? "" : DateFormat("yyyy-MM-dd").format(v), //
+          //               overflow: TextOverflow.ellipsis,
+          //             ),
+          //           ),
+          //         ),
+          //       ],
+          //     );
+          //   },
+          // ),
 
           // BUTTON RECEIPT
           PlutoColumn(
@@ -651,7 +723,6 @@ class _Main_State extends State<Main_> {
             title: "ការស្នាក់នៅ", //
             fields: [
               Front_Desk.CHECK_IN_AT, //
-              "duration", //
               Front_Desk.CHECK_OUT_AT,
             ],
           ),
@@ -713,6 +784,7 @@ class _Main_State extends State<Main_> {
     state_manager.columnFooterHeight = 32;
     list_column_pluto = state_manager.refColumns.toList();
 
+    on_load_room();
     on_load_page();
   }
 
@@ -758,7 +830,7 @@ class _Main_State extends State<Main_> {
 
   Future<void> on_reload() async {
     await load_auth();
-    await on_load_page();
+    await Future.wait([on_load_room(), on_load_page()]);
     snackbar(ct: context, ms: "Reloaded", cl: Colors.green);
   }
 
@@ -796,49 +868,38 @@ class _Main_State extends State<Main_> {
   Future<void> on_load_page() async {
     await on_fetch_page();
 
-    final now = DateTime.now();
-    final cutoff_2pm = DateTime(now.year, now.month, now.day, 14, 0);
-
     // បន្ថែមជួរដេកថ្មីទៅក្នុងតារាង
     state_manager.removeAllRows();
     state_manager.appendRows([
       for (var (i, d) in data.indexed)
-        if (show_co || !(d.room_price == 0 && (d.check_out_at == null || !d.check_out_at!.isAfter(cutoff_2pm))))
-          PlutoRow(
-            cells: {
-              for (var c in list_column_pluto) //
-                c.field: (() {
-                  if (c.field == "action") return PlutoCell(value: ""); //auto
-                  if (c.field == "index") return PlutoCell(value: i + 1); // auto
-                  if (c.field == Front_Desk.ID) return PlutoCell(value: d.id ?? "");
-                  if (c.field == Front_Desk.ROOM_NUMBER) return PlutoCell(value: d.room_number ?? "");
-                  if (c.field == Front_Desk.CHECK_IN_AT) return PlutoCell(value: format_datetime(d.check_in_at));
-                  if (c.field == "duration") return PlutoCell(value: check_in_duration(d.check_in_at, d.check_out_at, d.room_number)); // auto
-                  if (c.field == Front_Desk.CHECK_OUT_AT) return PlutoCell(value: format_datetime(d.check_out_at));
-                  if (c.field == Front_Desk.GUEST_ID) return PlutoCell(value: guest_name_phone(d.guest_id));
-                  if (c.field == Front_Desk.NUMBER_OF_GUEST) return PlutoCell(value: d.number_of_guest ?? 0);
-                  if (c.field == Front_Desk.ROOM_PRICE) return PlutoCell(value: d.room_price ?? 0.0);
-                  if (c.field == Front_Desk.MINI_BAR_PRICE) return PlutoCell(value: d.mini_bar_price ?? 0.0);
-                  if (c.field == Front_Desk.PENALTY_PRICE) return PlutoCell(value: d.penalty_price ?? 0.0);
-                  if (c.field == Front_Desk.PAY_CASH) return PlutoCell(value: d.pay_cash ?? 0.0);
-                  if (c.field == Front_Desk.PAY_BANK) return PlutoCell(value: d.pay_bank ?? 0.0);
-                  if (c.field == Front_Desk.PAY_BALANCE) return PlutoCell(value: d.pay_balance ?? 0.0);
-                  if (c.field == Front_Desk.PAY_NOTE) return PlutoCell(value: d.pay_note ?? "");
-                  if (c.field == Front_Desk.CHECK_IN_BY) return PlutoCell(value: user_name(d.check_in_by));
-                  if (c.field == Front_Desk.CHECK_OUT_BY) return PlutoCell(value: user_name(d.check_out_by));
-                  if (c.field == Front_Desk.SHIFT_DATE) return PlutoCell(value: format_datetime(d.shift_date));
-                  return PlutoCell(value: "");
-                })(),
-            },
-          ),
+        PlutoRow(
+          cells: {
+            for (var c in list_column_pluto) //
+              c.field: (() {
+                if (c.field == "action") return PlutoCell(value: ""); //auto
+                if (c.field == "index") return PlutoCell(value: i + 1); // auto
+                if (c.field == Front_Desk.ID) return PlutoCell(value: d.id ?? "");
+                if (c.field == Front_Desk.ROOM_NUMBER) return PlutoCell(value: d.room_number ?? "");
+                if (c.field == Front_Desk.CHECK_IN_AT) return PlutoCell(value: format_datetime(d.check_in_at));
+                if (c.field == Front_Desk.CHECK_OUT_AT) return PlutoCell(value: format_datetime(d.check_out_at));
+                if (c.field == Front_Desk.GUEST_ID) return PlutoCell(value: guest_name_phone(d.guest_id));
+                if (c.field == Front_Desk.NUMBER_OF_GUEST) return PlutoCell(value: d.number_of_guest ?? 0);
+                if (c.field == Front_Desk.ROOM_PRICE) return PlutoCell(value: d.room_price ?? 0.0);
+                if (c.field == Front_Desk.MINI_BAR_PRICE) return PlutoCell(value: d.mini_bar_price ?? 0.0);
+                if (c.field == Front_Desk.PENALTY_PRICE) return PlutoCell(value: d.penalty_price ?? 0.0);
+                if (c.field == Front_Desk.PAY_CASH) return PlutoCell(value: d.pay_cash ?? 0.0);
+                if (c.field == Front_Desk.PAY_BANK) return PlutoCell(value: d.pay_bank ?? 0.0);
+                if (c.field == Front_Desk.PAY_BALANCE) return PlutoCell(value: d.pay_balance ?? 0.0);
+                if (c.field == Front_Desk.PAY_NOTE) return PlutoCell(value: d.pay_note ?? "");
+                if (c.field == Front_Desk.CHECK_IN_BY) return PlutoCell(value: user_name(d.check_in_by));
+                if (c.field == Front_Desk.CHECK_OUT_BY) return PlutoCell(value: user_name(d.check_out_by));
+                if (c.field == Front_Desk.SHIFT_DATE) return PlutoCell(value: format_datetime(d.shift_date));
+                return PlutoCell(value: "");
+              })(),
+          },
+        ),
     ]);
     re_index();
-  }
-
-  void on_toggle_carry_over() {
-    show_co = !show_co;
-    on_load_page();
-    setState(() {});
   }
 
   Future<void> on_reindex() async {
@@ -846,28 +907,6 @@ class _Main_State extends State<Main_> {
       final row = state_manager.rows[i];
       state_manager.changeCellValue(row.cells["index"]!, i + 1, force: true, callOnChangedEvent: false);
     }
-  }
-
-  Future<void> on_refresh_duration() async {
-    for (var row in state_manager.rows) {
-      final in_at = parse_datetime(row.cells[Front_Desk.CHECK_IN_AT]?.value);
-      final out_at = parse_datetime(row.cells[Front_Desk.CHECK_OUT_AT]?.value);
-      final room = format_string(row.cells[Front_Desk.ROOM_NUMBER]?.value);
-      state_manager.changeCellValue(
-        row.cells["duration"]!, //
-        check_in_duration(in_at, out_at, room),
-        force: true,
-        callOnChangedEvent: false,
-      );
-    }
-  }
-
-  int check_in_duration(DateTime? in_at, DateTime? out_at, String? room_number) {
-    final is_walking = (room_number ?? "").toLowerCase() == "walk-in";
-    if (is_walking) return 0;
-    if (in_at == null) return 0;
-    if (out_at == null) return DateTime.now().difference(in_at).inMinutes;
-    return out_at.difference(in_at).inMinutes;
   }
 
   Future<void> on_refresh_balanced() async {
@@ -1018,7 +1057,6 @@ class _Main_State extends State<Main_> {
 
     state_manager.changeCellValue(rc.cell, format_datetime(v), force: true, callOnChangedEvent: false);
 
-    on_refresh_duration();
     do_updated(id, Front_Desk.CHECK_IN_AT, v);
   }
 
@@ -1033,7 +1071,6 @@ class _Main_State extends State<Main_> {
 
     state_manager.changeCellValue(rc.cell, format_datetime(v), force: true, callOnChangedEvent: false);
 
-    on_refresh_duration();
     do_updated(id, Front_Desk.CHECK_OUT_AT, v);
   }
 
@@ -1231,22 +1268,6 @@ class _Main_State extends State<Main_> {
     return format_string(v);
   }
 
-  // រយៈពេលស្នាក់ជាថ្ងៃ ម៉ោង និងនាទី
-  String duration_text(DateTime? in_at, DateTime? out_at) {
-    if (in_at == null) return "";
-    DateTime end = out_at ?? DateTime.now();
-    int minutes = end.difference(in_at).inMinutes;
-    if (minutes < 0) return "";
-    int day = minutes ~/ 1440;
-    int hour = (minutes % 1440) ~/ 60;
-    int minute = minutes % 60;
-    String text = "";
-    if (day > 0) text += "$day ថ្ងៃ ";
-    if (hour > 0 || day > 0) text += "$hour ម៉ោង ";
-    text += "$minute នាទី";
-    return text.trim();
-  }
-
   Widget _money(PlutoColumnRendererContext rc) {
     return Align(
       alignment: Alignment.center, //
@@ -1333,19 +1354,66 @@ class _Main_State extends State<Main_> {
     setState(() {});
   }
 
+  bool is_walk_in_room(dynamic r) => (r[Room.NUMBER] ?? "").toString().toLowerCase() == "walk-in";
+
+  Future<void> on_load_room() async {
+    dynamic tmp_r = await dio.post(endpoint.ROOM_READ, data: {"key": Room.NUMBER, "order": 1});
+    if (tmp_r == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+    rooms = tmp_r.data as List<dynamic>? ?? [];
+    setState(() {});
+  }
+
+  Future<void> on_check_in(dynamic r) async {
+    var v = await dialog_check_in(
+      context: context, //
+      lead: "Room ${r[Room.NUMBER]}", //
+      room_number: r[Room.NUMBER], //
+    );
+    if (v == null) return;
+    await Future.wait([on_load_room(), on_load_page()]);
+  }
+
+  Future<void> on_check_out(dynamic r) async {
+    String? fd_id = (data.where((fd) => (fd.room_number ?? "") == (r[Room.NUMBER] ?? ""))).firstOrNull?.id;
+    if (fd_id == null) return snackbar(ct: context, ms: "No stay to check out", cl: Colors.red);
+
+    var v = await dialog_check_out(
+      context: context, //
+      lead: "Room ${r[Room.NUMBER]}", //
+      front_desk_id: fd_id, //
+    );
+    if (v == null) return;
+
+    await Future.wait([on_load_room(), on_load_page()]);
+  }
+
+  Future<void> on_clean(dynamic r) async {
+    var v = await dialog_clean(
+      context: context, //
+      lead: "Room ${r[Room.NUMBER]}", //
+      room_number: r[Room.NUMBER], //
+    );
+    if (v == null) return;
+
+    await Future.wait([on_load_room(), on_load_page()]);
+  }
+
+  Future<void> on_mini_bar_only() async {
+    final v = await dialog_add_mini_bar(context: context);
+    if (v == null) return;
+    await Future.wait([on_load_room(), on_load_page()]);
+  }
+
   @override
   void initState() {
     super.initState();
     current_shift = shift_day();
     load_auth();
-    _timer = Timer.periodic(const Duration(minutes: 1), (_) {
-      on_refresh_duration();
-    });
+    on_load_room();
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
     super.dispose();
   }
 

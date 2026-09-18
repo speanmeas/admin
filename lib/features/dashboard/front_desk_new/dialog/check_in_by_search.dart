@@ -3,21 +3,19 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-Future<String?> dialog_room_search({
+Future<String?> dialog_check_in_by_search({
   required BuildContext context, //
+  required String? front_desk_id, //
 }) async {
-  dynamic tmp_r = await dio.post(
-    endpoint.ROOM_READ, //
-    data: {"key": Room.NUMBER, "order": 1},
-  );
-  if (tmp_r == null) {
+  dynamic tmp_u = await dio.post(endpoint.USER_READ, data: {"key": User.FULL_NAME, "order": 1});
+  if (tmp_u == null) {
     snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
     return null;
   }
 
-  final rooms = tmp_r.data as List<dynamic>? ?? []; // this one has to show all room because it for manual change room
+  final users = tmp_u.data as List<dynamic>? ?? [];
 
-  final v = await showDialog<String>(
+  return await showDialog<String>(
     context: context,
     builder: (context) {
       return AlertDialog(
@@ -27,27 +25,30 @@ Future<String?> dialog_room_search({
         contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text("Search:", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))],
+          children: [
+            Text(
+              "Check-in By", //
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
         content: SizedBox(
           width: 400,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Divider(height: 0, color: Colors.grey),
+              const Divider(height: 1, color: Colors.grey),
               const SizedBox(height: 8),
               TypeAheadField<String>(
-                itemBuilder: (context, item) => ListTile(
-                  title: Text(item),
-                  leading: const Icon(Icons.meeting_room_outlined, color: Colors.blue),
-                ),
+                hideOnUnfocus: false,
+                itemBuilder: (context, item) => ListTile(title: Text(item)),
                 suggestionsCallback: (q) {
                   final query = q.trim().toLowerCase();
                   final options = <String>[];
-                  for (var r in rooms) {
-                    final number = (r[Room.NUMBER] ?? "").toString();
-                    if (query.isEmpty || number.toLowerCase().contains(query)) {
-                      options.add(number);
+                  for (var u in users) {
+                    final name = (u[User.FULL_NAME] ?? "").toString();
+                    if (query.isEmpty || name.toLowerCase().contains(query)) {
+                      options.add(name);
                     }
                   }
                   return options;
@@ -58,25 +59,36 @@ Future<String?> dialog_room_search({
                     controller: controller,
                     focusNode: focusNode,
                     decoration: const InputDecoration(
-                      labelText: "Room:",
+                      labelText: "Search:",
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: Icon(Icons.search, color: Colors.blue),
                     ),
                   );
                 },
-                onSelected: (v) {
-                  String? room_number;
-                  for (var r in rooms) {
-                    if ((r[Room.NUMBER] ?? "").toString() == v) {
-                      room_number = r[Room.NUMBER];
+                onSelected: (v) async {
+                  String? user_id;
+                  String? full_name;
+                  for (var u in users) {
+                    if ((u[User.FULL_NAME] ?? "").toString() == v) {
+                      user_id = u[User.ID];
+                      full_name = u[User.FULL_NAME];
                       break;
                     }
                   }
-                  if (room_number == null) return;
+                  if (user_id == null || front_desk_id == null) return;
+
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (context.mounted) Navigator.pop(context, room_number);
+                    if (context.mounted) Navigator.pop(context, full_name);
                   });
+
+                  await dio.post(
+                    endpoint.FRONT_DESK_UPDATE,
+                    data: {
+                      Front_Desk.ID: front_desk_id, //
+                      Front_Desk.CHECK_IN_BY: user_id, //
+                    },
+                  );
                 },
               ),
             ],
@@ -85,12 +97,9 @@ Future<String?> dialog_room_search({
       );
     },
   );
-  return v;
 }
 
 class _Main_State extends State<Main_> {
-  String? tmp;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,10 +107,7 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            final v = await dialog_room_search(context: context);
-            if (v == null) return;
-            tmp = v;
-            setState(() {});
+            await dialog_check_in_by_search(context: context, front_desk_id: "test");
           },
           child: const Text("Show"),
         ),

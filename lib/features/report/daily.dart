@@ -549,7 +549,7 @@ class _Main_State extends State<Main_> {
     Front_Desk? fd = rows.where((x) => x.id == fd_id).firstOrNull;
     if (fd == null) return false;
     String n = (fd.room_number ?? "").toLowerCase();
-    return n == "walk-in" || n == "mini bar";
+    return n == "walk-in";
   }
 
   double get total_price => parse_double(summary["total"]?["price"]) ?? 0;
