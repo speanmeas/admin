@@ -45,6 +45,7 @@ Future<String?> dialog_guest_search({
               const Divider(height: 0, color: Colors.grey),
               const SizedBox(height: 8),
               TypeAheadField<String>(
+                hideOnUnfocus: false,
                 itemBuilder: (context, item) => ListTile(title: Text(item)),
                 suggestionsCallback: search,
                 builder: (context, controller, focusNode) {
@@ -83,18 +84,6 @@ Future<String?> dialog_guest_search({
             ],
           ),
         ),
-        actionsPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-        actionsAlignment: MainAxisAlignment.end,
-        actions: [
-          OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.red,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-            ),
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-        ],
       );
     },
   );

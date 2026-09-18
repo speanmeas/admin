@@ -39,9 +39,7 @@ Future<String?> dialog_guest_update({
             contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
             title: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Update Guest", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              ],
+              children: [Text("Update Guest", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))],
             ),
             content: SizedBox(
               width: 400,
@@ -82,17 +80,12 @@ Future<String?> dialog_guest_update({
             actionsAlignment: MainAxisAlignment.end,
             actions: [
               OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                ),
+                style: OutlinedButton.styleFrom(foregroundColor: Colors.red, padding: const EdgeInsets.symmetric(horizontal: 16)),
                 onPressed: () => Navigator.pop(context),
                 child: const Text("Cancel"),
               ),
               OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                ),
+                style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 16)),
                 onPressed: on_confirm,
                 child: const Text("OK"),
               ),

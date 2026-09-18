@@ -4,7 +4,7 @@ import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 // dashboard
-import "package:speanmeas/features/dashboard/front_desk/main.dart" as d_front_desk_new;
+import "package:speanmeas/features/dashboard/front_desk/main.dart" as d_front_desk;
 // import "package:speanmeas/features/dashboard/mini_bar/main.dart" as d_mini_bar;
 
 // database
@@ -33,7 +33,7 @@ class _Panel_BodyState extends State<Panel_Body> {
   List<Map<String, dynamic>> panels = [
     {"name": "", "panel": Text("This page is under development..")},
     //
-    {"name": "Front Desk", "panel": d_front_desk_new.Main_()}, //
+    {"name": "Front Desk", "panel": d_front_desk.Main_()}, //
     //
     {"name": "Data Front Desk", "panel": front_desk.Main_()}, //
     {"name": "Data Room", "panel": room.Main_()}, //

@@ -804,6 +804,7 @@ class Front_Desk {
   static const PAY_BALANCE = 'pay_balance';
   static const PAY_NOTE = 'pay_note';
   static const SHIFT_DATE = 'shift_date';
+  static const CARRY_FROM_ID = 'carry_from_id';
   static const CHECK_IN_AT = 'check_in_at';
   static const CHECK_IN_BY = 'check_in_by';
   static const PAY_AT = 'pay_at';
@@ -836,6 +837,7 @@ class Front_Desk {
   final double? pay_balance;
   final String? pay_note;
   final DateTime? shift_date;
+  final String? carry_from_id;
   final DateTime? check_in_at;
   final dynamic check_in_by;
   final DateTime? pay_at;
@@ -847,7 +849,7 @@ class Front_Desk {
   final DateTime? change_at;
   final dynamic change_by;
 
-  Front_Desk({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.room_number, this.guest_id, this.number_of_guest, this.room_price, this.penalty_item_id, this.penalty_price, this.mini_bar_item_id, this.mini_bar_price, this.pay_cash, this.pay_bank, this.pay_balance, this.pay_note, this.shift_date, this.check_in_at, this.check_in_by, this.pay_at, this.pay_by, this.check_out_at, this.check_out_by, this.clean_at, this.clean_by, this.change_at, this.change_by});
+  Front_Desk({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.room_number, this.guest_id, this.number_of_guest, this.room_price, this.penalty_item_id, this.penalty_price, this.mini_bar_item_id, this.mini_bar_price, this.pay_cash, this.pay_bank, this.pay_balance, this.pay_note, this.shift_date, this.carry_from_id, this.check_in_at, this.check_in_by, this.pay_at, this.pay_by, this.check_out_at, this.check_out_by, this.clean_at, this.clean_by, this.change_at, this.change_by});
 
   factory Front_Desk.fromJson(Map<String, dynamic> json) => Front_Desk(
     id: json['_id'] as String?,
@@ -871,6 +873,7 @@ class Front_Desk {
     pay_balance: json['pay_balance'] as double?,
     pay_note: json['pay_note'] as String?,
     shift_date: json['shift_date'] == null ? null : DateTime.tryParse(json['shift_date'] as String),
+    carry_from_id: json['carry_from_id'] as String?,
     check_in_at: json['check_in_at'] == null ? null : DateTime.tryParse(json['check_in_at'] as String),
     check_in_by: json['check_in_by'] == null ? null : (json['check_in_by'] is Map<String, dynamic> ? User_Show.fromJson(json['check_in_by'] as Map<String, dynamic>) : json['check_in_by']),
     pay_at: json['pay_at'] == null ? null : DateTime.tryParse(json['pay_at'] as String),
@@ -906,6 +909,7 @@ class Front_Desk {
     json['pay_balance'] = pay_balance;
     json['pay_note'] = pay_note;
     json['shift_date'] = shift_date?.toIso8601String();
+    json['carry_from_id'] = carry_from_id;
     json['check_in_at'] = check_in_at?.toIso8601String();
     json['check_in_by'] = check_in_by == null ? null : check_in_by is User_Show ? check_in_by.toJson() : check_in_by;
     json['pay_at'] = pay_at?.toIso8601String();
@@ -942,6 +946,7 @@ class Log_Front_Desk {
   static const PAY_BALANCE = 'pay_balance';
   static const PAY_NOTE = 'pay_note';
   static const SHIFT_DATE = 'shift_date';
+  static const CARRY_FROM_ID = 'carry_from_id';
   static const CHECK_IN_AT = 'check_in_at';
   static const CHECK_IN_BY = 'check_in_by';
   static const PAY_AT = 'pay_at';
@@ -976,6 +981,7 @@ class Log_Front_Desk {
   final double? pay_balance;
   final String? pay_note;
   final DateTime? shift_date;
+  final String? carry_from_id;
   final DateTime? check_in_at;
   final dynamic check_in_by;
   final DateTime? pay_at;
@@ -989,7 +995,7 @@ class Log_Front_Desk {
   final dynamic bid;
   final String? op;
 
-  Log_Front_Desk({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.room_number, this.guest_id, this.number_of_guest, this.room_price, this.penalty_item_id, this.penalty_price, this.mini_bar_item_id, this.mini_bar_price, this.pay_cash, this.pay_bank, this.pay_balance, this.pay_note, this.shift_date, this.check_in_at, this.check_in_by, this.pay_at, this.pay_by, this.check_out_at, this.check_out_by, this.clean_at, this.clean_by, this.change_at, this.change_by, this.bid, this.op});
+  Log_Front_Desk({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.room_number, this.guest_id, this.number_of_guest, this.room_price, this.penalty_item_id, this.penalty_price, this.mini_bar_item_id, this.mini_bar_price, this.pay_cash, this.pay_bank, this.pay_balance, this.pay_note, this.shift_date, this.carry_from_id, this.check_in_at, this.check_in_by, this.pay_at, this.pay_by, this.check_out_at, this.check_out_by, this.clean_at, this.clean_by, this.change_at, this.change_by, this.bid, this.op});
 
   factory Log_Front_Desk.fromJson(Map<String, dynamic> json) => Log_Front_Desk(
     id: json['_id'] as String?,
@@ -1013,6 +1019,7 @@ class Log_Front_Desk {
     pay_balance: json['pay_balance'] as double?,
     pay_note: json['pay_note'] as String?,
     shift_date: json['shift_date'] == null ? null : DateTime.tryParse(json['shift_date'] as String),
+    carry_from_id: json['carry_from_id'] as String?,
     check_in_at: json['check_in_at'] == null ? null : DateTime.tryParse(json['check_in_at'] as String),
     check_in_by: json['check_in_by'] == null ? null : (json['check_in_by'] is Map<String, dynamic> ? User_Show.fromJson(json['check_in_by'] as Map<String, dynamic>) : json['check_in_by']),
     pay_at: json['pay_at'] == null ? null : DateTime.tryParse(json['pay_at'] as String),
@@ -1050,6 +1057,7 @@ class Log_Front_Desk {
     json['pay_balance'] = pay_balance;
     json['pay_note'] = pay_note;
     json['shift_date'] = shift_date?.toIso8601String();
+    json['carry_from_id'] = carry_from_id;
     json['check_in_at'] = check_in_at?.toIso8601String();
     json['check_in_by'] = check_in_by == null ? null : check_in_by is User_Show ? check_in_by.toJson() : check_in_by;
     json['pay_at'] = pay_at?.toIso8601String();

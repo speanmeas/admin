@@ -9,6 +9,7 @@ class EndPoint {
 	final TELEGRAM = "/telegram";
 	final TELEGRAM_AUTH = "/telegram_auth";
 	final FRONT_DESK_CARRY_OVER = "/front_desk/carry_over";
+	final FRONT_DESK_CARRY_OVER_ONE = "/front_desk/carry_over_one";
 	final FRONT_DESK_CHANGE = "/front_desk/change";
 	final FRONT_DESK_CHECK_IN = "/front_desk/check_in";
 	final FRONT_DESK_CHECK_OUT = "/front_desk/check_out";
