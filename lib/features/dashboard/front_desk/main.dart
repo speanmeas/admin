@@ -844,17 +844,21 @@ class _Main_State extends State<Main_> {
   Future<void> on_rows_moved(PlutoGridOnRowsMovedEvent e) async {
     await on_reindex();
 
-    final List<Map<String, dynamic>> items = [];
+    final int idx = e.idx;
+    if (idx < 0 || idx >= state_manager.rows.length) return;
 
-    for (int i = 0; i < state_manager.rows.length; i++) {
-      final row = state_manager.rows[i];
-      final String id = row.cells[Front_Desk.ID]?.value?.toString() ?? "";
-      if (id.isNotEmpty) items.add({"_id": id, "order": (i + 1).toDouble()});
-    }
+    final moved_row = state_manager.rows[idx];
+    final String id = moved_row.cells[Front_Desk.ID]?.value?.toString() ?? "";
+    if (id.isEmpty) return;
 
-    if (items.isEmpty) return;
+    final String? prev_id = idx > 0 ? state_manager.rows[idx - 1].cells[Front_Desk.ID]?.value?.toString() : null;
+    final String? next_id = idx < state_manager.rows.length - 1 ? state_manager.rows[idx + 1].cells[Front_Desk.ID]?.value?.toString() : null;
 
-    final res = await dio.post(endpoint.FRONT_DESK_UPDATE_ORDER, data: {"items": items});
+    final Map<String, dynamic> body = {"_id": id};
+    if (prev_id != null && prev_id.isNotEmpty) body["prev_id"] = prev_id;
+    if (next_id != null && next_id.isNotEmpty) body["next_id"] = next_id;
+
+    final res = await dio.post(endpoint.FRONT_DESK_UPDATE_ORDER, data: body);
 
     if (res == null) {
       snackbar(ct: context, ms: dio.error_msg ?? "Failed to update order", cl: Colors.red);
