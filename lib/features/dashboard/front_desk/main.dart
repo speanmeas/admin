@@ -63,13 +63,7 @@ class _Main_State extends State<Main_> {
   }
 
   // ########## UI LAYOUT ##########
-  Widget _layout({
-    List<Widget>? check_in,
-    List<Widget>? check_out,
-    List<Widget>? clean,
-    List<Widget>? header,
-    Widget? body,
-  }) {
+  Widget _layout({List<Widget>? check_in, List<Widget>? check_out, List<Widget>? clean, List<Widget>? header, Widget? body}) {
     return Scaffold(
       body: Column(
         spacing: 1,
@@ -159,42 +153,15 @@ class _Main_State extends State<Main_> {
         ],
       ],
       header: [
-        IconButton(
-          tooltip: "Goto Previous Day",
-          icon: const Icon(Icons.navigate_before, size: 30),
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-          onPressed: on_previous_day,
-        ),
+        IconButton(tooltip: "Goto Previous Day", icon: const Icon(Icons.navigate_before, size: 30), padding: EdgeInsets.zero, constraints: const BoxConstraints(), onPressed: on_previous_day),
         TextButton(
-          child: Text(
-            DateFormat("yyyy-MM-dd").format(current_shift),
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
+          child: Text(DateFormat("yyyy-MM-dd").format(current_shift), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           onPressed: on_goto_day,
         ),
-        IconButton(
-          tooltip: "Goto Next Day",
-          icon: const Icon(Icons.navigate_next, size: 30),
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-          onPressed: on_next_day,
-        ),
+        IconButton(tooltip: "Goto Next Day", icon: const Icon(Icons.navigate_next, size: 30), padding: EdgeInsets.zero, constraints: const BoxConstraints(), onPressed: on_next_day),
         const Spacer(),
-        IconButton(
-          tooltip: filter ? "Hide Filter" : "Show Filter",
-          icon: Icon(filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30),
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-          onPressed: on_filter,
-        ),
-        IconButton(
-          tooltip: "Reload",
-          icon: const Icon(Icons.refresh, size: 30),
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-          onPressed: on_reload,
-        ),
+        IconButton(tooltip: filter ? "Hide Filter" : "Show Filter", icon: Icon(filter ? Icons.filter_alt_off_outlined : Icons.filter_alt_outlined, size: 30), padding: EdgeInsets.zero, constraints: const BoxConstraints(), onPressed: on_filter),
+        IconButton(tooltip: "Reload", icon: const Icon(Icons.refresh, size: 30), padding: EdgeInsets.zero, constraints: const BoxConstraints(), onPressed: on_reload),
       ],
       body: PlutoGrid(
         key: ValueKey(reload),
@@ -216,45 +183,14 @@ class _Main_State extends State<Main_> {
           on_print_receipt: (rc) => snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue),
         ),
         columnGroups: [
-          PlutoColumnGroup(
-            title: "",
-            fields: [Front_Desk.ID, Front_Desk.SHIFT_DATE, Front_Desk.ROOM_NUMBER, "index", "other"],
-          ),
-          PlutoColumnGroup(
-            title: "ការស្នាក់នៅ",
-            fields: [Front_Desk.CHECK_IN_AT, Front_Desk.CHECK_OUT_AT],
-          ),
-          PlutoColumnGroup(
-            title: "អតិថិជន",
-            fields: [Front_Desk.GUEST_ID, Front_Desk.NUMBER_OF_GUEST],
-          ),
-          PlutoColumnGroup(
-            title: "ការបង់ប្រាក់",
-            fields: [
-              Front_Desk.ROOM_PRICE,
-              Front_Desk.MINI_BAR_PRICE,
-              Front_Desk.PENALTY_PRICE,
-              Front_Desk.PAY_CASH,
-              Front_Desk.PAY_BANK,
-              Front_Desk.PAY_BALANCE,
-              Front_Desk.PAY_NOTE,
-            ],
-          ),
+          PlutoColumnGroup(title: "", fields: [Front_Desk.ID, Front_Desk.SHIFT_DATE, Front_Desk.ROOM_NUMBER, "index", "other"]),
+          PlutoColumnGroup(title: "ការស្នាក់នៅ", fields: [Front_Desk.CHECK_IN_AT, Front_Desk.CHECK_OUT_AT]),
+          PlutoColumnGroup(title: "អតិថិជន", fields: [Front_Desk.GUEST_ID, Front_Desk.NUMBER_OF_GUEST]),
+          PlutoColumnGroup(title: "ការបង់ប្រាក់", fields: [Front_Desk.ROOM_PRICE, Front_Desk.MINI_BAR_PRICE, Front_Desk.PENALTY_PRICE, Front_Desk.PAY_CASH, Front_Desk.PAY_BANK, Front_Desk.PAY_BALANCE, Front_Desk.PAY_NOTE]),
         ],
         configuration: const PlutoGridConfiguration(
-          scrollbar: PlutoGridScrollbarConfig(
-            isAlwaysShown: true,
-            scrollbarThickness: 12,
-            scrollbarThicknessWhileDragging: 12,
-          ),
-          style: PlutoGridStyleConfig(
-            rowHeight: 28,
-            columnHeight: 32,
-            columnFilterHeight: 32,
-            defaultColumnTitlePadding: EdgeInsets.fromLTRB(4, 0, 26, 0),
-            defaultColumnFilterPadding: EdgeInsets.all(1),
-            defaultCellPadding: EdgeInsets.symmetric(horizontal: 2),
-          ),
+          scrollbar: PlutoGridScrollbarConfig(isAlwaysShown: false, scrollbarThickness: 0, scrollbarThicknessWhileDragging: 0),
+          style: PlutoGridStyleConfig(rowHeight: 28, columnHeight: 32, columnFilterHeight: 32, defaultColumnTitlePadding: EdgeInsets.fromLTRB(4, 0, 26, 0), defaultColumnFilterPadding: EdgeInsets.all(1), defaultCellPadding: EdgeInsets.symmetric(horizontal: 2)),
         ),
         onLoaded: on_loaded,
         onChanged: on_updated,
@@ -273,12 +209,7 @@ class _Main_State extends State<Main_> {
   }
 
   Future<void> on_load_dashboard([DateTime? shift_date]) async {
-    final res = await dio.post(
-      endpoint.FRONT_DESK_DASHBOARD,
-      data: {
-        if (shift_date != null) "shift_date": DateFormat("yyyy-MM-dd").format(shift_date),
-      },
-    );
+    final res = await dio.post(endpoint.FRONT_DESK_DASHBOARD, data: {if (shift_date != null) "shift_date": DateFormat("yyyy-MM-dd").format(shift_date)});
     if (res == null) {
       if (mounted) snackbar(ct: context, ms: dio.error_msg ?? "Failed to load dashboard", cl: Colors.red);
       return;
@@ -296,10 +227,7 @@ class _Main_State extends State<Main_> {
     data = staysJson.map((e) => Front_Desk.fromJson(Map<String, dynamic>.from(e as Map))).toList();
 
     state_manager.removeAllRows();
-    state_manager.appendRows([
-      for (var (i, d) in data.indexed)
-        build_front_desk_row(d, i + 1, list_column_pluto),
-    ]);
+    state_manager.appendRows([for (var (i, d) in data.indexed) build_front_desk_row(d, i + 1, list_column_pluto)]);
     re_index();
     setState(() {});
   }
@@ -332,11 +260,7 @@ class _Main_State extends State<Main_> {
     state_manager.notifyListeners();
 
     if (is_walk_in) {
-      if (e.column.field == Front_Desk.ROOM_PRICE ||
-          e.column.field == Front_Desk.PAY_BALANCE ||
-          e.column.field == Front_Desk.ROOM_NUMBER ||
-          e.column.field == Front_Desk.NUMBER_OF_GUEST ||
-          e.column.field == Front_Desk.PENALTY_PRICE) {
+      if (e.column.field == Front_Desk.ROOM_PRICE || e.column.field == Front_Desk.PAY_BALANCE || e.column.field == Front_Desk.ROOM_NUMBER || e.column.field == Front_Desk.NUMBER_OF_GUEST || e.column.field == Front_Desk.PENALTY_PRICE) {
         state_manager.changeCellValue(e.row.cells[e.column.field]!, e.oldValue, callOnChangedEvent: false);
         return;
       }
@@ -354,10 +278,7 @@ class _Main_State extends State<Main_> {
   }
 
   Future<void> do_update_room_price(String? id, double v) async {
-    final tmp = await dio.post(
-      endpoint.FRONT_DESK_UPDATE_ROOM_PRICE,
-      data: {Front_Desk.ID: id, Front_Desk.ROOM_PRICE: v},
-    );
+    final tmp = await dio.post(endpoint.FRONT_DESK_UPDATE_ROOM_PRICE, data: {Front_Desk.ID: id, Front_Desk.ROOM_PRICE: v});
     if (tmp == null) {
       await on_load_dashboard(current_shift);
       return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
@@ -411,14 +332,7 @@ class _Main_State extends State<Main_> {
     final String? prev_id = idx > 0 ? state_manager.rows[idx - 1].cells[Front_Desk.ID]?.value?.toString() : null;
     final String? next_id = idx < state_manager.rows.length - 1 ? state_manager.rows[idx + 1].cells[Front_Desk.ID]?.value?.toString() : null;
 
-    final res = await dio.post(
-      endpoint.FRONT_DESK_UPDATE_ORDER,
-      data: {
-        "_id": id,
-        if (prev_id != null && prev_id.isNotEmpty) "prev_id": prev_id,
-        if (next_id != null && next_id.isNotEmpty) "next_id": next_id,
-      },
-    );
+    final res = await dio.post(endpoint.FRONT_DESK_UPDATE_ORDER, data: {"_id": id, if (prev_id != null && prev_id.isNotEmpty) "prev_id": prev_id, if (next_id != null && next_id.isNotEmpty) "next_id": next_id});
     if (res == null) {
       snackbar(ct: context, ms: dio.error_msg ?? "Failed to update order", cl: Colors.red);
     } else {
@@ -481,13 +395,7 @@ class _Main_State extends State<Main_> {
     final fd = data.where((x) => x.id == fd_id).firstOrNull;
     final guest = fd?.guest_id is Guest_Show ? fd!.guest_id as Guest_Show : null;
 
-    final name_phone = await dialog_guest_update(
-      context: context,
-      fd_id: fd_id,
-      guest_id: guest?.id ?? "",
-      current_name: guest?.full_name ?? "",
-      current_phone: guest?.phone_number ?? "",
-    );
+    final name_phone = await dialog_guest_update(context: context, fd_id: fd_id, guest_id: guest?.id ?? "", current_name: guest?.full_name ?? "", current_phone: guest?.phone_number ?? "");
     if (name_phone == null) return;
     state_manager.changeCellValue(rc.cell, name_phone, force: true, callOnChangedEvent: false);
   }
@@ -545,12 +453,7 @@ class _Main_State extends State<Main_> {
         if (it is Mini_Bar_Item) Order_Mini_Bar.fromJson(it.toJson()),
     ];
 
-    final price = await dialog_mini_bar_select(
-      context: context,
-      list_order_mini_bar: orders,
-      front_desk_id: fd_id,
-      is_walk_in: is_row_mini_bar(rc),
-    );
+    final price = await dialog_mini_bar_select(context: context, list_order_mini_bar: orders, front_desk_id: fd_id, is_walk_in: is_row_mini_bar(rc));
     if (price == null) return;
     state_manager.changeCellValue(rc.row.cells[Front_Desk.MINI_BAR_PRICE]!, price, force: true, callOnChangedEvent: false);
     on_refresh_balanced();
@@ -567,11 +470,7 @@ class _Main_State extends State<Main_> {
         if (it is Penalty_Item) Order_Penalty.fromJson(it.toJson()),
     ];
 
-    final price = await dialog_penalty_select(
-      context: context,
-      list_order_penalty: orders,
-      front_desk_id: fd_id,
-    );
+    final price = await dialog_penalty_select(context: context, list_order_penalty: orders, front_desk_id: fd_id);
     if (price == null) return;
     state_manager.changeCellValue(rc.row.cells[Front_Desk.PENALTY_PRICE]!, price, force: true, callOnChangedEvent: false);
     on_refresh_balanced();
@@ -593,12 +492,7 @@ class _Main_State extends State<Main_> {
   }
 
   Future<void> on_goto_day() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: current_shift,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
+    final picked = await showDatePicker(context: context, initialDate: current_shift, firstDate: DateTime(2000), lastDate: DateTime(2100));
     if (picked == null) return;
     current_shift = DateTime(picked.year, picked.month, picked.day);
     await on_load_dashboard(current_shift);
@@ -636,12 +530,5 @@ class Main_ extends StatefulWidget {
 }
 
 void main() {
-  runApp(
-    MaterialApp(
-      home: const Main_(),
-      theme: theme_data,
-      title: "Development",
-      debugShowCheckedModeBanner: false,
-    ),
-  );
+  runApp(MaterialApp(home: const Main_(), theme: theme_data, title: "Development", debugShowCheckedModeBanner: false));
 }
