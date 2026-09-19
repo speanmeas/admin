@@ -12,7 +12,15 @@ class Order_Penalty {
   // តម្លៃសរុប = price × quantity
   double get total => (penalty_id?.price ?? 0) * quantity;
 
-  factory Order_Penalty.fromJson(Map<String, dynamic> m) => Order_Penalty(id: parse_string(m["_id"]), penalty_id: m["penalty_id"] == null ? null : Penalty_Show_2.fromJson(m["penalty_id"]), quantity: parse_int(m["quantity"]) ?? 1);
+  factory Order_Penalty.fromJson(Map<String, dynamic> m) => Order_Penalty(
+        id: parse_string(m["_id"]),
+        penalty_id: m["penalty_id"] == null
+            ? null
+            : (m["penalty_id"] is Map
+                ? Penalty_Show_2.fromJson(Map<String, dynamic>.from(m["penalty_id"] as Map))
+                : null),
+        quantity: parse_int(m["quantity"]) ?? 1,
+      );
 }
 
 // dialog ជ្រើសរើសទំនិញ penalty ជាមួយ stepper +/- ក្នុងមួយទំនិញ
@@ -84,44 +92,32 @@ Future<double?> dialog_penalty_select({
     return list_penalty.where((item) => (item.name ?? "").toLowerCase().contains(q)).toList();
   }
 
-  // រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
+  // រក្សាទុកទំនិញតាមរយៈ atomic backend endpoint
   Future<double?> on_confirm() async {
-    List<String> ids = [];
-    for (var o in orders) {
-      if (o.id != null) {
-        final tmp_up = await dio.post(
-          endpoint.PENALTY_ITEM_UPDATE,
-          data: {
-            Penalty_Item.ID: o.id, //
-            Penalty_Item.QUANTITY: o.quantity, //
-          },
-        );
-        if (tmp_up == null) return null;
-        ids.add(o.id!);
-        continue;
-      }
-      final tmp_item = await dio.post(
-        endpoint.PENALTY_ITEM_CREATE,
-        data: {
-          Penalty_Item.PENALTY_ID: o.penalty_id?.id, //
-          Penalty_Item.QUANTITY: o.quantity, //
-        },
-      );
-      if (tmp_item == null) return null;
-      ids.add(tmp_item.data[0][Penalty_Item.ID]);
-    }
+    final payloadItems = [
+      for (var o in orders)
+        {
+          if (o.id != null) "_id": o.id,
+          "penalty_id": o.penalty_id?.id,
+          "quantity": o.quantity,
+        }
+    ];
 
-    final tmp_fd = await dio.post(
-      endpoint.FRONT_DESK_UPDATE_PENALTY_ITEM,
+    final res = await dio.post(
+      endpoint.FRONT_DESK_SET_PENALTY,
       data: {
-        Front_Desk.ID: front_desk_id, //
-        Front_Desk.PENALTY_ITEM_ID: ids, //
+        "_id": front_desk_id,
+        "items": payloadItems,
       },
     );
-    if (tmp_fd == null) return null;
+    if (res == null) {
+      snackbar(ct: context, ms: dio.error_msg ?? "Failed to update penalty", cl: Colors.red);
+      return null;
+    }
 
     snackbar(ct: context, ms: "Penalty Updated", cl: Colors.green);
-    return orders.fold<double>(0.0, (sum, o) => sum + o.total);
+    final updated = (res.data as List?)?.firstOrNull;
+    return parse_double(updated?[Front_Desk.PENALTY_PRICE]);
   }
 
   await load();
@@ -298,45 +294,3 @@ Future<double?> dialog_penalty_select({
   return result;
 }
 
-class _Main_State extends State<Main_> {
-  double? tmp;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: OutlinedButton(
-          style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-          onPressed: () async {
-            final v = await dialog_penalty_select(
-              context: context, //
-              list_order_penalty: [], //
-              front_desk_id: "test", //
-            );
-            if (v == null) return;
-            tmp = v;
-            setState(() {});
-          },
-          child: const Text("Show"),
-        ),
-      ),
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  const Main_({super.key});
-  @override
-  State<Main_> createState() => _Main_State();
-}
-
-void main() {
-  runApp(
-    MaterialApp(
-      home: const Main_(), //
-      theme: theme_data, //
-      title: "Development", //
-      debugShowCheckedModeBanner: false, //
-    ),
-  );
-}

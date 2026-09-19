@@ -76,25 +76,21 @@ Future<String?> dialog_guest_add({
                 ),
                 onPressed: () async {
                   if ((full_name ?? "").isEmpty && (phone_number ?? "").isEmpty) return;
-                  final guest = await dio.post(
-                    endpoint.GUEST_CREATE,
+                  final res = await dio.post(
+                    endpoint.FRONT_DESK_SET_GUEST,
                     data: {
-                      Guest.FULL_NAME: full_name, //
-                      Guest.PHONE_NUMBER: phone_number,
+                      "_id": fd_id,
+                      "full_name": full_name,
+                      "phone_number": phone_number,
                     },
                   );
-                  if (guest == null) return;
-                  final guest_id = (guest.data as List?)?.firstOrNull?[Guest.ID] as String?;
-                  if (guest_id == null) return;
-                  final tmp = await dio.post(
-                    endpoint.FRONT_DESK_UPDATE_GUEST_INFO,
-                    data: {
-                      Front_Desk.ID: fd_id, //
-                      Front_Desk.GUEST_ID: guest_id, //
-                    },
-                  );
-                  if (tmp == null) return;
-                  if (context.mounted) Navigator.pop(context, "${full_name ?? ""} (${phone_number ?? ""})");
+                  if (res == null) return;
+                  final updated = (res.data as List?)?.firstOrNull;
+                  final guestObj = updated?[Front_Desk.GUEST_ID];
+                  final formatted = (guestObj is Map)
+                      ? "${guestObj[Guest.FULL_NAME] ?? "N/A"} (${guestObj[Guest.PHONE_NUMBER] ?? "N/A"})"
+                      : "${full_name ?? ""} (${phone_number ?? ""})";
+                  if (context.mounted) Navigator.pop(context, formatted);
                 },
                 child: const Text("OK"),
               ),

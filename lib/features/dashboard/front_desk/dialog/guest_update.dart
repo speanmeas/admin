@@ -16,11 +16,12 @@ Future<String?> dialog_guest_update({
 
   Future<void> on_confirm() async {
     final tmp = await dio.post(
-      endpoint.GUEST_UPDATE,
+      endpoint.FRONT_DESK_SET_GUEST,
       data: {
-        Guest.ID: guest_id, //
-        Guest.FULL_NAME: name_ctrl.text, //
-        Guest.PHONE_NUMBER: phone_ctrl.text,
+        "_id": fd_id,
+        if (guest_id.isNotEmpty) "guest_id": guest_id,
+        "full_name": name_ctrl.text,
+        "phone_number": phone_ctrl.text,
       },
     );
     if (tmp == null) return snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
@@ -36,7 +37,7 @@ Future<String?> dialog_guest_update({
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
             alignment: Alignment.topCenter,
             titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
-            contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+            contentPadding: const EdgeInsets.all(4),
             title: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [Text("Update Guest", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))],
@@ -94,44 +95,5 @@ Future<String?> dialog_guest_update({
         },
       );
     },
-  );
-}
-
-class _Main_State extends State<Main_> {
-  String? tmp;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: OutlinedButton(
-          style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-          onPressed: () async {
-            final v = await dialog_guest_update(context: context, fd_id: "test", guest_id: "test");
-            if (v == null) return;
-            tmp = v;
-            setState(() {});
-          },
-          child: const Text("Show"),
-        ),
-      ),
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  const Main_({super.key});
-  @override
-  State<Main_> createState() => _Main_State();
-}
-
-void main() {
-  runApp(
-    MaterialApp(
-      home: const Main_(), //
-      theme: theme_data, //
-      title: "Development", //
-      debugShowCheckedModeBanner: false, //
-    ),
   );
 }

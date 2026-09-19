@@ -12,7 +12,15 @@ class Order_Mini_Bar {
   // តម្លៃសរុប = price × quantity
   double get total => (mini_bar_id?.price ?? 0) * quantity;
 
-  factory Order_Mini_Bar.fromJson(Map<String, dynamic> m) => Order_Mini_Bar(id: parse_string(m["_id"]), mini_bar_id: m["mini_bar_id"] == null ? null : Mini_Bar_Show_2.fromJson(m["mini_bar_id"]), quantity: parse_int(m["quantity"]) ?? 1);
+  factory Order_Mini_Bar.fromJson(Map<String, dynamic> m) => Order_Mini_Bar(
+        id: parse_string(m["_id"]),
+        mini_bar_id: m["mini_bar_id"] == null
+            ? null
+            : (m["mini_bar_id"] is Map
+                ? Mini_Bar_Show_2.fromJson(Map<String, dynamic>.from(m["mini_bar_id"] as Map))
+                : null),
+        quantity: parse_int(m["quantity"]) ?? 1,
+      );
 }
 
 // dialog ជ្រើសរើសទំនិញ mini bar ជាមួយ stepper +/- ក្នុងមួយទំនិញ
@@ -85,45 +93,32 @@ Future<double?> dialog_mini_bar_select({
     return list_mini_bar.where((item) => (item.name ?? "").toLowerCase().contains(q)).toList();
   }
 
-  // រក្សាទុកទំនិញ: ថ្មី → create, មានរួច → update quantity, រួចភ្ជាប់ទៅ stay
+  // រក្សាទុកទំនិញតាមរយៈ atomic backend endpoint
   Future<double?> on_confirm() async {
-    List<String> ids = [];
-    for (var o in orders) {
-      if (o.id != null) {
-        final tmp_up = await dio.post(
-          endpoint.MINI_BAR_ITEM_UPDATE,
-          data: {
-            Mini_Bar_Item.ID: o.id, //
-            Mini_Bar_Item.QUANTITY: o.quantity, //
-          },
-        );
-        if (tmp_up == null) return null;
-        ids.add(o.id!);
-        continue;
-      }
-      final tmp_item = await dio.post(
-        endpoint.MINI_BAR_ITEM_CREATE,
-        data: {
-          Mini_Bar_Item.MINI_BAR_ID: o.mini_bar_id?.id, //
-          Mini_Bar_Item.QUANTITY: o.quantity, //
-        },
-      );
-      if (tmp_item == null) return null;
-      ids.add(tmp_item.data[0][Mini_Bar_Item.ID]);
-    }
+    final payloadItems = [
+      for (var o in orders)
+        {
+          if (o.id != null) "_id": o.id,
+          "mini_bar_id": o.mini_bar_id?.id,
+          "quantity": o.quantity,
+        }
+    ];
 
-    // Walk-In: ប្រើ endpoint ដាច់ដោយឡែក (update_walkin)
-    final tmp_fd = await dio.post(
-      is_walk_in ? endpoint.FRONT_DESK_UPDATE_WALKIN : endpoint.FRONT_DESK_UPDATE_MINI_BAR_ITEM,
+    final res = await dio.post(
+      endpoint.FRONT_DESK_SET_MINI_BAR,
       data: {
-        Front_Desk.ID: front_desk_id, //
-        Front_Desk.MINI_BAR_ITEM_ID: ids, //
+        "_id": front_desk_id,
+        "items": payloadItems,
       },
     );
-    if (tmp_fd == null) return null;
+    if (res == null) {
+      snackbar(ct: context, ms: dio.error_msg ?? "Failed to update mini bar", cl: Colors.red);
+      return null;
+    }
 
     snackbar(ct: context, ms: "Mini Bar Updated", cl: Colors.green);
-    return orders.fold<double>(0.0, (sum, o) => sum + o.total);
+    final updated = (res.data as List?)?.firstOrNull;
+    return parse_double(updated?[Front_Desk.MINI_BAR_PRICE]);
   }
 
   await load();
@@ -300,46 +295,3 @@ Future<double?> dialog_mini_bar_select({
   return result;
 }
 
-class _Main_State extends State<Main_> {
-  double? tmp;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: OutlinedButton(
-          style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
-          onPressed: () async {
-            final v = await dialog_mini_bar_select(
-              context: context, //
-              list_order_mini_bar: [], //
-              front_desk_id: "test", //
-              is_walk_in: false, //
-            );
-            if (v == null) return;
-            tmp = v;
-            setState(() {});
-          },
-          child: const Text("Show"),
-        ),
-      ),
-    );
-  }
-}
-
-class Main_ extends StatefulWidget {
-  const Main_({super.key});
-  @override
-  State<Main_> createState() => _Main_State();
-}
-
-void main() {
-  runApp(
-    MaterialApp(
-      home: const Main_(), //
-      theme: theme_data, //
-      title: "Development", //
-      debugShowCheckedModeBanner: false, //
-    ),
-  );
-}

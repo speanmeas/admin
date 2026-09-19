@@ -14,8 +14,12 @@ class EndPoint {
 	final FRONT_DESK_CHECK_IN = "/front_desk/check_in";
 	final FRONT_DESK_CHECK_OUT = "/front_desk/check_out";
 	final FRONT_DESK_CLEAN = "/front_desk/clean";
+	final FRONT_DESK_DASHBOARD = "/front_desk/dashboard";
 	final FRONT_DESK_OVER_TIME = "/front_desk/over_time";
 	final FRONT_DESK_REPORT_DAILY = "/front_desk/report_daily";
+	final FRONT_DESK_SET_GUEST = "/front_desk/set_guest";
+	final FRONT_DESK_SET_MINI_BAR = "/front_desk/set_mini_bar";
+	final FRONT_DESK_SET_PENALTY = "/front_desk/set_penalty";
 	final FRONT_DESK_UPDATE_GUEST_INFO = "/front_desk/update_guest_info";
 	final FRONT_DESK_UPDATE_MINI_BAR_ITEM = "/front_desk/update_mini_bar_item";
 	final FRONT_DESK_UPDATE_NUMBER_OF_GUEST = "/front_desk/update_number_of_guest";
