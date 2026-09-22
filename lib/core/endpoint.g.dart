@@ -8,6 +8,7 @@ class EndPoint {
 	final AUTH_CLIENT_KHUNBUNHAP_SIGN_UP = "/auth_client/khunbunhap/sign_up";
 	final TELEGRAM = "/telegram";
 	final TELEGRAM_AUTH = "/telegram_auth";
+	final DEBUG_ORDER_REBALANCE = "/debug/order_rebalance";
 	final FRONT_DESK_CARRY_OVER = "/front_desk/carry_over";
 	final FRONT_DESK_CARRY_OVER_ONE = "/front_desk/carry_over_one";
 	final FRONT_DESK_CHANGE = "/front_desk/change";
