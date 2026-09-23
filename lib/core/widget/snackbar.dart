@@ -13,25 +13,33 @@ void snackbar({
   required String ms, //
   required Color cl, //
 }) {
+  final screenWidth = MediaQuery.sizeOf(ct).width;
+  final screenHeight = MediaQuery.sizeOf(ct).height;
+  const snackbarWidth = 400.0;
+  const topMargin = 4.0;
+  const snackbarHeight = 36.0;
+  final horizontalMargin = math.max(0.0, (screenWidth - snackbarWidth) / 2);
+  final bottomMargin = math.max(0.0, screenHeight - topMargin - snackbarHeight);
+
   ScaffoldMessenger.of(ct)
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
-        margin: EdgeInsets.only(left: math.max(8, MediaQuery.sizeOf(ct).width - 500 - 8), top: 0, right: 8, bottom: 8),
-        duration: Duration(seconds: 5),
-
+        margin: EdgeInsets.only(left: horizontalMargin, right: horizontalMargin, bottom: bottomMargin),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        duration: const Duration(seconds: 5),
         content: Row(
           children: [
             // រូបតំណាងព័ត៌មាន
-            Icon(Icons.info_outline, color: Colors.white),
-            SizedBox(width: 8),
+            const Icon(Icons.info_outline, color: Colors.white, size: 20),
+            const SizedBox(width: 8),
             // អត្ថបទសារ
             Expanded(
               child: Text(
                 ms, //
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 16, //
+                style: const TextStyle(
+                  fontSize: 14, //
                   color: Colors.white,
                 ),
               ),
@@ -41,15 +49,16 @@ void snackbar({
         // backgroundColor: Colors.transparent,
         backgroundColor: cl,
 
-        elevation: 0, //
+        elevation: 2, //
 
         shape: RoundedRectangleBorder(
-          //
+          borderRadius: BorderRadius.circular(0),
           side: BorderSide(color: cl),
         ),
 
         behavior: SnackBarBehavior.floating,
       ),
+      snackBarAnimationStyle: const AnimationStyle(duration: Duration(milliseconds: 150), reverseDuration: Duration(milliseconds: 80)),
     );
 }
 
