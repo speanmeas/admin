@@ -27,7 +27,7 @@ Future<String?> dialog_room_search({
         contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text("Search:", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))],
+          children: [Text("Search", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))],
         ),
         content: SizedBox(
           width: 400,

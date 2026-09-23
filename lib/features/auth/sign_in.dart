@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:speanmeas/core/utility/all.dart";
 
-import "package:speanmeas/core/layout/layout.dart";
+import "package:speanmeas/features/layout/layout.dart";
 
 // ថ្នាក់ state របស់ Main_ គ្រប់គ្រងទំព័រចូលប្រព័ន្ធ
 class _Main_State extends State<Main_> {
