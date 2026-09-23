@@ -36,7 +36,7 @@ class _LayoutState extends State<Layout> {
                 // បន្ទះខាងឆ្វេង (menu)
                 if (!is_mobile)
                   Container(
-                    width: 250,
+                    width: 200,
                     decoration: BoxDecoration(border: Border(right: BorderSide())), //
                     child: left.Panel_Left(), //
                   ),

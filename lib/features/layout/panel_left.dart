@@ -48,6 +48,8 @@ class _Panel_LeftState extends State<Panel_Left> {
               ExpansionTile(
                 leading: Icon(Icons.storage_outlined), //
                 title: Text("Database"),
+                tilePadding: const EdgeInsets.symmetric(horizontal: 4),
+                childrenPadding: const EdgeInsets.symmetric(horizontal: 4),
                 initiallyExpanded: true,
                 children: [
                   // front desk
@@ -90,6 +92,8 @@ class _Panel_LeftState extends State<Panel_Left> {
                   leading: Icon(Icons.assessment_outlined), //
                   title: Text("Report"),
                   initiallyExpanded: true,
+                  tilePadding: const EdgeInsets.symmetric(horizontal: 4),
+                  childrenPadding: const EdgeInsets.symmetric(horizontal: 4),
                   children: [
                     list_tile_l2(prefix: "Report", name: "Daily", icon: Icons.today_outlined),
                     // list_tile_l2(prefix: "Report", name: "Weekly", icon: Icons.date_range_outlined),
@@ -104,6 +108,8 @@ class _Panel_LeftState extends State<Panel_Left> {
                   leading: Icon(Icons.model_training_outlined), //
                   title: Text("Demo"),
                   initiallyExpanded: true,
+                  tilePadding: const EdgeInsets.symmetric(horizontal: 4),
+                  childrenPadding: const EdgeInsets.symmetric(horizontal: 4),
                   children: [
                     list_tile_l2(prefix: "Demo", name: "001", icon: Icons.model_training_outlined), //
                     list_tile_l2(prefix: "Demo", name: "002", icon: Icons.model_training_outlined), //
@@ -128,7 +134,7 @@ class _Panel_LeftState extends State<Panel_Left> {
               InkWell(
                 onTap: () => launchUrl(Uri.parse("https://t.me/muysengly")),
                 child: Text(
-                  "Developer: MUY Sengly (011-358-858)", //
+                  "MUY Sengly (011358858)", //
                   style: TextStyle(
                     fontSize: 12, //
                     color: Colors.blue,
@@ -151,6 +157,7 @@ class _Panel_LeftState extends State<Panel_Left> {
     return ListTile(
       leading: Icon(icon),
       title: Text(name),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 4),
       selected: glob.body == name,
       selectedColor: Colors.blue,
       onTap: () {
@@ -174,7 +181,8 @@ class _Panel_LeftState extends State<Panel_Left> {
       title: Text(name),
       selected: glob.body == "$prefix $name",
       selectedColor: Colors.blue,
-      contentPadding: EdgeInsets.only(left: 40),
+      // contentPadding: EdgeInsets.only(left: 40),
+      contentPadding: const EdgeInsets.fromLTRB(12, 0, 4, 0),
       onTap: () {
         // ផ្លាស់ប្តូរ body បច្ចុប្បន្នជាមួយ prefix
         glob.body = "$prefix $name";

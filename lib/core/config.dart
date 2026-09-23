@@ -38,7 +38,6 @@ String get_api_host() {
 // API host ដែលបានកំណត់
 final API_HOST = get_api_host();
 
-// TODO: later
 // ទទួលបាន MinIO public URL សម្រាប់ផ្ទុកឯកសារ
 String get_minio_public() {
   if (kDebugMode) return "http://localhost:9000/public";
