@@ -1,13 +1,13 @@
 import "dart:async";
 import "dart:convert";
 
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 import "dialog/add_mini_bar.dart";
+import "dialog/carry_over.dart";
 import "dialog/check_in.dart";
 import "dialog/check_in_at_select.dart";
 import "dialog/check_out.dart";
@@ -348,13 +348,14 @@ class _Main_State extends State<Main_> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [
-                  IconButton(
-                    tooltip: "កែពេលចេញ", //
-                    icon: Icon(Icons.calendar_month_outlined),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_update_check_out_at(rc), //
-                  ),
+                  if (has_checkout)
+                    IconButton(
+                      tooltip: "កែពេលចេញ", //
+                      icon: Icon(Icons.calendar_month_outlined),
+                      padding: EdgeInsets.all(0),
+                      constraints: BoxConstraints(),
+                      onPressed: () => on_update_check_out_at(rc), //
+                    ),
                   Expanded(
                     child: Align(
                       alignment: Alignment.center, //
@@ -500,41 +501,40 @@ class _Main_State extends State<Main_> {
             },
           ),
 
-          if (kDebugMode)
-            PlutoColumn(
-              field: Front_Desk.SHIFT_DATE, //
-              title: "របាយការណ៍ថ្ងៃ",
-              type: PlutoColumnType.text(),
-              enableEditingMode: false,
-              width: 120,
-              renderer: (rc) {
-                final is_walk_in = is_row_mini_bar(rc);
-                final v = parse_datetime(rc.cell.value);
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center, //
-                  children: [
-                    if (!is_walk_in)
-                      IconButton(
-                        tooltip: "កែថ្ងៃ", //
-                        icon: Icon(Icons.calendar_month_outlined),
-                        padding: EdgeInsets.all(0),
-                        constraints: BoxConstraints(),
-                        onPressed: () => on_update_shift_date(rc), //
-                      ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.center, //
-                        child: Text(
-                          v == null ? "" : DateFormat("yyyy-MM-dd").format(v), //
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-
+          // if (kDebugMode)
+          //   PlutoColumn(
+          //     field: Front_Desk.SHIFT_DATE, //
+          //     title: "របាយការណ៍ថ្ងៃ",
+          //     type: PlutoColumnType.text(),
+          //     enableEditingMode: false,
+          //     width: 120,
+          //     renderer: (rc) {
+          //       final is_walk_in = is_row_mini_bar(rc);
+          //       final v = parse_datetime(rc.cell.value);
+          //       return Row(
+          //         mainAxisAlignment: MainAxisAlignment.center, //
+          //         children: [
+          //           if (!is_walk_in)
+          //             IconButton(
+          //               tooltip: "កែថ្ងៃ", //
+          //               icon: Icon(Icons.calendar_month_outlined),
+          //               padding: EdgeInsets.all(0),
+          //               constraints: BoxConstraints(),
+          //               onPressed: () => on_update_shift_date(rc), //
+          //             ),
+          //           Expanded(
+          //             child: Align(
+          //               alignment: Alignment.center, //
+          //               child: Text(
+          //                 v == null ? "" : DateFormat("yyyy-MM-dd").format(v), //
+          //                 overflow: TextOverflow.ellipsis,
+          //               ),
+          //             ),
+          //           ),
+          //         ],
+          //       );
+          //     },
+          //   ),
           PlutoColumn(
             field: "other", //
             title: "ផ្សេងៗ",
@@ -942,12 +942,9 @@ class _Main_State extends State<Main_> {
     if (is_row_mini_bar(rc)) return;
     final fd_id = rc.row.cells[Front_Desk.ID]?.value;
     if (fd_id == null) return;
-    final tmp = await dio.post(endpoint.FRONT_DESK_CARRY_OVER_ONE, data: {Front_Desk.ID: fd_id});
-    if (tmp == null) {
-      return snackbar(ct: context, ms: dio.error_msg ?? "Failed to carry over", cl: Colors.red);
-    }
-    snackbar(ct: context, ms: "Carried Over", cl: Colors.green);
-    await on_load_dashboard(current_shift);
+    final room_number = (rc.row.cells[Front_Desk.ROOM_NUMBER]?.value ?? "").toString();
+    final v = await dialog_carry_over(context: context, lead: "Room $room_number", front_desk_id: fd_id);
+    if (v == true) await on_load_dashboard(current_shift);
   }
 
   void on_mini_bar_item(PlutoColumnRendererContext rc) async {
