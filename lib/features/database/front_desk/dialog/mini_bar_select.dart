@@ -136,41 +136,41 @@ Future<double?> dialog_mini_bar_select({
         builder: (context, setState) {
           return AlertDialog(
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-            titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 4),
-            contentPadding: EdgeInsets.zero,
-            title: Row(
+            alignment: Alignment.topCenter,
+            titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+            contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+            title: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  "Select Mini Bar", //
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  "មីនីបារ", //
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
             content: SizedBox(
-              width: 420,
+              width: 400,
               height: 480,
               child: Column(
                 children: [
+                  const Divider(height: 0, color: Colors.grey),
+                  const SizedBox(height: 8),
                   // ប្រអប់ស្វែងរកទំនិញតាមឈ្មោះ
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        isDense: true,
-                        hintText: "Search",
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                        border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
-                        prefixIcon: const Icon(Icons.search, size: 20, color: Colors.blue),
-                      ),
-                      onChanged: (v) {
-                        search = v;
-                        setState(() {});
-                      },
+                  TextField(
+                    autofocus: true,
+                    decoration: const InputDecoration(
+                      labelText: "ស្វែងរក:", //
+                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      prefixIcon: Icon(Icons.search, color: Colors.blue),
                     ),
+                    onChanged: (v) {
+                      search = v;
+                      setState(() {});
+                    },
                   ),
-
-                  const Divider(height: 1),
+                  const SizedBox(height: 8),
+                  const Divider(height: 1, color: Colors.grey),
 
                   // បញ្ជីទំនិញដែលបានត្រង
                   Expanded(

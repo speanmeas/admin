@@ -27,7 +27,7 @@ Future<String?> dialog_room_search({
         contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text("Search:", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))],
+          children: [Text("បន្ទប់", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))],
         ),
         content: SizedBox(
           width: 400,
@@ -37,6 +37,7 @@ Future<String?> dialog_room_search({
               const Divider(height: 0, color: Colors.grey),
               const SizedBox(height: 8),
               TypeAheadField<String>(
+                animationDuration: Duration.zero,
                 itemBuilder: (context, item) => ListTile(
                   title: Text(item),
                   leading: const Icon(Icons.meeting_room_outlined, color: Colors.blue),
@@ -58,7 +59,7 @@ Future<String?> dialog_room_search({
                     controller: controller,
                     focusNode: focusNode,
                     decoration: const InputDecoration(
-                      labelText: "Room:",
+                      labelText: "ស្វែងរក:",
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: Icon(Icons.search, color: Colors.blue),

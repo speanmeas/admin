@@ -27,7 +27,7 @@ Future<String?> dialog_check_out_by_search({
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Check-out By", //
+              "ឲចេញដោយ", //
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],
@@ -40,6 +40,7 @@ Future<String?> dialog_check_out_by_search({
               const Divider(height: 1, color: Colors.grey),
               const SizedBox(height: 8),
               TypeAheadField<String>(
+                animationDuration: Duration.zero,
                 itemBuilder: (context, item) => ListTile(title: Text(item)),
                 suggestionsCallback: (q) {
                   final query = q.trim().toLowerCase();
@@ -58,7 +59,7 @@ Future<String?> dialog_check_out_by_search({
                     controller: controller,
                     focusNode: focusNode,
                     decoration: const InputDecoration(
-                      labelText: "Search:",
+                      labelText: "ស្វែងរក:",
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: Icon(Icons.search, color: Colors.blue),

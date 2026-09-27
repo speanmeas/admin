@@ -7,6 +7,7 @@ import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 import "dialog/add_mini_bar.dart";
+import "dialog/bank_name_search.dart";
 import "dialog/carry_over.dart";
 import "dialog/check_in.dart";
 import "dialog/check_in_at_select.dart";
@@ -477,6 +478,37 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
+            field: Front_Desk.PAY_BANK_NAME, //
+            title: "ឈ្មោះធនាគារ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 120,
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
+                children: [
+                  IconButton(
+                    tooltip: "ឈ្មោះធនាគារ", //
+                    icon: const Icon(Icons.search_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: const BoxConstraints(),
+                    onPressed: () => on_update_bank_name(rc), //
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(
+                        format_string(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
             field: Front_Desk.PAY_BALANCE, //
             title: "សមតុល្យ",
             type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
@@ -501,40 +533,6 @@ class _Main_State extends State<Main_> {
             },
           ),
 
-          // if (kDebugMode)
-          //   PlutoColumn(
-          //     field: Front_Desk.SHIFT_DATE, //
-          //     title: "របាយការណ៍ថ្ងៃ",
-          //     type: PlutoColumnType.text(),
-          //     enableEditingMode: false,
-          //     width: 120,
-          //     renderer: (rc) {
-          //       final is_walk_in = is_row_mini_bar(rc);
-          //       final v = parse_datetime(rc.cell.value);
-          //       return Row(
-          //         mainAxisAlignment: MainAxisAlignment.center, //
-          //         children: [
-          //           if (!is_walk_in)
-          //             IconButton(
-          //               tooltip: "កែថ្ងៃ", //
-          //               icon: Icon(Icons.calendar_month_outlined),
-          //               padding: EdgeInsets.all(0),
-          //               constraints: BoxConstraints(),
-          //               onPressed: () => on_update_shift_date(rc), //
-          //             ),
-          //           Expanded(
-          //             child: Align(
-          //               alignment: Alignment.center, //
-          //               child: Text(
-          //                 v == null ? "" : DateFormat("yyyy-MM-dd").format(v), //
-          //                 overflow: TextOverflow.ellipsis,
-          //               ),
-          //             ),
-          //           ),
-          //         ],
-          //       );
-          //     },
-          //   ),
           PlutoColumn(
             field: "other", //
             title: "ផ្សេងៗ",
@@ -564,10 +562,43 @@ class _Main_State extends State<Main_> {
           ),
         ],
         columnGroups: [
-          PlutoColumnGroup(title: "", fields: [Front_Desk.ID, Front_Desk.SHIFT_DATE, Front_Desk.ROOM_NUMBER, "index", "other"]),
-          PlutoColumnGroup(title: "ការស្នាក់នៅ", fields: [Front_Desk.CHECK_IN_AT, Front_Desk.CHECK_OUT_AT]),
-          PlutoColumnGroup(title: "អតិថិជន", fields: [Front_Desk.GUEST_ID, Front_Desk.NUMBER_OF_GUEST]),
-          PlutoColumnGroup(title: "ការបង់ប្រាក់", fields: [Front_Desk.ROOM_PRICE, Front_Desk.MINI_BAR_PRICE, Front_Desk.PENALTY_PRICE, Front_Desk.PAY_CASH, Front_Desk.PAY_BANK, Front_Desk.PAY_BALANCE, Front_Desk.PAY_NOTE]),
+          PlutoColumnGroup(
+            title: "",
+            fields: [
+              Front_Desk.ID, //
+              Front_Desk.SHIFT_DATE,
+              Front_Desk.ROOM_NUMBER,
+              "index",
+              "other",
+            ],
+          ),
+          PlutoColumnGroup(
+            title: "ការស្នាក់នៅ",
+            fields: [
+              Front_Desk.CHECK_IN_AT, //
+              Front_Desk.CHECK_OUT_AT,
+            ],
+          ),
+          PlutoColumnGroup(
+            title: "អតិថិជន",
+            fields: [
+              Front_Desk.GUEST_ID, //
+              Front_Desk.NUMBER_OF_GUEST,
+            ],
+          ),
+          PlutoColumnGroup(
+            title: "ការបង់ប្រាក់",
+            fields: [
+              Front_Desk.ROOM_PRICE, //
+              Front_Desk.MINI_BAR_PRICE,
+              Front_Desk.PENALTY_PRICE,
+              Front_Desk.PAY_CASH,
+              Front_Desk.PAY_BANK,
+              Front_Desk.PAY_BANK_NAME,
+              Front_Desk.PAY_BALANCE,
+              Front_Desk.PAY_NOTE,
+            ],
+          ),
         ],
         configuration: const PlutoGridConfiguration(
           scrollbar: PlutoGridScrollbarConfig(isAlwaysShown: false, scrollbarThickness: 0, scrollbarThicknessWhileDragging: 0),
@@ -725,6 +756,7 @@ class _Main_State extends State<Main_> {
                 if (c.field == Front_Desk.PENALTY_PRICE) return PlutoCell(value: d.penalty_price ?? 0.0);
                 if (c.field == Front_Desk.PAY_CASH) return PlutoCell(value: d.pay_cash ?? 0.0);
                 if (c.field == Front_Desk.PAY_BANK) return PlutoCell(value: d.pay_bank ?? 0.0);
+                if (c.field == Front_Desk.PAY_BANK_NAME) return PlutoCell(value: d.pay_bank_name ?? "");
                 if (c.field == Front_Desk.PAY_BALANCE) return PlutoCell(value: d.pay_balance ?? 0.0);
                 if (c.field == Front_Desk.PAY_NOTE) return PlutoCell(value: d.pay_note ?? "");
                 if (c.field == Front_Desk.CHECK_IN_BY) return PlutoCell(value: user_name(d.check_in_by));
@@ -988,6 +1020,16 @@ class _Main_State extends State<Main_> {
     final v = await dialog_shift_date_select(context: context, front_desk_id: id, initial: dt);
     if (v == null) return;
     await on_load_dashboard(current_shift);
+  }
+
+  Future<void> on_update_bank_name(PlutoColumnRendererContext rc) async {
+    final fd_id = rc.row.cells[Front_Desk.ID]?.value;
+    if (fd_id == null) return;
+    final current_bank = (rc.cell.value ?? "").toString();
+    final v = await dialog_bank_name_select(context: context, initial: current_bank);
+    if (v == null) return;
+    state_manager.changeCellValue(rc.cell, v, force: true, callOnChangedEvent: false);
+    do_updated(fd_id, Front_Desk.PAY_BANK_NAME, v);
   }
 
   Future<void> on_previous_day() async {

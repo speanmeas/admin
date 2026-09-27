@@ -17,7 +17,7 @@ Future<String?> dialog_guest_search({
       final text = "${g[Guest.FULL_NAME] ?? "N/A"} (${g[Guest.PHONE_NUMBER] ?? "N/A"})";
       options.add(text);
     }
-    return options;
+    return ["", ...options];
   }
 
   return await showDialog<String?>(
@@ -32,7 +32,7 @@ Future<String?> dialog_guest_search({
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Search Guest", //
+              "អតិថិជន", //
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],
@@ -45,8 +45,15 @@ Future<String?> dialog_guest_search({
               const Divider(height: 0, color: Colors.grey),
               const SizedBox(height: 8),
               TypeAheadField<String>(
+                animationDuration: Duration.zero,
                 hideOnUnfocus: false,
-                itemBuilder: (context, item) => ListTile(title: Text(item)),
+                itemBuilder: (context, item) => ListTile(
+                  leading: Icon(
+                    item.isEmpty ? Icons.block_outlined : Icons.person_outline,
+                    color: item.isEmpty ? Colors.red : Colors.blue,
+                  ),
+                  title: Text(item.isEmpty ? "គ្មាន (Clear)" : item),
+                ),
                 suggestionsCallback: search,
                 builder: (context, controller, focusNode) {
                   return TextField(
@@ -54,7 +61,7 @@ Future<String?> dialog_guest_search({
                     controller: controller,
                     focusNode: focusNode,
                     decoration: const InputDecoration(
-                      labelText: "Search:",
+                      labelText: "ស្វែងរក:",
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: Icon(Icons.search, color: Colors.blue),
@@ -62,6 +69,21 @@ Future<String?> dialog_guest_search({
                   );
                 },
                 onSelected: (v) async {
+                  if (v.isEmpty) {
+                    final tmp = await dio.post(
+                      endpoint.FRONT_DESK_UPDATE_GUEST_INFO,
+                      data: {
+                        Front_Desk.ID: fd_id, //
+                        Front_Desk.GUEST_ID: null, //
+                      },
+                    );
+                    if (tmp != null && context.mounted) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (context.mounted) Navigator.pop(context, "");
+                      });
+                    }
+                    return;
+                  }
                   for (var e in guests) {
                     if ("${e[Guest.FULL_NAME] ?? ""} (${e[Guest.PHONE_NUMBER] ?? "N/A"})" == v) {
                       final tmp = await dio.post(

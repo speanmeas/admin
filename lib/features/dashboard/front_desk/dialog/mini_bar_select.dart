@@ -16,7 +16,7 @@ class Order_Mini_Bar {
         id: parse_string(m["_id"]),
         mini_bar_id: m["mini_bar_id"] == null
             ? null
-            : (m["mini_bar_id"] is Map
+            : (m["mini_bar_id"] is Map //
                 ? Mini_Bar_Show_2.fromJson(Map<String, dynamic>.from(m["mini_bar_id"] as Map))
                 : null),
         quantity: parse_int(m["quantity"]) ?? 1,
@@ -98,16 +98,16 @@ Future<double?> dialog_mini_bar_select({
     final payloadItems = [
       for (var o in orders)
         {
-          if (o.id != null) "_id": o.id,
+          if (o.id != null) "_id": o.id, //
           "mini_bar_id": o.mini_bar_id?.id,
           "quantity": o.quantity,
-        }
+        },
     ];
 
     final res = await dio.post(
       endpoint.FRONT_DESK_SET_MINI_BAR,
       data: {
-        "_id": front_desk_id,
+        "_id": front_desk_id, //
         "items": payloadItems,
       },
     );
@@ -131,133 +131,133 @@ Future<double?> dialog_mini_bar_select({
         builder: (context, setState) {
           return AlertDialog(
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-            titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 4),
-            contentPadding: EdgeInsets.zero,
-            title: Row(
+            alignment: Alignment.topCenter,
+            titlePadding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+            contentPadding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+            title: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  "Select Mini Bar", //
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  "មីនីបារ", //
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
             content: SizedBox(
-              width: 420,
+              width: 400,
               height: 480,
               child: Column(
                 children: [
+                  const Divider(height: 0, color: Colors.grey),
+                  const SizedBox(height: 8),
                   // ប្រអប់ស្វែងរកទំនិញតាមឈ្មោះ
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        isDense: true,
-                        hintText: "Search",
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                        border: const OutlineInputBorder(borderRadius: BorderRadius.zero),
-                        prefixIcon: const Icon(Icons.search, size: 20, color: Colors.blue),
-                      ),
-                      onChanged: (v) {
-                        search = v;
-                        setState(() {});
-                      },
+                  TextField(
+                    autofocus: true,
+                    decoration: const InputDecoration(
+                      labelText: "ស្វែងរក:", //
+                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      prefixIcon: Icon(Icons.search, color: Colors.blue),
                     ),
+                    onChanged: (v) {
+                      search = v;
+                      setState(() {});
+                    },
                   ),
-
-                  const Divider(height: 1),
+                  const SizedBox(height: 8),
+                  const Divider(height: 1, color: Colors.grey),
 
                   // បញ្ជីទំនិញដែលបានត្រង
                   Expanded(
                     child: list_mini_bar.isEmpty
                         ? const Center(child: CircularProgressIndicator())
                         : list_show().isEmpty
-                        ? const Center(
-                            child: Text("No item found", style: TextStyle(color: Colors.grey)),
-                          )
-                        : ListView.separated(
-                            padding: const EdgeInsets.fromLTRB(8, 0, 16, 8),
-                            itemCount: list_show().length,
-                            separatorBuilder: (_, _) => const Divider(height: 1, color: Colors.grey),
-                            itemBuilder: (context, index) {
-                              final item = list_show()[index];
-                              final selected = is_selected(item);
-                              final order = order_of(item);
-                              final price = item.price ?? 0;
-                              final qty = order?.quantity ?? 0;
-                              return InkWell(
-                                hoverColor: Colors.blue.withValues(alpha: 0.05),
-                                onTap: () {
-                                  toggle(item, selected);
-                                  setState(() {});
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    border: Border(left: selected ? const BorderSide(color: Colors.blue, width: 3) : BorderSide.none),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      // សញ្ញាធីកបង្ហាញថាបានជ្រើសរើស
-                                      Icon(selected ? Icons.check_circle : Icons.radio_button_unchecked, color: selected ? Colors.blue : Colors.grey),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              item.name ?? "", //
-                                              style: TextStyle(
-                                                fontSize: 16, //
-                                                fontWeight: FontWeight.bold,
-                                                color: selected ? Colors.blue : Colors.black87,
+                            ? const Center(
+                                child: Text("No item found", style: TextStyle(color: Colors.grey)),
+                              )
+                            : ListView.separated(
+                                padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+                                itemCount: list_show().length,
+                                separatorBuilder: (_, _) => const Divider(height: 1, color: Colors.grey),
+                                itemBuilder: (context, index) {
+                                  final item = list_show()[index];
+                                  final selected = is_selected(item);
+                                  final order = order_of(item);
+                                  final price = item.price ?? 0;
+                                  final qty = order?.quantity ?? 0;
+                                  return InkWell(
+                                    hoverColor: Colors.blue.withValues(alpha: 0.05),
+                                    onTap: () {
+                                      toggle(item, selected);
+                                      setState(() {});
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        border: Border(left: selected ? const BorderSide(color: Colors.blue, width: 3) : BorderSide.none),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          // សញ្ញាធីកបង្ហាញថាបានជ្រើសរើស
+                                          Icon(selected ? Icons.check_circle : Icons.radio_button_unchecked, color: selected ? Colors.blue : Colors.grey),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  item.name ?? "", //
+                                                  style: TextStyle(
+                                                    fontSize: 16, //
+                                                    fontWeight: FontWeight.bold,
+                                                    color: selected ? Colors.blue : Colors.black87,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "$price \$ / item", //
+                                                  style: const TextStyle(color: Colors.blue),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          // stepper +/-
+                                          if (selected) ...[
+                                            IconButton(
+                                              tooltip: "Decrease", //
+                                              icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                                              padding: EdgeInsets.zero,
+                                              constraints: const BoxConstraints(),
+                                              onPressed: () {
+                                                decrease(item);
+                                                setState(() {});
+                                              }, //
+                                            ),
+                                            SizedBox(
+                                              width: 32,
+                                              child: Text(
+                                                "$qty", //
+                                                textAlign: TextAlign.center,
+                                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                               ),
                                             ),
-                                            Text(
-                                              "$price \$ / item", //
-                                              style: const TextStyle(color: Colors.blue),
+                                            IconButton(
+                                              tooltip: "Increase", //
+                                              icon: const Icon(Icons.add_circle_outline, color: Colors.blue),
+                                              padding: EdgeInsets.zero,
+                                              constraints: const BoxConstraints(),
+                                              onPressed: () {
+                                                increase(item);
+                                                setState(() {});
+                                              }, //
                                             ),
                                           ],
-                                        ),
+                                        ],
                                       ),
-
-                                      // stepper +/-
-                                      if (selected) ...[
-                                        IconButton(
-                                          tooltip: "Decrease", //
-                                          icon: Icon(Icons.remove_circle_outline, color: Colors.red),
-                                          padding: EdgeInsets.zero,
-                                          constraints: const BoxConstraints(),
-                                          onPressed: () {
-                                            decrease(item);
-                                            setState(() {});
-                                          }, //
-                                        ),
-                                        SizedBox(
-                                          width: 32,
-                                          child: Text(
-                                            "$qty", //
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                        IconButton(
-                                          tooltip: "Increase", //
-                                          icon: const Icon(Icons.add_circle_outline, color: Colors.blue),
-                                          padding: EdgeInsets.zero,
-                                          constraints: const BoxConstraints(),
-                                          onPressed: () {
-                                            increase(item);
-                                            setState(() {});
-                                          }, //
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+                                    ),
+                                  );
+                                },
+                              ),
                   ),
                 ],
               ),
@@ -294,4 +294,3 @@ Future<double?> dialog_mini_bar_select({
   );
   return result;
 }
-

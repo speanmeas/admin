@@ -3,19 +3,31 @@ import "package:flutter_typeahead/flutter_typeahead.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
-Future<String?> dialog_check_in_by_search({
+Future<String?> dialog_bank_name_select({
   required BuildContext context, //
-  required String? front_desk_id, //
+  String? initial, //
 }) async {
-  dynamic tmp_u = await dio.post(endpoint.USER_READ, data: {"key": User.FULL_NAME, "order": 1});
-  if (tmp_u == null) {
-    snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+  dynamic tmp = await dio.post(endpoint.BANK_READ);
+  if (tmp == null) {
+    if (context.mounted) snackbar(ct: context, ms: dio.error_msg ?? "Failed to fetch banks", cl: Colors.red);
     return null;
   }
 
-  final users = tmp_u.data as List<dynamic>? ?? [];
+  List<String> options = [];
+  if (tmp.data is List) {
+    for (var b in tmp.data as List) {
+      if (b is Map) {
+        final name = (b[Bank.NAME] ?? b["name"] ?? "").toString().trim();
+        if (name.isNotEmpty && !options.contains(name)) {
+          options.add(name);
+        }
+      }
+    }
+  }
 
-  return await showDialog<String>(
+  final controller = TextEditingController(text: initial ?? "");
+
+  return await showDialog<String?>(
     context: context,
     builder: (context) {
       return AlertDialog(
@@ -27,7 +39,7 @@ Future<String?> dialog_check_in_by_search({
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Check-in By", //
+              "ឈ្មោះធនាគារ", //
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],
@@ -37,59 +49,40 @@ Future<String?> dialog_check_in_by_search({
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Divider(height: 1, color: Colors.grey),
+              const Divider(height: 0, color: Colors.grey),
               const SizedBox(height: 8),
               TypeAheadField<String>(
                 animationDuration: Duration.zero,
+                controller: controller,
                 hideOnUnfocus: false,
-                itemBuilder: (context, item) => ListTile(title: Text(item)),
+                itemBuilder: (context, item) => ListTile(
+                  leading: Icon(item.isEmpty ? Icons.block_outlined : Icons.account_balance_outlined, color: item.isEmpty ? Colors.red : Colors.blue),
+                  title: Text(item.isEmpty ? "គ្មាន (Clear)" : item),
+                ),
                 suggestionsCallback: (q) {
                   final query = q.trim().toLowerCase();
-                  final options = <String>[];
-                  for (var u in users) {
-                    final name = (u[User.FULL_NAME] ?? "").toString();
-                    if (query.isEmpty || name.toLowerCase().contains(query)) {
-                      options.add(name);
-                    }
-                  }
-                  return options;
+                  final list = <String>[...options];
+                  if (query.isEmpty) return ["", ...list];
+                  final filtered = list.where((element) => element.toLowerCase().contains(query)).toList();
+                  return ["", ...filtered];
                 },
-                builder: (context, controller, focusNode) {
+                builder: (context, ctrl, focusNode) {
                   return TextField(
                     autofocus: true,
-                    controller: controller,
+                    controller: ctrl,
                     focusNode: focusNode,
                     decoration: const InputDecoration(
-                      labelText: "Search:",
+                      labelText: "ស្វែងរក:", //
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: Icon(Icons.search, color: Colors.blue),
                     ),
                   );
                 },
-                onSelected: (v) async {
-                  String? user_id;
-                  String? full_name;
-                  for (var u in users) {
-                    if ((u[User.FULL_NAME] ?? "").toString() == v) {
-                      user_id = u[User.ID];
-                      full_name = u[User.FULL_NAME];
-                      break;
-                    }
-                  }
-                  if (user_id == null || front_desk_id == null) return;
-
+                onSelected: (v) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (context.mounted) Navigator.pop(context, full_name);
+                    if (context.mounted) Navigator.pop(context, v);
                   });
-
-                  await dio.post(
-                    endpoint.FRONT_DESK_UPDATE,
-                    data: {
-                      Front_Desk.ID: front_desk_id, //
-                      Front_Desk.CHECK_IN_BY: user_id, //
-                    },
-                  );
                 },
               ),
             ],
@@ -101,6 +94,8 @@ Future<String?> dialog_check_in_by_search({
 }
 
 class _Main_State extends State<Main_> {
+  String? tmp;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,7 +103,10 @@ class _Main_State extends State<Main_> {
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(foregroundColor: Colors.blue),
           onPressed: () async {
-            await dialog_check_in_by_search(context: context, front_desk_id: "test");
+            final v = await dialog_bank_name_select(context: context);
+            if (v == null) return;
+            tmp = v;
+            setState(() {});
           },
           child: const Text("Show"),
         ),

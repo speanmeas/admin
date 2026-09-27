@@ -40,6 +40,7 @@ Future<String?> dialog_check_out_by_search({
               const Divider(height: 1, color: Colors.grey),
               const SizedBox(height: 8),
               TypeAheadField<String>(
+                animationDuration: Duration.zero,
                 hideOnUnfocus: false,
                 itemBuilder: (context, item) => ListTile(title: Text(item)),
                 suggestionsCallback: (q) {

@@ -7,6 +7,7 @@ import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
 
 import "dialog/guest_add.dart";
+import "dialog/bank_name_search.dart";
 import "dialog/guest_search.dart";
 import "dialog/guest_update.dart";
 import "dialog/check_in_by_search.dart";
@@ -492,6 +493,37 @@ class _Main_State extends State<Main_> {
           ),
 
           PlutoColumn(
+            field: Front_Desk.PAY_BANK_NAME, //
+            title: "ឈ្មោះធនាគារ",
+            type: PlutoColumnType.text(),
+            enableEditingMode: false,
+            width: 120,
+            renderer: (rc) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center, //
+                children: [
+                  IconButton(
+                    tooltip: "ឈ្មោះធនាគារ", //
+                    icon: const Icon(Icons.search_outlined),
+                    padding: EdgeInsets.all(0),
+                    constraints: const BoxConstraints(),
+                    onPressed: () => on_update_bank_name(rc), //
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center, //
+                      child: Text(
+                        format_string(rc.cell.value), //
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          PlutoColumn(
             field: Front_Desk.PAY_BALANCE, //
             title: "សមតុល្យ",
             type: PlutoColumnType.number(negative: true, format: "#,##0.00"),
@@ -670,6 +702,7 @@ class _Main_State extends State<Main_> {
               Front_Desk.PENALTY_PRICE, //
               Front_Desk.PAY_CASH, //
               Front_Desk.PAY_BANK, //
+              Front_Desk.PAY_BANK_NAME, //
               Front_Desk.PAY_BALANCE, //
               Front_Desk.PAY_NOTE,
             ],
@@ -822,6 +855,7 @@ class _Main_State extends State<Main_> {
                   if (c.field == Front_Desk.PENALTY_PRICE) return PlutoCell(value: d.penalty_price ?? 0.0);
                   if (c.field == Front_Desk.PAY_CASH) return PlutoCell(value: d.pay_cash ?? 0.0);
                   if (c.field == Front_Desk.PAY_BANK) return PlutoCell(value: d.pay_bank ?? 0.0);
+                  if (c.field == Front_Desk.PAY_BANK_NAME) return PlutoCell(value: d.pay_bank_name ?? "");
                   if (c.field == Front_Desk.PAY_BALANCE) return PlutoCell(value: d.pay_balance ?? 0.0);
                   if (c.field == Front_Desk.PAY_NOTE) return PlutoCell(value: d.pay_note ?? "");
                   if (c.field == Front_Desk.CHECK_IN_BY) return PlutoCell(value: user_name(d.check_in_by));
@@ -1127,6 +1161,16 @@ class _Main_State extends State<Main_> {
     state_manager.changeCellValue(rc.cell, room_number, force: true, callOnChangedEvent: false);
 
     do_updated(fd_id, Front_Desk.ROOM_NUMBER, room_number);
+  }
+
+  Future<void> on_update_bank_name(PlutoColumnRendererContext rc) async {
+    final fd_id = rc.row.cells[Front_Desk.ID]?.value;
+    if (fd_id == null) return;
+    final current_bank = (rc.cell.value ?? "").toString();
+    final v = await dialog_bank_name_select(context: context, initial: current_bank);
+    if (v == null) return;
+    state_manager.changeCellValue(rc.cell, v, force: true, callOnChangedEvent: false);
+    do_updated(fd_id, Front_Desk.PAY_BANK_NAME, v);
   }
 
   Future<void> do_updated(String? fd_id, String field, dynamic value) async {
