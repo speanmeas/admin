@@ -86,6 +86,17 @@ class DioUtil {
       return null;
     }
   }
+
+  // ផ្ញើ POST request ដើម្បីទាញយកឯកសារ (.xlsx) ជា bytes
+  Future<Response<dynamic>?> download(String path, {dynamic data}) async {
+    try {
+      error_msg = null;
+      return await __dio.post(path, data: data, options: Options(responseType: ResponseType.bytes));
+    } catch (e) {
+      error_msg = e is DioException ? (e.response?.data?.toString() ?? e.message) : e.toString();
+      return null;
+    }
+  }
 }
 
 // instance សកលរបស់ DioUtil

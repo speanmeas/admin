@@ -19,6 +19,7 @@ import "package:speanmeas/features/database/penalty/main.dart" as penalty;
 
 // report
 import "package:speanmeas/features/report/daily.dart" as report_daily;
+import "package:speanmeas/features/report/summary_report.dart" as report_summary;
 
 import "package:speanmeas/features/database/demo_1/main.dart" as demo_1;
 // import "package:speanmeas/features/database/demo_2_1/main.dart" as demo_2_1;
@@ -45,6 +46,7 @@ class _Panel_BodyState extends State<Panel_Body> {
     {"name": "Data Penalty", "panel": penalty.Main_()}, //
     //
     {"name": "Report Daily", "panel": report_daily.Main_()}, //
+    {"name": "Report Summary", "panel": report_summary.Main_()}, //
     //
     {"name": "Demo 001", "panel": demo_1.Main_()},
     // {"name": "Demo 002-1", "panel": demo_2_1.Main_()},

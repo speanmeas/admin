@@ -1,12 +1,19 @@
+import "dart:js_interop";
+import "dart:typed_data";
+
 import "package:flutter/material.dart";
+import "package:flutter_svg/flutter_svg.dart";
 import "package:intl/intl.dart";
 import "package:pluto_grid/pluto_grid.dart";
 import "package:speanmeas/core/utility/all.dart";
+import "package:web/web.dart" as web;
 
 class _Main_State extends State<Main_> {
   // ########## BLOCK ATTRIBUTE ##########
   int reload = 0;
   bool filter = false;
+  bool downloading = false;
+  bool downloading_summary = false;
   double WIDTH = 120;
 
   late List<PlutoColumn> list_column_pluto;
@@ -89,6 +96,43 @@ class _Main_State extends State<Main_> {
         ),
 
         const Spacer(),
+
+        IconButton(
+          tooltip: "Download Excel", //
+          icon: downloading ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : SvgPicture.asset("assets/icon/excel.svg", width: 30, height: 30),
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(),
+          color: Colors.blue,
+          onPressed: on_download,
+        ),
+
+        IconButton(
+          tooltip: "Download Summary Excel", //
+          icon: downloading_summary
+              ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+              : Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    SvgPicture.asset("assets/icon/excel.svg", width: 30, height: 30),
+                    Positioned(
+                      right: -2,
+                      bottom: -2,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 0.5),
+                        decoration: BoxDecoration(color: Colors.blue.shade700, borderRadius: BorderRadius.circular(3)),
+                        child: const Text(
+                          "SUM",
+                          style: TextStyle(color: Colors.white, fontSize: 7, fontWeight: FontWeight.bold, height: 1.1),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+          padding: EdgeInsets.all(0),
+          color: Colors.blue,
+          constraints: BoxConstraints(),
+          onPressed: on_download_summary,
+        ),
 
         IconButton(
           tooltip: filter ? "Hide Filter" : "Show Filter", //
@@ -476,6 +520,66 @@ class _Main_State extends State<Main_> {
     reload++;
     await on_load_page();
     snackbar(ct: context, ms: "Reloaded", cl: Colors.green);
+  }
+
+  Future<void> on_download() async {
+    if (downloading) return;
+    setState(() => downloading = true);
+    try {
+      final String formatted_date = DateFormat("yyyy-MM-dd").format(date);
+      dynamic tmp = await dio.download(endpoint.FRONT_DESK_REPORT_DAILY_EXCEL, data: {"date": formatted_date});
+      if (tmp == null) {
+        snackbar(ct: context, ms: dio.error_msg ?? "Error: ${endpoint.FRONT_DESK_REPORT_DAILY_EXCEL}", cl: Colors.red);
+        return;
+      }
+
+      final bytes = Uint8List.fromList(tmp.data as List<int>);
+      final blob = web.Blob([bytes.toJS].toJS, web.BlobPropertyBag(type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+      final url = web.URL.createObjectURL(blob);
+      final anchor = web.HTMLAnchorElement()
+        ..href = url
+        ..download = "report_daily_$formatted_date.xlsx";
+      web.document.body?.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      web.URL.revokeObjectURL(url);
+      snackbar(ct: context, ms: "Downloaded: report_daily_$formatted_date.xlsx", cl: Colors.green);
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: "Error: $e", cl: Colors.red);
+    } finally {
+      if (mounted) setState(() => downloading = false);
+    }
+  }
+
+  Future<void> on_download_summary() async {
+    if (downloading_summary) return;
+    setState(() => downloading_summary = true);
+    try {
+      final String formatted_date = DateFormat("yyyy-MM-dd").format(date);
+      dynamic tmp = await dio.download(endpoint.FRONT_DESK_REPORT_DAILY_SUMMARY_EXCEL, data: {"date": formatted_date});
+      if (tmp == null) {
+        snackbar(ct: context, ms: dio.error_msg ?? "Error: ${endpoint.FRONT_DESK_REPORT_DAILY_SUMMARY_EXCEL}", cl: Colors.red);
+        return;
+      }
+
+      final bytes = Uint8List.fromList(tmp.data as List<int>);
+      final blob = web.Blob([bytes.toJS].toJS, web.BlobPropertyBag(type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+      final url = web.URL.createObjectURL(blob);
+      final anchor = web.HTMLAnchorElement()
+        ..href = url
+        ..download = "report_daily_summary_$formatted_date.xlsx";
+      web.document.body?.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      web.URL.revokeObjectURL(url);
+      snackbar(ct: context, ms: "Downloaded: report_daily_summary_$formatted_date.xlsx", cl: Colors.green);
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: "Error: $e", cl: Colors.red);
+    } finally {
+      if (mounted) setState(() => downloading_summary = false);
+    }
   }
 
   Future<void> pick_date() async {

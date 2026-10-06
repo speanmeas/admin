@@ -6,8 +6,11 @@ class EndPoint {
 	final AUTH_CLIENT_KHUNBUNHAP_SIGN_IN = "/auth_client/khunbunhap/sign_in";
 	final AUTH_CLIENT_KHUNBUNHAP_SIGN_OUT = "/auth_client/khunbunhap/sign_out";
 	final AUTH_CLIENT_KHUNBUNHAP_SIGN_UP = "/auth_client/khunbunhap/sign_up";
-	final TELEGRAM = "/telegram";
+	final GOOGLE_AUTH = "/google_auth";
+	final GOOGLE_AUTH_CALLBACK = "/google_auth/callback";
+	final GOOGLE_AUTH_DELETE = "/google_auth/delete";
 	final TELEGRAM_AUTH = "/telegram_auth";
+	final TELEGRAM_AUTH_DELETE = "/telegram_auth/delete";
 	final DEBUG_ORDER_REBALANCE = "/debug/order_rebalance";
 	final FRONT_DESK_CARRY_OVER = "/front_desk/carry_over";
 	final FRONT_DESK_CARRY_OVER_ONE = "/front_desk/carry_over_one";
@@ -18,6 +21,8 @@ class EndPoint {
 	final FRONT_DESK_DASHBOARD = "/front_desk/dashboard";
 	final FRONT_DESK_OVER_TIME = "/front_desk/over_time";
 	final FRONT_DESK_REPORT_DAILY = "/front_desk/report_daily";
+	final FRONT_DESK_REPORT_DAILY_EXCEL = "/front_desk/report_daily_excel";
+	final FRONT_DESK_REPORT_DAILY_SUMMARY_EXCEL = "/front_desk/report_daily_summary_excel";
 	final FRONT_DESK_SET_GUEST = "/front_desk/set_guest";
 	final FRONT_DESK_SET_MINI_BAR = "/front_desk/set_mini_bar";
 	final FRONT_DESK_SET_PENALTY = "/front_desk/set_penalty";

@@ -2,7 +2,7 @@ name: speanmeas
 description: "Hotel Management System."
 # publish_to: "CloudFlare" # Remove this line if you wish to publish to pub.dev
 
-version: 1.1.1+226
+version: 1.1.1+227
 
 environment:
   sdk: ^3.11.4
@@ -25,6 +25,7 @@ dependencies:
   pluto_grid: ^8.1.0
   provider: ^6.1.5+1
   url_launcher: ^6.3.2
+  web: ^1.1.1
 
   # syncfusion_flutter_datagrid: ^33.1.49
 

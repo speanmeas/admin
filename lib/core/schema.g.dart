@@ -2224,6 +2224,7 @@ class Log_User {
   static const IS_RECEPTIONIST = 'is_receptionist';
   static const IS_HOUSEKEEPER = 'is_housekeeper';
   static const NOTE = 'note';
+  static const GOOGLE_ID = 'google_id';
   static const TOKEN_TYPE = 'token_type';
   static const ACCESS_TOKEN = 'access_token';
   static const BID = 'bid';
@@ -2246,12 +2247,13 @@ class Log_User {
   final bool? is_receptionist;
   final bool? is_housekeeper;
   final String? note;
+  final String? google_id;
   final String? token_type;
   final String? access_token;
   final dynamic bid;
   final String? op;
 
-  Log_User({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.username, this.password, this.full_name, this.phone_number, this.is_admin, this.is_manager, this.is_receptionist, this.is_housekeeper, this.note, this.token_type, this.access_token, this.bid, this.op});
+  Log_User({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.username, this.password, this.full_name, this.phone_number, this.is_admin, this.is_manager, this.is_receptionist, this.is_housekeeper, this.note, this.google_id, this.token_type, this.access_token, this.bid, this.op});
 
   factory Log_User.fromJson(Map<String, dynamic> json) => Log_User(
     id: json['_id'] as String?,
@@ -2271,6 +2273,7 @@ class Log_User {
     is_receptionist: json['is_receptionist'] as bool?,
     is_housekeeper: json['is_housekeeper'] as bool?,
     note: json['note'] as String?,
+    google_id: json['google_id'] as String?,
     token_type: json['token_type'] as String?,
     access_token: json['access_token'] as String?,
     bid: json['bid'] == null ? null : (json['bid'] is Map<String, dynamic> ? User_Show_2.fromJson(json['bid'] as Map<String, dynamic>) : json['bid']),
@@ -2296,6 +2299,7 @@ class Log_User {
     json['is_receptionist'] = is_receptionist;
     json['is_housekeeper'] = is_housekeeper;
     json['note'] = note;
+    json['google_id'] = google_id;
     json['token_type'] = token_type;
     json['access_token'] = access_token;
     json['bid'] = bid == null ? null : bid is User_Show_2 ? bid.toJson() : bid;
@@ -2322,6 +2326,7 @@ class User {
   static const IS_RECEPTIONIST = 'is_receptionist';
   static const IS_HOUSEKEEPER = 'is_housekeeper';
   static const NOTE = 'note';
+  static const GOOGLE_ID = 'google_id';
   static const TOKEN_TYPE = 'token_type';
   static const ACCESS_TOKEN = 'access_token';
 
@@ -2342,10 +2347,11 @@ class User {
   final bool? is_receptionist;
   final bool? is_housekeeper;
   final String? note;
+  final String? google_id;
   final String? token_type;
   final String? access_token;
 
-  User({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.username, this.password, this.full_name, this.phone_number, this.is_admin, this.is_manager, this.is_receptionist, this.is_housekeeper, this.note, this.token_type, this.access_token});
+  User({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.username, this.password, this.full_name, this.phone_number, this.is_admin, this.is_manager, this.is_receptionist, this.is_housekeeper, this.note, this.google_id, this.token_type, this.access_token});
 
   factory User.fromJson(Map<String, dynamic> json) => User(
     id: json['_id'] as String?,
@@ -2365,6 +2371,7 @@ class User {
     is_receptionist: json['is_receptionist'] as bool?,
     is_housekeeper: json['is_housekeeper'] as bool?,
     note: json['note'] as String?,
+    google_id: json['google_id'] as String?,
     token_type: json['token_type'] as String?,
     access_token: json['access_token'] as String?,
   );
@@ -2388,6 +2395,7 @@ class User {
     json['is_receptionist'] = is_receptionist;
     json['is_housekeeper'] = is_housekeeper;
     json['note'] = note;
+    json['google_id'] = google_id;
     json['token_type'] = token_type;
     json['access_token'] = access_token;
     return json;
@@ -2408,6 +2416,8 @@ class Log_User_Client {
   static const FULL_NAME = 'full_name';
   static const PHONE_NUMBER = 'phone_number';
   static const NOTE = 'note';
+  static const TELEGRAM_ID = 'telegram_id';
+  static const GOOGLE_ID = 'google_id';
   static const ACCESS_TOKEN = 'access_token';
   static const TOKEN_TYPE = 'token_type';
   static const BID = 'bid';
@@ -2426,12 +2436,14 @@ class Log_User_Client {
   final String? full_name;
   final String? phone_number;
   final String? note;
+  final String? telegram_id;
+  final String? google_id;
   final String? access_token;
   final String? token_type;
   final dynamic bid;
   final String? op;
 
-  Log_User_Client({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.username, this.password, this.full_name, this.phone_number, this.note, this.access_token, this.token_type, this.bid, this.op});
+  Log_User_Client({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.username, this.password, this.full_name, this.phone_number, this.note, this.telegram_id, this.google_id, this.access_token, this.token_type, this.bid, this.op});
 
   factory Log_User_Client.fromJson(Map<String, dynamic> json) => Log_User_Client(
     id: json['_id'] as String?,
@@ -2447,6 +2459,8 @@ class Log_User_Client {
     full_name: json['full_name'] as String?,
     phone_number: json['phone_number'] as String?,
     note: json['note'] as String?,
+    telegram_id: json['telegram_id'] as String?,
+    google_id: json['google_id'] as String?,
     access_token: json['access_token'] as String?,
     token_type: json['token_type'] as String?,
     bid: json['bid'] == null ? null : (json['bid'] is Map<String, dynamic> ? User_Client_Show.fromJson(json['bid'] as Map<String, dynamic>) : json['bid']),
@@ -2468,6 +2482,8 @@ class Log_User_Client {
     json['full_name'] = full_name;
     json['phone_number'] = phone_number;
     json['note'] = note;
+    json['telegram_id'] = telegram_id;
+    json['google_id'] = google_id;
     json['access_token'] = access_token;
     json['token_type'] = token_type;
     json['bid'] = bid == null ? null : bid is User_Client_Show ? bid.toJson() : bid;
@@ -2490,6 +2506,8 @@ class User_Client {
   static const FULL_NAME = 'full_name';
   static const PHONE_NUMBER = 'phone_number';
   static const NOTE = 'note';
+  static const TELEGRAM_ID = 'telegram_id';
+  static const GOOGLE_ID = 'google_id';
   static const ACCESS_TOKEN = 'access_token';
   static const TOKEN_TYPE = 'token_type';
 
@@ -2506,10 +2524,12 @@ class User_Client {
   final String? full_name;
   final String? phone_number;
   final String? note;
+  final String? telegram_id;
+  final String? google_id;
   final String? access_token;
   final String? token_type;
 
-  User_Client({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.username, this.password, this.full_name, this.phone_number, this.note, this.access_token, this.token_type});
+  User_Client({this.id, this.created_at, this.created_by, this.updated_at, this.updated_by, this.deleted_at, this.deleted_by, this.order, this.username, this.password, this.full_name, this.phone_number, this.note, this.telegram_id, this.google_id, this.access_token, this.token_type});
 
   factory User_Client.fromJson(Map<String, dynamic> json) => User_Client(
     id: json['_id'] as String?,
@@ -2525,6 +2545,8 @@ class User_Client {
     full_name: json['full_name'] as String?,
     phone_number: json['phone_number'] as String?,
     note: json['note'] as String?,
+    telegram_id: json['telegram_id'] as String?,
+    google_id: json['google_id'] as String?,
     access_token: json['access_token'] as String?,
     token_type: json['token_type'] as String?,
   );
@@ -2544,6 +2566,8 @@ class User_Client {
     json['full_name'] = full_name;
     json['phone_number'] = phone_number;
     json['note'] = note;
+    json['telegram_id'] = telegram_id;
+    json['google_id'] = google_id;
     json['access_token'] = access_token;
     json['token_type'] = token_type;
     return json;
