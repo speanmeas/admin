@@ -221,19 +221,6 @@ class _Main_State extends State<Main_> {
             },
           ),
           PlutoColumn(
-            field: "duration", //
-            title: "រយៈពេល",
-            type: PlutoColumnType.text(),
-            enableEditingMode: false,
-            width: 150,
-            renderer: (rc) {
-              return Align(
-                alignment: Alignment.center, //
-                child: Text(format_string(rc.cell.value), overflow: TextOverflow.ellipsis),
-              );
-            },
-          ),
-          PlutoColumn(
             field: "check_out_at", //
             title: "ពេលចេញ",
             type: PlutoColumnType.text(),
@@ -427,7 +414,7 @@ class _Main_State extends State<Main_> {
         ], //
         columnGroups: [
           PlutoColumnGroup(title: "", fields: ["index"]),
-          PlutoColumnGroup(title: "ការស្នាក់នៅ", fields: ["room", "check_in_at", "duration", "check_out_at"]),
+          PlutoColumnGroup(title: "ការស្នាក់នៅ", fields: ["room", "check_in_at", "check_out_at"]),
           PlutoColumnGroup(title: "អតិថិជន", fields: ["guest_name", "guest_phone", "number_of_guest"]),
           PlutoColumnGroup(title: "ការបង់ប្រាក់", fields: ["room_price", "mini_bar_price", "penalty_price", "pay_cash", "pay_bank", "pay_balance", "pay_note"]),
           PlutoColumnGroup(title: "ការត្រួតពិនិត្យ", fields: ["check_in_by", "check_out_by"]),
@@ -610,7 +597,6 @@ class _Main_State extends State<Main_> {
                 if (c.field == "number_of_guest") return PlutoCell(value: fd.number_of_guest ?? 0);
                 if (c.field == "check_in_at") return PlutoCell(value: fd.check_in_at);
                 if (c.field == "check_out_at") return PlutoCell(value: fd.check_out_at);
-                if (c.field == "duration") return PlutoCell(value: row_is_walk_in_by_id(fd.id ?? "") ? "" : duration_text(fd.check_in_at, fd.check_out_at));
                 if (c.field == "check_in_by") return PlutoCell(value: fd.check_in_by is User_Show ? (fd.check_in_by as User_Show).full_name : "");
                 if (c.field == "check_out_by") return PlutoCell(value: fd.check_out_by is User_Show ? (fd.check_out_by as User_Show).full_name : "");
 
@@ -632,28 +618,6 @@ class _Main_State extends State<Main_> {
   void on_filter() {
     filter = !filter;
     state_manager.setShowColumnFilter(filter);
-  }
-
-  String duration_text(DateTime? in_at, DateTime? out_at) {
-    if (in_at == null) return "";
-    DateTime end = out_at ?? DateTime.now();
-    int minutes = end.difference(in_at).inMinutes;
-    if (minutes < 0) return "";
-    int day = minutes ~/ 1440;
-    int hour = (minutes % 1440) ~/ 60;
-    int min = minutes % 60;
-    String text = "";
-    if (day > 0) text += "$day ថ្ងៃ ";
-    if (hour > 0) text += "$hour ម៉ោង ";
-    text += "$min នាទី";
-    return text.trim();
-  }
-
-  bool row_is_walk_in_by_id(String fd_id) {
-    Front_Desk? fd = rows.where((x) => x.id == fd_id).firstOrNull;
-    if (fd == null) return false;
-    String n = (fd.room_number ?? "").toLowerCase();
-    return n == "walk-in";
   }
 
   double get total_price => parse_double(summary["total"]?["price"]) ?? 0;

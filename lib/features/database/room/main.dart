@@ -3,6 +3,7 @@ import "package:pluto_grid/pluto_grid.dart";
 
 import "package:speanmeas/core/utility/all.dart";
 
+import "dialog/delete_confirm.dart";
 import "dialog/select_page.dart";
 
 class _Main_State extends State<Main_> {
@@ -493,22 +494,17 @@ class _Main_State extends State<Main_> {
     snackbar(ct: context, ms: "Created", cl: Colors.green);
   }
 
-  void on_delete(PlutoColumnRendererContext rc) {
-    state_manager.removeRows([rc.row]);
-    re_index();
-
+  Future<void> on_delete(PlutoColumnRendererContext rc) async {
     final id = rc.row.cells[Room.ID]?.value;
     if (id == null) return;
-    do_delete(id);
-  }
 
-  Future<void> do_delete(String? id) async {
-    final tmp = await dio.post(endpoint.ROOM_DELETE, data: {Room.ID: id});
-    if (tmp == null) {
-      await on_reload();
-      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-      return;
-    }
+    final item = format_string(rc.row.cells[Room.NUMBER]?.value);
+    final ok = await dialog_room_delete_confirm(context: context, room_id: id, item: item);
+    if (!ok) return;
+
+    state_manager.removeRows([rc.row]);
+    re_index();
+    if (!mounted) return;
     snackbar(ct: context, ms: "Deleted", cl: Colors.green);
   }
 

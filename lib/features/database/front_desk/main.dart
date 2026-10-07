@@ -8,6 +8,7 @@ import "package:speanmeas/core/utility/all.dart";
 
 import "dialog/guest_add.dart";
 import "dialog/bank_name_search.dart";
+import "dialog/delete_confirm.dart";
 import "dialog/guest_search.dart";
 import "dialog/guest_update.dart";
 import "dialog/check_in_by_search.dart";
@@ -965,22 +966,17 @@ class _Main_State extends State<Main_> {
     snackbar(ct: context, ms: "Created", cl: Colors.green);
   }
 
-  void on_delete(PlutoColumnRendererContext rc) {
-    state_manager.removeRows([rc.row]);
-    on_reindex();
-
+  Future<void> on_delete(PlutoColumnRendererContext rc) async {
     final id = rc.row.cells[Front_Desk.ID]?.value;
     if (id == null) return;
-    do_delete(id);
-  }
 
-  Future<void> do_delete(String? id) async {
-    final tmp = await dio.post(endpoint.FRONT_DESK_DELETE, data: {Front_Desk.ID: id});
-    if (tmp == null) {
-      snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
-      await on_load_page();
-      return;
-    }
+    final item = format_string(rc.row.cells[Front_Desk.ROOM_NUMBER]?.value);
+    final ok = await dialog_delete_confirm(context: context, fd_id: id, item: item);
+    if (!ok) return;
+
+    state_manager.removeRows([rc.row]);
+    on_reindex();
+    if (!mounted) return;
     snackbar(ct: context, ms: "Deleted", cl: Colors.green);
   }
 
