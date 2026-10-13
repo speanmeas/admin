@@ -30,6 +30,7 @@ class _Main_State extends State<Main_> {
   bool show_check_in = true;
   bool show_check_out = true;
   bool show_clean = true;
+  String? downloading_receipt_id;
   DateTime current_shift = DateTime.now();
 
   late List<PlutoColumn> list_column_pluto;
@@ -554,7 +555,7 @@ class _Main_State extends State<Main_> {
                     icon: Icon(Icons.print_outlined),
                     padding: EdgeInsets.all(0),
                     constraints: BoxConstraints(),
-                    onPressed: () => snackbar(ct: context, ms: "កំពុងអភិវឌ្ឍន៍...", cl: Colors.blue), //
+                    onPressed: () => on_download_receipt(rc), //
                   ),
                 ],
               );
@@ -900,6 +901,38 @@ class _Main_State extends State<Main_> {
   Future<void> on_mini_bar_only() async {
     final v = await dialog_add_mini_bar(context: context);
     if (v == true) await on_load_dashboard(current_shift);
+  }
+
+  Future<void> on_download_receipt(PlutoColumnRendererContext rc) async {
+    final fd_id = rc.row.cells[Front_Desk.ID]?.value?.toString();
+    if (fd_id == null || fd_id.isEmpty) return;
+    if (downloading_receipt_id != null) return;
+
+    setState(() => downloading_receipt_id = fd_id);
+    state_manager.notifyListeners();
+    try {
+      final tmp = await dio.download(
+        endpoint.FRONT_DESK_RECEIPT, //
+        data: {Front_Desk.ID: fd_id},
+      );
+      if (!mounted) return;
+      if (tmp == null) {
+        snackbar(ct: context, ms: dio.error_msg ?? "", cl: Colors.red);
+        return;
+      }
+
+      final filename = download_filename(tmp.headers.value("content-disposition"), download_name("receipt", "xlsx"));
+      download_bytes(bytes: tmp.data as List<int>, filename: filename, mime: XLSX_MIME);
+      snackbar(ct: context, ms: "Downloaded: $filename", cl: Colors.green);
+    } catch (e, st) {
+      pprint(st);
+      snackbar(ct: context, ms: "Error: $e", cl: Colors.red);
+    } finally {
+      if (mounted) {
+        setState(() => downloading_receipt_id = null);
+        state_manager.notifyListeners();
+      }
+    }
   }
 
   void on_update_room(PlutoColumnRendererContext rc) async {

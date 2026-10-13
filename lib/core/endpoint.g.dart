@@ -20,6 +20,7 @@ class EndPoint {
 	final FRONT_DESK_CLEAN = "/front_desk/clean";
 	final FRONT_DESK_DASHBOARD = "/front_desk/dashboard";
 	final FRONT_DESK_OVER_TIME = "/front_desk/over_time";
+	final FRONT_DESK_RECEIPT = "/front_desk/receipt";
 	final FRONT_DESK_REPORT_DAILY = "/front_desk/report_daily";
 	final FRONT_DESK_REPORT_DAILY_EXCEL = "/front_desk/report_daily_excel";
 	final FRONT_DESK_REPORT_DAILY_SUMMARY_EXCEL = "/front_desk/report_daily_summary_excel";

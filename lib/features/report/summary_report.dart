@@ -1,6 +1,5 @@
 import "dart:async";
 import "dart:js_interop";
-import "dart:typed_data";
 
 import "package:flutter/material.dart";
 import "package:flutter_svg/flutter_svg.dart";
@@ -357,17 +356,9 @@ class _Main_State extends State<Main_> {
         return;
       }
 
-      final bytes = Uint8List.fromList(tmp.data as List<int>);
-      final blob = web.Blob([bytes.toJS].toJS, web.BlobPropertyBag(type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-      final url = web.URL.createObjectURL(blob);
-      final anchor = web.HTMLAnchorElement()
-        ..href = url
-        ..download = "report_daily_summary_$formatted_date.xlsx";
-      web.document.body?.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      web.URL.revokeObjectURL(url);
-      snackbar(ct: context, ms: "Downloaded: report_daily_summary_$formatted_date.xlsx", cl: Colors.green);
+      final filename = download_filename(tmp.headers.value("content-disposition"), download_name("report_daily_summary", "xlsx"));
+      download_bytes(bytes: tmp.data as List<int>, filename: filename, mime: XLSX_MIME);
+      snackbar(ct: context, ms: "Downloaded: $filename", cl: Colors.green);
     } catch (e, st) {
       pprint(st);
       snackbar(ct: context, ms: "Error: $e", cl: Colors.red);

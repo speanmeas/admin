@@ -125,47 +125,46 @@ class _Main_State extends State<Main_> {
             // width: kDebugMode ? 220 : 0,
           ),
 
-          PlutoColumn(
-            field: "action", //
-            title: "",
-            titleSpan: WidgetSpan(
-              child: Container(
-                alignment: Alignment.center, //
-                child: IconButton(
-                  tooltip: "Add Row", //
-                  icon: Icon(Icons.add_circle_outline, size: 28), //
-                  padding: EdgeInsets.all(0),
-                  constraints: BoxConstraints(),
-                  onPressed: on_create,
-                ),
-              ),
-            ),
-            titlePadding: EdgeInsets.all(0),
-            type: PlutoColumnType.text(),
-            width: 40,
-            enableEditingMode: false,
-            enableColumnDrag: false,
-            enableContextMenu: false,
-            enableDropToResize: false,
-            enableFilterMenuItem: false,
-            enableSorting: false,
-            cellPadding: EdgeInsets.all(0),
-            renderer: (rc) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center, //
-                children: [
-                  IconButton(
-                    tooltip: "Remove Row", //
-                    icon: Icon(Icons.remove_circle_outline, size: 28, color: Colors.red),
-                    padding: EdgeInsets.all(0),
-                    constraints: BoxConstraints(),
-                    onPressed: () => on_delete(rc),
-                  ),
-                ],
-              );
-            },
-          ),
-
+          // PlutoColumn(
+          //   field: "action", //
+          //   title: "",
+          //   titleSpan: WidgetSpan(
+          //     child: Container(
+          //       alignment: Alignment.center, //
+          //       child: IconButton(
+          //         tooltip: "Add Row", //
+          //         icon: Icon(Icons.add_circle_outline, size: 28), //
+          //         padding: EdgeInsets.all(0),
+          //         constraints: BoxConstraints(),
+          //         onPressed: on_create,
+          //       ),
+          //     ),
+          //   ),
+          //   titlePadding: EdgeInsets.all(0),
+          //   type: PlutoColumnType.text(),
+          //   width: 40,
+          //   enableEditingMode: false,
+          //   enableColumnDrag: false,
+          //   enableContextMenu: false,
+          //   enableDropToResize: false,
+          //   enableFilterMenuItem: false,
+          //   enableSorting: false,
+          //   cellPadding: EdgeInsets.all(0),
+          //   renderer: (rc) {
+          //     return Row(
+          //       mainAxisAlignment: MainAxisAlignment.center, //
+          //       children: [
+          //         IconButton(
+          //           tooltip: "Remove Row", //
+          //           icon: Icon(Icons.remove_circle_outline, size: 28, color: Colors.red),
+          //           padding: EdgeInsets.all(0),
+          //           constraints: BoxConstraints(),
+          //           onPressed: () => on_delete(rc),
+          //         ),
+          //       ],
+          //     );
+          //   },
+          // ),
           PlutoColumn(
             field: "index", //
             title: "No.",
@@ -430,7 +429,7 @@ class _Main_State extends State<Main_> {
           cells: {
             for (var c in list_column_pluto) //
               c.field: (() {
-                if (c.field == "action") return PlutoCell(value: "");
+                // if (c.field == "action") return PlutoCell(value: "");
                 if (c.field == "index") return PlutoCell(value: i + 1);
                 if (c.field == Room.ID) return PlutoCell(value: d.id ?? "");
                 if (c.field == Room.NUMBER) return PlutoCell(value: d.number ?? "");
